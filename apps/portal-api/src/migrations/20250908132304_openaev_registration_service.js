@@ -47,7 +47,7 @@ export async function up(knex) {
     {
       id: serviceDefinitionId,
       name: 'OpenAEV Registration',
-      description: 'Access and manage your OpenAEV instance',
+      description: 'Access and manage your OpenAEV platform',
       public: false,
       identifier: 'openaev_registration',
     },

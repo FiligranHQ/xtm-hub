@@ -284,13 +284,17 @@ export const registrationApp = {
       context,
       activeServiceConfiguration.service_instance_id
     );
+
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
     const platformIdentifier =
       platformIdentifierMappedByServiceDefinitionIdentifier[
         serviceDefinition.identifier
       ];
-
-    if (!serviceDefinition || identifier !== platformIdentifier) {
-      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    if (identifier !== platformIdentifier) {
+      throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
 
     const requiredCapability =

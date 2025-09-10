@@ -93,6 +93,7 @@
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
+      "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",

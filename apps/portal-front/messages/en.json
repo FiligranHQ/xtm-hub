@@ -93,6 +93,7 @@
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "INVALID_IMAGE_URL": "The image URL is not valid",
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
+      "INVALID_PLATFORM_IDENTIFIER": "Platform identifier is invalid",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",

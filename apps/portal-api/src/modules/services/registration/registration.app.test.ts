@@ -234,7 +234,7 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Openaev,
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+      await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformIdentifier);
     });
 
     it('should unregister platform when the platform is still active', async () => {
