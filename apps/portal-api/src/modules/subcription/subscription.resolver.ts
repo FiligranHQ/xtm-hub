@@ -13,6 +13,7 @@ import {
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { sendMail } from '../../server/mail-service';
+import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
 import {
   FORBIDDEN_ACCESS,
@@ -114,7 +115,9 @@ const resolvers: Resolvers = {
 
         await sendMail({
           to: context.user.email,
-          template: serviceDefinition.identifier,
+          template: ServiceIdentifierToMailTemplate.get(
+            serviceDefinition.identifier
+          ),
           params: {
             name: context.user.email,
             serviceLink: `${config.get('base_url_front')}/service/${serviceDefinition.identifier}/${toGlobalId('ServiceInstance', filledSubscription.service_instance.id)}`,

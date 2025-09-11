@@ -6,6 +6,7 @@ export const RegistrationTranslationMapping: Record<
   string
 > = {
   [PlatformIdentifierEnum.OPENCTI]: 'OpenCTI',
+  [PlatformIdentifierEnum.OPENAEV]: 'OpenAEV',
 };
 
 export const RegistrationCapabilityMapping: Record<
@@ -14,4 +15,6 @@ export const RegistrationCapabilityMapping: Record<
 > = {
   [PlatformIdentifierEnum.OPENCTI]:
     OrganizationCapabilityEnum.MANAGE_OPENCTI_REGISTRATION,
+  [PlatformIdentifierEnum.OPENAEV]:
+    OrganizationCapabilityEnum.MANAGE_OPENAEV_REGISTRATION,
 };

@@ -64,7 +64,10 @@ const ServiceIdentifierToEventService = new Map<
 const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
   PlatformIdentifier,
   TelemetryTargetProduct
->([[PlatformIdentifier.Opencti, TelemetryTargetProduct.OPEN_CTI]]);
+>([
+  [PlatformIdentifier.Opencti, TelemetryTargetProduct.OPEN_CTI],
+  [PlatformIdentifier.Openaev, TelemetryTargetProduct.OPEN_AEV],
+]);
 
 export function shouldSendEventForService(
   service: ServiceDefinitionIdentifier
@@ -210,7 +213,7 @@ export function buildRegisterEvent(
   organization_name: string,
   organization_personal_space: boolean,
   user_id: UserId,
-  target_product: TelemetryTargetProduct,
+  platform_identifier: PlatformIdentifier,
   platform_id: string,
   platform_contract: PlatformContract,
   timestamp?: Date
@@ -228,7 +231,8 @@ export function buildRegisterEvent(
     organization_type: organization_personal_space
       ? 'Personal'
       : 'Professional',
-    target_product,
+    target_product:
+      TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
     platform_id,
     platform_contract,
   };

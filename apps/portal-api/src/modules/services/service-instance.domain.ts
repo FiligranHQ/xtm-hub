@@ -21,6 +21,7 @@ import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCap
 import { PortalContext } from '../../model/portal-context';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { sendMail } from '../../server/mail-service';
+import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
@@ -514,7 +515,9 @@ export const grantServiceAccess = async (
 
     await sendMail({
       to: user.email,
-      template: service_definition.identifier,
+      template: ServiceIdentifierToMailTemplate.get(
+        service_definition.identifier
+      ),
       params: {
         name: user.email,
         serviceLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,

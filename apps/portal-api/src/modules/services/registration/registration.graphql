@@ -22,6 +22,7 @@ input PlatformInput {
 
 enum PlatformIdentifier {
   opencti
+  openaev
 }
 
 input RegisterPlatformInput {
@@ -67,6 +68,7 @@ type CanUnregisterResponse {
 
 input UnregisterPlatformInput {
   platformId: String!
+  identifier: PlatformIdentifier!
 }
 
 enum PlatformRegistrationConnectivityStatus {

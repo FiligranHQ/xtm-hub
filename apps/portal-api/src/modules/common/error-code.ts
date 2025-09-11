@@ -5,6 +5,7 @@ export enum ErrorCode {
   PlatformNotRegistered = 'PLATFORM_NOT_REGISTERED',
   InvalidImageUrl = 'INVALID_IMAGE_URL',
   InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
+  InvalidPlatformIdentifier = 'INVALID_PLATFORM_IDENTIFIER',
   MissingCapabilityOnOrganization = 'MISSING_CAPABILITY_ON_ORGANIZATION',
   RegistrationOnAnotherOrganizationForbidden = 'REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN',
   RefreshUserPlatformTokenUnknownError = 'REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR',
