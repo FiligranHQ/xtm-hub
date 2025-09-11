@@ -67,7 +67,7 @@ export const loadPlatformOrganizationId = async (
       platformId,
     })) as PlatformAssociatedOrganizationResponse;
 
-    return associatedOrganization.data.platformAssociatedOrganization.id;
+    return associatedOrganization.data.platformAssociatedOrganization?.id;
   } catch (_) {}
 };
 

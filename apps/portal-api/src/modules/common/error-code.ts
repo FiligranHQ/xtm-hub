@@ -9,7 +9,6 @@ export enum ErrorCode {
   RegistrationOnAnotherOrganizationForbidden = 'REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN',
   RefreshUserPlatformTokenUnknownError = 'REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR',
   ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',
-  ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   UnregisterPlatformUnknownError = 'UNREGISTER_PLATFORM_UNKNOWN_ERROR',

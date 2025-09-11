@@ -133,7 +133,6 @@ const resolvers: Resolvers = {
         await trx.rollback();
 
         const errorMapping = {
-          [ErrorCode.ServiceConfigurationNotFound]: NotFoundError,
           [ErrorCode.SubscriptionNotFound]: NotFoundError,
           [ErrorCode.MissingCapabilityOnOrganization]: ForbiddenAccess,
           [ErrorCode.UserIsNotInOrganization]: ForbiddenAccess,

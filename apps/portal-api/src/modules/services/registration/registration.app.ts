@@ -54,14 +54,14 @@ export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
     context: PortalContext,
     platformId: string
-  ): Promise<Organization> => {
+  ): Promise<Organization | null> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
         platformId
       );
     if (!serviceConfiguration) {
-      throw new Error(ErrorCode.ServiceConfigurationNotFound);
+      return null;
     }
 
     const subscription = await loadSubscriptionBy(context, {
