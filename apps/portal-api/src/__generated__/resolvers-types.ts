@@ -1037,7 +1037,7 @@ export type QueryPublicServiceInstancesArgs = {
 
 
 export type QueryRegisteredPlatformsArgs = {
-  input: RegisteredPlatformsInput;
+  input?: InputMaybe<RegisteredPlatformsInput>;
 };
 
 
@@ -1182,6 +1182,7 @@ export type RegisteredPlatform = Node & {
   __typename?: 'RegisteredPlatform';
   contract: PlatformContract;
   id: Scalars['ID']['output'];
+  identifier: ServiceDefinitionIdentifier;
   platform_id: Scalars['String']['output'];
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
@@ -1189,7 +1190,7 @@ export type RegisteredPlatform = Node & {
 };
 
 export type RegisteredPlatformsInput = {
-  identifier: PlatformIdentifier;
+  identifier?: InputMaybe<PlatformIdentifier>;
 };
 
 export type RegistrationResponse = {
@@ -2315,7 +2316,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
+  registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
   seoCsvFeedBySlug?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QuerySeoCsvFeedBySlugArgs>>;
@@ -2355,6 +2356,7 @@ export type RefreshUserPlatformTokenResponseResolvers<ContextType = PortalContex
 export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegisteredPlatform'] = ResolversParentTypes['RegisteredPlatform']> = ResolversObject<{
   contract?: Resolver<ResolversTypes['PlatformContract'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

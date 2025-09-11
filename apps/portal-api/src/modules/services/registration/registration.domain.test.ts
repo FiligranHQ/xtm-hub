@@ -7,6 +7,7 @@ import {
   PlatformContract,
   PlatformIdentifier,
   ServiceConfigurationStatus,
+  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
@@ -285,6 +286,80 @@ describe('Registration domain', () => {
           { config: configuration, status: ServiceConfigurationStatus.Active }
         );
       });
+    });
+  });
+
+  describe('loadRegisteredPlatforms', () => {
+    const openAEVplatformId = uuidv4();
+
+    const openAEVplatformTitle = 'My OpenCTI platform';
+    const openAEVplatformUrl = 'http://example.com';
+    const openAEVplatformContract = PlatformContract.Ee;
+    const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+    const openAEVplatformVersion = '6.7.17';
+    const openAEVToken = uuidv4();
+    const openAEVServiceDefinitionId = 'e66a6b50-1f92-4f62-b84c-88ed6b871790';
+
+    beforeEach(async () => {
+      await registrationDomain.registerNewPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        serviceDefinitionId,
+        configuration: {
+          registerer_id: contextAdminUser.user.id,
+          platform_id: platformId,
+          platform_url: platformUrl,
+          platform_title: platformTitle,
+          platform_contract: platformContract,
+          platform_version: platformOpenCTI,
+          token,
+        },
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+
+      await registrationDomain.registerNewPlatform(contextAdminUser, {
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        serviceDefinitionId: openAEVServiceDefinitionId,
+        configuration: {
+          registerer_id: contextAdminUser.user.id,
+          platform_id: openAEVplatformId,
+          platform_url: openAEVplatformUrl,
+          platform_title: openAEVplatformTitle,
+          platform_contract: openAEVplatformContract,
+          platform_version: openAEVplatformVersion,
+          token: openAEVToken,
+        },
+        platformIdentifier: PlatformIdentifier.Openaev,
+      });
+    });
+
+    it('should return all registered platform without platformIdentifier in input ', async () => {
+      const platforms =
+        await registrationDomain.loadRegisteredPlatforms(contextAdminUser);
+
+      expect(
+        platforms.some(
+          (item) =>
+            item.identifier === ServiceDefinitionIdentifier.OpenctiRegistration
+        )
+      ).toBe(true);
+      expect(
+        platforms.some(
+          (item) =>
+            item.identifier === ServiceDefinitionIdentifier.OpenaevRegistration
+        )
+      ).toBe(true);
+    });
+    it('should return only the right registered platform if platformIdentifier in input ', async () => {
+      const platforms = await registrationDomain.loadRegisteredPlatforms(
+        contextAdminUser,
+        PlatformIdentifier.Openaev
+      );
+      expect(
+        platforms.every(
+          (item) =>
+            item.identifier === ServiceDefinitionIdentifier.OpenaevRegistration
+        )
+      ).toBe(true);
     });
   });
 });
