@@ -12,16 +12,20 @@ export const isExternalService = (
   [
     ServiceDefinitionIdentifierEnum.LINK,
     ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+    ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
 
 export const isRegistrationService = (
   serviceInstance: ServiceInstanceCardData
 ) =>
-  [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION].includes(
+  [
+    ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+    ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+  ].includes(
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
 
-export const openCTIPlatformToServiceInstanceCardData = (
+export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
   return {
@@ -33,9 +37,9 @@ export const openCTIPlatformToServiceInstanceCardData = (
     illustration_document_id: null,
     logo_document_id: null,
     service_definition_identifier:
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+      platform.identifier as ServiceDefinitionIdentifierEnum,
     url: platform.url,
-    ordering: -1, // OpenCTI Instances are displayed at the first position
+    ordering: -1, // registered platforms are displayed at the first position
   };
 };
 
