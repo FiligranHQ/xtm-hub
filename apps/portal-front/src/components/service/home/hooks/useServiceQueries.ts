@@ -51,7 +51,7 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
   return ownedServices;
 };
 
-const getRegisteredInstances = (
+const getRegisteredPlatforms = (
   queryRef: PreloadedQuery<registerRegisteredPlatformsQuery>
 ) => {
   const queryData = usePreloadedQuery<registerRegisteredPlatformsQuery>(
@@ -164,7 +164,7 @@ export const useServiceQueries = (
 
   return {
     ownedServices: getOwnedServices(queryRefUserServiceOwned),
-    registeredPlatforms: getRegisteredInstances(queryRefRegisteredPlatforms),
+    registeredPlatforms: getRegisteredPlatforms(queryRefRegisteredPlatforms),
     publicServices,
     addSubscriptionInDb,
   };
