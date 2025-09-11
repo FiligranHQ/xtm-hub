@@ -150,7 +150,7 @@ export const registrationDomain = {
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
 
-    const query = await db<ServiceInstance>(context, 'ServiceInstance', opts)
+    return await db<ServiceInstance>(context, 'ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',
@@ -190,6 +190,5 @@ export const registrationDomain = {
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .select(['Service_Configuration.config', 'ServiceDefinition.identifier'])
       .secureQuery();
-    return query;
   },
 };
