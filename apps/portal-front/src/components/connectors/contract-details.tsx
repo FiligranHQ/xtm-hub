@@ -27,7 +27,6 @@ const ContractDetailsInformationPage = ({
           <Link href={contract.source_code}>{contract.title}</Link>
         </Button>
       </div>
-
       <div>
         <Label className="block pb-s">
           {t('Service.Connectors.VisitVendor')}
@@ -42,18 +41,25 @@ const ContractDetailsInformationPage = ({
           </Link>
         </Button>
       </div>
-
       <div>
         <Label className="block pb-s">{t('Service.Connectors.Type')}</Label>
         <span>{t('Service.Connectors.DataImport')}</span>
       </div>
-
       <div>
         <Label className="block pb-s">
           {t('Service.ShareableResources.Details.ProductVersion')}
         </Label>
         <span>{contract.support_version}</span>
       </div>
+
+      {contract.last_verified_date && (
+        <div>
+          <Label className="block pb-s">
+            {t('Service.Connectors.LastVerifiedDate')}
+          </Label>
+          <span>{contract.last_verified_date}</span>
+        </div>
+      )}
     </div>
   );
 };

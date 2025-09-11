@@ -437,6 +437,7 @@
     "Connectors": {
       "DataImport": "Data Import",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
+      "LastVerifiedDate": "Dernière vérification",
       "Search": "Rechercher un connecteur par nom...",
       "Type": "Type",
       "VendorContact": "Contact vendeur",
