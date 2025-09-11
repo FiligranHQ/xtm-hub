@@ -101,7 +101,7 @@ type Query {
   ): CanUnregisterResponse! @auth
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
     @auth
-  platformAssociatedOrganization(platformId: String!): Organization! @auth
+  platformAssociatedOrganization(platformId: String!): Organization @auth
 }
 
 type Mutation {
