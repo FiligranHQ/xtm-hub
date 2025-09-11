@@ -13,29 +13,37 @@ interface GuardComponentProps {
   children: React.ReactNode;
   capacityRestriction?: OrganizationCapabilityEnum[];
   displayError?: boolean;
+  shouldNotBePersonalSpace?: boolean;
 }
 
 const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   children,
   capacityRestriction = [],
   displayError = false,
+  shouldNotBePersonalSpace = false,
 }) => {
   const { me } = useContext(PortalContext);
   if (!me) {
     return null;
   }
   const isAdmin = useAdminByPass();
+  const currentOrganization = me?.organizations.find(
+    (orga) => orga.id === me?.selected_organization_id
+  );
   const authorized = capacityRestriction.some(useGranted) || isAdmin;
 
-  if (!authorized && displayError) {
-    const t = useTranslations();
-    return (
-      <>
-        <h2 className={'txt-title'}>{t('Utils.Error')}</h2>
-        {t('Error.YouAreNotAuthorized')}
-      </>
-    );
-  } else if (!authorized) {
+  const isPersonalSpace = currentOrganization?.personal_space ?? false;
+  const t = useTranslations();
+
+  if (!authorized || (shouldNotBePersonalSpace && isPersonalSpace)) {
+    if (displayError) {
+      return (
+        <>
+          <h2 className="txt-title">{t('Utils.Error')}</h2>
+          {t('Error.YouAreNotAuthorized')}
+        </>
+      );
+    }
     return null;
   }
 
