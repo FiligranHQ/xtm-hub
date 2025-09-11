@@ -42,7 +42,7 @@ export default async function Page({
         {connectorManifest.name}
       </h1>
       <div className="grid grid-cols-1 pr-xl mb-l">
-        <SelectConnectorVersion />
+        <SelectConnectorVersion version={version} />
       </div>
       <ConnectorsList contracts={connectorManifest.contracts} />
     </main>

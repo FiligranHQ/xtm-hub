@@ -4,16 +4,20 @@ import { Combobox } from 'filigran-ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-interface Props {
+interface ConnectorVersionComboboxProps {
+  version: string;
   dataTab: { value: string; label: string }[];
 }
 
-export function ConnectorVersionCombobox({ dataTab }: Props) {
+export function ConnectorVersionCombobox({
+  version,
+  dataTab,
+}: ConnectorVersionComboboxProps) {
   const router = useRouter();
 
   const [selectedValue, setSelectedValue] = useState({
-    value: 'master',
-    label: 'Latest',
+    value: version && version !== 'master' ? version : 'latest',
+    label: version && version !== 'master' ? version : 'Latest',
   });
   return (
     <Combobox

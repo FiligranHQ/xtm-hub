@@ -24,7 +24,7 @@ const ContractDetailsInformationPage = ({
           className="p-0"
           variant="link"
           asChild>
-          <Link href={contract.source_code}>SERVICENOW</Link>
+          <Link href={contract.source_code}>{contract.title}</Link>
         </Button>
       </div>
 
