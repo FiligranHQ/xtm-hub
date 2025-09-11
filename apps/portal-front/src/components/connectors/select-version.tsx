@@ -2,7 +2,7 @@ import { ConnectorVersionCombobox } from '@/components/connectors/connector-vers
 import { getConnectorVersion } from '@/utils/connectors/connectors.fetch';
 
 interface SelectConnectorVersionProps {
-  version: string;
+  version?: string;
 }
 
 export const SelectConnectorVersion = async ({

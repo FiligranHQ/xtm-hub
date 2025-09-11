@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface ConnectorVersionComboboxProps {
-  version: string;
+  version?: string;
   dataTab: { value: string; label: string }[];
 }
 
