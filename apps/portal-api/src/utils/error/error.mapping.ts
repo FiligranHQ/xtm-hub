@@ -1,10 +1,12 @@
 import {
+  AlreadyExistsErrorCode,
   BadRequestErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
   UnknownErrorCode,
 } from './error.code';
 import {
+  AlreadyExistsError,
   BadRequestError,
   ErrorBuilder,
   ForbiddenAccess,
@@ -20,7 +22,9 @@ const badRequestErrorsSet: Set<string> = new Set(
   Object.values(BadRequestErrorCode)
 );
 
-const unknownErrorsSet: Set<string> = new Set(Object.values(UnknownErrorCode));
+const alreadyExistsErrorSet: Set<string> = new Set(
+  Object.values(AlreadyExistsErrorCode)
+);
 
 const notFoundErrorsSet: Set<string> = new Set(
   Object.values(NotFoundErrorCode)
@@ -29,14 +33,19 @@ const notFoundErrorsSet: Set<string> = new Set(
 const errorSetMapping: Map<Set<string>, ErrorBuilder> = new Map();
 errorSetMapping.set(forbiddenErrorSet, ForbiddenAccess);
 errorSetMapping.set(badRequestErrorsSet, BadRequestError);
-errorSetMapping.set(unknownErrorsSet, UnknownError);
+errorSetMapping.set(alreadyExistsErrorSet, AlreadyExistsError);
 errorSetMapping.set(notFoundErrorsSet, NotFoundError);
 
-export const mapToGraphQLError = (error: Error): Error => {
+export const mapToGraphQLError = (
+  error: Error,
+  customUnknownErrorCode: UnknownErrorCode = UnknownErrorCode.UnknownError
+): Error => {
   const code = error.message;
   for (const [mapping, errorBuilder] of errorSetMapping) {
     if (mapping.has(code)) {
       return errorBuilder(code, { detail: error });
     }
   }
+
+  return UnknownError(customUnknownErrorCode, { detail: error });
 };

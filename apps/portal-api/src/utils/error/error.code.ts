@@ -18,6 +18,13 @@ export enum UnknownErrorCode {
   RegisterPlatformUnknownError = 'REGISTER_PLATFORM_UNKNOWN_ERROR',
   UnknownError = 'UNKNOWN_ERROR',
   UnregisterPlatformUnknownError = 'UNREGISTER_PLATFORM_UNKNOWN_ERROR',
+  AddOrganizationError = 'ADD_ORGANIZATION_ERROR',
+  EditOrganizationError = 'EDIT_ORGANIZATION_ERROR',
+  DeleteOrganizationError = 'DELETE_ORGANIZATION_ERROR',
+}
+
+export enum AlreadyExistsErrorCode {
+  OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
 }
 
 export enum NotFoundErrorCode {
@@ -28,7 +35,7 @@ export enum NotFoundErrorCode {
 
 export const ErrorCode = {
   ...ForbiddenErrorCode,
-  ...UnknownErrorCode,
-  ...NotFoundErrorCode,
   ...BadRequestErrorCode,
+  ...AlreadyExistsErrorCode,
+  ...NotFoundErrorCode,
 };
