@@ -1,22 +1,17 @@
 import { Knex } from 'knex';
 import {
-  ServiceDefinitionIdentifier,
   ServiceInstance,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
 import { securityGuard } from '../../security/guard';
-import { ForbiddenAccess, NotFoundError } from '../../utils/error.util';
+import { NotFoundError } from '../../utils/error.util';
 import { extractId } from '../../utils/utils';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { loadUserServiceBy } from '../user_service/user_service.domain';
 import { uploadNewFile } from './document/document.helper';
-import {
-  organizationCapabilityMappedByPlatformIdentifier,
-  platformIdentifierMappedByServiceDefinitionIdentifier,
-} from './registration/registration.mapping';
 import {
   grantServiceAccess,
   loadServiceDefinitionByServiceInstance,
@@ -70,35 +65,15 @@ export const serviceInstanceApp = {
       serviceInstance.id
     );
 
-    // Verify it's an OpenCTI or OpenAEV platform
-    const allowedIdentifiers = [
-      ServiceDefinitionIdentifier.OpenctiRegistration,
-      ServiceDefinitionIdentifier.OpenaevRegistration,
-    ];
-
-    if (
-      !serviceDefinition ||
-      !allowedIdentifiers.includes(
-        serviceDefinition.identifier as ServiceDefinitionIdentifier
-      )
-    ) {
-      throw ForbiddenAccess('PLATFORM_TYPE_NOT_SUPPORTED');
+    if (!serviceDefinition) {
+      throw NotFoundError('SERVICE_DEFINITION_NOT_FOUND');
     }
 
-    // Check specific capabilities based on platform type
-    const platformIdentifier =
-      platformIdentifierMappedByServiceDefinitionIdentifier[
-        serviceDefinition.identifier as ServiceDefinitionIdentifier
-      ];
-
-    if (platformIdentifier) {
-      const requiredCapability =
-        organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
-      await securityGuard.assertUserIsAllowedOnOrganization(context, {
-        organizationId: context.user.selected_organization_id,
-        requiredCapability,
-      });
-    }
+    // Verify platform type and check capabilities
+    await securityGuard.assertUserCanModifyPlatformService(
+      context,
+      serviceDefinition
+    );
 
     // Build update object
     const updateData: Partial<ServiceInstance> = {};
