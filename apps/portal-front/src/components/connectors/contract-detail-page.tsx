@@ -5,6 +5,7 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { Contract } from '@/utils/connectors/connector.model';
 import { VerifiedIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import React from 'react';
 
 interface ContractDetailPageProps {
@@ -37,9 +38,12 @@ const ContractDetailPage: React.FC<ContractDetailPageProps> = ({
       <div className="w-full">
         <div className="flex flex-row gap-s">
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
-            <img
+            <Image
               src={contract.logo}
               alt={`${contract.title} logo`}
+              width={96}
+              height={96}
+              loading="lazy"
               className="w-full h-full object-contain rounded"
             />
           </div>

@@ -56,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const connectorsFromOpenCTI = await getConnectorManifest('master');
     for (const contract of connectorsFromOpenCTI.contracts) {
       sitemap.push({
-        url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-connectors/master/${contract.slug}`,
+        url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-connectors/${contract.slug}`,
         lastModified: contract.last_verified_date,
         changeFrequency: 'monthly',
         priority: 0.8,

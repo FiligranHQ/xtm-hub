@@ -1,7 +1,11 @@
+import {
+  IngestionConnectorType,
+  ingestionConnectorTypeMetadata,
+} from '@/components/connectors/connector.utils';
 import { Contract } from '@/utils/connectors/connector.model';
-import { ArrowOutwardIcon } from 'filigran-icon';
+import { LogoGitIcon, OpenInNewIcon } from 'filigran-icon';
 import { Label } from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+import { Badge, Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
@@ -24,7 +28,12 @@ const ContractDetailsInformationPage = ({
           className="p-0"
           variant="link"
           asChild>
-          <Link href={contract.source_code}>{contract.title}</Link>
+          <Link
+            href={contract.source_code}
+            target="_blank">
+            <LogoGitIcon className="h-4 w-4 mr-s" />
+            {contract.title}
+          </Link>
         </Button>
       </div>
       <div>
@@ -35,15 +44,38 @@ const ContractDetailsInformationPage = ({
           className="p-0 uppercase"
           variant="link"
           asChild>
-          <Link href={contract.subscription_link}>
+          <Link
+            href={contract.subscription_link}
+            rel="noopener noreferrer"
+            target="_blank">
+            <OpenInNewIcon className="h-4 w-4 mr-s" />
             {t('Service.Connectors.VendorContact')}
-            <ArrowOutwardIcon className="h-4 w-4 ml-s" />
           </Link>
         </Button>
       </div>
       <div>
         <Label className="block pb-s">{t('Service.Connectors.Type')}</Label>
-        <span>{t('Service.Connectors.DataImport')}</span>
+        <span>
+          {' '}
+          {ingestionConnectorTypeMetadata[
+            contract.container_type as IngestionConnectorType
+          ] && (
+            <Badge
+              className="mr-auto"
+              variant="outline"
+              color={
+                ingestionConnectorTypeMetadata[
+                  contract.container_type as IngestionConnectorType
+                ]?.color
+              }>
+              {
+                ingestionConnectorTypeMetadata[
+                  contract.container_type as IngestionConnectorType
+                ]?.label
+              }
+            </Badge>
+          )}
+        </span>
       </div>
       <div>
         <Label className="block pb-s">

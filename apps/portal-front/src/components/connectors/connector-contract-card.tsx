@@ -7,7 +7,9 @@ import {
 import BadgeOverflowCounter from '@/components/ui/badge-overflow-counter';
 import { Contract } from '@/utils/connectors/connector.model';
 import { VerifiedIcon } from 'filigran-icon';
-import { Badge } from 'filigran-ui';
+import { Badge } from 'filigran-ui/servers';
+import Image from 'next/image';
+import Link from 'next/link';
 import { FunctionComponent } from 'react';
 
 interface ConnectorContractCardProps {
@@ -17,19 +19,21 @@ interface ConnectorContractCardProps {
 
 const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
   contract,
-  version = 'master',
 }) => {
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
-      <a
+      <Link
         className="flex flex-col h-full"
-        href={`/cybersecurity-solutions/opencti-connectors/${version}/${contract.slug}`}>
+        href={`/cybersecurity-solutions/opencti-connectors/${contract.slug}`}>
         <div className="flex items-stretch gap-l p-l">
           <div className="w-24 self-stretch flex">
-            <img
+            <Image
               src={contract.logo}
               alt={`${contract.title} logo`}
-              className="rounded w-full h-full object-contain"
+              width={96}
+              height={96}
+              loading="lazy"
+              className="rounded object-contain"
             />
           </div>
 
@@ -74,7 +78,7 @@ const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
             </Badge>
           )}
         </div>
-      </a>
+      </Link>
     </li>
   );
 };

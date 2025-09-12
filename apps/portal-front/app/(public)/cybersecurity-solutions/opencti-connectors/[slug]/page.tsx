@@ -1,3 +1,4 @@
+import ContractDetailPage from '@/components/connectors/contract-detail-page';
 import { Connector, Contract } from '@/utils/connectors/connector.model';
 import { getConnectorManifest } from '@/utils/connectors/connectors.fetch';
 
@@ -9,16 +10,15 @@ export const metadata = {
 export default async function Page({
   params,
 }: {
-  params: Promise<{ version: string; slug: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { version, slug } = await params;
-  const connectorManifest: Connector = await getConnectorManifest(version);
+  const { slug } = await params;
+  const connectorManifest: Connector = await getConnectorManifest();
   const connectorContract: Contract | undefined =
     connectorManifest.contracts.find((contract) => contract.slug === slug);
   return (
     <main>
-      <h1>{connectorContract?.title}</h1>
-      <p>{connectorContract?.description}</p>
+      {connectorContract && <ContractDetailPage contract={connectorContract} />}
     </main>
   );
 }

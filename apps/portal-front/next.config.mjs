@@ -6,6 +6,24 @@ const withNextIntl = createNextIntlPlugin();
  */
 const nextConfig = {
   output: 'standalone',
+  logging: {
+    fetches: {
+      fullUrl:
+        process.env.NODE_ENV !== 'production' &&
+        process.env.NODE_ENV !== 'staging',
+    },
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '**',
+        search: '',
+      },
+    ],
+  },
   skipTrailingSlashRedirect: true,
   reactStrictMode: true,
   compiler: {
