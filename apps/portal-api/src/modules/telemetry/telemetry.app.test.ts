@@ -16,7 +16,12 @@ import {
 import { LoginEvent, TelemetryEventType } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { PlatformIdentifier } from '../../__generated__/resolvers-types';
+import {
+  PlatformIdentifier,
+  ServiceConfigurationStatus,
+} from '../../__generated__/resolvers-types';
+import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { serviceContractDomain } from '../services/contract/domain';
 
 // Mock the ES Client
 vi.mock('@elastic/elasticsearch', () => ({
@@ -81,13 +86,88 @@ describe('TelemetryApp', () => {
     });
   });
   describe('sendOneClickDeployEvent', () => {
-    it('should send a OneClickDeployEvent', async () => {
+    it('should send a OneClickDeployEvent with version', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
       const telemetrySpy = vi
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
+      vi.spyOn(
+        serviceContractDomain,
+        'loadConfigurationByPlatform'
+      ).mockResolvedValue({
+        service_instance_id:
+          '5891d6cf-1737-48bb-8f60-de520a93f2bd' as ServiceInstanceId,
+        config: {
+          token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
+          platform_id: '916121bf-d246-4a43-8522-24be19537b91',
+          platform_url: 'https://testing.obas.staging.filigran.io/',
+          registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
+          platform_title: 'Open AEV Instance',
+          platform_version: '1.0.0',
+          platform_contract: 'EE',
+        },
+        status: ServiceConfigurationStatus.Active,
+      });
+
+      const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
+      const fakePlatformId = '11b0fe37-0623-4487-af23-0efa6de157a4';
+
+      await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
+        userId: ADMIN_UUID,
+        input: {
+          platform_identifier: PlatformIdentifier.Opencti,
+          service_instance_id: toGlobalId(
+            'ServiceInstance',
+            SERVICE_CSV_FEEDS_ID
+          ),
+          resource_id: toGlobalId('DocumentId', fakeResourceId),
+          resource_title: 'CsvFeed Title',
+          platform_id: toGlobalId('OpenCTIPlatform', fakePlatformId),
+        },
+      });
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: 'Filigran',
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_UUID,
+        service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+        service_type: TelemetryEventServiceType.CSV_FEEDS,
+        resource_id: fakeResourceId,
+        resource_title: 'CsvFeed Title',
+        platform_id: fakePlatformId,
+        platform_version: '1.0.0',
+        target_product: TelemetryTargetProduct.OPEN_CTI,
+      });
+    });
+    it('should send a OneClickDeployEvent without version', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+      vi.spyOn(
+        serviceContractDomain,
+        'loadConfigurationByPlatform'
+      ).mockResolvedValue({
+        service_instance_id:
+          '5891d6cf-1737-48bb-8f60-de520a93f2bd' as ServiceInstanceId,
+        config: {
+          token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
+          platform_id: '916121bf-d246-4a43-8522-24be19537b91',
+          platform_url: 'https://testing.obas.staging.filigran.io/',
+          registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
+          platform_title: 'Open AEV Instance',
+          platform_contract: 'EE',
+        },
+        status: ServiceConfigurationStatus.Active,
+      });
+
       const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
       const fakePlatformId = '11b0fe37-0623-4487-af23-0efa6de157a4';
 

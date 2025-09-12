@@ -247,6 +247,7 @@ export function buildOneClickDeployEvent(
   service: ServiceDefinitionIdentifier,
   platform_identifier: PlatformIdentifier,
   platform_id: string,
+  platform_version: string,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
@@ -268,5 +269,6 @@ export function buildOneClickDeployEvent(
     resource_id,
     resource_title,
     platform_id,
+    platform_version,
   };
 }
