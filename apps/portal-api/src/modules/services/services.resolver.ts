@@ -266,6 +266,24 @@ const resolvers: Resolvers = {
         throw error;
       }
     },
+    updatePlatformServiceMetadata: async (_, { input }, context) => {
+      const trx = await dbTx();
+      try {
+        const updatedServiceInstance =
+          await serviceInstanceApp.updatePlatformServiceMetadata(
+            context,
+            input,
+            trx
+          );
+
+        await trx.commit();
+        await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+        return updatedServiceInstance;
+      } catch (error) {
+        await trx.rollback();
+        throw error;
+      }
+    },
   },
   Subscription: {
     ServiceInstance: {
