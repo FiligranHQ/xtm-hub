@@ -90,7 +90,14 @@ type Mutation {
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   updatePlatformServiceMetadata(
     input: UpdatePlatformServiceMetadataInput!
-  ): ServiceInstance @auth(requires: [ADMINISTRATE_ORGANIZATION])
+  ): ServiceInstance
+    @auth(
+      requires: [
+        ADMINISTRATE_ORGANIZATION
+        MANAGE_OPENCTI_REGISTRATION
+        MANAGE_OPENAEV_REGISTRATION
+      ]
+    )
 }
 
 type Query {
