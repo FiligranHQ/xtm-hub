@@ -1,14 +1,14 @@
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
+import { ErrorCode } from '../../../utils/error/error.code';
 import {
   BadRequestError,
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   NotFoundError,
   UnknownError,
-} from '../../../utils/error.util';
-import { ErrorCode } from '../../common/error-code';
+} from '../../../utils/error/error.util';
 import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {

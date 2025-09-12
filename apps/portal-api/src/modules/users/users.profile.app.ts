@@ -3,8 +3,8 @@ import { dispatch } from '../../pub';
 import { updateUserSession } from '../../sessionStoreManager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import { isImgUrl } from '../../utils/utils';
-import { ErrorCode } from '../common/error-code';
 import { loadUserDetails, updateUser } from './users.domain';
 import { mapUserToGraphqlUser } from './users.helper';
 

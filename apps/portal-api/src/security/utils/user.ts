@@ -1,7 +1,7 @@
 import { dbUnsecure } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { PortalContext } from '../../model/portal-context';
-import { ForbiddenAccess } from '../../utils/error.util';
+import { ForbiddenAccess } from '../../utils/error/error.util';
 
 export const checkUserCapabilities = async (
   context: PortalContext,

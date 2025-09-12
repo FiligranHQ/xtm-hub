@@ -19,7 +19,7 @@ import Subscription, {
 import { PortalContext } from '../../../model/portal-context';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { securityGuard } from '../../../security/guard';
-import { ErrorCode } from '../../common/error-code';
+import { ErrorCode } from '../../../utils/error/error.code';
 import * as organizationDomain from '../../organizations/organizations.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';

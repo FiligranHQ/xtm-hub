@@ -1,5 +1,5 @@
 import { createError } from 'apollo-errors';
-import { logApp } from './app-logger.util';
+import { logApp } from '../app-logger.util';
 
 interface Information {
   detail?: Error | string;
@@ -43,6 +43,12 @@ export const UNKNOWN_ERROR = 'UNKNOWN_ERROR';
 export const STILL_REFERENCED = 'STILL_REFERENCED';
 export const ALREADY_EXISTS = 'ALREADY_EXISTS';
 export const NOT_FOUND = 'NOT_FOUND';
+
+export type ErrorBuilder = (
+  message: string,
+  information?: Information
+) => Error;
+
 export const ForbiddenAccess = (
   message: string,
   data?: Record<string, unknown>
@@ -58,7 +64,7 @@ export const ForbiddenAccess = (
   );
 };
 
-export const BadRequestError = (
+export const BadRequestError: ErrorBuilder = (
   message: string,
   information?: Information,
   data?: Record<string, unknown>
@@ -75,7 +81,7 @@ export const BadRequestError = (
   );
 };
 
-export const UnknownError = (
+export const UnknownError: ErrorBuilder = (
   message: string,
   information?: Information,
   data?: Record<string, unknown>
@@ -93,7 +99,7 @@ export const UnknownError = (
   );
 };
 
-export const StillReferencedError = (
+export const StillReferencedError: ErrorBuilder = (
   message?: string,
   information?: Information,
   data?: Record<string, unknown>
@@ -112,7 +118,7 @@ export const StillReferencedError = (
   );
 };
 
-export const AlreadyExistsError = (
+export const AlreadyExistsError: ErrorBuilder = (
   message?: string,
   information?: Information,
   data?: Record<string, unknown>
@@ -131,7 +137,7 @@ export const AlreadyExistsError = (
   );
 };
 
-export const NotFoundError = (
+export const NotFoundError: ErrorBuilder = (
   message?: string,
   information?: Information,
   data?: Record<string, unknown>

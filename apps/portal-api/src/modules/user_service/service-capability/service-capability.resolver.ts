@@ -9,7 +9,7 @@ import {
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
-} from '../../../utils/error.util';
+} from '../../../utils/error/error.util';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
 import { insertCapabilities } from '../user-service-capability/user-service-capability.helper';
 import { loadUserServiceById } from '../user_service.domain';

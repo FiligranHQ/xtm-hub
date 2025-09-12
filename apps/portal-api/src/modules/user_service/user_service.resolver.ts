@@ -18,7 +18,7 @@ import {
   NOT_FOUND,
   NotFoundError,
   UnknownError,
-} from '../../utils/error.util';
+} from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';

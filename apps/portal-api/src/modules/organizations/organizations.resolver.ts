@@ -7,7 +7,7 @@ import {
   AlreadyExistsError,
   StillReferencedError,
   UnknownError,
-} from '../../utils/error.util';
+} from '../../utils/error/error.util';
 import {
   loadOrganizationBy,
   loadOrganizations,

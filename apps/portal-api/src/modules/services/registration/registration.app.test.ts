@@ -28,7 +28,7 @@ import Subscription from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
-import { ErrorCode } from '../../common/error-code';
+import { ErrorCode } from '../../../utils/error/error.code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {

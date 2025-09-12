@@ -1,7 +1,7 @@
 import { MemoryStore } from 'express-session';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from './model/user';
 import { logApp } from './utils/app-logger.util';
-import { UnknownError } from './utils/error.util';
+import { UnknownError } from './utils/error/error.util';
 
 let memoryStore = undefined;
 

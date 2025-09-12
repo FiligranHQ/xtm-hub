@@ -4,7 +4,7 @@ import { Resolvers } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../utils/app-logger.util';
-import { UnknownError } from '../../../utils/error.util';
+import { UnknownError } from '../../../utils/error/error.util';
 import { extractId, omit } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscription } from '../../subcription/subscription.domain';

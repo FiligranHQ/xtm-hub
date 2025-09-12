@@ -9,7 +9,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { logApp } from '../../../utils/app-logger.util';
-import { NotFoundError } from '../../../utils/error.util';
+import { NotFoundError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';

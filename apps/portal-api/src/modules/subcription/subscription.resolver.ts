@@ -19,7 +19,7 @@ import {
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
-} from '../../utils/error.util';
+} from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import {

@@ -18,7 +18,7 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
-import { NotFoundError } from '../../utils/error.util';
+import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';

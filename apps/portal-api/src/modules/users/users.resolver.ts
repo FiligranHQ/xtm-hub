@@ -10,14 +10,14 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
+import { ErrorCode } from '../../utils/error/error.code';
 import {
   BadRequestError,
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
-} from '../../utils/error.util';
+} from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { ErrorCode } from '../common/error-code';
 import { removeUserFromOrganizationPending } from '../common/user-organization-pending.domain';
 import {
   createUserOrgCapabilities,
