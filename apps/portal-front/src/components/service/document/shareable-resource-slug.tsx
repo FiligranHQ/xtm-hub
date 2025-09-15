@@ -54,7 +54,9 @@ const ShareableResourceSlug: React.FunctionComponent<
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
-    return ['custom_dashboard', 'csv_feed'].includes(documentData.type);
+    return ['custom_dashboard', 'csv_feed', 'openaev_scenario'].includes(
+      documentData.type
+    );
   }, [documentData.active, documentData.type]);
 
   return (
