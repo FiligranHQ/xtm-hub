@@ -18,7 +18,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     OpenaevScenariosListQuery
   );
   const { count, search, labels, setSearch, setLabels } =
-    serviceListLocalStorage('ObasScenario');
+    serviceListLocalStorage('OpenAEVScenario');
 
   useEffect(() => {
     loadQuery(

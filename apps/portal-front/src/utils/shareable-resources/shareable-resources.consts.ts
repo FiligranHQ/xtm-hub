@@ -60,9 +60,10 @@ function makeSingleQueryMapEntry<TReturn>({
 }
 
 export const localeMap: Record<ServiceSlug, string> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'OpenctiIntegrationFeeds',
-  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: 'ObasScenario',
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'CsvFeed',
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'CustomDashboards',
+  [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
+
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
@@ -76,7 +77,7 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
       query: SeoCustomDashboardsByServiceSlugQuery,
       key: 'seoCustomDashboardsByServiceSlug',
     }),
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeQueryMapEntry<SeoOpenAEVScenario>({
+  [ServiceSlug.OPEN_AEV_SCENARIOS]: makeQueryMapEntry<SeoOpenAEVScenario>({
     query: SeoOpenaevScenariosByServiceSlugQuery,
     key: 'seoOpenAEVScenariosByServiceSlug',
   }),
@@ -93,7 +94,7 @@ export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
       query: SeoCustomDashboardBySlugQuery,
       key: 'seoCustomDashboardBySlug',
     }),
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: makeSingleQueryMapEntry<SeoOpenAEVScenario>(
+  [ServiceSlug.OPEN_AEV_SCENARIOS]: makeSingleQueryMapEntry<SeoOpenAEVScenario>(
     {
       query: SeoOpenaevScenarioBySlugQuery,
       key: 'seoOpenAEVScenarioBySlug',
