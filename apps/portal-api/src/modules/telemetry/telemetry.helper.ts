@@ -216,6 +216,7 @@ export function buildRegisterEvent(
   platform_identifier: PlatformIdentifier,
   platform_id: string,
   platform_contract: PlatformContract,
+  platform_version: string,
   timestamp?: Date
 ): RegisterPlatformEvent {
   const baseEvent = buildBaseEvent(
@@ -235,6 +236,7 @@ export function buildRegisterEvent(
       TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
     platform_id,
     platform_contract,
+    platform_version,
   };
 }
 
@@ -245,6 +247,7 @@ export function buildOneClickDeployEvent(
   service: ServiceDefinitionIdentifier,
   platform_identifier: PlatformIdentifier,
   platform_id: string,
+  platform_version: string,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
@@ -266,5 +269,6 @@ export function buildOneClickDeployEvent(
     resource_id,
     resource_title,
     platform_id,
+    platform_version,
   };
 }

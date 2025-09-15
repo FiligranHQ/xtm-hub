@@ -247,7 +247,8 @@ export const registrationApp = {
         context.user.id,
         identifier,
         platform.id,
-        platform.contract
+        platform.contract,
+        platform.version
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
