@@ -138,8 +138,7 @@ const resolvers: Resolvers = {
         try {
           if (shouldSendEventForService(serviceDefinition.identifier)) {
             const subscribeEvent = buildSubscribeEvent(
-              context.user.selected_organization_id,
-              selectedOrga.name,
+              selectedOrga,
               context.user.id,
               serviceDefinition.identifier
             );

@@ -59,6 +59,7 @@ describe('custom dashboards app', () => {
       event_type: TelemetryEventType.CREATE,
       organization_id: PLATFORM_ORGANIZATION_UUID,
       organization_name: 'Filigran',
+      organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
       service: TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,

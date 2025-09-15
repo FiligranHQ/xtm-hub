@@ -530,11 +530,7 @@ export const updateUserAtLogin = async (
     const selectedOrga = context.user.organizations.find(
       (org) => org.id === updatedUser.selected_organization_id
     );
-    const loginEvent = buildLoginEvent(
-      updatedUser.selected_organization_id,
-      selectedOrga.name,
-      user.id
-    );
+    const loginEvent = buildLoginEvent(selectedOrga, user.id);
     telemetryApp.sendTelemetryEvent(loginEvent);
   } catch (error) {
     logApp.error('Unable to send telemetry event for login', {

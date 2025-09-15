@@ -241,9 +241,7 @@ export const registrationApp = {
       );
 
       const registerEvent = buildRegisterEvent(
-        organizationId as OrganizationId,
-        selectedOrga.name,
-        selectedOrga.personal_space,
+        selectedOrga,
         context.user.id,
         identifier,
         platform.id,

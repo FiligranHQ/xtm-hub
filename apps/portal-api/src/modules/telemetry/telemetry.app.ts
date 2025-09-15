@@ -52,8 +52,7 @@ export const telemetryApp = {
     const config = serviceConfiguration.config as object;
 
     const event = buildOneClickDeployEvent(
-      selected_organization_id,
-      selectedOrga.name,
+      selectedOrga,
       userId,
       serviceDefinition.identifier,
       input.platform_identifier,

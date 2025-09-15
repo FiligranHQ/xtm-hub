@@ -139,8 +139,7 @@ export const documentDownloadEndpoint = (app) => {
               );
 
               const downloadEvent = buildDownloadEvent(
-                context.user.selected_organization_id,
-                selectedOrga.name,
+                selectedOrga,
                 context.user.id,
                 serviceDefinition.identifier,
                 document.id,
