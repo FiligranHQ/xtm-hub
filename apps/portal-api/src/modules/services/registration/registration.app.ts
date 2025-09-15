@@ -29,7 +29,6 @@ import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
-import { TelemetryTargetProduct } from '../../telemetry/telemetry.const';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
   loadUsersByCapabilitiesInOrganization,
@@ -54,14 +53,14 @@ export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
     context: PortalContext,
     platformId: string
-  ): Promise<Organization> => {
+  ): Promise<Organization | null> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         context,
         platformId
       );
     if (!serviceConfiguration) {
-      throw new Error(ErrorCode.ServiceConfigurationNotFound);
+      return null;
     }
 
     const subscription = await loadSubscriptionBy(context, {
@@ -242,13 +241,12 @@ export const registrationApp = {
       );
 
       const registerEvent = buildRegisterEvent(
-        organizationId as OrganizationId,
-        selectedOrga.name,
-        selectedOrga.personal_space,
+        selectedOrga,
         context.user.id,
-        TelemetryTargetProduct.OPEN_CTI,
+        identifier,
         platform.id,
-        platform.contract
+        platform.contract,
+        platform.version
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
@@ -262,7 +260,7 @@ export const registrationApp = {
 
   unregisterPlatform: async (
     context: PortalContext,
-    { platformId }: UnregisterPlatformInput
+    { platformId, identifier }: UnregisterPlatformInput
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
@@ -285,6 +283,7 @@ export const registrationApp = {
       context,
       activeServiceConfiguration.service_instance_id
     );
+
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
@@ -293,6 +292,10 @@ export const registrationApp = {
       platformIdentifierMappedByServiceDefinitionIdentifier[
         serviceDefinition.identifier
       ];
+    if (identifier !== platformIdentifier) {
+      throw new Error(ErrorCode.InvalidPlatformIdentifier);
+    }
+
     const requiredCapability =
       organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     await securityGuard.assertUserIsAllowedOnOrganization(context, {

@@ -9,27 +9,30 @@ import { createContext, FunctionComponent } from 'react';
 
 export interface RegistrationState {
   identifier?: PlatformIdentifierEnum;
-  translationKey?: string;
+  displayedIdentifier: string;
   capability?: OrganizationCapabilityEnum;
 }
 
-export interface RegistrationProps extends RegistrationState {
+export interface RegistrationProps {
+  identifier?: PlatformIdentifierEnum;
   children: React.ReactNode;
 }
 
-export const RegistrationContext = createContext<RegistrationState>({});
+export const RegistrationContext = createContext<RegistrationState>({
+  displayedIdentifier: '',
+});
 
 export const generateRegistrationContext = (
   identifier?: PlatformIdentifierEnum
 ): RegistrationState => {
   if (!identifier) {
-    return {};
+    return { displayedIdentifier: '' };
   }
 
-  const translationKey = RegistrationTranslationMapping[identifier];
+  const displayedIdentifier = RegistrationTranslationMapping[identifier];
   const capability = RegistrationCapabilityMapping[identifier];
 
-  return { identifier, translationKey, capability };
+  return { identifier, displayedIdentifier, capability };
 };
 
 export const RegistrationContextProvider: FunctionComponent<

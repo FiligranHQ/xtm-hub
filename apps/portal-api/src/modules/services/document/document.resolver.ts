@@ -127,8 +127,7 @@ const resolvers: Resolvers = {
             );
 
             const shareEvent = buildShareEvent(
-              context.user.selected_organization_id,
-              selectedOrga.name,
+              selectedOrga,
               context.user.id,
               serviceDefinition.identifier,
               document.id,

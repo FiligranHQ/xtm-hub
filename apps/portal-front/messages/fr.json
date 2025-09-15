@@ -93,6 +93,7 @@
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
+      "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
@@ -117,89 +118,85 @@
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
   },
   "Unregister": {
-    "OpenCTI": {
-      "Succeeded": {
-        "Title": "La plateforme OpenCTI a été désinscrite avec succès",
+    "Succeeded": {
+      "Title": "La plateforme {platformIdentifier} a été désinscrite avec succès",
+      "Description": "Cet onglet sera bientôt fermé."
+    },
+    "Failed": {
+      "Title": "La désinscription a échoué",
+      "Description": "Une erreur s'est produite lors de la désinscription de la plateforme."
+    },
+    "Confirm": {
+      "Title": "Vous'êtes sur le point de désenregistrer votre plateforme {platformIdentifier}",
+      "Description": "Voulez-vous procéder à la désinscription ?"
+    },
+    "Error": {
+      "Capability": {
+        "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
+        "Description": "Si vous voulez procéder à la désinscription de votre plateforme {platformIdentifier} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
+        "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
+      },
+      "NotInOrganization": {
+        "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+      },
+      "PlatformNotRegistered": {
+        "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite",
         "Description": "Cet onglet sera bientôt fermé."
-      },
-      "Failed": {
-        "Title": "La désinscription a échoué",
-        "Description": "Une erreur s'est produite lors de la désinscription de la plateforme."
-      },
-      "Confirm": {
-        "Title": "Vous'êtes sur le point de désenregistrer votre plateforme OpenCTI",
-        "Description": "Voulez-vous procéder à la désinscription ?"
-      },
-      "Error": {
-        "Capability": {
-          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
-          "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
-          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
-        },
-        "NotInOrganization": {
-          "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
-        },
-        "PlatformNotRegistered": {
-          "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite",
-          "Description": "Cet onglet sera bientôt fermé."
-        }
       }
     }
   },
   "Register": {
     "Confirm": "Inscrire",
-    "OpenCTI": {
-      "Succeeded": {
-        "Title": "La plateforme OpenCTI a été inscrite avec succès",
-        "Description": "Cet onglet sera bientôt fermé."
+    "Succeeded": {
+      "Title": "La plateforme {platformIdentifier} a été inscrite avec succès",
+      "Description": "Cet onglet sera bientôt fermé."
+    },
+    "Failed": {
+      "Title": "L'inscription a échoué",
+      "Description": "Une erreur s'est produite lors de l'inscription de la plateforme."
+    },
+    "TooMuchOrganization": {
+      "Title": "Avis de réenregistrement de la plate-forme",
+      "Description1": "Votre plateforme {platformIdentifier} {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+      "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation."
+    },
+    "SameOrganization": {
+      "Registered": {
+        "Title": "Plateforme déjà inscrite",
+        "Description": "Votre plateforme {platformIdentifier} est déjà inscrite. Voulez-vous inscrire votre plateforme à nouveau ?"
       },
-      "Failed": {
-        "Title": "L'inscription a échoué",
-        "Description": "Une erreur s'est produite lors de l'inscription de la plateforme."
+      "Unregistered": {
+        "Title": "La plateforme était inscrite",
+        "Description": "Votre plateforme {platformIdentifier} a déjà été inscrite. Voulez-vous inscrire votre plateforme à nouveau  ?"
+      }
+    },
+    "AnotherOrganization": {
+      "NotAllowed": {
+        "Title": "La plateforme est inscrite dans une autre organisation",
+        "Description": "Votre plateforme {platformIdentifier} est déjà inscrite dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer."
       },
-      "TooMuchOrganization": {
-        "Title": "Avis de réenregistrement de la plate-forme",
-        "Description1": "Votre plateforme OpenCTI {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
-        "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation."
-      },
-      "SameOrganization": {
+      "Allowed": {
         "Registered": {
           "Title": "Plateforme déjà inscrite",
-          "Description": "Votre plateforme OpenCTI est déjà inscrite. Voulez-vous inscrire votre plateforme à nouveau ?"
+          "Description": "Votre plateforme {platformIdentifier} est déjà inscrite dans une autre organisation. Voulez-vous transférer votre plateforme ?"
         },
         "Unregistered": {
           "Title": "La plateforme était inscrite",
-          "Description": "Votre plateforme OpenCTI a déjà été inscrite. Voulez-vous inscrire votre plateforme à nouveau  ?"
+          "Description": "Votre plateforme {platformIdentifier} a déjà été inscrite dans une autre organisation. Souhaitez-vous inscrire votre plateforme à nouveau ?"
         }
-      },
-      "AnotherOrganization": {
-        "NotAllowed": {
-          "Title": "La plateforme est inscrite dans une autre organisation",
-          "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer."
-        },
-        "Allowed": {
-          "Registered": {
-            "Title": "Plateforme déjà inscrite",
-            "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre plateforme ?"
-          },
-          "Unregistered": {
-            "Title": "La plateforme était inscrite",
-            "Description": "Votre plateforme OpenCTI a déjà été inscrite dans une autre organisation. Souhaitez-vous inscrire votre plateforme à nouveau ?"
-          }
-        }
-      },
-      "Back": "Retour à OpenCTI",
-      "Error": {
-        "Capability": {
-          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
-          "Description": "Si vous souhaitez procéder à l'inscription de votre plateforme OpenCTI dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
-          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
-        }
-      },
-      "OrganizationForm": {
-        "Title": "Vous êtes sur le point d'inscrire votre plateforme OpenCTI dans XTM Hub",
-        "Description": "Dans quel espace souhaitez-vous inscrire votre plateforme OpenCTI ?"
       }
+    },
+    "Back": "Retour à {platformIdentifier}",
+    "Error": {
+      "Capability": {
+        "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub.",
+        "Description": "Si vous souhaitez procéder à l'inscription de votre plateforme {platformIdentifier} dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
+        "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :"
+      }
+    },
+    "OrganizationForm": {
+      "Title": "Vous êtes sur le point d'inscrire votre plateforme {platformIdentifier} dans XTM Hub",
+      "Description": "Dans quel espace souhaitez-vous inscrire votre plateforme {platformIdentifier} ?"
     },
     "Details": {
       "PlatformID": "ID de la plateforme",

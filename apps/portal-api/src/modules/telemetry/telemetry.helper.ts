@@ -1,19 +1,21 @@
 import {
+  Organization,
   PlatformContract,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryOrganizationType,
   TelemetryTargetProduct,
 } from './telemetry.const';
 import {
@@ -28,16 +30,18 @@ import {
 } from './telemetry.types';
 
 function buildBaseEvent(
-  organization_id: OrganizationId,
-  organization_name: string,
+  organization: Organization,
   user_id: UserId,
   timestamp?: Date
 ) {
   const eventTimestamp = timestamp || new Date();
   return {
-    organization_id: organization_id,
-    organization_name: organization_name,
-    user_id: user_id,
+    organization_id: organization.id,
+    organization_name: organization.name,
+    organization_type: organization.personal_space
+      ? TelemetryOrganizationType.PERSONAL
+      : TelemetryOrganizationType.PROFESSIONAL,
+    user_id,
     '@timestamp': eventTimestamp.toISOString(),
     source: TELEMETRY_SOURCE,
   };
@@ -64,7 +68,10 @@ const ServiceIdentifierToEventService = new Map<
 const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
   PlatformIdentifier,
   TelemetryTargetProduct
->([[PlatformIdentifier.Opencti, TelemetryTargetProduct.OPEN_CTI]]);
+>([
+  [PlatformIdentifier.Opencti, TelemetryTargetProduct.OPEN_CTI],
+  [PlatformIdentifier.Openaev, TelemetryTargetProduct.OPEN_AEV],
+]);
 
 export function shouldSendEventForService(
   service: ServiceDefinitionIdentifier
@@ -80,17 +87,11 @@ const ServiceIdentifierToEventServiceType = new Map<
 ]);
 
 export function buildLoginEvent(
-  organization_id: OrganizationId,
-  organization_name: string,
+  organization: Organization,
   user_id: UserId,
   timestamp?: Date
 ): LoginEvent {
-  const baseEvent = buildBaseEvent(
-    organization_id,
-    organization_name,
-    user_id,
-    timestamp
-  );
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
   return {
     event_type: TelemetryEventType.LOGIN,
     ...baseEvent,
@@ -98,18 +99,12 @@ export function buildLoginEvent(
 }
 
 export function buildSubscribeEvent(
-  organization_id: OrganizationId,
-  organization_name: string,
+  organization: Organization,
   user_id: UserId,
   service: ServiceDefinitionIdentifier,
   timestamp?: Date
 ): SubscribeEvent {
-  const baseEvent = buildBaseEvent(
-    organization_id,
-    organization_name,
-    user_id,
-    timestamp
-  );
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
     event_type: TelemetryEventType.SUBSCRIBE,
@@ -120,20 +115,14 @@ export function buildSubscribeEvent(
 }
 
 export function buildDownloadEvent(
-  organization_id: OrganizationId,
-  organization_name: string,
+  organization: Organization,
   user_id: UserId,
   service: ServiceDefinitionIdentifier,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
 ): DownloadEvent {
-  const baseEvent = buildBaseEvent(
-    organization_id,
-    organization_name,
-    user_id,
-    timestamp
-  );
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
     event_type: TelemetryEventType.DOWNLOAD,
@@ -146,20 +135,14 @@ export function buildDownloadEvent(
 }
 
 export function buildShareEvent(
-  organization_id: OrganizationId,
-  organization_name: string,
+  organization: Organization,
   user_id: UserId,
   service: ServiceDefinitionIdentifier,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
 ): ShareEvent {
-  const baseEvent = buildBaseEvent(
-    organization_id,
-    organization_name,
-    user_id,
-    timestamp
-  );
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
     event_type: TelemetryEventType.SHARE,
@@ -180,12 +163,7 @@ export async function buildCreateEvent(
 ): Promise<CreateEvent> {
   const selectedOrga = await loadOrganizationBy(context, 'id', organization_id);
 
-  const baseEvent = buildBaseEvent(
-    organization_id,
-    selectedOrga.name,
-    user_id,
-    timestamp
-  );
+  const baseEvent = buildBaseEvent(selectedOrga, user_id, timestamp);
 
   const serviceDefinition = await loadServiceDefinitionByServiceInstance(
     context,
@@ -206,51 +184,39 @@ export async function buildCreateEvent(
 }
 
 export function buildRegisterEvent(
-  organization_id: OrganizationId,
-  organization_name: string,
-  organization_personal_space: boolean,
+  organization: Organization,
   user_id: UserId,
-  target_product: TelemetryTargetProduct,
+  platform_identifier: PlatformIdentifier,
   platform_id: string,
   platform_contract: PlatformContract,
+  platform_version: string,
   timestamp?: Date
 ): RegisterPlatformEvent {
-  const baseEvent = buildBaseEvent(
-    organization_id,
-    organization_name,
-    user_id,
-    timestamp
-  );
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
     event_type: TelemetryEventType.REGISTER,
     ...baseEvent,
-    organization_type: organization_personal_space
-      ? 'Personal'
-      : 'Professional',
-    target_product,
+    target_product:
+      TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
     platform_id,
     platform_contract,
+    platform_version,
   };
 }
 
 export function buildOneClickDeployEvent(
-  organization_id: OrganizationId,
-  organization_name: string,
+  organization: Organization,
   user_id: UserId,
   service: ServiceDefinitionIdentifier,
   platform_identifier: PlatformIdentifier,
   platform_id: string,
+  platform_version: string,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
 ): OneClickDeployEvent {
-  const baseEvent = buildBaseEvent(
-    organization_id,
-    organization_name,
-    user_id,
-    timestamp
-  );
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
     event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
@@ -262,5 +228,6 @@ export function buildOneClickDeployEvent(
     resource_id,
     resource_title,
     platform_id,
+    platform_version,
   };
 }

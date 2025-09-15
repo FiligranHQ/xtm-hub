@@ -17,7 +17,11 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
   open,
 }) => {
   const t = useTranslations();
-  const { hasOrganizationCapability } = useContext(PortalContext);
+  const { hasOrganizationCapability, me } = useContext(PortalContext);
+
+  const currentOrganization = me?.organizations.find(
+    (orga) => orga.id === me?.selected_organization_id
+  );
   const canManageUser =
     hasOrganizationCapability &&
     (hasOrganizationCapability(
@@ -38,7 +42,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
             text={t('MenuLinks.Home')}
           />
         </li>
-        {canManageUser && (
+        {canManageUser && !currentOrganization?.personal_space && (
           <li>
             <LinkMenu
               open={open}

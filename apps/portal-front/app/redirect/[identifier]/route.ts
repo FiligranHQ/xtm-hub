@@ -14,20 +14,31 @@ export async function GET(
   { params }: RedirectIdentifierGetRouteProps
 ) {
   const awaitedParams = await params;
-  if (awaitedParams.identifier === 'register-opencti') {
-    return redirectToRegistration(
-      request,
-      'register',
-      PlatformIdentifierEnum.OPENCTI
-    );
-  }
-
-  if (awaitedParams.identifier === 'unregister-opencti') {
-    return redirectToRegistration(
-      request,
-      'unregister',
-      PlatformIdentifierEnum.OPENCTI
-    );
+  switch (awaitedParams.identifier) {
+    case 'register-opencti':
+      return redirectToRegistration(
+        request,
+        'register',
+        PlatformIdentifierEnum.OPENCTI
+      );
+    case 'unregister-opencti':
+      return redirectToRegistration(
+        request,
+        'unregister',
+        PlatformIdentifierEnum.OPENCTI
+      );
+    case 'register-openaev':
+      return redirectToRegistration(
+        request,
+        'register',
+        PlatformIdentifierEnum.OPENAEV
+      );
+    case 'unregister-openaev':
+      return redirectToRegistration(
+        request,
+        'unregister',
+        PlatformIdentifierEnum.OPENAEV
+      );
   }
 
   return redirectToResource(awaitedParams, request);

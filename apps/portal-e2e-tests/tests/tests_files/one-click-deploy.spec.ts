@@ -2,7 +2,7 @@ import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 
 import CsvFeedPage from '../model/csvFeed.pageModel';
-import RegisterPage from '../model/register.pageModel';
+import RegisterPage, { PlatformDetails } from '../model/register.pageModel';
 import { HomePage } from '../model/home.pageModel';
 
 const CSV_FEED_TEST = {
@@ -12,7 +12,7 @@ const CSV_FEED_TEST = {
   csvFeedsServiceInstanceId: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
 };
 
-const OPENCTI_PLATFORM_URL = {
+const OPENCTI_PLATFORM_URL: PlatformDetails = {
   url: 'http://localhost:3000',
   title: 'Open%20CTI%20Instance',
   id: '916121bf-d246-4a43-8522-24be19537b91',
@@ -34,10 +34,8 @@ test.describe('One Click Deploy', () => {
 
     registerPage = new RegisterPage(page);
     await registerPage.navigateToAndRegister(
-      OPENCTI_PLATFORM_URL.url,
-      OPENCTI_PLATFORM_URL.title,
-      OPENCTI_PLATFORM_URL.id,
-      OPENCTI_PLATFORM_URL.contract
+      'register-opencti',
+      OPENCTI_PLATFORM_URL
     );
 
     await homePage.navigateTo();

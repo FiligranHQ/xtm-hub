@@ -1,30 +1,26 @@
 import { Page } from '@playwright/test';
 
+export type PlatformDetails = {
+  url: string;
+  title: string;
+  id: string;
+  contract: string;
+  version?: string;
+};
+
 export default class RegisterPage {
   constructor(private page: Page) {}
 
-  async navigateTo(
-    platformUrl: string,
-    platformTitle: string,
-    platformId: string,
-    platformContract: string
-  ) {
-    const url = `/redirect/register-opencti?platform_url=${platformUrl}&platform_title=${platformTitle}&platform_id=${platformId}&platform_contract=${platformContract}`;
+  async navigateTo(redirectionKey: string, platformDetails: PlatformDetails) {
+    const url = `/redirect/${redirectionKey}?platform_url=${platformDetails.url}&platform_title=${platformDetails.title}&platform_id=${platformDetails.id}&platform_contract=${platformDetails.contract}&platform_version=${platformDetails.version}`;
     await this.page.goto(encodeURI(url));
   }
 
   async navigateToAndRegister(
-    platformUrl: string,
-    platformTitle: string,
-    platformId: string,
-    platformContract: string
+    redirectionKey: string,
+    platformDetails: PlatformDetails
   ) {
-    await this.navigateTo(
-      platformUrl,
-      platformTitle,
-      platformId,
-      platformContract
-    );
+    await this.navigateTo(redirectionKey, platformDetails);
     await this.page.getByRole('button', { name: 'Register' }).click();
   }
 }

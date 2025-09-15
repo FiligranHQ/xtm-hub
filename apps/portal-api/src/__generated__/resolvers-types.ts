@@ -808,6 +808,7 @@ export enum PlatformContract {
 }
 
 export enum PlatformIdentifier {
+  Openaev = 'openaev',
   Opencti = 'opencti'
 }
 
@@ -859,7 +860,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
-  platformAssociatedOrganization: Organization;
+  platformAssociatedOrganization?: Maybe<Organization>;
   publicServiceInstances: ServiceConnection;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
@@ -1275,6 +1276,7 @@ export enum ServiceDefinitionIdentifier {
   CsvFeeds = 'csv_feeds',
   CustomDashboards = 'custom_dashboards',
   Link = 'link',
+  OpenaevRegistration = 'openaev_registration',
   OpenaevScenarios = 'openaev_scenarios',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault'
@@ -1447,6 +1449,7 @@ export type TrackingSubscription = {
 };
 
 export type UnregisterPlatformInput = {
+  identifier: PlatformIdentifier;
   platformId: Scalars['String']['input'];
 };
 
@@ -2310,7 +2313,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  platformAssociatedOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
+  platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;

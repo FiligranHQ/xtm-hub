@@ -28,15 +28,19 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
   userOrganizationsQueryData,
 }) => {
   const organizations = userOrganizationsQueryData.userOrganizations;
-  const { translationKey } = useContext(RegistrationContext);
+  const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
 
   return (
     <div className="flex items-center justify-center">
       <div className="flex flex-col justify-between gap-m">
         <div className="space-y-m">
-          <h1>{t(`Register.${translationKey}.OrganizationForm.Title`)}</h1>
-          <p>{t(`Register.${translationKey}.OrganizationForm.Description`)}</p>
+          <h1>
+            {t(`Register.OrganizationForm.Title`, {
+              platformIdentifier: displayedIdentifier,
+            })}
+          </h1>
+          <p>{t(`Register.OrganizationForm.Description`)}</p>
         </div>
         <AutoForm
           formSchema={selectOrganizationFormSchema}

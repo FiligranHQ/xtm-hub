@@ -5,6 +5,7 @@ enum ServiceDefinitionIdentifier {
   csv_feeds
   openaev_scenarios
   opencti_registration
+  openaev_registration
 }
 
 type ServiceDefinition implements Node {

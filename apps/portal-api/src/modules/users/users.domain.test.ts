@@ -56,6 +56,7 @@ describe('Users domain', () => {
       event_type: 'login',
       organization_id: THALES_ORGA_ID,
       organization_name: 'Thales',
+      organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
       user_id: THALES_SIMPLE_USER_ID,
     });

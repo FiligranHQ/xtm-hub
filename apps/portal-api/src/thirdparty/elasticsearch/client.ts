@@ -11,6 +11,8 @@ import {
   SearchRequest,
   SearchResponse,
   Sort,
+  UpdateByQueryRequest,
+  UpdateByQueryResponse,
 } from '@elastic/elasticsearch/lib/api/types.js';
 import fs from 'fs';
 import portalConfig from '../../config';
@@ -92,6 +94,16 @@ export class ElasticSearchService {
       return this.elasticsearchClient.delete(params);
     } catch (error) {
       logApp.error('ES delete error', { error });
+      throw error;
+    }
+  }
+  async updateByQuery(
+    params: UpdateByQueryRequest
+  ): Promise<UpdateByQueryResponse> {
+    try {
+      return this.elasticsearchClient.updateByQuery(params);
+    } catch (error) {
+      logApp.error('ES updateByQuery error', { error });
       throw error;
     }
   }

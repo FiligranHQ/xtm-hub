@@ -1,3 +1,5 @@
+import { ServiceDefinitionIdentifier } from '../../__generated__/resolvers-types';
+
 export interface GenericServiceMailModel {
   name: string;
   serviceLink: string;
@@ -17,7 +19,15 @@ export interface PlatformRegisteredModel {
 export interface PlatformUnregisteredModel {
   adminName: string;
 }
-
+export const ServiceIdentifierToMailTemplate = new Map<
+  ServiceDefinitionIdentifier,
+  keyof MailTemplates
+>([
+  [ServiceDefinitionIdentifier.OpenaevScenarios, 'openaev_scenarios'],
+  [ServiceDefinitionIdentifier.CustomDashboards, 'custom_dashboards'],
+  [ServiceDefinitionIdentifier.CsvFeeds, 'csv_feeds'],
+  [ServiceDefinitionIdentifier.Vault, 'vault'],
+]);
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {
   welcome: WelcomeMailModel;
@@ -28,6 +38,8 @@ export type MailTemplates = {
   new_user_organization: NewUserOrganizationMailModel;
   opencti_platform_registered: PlatformRegisteredModel;
   opencti_platform_unregistered: PlatformUnregisteredModel;
+  openaev_platform_registered: PlatformRegisteredModel;
+  openaev_platform_unregistered: PlatformUnregisteredModel;
 };
 
 export const templateSubjects: {
@@ -48,4 +60,8 @@ export const templateSubjects: {
     `OpenCTI Platform Successfully Registered to XTM Hub – Integration Now Active`,
   opencti_platform_unregistered: () =>
     `OpenCTI Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
+  openaev_platform_registered: () =>
+    `OpenAEV Platform Successfully Registered to XTM Hub – Integration Now Active`,
+  openaev_platform_unregistered: () =>
+    `OpenAEV Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
 };
