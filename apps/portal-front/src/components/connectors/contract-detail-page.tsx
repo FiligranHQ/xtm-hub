@@ -35,7 +35,7 @@ const ContractDetailPage: React.FC<ContractDetailPageProps> = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <div className="w-full">
+      <div className="w-full pt-s">
         <div className="flex flex-row gap-s">
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
@@ -49,12 +49,12 @@ const ContractDetailPage: React.FC<ContractDetailPageProps> = ({
           </div>
 
           <div className="flex flex-col flex-1 justify-center">
-            <div className="flex items-center gap-s">
+            <div className="flex items-center gap-s flex-wrap">
               <h1 className="text-xl font-semibold">{contract.title}</h1>
               {contract.verified && (
-                <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100 dark:bg-turquoise-900 rounded-lg">
-                  <VerifiedIcon className="h-5 w-5 shrink-0 text-green-500" />
-                  <div className="text-green-500">{t('Utils.Verified')}</div>
+                <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100  text-green-500 dark:bg-turquoise-900 rounded-lg">
+                  <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />
+                  {t('Utils.Verified')}
                 </div>
               )}
             </div>
