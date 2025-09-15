@@ -105,6 +105,9 @@
       "PLATFORM_NOT_REGISTERED": "The platform is not registered",
       "PLATFORM_TYPE_NOT_SUPPORTED": "The platform type is not supported",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "An unknown error occurred while refreshing user platform token",
+      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
+      "REGISTER_OPENCTI_PLATFORM_INVALID_DATA": "Data sent for OpenCTI platform registration is invalid",
+      "REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "REGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "Registration on another organization is forbidden",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
@@ -124,6 +127,7 @@
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
       "YOU_CAN_NOT_LOGIN": "You are not authorized to log in"
+      "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first."
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -263,7 +267,7 @@
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {
-      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenBAS platforms."
+      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
     },
     "Title": "Profile",
     "UpdateProfile": "Update profile",
@@ -505,6 +509,36 @@
       "NonActive": "Draft",
       "SureDeleteService": "Are you sure you want to delete the {name} dashboard?",
       "UpdateService": "Update dashboard"
+    },
+    "OpenAEVScenario": {
+      "Actions": {
+        "Added": "The scenario {name} has been added successfully",
+        "Deleted": "The scenario {name} has been deleted successfully",
+        "Updated": "The scenario {name} has been modified successfully",
+        "Share": "Share Scenario"
+      },
+      "Form": {
+        "NameLabel": "Name",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
+        "LabelsLabel": "Labels",
+        "LabelsPlaceholder": "Add labels",
+        "OpenAEVScenarioFile": "Scenario file",
+        "ExistingOpenAEVScenarioFile": "Existing scenario file: {file_name}",
+        "OpenAEVScenarioIllustration": "Illustration",
+        "ExistingOpenAEVScenarioIllustration": "Existing scenario illustration: {file_name}",
+        "PublishedPlaceholder": "Is the scenario published?",
+        "Author": "Author",
+        "ProductVersionLabel": "OpenAEV Version"
+      },
+      "AddService": "Add new scenario",
+      "UpdateService": "Update the scenario {name}",
+      "DeleteService": "Delete the scenario {name}",
+      "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
+      "NonActive": "Draft",
+      "Active": "Published"
     },
     "Description": "Description",
     "GoTo": "Go to service page",
