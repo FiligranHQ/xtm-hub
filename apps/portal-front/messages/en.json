@@ -126,7 +126,7 @@
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "An error occurred while updating platform service metadata",
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
-      "YOU_CAN_NOT_LOGIN": "You are not authorized to log in"
+      "YOU_CAN_NOT_LOGIN": "You are not authorized to log in",
       "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first."
     },
     "SomethingWentWrong": "Something went wrong",
@@ -570,36 +570,6 @@
     "Name": "Name",
     "NoOwnedService": "You don't have any services yet.",
     "NoService": "There is no service... Yet!",
-    "ObasScenario": {
-      "Actions": {
-        "Added": "The scenario {name} has been added successfully",
-        "Deleted": "The scenario {name} has been deleted successfully",
-        "Share": "Share Scenario",
-        "Updated": "The scenario {name} has been modified successfully"
-      },
-      "Active": "Published",
-      "AddService": "Add new scenario",
-      "DeleteService": "Delete the scenario {name}",
-      "Form": {
-        "Author": "Author",
-        "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
-        "ExistingObasScenarioFile": "Existing scenario file: {file_name}",
-        "ExistingObasScenarioIllustration": "Existing scenario illustration: {file_name}",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
-        "NameLabel": "Name",
-        "ObasScenarioFile": "Scenario file",
-        "ObasScenarioIllustration": "Illustration",
-        "ProductVersionLabel": "OpenBAS Version",
-        "PublishedPlaceholder": "Is the scenario published?",
-        "ShortDescriptionLabel": "Short Description",
-        "SlugLabel": "Slug"
-      },
-      "NonActive": "Draft",
-      "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
-      "UpdateService": "Update the scenario {name}"
-    },
     "Organizations": "Organizations",
     "SearchServices": "Search service...",
     "ServiceName": "Service name",
