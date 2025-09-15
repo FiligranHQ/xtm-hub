@@ -396,6 +396,7 @@
     },
     "ComingSoon": "Coming soon",
     "Connectors": {
+      "Name": "Connectors",
       "DataImport": "Data Import",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Last verified at",

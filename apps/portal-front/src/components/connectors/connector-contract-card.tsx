@@ -25,7 +25,7 @@ const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
       <Link
         className="flex flex-col h-full"
         href={`/cybersecurity-solutions/opencti-connectors/${contract.slug}`}>
-        <div className="flex items-stretch gap-l p-l">
+        <div className="flex items-stretch gap-l p-l relative">
           <div className="w-24 self-stretch flex">
             <Image
               src={contract.logo}
@@ -36,17 +36,15 @@ const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
               className="rounded object-contain"
             />
           </div>
-
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0">
+              <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 pr-xxl">
                 {contract.title}
               </h2>
               {contract.verified && (
-                <VerifiedIcon className="h-6 w-6 shrink-0 text-green-500" />
+                <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
               )}
             </div>
-
             <div className="mt-s flex flex-wrap gap-s mb-xs">
               <BadgeOverflowCounter
                 badges={getBadgesValues(contract)}

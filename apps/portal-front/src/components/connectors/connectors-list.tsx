@@ -30,13 +30,16 @@ const ConnectorsList = ({ contracts }: ContractDetailsInformationPageProps) => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-l mb-l">
-        <div>
+        <div className="md:col-span-1">
           <SearchInput
             containerClass="w-full"
             placeholder={t('Service.Connectors.Search')}
             onChange={debounceHandleInput}
           />
         </div>
+        <span className="md:col-start-2 lg:col-start-3 self-center md:text-right">
+          {t('Service.Connectors.Name')}: {filteredContracts.length}
+        </span>
       </div>
 
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-l">
