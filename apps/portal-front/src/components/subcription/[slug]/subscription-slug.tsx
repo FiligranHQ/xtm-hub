@@ -100,8 +100,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
       {
         label: `${serviceInstance.name}`,
         original: true,
-        // Temp fix, add service definition identifier when obas new name will be released
-        href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier !== 'openaev_scenarios' ? serviceInstance.service_definition!.identifier : 'obas_scenarios'}/${serviceInstance.id}`,
+        href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       },
       {
         label: t('Service.Management.ManageUsers'),
