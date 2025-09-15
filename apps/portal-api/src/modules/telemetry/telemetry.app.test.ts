@@ -136,6 +136,7 @@ describe('TelemetryApp', () => {
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: PLATFORM_ORGANIZATION_UUID,
         organization_name: 'Filigran',
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
         user_id: ADMIN_UUID,
         service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
