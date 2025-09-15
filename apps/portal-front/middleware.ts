@@ -2,7 +2,7 @@ import { manageRequest } from '@/utils/middleware/graphqlRequest.util';
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest, _: NextFetchEvent) {
-  return manageRequest(request) || NextResponse.next();
+  return (await manageRequest(request)) || NextResponse.next();
 }
 
 export const config = {
@@ -14,5 +14,6 @@ export const config = {
     '/document/visualize/:serviceInstanceId/:filename*',
     '/document/deploy/:serviceInstanceId/:filename*',
     '/document/images/:documentId*',
+    '/cybersecurity-solutions/opencti-connectors/:path*',
   ],
 };

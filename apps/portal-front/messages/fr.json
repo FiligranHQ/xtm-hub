@@ -67,6 +67,7 @@
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
       "CAN_UNREGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
+      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors du désenregistrement de la plate-forme",
       "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
       "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
       "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed.",
@@ -86,16 +87,18 @@
       "ERROR_SUBSCRIPTION_WITH_BILLING": "Erreur lors de la suppression de la souscription : vous ne pouvez pas supprimer une souscription associée à une facturation",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
+      "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "IS_OPENCTI_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'inscription de la plateforme",
+      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
-      "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
       "OBAS_SCENARIO_INSERTION_ERROR": "Erreur lors de la création du scénario.",
       "OBAS_SCENARIO_UNIQUE_SLUG_ERROR": "Le slug du scénario est déjà utilisé.",
       "OBAS_SCENARIO_UPDATE_ERROR": "Erreur lors de la mise à jour du scénario.",
       "REGISTER_OPENCTI_PLATFORM_INVALID_DATA": "Les données envoyées pour l'inscription de la plateforme OpenCTI ne sont pas valides",
       "REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'inscription de la plateforme",
+      "REGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
       "SERVICE_CONTRACT_NOT_FOUND": "Le contrat de service n'a pas été trouvé",
@@ -260,7 +263,46 @@
     "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !"
   },
   "Register": {
+    "AnotherOrganization": {
+      "Allowed": {
+        "Registered": {
+          "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation. Voulez-vous transférer votre plate-forme ?",
+          "Title": "Plate-forme déjà enregistrée"
+        },
+        "Unregistered": {
+          "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée dans une autre organisation. Souhaitez-vous réenregistrer votre plate-forme ?",
+          "Title": "La plate-forme a été enregistrée"
+        }
+      },
+      "NotAllowed": {
+        "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer.",
+        "Title": "La plate-forme est enregistrée dans une autre organisation"
+      }
+    },
+    "Back": "Retour à {platformIdentifier}",
     "Confirm": "Inscrire",
+    "Details": {
+      "Contract": "Contrat",
+      "Contracts": {
+        "CE": "Édition communautaire",
+        "EE": "Édition Entreprise"
+      },
+      "Description": "Cliquez ici pour accéder à votre plateforme privée.",
+      "PlatformID": "ID de la plate-forme",
+      "PlatformURL": "URL de la plate-forme",
+      "PrivatePlatform": "Plate-forme privée"
+    },
+    "Error": {
+      "Capability": {
+        "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+        "Description": "Si vous souhaitez procéder à l'enregistrement de votre plateforme {platformIdentifier} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
+        "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub"
+      }
+    },
+    "Failed": {
+      "Description": "Une erreur s'est produite lors de l'enregistrement sur la plateforme",
+      "Title": "L'enregistrement a échoué"
+    },
     "OpenCTI": {
       "AnotherOrganization": {
         "Allowed": {
@@ -279,17 +321,6 @@
         }
       },
       "Back": "Retour à OpenCTI",
-      "Details": {
-        "Contract": "Contrat",
-        "Contracts": {
-          "CE": "Édition communautaire",
-          "EE": "Édition Entreprise"
-        },
-        "Description": "Cliquez ici pour accéder à votre plateforme privée.",
-        "PlatformID": "ID de la plate-forme",
-        "PlatformURL": "URL de la plate-forme",
-        "PrivatePlatform": "Plate-forme privée"
-      },
       "Error": {
         "Capability": {
           "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
@@ -324,6 +355,29 @@
         "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
         "Title": "Avis de réenregistrement de la plate-forme"
       }
+    },
+    "OrganizationForm": {
+      "Description": "Choisir l'espace organisationnel auquel s'inscrire",
+      "Title": "Vous êtes sur le point d'enregistrer votre plateforme {platformIdentifier} dans XTM Hub"
+    },
+    "SameOrganization": {
+      "Registered": {
+        "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée. Voulez-vous réenregistrer votre plateforme ?",
+        "Title": "Plateforme déjà enregistrée"
+      },
+      "Unregistered": {
+        "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée. Souhaitez-vous réenregistrer votre plate-forme ?",
+        "Title": "La plate-forme a été enregistrée"
+      }
+    },
+    "Succeeded": {
+      "Description": "Cet onglet sera bientôt fermé",
+      "Title": "{La plateforme a été enregistrée avec succès"
+    },
+    "TooMuchOrganization": {
+      "Description1": "Votre plateforme {platformIdentifier} {platformIdentifier} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+      "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
+      "Title": "Avis de réenregistrement de la plate-forme"
     }
   },
   "RemoveUserOrgDialog": {
@@ -342,6 +396,8 @@
     },
     "ComingSoon": "Bientôt disponible",
     "Connectors": {
+      "Name": "Connecteurs",
+      "DataImport": "Importation de données",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Dernière vérification",
       "Search": "Rechercher un connecteur par nom...",
@@ -396,6 +452,7 @@
         "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Description du tableau de bord",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
         "ExistingJSONFile": "Fichier JSON existant : {file_name}",
         "ImageLabel": "Images",
         "JSONFile": "Fichier JSON",
@@ -483,6 +540,8 @@
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
       "UpdateService": "Mettre à jour le scénario {name}"
     },
+    "Organizations": "Organisations",
+    "SearchServices": "Service de recherche...",
     "ServiceName": "Nom du service",
     "ShareableResources": {
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
@@ -581,6 +640,28 @@
     "Title": "Un événement inattendu s'est produit."
   },
   "Unregister": {
+    "Confirm": {
+      "Description": "Voulez-vous procéder à la désinscription ?",
+      "Title": "Vous êtes sur le point de désenregistrer votre plateforme {platformTitle} de l'organisation {platformIdentifier} sur le Hub."
+    },
+    "Error": {
+      "Capability": {
+        "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+        "Description": "Si vous souhaitez procéder à la désinscription de votre plate-forme {name} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
+        "Title": "Vous n'avez pas l'accès {platformIdentifier} nécessaire sur le XTM Hub."
+      },
+      "NotInOrganization": {
+        "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+      },
+      "PlatformNotRegistered": {
+        "Description": "Cet onglet sera bientôt fermé.",
+        "Title": "La plateforme que vous essayez de désenregistrer n'est pas enregistrée"
+      }
+    },
+    "Failed": {
+      "Description": "Une erreur s'est produite lors de la désinscription de la plate-forme.",
+      "Title": "La désinscription a échoué"
+    },
     "OpenCTI": {
       "Confirm": {
         "Description": "Voulez-vous procéder à la désinscription ?",
@@ -608,6 +689,10 @@
         "Description": "Cet onglet sera bientôt fermé.",
         "Title": "La plateforme OpenCTI a été désinscrite avec succès"
       }
+    },
+    "Succeeded": {
+      "Description": "Cet onglet sera bientôt fermé.",
+      "Title": "la plateforme {capability} s'est désinscrite avec succès"
     }
   },
   "UpdateUserDialog": {
