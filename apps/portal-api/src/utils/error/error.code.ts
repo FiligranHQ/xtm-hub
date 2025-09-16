@@ -4,7 +4,9 @@ export enum ForbiddenErrorCode {
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
   AlreadySubscribed = 'ALREADY_SUBSCRIBED',
   AlreadySubscribedOrganizationError = 'ALREADY_SUBSCRIBED_ORGANIZATION_ERROR',
-  ErrorSubscriptionWithBilling = 'ERROR_SUBSCRIPTION_WITH_BILLING',
+  EditCapabilitiesCantRemoveLastManageAccess = 'EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS',
+  GrantCapabilitiesOnOrganizationFirst = 'GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST',
+  CantSubscribeYourself = 'CANT_SUBSCRIBE_YOURSELF',
 }
 
 export enum BadRequestErrorCode {
@@ -38,6 +40,8 @@ export enum UnknownErrorCode {
   OpenAEVScenarioDeleteError = 'OPENAEV_SCENARIO_DELETE_ERROR',
   ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
+  EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
+  AddUserServiceError = 'ADD_USER_SERVICE_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {

@@ -5,11 +5,8 @@ import {
   UserServiceCapability,
 } from '../../../__generated__/resolvers-types';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
-import {
-  FORBIDDEN_ACCESS,
-  ForbiddenAccess,
-  UnknownError,
-} from '../../../utils/error/error.util';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
 import { insertCapabilities } from '../user-service-capability/user-service-capability.helper';
 import { loadUserServiceById } from '../user_service.domain';
@@ -43,12 +40,7 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          throw ForbiddenAccess(
-            'EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS'
-          );
-        }
-        throw UnknownError('EDIT_CAPABILITIES_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.EditCapabilitiesError);
       }
     },
   },

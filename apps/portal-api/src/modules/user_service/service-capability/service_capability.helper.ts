@@ -6,7 +6,7 @@ import {
 import { ServiceCapabilityMutator } from '../../../model/kanel/public/ServiceCapability';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { PortalContext } from '../../../model/portal-context';
-import { ForbiddenAccess } from '../../../utils/error/error.util';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { loadUserServiceById } from '../user_service.domain';
 import { getManageAccessLeft } from './service-capability.domain';
 
@@ -33,7 +33,7 @@ export const willManageAccessBeConserved = async (
     manageAccessWillLeft ||
     !isCurrentUserModified;
   if (!isAuthorizedToEditCapabilities) {
-    throw ForbiddenAccess('EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS');
+    throw new Error(ErrorCode.EditCapabilitiesCantRemoveLastManageAccess);
   }
   return;
 };
