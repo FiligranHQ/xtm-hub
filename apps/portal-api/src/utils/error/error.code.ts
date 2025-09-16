@@ -30,12 +30,16 @@ export enum UnknownErrorCode {
   InsertDocumentError = 'INSERT_DOCUMENT_ERROR',
   UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
   IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
+  OpenAEVScenarioInsertionError = 'OPENAEV_SCENARIO_INSERTION_ERROR',
+  OpenAEVScenarioUpdateError = 'OPENAEV_SCENARIO_UPDATE_ERROR',
+  OpenAEVScenarioDeleteError = 'OPENAEV_SCENARIO_DELETE_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
   OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
   CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
   CustomDashboardUniqueSlugError = 'CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR',
+  OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
 }
 
 export enum NotFoundErrorCode {
