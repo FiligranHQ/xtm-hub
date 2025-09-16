@@ -7,6 +7,13 @@ export enum ForbiddenErrorCode {
   EditCapabilitiesCantRemoveLastManageAccess = 'EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS',
   GrantCapabilitiesOnOrganizationFirst = 'GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST',
   CantSubscribeYourself = 'CANT_SUBSCRIBE_YOURSELF',
+  UserDisabled = 'USER_DISABLED',
+  CantRemoveLastAdministrator = 'CANT_REMOVE_LAST_ADMINISTRATOR',
+  CantAddUserToPersonalSpace = 'CANT_ADD_USER_TO_PERSONAL_SPACE',
+  EmailOutsideOrganizationError = 'EMAIL_OUTSIDE_ORGANIZATION_ERROR',
+  CantAddDisabledUser = 'CANT_ADD_DISABLED_USER',
+  CantRemoveYourselfFromOrgaError = 'CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR',
+  YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
 }
 
 export enum BadRequestErrorCode {
@@ -42,6 +49,11 @@ export enum UnknownErrorCode {
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
   EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
   AddUserServiceError = 'ADD_USER_SERVICE_ERROR',
+  AddingUserError = 'ADDING_USER_ERROR',
+  EditUserError = 'EDIT_USER_ERROR',
+  EditMeUserError = 'EDIT_ME_USER_ERROR',
+  RemoveUserFromOrgaError = 'REMOVE_USER_FROM_ORGA_ERROR',
+  RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {

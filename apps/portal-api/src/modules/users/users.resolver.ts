@@ -10,9 +10,9 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
-  BadRequestError,
   FORBIDDEN_ACCESS,
   ForbiddenAccess,
   UnknownError,
@@ -137,7 +137,8 @@ const resolvers: Resolvers = {
         );
 
         if (chosenOrganization.personal_space) {
-          throw new Error('CANT_ADD_USER_TO_PERSONAL_SPACE');
+          logApp.warn('You cannot add a user in your personal space');
+          throw new Error(ErrorCode.CantAddUserToPersonalSpace);
         }
 
         // The admin orga should only allow to add users in the same organization and with the same domain.
@@ -176,10 +177,6 @@ const resolvers: Resolvers = {
         return mapUserToGraphqlUser(loadUserFinalUser);
       } catch (error) {
         await trx.rollback();
-        if (error.message.includes('CANT_ADD_USER_TO_PERSONAL_SPACE')) {
-          logApp.warn('You cannot add a user in your personal space');
-          throw ForbiddenAccess(error.message);
-        }
         if (error.name.includes(FORBIDDEN_ACCESS)) {
           logApp.warn(
             'You cannot add a user whose email domain is outside your organization'
@@ -211,7 +208,10 @@ const resolvers: Resolvers = {
           chosenOrganization !== organizationFromEmail?.id &&
           !context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)
         ) {
-          throw ForbiddenAccess('EMAIL_OUTSIDE_ORGANIZATION_ERROR');
+          logApp.warn(
+            'You cannot add a user whose email domain is outside your organization'
+          );
+          throw new Error(ErrorCode.EmailOutsideOrganizationError);
         }
 
         const [existingUser] = await loadUnsecureUser({ email: input.email });
@@ -242,25 +242,12 @@ const resolvers: Resolvers = {
         return mapUserToGraphqlUser(loadUserFinalUser);
       } catch (error) {
         await trx.rollback();
-        if (
-          error.name.includes(FORBIDDEN_ACCESS) &&
-          error.message.includes('User disabled')
-        ) {
+        if (error.message.includes(ErrorCode.UserDisabled)) {
           logApp.warn('You cannot add a user who is disabled in the plaform');
-          throw ForbiddenAccess('CANT_ADD_DISABLED_USER');
+          throw ForbiddenAccess(ErrorCode.CantAddDisabledUser);
         }
-        if (
-          error.name.includes(FORBIDDEN_ACCESS) &&
-          error.message.includes('EMAIL_OUTSIDE_ORGANIZATION_ERROR')
-        ) {
-          logApp.warn(
-            'You cannot add a user whose email domain is outside your organization'
-          );
-          throw ForbiddenAccess('EMAIL_OUTSIDE_ORGANIZATION_ERROR');
-        }
-        throw UnknownError('ADDING_USER_ERROR', {
-          detail: error,
-        });
+
+        throw mapToGraphQLError(error, UnknownErrorCode.AddingUserError);
       }
     },
     editUserCapabilities: async (_, { id, input }, context) => {
@@ -270,16 +257,7 @@ const resolvers: Resolvers = {
           input,
         });
       } catch (error) {
-        if (error.message === 'CANT_REMOVE_LAST_ADMINISTRATOR') {
-          throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
-        }
-        if (error.name === 'FORBIDDEN_ACCESS') {
-          logApp.warn('Forbidden access while editing user');
-          throw ForbiddenAccess('Not authorized');
-        }
-        throw UnknownError('EDIT_USER_ERROR', {
-          detail: error.message,
-        });
+        throw mapToGraphQLError(error, UnknownErrorCode.EditUserError);
       }
     },
     adminEditUser: async (_, { id, input }, context) => {
@@ -289,13 +267,7 @@ const resolvers: Resolvers = {
           input,
         });
       } catch (error) {
-        if (error.message.includes('CANT_REMOVE_LAST_ADMINISTRATOR')) {
-          throw BadRequestError('CANT_REMOVE_LAST_ADMINISTRATOR');
-        }
-
-        throw UnknownError('EDIT_USER_ERROR', {
-          detail: error.message,
-        });
+        throw mapToGraphQLError(error, UnknownErrorCode.EditUserError);
       }
     },
 
@@ -303,13 +275,7 @@ const resolvers: Resolvers = {
       try {
         return await usersProfileApp.editMeUser(context, input);
       } catch (error) {
-        if (error.message.includes(ErrorCode.InvalidImageUrl)) {
-          throw BadRequestError(error.message);
-        }
-
-        throw UnknownError('EDIT_ME_USER_ERROR', {
-          detail: error,
-        });
+        throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
       }
     },
     resetPassword: async (_, __, context) => {
@@ -332,7 +298,7 @@ const resolvers: Resolvers = {
     ) => {
       try {
         if (extractId(user_id) === context.user.id) {
-          throw ForbiddenAccess('CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR');
+          throw new Error(ErrorCode.CantRemoveYourselfFromOrgaError);
         }
         await removeUserFromOrganization(
           context,
@@ -344,11 +310,10 @@ const resolvers: Resolvers = {
         });
         return mapUserToGraphqlUser(user);
       } catch (error) {
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          logApp.warn('CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR');
-          throw ForbiddenAccess('CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR');
-        }
-        throw UnknownError('REMOVE_USER_FROM_ORGA_ERROR', { detail: error });
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RemoveUserFromOrgaError
+        );
       }
     },
     removePendingUserFromOrganization: async (
@@ -368,9 +333,10 @@ const resolvers: Resolvers = {
         await dispatch('UserPending', 'delete', user, 'User');
         return mapUserToGraphqlUser(user);
       } catch (error) {
-        throw UnknownError('REMOVE_USER_FROM_PENDING_ORGA_ERROR', {
-          detail: error,
-        });
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RemoveUserFromPendingOrgaError
+        );
       }
     },
     login: async (_, { email, password }, context) => {
@@ -389,13 +355,11 @@ const resolvers: Resolvers = {
         }
         return undefined;
       } catch (error) {
-        if (
-          error.name.includes(FORBIDDEN_ACCESS) &&
-          error.message.includes('User disabled')
-        ) {
-          logApp.warn('You can not login');
-          throw ForbiddenAccess('You can not login');
+        if (error.message.includes(ErrorCode.UserDisabled)) {
+          throw ForbiddenAccess(ErrorCode.YouCanNotLogin);
         }
+
+        throw mapToGraphQLError(error);
       }
     },
     logout: async (_, __, { user, req, res }) => {

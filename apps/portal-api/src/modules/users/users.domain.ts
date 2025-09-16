@@ -18,7 +18,7 @@ import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
-import { ForbiddenAccess } from '../../utils/error/error.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import { formatRawAggObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { isEmpty } from '../../utils/utils';
@@ -135,7 +135,7 @@ export const loadUserBy = async (
   }
 
   if (foundUser.disabled) {
-    throw ForbiddenAccess('User disabled');
+    throw new Error(ErrorCode.UserDisabled);
   }
 
   const userOrganizationCapabilityQuery = dbUnsecure<UserService>(
