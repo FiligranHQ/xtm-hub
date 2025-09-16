@@ -2,6 +2,15 @@ import ContractDetailPage from '@/components/connectors/contract-detail-page';
 import { Connector, Contract } from '@/utils/connectors/connector.model';
 import { getConnectorManifest } from '@/utils/connectors/connectors.fetch';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+
+export async function generateStaticParams() {
+  const connectorManifest: Connector = await getConnectorManifest();
+
+  return connectorManifest.contracts.map((contract) => ({
+    slug: contract.slug,
+  }));
+}
 
 export async function generateMetadata({
   params,
@@ -19,10 +28,6 @@ export async function generateMetadata({
     return {
       title: 'Contract Not Found | OpenCTI Connectors',
       description: 'The requested connector contract could not be found.',
-      robots: {
-        index: false,
-        follow: false,
-      },
     };
   }
 
@@ -39,16 +44,6 @@ export async function generateMetadata({
     title: `${connectorContract.title} | OpenCTI Connectors`,
     description: connectorContract.short_description,
     keywords: keywords,
-    authors: [{ name: 'Filigran' }],
-    openGraph: {
-      title: `${connectorContract.title} | OpenCTI Connectors`,
-      description: connectorContract.short_description,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${connectorContract.title} | OpenCTI Connectors`,
-      description: connectorContract.short_description,
-    },
   };
 }
 export default async function Page({
@@ -60,6 +55,10 @@ export default async function Page({
   const connectorManifest: Connector = await getConnectorManifest();
   const connectorContract: Contract | undefined =
     connectorManifest.contracts.find((contract) => contract.slug === slug);
+  if (!connectorContract) {
+    // notFound() is not working on this dynamic route redirect to 404 for the moment;
+    redirect('/404');
+  }
   return (
     <main>
       {connectorContract && <ContractDetailPage contract={connectorContract} />}
