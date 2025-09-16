@@ -1,7 +1,10 @@
 import ContractDetailPage from '@/components/connectors/contract-detail-page';
 import { Connector, Contract } from '@/utils/connectors/connector.model';
 import { getConnectorManifest } from '@/utils/connectors/connectors.fetch';
+import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { Metadata } from 'next';
+import { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types';
+import { Twitter } from 'next/dist/lib/metadata/types/twitter-types';
 import { redirect } from 'next/navigation';
 
 export async function generateStaticParams() {
@@ -40,10 +43,24 @@ export async function generateMetadata({
     connectorContract.verified ? 'verified' : '',
   ];
 
-  return {
+  const metadata = {
     title: `${connectorContract.title} | OpenCTI Connectors`,
     description: connectorContract.short_description,
     keywords: keywords,
+  };
+
+  const defaultMetadata = await getDefaultMetadata();
+  return {
+    ...defaultMetadata,
+    ...metadata,
+    openGraph: {
+      ...defaultMetadata.openGraph,
+      ...metadata,
+    } as OpenGraph,
+    twitter: {
+      ...defaultMetadata.twitter,
+      ...metadata,
+    } as Twitter,
   };
 }
 export default async function Page({

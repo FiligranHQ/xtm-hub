@@ -396,7 +396,8 @@
     },
     "ComingSoon": "Coming soon",
     "Connectors": {
-      "Name": "Connectors",
+      "Name": "OpenCTI Connectors",
+      "Description": "Explore a range of OpenCTI Connectors shared by the Filigran team",
       "DataImport": "Data Import",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Last verified at",
