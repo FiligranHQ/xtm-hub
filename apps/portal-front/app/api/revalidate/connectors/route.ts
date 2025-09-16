@@ -6,11 +6,13 @@ import path from 'path';
 const CACHE_DIR = path.join(process.cwd(), '.cache');
 
 export async function GET(request: NextRequest) {
-  // TODO:  protect this endpoint
-  // const authHeader = request.headers.get('authorization');
-  // if (authHeader !== `Bearer ${process.env.CACHE_SECRET}`) {
-  //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  // }
+  const authHeader = request.headers.get('authorization');
+  if (
+    authHeader !== `Bearer ${process.env.REVALIDATE_CACHE_SECRET}` &&
+    process.env.REVALIDATE_CACHE_SECRET !== undefined
+  ) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   const { searchParams } = new URL(request.url);
   const version = searchParams.get('version');
