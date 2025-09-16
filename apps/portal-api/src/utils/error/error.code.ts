@@ -21,6 +21,7 @@ export enum BadRequestErrorCode {
   InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
   PlatformNotRegistered = 'PLATFORM_NOT_REGISTERED',
   InvalidPlatformIdentifier = 'INVALID_PLATFORM_IDENTIFIER',
+  InvalidActionSize = 'INVALID_ACTION_SIZE',
 }
 
 export enum UnknownErrorCode {
