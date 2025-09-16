@@ -18,6 +18,8 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.helper';
@@ -116,7 +118,7 @@ const resolvers: Resolvers = {
     seoServiceInstance: async (_, { slug }, context) => {
       const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);
       if (!serviceInstance) {
-        return NotFoundError('SERVICE_NOT_FOUND_ERROR');
+        throw NotFoundError(ErrorCode.ServiceNotFound);
       }
       return {
         ...serviceInstance,
@@ -176,7 +178,7 @@ const resolvers: Resolvers = {
         return updatedServiceInstance;
       } catch (error) {
         await trx.rollback();
-        throw error;
+        throw mapToGraphQLError(error);
       }
     },
     editServiceInstance: async (_, { id, name }, context) => {
@@ -263,7 +265,7 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         logApp.error('Error while adding the new service.', error);
-        throw error;
+        throw mapToGraphQLError(error);
       }
     },
   },

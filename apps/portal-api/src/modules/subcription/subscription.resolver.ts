@@ -1,10 +1,9 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbTx } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 
 import config from 'config';
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
@@ -15,11 +14,8 @@ import { UserId } from '../../model/kanel/public/User';
 import { sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
-import {
-  FORBIDDEN_ACCESS,
-  ForbiddenAccess,
-  UnknownError,
-} from '../../utils/error/error.util';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import {
@@ -70,7 +66,11 @@ const resolvers: Resolvers = {
         );
 
         if (subscription) {
-          throw ForbiddenAccess('ALREADY_SUBSCRIBED');
+          logApp.warn(
+            'Forbidden access while adding subscription: you have already subscribed this service.'
+          );
+
+          throw new Error(ErrorCode.AlreadySubscribed);
         }
 
         const subscriptionData = {
@@ -157,13 +157,10 @@ const resolvers: Resolvers = {
         };
       } catch (error) {
         await trx.rollback();
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          logApp.warn(
-            'Forbidden access while adding subscription: you have already subscribed this service.'
-          );
-          throw ForbiddenAccess('ALREADY_SUBSCRIBED');
-        }
-        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.ServiceSubscriptionError
+        );
       }
     },
     addSubscriptionInService: async (
@@ -188,7 +185,10 @@ const resolvers: Resolvers = {
           fromGlobalId(service_instance_id).id as ServiceInstanceId
         );
         if (subscription) {
-          throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
+          logApp.warn(
+            "Forbidden access while adding subscription: You've already subscribed this organization to this service."
+          );
+          throw new Error(ErrorCode.AlreadySubscribedOrganizationError);
         }
 
         const subscriptionData = {
@@ -223,13 +223,10 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          logApp.warn(
-            "Forbidden access while adding subscription: You've already subscribed this organization to this service."
-          );
-          throw ForbiddenAccess('ALREADY_SUBSCRIBED_ORGANIZATION_ERROR');
-        }
-        throw UnknownError('SERVICE_SUBSCRIPTION_ERROR', { detail: error });
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.ServiceSubscriptionError
+        );
       }
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
@@ -241,6 +238,9 @@ const resolvers: Resolvers = {
 
         // TODO: to be rethought when billing is used in XTM
         // if (subscription.billing !== 0) {
+        //     logApp.warn(
+        //       'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
+        //     );
         //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
         // }
 
@@ -253,13 +253,10 @@ const resolvers: Resolvers = {
           subscription.service_instance_id
         );
       } catch (error) {
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          logApp.warn(
-            'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
-          );
-          throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
-        }
-        throw UnknownError('DELETE_SUBSCRIPTION_ERROR', { detail: error });
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeleteSubscriptionError
+        );
       }
     },
   },

@@ -2,6 +2,9 @@ export enum ForbiddenErrorCode {
   MissingCapabilityOnOrganization = 'MISSING_CAPABILITY_ON_ORGANIZATION',
   RegistrationOnAnotherOrganizationForbidden = 'REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN',
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
+  AlreadySubscribed = 'ALREADY_SUBSCRIBED',
+  AlreadySubscribedOrganizationError = 'ALREADY_SUBSCRIBED_ORGANIZATION_ERROR',
+  ErrorSubscriptionWithBilling = 'ERROR_SUBSCRIPTION_WITH_BILLING',
 }
 
 export enum BadRequestErrorCode {
@@ -33,6 +36,8 @@ export enum UnknownErrorCode {
   OpenAEVScenarioInsertionError = 'OPENAEV_SCENARIO_INSERTION_ERROR',
   OpenAEVScenarioUpdateError = 'OPENAEV_SCENARIO_UPDATE_ERROR',
   OpenAEVScenarioDeleteError = 'OPENAEV_SCENARIO_DELETE_ERROR',
+  ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
+  DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
@@ -46,6 +51,7 @@ export enum NotFoundErrorCode {
   ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+  ServiceNotFound = 'SERVICE_NOT_FOUND',
 }
 
 export const ErrorCode = {
