@@ -35,7 +35,7 @@ import {
   updateUser,
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
-import { serviceDefinitionDomain } from '../definition/domain';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import {
   PlatformConfiguration,
