@@ -21,10 +21,14 @@ export enum UnknownErrorCode {
   AddOrganizationError = 'ADD_ORGANIZATION_ERROR',
   EditOrganizationError = 'EDIT_ORGANIZATION_ERROR',
   DeleteOrganizationError = 'DELETE_ORGANIZATION_ERROR',
+  CsvFeedInsertionError = 'CSV_FEED_INSERTION_ERROR',
+  CsvFeedUpdateError = 'CSV_FEED_UPDATE_ERROR',
+  CsvFeedDeletionError = 'CSV_FEED_DELETION_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
   OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
+  CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
 }
 
 export enum NotFoundErrorCode {
