@@ -27,6 +27,9 @@ export enum UnknownErrorCode {
   CustomDashboardInsertionError = 'CUSTOM_DASHBOARD_INSERTION_ERROR',
   CustomDashboardUpdateError = 'CUSTOM_DASHBOARD_UPDATE_ERROR',
   DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
+  InsertDocumentError = 'INSERT_DOCUMENT_ERROR',
+  UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
+  IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
 }
 
 export enum AlreadyExistsErrorCode {

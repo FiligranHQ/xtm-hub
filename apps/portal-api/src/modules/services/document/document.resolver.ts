@@ -4,7 +4,8 @@ import { Resolvers } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../utils/app-logger.util';
-import { UnknownError } from '../../../utils/error/error.util';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { extractId, omit } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscription } from '../../subcription/subscription.domain';
@@ -69,7 +70,7 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         console.error('Error while adding document:', error);
-        throw UnknownError('INSERT_DOCUMENT_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.InsertDocumentError);
       }
     },
     editDocument: async (_, { documentId, input }, context) => {
@@ -86,7 +87,7 @@ const resolvers: Resolvers = {
         return document;
       } catch (error) {
         await trx.rollback();
-        throw UnknownError('UPDATE_DOCUMENT_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.UpdateDocumentError);
       }
     },
     deleteDocument: async (_, { documentId, forceDelete }, context) => {
@@ -103,7 +104,7 @@ const resolvers: Resolvers = {
         return doc;
       } catch (error) {
         await trx.rollback();
-        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.DeleteDocumentError);
       }
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
@@ -143,7 +144,10 @@ const resolvers: Resolvers = {
 
         return document;
       } catch (error) {
-        throw UnknownError('INCREMENT_SHARE_NUMBER', { detail: error });
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.IncrementShareNumberError
+        );
       }
     },
   },
@@ -176,7 +180,7 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);
-        throw error;
+        throw mapToGraphQLError(error);
       }
     },
     documents: async (
@@ -211,7 +215,7 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         logApp.error('Error while fetching documents:', error);
-        throw error;
+        throw mapToGraphQLError(error);
       }
     },
     document: async (_, { documentId }, context) =>
