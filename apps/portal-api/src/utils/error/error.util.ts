@@ -1,25 +1,11 @@
 import { createError } from 'apollo-errors';
 import { logApp } from '../app-logger.util';
-
-interface Information {
-  detail?: Error | string;
-  [key: string]: unknown;
-}
-
-enum ErrorCategory {
-  BadRequest = 'BAD_REQUEST',
-  Conflict = 'CONFLICT',
-  Technical = 'TECHNICAL',
-}
-
-export enum ErrorType {
-  BadRequest = 'BAD_REQUEST',
-  ForbiddenAccess = 'FORBIDDEN_ACCESS',
-  UnknownError = 'UNKNOWN_ERROR',
-  StillReference = 'STILL_REFERENCED',
-  AlreadyExists = 'ALREADY_EXISTS',
-  NotFound = 'NOT_FOUND',
-}
+import {
+  CustomApolloError,
+  ErrorCategory,
+  ErrorInformation,
+  ErrorType,
+} from './error.type';
 
 const errorUtil = (
   name: ErrorType,
@@ -28,8 +14,8 @@ const errorUtil = (
     genre?: ErrorCategory;
     http_status?: number;
   },
-  information?: Information
-) => {
+  information?: ErrorInformation
+): CustomApolloError => {
   const Exception = createError(name, { data, message });
   console.trace(name, data, message);
   if (information?.detail instanceof Error) {
@@ -46,13 +32,13 @@ export const NOT_FOUND = 'NOT_FOUND';
 
 export type ErrorBuilder = (
   message: string,
-  information?: Information
-) => Error;
+  information?: ErrorInformation
+) => CustomApolloError;
 
 export const ForbiddenAccess = (
   message: string,
   data?: Record<string, unknown>
-) => {
+): CustomApolloError => {
   return errorUtil(
     ErrorType.ForbiddenAccess,
     message || 'You are not allowed to do this.',
@@ -66,9 +52,9 @@ export const ForbiddenAccess = (
 
 export const BadRequestError: ErrorBuilder = (
   message: string,
-  information?: Information,
+  information?: ErrorInformation,
   data?: Record<string, unknown>
-) => {
+): CustomApolloError => {
   return errorUtil(
     ErrorType.BadRequest,
     message || 'Request is invalid',
@@ -83,9 +69,9 @@ export const BadRequestError: ErrorBuilder = (
 
 export const UnknownError: ErrorBuilder = (
   message: string,
-  information?: Information,
+  information?: ErrorInformation,
   data?: Record<string, unknown>
-) => {
+): CustomApolloError => {
   logApp.error(message + ' details: ' + information.detail);
   return errorUtil(
     ErrorType.UnknownError,
@@ -101,9 +87,9 @@ export const UnknownError: ErrorBuilder = (
 
 export const StillReferencedError: ErrorBuilder = (
   message?: string,
-  information?: Information,
+  information?: ErrorInformation,
   data?: Record<string, unknown>
-) => {
+): CustomApolloError => {
   logApp.error(message + ' details: ' + information.detail);
 
   return errorUtil(
@@ -120,9 +106,9 @@ export const StillReferencedError: ErrorBuilder = (
 
 export const AlreadyExistsError: ErrorBuilder = (
   message?: string,
-  information?: Information,
+  information?: ErrorInformation,
   data?: Record<string, unknown>
-) => {
+): CustomApolloError => {
   logApp.error(message + ' details: ' + information.detail);
 
   return errorUtil(
@@ -139,9 +125,9 @@ export const AlreadyExistsError: ErrorBuilder = (
 
 export const NotFoundError: ErrorBuilder = (
   message?: string,
-  information?: Information,
+  information?: ErrorInformation,
   data?: Record<string, unknown>
-) => {
+): CustomApolloError => {
   logApp.error(
     `${message} ${information ? `details: ${information.detail}` : ''}`
   );

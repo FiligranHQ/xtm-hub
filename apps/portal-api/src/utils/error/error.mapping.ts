@@ -5,6 +5,7 @@ import {
   NotFoundErrorCode,
   UnknownErrorCode,
 } from './error.code';
+import { CustomApolloError } from './error.type';
 import {
   AlreadyExistsError,
   BadRequestError,
@@ -39,7 +40,7 @@ errorSetMapping.set(notFoundErrorsSet, NotFoundError);
 export const mapToGraphQLError = (
   error: Error,
   customUnknownErrorCode: UnknownErrorCode = UnknownErrorCode.UnknownError
-): Error => {
+): CustomApolloError => {
   const code = error.message;
   for (const [mapping, errorBuilder] of errorSetMapping) {
     if (mapping.has(code)) {
