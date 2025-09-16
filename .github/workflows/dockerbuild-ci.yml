@@ -21,16 +21,60 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-env:
-  POSTGRES_VERSION: "17.2"
-  MINIO_VERSION: "RELEASE.2024-08-03T04-33-23Z"
-  ELASTIC_VERSION: "8.18.3"
+
 jobs:
+  determine-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has-api-changes: ${{ steps.check-changes.outputs.api }}
+      has-front-changes: ${{ steps.check-changes.outputs.front }}
+      has-e2e-changes: ${{ steps.check-changes.outputs.e2e }}
+      base-sha: ${{ steps.setSHAs.outputs.base }}
+      head-sha: ${{ steps.setSHAs.outputs.head }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Derive appropriate SHAs for base and head
+        id: setSHAs
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'development'
+      - run: corepack enable && corepack prepare yarn@3.8.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Check what changed
+        id: check-changes
+        run: |
+          AFFECTED=$(yarn dlx nx show projects --affected --base=${{ steps.setSHAs.outputs.base }} --head=${{ steps.setSHAs.outputs.head }})
+          
+          echo "Affected projects:"
+          echo "$AFFECTED"
+          
+          if grep -q "portal-api" <<< "$AFFECTED"; then
+            echo "api=true" >> $GITHUB_OUTPUT
+          else
+            echo "api=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if grep -q "portal-front" <<< "$AFFECTED"; then
+            echo "front=true" >> $GITHUB_OUTPUT
+          else
+            echo "front=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if grep -q "portal-e2e-tests" <<< "$AFFECTED"; then
+            echo "e2e=true" >> $GITHUB_OUTPUT
+          else
+            echo "e2e=false" >> $GITHUB_OUTPUT
+          fi
+
   prepare-build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     outputs:
       docker-tag: ${{ steps.generate-tag.outputs.tag }}
       cache-tag: ${{ steps.generate-tag.outputs.cache-tag }}
@@ -60,92 +104,60 @@ jobs:
           fi
           echo "cache-tag=$CACHE_TAG" >> $GITHUB_OUTPUT
 
-  determine-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      has-api-changes: ${{ steps.check-changes.outputs.api }}
-      has-front-changes: ${{ steps.check-changes.outputs.front }}
-      has-e2e-changes: ${{ steps.check-changes.outputs.e2e }}
-      base-sha: ${{ steps.setSHAs.outputs.base }}
-      head-sha: ${{ steps.setSHAs.outputs.head }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Derive appropriate SHAs for base and head
-        id: setSHAs
-        uses: nrwl/nx-set-shas@v4
-        with:
-          main-branch-name: 'development'
-      - run: corepack enable && corepack prepare yarn@3.8.7
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - name: Check what changed
-        id: check-changes
-        run: |
-          AFFECTED=$(yarn dlx nx show projects --affected --base=${{ steps.setSHAs.outputs.base }} --head=${{ steps.setSHAs.outputs.head }})
-          echo "Affected projects:"
-          echo "$AFFECTED"
-          if grep -q "portal-api" <<< "$AFFECTED"; then
-            echo "api=true" >> $GITHUB_OUTPUT
-          else
-            echo "api=false" >> $GITHUB_OUTPUT
-          fi
-          if grep -q "portal-front" <<< "$AFFECTED"; then
-            echo "front=true" >> $GITHUB_OUTPUT
-          else
-            echo "front=false" >> $GITHUB_OUTPUT
-          fi
-          if grep -q "portal-e2e-tests" <<< "$AFFECTED"; then
-            echo "e2e=true" >> $GITHUB_OUTPUT
-          else
-            echo "e2e=false" >> $GITHUB_OUTPUT
-          fi
-
   pull-external-images:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Pull and push external images to your registry
+      - name: Pull external images
         run: |
-          echo "📦 Pre-pulling external images to speed up tests..."
-          
-          UNIQUE_TAG="${{ github.run_id }}-${{ github.run_attempt }}"
-          
-          docker pull postgres:${{ env.POSTGRES_VERSION }} &
-          PG_PID=$!
-          docker pull minio/minio:${{ env.MINIO_VERSION }} &
+          echo "Starting parallel pull of external service images..."
+        
+          docker pull postgres:17.2 &
+          POSTGRES_PID=$!
+          docker pull minio/minio:RELEASE.2024-08-03T04-33-23Z &
           MINIO_PID=$!
-          docker pull docker.elastic.co/elasticsearch/elasticsearch:${{ env.ELASTIC_VERSION }} &
+          docker pull docker.elastic.co/elasticsearch/elasticsearch:8.18.3 &
           ELASTIC_PID=$!
           
-          wait $PG_PID $MINIO_PID $ELASTIC_PID
+          # Attendre que TOUS les pulls soient terminés
+          wait $POSTGRES_PID
+          POSTGRES_EXIT=$?
           
-          docker tag postgres:${{ env.POSTGRES_VERSION }} filigran/ci-postgres:$UNIQUE_TAG
-          docker tag minio/minio:${{ env.MINIO_VERSION }} filigran/ci-minio:$UNIQUE_TAG
-          docker tag docker.elastic.co/elasticsearch/elasticsearch:${{ env.ELASTIC_VERSION }} filigran/ci-elastic:$UNIQUE_TAG
+          wait $MINIO_PID
+          MINIO_EXIT=$?
           
-          docker push filigran/ci-postgres:$UNIQUE_TAG &
-          docker push filigran/ci-minio:$UNIQUE_TAG &
-          docker push filigran/ci-elastic:$UNIQUE_TAG &
-          wait
+          wait $ELASTIC_PID
+          ELASTIC_EXIT=$?
           
-          echo "✅ External images ready in your registry with tag: $UNIQUE_TAG"
-          echo "unique-tag=$UNIQUE_TAG" >> $GITHUB_OUTPUT
+          # Vérifier les codes de sortie
+          if [ $POSTGRES_EXIT -ne 0 ]; then
+          echo "Failed to pull postgres:17.2"
+          exit 1
+          fi
+          
+          if [ $MINIO_EXIT -ne 0 ]; then
+          echo "Failed to pull minio/minio:RELEASE.2024-08-03T04-33-23Z"
+          exit 1
+          fi
+          if [ $ELASTIC_EXIT -ne 0 ]; then
+          echo "Failed to pull docker.elastic.co/elasticsearch/elasticsearch:8.18.3"
+          exit 1
+          fi
+          
+          echo "All external images pulled successfully"
+          docker images | grep -E "postgres|minio|elasticsearch"
+
+      - name: Run postgres and minio and elastic
+        run: |
+          docker network create ci_network || true
+          docker run --name portal-postgres --network ci_network --env=POSTGRES_USER=portal --env=POSTGRES_PASSWORD=portal-password --env=POSTGRES_DB=cloud-portal --env=PGDATA=/data/postgres -d postgres:17.2 
+          docker run --name portal-minio --network ci_network --env=MINIO_ROOT_USER=portal --env=MINIO_ROOT_PASSWORD=changeme -d minio/minio:RELEASE.2024-08-03T04-33-23Z server /data --console-address ":9001"
+          docker run --name portal-elastic --network ci_network --user=1000:0 --env=xpack.ml.enabled=false --env=xpack.security.enabled=false --env=ELASTIC_CONTAINER=true --env=SHELL=/bin/bash --runtime=runc -d docker.elastic.co/elasticsearch/elasticsearch:8.18.3
+
   build-test-images:
     needs: [determine-changes, prepare-build]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: write
@@ -162,18 +174,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Copy migrations for e2e tests
-        if: matrix.image == 'portal-e2e-tests'
         run: |
-          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations || true
-          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds || true
+          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
+          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+
       - name: Build and push ${{ matrix.image }}
         uses: docker/build-push-action@v6
         with:
@@ -186,36 +201,19 @@ jobs:
           build-args: |
             APP_VERSION=0.0.0-e2e
           cache-from: |
-            type=registry,ref=filigran/${{ matrix.image }}:cache-${{ needs.prepare-build.outputs.docker-tag }}
+            type=registry,ref=filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.cache-tag }}
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:development
-          cache-to: |
-            type=registry,ref=filigran/${{ matrix.image }}:cache-${{ needs.prepare-build.outputs.docker-tag }},mode=max
+          cache-to: type=registry,ref=filigran/${{ matrix.image }}:${{ needs.prepare-build.outputs.cache-tag }},mode=max
 
-  # JOB UNIQUE AVEC MATRICE POUR TOUS LES TESTS
-  run-all-tests:
-    needs: [build-test-images, prepare-build]
+  run-e2e-tests:
+    needs: [ build-test-images, prepare-build, pull-external-images ]
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: contains(github.ref, 'refs/tags/') == false
     permissions:
       contents: read
       packages: write
       pull-requests: write
-    strategy:
-      fail-fast: true
-      matrix:
-        test-type: [e2e, api-unit, front-unit]
-        include:
-          - test-type: e2e
-            needs-frontend: true
-            timeout: 10
-          - test-type: api-unit
-            needs-frontend: false
-            timeout: 5
-          - test-type: front-unit
-            needs-frontend: false
-            timeout: 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -226,274 +224,116 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Determine required images
-        id: images
+      - name: Pull pre-built images
         run: |
-          echo "required to test: ${{ matrix.test-type }}"
-          
-          IMAGES="postgres:${{ env.POSTGRES_VERSION }} minio/minio:${{ env.MINIO_VERSION }} docker.elastic.co/elasticsearch/elasticsearch:${{ env.ELASTIC_VERSION }}"
-          
-          case "${{ matrix.test-type }}" in
-            e2e)
-              IMAGES="$IMAGES filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}"
-              IMAGES="$IMAGES filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}"
-              IMAGES="$IMAGES filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }}"
-              ;;
-            api-unit)
-              IMAGES="$IMAGES filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}"
-              ;;
-            front-unit)
-              IMAGES="filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}"
-              ;;
-          esac
-          
-          echo "images=$IMAGES" >> $GITHUB_OUTPUT
-
-      - name: Pull required images in parallel
-        run: |
-          echo "Pulling images for ${{ matrix.test-type }} tests..."
-          
-          pull_with_retry() {
-            local image=$1
-            local max_attempts=3
-            for attempt in $(seq 1 $max_attempts); do
-              if docker pull "$image"; then
-                echo "Pulled $image"
-                return 0
-              fi
-              echo "Attempt $attempt/$max_attempts failed for $image"
-              [ $attempt -lt $max_attempts ] && sleep 2
-            done
-            return 1
-          }
-          
-          for image in ${{ steps.images.outputs.images }}; do
-            pull_with_retry "$image" &
-          done
-          
+          docker pull filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} &
+          docker pull filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} &
+          docker pull filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} &
           wait
 
-      - name: Start required services
-        run: |
-          echo "Starting services for ${{ matrix.test-type }} tests..."
-          
-          # Démarrer PostgreSQL et MinIO 
-          if [[ "${{ matrix.test-type }}" != "front-unit" ]]; then
-            docker run -d \
-              --name portal-postgres \
-              --health-cmd "pg_isready -U portal" \
-              --health-interval 2s \
-              --health-timeout 3s \
-              --health-retries 30 \
-              -e POSTGRES_USER=portal \
-              -e POSTGRES_PASSWORD=portal-password \
-              -e POSTGRES_DB=$([[ "${{ matrix.test-type }}" == "e2e" ]] && echo "test_database" || echo "postgres") \
-              postgres:${{ env.POSTGRES_VERSION }}
-          
-            docker run -d \
-              --name portal-minio \
-              --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1" \
-              --health-interval 2s \
-              --health-timeout 3s \
-              --health-retries 30 \
-              -e MINIO_ROOT_USER=$([[ "${{ matrix.test-type }}" == "e2e" ]] && echo "portal" || echo "minio") \
-              -e MINIO_ROOT_PASSWORD=$([[ "${{ matrix.test-type }}" == "e2e" ]] && echo "changeme" || echo "password") \
-              minio/minio:${{ env.MINIO_VERSION }} server /data --console-address ":9001"
-          
-            docker run -d \
-              --name portal-elasticsearch \
-              --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1" \
-              --health-interval 5s \
-              --health-timeout 5s \
-              --health-retries 30 \
-              -e discovery.type=single-node \
-              -e xpack.security.enabled=false \
-              -e xpack.ml.enabled=false \
-              -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
-              docker.elastic.co/elasticsearch/elasticsearch:${{ env.ELASTIC_VERSION }}
-            for service in portal-postgres portal-minio portal-elasticsearch; do
-              echo "Waiting for $service..."
-              timeout 60s bash -c "until docker inspect $service --format='{{json .State.Health.Status}}' 2>/dev/null | grep -q '\"healthy\"'; do sleep 2; done" || true
-              echo "$service is ready"
-            done
-          fi
-          
-          if [[ "${{ matrix.test-type }}" == "e2e" ]]; then          
-            docker run -d \
-              --name portal-api \
-              --health-cmd "wget -qO- http://localhost:4001/health || exit 1" \
-              --health-interval 3s \
-              --health-timeout 3s \
-              --health-retries 20 \
-              -p 4001:4001 \
-              -e DATABASE_HOST=portal-postgres \
-              -e DATABASE_PORT=5432 \
-              -e DATABASE_USER=portal \
-              -e DATABASE_BASE=test_database \
-              -e DATABASE_PASSWORD=portal-password \
-              -e ADMIN_EMAIL=admin@filigran.io \
-              -e ADMIN_PASSWORD=admin \
-              -e DATA_SEEDING=true \
-              -e MINIO_BUCKET_NAME=xtmhubbucket \
-              -e MINIO_ENDPOINT=portal-minio \
-              -e MINIO_PORT=9000 \
-              -e MINIO_ACCESS_KEY=portal \
-              -e MINIO_SECRET_KEY=changeme \
-              -e MINIO_USE_SSL=false \
-              -e NODE_ENV=development \
-              -e VITEST_MODE=true \
-              -e START_DEV_SERVER=true \
-              -e ELASTIC_HOST=portal-elasticsearch \
-              -e ELASTIC_PORT=9200 \
-              -e BASE_URL_FRONT=http://portal-front:3000 \
-              filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}
-          
-            echo "Waiting for API..."
-            timeout 60s bash -c "until docker inspect portal-api --format='{{json .State.Health.Status}}' 2>/dev/null | grep -q '\"healthy\"'; do sleep 2; done"
-            echo "API is ready"
-          
-            docker run -d \
-              --name portal-front \
-              --health-cmd "wget -qO- http://localhost:3000/health || exit 1" \
-              --health-interval 3s \
-              --health-timeout 3s \
-              --health-retries 20 \
-              -p 3000:3000 \
-              -e SERVER_HTTP_API=http://portal-api:4001 \
-              filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}
-          
-            echo "Waiting for Frontend..."
-            timeout 60s bash -c "until docker inspect portal-front --format='{{json .State.Health.Status}}' 2>/dev/null | grep -q '\"healthy\"'; do sleep 2; done"
-            echo "Frontend is ready"
-          fi
-          
-          echo "All required services are running for ${{ matrix.test-type }}"
-          docker ps
+          docker tag filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }}
+          docker tag filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}
+          docker tag filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }}
 
-      - name: Run tests
+      - name: Launch docker compose
         run: |
-          echo "Running ${{ matrix.test-type }} tests..."
-          mkdir -p test-results
-          
-          case "${{ matrix.test-type }}" in
-            e2e)
-              mkdir -p ctrf
-              docker run \
-                --name portal-e2e-tests \
-                -e E2E_BASE_URL=http://portal-front:3000 \
-                -e E2E_API_URL=http://portal-api:4001 \
-                -e POSTGRES_USER=portal \
-                -e DATABASE_HOST=portal-postgres \
-                -e POSTGRES_DB=test_database \
-                -e POSTGRES_PASSWORD=portal-password \
-                -e DATABASE_PORT=5432 \
-                -e TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
-                -e MIGRATIONS_PATH=./migrations \
-                -e SEEDS_PATH=./seeds \
-                -e GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
-                -e GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
-                -e GITHUB_RUN_ID="${{ github.run_id }}" \
-                -v $(pwd)/ctrf:/app/apps/portal-e2e-tests/ctrf \
-                filigran/portal-e2e-tests:${{ needs.prepare-build.outputs.docker-tag }} || TEST_EXIT_CODE=$?
-          
-              if [ -d ctrf ]; then
-                cp -r ctrf/* test-results/ 2>/dev/null || true
-              fi
-              ;;
-          
-            api-unit)
-              mkdir -p coverage
-              docker run \
-                --rm \
-                --name portal-api-test \
-                -e DATABASE_HOST=portal-postgres \
-                -e DATABASE_PORT=5432 \
-                -e DATABASE_USER=portal \
-                -e DATABASE_BASE=postgres \
-                -e DATABASE_PASSWORD=portal-password \
-                -e ADMIN_EMAIL=admin@filigran.io \
-                -e ADMIN_PASSWORD=admin \
-                -e NODE_ENV=test \
-                -e MINIO_BUCKET_NAME=xtmhubbucket \
-                -e MINIO_ENDPOINT=portal-minio \
-                -e MINIO_PORT=9000 \
-                -e MINIO_ACCESS_KEY=minio \
-                -e MINIO_SECRET_KEY=password \
-                -e MINIO_USE_SSL=false \
-                -v $(pwd)/coverage:/app/apps/portal-api/coverage \
-                filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }} \
-                npm test || TEST_EXIT_CODE=$?
-          
-              if [ -d coverage ]; then
-                cp -r coverage/* test-results/ 2>/dev/null || true
-              fi
-              ;;
-          
-            front-unit)
-              mkdir -p coverage
-              docker run \
-                --rm \
-                --name portal-front-test \
-                -e SERVER_HTTP_API=http://localhost:4001 \
-                -e NODE_ENV=test \
-                -v $(pwd)/coverage:/app/apps/portal-front/coverage \
-                filigran/portal-front:${{ needs.prepare-build.outputs.docker-tag }} \
-                npm test || TEST_EXIT_CODE=$?
-          
-              if [ -d coverage ]; then
-                cp -r coverage/* test-results/ 2>/dev/null || true
-              fi
-              ;;
-          esac
-          
+          mkdir -p ctrf
+          export IMAGE_TAGS="${{ needs.prepare-build.outputs.docker-tag }}" \
+           TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
+           GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
+           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
+           GITHUB_RUN_ID="${{ github.run_id }}"
+          docker network create ci_network || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests || TEST_EXIT_CODE=$?
+          CONTAINER_ID=$(docker ps -a --filter "name=portal-e2e-tests-run" --format "{{.ID}}" | head -1)
+          docker cp $CONTAINER_ID:/app/apps/portal-e2e-tests/ctrf/. ./ctrf/
           exit ${TEST_EXIT_CODE:-0}
+  
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
+  run-api-unit-tests:
+    needs:  [build-test-images, prepare-build, pull-external-images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    if: contains(github.ref , 'refs/tags/') == false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
         with:
-          name: ${{ matrix.test-type }}-results
-          path: |
-            test-results/
-            ctrf/
-            coverage/
-          retention-days: 7
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Pull pre-built image
+        run: |
+          docker pull filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }}
+          docker tag filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}-${{ github.sha }} filigran/portal-api:${{ needs.prepare-build.outputs.docker-tag }}
+
+      - name: Launch docker compose
+        run: |
+          mkdir -p coverage
+          export IMAGE_TAGS=${{ needs.prepare-build.outputs.docker-tag }}
+          docker network create ci_network || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
 
       - name: Upload coverage to Codecov
-        if: matrix.test-type != 'e2e' && always()
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage
-          name: ${{ matrix.test-type }}
 
-      - name: Show logs on failure
-        if: failure()
+  run-front-unit-tests:
+    needs:  [build-test-images, prepare-build, pull-external-images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    if: contains(github.ref , 'refs/tags/') == false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Install docker
+        uses: docker/setup-docker-action@v4
+      - name: Launch docker compose
         run: |
-          awx --conf.host https://awx.filigran.io \
-          --conf.token ${{ secrets.AWX_TOKEN }} \
-          -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
-          --inventory eu-west-staging \
-          --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
+          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
+          mkdir -p coverage
+          docker network create ci_network || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
   deploy-feature-branch:
-    needs: run-all-tests
+    needs: build-test-images
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: |
-      github.event_name == 'pull_request' &&	
+      github.event_name == 'pull_request' &&
       contains(github.event.pull_request.labels.*.name, 'needs feature env')
     steps:
-    - name: Install AWX cli
-      run: pip install awxkit
-    - name: Deploy
-      run: |
-        awx --conf.host https://awx.filigran.io \
-          --conf.token ${{ secrets.AWX_TOKEN }} \
-          -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
-          --inventory eu-west-staging \
-          --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
+      - name: Install AWX cli
+        run: pip install awxkit
 
+      - name: Deploy
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
+            --inventory eu-west-staging \
+            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
   delete-feature-branch:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -509,10 +349,11 @@ jobs:
             -f human job_templates launch 'Delete XTM Hub feature branch for testing' \
             --inventory eu-west-staging \
             --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.pull_request.number }}\"}"
-
   build-images-prod:
     needs:
-      - run-all-tests
+      - run-e2e-tests
+      - run-front-unit-tests
+      - run-api-unit-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -529,7 +370,9 @@ jobs:
     if: |
       always() &&
       github.event_name != 'pull_request' &&
-      (needs.run-all-tests.result == 'success')
+      (needs.run-e2e-tests.result == 'success') &&
+      (needs.run-front-unit-tests.result == 'skipped' || needs.run-front-unit-tests.result == 'success') &&
+      (needs.run-api-unit-tests.result == 'skipped' || needs.run-api-unit-tests.result == 'success')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
