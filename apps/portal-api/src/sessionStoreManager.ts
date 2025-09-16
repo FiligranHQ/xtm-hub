@@ -1,7 +1,7 @@
 import { MemoryStore } from 'express-session';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from './model/user';
 import { logApp } from './utils/app-logger.util';
-import { UnknownError } from './utils/error/error.util';
+import { UnknownErrorCode } from './utils/error/error.code';
 
 let memoryStore = undefined;
 
@@ -31,9 +31,7 @@ export const updateUserSession = (user: UserWithOrganizationsAndRole) => {
         storeInstance.set(sessionId, sessionToUpdate, (error) => {
           logApp.info('USER_SESSION_UPDATED');
           if (error) {
-            throw UnknownError('EDIT_USER_SESSION_ERROR', {
-              detail: error,
-            });
+            throw new Error(UnknownErrorCode.EditUserSessionError);
           }
         });
       });

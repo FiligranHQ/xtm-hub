@@ -55,6 +55,7 @@ export enum UnknownErrorCode {
   EditMeUserError = 'EDIT_ME_USER_ERROR',
   RemoveUserFromOrgaError = 'REMOVE_USER_FROM_ORGA_ERROR',
   RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
+  EditUserSessionError = 'EDIT_USER_SESSION_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
