@@ -10115,7 +10115,7 @@ __metadata:
     eslint-config-next: 15.3.2
     eslint-config-prettier: 10.1.5
     extract-files: 13.0.0
-    filigran-icon: 0.18.1
+    filigran-icon: 0.18.8
     filigran-ui: 0.39.9
     graphql: 16.11.0
     graphql-sse: 2.5.4
@@ -10140,6 +10140,7 @@ __metadata:
     rehype-sanitize: 6.0.0
     relay-compiler: 18.2.0
     relay-test-utils: 18.2.0
+    semver: 7.7.2
     slugify: 1.6.6
     tailwind-merge: 2.6.0
     tailwindcss: 3.4.17
@@ -14643,10 +14644,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-icon@npm:0.18.1":
-  version: 0.18.1
-  resolution: "filigran-icon@npm:0.18.1"
-  checksum: a2c432c8fec499cbf6dc3c432eb8edf61d37dd624079802e2fb2bb47261ffa4d4542c0ae46dd8e2b7a675f5251b4ee3e79f6d5c181c6fc46b829e98b732f8058
+"filigran-icon@npm:0.18.8":
+  version: 0.18.8
+  resolution: "filigran-icon@npm:0.18.8"
+  checksum: 82671ac725fb4bb6df098e11f63b34901f7fcd4888e4114ace02e3599a0c188fca74690d457d9c47ece081feeb600aaf68fc36632b361e9168bad67f88f20f62
   languageName: node
   linkType: hard
 
@@ -22975,6 +22976,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:7.7.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.3, semver@npm:^7.7.1, semver@npm:^7.7.2":
+  version: 7.7.2
+  resolution: "semver@npm:7.7.2"
+  bin:
+    semver: bin/semver.js
+  checksum: dd94ba8f1cbc903d8eeb4dd8bf19f46b3deb14262b6717d0de3c804b594058ae785ef2e4b46c5c3b58733c99c83339068203002f9e37cfe44f7e2cc5e3d2f621
+  languageName: node
+  linkType: hard
+
 "semver@npm:^5.6.0":
   version: 5.7.2
   resolution: "semver@npm:5.7.2"
@@ -22990,15 +23000,6 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: ae47d06de28836adb9d3e25f22a92943477371292d9b665fb023fae278d345d508ca1958232af086d85e0155aee22e313e100971898bbb8d5d89b8b1d4054ca2
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.3, semver@npm:^7.7.1, semver@npm:^7.7.2":
-  version: 7.7.2
-  resolution: "semver@npm:7.7.2"
-  bin:
-    semver: bin/semver.js
-  checksum: dd94ba8f1cbc903d8eeb4dd8bf19f46b3deb14262b6717d0de3c804b594058ae785ef2e4b46c5c3b58733c99c83339068203002f9e37cfe44f7e2cc5e3d2f621
   languageName: node
   linkType: hard
 

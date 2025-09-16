@@ -1,5 +1,8 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { getConnectorManifest } from '@/utils/connectors/connectors.fetch';
+import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import SeoServiceInstancesQuery, {
@@ -10,6 +13,9 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const isConnectorPageEnable = await isFeatureEnabled(
+    FeatureFlag.CONNECTORS_PAGE
+  );
   const settingsResponse =
     await serverFetchGraphQL<settingsQuery>(SettingsQuery);
   const baseURI = settingsResponse.data.settings.base_url_front;
@@ -50,6 +56,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: 0.8,
       });
+    }
+
+    if (isConnectorPageEnable) {
+      const connectorsFromOpenCTI = await getConnectorManifest('master');
+      for (const contract of connectorsFromOpenCTI.contracts) {
+        sitemap.push({
+          url: `${baseURI}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-connectors/${contract.slug}`,
+          lastModified: contract.last_verified_date,
+          changeFrequency: 'monthly',
+          priority: 0.8,
+        });
+      }
     }
   }
 
