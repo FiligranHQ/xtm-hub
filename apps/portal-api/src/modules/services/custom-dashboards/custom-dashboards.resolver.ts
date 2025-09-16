@@ -5,10 +5,9 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import {
-  AlreadyExistsError,
-  UnknownError,
-} from '../../../utils/error/error.util';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
@@ -98,13 +97,15 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
             detail: error,
           });
         }
-        throw UnknownError('CUSTOM_DASHBOARD_INSERTION_ERROR', {
-          detail: error,
-        });
+
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.CustomDashboardInsertionError
+        );
       }
     },
     updateCustomDashboard: async (_, input, context) => {
@@ -123,13 +124,15 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
             detail: error,
           });
         }
-        throw UnknownError('CUSTOM_DASHBOARD_UPDATE_ERROR', {
-          detail: error,
-        });
+
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.CustomDashboardUpdateError
+        );
       }
     },
     deleteCustomDashboard: async (_, { id }, context) => {
@@ -147,7 +150,7 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
 
-        throw UnknownError('DELETE_DOCUMENT_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.DeleteDocumentError);
       }
     },
   },

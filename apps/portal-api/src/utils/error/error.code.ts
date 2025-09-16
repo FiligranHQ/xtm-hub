@@ -24,11 +24,15 @@ export enum UnknownErrorCode {
   CsvFeedInsertionError = 'CSV_FEED_INSERTION_ERROR',
   CsvFeedUpdateError = 'CSV_FEED_UPDATE_ERROR',
   CsvFeedDeletionError = 'CSV_FEED_DELETION_ERROR',
+  CustomDashboardInsertionError = 'CUSTOM_DASHBOARD_INSERTION_ERROR',
+  CustomDashboardUpdateError = 'CUSTOM_DASHBOARD_UPDATE_ERROR',
+  DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
   OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
   CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
+  CustomDashboardUniqueSlugError = 'CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR',
 }
 
 export enum NotFoundErrorCode {
