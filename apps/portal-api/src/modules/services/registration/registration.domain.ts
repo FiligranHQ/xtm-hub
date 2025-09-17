@@ -4,6 +4,7 @@ import {
   PlatformContract,
   PlatformIdentifier,
   ServiceConfigurationStatus,
+  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
@@ -140,9 +141,11 @@ export const registrationDomain = {
 
   loadRegisteredPlatforms: async (
     context: PortalContext,
-    platformIdentifier: PlatformIdentifier,
+    platformIdentifier?: PlatformIdentifier,
     opts: QueryOpts = {}
-  ): Promise<{ config: PlatformConfiguration }[]> => {
+  ): Promise<
+    { config: PlatformConfiguration; identifier: ServiceDefinitionIdentifier }[]
+  > => {
     const userSelectedOrganization = context.user.selected_organization_id;
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
@@ -166,7 +169,15 @@ export const registrationDomain = {
         '=',
         'ServiceInstance.id'
       )
-      .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
+      .modify((queryBuilder) => {
+        if (platformIdentifier) {
+          queryBuilder.where(
+            'ServiceDefinition.identifier',
+            '=',
+            serviceDefinitionIdentifier
+          );
+        }
+      })
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereNot((qb) => {
@@ -177,7 +188,7 @@ export const registrationDomain = {
         );
       })
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
-      .select(['Service_Configuration.config'])
+      .select(['Service_Configuration.config', 'ServiceDefinition.identifier'])
       .secureQuery();
   },
 };

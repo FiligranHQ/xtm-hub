@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  openCTIPlatformToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
+  registeredPlatformToServiceInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -14,19 +14,19 @@ import ServiceInstanceCard from '../service-instance-card';
 interface OwnedServicesProps {
   services: userServicesOwned_fragment$data[];
   publicServices: serviceList_fragment$data[];
-  openCTIPlatforms: registerRegisteredPlatformListFragment$data['registeredPlatforms'];
+  registeredPlatforms: registerRegisteredPlatformListFragment$data['registeredPlatforms'];
 }
 
 const OwnedServices = ({
   services,
   publicServices,
-  openCTIPlatforms,
+  registeredPlatforms,
 }: OwnedServicesProps) => {
   // Merge and sort by ordering property
   const sortedServices = [
     ...services.map(userServicesOwnedServiceToInstanceCardData),
     ...publicServices.map(publicServiceInstanceToInstanceCardData),
-    ...openCTIPlatforms.map(openCTIPlatformToServiceInstanceCardData),
+    ...registeredPlatforms.map(registeredPlatformToServiceInstanceCardData),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
   if (sortedServices.length > 0) {

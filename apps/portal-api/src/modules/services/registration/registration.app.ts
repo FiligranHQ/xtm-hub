@@ -88,7 +88,7 @@ export const registrationApp = {
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms(
       context,
-      input.identifier
+      input?.identifier
     );
 
     return platforms.map((platform) => ({
@@ -98,6 +98,7 @@ export const registrationApp = {
       title: platform.config.platform_title,
       url: platform.config.platform_url,
       contract: platform.config.platform_contract,
+      identifier: platform.identifier,
       version: platform.config.platform_version,
     }));
   },

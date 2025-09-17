@@ -91,7 +91,7 @@ const ServiceInstanceCard: React.FunctionComponent<
       : '';
 
   if (isRegistrationService(serviceInstance)) {
-    backgroundImage = 'url(/octi-private-platform-logo.png)';
+    backgroundImage = `url(/${serviceInstance.service_definition_identifier}-private-platform-logo.png)`;
   }
 
   return (

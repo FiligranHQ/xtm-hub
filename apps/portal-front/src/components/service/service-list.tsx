@@ -20,14 +20,14 @@ import OwnedServices from './home/owned-services';
 interface ServiceProps {
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>;
   queryRefServiceList: PreloadedQuery<publicServiceQuery>;
-  queryRefOpenCTIPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>;
+  queryRefRegisteredPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>;
   onUpdate: () => void;
 }
 
 const ServiceList = ({
   queryRefUserServiceOwned,
   queryRefServiceList,
-  queryRefOpenCTIPlatforms,
+  queryRefRegisteredPlatforms,
   onUpdate,
 }: ServiceProps) => {
   const t = useTranslations();
@@ -56,12 +56,12 @@ const ServiceList = ({
   const {
     ownedServices,
     publicServices,
-    openCTIPlatforms,
+    registeredPlatforms,
     addSubscriptionInDb,
   } = useServiceQueries(
     queryRefUserServiceOwned,
     queryRefServiceList,
-    queryRefOpenCTIPlatforms,
+    queryRefRegisteredPlatforms,
     onUpdate,
     handleSuccess,
     handleError
@@ -136,7 +136,7 @@ const ServiceList = ({
       <OwnedServices
         services={regularOwnedServices}
         publicServices={publicOwnedServices}
-        openCTIPlatforms={openCTIPlatforms}
+        registeredPlatforms={registeredPlatforms}
       />
     </>
   );

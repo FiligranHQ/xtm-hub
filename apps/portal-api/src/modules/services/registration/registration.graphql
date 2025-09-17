@@ -9,6 +9,7 @@ type RegisteredPlatform implements Node {
   title: String!
   contract: PlatformContract!
   platform_id: String!
+  identifier: ServiceDefinitionIdentifier!
   version: String
 }
 
@@ -91,7 +92,7 @@ type RefreshUserPlatformTokenResponse {
 }
 
 input RegisteredPlatformsInput {
-  identifier: PlatformIdentifier!
+  identifier: PlatformIdentifier
 }
 
 type Query {
@@ -101,7 +102,7 @@ type Query {
   canUnregisterPlatform(
     input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
-  registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
+  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
     @auth
   platformAssociatedOrganization(platformId: String!): Organization @auth
 }
