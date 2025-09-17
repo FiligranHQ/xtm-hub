@@ -1,7 +1,7 @@
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 
-export const RegistrationTranslationMapping: Record<
+export const PlatformTranslationMapping: Record<
   PlatformIdentifierEnum,
   string
 > = {

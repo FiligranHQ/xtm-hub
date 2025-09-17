@@ -1,4 +1,5 @@
 import { RefreshUserPlatformTokenMutation } from '@/components/registration/register/register.graphql';
+import { ShareableResourceType } from '@/components/service/document/shareable-resource-slug';
 import useExternalTab from '@/hooks/useExternalTab';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
@@ -9,13 +10,13 @@ import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-const URL_CONFIGS = {
+const URL_CONFIGS_OPENCTI = {
   custom_dashboard: 'deploy-custom-dashboard',
   csv_feed: 'deploy-csv-feed',
 };
 
 interface Props {
-  openCTIBasePath: string;
+  platformBasePath: string;
   documentData: ShareableResource;
 }
 
@@ -24,7 +25,7 @@ interface Return {
 }
 
 export const useOneClickDeployTab = ({
-  openCTIBasePath,
+  platformBasePath,
   documentData,
 }: Props): Return => {
   const t = useTranslations();
@@ -50,10 +51,16 @@ export const useOneClickDeployTab = ({
       });
     }
   };
-
+  const url =
+    documentData.type === ShareableResourceType.OPENAEV_SCENARIO
+      ? `${platformBasePath}/admin/deploy-scenario/${documentData.service_instance?.id}/${documentData.id}`
+      : `${platformBasePath}/dashboard/xtm-hub/${URL_CONFIGS_OPENCTI[documentData.type as keyof typeof URL_CONFIGS_OPENCTI]}/${documentData.service_instance?.id}/${documentData.id}`;
   const { openTab, postMessage } = useExternalTab({
-    url: `${openCTIBasePath}/dashboard/xtm-hub/${URL_CONFIGS[documentData.type as keyof typeof URL_CONFIGS]}/${documentData.service_instance?.id}/${documentData.id}`,
-    tabName: 'opencti-one-click-deploy',
+    url,
+    tabName:
+      documentData.type === ShareableResourceType.OPENAEV_SCENARIO
+        ? 'openaev-one-click-deploy'
+        : 'opencti-one-click-deploy',
     onMessage: handleMessage,
     preventUnload: false,
   });

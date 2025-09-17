@@ -24,6 +24,8 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
+import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { ReactNode, useContext } from 'react';
@@ -34,6 +36,18 @@ interface ShareableResourceSlugProps {
   children?: ReactNode;
   updateActions?: ReactNode;
 }
+
+export enum ShareableResourceType {
+  OPENAEV_SCENARIO = 'openaev_scenario',
+  OPENCTI_CSVFEED = 'csv_feed',
+  OPENCTI_CUSTOMDASHBOARD = 'custom_dashboard',
+}
+
+export const SHAREABLE_RESOURCE_TYPE = {
+  openaev_scenario: 'Scenario OpenAEV',
+  csv_feed: 'Feed OpenCTI',
+  custom_dashboard: 'Custom Dashboard OpenCTI',
+};
 
 // Component
 const ShareableResourceSlug: React.FunctionComponent<
@@ -50,13 +64,17 @@ const ShareableResourceSlug: React.FunctionComponent<
   const incrementDownloadNumber = () => {
     setDocumentDownloadNumber(documentDownloadNumber + 1);
   };
-
+  const isOneOpenAEVRegistrationFeatureEnabled = useIsFeatureEnabled(
+    FeatureFlag.OPENAEV_REGISTRATION
+  );
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
-    return ['custom_dashboard', 'csv_feed', 'openaev_scenario'].includes(
-      documentData.type
-    );
+    if (documentData.type === 'openaev_scenario') {
+      return isOneOpenAEVRegistrationFeatureEnabled;
+    }
+
+    return ['custom_dashboard', 'csv_feed'].includes(documentData.type);
   }, [documentData.active, documentData.type]);
 
   return (

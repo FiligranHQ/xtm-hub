@@ -402,6 +402,7 @@
       "DataImport": "Importation de données",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Dernière vérification",
+      "Name": "Connecteurs",
       "Search": "Rechercher un connecteur par nom...",
       "Type": "Type",
       "VendorContact": "Contact vendeur",
@@ -548,13 +549,13 @@
     "ShareableResources": {
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
       "Deploy": {
-        "DeployDashboardOctiDescription": "Vous êtes sur le point de déployer le custom dashboard {dashboardName}.",
-        "DeployOcti": "Déployer dans OpenCTI",
-        "DeployOctiDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme OpenCTI.",
-        "DeployOctiDescriptionNoPlatformIllustration": "OpenCTI S'enregistrer dans l'illustration du Hub XTM",
-        "DeployOctiDescriptionNoPlatformThen": "L'enregistrement peut être fait sur la page Filigran Experience dans la section suivante :",
-        "DeployOctiDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
-        "DeployOctiQuestionTag": "Sur quelle plateforme OpenCTI voulez-vous le déployer ?"
+        "DeployDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme {platformIdentifier}.",
+        "DeployDescriptionNoPlatformIllustration": "{platformIdentifier} S'enregistrer dans l'illustration du Hub XTM",
+        "DeployDescriptionNoPlatformThen": "L'enregistrement peut être fait sur la page Filigran Experience dans la section suivante :",
+        "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
+        "DeployPlatform": "Déployer dans {platformName}",
+        "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
+        "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}."
       },
       "Details": {
         "Author": "Auteur",
