@@ -5,7 +5,7 @@ import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
-import { NotFoundError } from '../../../utils/error.util';
+import { NotFoundError } from '../../../utils/error/error.util';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { downloadFile } from './document-storage';
 import { loadDocumentBy } from './document.domain';

@@ -8,7 +8,7 @@ import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability, {
   UserServiceCapabilityId,
 } from '../../../model/kanel/public/UserServiceCapability';
-import { UnknownError } from '../../../utils/error.util';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { loadSubscriptionCapabilitiesBy } from '../../services/instances/service-capabilities/service_capabilities.helper';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic_service_capability.helper';
 import { loadServiceCapabilityBy } from '../service-capability/service_capability.helper';
@@ -65,9 +65,7 @@ export const insertCapabilities = async (
           })
           .transacting(trx);
       } else {
-        throw UnknownError('CAPABILITIES_ERROR', {
-          detail: 'Grant the capability on an organization level first.',
-        });
+        throw new Error(ErrorCode.GrantCapabilitiesOnOrganizationFirst);
       }
     }
   }

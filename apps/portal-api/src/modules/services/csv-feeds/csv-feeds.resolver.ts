@@ -5,7 +5,9 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { AlreadyExistsError, UnknownError } from '../../../utils/error.util';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadSubscription } from '../../subcription/subscription.domain';
 import {
@@ -35,11 +37,12 @@ const resolvers: Resolvers = {
         return await csvFeedsApp.createCsvFeed(context, input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {
             detail: error,
           });
         }
-        throw UnknownError('CSV_FEED_INSERTION_ERROR', { detail: error });
+
+        throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedInsertionError);
       }
     },
     updateCsvFeed: async (_, input, context) => {
@@ -58,13 +61,12 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError('CSV_FEED_UNIQUE_SLUG_ERROR', {
+          throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {
             detail: error,
           });
         }
-        throw UnknownError('CSV_FEED_UPDATE_ERROR', {
-          detail: error,
-        });
+
+        throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedUpdateError);
       }
     },
     deleteCsvFeed: async (_, { id }, context) => {
@@ -82,7 +84,7 @@ const resolvers: Resolvers = {
       } catch (error) {
         await trx.rollback();
 
-        throw UnknownError('CSV_FEED_DELETION_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedDeletionError);
       }
     },
   },

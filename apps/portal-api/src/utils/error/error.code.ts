@@ -1,0 +1,80 @@
+export enum ForbiddenErrorCode {
+  MissingCapabilityOnOrganization = 'MISSING_CAPABILITY_ON_ORGANIZATION',
+  RegistrationOnAnotherOrganizationForbidden = 'REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN',
+  UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
+  AlreadySubscribed = 'ALREADY_SUBSCRIBED',
+  AlreadySubscribedOrganizationError = 'ALREADY_SUBSCRIBED_ORGANIZATION_ERROR',
+  EditCapabilitiesCantRemoveLastManageAccess = 'EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS',
+  GrantCapabilitiesOnOrganizationFirst = 'GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST',
+  CantSubscribeYourself = 'CANT_SUBSCRIBE_YOURSELF',
+  UserDisabled = 'USER_DISABLED',
+  CantRemoveLastAdministrator = 'CANT_REMOVE_LAST_ADMINISTRATOR',
+  CantAddUserToPersonalSpace = 'CANT_ADD_USER_TO_PERSONAL_SPACE',
+  EmailOutsideOrganizationError = 'EMAIL_OUTSIDE_ORGANIZATION_ERROR',
+  CantAddDisabledUser = 'CANT_ADD_DISABLED_USER',
+  CantRemoveYourselfFromOrgaError = 'CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR',
+  YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
+}
+
+export enum BadRequestErrorCode {
+  InvalidImageUrl = 'INVALID_IMAGE_URL',
+  InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
+  PlatformNotRegistered = 'PLATFORM_NOT_REGISTERED',
+  InvalidPlatformIdentifier = 'INVALID_PLATFORM_IDENTIFIER',
+  InvalidActionSize = 'INVALID_ACTION_SIZE',
+}
+
+export enum UnknownErrorCode {
+  CanUnregisterPlatformUnknownError = 'CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR',
+  IsPlatformRegisteredUnknownError = 'IS_PLATFORM_REGISTERED_UNKNOWN_ERROR',
+  RefreshUserPlatformTokenUnknownError = 'REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR',
+  RegisterPlatformUnknownError = 'REGISTER_PLATFORM_UNKNOWN_ERROR',
+  UnknownError = 'UNKNOWN_ERROR',
+  UnregisterPlatformUnknownError = 'UNREGISTER_PLATFORM_UNKNOWN_ERROR',
+  AddOrganizationError = 'ADD_ORGANIZATION_ERROR',
+  EditOrganizationError = 'EDIT_ORGANIZATION_ERROR',
+  DeleteOrganizationError = 'DELETE_ORGANIZATION_ERROR',
+  CsvFeedInsertionError = 'CSV_FEED_INSERTION_ERROR',
+  CsvFeedUpdateError = 'CSV_FEED_UPDATE_ERROR',
+  CsvFeedDeletionError = 'CSV_FEED_DELETION_ERROR',
+  CustomDashboardInsertionError = 'CUSTOM_DASHBOARD_INSERTION_ERROR',
+  CustomDashboardUpdateError = 'CUSTOM_DASHBOARD_UPDATE_ERROR',
+  DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
+  InsertDocumentError = 'INSERT_DOCUMENT_ERROR',
+  UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
+  IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
+  OpenAEVScenarioInsertionError = 'OPENAEV_SCENARIO_INSERTION_ERROR',
+  OpenAEVScenarioUpdateError = 'OPENAEV_SCENARIO_UPDATE_ERROR',
+  OpenAEVScenarioDeleteError = 'OPENAEV_SCENARIO_DELETE_ERROR',
+  ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
+  DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
+  EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
+  AddUserServiceError = 'ADD_USER_SERVICE_ERROR',
+  AddingUserError = 'ADDING_USER_ERROR',
+  EditUserError = 'EDIT_USER_ERROR',
+  EditMeUserError = 'EDIT_ME_USER_ERROR',
+  RemoveUserFromOrgaError = 'REMOVE_USER_FROM_ORGA_ERROR',
+  RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
+  EditUserSessionError = 'EDIT_USER_SESSION_ERROR',
+}
+
+export enum AlreadyExistsErrorCode {
+  OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
+  CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
+  CustomDashboardUniqueSlugError = 'CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR',
+  OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
+}
+
+export enum NotFoundErrorCode {
+  ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',
+  ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
+  SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+  ServiceNotFound = 'SERVICE_NOT_FOUND',
+}
+
+export const ErrorCode = {
+  ...ForbiddenErrorCode,
+  ...BadRequestErrorCode,
+  ...AlreadyExistsErrorCode,
+  ...NotFoundErrorCode,
+};

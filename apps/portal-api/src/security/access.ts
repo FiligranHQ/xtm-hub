@@ -22,6 +22,7 @@ import {
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
 import { logApp } from '../utils/app-logger.util';
+import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
 import { serviceInstanceSecurityLayer } from './layer/service-instance';
 import { userSecurityLayer } from './layer/user';
@@ -81,7 +82,7 @@ export const isNodeAccessible = async (
   const isInvalidActionSize = Object.keys(data).length !== 1;
   if (isInvalidActionSize) {
     // Event can only be setup to one action
-    throw new Error('Invalid action size', { cause: data });
+    throw new Error(ErrorCode.InvalidActionSize, { cause: data });
   }
   type AccessibilityChecker = (opt: {
     user: UserLoadUserBy;

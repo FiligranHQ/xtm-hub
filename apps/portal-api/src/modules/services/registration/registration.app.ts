@@ -23,8 +23,8 @@ import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
 import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
-import { ErrorCode } from '../../common/error-code';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.helper';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -35,7 +35,7 @@ import {
   updateUser,
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
-import { serviceDefinitionDomain } from '../definition/domain';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import {
   PlatformConfiguration,

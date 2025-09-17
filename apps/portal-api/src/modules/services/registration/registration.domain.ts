@@ -12,7 +12,7 @@ import ServiceInstance, {
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
 import { securityGuard } from '../../../security/guard';
-import { ErrorCode } from '../../common/error-code';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
 import {
   loadSubscriptionBy,
