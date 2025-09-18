@@ -10,7 +10,7 @@ import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-const URL_CONFIGS_OPENCTI = {
+const OPENCTI_URL_CONFIGS = {
   custom_dashboard: 'deploy-custom-dashboard',
   csv_feed: 'deploy-csv-feed',
 };
@@ -22,6 +22,20 @@ interface Props {
 
 interface Return {
   openTab: () => void;
+}
+
+function computeDeployUrl(
+  documentData: ShareableResource,
+  platformBasePath: string
+): string {
+  const { id, service_instance, type } = documentData;
+
+  if (type === ShareableResourceType.OPENAEV_SCENARIO) {
+    return `${platformBasePath}/admin/deploy-scenario/${service_instance?.id}/${id}`;
+  }
+
+  const urlKey = OPENCTI_URL_CONFIGS[type as keyof typeof OPENCTI_URL_CONFIGS];
+  return `${platformBasePath}/dashboard/xtm-hub/${urlKey}/${service_instance?.id}/${id}`;
 }
 
 export const useOneClickDeployTab = ({
@@ -51,10 +65,7 @@ export const useOneClickDeployTab = ({
       });
     }
   };
-  const url =
-    documentData.type === ShareableResourceType.OPENAEV_SCENARIO
-      ? `${platformBasePath}/admin/deploy-scenario/${documentData.service_instance?.id}/${documentData.id}`
-      : `${platformBasePath}/dashboard/xtm-hub/${URL_CONFIGS_OPENCTI[documentData.type as keyof typeof URL_CONFIGS_OPENCTI]}/${documentData.service_instance?.id}/${documentData.id}`;
+  const url = computeDeployUrl(documentData, platformBasePath);
   const { openTab, postMessage } = useExternalTab({
     url,
     tabName:

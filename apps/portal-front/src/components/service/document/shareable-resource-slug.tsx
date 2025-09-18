@@ -43,7 +43,7 @@ export enum ShareableResourceType {
   OPENCTI_CUSTOMDASHBOARD = 'custom_dashboard',
 }
 
-export const SHAREABLE_RESOURCE_TYPE = {
+export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
   openaev_scenario: 'Scenario OpenAEV',
   csv_feed: 'Feed OpenCTI',
   custom_dashboard: 'Custom Dashboard OpenCTI',
@@ -70,11 +70,14 @@ const ShareableResourceSlug: React.FunctionComponent<
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
-    if (documentData.type === 'openaev_scenario') {
+    if (documentData.type === ShareableResourceType.OPENAEV_SCENARIO) {
       return isOneOpenAEVRegistrationFeatureEnabled;
     }
 
-    return ['custom_dashboard', 'csv_feed'].includes(documentData.type);
+    return [
+      ShareableResourceType.OPENCTI_CUSTOMDASHBOARD,
+      ShareableResourceType.OPENCTI_CSVFEED,
+    ].includes(documentData.type as ShareableResourceType);
   }, [documentData.active, documentData.type]);
 
   return (

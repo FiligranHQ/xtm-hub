@@ -1,4 +1,4 @@
-import { SHAREABLE_RESOURCE_TYPE } from '@/components/service/document/shareable-resource-slug';
+import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/components/service/document/shareable-resource-slug';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployPlatformFragment$data } from '@generated/oneClickDeployPlatformFragment.graphql';
 import { AlertDialogTitle } from 'filigran-ui';
@@ -27,8 +27,8 @@ const OnePlatformDisplay = ({
           {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
             resourceName: documentData.name,
             resourceType:
-              SHAREABLE_RESOURCE_TYPE[
-                documentData.type as keyof typeof SHAREABLE_RESOURCE_TYPE
+              SHAREABLE_RESOURCE_TYPE_NAME_MAPPING[
+                documentData.type as keyof typeof SHAREABLE_RESOURCE_TYPE_NAME_MAPPING
               ],
           })}
         </AlertDialogTitle>
