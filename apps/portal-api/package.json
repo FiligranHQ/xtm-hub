@@ -36,7 +36,7 @@
     "format": "prettier --write .",
     "test": "VITEST_MODE=true && vitest run",
     "test:coverage": "yarn test --coverage",
-    "test:ci": "yarn lint && yarn test --coverage --coverage.clean=false",
+    "test:ci": "yarn check-ts && yarn lint && yarn test --coverage --coverage.clean=false",
     "prepare": "cd .. && husky ./.husky",
     "seed:make:test": "VITEST_MODE=true && yarn knex:run seed:make",
     "start-dev-test": "VITEST_MODE=true && START_DEV_SERVER=true && yarn start-dev",
