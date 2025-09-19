@@ -1,6 +1,7 @@
 'use client';
 import ConnectorContractCard from '@/components/connectors/connector-contract-card';
 import { SearchInput } from '@/components/ui/search-input';
+import { isDevelopment } from '@/lib/utils';
 import { Contract } from '@/utils/connectors/connector.model';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { useTranslations } from 'next-intl';
@@ -27,6 +28,7 @@ const ConnectorsList = ({ contracts }: ContractDetailsInformationPageProps) => {
     (e) => handleInputChange(e.target.value),
     DEBOUNCE_TIME
   );
+  const displayOnlyInDev = isDevelopment();
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-l mb-l">
@@ -37,9 +39,11 @@ const ConnectorsList = ({ contracts }: ContractDetailsInformationPageProps) => {
             onChange={debounceHandleInput}
           />
         </div>
-        <span className="md:col-start-2 lg:col-start-3 self-center md:text-right">
-          {t('Service.Connectors.Name')}: {filteredContracts.length}
-        </span>
+        {displayOnlyInDev && (
+          <span className="md:col-start-2 lg:col-start-3 self-center md:text-right">
+            {t('Service.Connectors.Name')}: {filteredContracts.length}
+          </span>
+        )}
       </div>
 
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-l">
