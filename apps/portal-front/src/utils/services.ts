@@ -28,7 +28,7 @@ export const isRegistrationService = (
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
-  const card_background_by_service_map: Partial<
+  const cardBackgroundByServiceMap: Partial<
     Record<ServiceDefinitionIdentifierEnum, string>
   > = {
     [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION]:
@@ -36,7 +36,7 @@ export const registeredPlatformToServiceInstanceCardData = (
     [ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION]:
       'bg-gradient-to-br from-[#0F1E38] via-[#0A6D6A] to-[#0F1E38]',
   };
-  const platform_identifier =
+  const platformIdentifier =
     platform.identifier as ServiceDefinitionIdentifierEnum;
   return {
     id: platform.id,
@@ -46,9 +46,8 @@ export const registeredPlatformToServiceInstanceCardData = (
     platform_contract: platform.contract,
     illustration_document_id: null,
     logo_document_id: null,
-    service_definition_identifier: platform_identifier,
-    card_background:
-      card_background_by_service_map[platform_identifier] ?? null,
+    service_definition_identifier: platformIdentifier,
+    card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
     ordering: -1, // registered platforms are displayed at the first position
   };
