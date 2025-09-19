@@ -23,6 +23,7 @@ export interface ServiceInstanceCardData {
   logo_document_id: string | null;
   illustration_document_id: string | null;
   service_definition_identifier: ServiceDefinitionIdentifierEnum;
+  card_background?: string | null;
   description?: string;
   url?: string;
   ordering: number;
@@ -100,9 +101,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div
           className={cn(
             'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
-            isRegistrationService(serviceInstance)
-              ? 'bg-darkblue-800'
-              : 'bg-blue-900'
+            serviceInstance.card_background ?? 'bg-blue-900'
           )}>
           <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
@@ -138,7 +137,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 <Image
                   width="580"
                   height="281"
-                  src="/octi-private-platform-illustration.png"
+                  src={`/${serviceInstance.service_definition_identifier}-private-platform-illustration.png`}
                   priority={false}
                   loading="lazy"
                   alt={`Illustration of ${serviceInstance.name}`}
