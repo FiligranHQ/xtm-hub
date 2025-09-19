@@ -197,6 +197,7 @@ export async function seed(knex) {
         join_type: 'JOIN_AUTO',
         tags: '{others}',
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+        ordering: 10,
       },
       {
         id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
@@ -208,6 +209,7 @@ export async function seed(knex) {
         join_type: 'JOIN_AUTO',
         tags: '{others}',
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+        ordering: 11,
       },
       {
         id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
@@ -218,6 +220,7 @@ export async function seed(knex) {
         join_type: 'JOIN_INVITE',
         tags: '{others}',
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
+        ordering: 12,
       },
       {
         id: 'ad003d3f-c406-4be8-a650-880d72f952e9',
@@ -228,6 +231,7 @@ export async function seed(knex) {
         join_type: 'JOIN_AUTO',
         tags: '{others}',
         service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad2',
+        ordering: 13,
       },
       {
         id: 'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2',
@@ -238,6 +242,7 @@ export async function seed(knex) {
         join_type: 'JOIN_AUTO',
         tags: '{others}',
         service_definition_id: '97280ba3-8587-4a3e-87ad-ed279b0e768f',
+        ordering: 14,
       },
       {
         id: 'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4',
@@ -248,6 +253,7 @@ export async function seed(knex) {
         join_type: 'JOIN_AUTO',
         tags: '{others}',
         service_definition_id: 'e974c9c3-f3c5-4b48-b183-a73ff218dec1',
+        ordering: 15,
       },
     ])
     .onConflict('id')

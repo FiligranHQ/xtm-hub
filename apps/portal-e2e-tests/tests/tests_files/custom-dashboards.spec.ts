@@ -41,7 +41,9 @@ test.describe('Custom dashboards', () => {
   });
 
   test('Should add custom dashboard', async ({ page }) => {
+    await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToDashboard(DASHBOARD_TEST.shortDescription);
+    await expect(page).toHaveScreenshot();
     await expect(
       page.getByRole('heading', { name: DASHBOARD_TEST.name })
     ).toBeVisible();
@@ -49,10 +51,13 @@ test.describe('Custom dashboards', () => {
 
   test('Should see the custom dashboard on public page', async ({ page }) => {
     await page.goto('/');
+    await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToPublicCustomDashboard();
+    await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToPublicDashboardDetail(
       DASHBOARD_TEST.shortDescription
     );
+    await expect(page).toHaveScreenshot();
   });
 
   test('Should edit a custom dashboard', async ({ page }) => {
@@ -68,6 +73,7 @@ test.describe('Custom dashboards', () => {
     ).toBeVisible();
 
     await openUpdateDrawer();
+    await expect(page).toHaveScreenshot();
 
     let test_step = 0;
     await test.step('Update only texts', async () => {
@@ -84,7 +90,9 @@ test.describe('Custom dashboards', () => {
       await page
         .getByRole('textbox', { name: 'This is a paragraph to' })
         .fill(UPDATED_DASHBOARD_TEST.description);
-      await page.getByRole('checkbox', { name: 'Is the dashboard published?' }).click();
+      await page
+        .getByRole('checkbox', { name: 'Is the dashboard published?' })
+        .click();
       await page.getByRole('button', { name: 'Validate' }).click();
       await waitForDrawerToClose(page);
       await expect(

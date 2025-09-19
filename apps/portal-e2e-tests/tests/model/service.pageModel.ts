@@ -1,5 +1,10 @@
 import { Page } from '@playwright/test';
-import { clickRowAction, waitForDrawerToClose } from './common';
+import {
+  clickRowAction,
+  waitForDrawerToClose,
+  waitForReactIdle,
+} from './common';
+import { expect } from '../fixtures/baseFixtures';
 
 export default class ServicePage {
   constructor(private page: Page) {}
@@ -8,6 +13,7 @@ export default class ServicePage {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Services' }).click();
     await this.page.getByText('Name', { exact: true }).click();
+    await expect(this.page).toHaveScreenshot();
   }
 
   async navigateToServiceItemAdmin() {
@@ -17,6 +23,7 @@ export default class ServicePage {
       'Manage',
       'link'
     );
+    await expect(this.page).toHaveScreenshot();
   }
 
   async addOrganizationIntoService(organizationName: string) {
@@ -74,6 +81,7 @@ export default class ServicePage {
       this.page.getByRole('row', { name: userEmail }),
       'Update'
     );
+    await expect(this.page).toHaveScreenshot();
     await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
     await waitForDrawerToClose(this.page);
