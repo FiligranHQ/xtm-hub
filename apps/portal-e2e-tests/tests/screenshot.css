@@ -1,0 +1,3 @@
+body > div[role="region"][aria-label="Notifications (F8)"] {
+    display: none !important;
+}

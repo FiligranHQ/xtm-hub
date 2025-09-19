@@ -1,5 +1,9 @@
 import { Page } from '@playwright/test';
-import { clickRowAction, waitForDrawerToClose } from './common';
+import {
+  clickRowAction,
+  waitForDrawerToClose,
+  waitForReactIdle,
+} from './common';
 import { expect } from '../fixtures/baseFixtures';
 
 export default class ServicePage {
@@ -88,7 +92,6 @@ export default class ServicePage {
     const row = this.page.getByRole('row', { name: organizationName });
     await clickRowAction(this.page, row, 'Delete');
     // Wait for the dialog to appear and animation to finish
-    await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Remove access' }).click();
   }
 

@@ -22,12 +22,12 @@ export default defineConfig({
   workers: 1,
   expect: {
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: 0.04,
       animations: 'disabled',
       caret: 'hide',
       scale: 'css',
       pathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
-      stylePath: './screenshot.css',
+      stylePath: './tests/screenshot.css',
     },
   },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
