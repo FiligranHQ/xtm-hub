@@ -134,7 +134,8 @@ const resolvers: Resolvers = {
             serviceInstance.logo_document_id
           ),
         }),
-      };
+        __typename: 'SeoServiceInstance',
+      } as SeoServiceInstance;
     },
   },
   Mutation: {
