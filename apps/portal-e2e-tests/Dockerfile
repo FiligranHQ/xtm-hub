@@ -14,6 +14,7 @@ RUN corepack enable && \
 
 # Copy e2e test files
 COPY ./apps/portal-e2e-tests/playwright.config.ts ./apps/portal-e2e-tests/
+COPY ./apps/portal-e2e-tests/screenshot.css ./apps/portal-e2e-tests/
 COPY ./apps/portal-e2e-tests/tests ./apps/portal-e2e-tests/tests
 
 # Copy migrations and seeds (these are copied by the CI pipeline before the Docker build)

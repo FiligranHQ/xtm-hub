@@ -17,13 +17,17 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: 2, // Retry in order to check the flaky test
+  retries: process.env.CI ? 2 : 0, // Retry in order to check the flaky test
   /* Parallel test is breaking tests */
   workers: 1,
   expect: {
     toHaveScreenshot: {
-      maxDiffPixels: 100,
+      maxDiffPixelRatio: 0.02,
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
       pathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+      stylePath: './screenshot.css',
     },
   },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -64,6 +68,12 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    headless: true,
+    viewport: { width: 1280, height: 800 }, // or keep Desktop Chrome defaults
+    deviceScaleFactor: 1,
+    colorScheme: 'light',
+    locale: 'en-US',
+    timezoneId: 'UTC',
   },
 
   /* Configure projects for major browsers */

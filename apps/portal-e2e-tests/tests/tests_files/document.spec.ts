@@ -30,6 +30,7 @@ test.describe('Document Management', () => {
       await expect(
         page.getByRole('cell', { name: TEST_FILE.name })
       ).toBeVisible();
+      await expect(page).toHaveScreenshot();
     });
 
     await test.step('Filter documents', async () => {

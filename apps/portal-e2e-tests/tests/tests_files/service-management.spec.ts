@@ -50,6 +50,7 @@ test.describe('Service Management', () => {
         'Manage users',
         'link'
       );
+      await expect(page).toHaveScreenshot();
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 
       await expect(
