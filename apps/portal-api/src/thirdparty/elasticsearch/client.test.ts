@@ -1,6 +1,6 @@
 import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
-import { ElasticSearchService } from './client';
+import ElasticSearchService from './client';
 
 // Mock the ES Client
 vi.mock('@elastic/elasticsearch', () => ({
