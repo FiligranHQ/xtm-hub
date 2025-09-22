@@ -1,11 +1,11 @@
-import { db, paginate } from '../../../knexfile';
+import { db, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Filter,
   FilterKey,
-  Organization,
   OrganizationConnection,
   QueryOrganizationsArgs,
 } from '../../__generated__/resolvers-types';
+import Organization from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 
@@ -25,12 +25,10 @@ export const loadOrganizationsByUser = async (
 };
 
 export const loadOrganizationBy = async (
-  context: PortalContext,
-  field: string,
-  value: string
+  conditions: Partial<Organization>
 ): Promise<Organization> => {
-  return db<Organization>(context, 'Organization')
-    .where({ [field]: value })
+  return dbUnsecure<Organization>('Organization')
+    .where(conditions)
     .select('*')
     .first();
 };

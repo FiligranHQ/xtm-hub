@@ -12,7 +12,7 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
-import { loadOrganizationBy } from '../organizations/organizations.helper';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
@@ -22,11 +22,9 @@ export const fillSubscription = async (
   context: PortalContext,
   updatedSubscription: SubscriptionModel
 ): Promise<SubscriptionModel> => {
-  updatedSubscription.organization = await loadOrganizationBy(
-    context,
-    'id',
-    updatedSubscription.organization_id
-  );
+  updatedSubscription.organization = await loadOrganizationBy({
+    id: updatedSubscription.organization_id as OrganizationId,
+  });
 
   updatedSubscription.service_instance = await loadServiceInstanceBy(
     context,
@@ -85,11 +83,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
     } as SubscriptionMutator
   );
 
-  const organization = await loadOrganizationBy(
-    context,
-    'Organization.id',
-    sub.organization_id
-  );
+  const organization = await loadOrganizationBy({ id: sub.organization_id });
   const serviceInstance = await loadServiceInstanceBy(
     context,
     'ServiceInstance.id',

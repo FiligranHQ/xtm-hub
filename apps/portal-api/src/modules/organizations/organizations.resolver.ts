@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../knexfile';
 import { Organization, Resolvers } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { dispatch } from '../../pub';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
@@ -13,8 +14,8 @@ import {
 
 const resolvers: Resolvers = {
   Query: {
-    organization: async (_, { id }, context) =>
-      loadOrganizationBy(context, 'Organization.id', id),
+    organization: async (_, { id }) =>
+      loadOrganizationBy({ id: id as OrganizationId }),
     organizations: async (_, opts, context) => {
       return loadOrganizations(context, opts);
     },

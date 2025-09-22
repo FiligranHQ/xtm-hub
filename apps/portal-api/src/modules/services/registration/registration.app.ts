@@ -26,7 +26,7 @@ import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { loadUserOrganization } from '../../common/user-organization.domain';
-import { loadOrganizationBy } from '../../organizations/organizations.helper';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
@@ -79,7 +79,7 @@ export const registrationApp = {
       throw new Error(ErrorCode.UserIsNotInOrganization);
     }
 
-    return loadOrganizationBy(context, 'id', subscription.organization_id);
+    return loadOrganizationBy({ id: subscription.organization_id });
   },
 
   loadRegisteredPlatforms: async (
@@ -235,11 +235,9 @@ export const registrationApp = {
     );
 
     try {
-      const selectedOrga = await loadOrganizationBy(
-        context,
-        'id',
-        organizationId
-      );
+      const selectedOrga = await loadOrganizationBy({
+        id: organizationId as OrganizationId,
+      });
 
       const registerEvent = buildRegisterEvent(
         selectedOrga,

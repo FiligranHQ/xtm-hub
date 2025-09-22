@@ -19,6 +19,7 @@ import UserOrganization, {
   UserOrganizationId,
 } from '../model/kanel/public/UserOrganization';
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
+import { loadOrganizationBy } from '../modules/organizations/organizations.domain';
 import {
   ADMIN_UUID,
   PLATFORM_ORGANIZATION_UUID,
@@ -158,9 +159,10 @@ export const ensureRoleHasCapability = async (role, capability, trx) => {
 };
 
 export const insertPlatformOrganization = async (trx) => {
-  const adminOrganization = await dbUnsecure<Organization>('Organization')
-    .where({ id: PLATFORM_ORGANIZATION_UUID })
-    .first();
+  const adminOrganization = await loadOrganizationBy({
+    id: PLATFORM_ORGANIZATION_UUID,
+  });
+
   if (!adminOrganization) {
     await dbUnsecure<Organization>('Organization')
       .insert({
@@ -173,9 +175,10 @@ export const insertPlatformOrganization = async (trx) => {
 };
 
 export const insertUserAdminOrganization = async (trx) => {
-  const adminOrganization = await dbUnsecure<Organization>('Organization')
-    .where({ id: ADMIN_UUID as unknown as OrganizationId })
-    .first();
+  const adminOrganization = await loadOrganizationBy({
+    id: ADMIN_UUID as unknown as OrganizationId,
+  });
+
   if (!adminOrganization) {
     await dbUnsecure<Organization>('Organization')
       .insert({
@@ -249,9 +252,7 @@ const ensureOrganizationExists = async (
   mail: string,
   trx?
 ) => {
-  const personalSpace = await dbUnsecure<Organization>('Organization')
-    .where({ id: orgId })
-    .first();
+  const personalSpace = await loadOrganizationBy({ id: orgId });
 
   if (!personalSpace) {
     const query = dbUnsecure('Organization').insert({
@@ -321,9 +322,10 @@ export const ensureDevOrganizationExists = async (
   trx?
 ): Promise<Organization> => {
   // Check if organization already exists by name
-  const existingOrg = await dbUnsecure<Organization>('Organization')
-    .where({ name: orgConfig.name, personal_space: false })
-    .first();
+  const existingOrg = await loadOrganizationBy({
+    name: orgConfig.name,
+    personal_space: false,
+  });
 
   if (existingOrg) {
     // Update domains if provided

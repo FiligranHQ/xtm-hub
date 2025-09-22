@@ -161,7 +161,9 @@ export async function buildCreateEvent(
   document: Document,
   timestamp?: Date
 ): Promise<CreateEvent> {
-  const selectedOrga = await loadOrganizationBy(context, 'id', organization_id);
+  const selectedOrga = await loadOrganizationBy({
+    id: organization_id,
+  });
 
   const baseEvent = buildBaseEvent(selectedOrga, user_id, timestamp);
 

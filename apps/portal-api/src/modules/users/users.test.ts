@@ -9,10 +9,8 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
-import {
-  deleteOrganizationByName,
-  loadUnsecureOrganizationBy,
-} from '../organizations/organizations.helper';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { deleteOrganizationByName } from '../organizations/organizations.helper';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
@@ -58,17 +56,16 @@ describe('User helpers', async () => {
       expect(newUser).toBeTruthy();
       expect(newUserPendingOrg.length).toBe(0);
 
-      const newOrganization = await loadUnsecureOrganizationBy(
-        'name',
-        'test-new-organization'
-      );
+      const newOrganization = await loadOrganizationBy({
+        name: 'test-new-organization',
+      });
       const userOrgCapa = await loadUserCapabilitiesByOrganization(
         newUser.id as UserId,
         newOrganization.id
       );
-      expect(userOrgCapa.capabilities.length).toBe(1);
+      expect(userOrgCapa.capabilities?.length).toBe(1);
       expect(
-        userOrgCapa.capabilities.includes(
+        userOrgCapa.capabilities?.includes(
           OrganizationCapability.AdministrateOrganization
         )
       ).toBeTruthy();
@@ -108,7 +105,7 @@ describe('User helpers', async () => {
       await createNewUserFromInvitation({
         email: userEmail,
       });
-      organization = await loadUnsecureOrganizationBy('name', organizationName);
+      organization = await loadOrganizationBy({ name: organizationName });
 
       expect(organization).toBeTruthy();
 
