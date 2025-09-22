@@ -25,6 +25,7 @@ export default class DocumentPage {
     const fileInput = this.page.locator('input[type="file"]');
 
     await fileInput.setInputFiles(filePath);
+    await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
     await waitForDrawerToClose(this.page);
   }
@@ -34,6 +35,7 @@ export default class DocumentPage {
     const dropdown = await openAndGetRowActionsDropdown(this.page, row);
     await expect(dropdown.getByLabel('Delete document')).not.toBeVisible();
     await this.page.getByLabel('Update document').click();
+    await expect(this.page).toHaveScreenshot();
     await this.page
       .getByRole('textbox', { name: 'Description' })
       .fill(newDescription);

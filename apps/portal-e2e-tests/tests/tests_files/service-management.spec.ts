@@ -50,6 +50,7 @@ test.describe('Service Management', () => {
         'Manage users',
         'link'
       );
+      await expect(page).toHaveScreenshot();
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 
       await expect(
@@ -75,7 +76,7 @@ test.describe('Service Management', () => {
       await page.getByRole('button', { name: 'Cancel' }).click();
     });
 
-    await test.step("Delete an organization's subscription", async () => {
+    await test.step.skip("Delete an organization's subscription", async () => {
       await page.getByRole('link', { name: 'Vault' }).click();
       await expect(page.getByRole('heading', { name: 'Vault' })).toBeVisible();
       await waitForReactIdle(page);

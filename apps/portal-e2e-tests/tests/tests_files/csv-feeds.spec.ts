@@ -25,7 +25,9 @@ test.describe('CSV Feeds', () => {
   });
 
   test('Should add CSV Feed', async ({ page }) => {
+    await expect(page).toHaveScreenshot();
     await csvFeedPage.navigateToCsvFeed(CSV_FEED_TEST.shortDescription);
+    await expect(page).toHaveScreenshot();
     await expect(
       page.getByRole('heading', { name: CSV_FEED_TEST.name })
     ).toBeVisible();

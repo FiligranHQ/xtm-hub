@@ -122,6 +122,7 @@ jobs:
           exit ${TEST_EXIT_CODE:-0}
 
       - name: Publish Test Report
+        if: always()
         uses: ctrf-io/github-test-reporter@v1
         with:
           report-path: './ctrf/*.json'
