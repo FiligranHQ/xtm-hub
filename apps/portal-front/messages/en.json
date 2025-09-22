@@ -397,11 +397,11 @@
     },
     "ComingSoon": "Coming soon",
     "Connectors": {
-      "Name": "OpenCTI Connectors",
-      "Description": "Explore a range of OpenCTI Connectors shared by the Filigran team",
       "DataImport": "Data Import",
+      "Description": "Explore a range of OpenCTI Connectors shared by the Filigran team",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Last verified at",
+      "Name": "OpenCTI Connectors",
       "Search": "Search a connector with name...",
       "Type": "Type",
       "VendorContact": "Vendor Contact",
@@ -548,13 +548,13 @@
     "ShareableResources": {
       "Copied": "URL copied! You can now paste and share it.",
       "Deploy": {
-        "DeployDashboardOctiDescription": "You're about to deploy the {dashboardName} dashboard.",
-        "DeployOcti": "Deploy in OpenCTI",
-        "DeployOctiDescriptionNoPlatform": "You must be an administrator, or contact your administrator, to register your OpenCTI platform",
-        "DeployOctiDescriptionNoPlatformIllustration": "OpenCTI Register in XTM Hub illustration",
-        "DeployOctiDescriptionNoPlatformThen": "The registration can be completed through the Filigran Experience page in the section below:",
-        "DeployOctiDescriptionOnePlatform": "Do you want to deploy it in the {platformName} platform?",
-        "DeployOctiQuestionTag": "In which OpenCTI platform do you want to deploy it?"
+        "DeployDescriptionNoPlatform": "You must be an administrator, or contact your administrator, to register your {platformIdentifier} platform",
+        "DeployDescriptionNoPlatformIllustration": "{platformIdentifier} Register in XTM Hub illustration",
+        "DeployDescriptionNoPlatformThen": "The registration can be completed through the Filigran Experience page in the section below:",
+        "DeployDescriptionOnePlatform": "Do you want to deploy it in the {platformName} platform?",
+        "DeployPlatform": "Deploy in {platformName}",
+        "DeployQuestionTag": "In which {platformType} platform do you want to deploy it?",
+        "DeployResourceDescription": "You're about to deploy the {resourceName} {resourceType}."
       },
       "Details": {
         "Author": "Author",

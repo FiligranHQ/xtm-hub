@@ -68,7 +68,7 @@ test.describe('One Click Deploy', () => {
 
       await expect(
         page.getByRole('heading', {
-          name: `You're about to deploy the ${CSV_FEED_TEST.name} dashboard`,
+          name: `You're about to deploy the ${CSV_FEED_TEST.name} Feed OpenCTI`,
         })
       ).toBeVisible();
       await page.pause();

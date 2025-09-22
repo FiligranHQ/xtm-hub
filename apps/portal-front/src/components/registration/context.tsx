@@ -1,6 +1,6 @@
 import {
+  PlatformTranslationMapping,
   RegistrationCapabilityMapping,
-  RegistrationTranslationMapping,
 } from '@/components/registration/platform-identifier-mapping';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
@@ -29,7 +29,7 @@ export const generateRegistrationContext = (
     return { displayedIdentifier: '' };
   }
 
-  const displayedIdentifier = RegistrationTranslationMapping[identifier];
+  const displayedIdentifier = PlatformTranslationMapping[identifier];
   const capability = RegistrationCapabilityMapping[identifier];
 
   return { identifier, displayedIdentifier, capability };

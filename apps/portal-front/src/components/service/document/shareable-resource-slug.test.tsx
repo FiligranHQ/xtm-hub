@@ -1,5 +1,6 @@
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import { SettingsContext } from '@/components/settings/env-portal-context';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import testRender from '@/utils/test/test-render';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { screen } from '@testing-library/react';
@@ -7,6 +8,10 @@ import { describe, expect, it, vi } from 'vitest';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////// Mock hooks /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vi.mock('@/hooks/useIsFeatureEnabled', () => ({
+  useIsFeatureEnabled: vi.fn(),
+}));
+
 vi.mock('@/hooks/useDecodedParams', () => ({
   default: () => ({
     serviceInstanceId: 'test-service-id',
@@ -68,22 +73,33 @@ vi.mock('filigran-icon', () => ({
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////// Mocks values /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const mockUseIsFeatureEnabled = vi.mocked(useIsFeatureEnabled);
+
 const mockSettings = {
   base_url_front: 'https://test.com',
 };
 
 describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
   it.each`
-    shouldShowOneClickComponent | documentType          | documentActive
-    ${true}                     | ${'custom_dashboard'} | ${true}
-    ${false}                    | ${'custom_dashboard'} | ${false}
-    ${true}                     | ${'csv_feed'}         | ${true}
-    ${false}                    | ${'csv_feed'}         | ${false}
-    ${false}                    | ${'openaev_scenario'} | ${false}
-    ${false}                    | ${'openaev_scenario'} | ${true}
+    shouldShowOneClickComponent | documentType          | documentActive | featureFlagScenarioEnabled
+    ${true}                     | ${'custom_dashboard'} | ${true}        | ${true}
+    ${false}                    | ${'custom_dashboard'} | ${false}       | ${true}
+    ${true}                     | ${'csv_feed'}         | ${true}        | ${true}
+    ${false}                    | ${'csv_feed'}         | ${false}       | ${true}
+    ${false}                    | ${'openaev_scenario'} | ${false}       | ${true}
+    ${true}                     | ${'openaev_scenario'} | ${true}        | ${true}
+    ${false}                    | ${'openaev_scenario'} | ${true}        | ${false}
   `(
     'should show OneClickDeploy=$shouldShowOneClickComponent when document is $documentType is $documentActive',
-    ({ shouldShowOneClickComponent, documentType, documentActive }) => {
+    ({
+      shouldShowOneClickComponent,
+      documentType,
+      documentActive,
+      featureFlagScenarioEnabled,
+    }) => {
+      mockUseIsFeatureEnabled.mockImplementation(() => {
+        return featureFlagScenarioEnabled;
+      });
       const testDocumentData = {
         active: documentActive,
         description: 'description',
