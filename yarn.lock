@@ -9992,7 +9992,7 @@ __metadata:
     "@typescript-eslint/parser": 8.44.0
     "@vitest/coverage-v8": 3.2.4
     apollo-errors: 1.9.0
-    auth0: 4.22.0
+    auth0: 4.30.0
     body-parser: 1.20.3
     chokidar: 3.6.0
     concurrently: 9.2.1
@@ -10746,14 +10746,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:4.22.0":
-  version: 4.22.0
-  resolution: "auth0@npm:4.22.0"
+"auth0@npm:4.30.0":
+  version: 4.30.0
+  resolution: "auth0@npm:4.30.0"
   dependencies:
     jose: ^4.13.2
     undici-types: ^6.15.0
     uuid: ^9.0.0
-  checksum: caa6f412c507d6a4040c0e4e9bcb3286012fc0377228409870a4f65be568dc34a803507ddc8cf14017e25f41034637ea1a978267bc95b037f2e81c24119caaeb
+  checksum: 6f77c722b71a6a3374c3e6aae781e7dd6ba7ab6d3f443d45a51cb73bcf559573cbde66e1278c0060b82e0bf981a9b234fe4de04864e5e7b916144ceccac6ebdd
   languageName: node
   linkType: hard
 
