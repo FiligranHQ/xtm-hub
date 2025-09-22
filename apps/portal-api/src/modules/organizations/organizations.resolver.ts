@@ -11,7 +11,9 @@ import {
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
+  updateOrganization,
 } from './organizations.domain';
+import { deleteOrganizationBy } from './organizations.helper';
 
 const resolvers: Resolvers = {
   Query: {
@@ -46,28 +48,24 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
-    editOrganization: async (_, { id, input }, context) => {
+    editOrganization: async (_, { id, input }) => {
       try {
-        const [updatedOrganization] = await db<Organization>(
-          context,
-          'Organization'
-        )
-          .where({ id })
-          .update({ ...input })
-          .returning('*');
+        const [updatedOrganization] = await updateOrganization(
+          id as OrganizationId,
+          { ...input }
+        );
+
         return updatedOrganization;
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EditOrganizationError);
       }
     },
-    deleteOrganization: async (_, { id }, context) => {
+    deleteOrganization: async (_, { id }) => {
       try {
-        const [deletedOrganization] = await db<Organization>(
-          context,
-          'Organization'
-        )
-          .where({ id })
-          .delete('*');
+        const [deletedOrganization] = await deleteOrganizationBy({
+          id: id as OrganizationId,
+        });
+
         await dispatch('Organization', 'delete', deletedOrganization);
         return deletedOrganization;
       } catch (error) {

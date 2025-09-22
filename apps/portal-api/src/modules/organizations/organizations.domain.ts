@@ -7,7 +7,9 @@ import {
   QueryOrganizationsArgs,
 } from '../../__generated__/resolvers-types';
 import Organization, {
+  OrganizationId,
   OrganizationInitializer,
+  OrganizationMutator,
 } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
@@ -83,5 +85,21 @@ export const insertNewOrganization = async (
     query.transacting(trx);
   }
 
+  return query;
+};
+
+export const updateOrganization = async (
+  id: OrganizationId,
+  data: OrganizationMutator,
+  trx?: Knex.Transaction
+) => {
+  const query = dbUnsecure<Organization>('Organization')
+    .where({ id: id })
+    .update(data)
+    .returning('*');
+
+  if (trx) {
+    query.transacting(trx);
+  }
   return query;
 };

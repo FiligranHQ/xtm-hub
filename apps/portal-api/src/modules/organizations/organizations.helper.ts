@@ -11,8 +11,6 @@ export const loadOrganizationsFromEmail = async (
     .select('*');
 };
 
-export const deleteOrganizationByName = (name: string) => {
-  return dbUnsecure<Organization>('Organization')
-    .delete('*')
-    .where('name', name);
+export const deleteOrganizationBy = (conditions: Partial<Organization>) => {
+  return dbUnsecure<Organization>('Organization').delete('*').where(conditions);
 };

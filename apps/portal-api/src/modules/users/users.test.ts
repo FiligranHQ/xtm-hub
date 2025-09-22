@@ -10,7 +10,7 @@ import { createUserOrganizationCapability } from '../common/user-organization-ca
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { deleteOrganizationByName } from '../organizations/organizations.helper';
+import { deleteOrganizationBy } from '../organizations/organizations.helper';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
@@ -74,7 +74,7 @@ describe('User helpers', async () => {
 
       // Delete corresponding in order to avoid issue with other tests
       await removeUser(contextAdminUser, { email: testMail });
-      await deleteOrganizationByName('test-new-organization');
+      await deleteOrganizationBy({ name: 'test-new-organization' });
     });
 
     it('should create a new user with Role USER and should not add it to pending organization if orga does not exist', async () => {
@@ -122,7 +122,7 @@ describe('User helpers', async () => {
         anotherUser = null;
       }
       if (organization) {
-        await deleteOrganizationByName(organizationName);
+        await deleteOrganizationBy({ name: organizationName });
         organization = null;
       }
     });

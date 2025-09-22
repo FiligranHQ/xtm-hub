@@ -23,6 +23,7 @@ import {
   insertNewOrganization,
   insertNewOrganizationReturning,
   loadOrganizationBy,
+  updateOrganization,
 } from '../modules/organizations/organizations.domain';
 import {
   ADMIN_UUID,
@@ -334,12 +335,11 @@ export const ensureDevOrganizationExists = async (
   if (existingOrg) {
     // Update domains if provided
     if (orgConfig.domains && orgConfig.domains.length > 0) {
-      const query = dbUnsecure<Organization>('Organization')
-        .where({ id: existingOrg.id })
-        .update({ domains: orgConfig.domains })
-        .returning('*');
-
-      const [updatedOrg] = trx ? await query.transacting(trx) : await query;
+      const [updatedOrg] = await updateOrganization(
+        existingOrg.id,
+        { domains: orgConfig.domains },
+        trx
+      );
       return updatedOrg;
     }
     return existingOrg;

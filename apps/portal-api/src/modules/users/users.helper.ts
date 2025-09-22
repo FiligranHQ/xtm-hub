@@ -40,7 +40,10 @@ import {
   createUserOrganizationRelationAndRemovePending,
 } from '../common/user-organization.helper';
 import { insertNewOrganizationReturning } from '../organizations/organizations.domain';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
+import {
+  deleteOrganizationBy,
+  loadOrganizationsFromEmail,
+} from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import {
   loadUserBy,
@@ -286,9 +289,9 @@ export const removeUser = async (
     .returning('*');
 
   // Organization personalSpace of the user should have the same id
-  await db<Organization>(context, 'Organization')
-    .delete('*')
-    .where({ id: deletedUser.id as unknown as OrganizationId });
+  await deleteOrganizationBy({
+    id: deletedUser.id as unknown as OrganizationId,
+  });
 
   return deletedUser;
 };
