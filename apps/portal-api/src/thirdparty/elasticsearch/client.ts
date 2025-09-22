@@ -1,24 +1,10 @@
-import { Client, ClientOptions } from '@elastic/elasticsearch';
-import IndicesApi from '@elastic/elasticsearch/lib/api/api/indices.js';
-import {
-  CreateRequest,
-  CreateResponse,
-  DeleteRequest,
-  DeleteResponse,
-  IndexRequest,
-  IndexResponse,
-  QueryDslQueryContainer,
-  SearchRequest,
-  SearchResponse,
-  Sort,
-  UpdateByQueryRequest,
-  UpdateByQueryResponse,
-} from '@elastic/elasticsearch/lib/api/types.js';
+import { Client, ClientOptions, estypes } from '@elastic/elasticsearch';
+
 import fs from 'fs';
 import portalConfig from '../../config';
 import { logApp } from '../../utils/app-logger.util';
 
-export class ElasticSearchService {
+class ElasticSearchService {
   private elasticsearchClient: Client;
 
   constructor() {
@@ -38,10 +24,12 @@ export class ElasticSearchService {
     this.elasticsearchClient = new Client(config);
   }
 
-  getIndices(): IndicesApi {
+  getIndices() {
     return this.elasticsearchClient.indices;
   }
-  async search<T = unknown>(params: SearchRequest): Promise<SearchResponse<T>> {
+  async search<T = unknown>(
+    params: estypes.SearchRequest
+  ): Promise<estypes.SearchResponse<T>> {
     try {
       return this.elasticsearchClient.search<T>(params);
     } catch (error) {
@@ -57,8 +45,8 @@ export class ElasticSearchService {
     size = 10,
   }: {
     index: string;
-    query?: QueryDslQueryContainer;
-    sort?: Sort;
+    query?: estypes.QueryDslQueryContainer;
+    sort?: estypes.Sort;
     size: number;
   }): Promise<T[]> {
     const result = await this.search<T>({
@@ -71,7 +59,9 @@ export class ElasticSearchService {
     return result.hits.hits.map((hit) => hit._source);
   }
 
-  async create<T = unknown>(params: CreateRequest): Promise<CreateResponse> {
+  async create<T = unknown>(
+    params: estypes.CreateRequest
+  ): Promise<estypes.CreateResponse> {
     try {
       return this.elasticsearchClient.create<T>(params);
     } catch (error) {
@@ -80,7 +70,9 @@ export class ElasticSearchService {
     }
   }
 
-  async index<T = unknown>(params: IndexRequest): Promise<IndexResponse> {
+  async index<T = unknown>(
+    params: estypes.IndexRequest
+  ): Promise<estypes.IndexResponse> {
     try {
       return this.elasticsearchClient.index<T>(params);
     } catch (error) {
@@ -89,7 +81,7 @@ export class ElasticSearchService {
     }
   }
 
-  async delete(params: DeleteRequest): Promise<DeleteResponse> {
+  async delete(params: estypes.DeleteRequest): Promise<estypes.DeleteResponse> {
     try {
       return this.elasticsearchClient.delete(params);
     } catch (error) {
@@ -98,8 +90,8 @@ export class ElasticSearchService {
     }
   }
   async updateByQuery(
-    params: UpdateByQueryRequest
-  ): Promise<UpdateByQueryResponse> {
+    params: estypes.UpdateByQueryRequest
+  ): Promise<estypes.UpdateByQueryResponse> {
     try {
       return this.elasticsearchClient.updateByQuery(params);
     } catch (error) {
@@ -108,5 +100,7 @@ export class ElasticSearchService {
     }
   }
 }
+
+export default ElasticSearchService;
 
 export const esDbClient = new ElasticSearchService();
