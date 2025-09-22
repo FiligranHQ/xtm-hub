@@ -1,7 +1,5 @@
 import { dbUnsecure } from '../../../knexfile';
-import Organization, {
-  OrganizationInitializer,
-} from '../../model/kanel/public/Organization';
+import Organization from '../../model/kanel/public/Organization';
 import { extractDomain } from '../../utils/verify-email.util';
 
 export const loadOrganizationsFromEmail = async (
@@ -13,9 +11,6 @@ export const loadOrganizationsFromEmail = async (
     .select('*');
 };
 
-export const insertNewOrganization = (data: OrganizationInitializer) => {
-  return dbUnsecure<Organization>('Organization').insert(data).returning('*');
-};
 export const deleteOrganizationByName = (name: string) => {
   return dbUnsecure<Organization>('Organization')
     .delete('*')

@@ -7,6 +7,7 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { StillReferencedError } from '../../utils/error/error.util';
 import {
+  insertNewOrganizationReturning,
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
@@ -35,12 +36,11 @@ const resolvers: Resolvers = {
           throw new Error(ErrorCode.OrganizationSameNameExists);
         }
 
-        const [addOrganization] = await db<Organization>(
-          context,
-          'Organization'
-        )
-          .insert({ id: uuidv4(), ...input })
-          .returning('*');
+        const [addOrganization] = await insertNewOrganizationReturning({
+          id: uuidv4() as OrganizationId,
+          ...input,
+        });
+
         return addOrganization;
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);

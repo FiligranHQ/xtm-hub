@@ -19,7 +19,11 @@ import UserOrganization, {
   UserOrganizationId,
 } from '../model/kanel/public/UserOrganization';
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
-import { loadOrganizationBy } from '../modules/organizations/organizations.domain';
+import {
+  insertNewOrganization,
+  insertNewOrganizationReturning,
+  loadOrganizationBy,
+} from '../modules/organizations/organizations.domain';
 import {
   ADMIN_UUID,
   PLATFORM_ORGANIZATION_UUID,
@@ -164,13 +168,14 @@ export const insertPlatformOrganization = async (trx) => {
   });
 
   if (!adminOrganization) {
-    await dbUnsecure<Organization>('Organization')
-      .insert({
+    await insertNewOrganization(
+      {
         id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
         name: 'Filigran',
         domains: ['filigran.io'],
-      })
-      .transacting(trx);
+      },
+      trx
+    );
   }
 };
 
@@ -180,13 +185,14 @@ export const insertUserAdminOrganization = async (trx) => {
   });
 
   if (!adminOrganization) {
-    await dbUnsecure<Organization>('Organization')
-      .insert({
+    await insertNewOrganization(
+      {
         id: ADMIN_UUID as unknown as OrganizationId,
         name: portalConfig.admin.email,
         personal_space: true,
-      })
-      .transacting(trx);
+      },
+      trx
+    );
   }
 };
 
@@ -255,16 +261,14 @@ const ensureOrganizationExists = async (
   const personalSpace = await loadOrganizationBy({ id: orgId });
 
   if (!personalSpace) {
-    const query = dbUnsecure('Organization').insert({
-      id: orgId,
-      name: mail,
-      personal_space: true,
-    });
-    if (trx) {
-      await query.transacting(trx);
-    } else {
-      await query;
-    }
+    await insertNewOrganization(
+      {
+        id: orgId,
+        name: mail,
+        personal_space: true,
+      },
+      trx
+    );
   }
 };
 
@@ -342,18 +346,16 @@ export const ensureDevOrganizationExists = async (
   }
 
   // Create new organization
-  const orgData: Partial<Organization> = {
-    id: uuidv4() as OrganizationId,
-    name: orgConfig.name,
-    domains: orgConfig.domains || [],
-    personal_space: false,
-  };
+  const [newOrg] = await insertNewOrganizationReturning(
+    {
+      id: uuidv4() as OrganizationId,
+      name: orgConfig.name,
+      domains: orgConfig.domains || [],
+      personal_space: false,
+    },
+    trx
+  );
 
-  const query = dbUnsecure<Organization>('Organization')
-    .insert(orgData)
-    .returning('*');
-
-  const [newOrg] = trx ? await query.transacting(trx) : await query;
   return newOrg;
 };
 

@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import { db, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Filter,
@@ -5,7 +6,9 @@ import {
   OrganizationConnection,
   QueryOrganizationsArgs,
 } from '../../__generated__/resolvers-types';
-import Organization from '../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationInitializer,
+} from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 
@@ -55,4 +58,30 @@ export const loadOrganizations = (
       ],
     }
   );
+};
+
+export const insertNewOrganizationReturning = (
+  data: OrganizationInitializer,
+  trx?: Knex.Transaction
+) => {
+  const query = dbUnsecure<Organization>('Organization')
+    .insert(data)
+    .returning('*');
+
+  if (trx) {
+    query.transacting(trx);
+  }
+  return query;
+};
+
+export const insertNewOrganization = async (
+  data: OrganizationInitializer,
+  trx?: Knex.Transaction
+) => {
+  const query = dbUnsecure<Organization>('Organization').insert(data);
+  if (trx) {
+    query.transacting(trx);
+  }
+
+  return query;
 };
