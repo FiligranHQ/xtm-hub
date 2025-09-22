@@ -14,10 +14,10 @@
     },
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist"],
-        "options": {
+      "outputs": ["{options.outputPath}"],
+      "options": {
         "cwd": "apps/portal-front",
-        "command": "relay-compiler && tsx scripts/generate-enum.ts && next build"
+        "command": "yarn build"
       }
     },
     "start": {

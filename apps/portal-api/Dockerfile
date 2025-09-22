@@ -25,7 +25,7 @@ COPY apps/portal-api/. ./apps/portal-api/
 # Build the backend
 WORKDIR /app/apps/portal-api
 RUN corepack enable && \
-    yarn build
+    yarn dlx nx --no-cloud build portal-api
 
 # Production image, copy all the files and run next
 FROM base AS runner

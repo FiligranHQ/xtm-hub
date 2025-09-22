@@ -236,5 +236,22 @@
       "cache": true
     }
   },
-  "nxCloudId": "687667e386e38579c882078f"
+  "nxCloudId": "687667e386e38579c882078f",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nx/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "test",
+          "lint",
+          "check-ts",
+          "generate:ts"
+        ]
+      }
+    }
+  },
+  "affected": {
+    "defaultBase": "development"
+  }
 }
