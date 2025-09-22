@@ -53,6 +53,17 @@ test.describe('Registration', () => {
         })
       ).toBeVisible();
     });
+    await test.step('instance should be visible', async () => {
+      const homePage = new HomePage(page);
+
+      await homePage.navigateTo();
+      await waitForReactIdle(page);
+      await expect(
+        page
+          .locator('li')
+          .filter({ hasText: 'Open AEV Instance - Private platform' })
+      ).toBeVisible();
+    });
   });
 
   test('should register openCTI platform', async ({ page }) => {

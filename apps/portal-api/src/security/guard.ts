@@ -1,7 +1,7 @@
 import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { PortalContext } from '../model/portal-context';
-import { ErrorCode } from '../modules/common/error-code';
+import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowedOnOrganization } from './auth.helper';
 
 export const securityGuard = {

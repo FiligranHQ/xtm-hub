@@ -2,7 +2,7 @@ import { MockInstance } from '@vitest/spy';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser, THALES_ORGA_ID } from '../../tests/tests.const';
 import { OrganizationCapability } from '../__generated__/resolvers-types';
-import { ErrorCode } from '../modules/common/error-code';
+import { ErrorCode } from '../utils/error/error.code';
 import * as authHelper from './auth.helper';
 import { securityGuard } from './guard';
 

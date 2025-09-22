@@ -5,4 +5,5 @@ export enum FeatureFlag {
   // dummy feature flag used for testing purposes
   DUMMY = 'DUMMY',
   OPENAEV_REGISTRATION = 'OPENAEV_REGISTRATION',
+  CONNECTORS_PAGE = 'CONNECTORS_PAGE',
 }

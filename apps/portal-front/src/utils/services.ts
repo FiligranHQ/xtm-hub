@@ -12,18 +12,32 @@ export const isExternalService = (
   [
     ServiceDefinitionIdentifierEnum.LINK,
     ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+    ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
 
 export const isRegistrationService = (
   serviceInstance: ServiceInstanceCardData
 ) =>
-  [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION].includes(
+  [
+    ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+    ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+  ].includes(
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
 
-export const openCTIPlatformToServiceInstanceCardData = (
+export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
+  const cardBackgroundByServiceMap: Partial<
+    Record<ServiceDefinitionIdentifierEnum, string>
+  > = {
+    [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION]:
+      'bg-gradient-to-br from-[#05105A] via-[#095298] to-[#05105A]',
+    [ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION]:
+      'bg-gradient-to-br from-[#0F1E38] via-[#0A6D6A] to-[#0F1E38]',
+  };
+  const platformIdentifier =
+    platform.identifier as ServiceDefinitionIdentifierEnum;
   return {
     id: platform.id,
     platform_id: platform.platform_id,
@@ -32,10 +46,10 @@ export const openCTIPlatformToServiceInstanceCardData = (
     platform_contract: platform.contract,
     illustration_document_id: null,
     logo_document_id: null,
-    service_definition_identifier:
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+    service_definition_identifier: platformIdentifier,
+    card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
-    ordering: -1, // OpenCTI Instances are displayed at the first position
+    ordering: -1, // registered platforms are displayed at the first position
   };
 };
 

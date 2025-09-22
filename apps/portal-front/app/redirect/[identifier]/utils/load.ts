@@ -1,4 +1,5 @@
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
+import { SettingsResponse } from '@/utils/settings.service';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import PlatformAssociatedOrganizationQueryGraphql, {
@@ -9,10 +10,7 @@ import ServiceInstancesSubscribedByIdentifierQuery, {
   serviceInstancesSubscribedByIdentifierQuery,
   serviceInstancesSubscribedByIdentifierQuery$data,
 } from '@generated/serviceInstancesSubscribedByIdentifierQuery.graphql';
-import SettingsQuery, {
-  settingsQuery,
-  settingsQuery$data,
-} from '@generated/settingsQuery.graphql';
+import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 
 interface MeResponse {
   data: {
@@ -35,10 +33,6 @@ export const loadMeUser = async () => {
   >(MeLoaderQuery)) as MeResponse;
   return meResponse.data.me;
 };
-
-interface SettingsResponse {
-  data: settingsQuery$data;
-}
 
 export const loadBaseUrlFront = async () => {
   const settingsResponse = (await serverPortalApiFetch<

@@ -44,6 +44,10 @@ export async function networkFetch({
   cache?: RequestCache;
   options?: RequestInit;
 }): Promise<GraphQLResponse> {
+  if (isDevelopment()) {
+    logGraphQLOperation(request, variables, apiUri);
+  }
+
   const headers: { [k: string]: string } = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -115,5 +119,23 @@ export function fetchOrSubscribe(
       },
       sink
     );
+  });
+}
+
+export function logGraphQLOperation(
+  request: RequestParameters,
+  variables: Variables,
+  apiUri: string
+) {
+  const operationName = request.name || 'Anonymous';
+  const query = request.text || '';
+  const operationType =
+    query
+      .trim()
+      .match(/^(query|mutation|subscription)/i)?.[1]
+      ?.toUpperCase() || 'QUERY';
+  // eslint-disable-next-line no-console
+  console.log(`[GraphQL ${operationType}] ${operationName} → ${apiUri}`, {
+    variables: variables || {},
   });
 }

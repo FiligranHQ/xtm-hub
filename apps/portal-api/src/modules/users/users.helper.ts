@@ -25,6 +25,7 @@ import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../sessionStoreManager';
 import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
@@ -320,7 +321,7 @@ export const preventAdministratorRemovalOfOneOrganization = async (
   );
 
   if (isLastWithCapability) {
-    throw new Error('CANT_REMOVE_LAST_ADMINISTRATOR');
+    throw new Error(ErrorCode.CantRemoveLastAdministrator);
   }
 };
 

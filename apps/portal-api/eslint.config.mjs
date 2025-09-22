@@ -1,9 +1,10 @@
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-export default [
+export default defineConfig([
   {
     languageOptions: { globals: globals.node },
     plugins: {
@@ -12,11 +13,15 @@ export default [
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.strict,
+  globalIgnores([
+    '**/dist/**',
+    '**/node_modules/**',
+    '**/__generated__/**',
+    '**/builder/**',
+    '**/tests/**',
+    '**/src/utils/error/error.util.ts',
+  ]),
   {
-    ignores: ['**/dist/**', '**/node_modules/**', '**/__generated__/**'],
-  },
-  {
-    files: ['**/*.test.ts'],
     rules: {
       '@typescript-eslint/ban-ts-ignore': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
@@ -34,6 +39,14 @@ export default [
           allow: ['warn', 'error'],
         },
       ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
     },
   },
-];
+]);

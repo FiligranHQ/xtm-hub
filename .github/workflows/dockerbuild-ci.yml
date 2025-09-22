@@ -264,22 +264,6 @@ jobs:
             -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
             --inventory eu-west-staging \
             --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
-
-  delete-feature-branch:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    steps:
-      - name: Install AWX cli
-        run: pip install awxkit
-
-      - name: Delete
-        run: |
-          awx --conf.host https://awx.filigran.io \
-            --conf.token ${{ secrets.AWX_TOKEN }} \
-            -f human job_templates launch 'Delete XTM Hub feature branch for testing' \
-            --inventory eu-west-staging \
-            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.pull_request.number }}\"}"
   build-images-prod:
     needs:
       - run-e2e-tests
