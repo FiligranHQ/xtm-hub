@@ -27,6 +27,7 @@ import {
   ShareEvent,
   SubscribeEvent,
   TelemetryEventType,
+  UpdateOrganizationEvent,
 } from './telemetry.types';
 
 function buildBaseEvent(
@@ -231,5 +232,19 @@ export function buildOneClickDeployEvent(
     resource_title,
     platform_id,
     platform_version,
+  };
+}
+
+export function buildUpdateOrganizationEvent(
+  organization: Organization,
+  user_id: UserId,
+  timestamp?: Date
+): UpdateOrganizationEvent {
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+  return {
+    event_type: TelemetryEventType.UPDATE_ORGANIZATION,
+    ...baseEvent,
+    domains: organization.domains,
   };
 }

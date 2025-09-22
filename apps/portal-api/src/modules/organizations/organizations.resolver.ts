@@ -6,12 +6,12 @@ import { dispatch } from '../../pub';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { StillReferencedError } from '../../utils/error/error.util';
+import { organizationsApp } from './organizations.app';
 import {
   insertNewOrganizationReturning,
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
-  updateOrganization,
 } from './organizations.domain';
 import { deleteOrganizationBy } from './organizations.helper';
 
@@ -48,14 +48,13 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
-    editOrganization: async (_, { id, input }) => {
+    editOrganization: async (_, { id, input }, context) => {
       try {
-        const [updatedOrganization] = await updateOrganization(
+        return await organizationsApp.updateOrganization(
+          context,
           id as OrganizationId,
-          { ...input }
+          input
         );
-
-        return updatedOrganization;
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EditOrganizationError);
       }
