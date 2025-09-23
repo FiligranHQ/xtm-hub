@@ -8,7 +8,7 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { extractId, omit } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { loadSubscription } from '../../subcription/subscription.domain';
+import { loadSubscriptionByServiceInstanceAndSelectedOrganization } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   buildShareEvent,
@@ -166,7 +166,10 @@ const resolvers: Resolvers = {
       return getServiceInstance(context, service_instance_id);
     },
     subscription: ({ service_instance_id }, _, context) => {
-      return loadSubscription(context, service_instance_id);
+      return loadSubscriptionByServiceInstanceAndSelectedOrganization(
+        context,
+        service_instance_id
+      );
     },
   },
   Query: {
