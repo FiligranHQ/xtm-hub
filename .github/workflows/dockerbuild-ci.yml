@@ -92,36 +92,6 @@ jobs:
       contents: read
       packages: write
       pull-requests: write
-    services:
-      postgres:
-        image: postgres:17.2
-        env:
-          POSTGRES_USER: portal
-          POSTGRES_PASSWORD: portal-password
-          POSTGRES_DB: test_database
-          PGDATA: /data/postgres
-        options: >-
-          --health-cmd "pg_isready -d test_database"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-        ports:
-          - 5432:5432
-      elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
-        env:
-          discovery.type: single-node
-          xpack.ml.enabled: false
-          xpack.security.enabled: false
-          ES_JAVA_OPTS: "-Xms256m -Xmx256m"
-        options: >-
-          --health-cmd "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-        ports:
-          - 9200:9200
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -142,37 +112,10 @@ jobs:
         run: |
           mkdir -p ctrf
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
-          export TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
-          export GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
-          export GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
-          export GITHUB_RUN_ID="${{ github.run_id }}"
-          echo "Starting portal-api to check logs..."
-          docker run --rm \
-            --network host \
-            -e PORT=4001 \
-            -e DATABASE_HOST=localhost \
-            -e DATABASE_PORT=5432 \
-            -e DATABASE_USER=portal \
-            -e DATABASE_BASE=test_database \
-            -e DATABASE_PASSWORD=portal-password \
-            -e ADMIN_EMAIL=admin@filigran.io \
-            -e ADMIN_PASSWORD=admin \
-            -e DATA_SEEDING=true \
-            -e MINIO_BUCKET_NAME=xtmhubbucket \
-            -e MINIO_ENDPOINT=localhost \
-            -e MINIO_PORT=9000 \
-            -e MINIO_ACCESS_KEY=portal \
-            -e MINIO_SECRET_KEY=changeme \
-            -e MINIO_USE_SSL=false \
-            -e NODE_ENV=development \
-            -e VITEST_MODE=true \
-            -e START_DEV_SERVER=true \
-            -e ELASTIC_HOST=localhost \
-            -e ELASTIC_PORT=9200 \
-            -e BASE_URL_FRONT=http://localhost:3000 \
-            filigran/portal-api:${IMAGE_TAGS} || {
-              echo "Portal API failed to start. This is expected for debugging."
-            }
+           TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
+           GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
+           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
+           GITHUB_RUN_ID="${{ github.run_id }}"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests || TEST_EXIT_CODE=$?
           CONTAINER_ID=$(docker ps -a --filter "name=portal-e2e-tests-run" --format "{{.ID}}" | head -1)
           docker cp $CONTAINER_ID:/app/apps/portal-e2e-tests/ctrf/. ./ctrf/
