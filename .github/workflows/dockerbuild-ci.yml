@@ -25,7 +25,136 @@ concurrency:
 
 jobs:
 
-  build-images-tests:
+  build-apps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    strategy:
+      matrix:
+        include:
+          - name: portal-front
+            path: apps/portal-front
+            build-command: yarn dlx nx --no-cloud build portal-front
+            artifacts: |
+              apps/portal-front/.next/standalone
+              apps/portal-front/.next/static
+              apps/portal-front/public
+          - name: portal-api
+            path: apps/portal-api
+            build-command: yarn dlx nx --no-cloud build portal-api
+            artifacts: |
+              apps/portal-api/dist
+              apps/portal-api/config
+              apps/portal-api/tests/seeds
+              apps/portal-api/src/server/mail-template
+              apps/portal-api/src/migrations
+          - name: portal-e2e-tests
+            path: apps/portal-e2e-tests
+            build-command: echo "No build needed for e2e tests"
+            artifacts: |
+              apps/portal-e2e-tests/playwright.config.ts
+              apps/portal-e2e-tests/tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable && corepack prepare yarn@3.8.7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME}"
+          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            VERSION="staging-${GITHUB_SHA::8}"
+          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
+            VERSION="dev-${GITHUB_SHA::8}"
+          else
+            VERSION="local-${GITHUB_SHA::8}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build ${{ matrix.name }}
+        if: matrix.build-command != 'echo "No build needed for e2e tests"'
+        env:
+          NEXT_PUBLIC_APP_VERSION: ${{ env.VERSION }}
+          APP_VERSION: ${{ env.VERSION }}
+        run: |
+          ${{ matrix.build-command }}
+
+      - name: Prepare artifacts structure
+        run: |
+          mkdir -p artifact-${{ matrix.name }}
+          
+          # Copy package files (needed for all)
+          cp package.json yarn.lock .yarnrc.yml artifact-${{ matrix.name }}/
+          
+          # Copy specific app package.json
+          mkdir -p artifact-${{ matrix.name }}/${{ matrix.path }}
+          cp ${{ matrix.path }}/package.json artifact-${{ matrix.name }}/${{ matrix.path }}/
+          
+          # Copy build outputs based on app type
+          if [[ "${{ matrix.name }}" == "portal-front" ]]; then
+            cp -r apps/portal-front/.next/standalone/* artifact-${{ matrix.name }}/
+          
+            mkdir -p artifact-${{ matrix.name }}/apps/portal-front/.next
+            cp -r apps/portal-front/.next/static artifact-${{ matrix.name }}/apps/portal-front/.next/
+          
+            mkdir -p artifact-${{ matrix.name }}/apps/portal-front
+            cp -r apps/portal-front/public artifact-${{ matrix.name }}/apps/portal-front/
+          
+          elif [[ "${{ matrix.name }}" == "portal-api" ]]; then
+            cp -r apps/portal-api/dist artifact-${{ matrix.name }}/dist
+          
+            cp -r apps/portal-api/config artifact-${{ matrix.name }}/config
+          
+            mkdir -p artifact-${{ matrix.name }}/tests
+            cp -r apps/portal-api/tests/seeds artifact-${{ matrix.name }}/tests/
+          
+            mkdir -p artifact-${{ matrix.name }}/src/server
+            cp -r apps/portal-api/src/server/mail-template artifact-${{ matrix.name }}/src/server/
+          
+          elif [[ "${{ matrix.name }}" == "portal-e2e-tests" ]]; then
+            ls -la package.json yarn.lock .yarnrc.yml
+          
+            ls -la artifact-${{ matrix.name }}/
+          
+            mkdir -p artifact-${{ matrix.name }}/apps/portal-e2e-tests
+            cp apps/portal-e2e-tests/playwright.config.ts artifact-${{ matrix.name }}/apps/portal-e2e-tests/
+            cp -r apps/portal-e2e-tests/tests artifact-${{ matrix.name }}/apps/portal-e2e-tests/
+          
+            mkdir -p artifact-${{ matrix.name }}/migrations
+            if [[ -d "apps/portal-api/src/migrations" ]]; then
+              cp -r apps/portal-api/src/migrations/* artifact-${{ matrix.name }}/migrations/ || true
+            fi
+          
+            mkdir -p artifact-${{ matrix.name }}/seeds  
+            if [[ -d "apps/portal-api/tests/seeds" ]]; then
+              cp -r apps/portal-api/tests/seeds/* artifact-${{ matrix.name }}/seeds/ || true
+            fi
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-build
+          path: artifact-${{ matrix.name }}/
+          retention-days: 2
+
+  build-docker-images:
+    needs: build-apps
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -36,56 +165,94 @@ jobs:
       matrix:
         include:
           - image: portal-front
+            artifact: portal-front-build
             dockerfile: apps/portal-front/Dockerfile
           - image: portal-api
+            artifact: portal-api-build
             dockerfile: apps/portal-api/Dockerfile
           - image: portal-e2e-tests
+            artifact: portal-e2e-tests-build
             dockerfile: apps/portal-e2e-tests/Dockerfile
     outputs:
-      docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-      docker-labels: ${{ steps.meta.outputs.labels }}
+      docker-tag: ${{ steps.generate-tag.outputs.tag }}
+      version: ${{ needs.build-apps.outputs.version }}
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (for Dockerfiles only)
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            apps/portal-front/Dockerfile.artifact
+            apps/portal-api/Dockerfile.artifact
+            apps/portal-e2e-tests/Dockerfile.artifact
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ./build-context
+
+      - name: Copy Dockerfile to build context
+        run: |
+          cp ${{ matrix.dockerfile }} ./build-context/Dockerfile.artifact
+          ls -la ./build-context/
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
+        if: github.event_name != 'pull_request' && matrix.image != 'portal-e2e-tests'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Docker meta deps
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: filigran/${{ matrix.image }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-      - name: Copy migrations
+
+      - name: Generate Docker tag
+        id: generate-tag
         run: |
-          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
-          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
-      - name: Build and push portal image
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            TAG="pr-${{ github.event.pull_request.number }}"
+          elif [[ "${GITHUB_REF}" == "refs/tags/"* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+          elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            TAG="main"
+          elif [[ "${GITHUB_REF}" == "refs/heads/development" ]]; then
+            TAG="development"
+          else
+            TAG="sha-${GITHUB_SHA::8}"
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Generated tag: ${TAG}"
+
+      - name: Determine build output
+        id: build-output
+        run: |
+          if [[ "${{ matrix.image }}" == "portal-e2e-tests" ]]; then
+            echo "should_push=false" >> $GITHUB_OUTPUT
+            echo "should_load=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "should_push=true" >> $GITHUB_OUTPUT
+            echo "should_load=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_push=true" >> $GITHUB_OUTPUT
+            echo "should_load=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Build et push/load selon le cas
+      - name: Build and push/load Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./build-context
           file: ${{ matrix.dockerfile }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: ${{ steps.build-output.outputs.should_push == 'true' }}
+          load: ${{ steps.build-output.outputs.should_load == 'true' }}
+          tags: filigran/${{ matrix.image }}:${{ steps.generate-tag.outputs.tag }}
           build-args: |
-            APP_VERSION=0.0.0-e2e
-          cache-from: |
-            type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:development
-            type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+            APP_VERSION=${{ needs.build-apps.outputs.version }}
+          cache-from: type=registry,ref=filigran/${{ matrix.image }}:buildcache
+          cache-to: ${{ steps.build-output.outputs.should_push == 'true' && format('type=registry,ref=filigran/{0}:buildcache,mode=max', matrix.image) || '' }}
 
   run-e2e-tests:
-    needs: build-images-tests
+    needs: build-docker-images
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -95,30 +262,45 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        with:
+          sparse-checkout: |
+            xtm-hub-dev/docker-compose-ci.yml
+
       - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Install docker
-        uses: docker/setup-docker-action@v4
-      - name: Copy migrations
+
+      - name: Pull images if needed
+        if: github.event_name != 'pull_request'
         run: |
-          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
-          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
-      - name: Launch docker compose
+          docker pull filigran/portal-front:${{ needs.build-docker-images.outputs.docker-tag }}
+          docker pull filigran/portal-api:${{ needs.build-docker-images.outputs.docker-tag }}
+
+      - name: Launch E2E tests with docker compose
         run: |
           mkdir -p ctrf
-          export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
+          export IMAGE_TAG="${{ needs.build-docker-images.outputs.docker-tag }}" \
            TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
            GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
            GITHUB_RUN_ID="${{ github.run_id }}"
+
+          # List available images for debug
+          echo "Available Docker images:"
+          docker images | grep portal || true
+
+          # Run tests
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests || TEST_EXIT_CODE=$?
-          CONTAINER_ID=$(docker ps -a --filter "name=portal-e2e-tests-run" --format "{{.ID}}" | head -1)
-          docker cp $CONTAINER_ID:/app/apps/portal-e2e-tests/ctrf/. ./ctrf/
+
+          # Get results
+          CONTAINER_ID=$(docker ps -a --filter "name=portal-e2e-tests" --format "{{.ID}}" | head -1)
+          if [[ ! -z "$CONTAINER_ID" ]]; then
+            docker cp $CONTAINER_ID:/app/apps/portal-e2e-tests/ctrf/. ./ctrf/ || true
+          fi
+
           exit ${TEST_EXIT_CODE:-0}
 
       - name: Publish Test Report
@@ -136,217 +318,357 @@ jobs:
           report-order: 'summary-report,failed-report,flaky-report,insights-report,test-report'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Collect service logs on failure
         if: failure()
         run: |
           echo "=== Collecting logs from all services ==="
-          echo ""
-          echo "=== Portal API Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-api || echo "Could not collect portal-api logs"
-          echo ""
-          echo "=== Portal API Test Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-api-test || echo "Could not collect portal-api-test logs"
-          echo ""
-          echo "=== Portal Front Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-front || echo "Could not collect portal-front logs"
-          echo ""
-          echo "=== Portal Front Test Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-front-test || echo "Could not collect portal-front-test logs"
-          echo ""
-          echo "=== PostgreSQL Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-postgres || echo "Could not collect portal-postgres logs"
-          echo ""
-          echo "=== MinIO Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-minio || echo "Could not collect portal-minio logs"
-          echo ""
-          echo "=== E2E Tests Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-e2e-tests || echo "Could not collect portal-e2e-tests logs"
-          echo ""
-          echo "=== Docker container status ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml ps -a || echo "Could not get container status"
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 || true
 
       - name: Save logs as artifacts
         if: failure()
         run: |
           mkdir -p logs
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-api > logs/portal-api.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-api-test > logs/portal-api-test.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front > logs/portal-front.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front-test > logs/portal-front-test.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-postgres > logs/portal-postgres.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-minio > logs/portal-minio.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-e2e-tests > logs/portal-e2e-tests.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs > logs/all-services.log 2>&1 || true
 
       - name: Upload logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: service-logs-${{ github.run_id }}
+          name: e2e-test-logs-${{ github.run_id }}
           path: logs/
           retention-days: 30
 
   run-front-unit-tests:
-    needs: build-images-tests
+    needs: build-docker-images
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: read
-      packages: write
-    if: contains(github.ref , 'refs/tags/') == false
+    if: contains(github.ref, 'refs/tags/') == false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        with:
+          sparse-checkout: |
+            xtm-hub-dev/docker-compose-ci.yml
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Install docker
-        uses: docker/setup-docker-action@v4
-      - name: Launch docker compose
+
+      - name: Pull Docker image
+        run: docker pull filigran/portal-front:${{ needs.build-docker-images.outputs.docker-tags }}
+
+      - name: Run unit tests in Docker
         run: |
-          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           mkdir -p coverage
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
+          docker run --rm \
+            -v $(pwd)/coverage:/app/apps/portal-front/coverage \
+            -e SERVER_HTTP_API=http://localhost:4001 \
+            filigran/portal-front:${{ needs.build-docker-images.outputs.docker-tags }} \
+            sh -c "cd /app/apps/portal-front && yarn test:unit --coverage"
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
 
   run-api-unit-tests:
-    needs: build-images-tests
+    needs: build-docker-images
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: read
-      packages: write
-    if: contains(github.ref , 'refs/tags/') == false
+    if: contains(github.ref, 'refs/tags/') == false
+    services:
+      postgres:
+        image: postgres:17.2
+        env:
+          POSTGRES_USER: portal
+          POSTGRES_PASSWORD: portal-password
+          POSTGRES_DB: test_database
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      minio:
+        image: minio/minio:RELEASE.2025-06-13T11-33-47Z
+        env:
+          MINIO_ROOT_USER: portal
+          MINIO_ROOT_PASSWORD: changeme
+        options: >-
+          --health-cmd "mc ready local"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        with:
+          sparse-checkout: |
+            xtm-hub-dev/docker-compose-ci.yml
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Install docker
-        uses: docker/setup-docker-action@v4
-      - name: Launch docker compose
+
+      - name: Pull Docker image
+        run: docker pull filigran/portal-api:${{ needs.build-docker-images.outputs.docker-tags }}
+
+      - name: Run unit tests in Docker
         run: |
           mkdir -p coverage
-          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
+          docker run --rm \
+            --network ${{ job.container.network }} \
+            -v $(pwd)/coverage:/app/coverage \
+            -e DATABASE_HOST=postgres \
+            -e DATABASE_PORT=5432 \
+            -e DATABASE_USER=portal \
+            -e DATABASE_BASE=test_database \
+            -e DATABASE_PASSWORD=portal-password \
+            -e MINIO_ENDPOINT=minio \
+            -e MINIO_PORT=9000 \
+            -e MINIO_ACCESS_KEY=portal \
+            -e MINIO_SECRET_KEY=changeme \
+            -e MINIO_USE_SSL=false \
+            -e NODE_ENV=test \
+            filigran/portal-api:${{ needs.build-docker-images.outputs.docker-tags }} \
+            sh -c "yarn test:unit --coverage"
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
 
-  deploy-feature-branch:
-    needs: build-images-tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: |
-      github.event_name == 'pull_request' &&
-      contains(github.event.pull_request.labels.*.name, 'needs feature env')
-    steps:
-      - name: Install AWX cli
-        run: pip install awxkit
-
-      - name: Deploy
-        run: |
-          awx --conf.host https://awx.filigran.io \
-            --conf.token ${{ secrets.AWX_TOKEN }} \
-            -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
-            --inventory eu-west-staging \
-            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
-  build-images-prod:
+  transform-image-for-prod:
     needs:
+      - build-docker-images
       - run-e2e-tests
       - run-front-unit-tests
       - run-api-unit-tests
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      packages: write
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - image: portal-front
-            dockerfile: apps/portal-front/Dockerfile
-          - image: portal-api
-            dockerfile: apps/portal-api/Dockerfile
+    timeout-minutes: 5
     if: |
       always() &&
       github.event_name != 'pull_request' &&
-      (needs.run-e2e-tests.result == 'success') &&
-      (needs.run-front-unit-tests.result == 'skipped' || needs.run-front-unit-tests.result == 'success') &&
-      (needs.run-api-unit-tests.result == 'skipped' || needs.run-api-unit-tests.result == 'success')
+      needs.run-e2e-tests.result == 'success'
+    strategy:
+      matrix:
+        image: [ portal-front, portal-api ]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Docker meta deps
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: filigran/${{ matrix.image }}-prod
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            ${{ contains(github.ref, 'refs/tags/') && 'latest' }} # Add `latest` only for tags (production)
-      - name: Determine version
-        id: version
+
+      - name: Promote images to production
         run: |
+          SOURCE_TAG="${{ needs.build-docker-images.outputs.docker-tags }}"
+          docker pull filigran/${{ matrix.image }}:${SOURCE_TAG}
+          
+          docker tag filigran/${{ matrix.image }}:${SOURCE_TAG} \
+                     filigran/${{ matrix.image }}-prod:${SOURCE_TAG}
+          
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            echo "VERSION=staging-${GITHUB_SHA::8}" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
-            echo "VERSION=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
-          else
-            echo "VERSION=local-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            docker tag filigran/${{ matrix.image }}:${SOURCE_TAG} \
+                       filigran/${{ matrix.image }}-prod:latest
+            docker push filigran/${{ matrix.image }}-prod:latest
           fi
-      - name: Build and push images
-        uses: docker/build-push-action@v6
+          
+          docker push filigran/${{ matrix.image }}-prod:${SOURCE_TAG}
+#
+#  build-images-tests:
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 10
+#    permissions:
+#      contents: read
+#      packages: write
+#    strategy:
+#      fail-fast: true
+#      matrix:
+#        include:
+#          - image: portal-front
+#            dockerfile: apps/portal-front/Dockerfile
+#          - image: portal-api
+#            dockerfile: apps/portal-api/Dockerfile
+#          - image: portal-e2e-tests
+#            dockerfile: apps/portal-e2e-tests/Dockerfile
+#    outputs:
+#      docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+#      docker-labels: ${{ steps.meta.outputs.labels }}
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v3
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#      - name: Docker meta deps
+#        id: meta
+#        uses: docker/metadata-action@v5
+#        with:
+#          images: filigran/${{ matrix.image }}
+#          tags: |
+#            type=ref,event=branch
+#            type=ref,event=pr
+#            type=semver,pattern={{version}}
+#            type=semver,pattern={{major}}.{{minor}}
+#      - name: Copy migrations
+#        run: |
+#          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
+#          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+#      - name: Build and push portal image
+#        uses: docker/build-push-action@v6
+#        with:
+#          context: .
+#          file: ${{ matrix.dockerfile }}
+#          push: true
+#          tags: ${{ steps.meta.outputs.tags }}
+#          labels: ${{ steps.meta.outputs.labels }}
+#          build-args: |
+#            APP_VERSION=0.0.0-e2e
+#          cache-from: |
+#            type=registry,ref=filigran/${{ matrix.image }}:main
+#            type=registry,ref=filigran/${{ matrix.image }}:development
+#            type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+#          cache-to: type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+#
+#  deploy-feature-branch:
+#    needs: build-images-tests
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 10
+#    if: |
+#      github.event_name == 'pull_request' &&
+#      contains(github.event.pull_request.labels.*.name, 'needs feature env')
+#    steps:
+#      - name: Install AWX cli
+#        run: pip install awxkit
+#
+#      - name: Deploy
+#        run: |
+#          awx --conf.host https://awx.filigran.io \
+#            --conf.token ${{ secrets.AWX_TOKEN }} \
+#            -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
+#            --inventory eu-west-staging \
+#            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
+#  build-images-prod:
+#    needs:
+#      - run-e2e-tests
+#      - run-front-unit-tests
+#      - run-api-unit-tests
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 10
+#    permissions:
+#      contents: read
+#      packages: write
+#    strategy:
+#      fail-fast: true
+#      matrix:
+#        include:
+#          - image: portal-front
+#            dockerfile: apps/portal-front/Dockerfile
+#          - image: portal-api
+#            dockerfile: apps/portal-api/Dockerfile
+#    if: |
+#      always() &&
+#      github.event_name != 'pull_request' &&
+#      (needs.run-e2e-tests.result == 'success') &&
+#      (needs.run-front-unit-tests.result == 'skipped' || needs.run-front-unit-tests.result == 'success') &&
+#      (needs.run-api-unit-tests.result == 'skipped' || needs.run-api-unit-tests.result == 'success')
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v3
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#      - name: Docker meta deps
+#        id: meta
+#        uses: docker/metadata-action@v5
+#        with:
+#          images: filigran/${{ matrix.image }}-prod
+#          tags: |
+#            type=ref,event=branch
+#            type=ref,event=pr
+#            type=semver,pattern={{version}}
+#            type=semver,pattern={{major}}.{{minor}}
+#            ${{ contains(github.ref, 'refs/tags/') && 'latest' }} # Add `latest` only for tags (production)
+#      - name: Determine version
+#        id: version
+#        run: |
+#          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+#            echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+#          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+#            echo "VERSION=staging-${GITHUB_SHA::8}" >> $GITHUB_ENV
+#          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
+#            echo "VERSION=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+#          else
+#            echo "VERSION=local-${GITHUB_SHA::8}" >> $GITHUB_ENV
+#          fi
+#      - name: Build and push images
+#        uses: docker/build-push-action@v6
+#        with:
+#          context: .
+#          file: ${{ matrix.dockerfile }}
+#          push: true
+#          tags: ${{ steps.meta.outputs.tags }}
+#          build-args: |
+#            APP_VERSION=${{ env.VERSION }}
+#          labels: ${{ steps.meta.outputs.labels }}
+#          cache-from: |
+#            type=registry,ref=filigran/${{ matrix.image }}:main
+#            type=registry,ref=filigran/${{ matrix.image }}:development
+#            type=registry,ref=filigran/${{ matrix.image }}:latest
+#            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+#
+
+  push-prod-images:
+    needs:
+      - build-docker-images
+      - run-e2e-tests
+      - run-front-unit-tests
+      - run-api-unit-tests
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      github.event_name != 'pull_request' &&
+      (needs.run-e2e-tests.result == 'success')
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
         with:
-          context: .
-          file: ${{ matrix.dockerfile }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          build-args: |
-            APP_VERSION=${{ env.VERSION }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:development
-            type=registry,ref=filigran/${{ matrix.image }}:latest
-            type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Pull and retag images
+        run: |
+          docker pull filigran/${{ matrix.image }}:${{ needs.build-docker-images.outputs.docker-tags }}
 
+          docker tag filigran/${{ matrix.image }}:${{ needs.build-docker-images.outputs.docker-tags }} \
+                     filigran/${{ matrix.image }}-prod:${{ needs.build-docker-images.outputs.docker-tags }}
+
+          docker push filigran/${{ matrix.image }}-prod:${{ needs.build-docker-images.outputs.docker-tags }}
   deploy:
-    needs: build-images-prod
+    needs: push-prod-images
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: |
       always() &&
       github.event_name != 'pull_request' &&
-      (needs.build-images-prod.result == 'success')
+      (needs.push-prod-images.result == 'success')
     steps:
       - name: Install AWX cli
         run: pip install awxkit

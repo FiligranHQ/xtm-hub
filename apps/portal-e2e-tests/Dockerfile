@@ -1,28 +1,24 @@
 FROM mcr.microsoft.com/playwright:v1.55.0-noble
-
 WORKDIR /app
 
-# Copy monorepo configuration files
+# Copy package files for dependency installation
 COPY .yarnrc.yml package.json yarn.lock ./
-COPY apps/portal-api/package.json ./apps/portal-api/package.json
-COPY apps/portal-e2e-tests/package.json ./apps/portal-e2e-tests/package.json
-COPY apps/portal-front/package.json ./apps/portal-front/package.json
+COPY ./apps/portal-e2e-tests/package.json ./apps/portal-e2e-tests/
 
-# Install all dependencies at the workspace level
+# Install dependencies for e2e tests only
 RUN corepack enable && \
-    yarn install --immutable
+    yarn workspaces focus portal-e2e-tests
 
-# Copy e2e test files
+# Copy test files and configs
 COPY ./apps/portal-e2e-tests/playwright.config.ts ./apps/portal-e2e-tests/
 COPY ./apps/portal-e2e-tests/tests ./apps/portal-e2e-tests/tests
 
-# Create directories first
+# Create directories for migrations and seeds
 RUN mkdir -p ./apps/portal-e2e-tests/migrations ./apps/portal-e2e-tests/seeds
 
-# Copy migrations and seeds if they exist (using wildcard trick)
-COPY ./apps/portal-api/src/migrations* ./apps/portal-e2e-tests/migrations/
-COPY ./apps/portal-api/tests/seeds* ./apps/portal-e2e-tests/seeds/
+# Copy migrations and seeds from artifacts
+COPY ./migrations ./apps/portal-e2e-tests/migrations/
+COPY ./seeds ./apps/portal-e2e-tests/seeds/
 
 WORKDIR /app/apps/portal-e2e-tests
-
 CMD ["yarn", "test:e2e"]
