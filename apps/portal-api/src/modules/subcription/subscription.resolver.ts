@@ -1,26 +1,23 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { v4 as uuidv4 } from 'uuid';
-import { db, dbTx } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
 
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
 import {
   loadServiceInstanceBy,
   loadServiceWithSubscriptions,
 } from '../services/service-instance.domain';
-import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
 import { subscriptionApp } from './subscription.app';
 import {
-  checkSubscriptionExists,
   getServiceCapability,
   getSubscriptionCapability,
   getUserService,
@@ -65,55 +62,29 @@ const resolvers: Resolvers = {
       },
       context
     ) => {
-      const trx = await dbTx();
-
-      // Check the subscription does not already exist :
       try {
-        const subscription = await checkSubscriptionExists(
-          context,
-          (fromGlobalId(organization_id).id ??
-            context.user.selected_organization_id) as OrganizationId,
-          fromGlobalId(service_instance_id).id as ServiceInstanceId
-        );
-        if (subscription) {
-          logApp.warn(
-            "Forbidden access while adding subscription: You've already subscribed this organization to this service."
-          );
-          throw new Error(ErrorCode.AlreadySubscribedOrganizationError);
-        }
-
-        const subscriptionData = {
-          id: uuidv4(),
-          service_instance_id: fromGlobalId(service_instance_id).id,
-          organization_id:
-            fromGlobalId(organization_id).id ??
-            context.user.selected_organization_id,
-          start_date: start_date,
-          end_date: end_date,
-          billing: 0,
-          status: 'ACCEPTED',
-        };
-
-        const [addedSubscription] = await db<Subscription>(
-          context,
-          'Subscription'
-        )
-          .insert(subscriptionData)
-          .returning('*');
-
-        await addCapabilitiesToSubscription(
-          context,
-          capability_ids,
-          addedSubscription.id as SubscriptionId
+        const organizationId =
+          extractId<OrganizationId>(organization_id) ??
+          context.user.selected_organization_id;
+        const serviceInstanceId =
+          extractId<ServiceInstanceId>(service_instance_id);
+        const capabilityIds = capability_ids.map((capability_id) =>
+          extractId<ServiceCapabilityId>(capability_id)
         );
 
-        await trx.commit();
+        await subscriptionApp.subscribeOrganizationToService(context, {
+          organizationId,
+          serviceInstanceId,
+          startDate: start_date,
+          endDate: end_date,
+          capabilityIds,
+        });
+
         return loadServiceWithSubscriptions(
           context,
           fromGlobalId(service_instance_id).id
         );
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.ServiceSubscriptionError
