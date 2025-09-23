@@ -1,6 +1,5 @@
 services:
   portal-front:
-    image: filigran/portal-front:${IMAGE_TAGS}
     container_name: portal-front
     logging:
       driver: "json-file"
@@ -80,7 +79,6 @@ services:
     volumes:
       - "./coverage:/app/apps/portal-api/coverage"
   portal-api:
-    image: filigran/portal-api:${IMAGE_TAGS}
     container_name: portal-api
     logging:
       driver: "json-file"
@@ -186,7 +184,6 @@ services:
       retries: 10
 
   portal-e2e-tests:
-    image: ${E2E_IMAGE_TAG:-filigran/portal-e2e-tests:latest}
     logging:
       driver: "json-file"
       options:
