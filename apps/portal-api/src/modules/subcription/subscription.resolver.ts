@@ -95,11 +95,9 @@ const resolvers: Resolvers = {
           addedSubscription
         );
 
-        const selectedOrga = await loadOrganizationBy(
-          context,
-          'id',
-          context.user.selected_organization_id
-        );
+        const selectedOrga = await loadOrganizationBy({
+          id: context.user.selected_organization_id,
+        });
 
         await addAdminAccess(
           context,

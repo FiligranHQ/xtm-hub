@@ -1,11 +1,16 @@
-import { db, paginate } from '../../../knexfile';
+import { Knex } from 'knex';
+import { db, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Filter,
   FilterKey,
-  Organization,
   OrganizationConnection,
   QueryOrganizationsArgs,
 } from '../../__generated__/resolvers-types';
+import Organization, {
+  OrganizationId,
+  OrganizationInitializer,
+  OrganizationMutator,
+} from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 
@@ -25,12 +30,10 @@ export const loadOrganizationsByUser = async (
 };
 
 export const loadOrganizationBy = async (
-  context: PortalContext,
-  field: string,
-  value: string
+  conditions: OrganizationMutator
 ): Promise<Organization> => {
-  return db<Organization>(context, 'Organization')
-    .where({ [field]: value })
+  return dbUnsecure<Organization>('Organization')
+    .where(conditions)
     .select('*')
     .first();
 };
@@ -57,4 +60,38 @@ export const loadOrganizations = (
       ],
     }
   );
+};
+
+export const insertNewOrganization = (
+  data: OrganizationInitializer,
+  trx?: Knex.Transaction
+) => {
+  const query = dbUnsecure<Organization>('Organization')
+    .insert(data)
+    .returning('*');
+
+  if (trx) {
+    query.transacting(trx);
+  }
+  return query;
+};
+
+export const updateOrganization = async (
+  id: OrganizationId,
+  data: OrganizationMutator,
+  trx?: Knex.Transaction
+) => {
+  const query = dbUnsecure<Organization>('Organization')
+    .where({ id: id })
+    .update(data)
+    .returning('*');
+
+  if (trx) {
+    query.transacting(trx);
+  }
+  return query;
+};
+
+export const deleteOrganizationBy = (conditions: OrganizationMutator) => {
+  return dbUnsecure<Organization>('Organization').delete('*').where(conditions);
 };

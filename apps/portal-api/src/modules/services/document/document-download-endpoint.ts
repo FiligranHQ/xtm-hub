@@ -132,11 +132,9 @@ export const documentDownloadEndpoint = (app) => {
 
           try {
             if (shouldSendEventForService(serviceDefinition.identifier)) {
-              const selectedOrga = await loadOrganizationBy(
-                context,
-                'id',
-                context.user.selected_organization_id
-              );
+              const selectedOrga = await loadOrganizationBy({
+                id: context.user.selected_organization_id,
+              });
 
               const downloadEvent = buildDownloadEvent(
                 selectedOrga,

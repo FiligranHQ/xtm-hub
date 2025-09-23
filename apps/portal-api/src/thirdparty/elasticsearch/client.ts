@@ -99,6 +99,25 @@ class ElasticSearchService {
       throw error;
     }
   }
+  async bulk(params: estypes.BulkRequest): Promise<estypes.BulkResponse> {
+    try {
+      return this.elasticsearchClient.bulk(params);
+    } catch (error) {
+      logApp.error('ES bulk error', { error });
+      throw error;
+    }
+  }
+
+  async deleteByQuery(
+    params: estypes.DeleteByQueryRequest
+  ): Promise<estypes.DeleteByQueryResponse> {
+    try {
+      return this.elasticsearchClient.deleteByQuery(params);
+    } catch (error) {
+      logApp.error('ES deleteByQuery error', { error });
+      throw error;
+    }
+  }
 }
 
 export default ElasticSearchService;

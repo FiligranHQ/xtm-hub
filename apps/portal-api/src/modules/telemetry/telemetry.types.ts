@@ -13,6 +13,8 @@ export enum TelemetryEventType {
   CREATE = 'create',
   REGISTER = 'register',
   ONE_CLICK_DEPLOY = 'one_click_deploy',
+  UPDATE_ORGANIZATION = 'update_organization',
+  CREATE_ORGANIZATION = 'create_organization',
 }
 
 export interface BaseTelemetryEvent {
@@ -79,6 +81,16 @@ export interface OneClickDeployEvent extends BaseTelemetryEvent {
   resource_title: string;
 }
 
+export interface UpdateOrganizationEvent extends BaseTelemetryEvent {
+  event_type: TelemetryEventType.UPDATE_ORGANIZATION;
+  domains: string[];
+}
+
+export interface CreateOrganizationEvent extends BaseTelemetryEvent {
+  event_type: TelemetryEventType.CREATE_ORGANIZATION;
+  domains: string[];
+}
+
 export type TelemetryEvent =
   | LoginEvent
   | SubscribeEvent
@@ -86,4 +98,6 @@ export type TelemetryEvent =
   | DownloadEvent
   | CreateEvent
   | RegisterPlatformEvent
-  | OneClickDeployEvent;
+  | OneClickDeployEvent
+  | UpdateOrganizationEvent
+  | CreateOrganizationEvent;

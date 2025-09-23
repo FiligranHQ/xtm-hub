@@ -20,6 +20,11 @@ import UserOrganization, {
 } from '../model/kanel/public/UserOrganization';
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
 import {
+  insertNewOrganization,
+  loadOrganizationBy,
+  updateOrganization,
+} from '../modules/organizations/organizations.domain';
+import {
   ADMIN_UUID,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
@@ -158,32 +163,36 @@ export const ensureRoleHasCapability = async (role, capability, trx) => {
 };
 
 export const insertPlatformOrganization = async (trx) => {
-  const adminOrganization = await dbUnsecure<Organization>('Organization')
-    .where({ id: PLATFORM_ORGANIZATION_UUID })
-    .first();
+  const adminOrganization = await loadOrganizationBy({
+    id: PLATFORM_ORGANIZATION_UUID,
+  });
+
   if (!adminOrganization) {
-    await dbUnsecure<Organization>('Organization')
-      .insert({
+    await insertNewOrganization(
+      {
         id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
         name: 'Filigran',
         domains: ['filigran.io'],
-      })
-      .transacting(trx);
+      },
+      trx
+    );
   }
 };
 
 export const insertUserAdminOrganization = async (trx) => {
-  const adminOrganization = await dbUnsecure<Organization>('Organization')
-    .where({ id: ADMIN_UUID as unknown as OrganizationId })
-    .first();
+  const adminOrganization = await loadOrganizationBy({
+    id: ADMIN_UUID as unknown as OrganizationId,
+  });
+
   if (!adminOrganization) {
-    await dbUnsecure<Organization>('Organization')
-      .insert({
+    await insertNewOrganization(
+      {
         id: ADMIN_UUID as unknown as OrganizationId,
         name: portalConfig.admin.email,
         personal_space: true,
-      })
-      .transacting(trx);
+      },
+      trx
+    );
   }
 };
 
@@ -249,21 +258,17 @@ const ensureOrganizationExists = async (
   mail: string,
   trx?
 ) => {
-  const personalSpace = await dbUnsecure<Organization>('Organization')
-    .where({ id: orgId })
-    .first();
+  const personalSpace = await loadOrganizationBy({ id: orgId });
 
   if (!personalSpace) {
-    const query = dbUnsecure('Organization').insert({
-      id: orgId,
-      name: mail,
-      personal_space: true,
-    });
-    if (trx) {
-      await query.transacting(trx);
-    } else {
-      await query;
-    }
+    await insertNewOrganization(
+      {
+        id: orgId,
+        name: mail,
+        personal_space: true,
+      },
+      trx
+    );
   }
 };
 
@@ -321,37 +326,35 @@ export const ensureDevOrganizationExists = async (
   trx?
 ): Promise<Organization> => {
   // Check if organization already exists by name
-  const existingOrg = await dbUnsecure<Organization>('Organization')
-    .where({ name: orgConfig.name, personal_space: false })
-    .first();
+  const existingOrg = await loadOrganizationBy({
+    name: orgConfig.name,
+    personal_space: false,
+  });
 
   if (existingOrg) {
     // Update domains if provided
     if (orgConfig.domains && orgConfig.domains.length > 0) {
-      const query = dbUnsecure<Organization>('Organization')
-        .where({ id: existingOrg.id })
-        .update({ domains: orgConfig.domains })
-        .returning('*');
-
-      const [updatedOrg] = trx ? await query.transacting(trx) : await query;
+      const [updatedOrg] = await updateOrganization(
+        existingOrg.id,
+        { domains: orgConfig.domains },
+        trx
+      );
       return updatedOrg;
     }
     return existingOrg;
   }
 
   // Create new organization
-  const orgData: Partial<Organization> = {
-    id: uuidv4() as OrganizationId,
-    name: orgConfig.name,
-    domains: orgConfig.domains || [],
-    personal_space: false,
-  };
+  const [newOrg] = await insertNewOrganization(
+    {
+      id: uuidv4() as OrganizationId,
+      name: orgConfig.name,
+      domains: orgConfig.domains || [],
+      personal_space: false,
+    },
+    trx
+  );
 
-  const query = dbUnsecure<Organization>('Organization')
-    .insert(orgData)
-    .returning('*');
-
-  const [newOrg] = trx ? await query.transacting(trx) : await query;
   return newOrg;
 };
 

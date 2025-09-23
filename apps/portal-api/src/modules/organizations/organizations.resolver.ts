@@ -1,11 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
-import { Organization, Resolvers } from '../../__generated__/resolvers-types';
+import { Resolvers } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { dispatch } from '../../pub';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { StillReferencedError } from '../../utils/error/error.util';
+import { organizationsApp } from './organizations.app';
 import {
+  deleteOrganizationBy,
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
@@ -13,8 +14,8 @@ import {
 
 const resolvers: Resolvers = {
   Query: {
-    organization: async (_, { id }, context) =>
-      loadOrganizationBy(context, 'Organization.id', id),
+    organization: async (_, { id }) =>
+      loadOrganizationBy({ id: id as OrganizationId }),
     organizations: async (_, opts, context) => {
       return loadOrganizations(context, opts);
     },
@@ -26,47 +27,28 @@ const resolvers: Resolvers = {
     addOrganization: async (_, { input }, context) => {
       // Check if an organization exists with the same name (case insensitive)
       try {
-        const existingOrganization: Organization | undefined =
-          await db<Organization>(context, 'Organization')
-            .where('name', 'ILIKE', input.name)
-            .first('id');
-        if (existingOrganization?.id) {
-          throw new Error(ErrorCode.OrganizationSameNameExists);
-        }
-
-        const [addOrganization] = await db<Organization>(
-          context,
-          'Organization'
-        )
-          .insert({ id: uuidv4(), ...input })
-          .returning('*');
-        return addOrganization;
+        return await organizationsApp.createOrganization(context, input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
     editOrganization: async (_, { id, input }, context) => {
       try {
-        const [updatedOrganization] = await db<Organization>(
+        return await organizationsApp.updateOrganization(
           context,
-          'Organization'
-        )
-          .where({ id })
-          .update({ ...input })
-          .returning('*');
-        return updatedOrganization;
+          id as OrganizationId,
+          input
+        );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EditOrganizationError);
       }
     },
-    deleteOrganization: async (_, { id }, context) => {
+    deleteOrganization: async (_, { id }) => {
       try {
-        const [deletedOrganization] = await db<Organization>(
-          context,
-          'Organization'
-        )
-          .where({ id })
-          .delete('*');
+        const [deletedOrganization] = await deleteOrganizationBy({
+          id: id as OrganizationId,
+        });
+
         await dispatch('Organization', 'delete', deletedOrganization);
         return deletedOrganization;
       } catch (error) {

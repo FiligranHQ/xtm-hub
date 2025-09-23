@@ -20,6 +20,7 @@ import {
 } from './telemetry.const';
 import {
   CreateEvent,
+  CreateOrganizationEvent,
   DownloadEvent,
   LoginEvent,
   OneClickDeployEvent,
@@ -27,6 +28,7 @@ import {
   ShareEvent,
   SubscribeEvent,
   TelemetryEventType,
+  UpdateOrganizationEvent,
 } from './telemetry.types';
 
 function buildBaseEvent(
@@ -161,7 +163,9 @@ export async function buildCreateEvent(
   document: Document,
   timestamp?: Date
 ): Promise<CreateEvent> {
-  const selectedOrga = await loadOrganizationBy(context, 'id', organization_id);
+  const selectedOrga = await loadOrganizationBy({
+    id: organization_id,
+  });
 
   const baseEvent = buildBaseEvent(selectedOrga, user_id, timestamp);
 
@@ -229,5 +233,33 @@ export function buildOneClickDeployEvent(
     resource_title,
     platform_id,
     platform_version,
+  };
+}
+
+export function buildUpdateOrganizationEvent(
+  organization: Organization,
+  user_id: UserId,
+  timestamp?: Date
+): UpdateOrganizationEvent {
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+  return {
+    event_type: TelemetryEventType.UPDATE_ORGANIZATION,
+    ...baseEvent,
+    domains: organization.domains,
+  };
+}
+
+export function buildCreateOrganizationEvent(
+  organization: Organization,
+  user_id: UserId,
+  timestamp?: Date
+): CreateOrganizationEvent {
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+  return {
+    event_type: TelemetryEventType.CREATE_ORGANIZATION,
+    ...baseEvent,
+    domains: organization.domains,
   };
 }
