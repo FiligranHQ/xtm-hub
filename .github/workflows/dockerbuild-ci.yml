@@ -83,6 +83,49 @@ jobs:
             type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           cache-to: type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+          load: true
+
+      - name: Extract build files from Docker image
+        run: |
+          IMAGE_TAG="${{ steps.meta.outputs.tags }}"
+          IMAGE_TAG=$(echo "$IMAGE_TAG" | head -n1 | tr -d ' ')
+
+          container_id=$(docker create $IMAGE_TAG)
+          mkdir -p ./extracted-build
+
+           case "${{ matrix.image }}" in
+            portal-front)
+            echo "=== Extraction du build portal-front ==="
+            docker cp $container_id:/app/apps/portal-front/.next/standalone ./extracted-build/standalone || echo "Pas de standalone"
+            docker cp $container_id:/app/apps/portal-front/.next/static ./extracted-build/static || echo "Pas de static"
+            docker cp $container_id:/app/apps/portal-front/public ./extracted-build/public || echo "Pas de public"
+            ;;
+            portal-api)
+            echo "=== Extraction du build portal-api ==="
+            # Exemple : NestJS compilé dans dist
+            docker cp $container_id:/app ./extracted-build || echo "Pas de dist"
+            ;;
+            portal-e2e-tests)
+            echo "=== Extraction du build portal-e2e-tests ==="
+            # Exemple : si tu veux récupérer seeds et migrations déjà copiées
+            docker cp $container_id:/app/apps/portal-e2e-tests/migrations ./extracted-build/migrations || echo "Pas de migrations"
+            docker cp $container_id:/app/apps/portal-e2e-tests/seeds ./extracted-build/seeds || echo "Pas de seeds"
+            ;;
+            *)
+            echo "Image non reconnue : ${{ matrix.image }}"
+            ;;
+          esac
+          docker rm $container_id
+
+          echo "=== Fichiers extraits ==="
+          ls -la ./extracted-build/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-context-${{ matrix.image }}
+          path: ./extracted-build/
+          retention-days: 3
+          if-no-files-found: error
 
   run-e2e-tests:
     needs: build-images-tests
@@ -236,6 +279,17 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Install docker
         uses: docker/setup-docker-action@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: build*
+      - name: List downloaded artifacts
+        run: |
+          echo "=== Structure des artifacts téléchargés ==="
+          ls -la
+          echo ""
+          echo "=== Contenu détaillé ==="
+          find . -type f -ls
       - name: Launch docker compose
         run: |
           mkdir -p coverage
