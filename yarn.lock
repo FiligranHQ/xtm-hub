@@ -8900,25 +8900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.18.0":
-  version: 22.18.0
-  resolution: "@types/node@npm:22.18.0"
-  dependencies:
-    undici-types: ~6.21.0
-  checksum: a110b66f079ea882be1e300e72978cd3a5e7be8217b362b72152e09f64087731a235a0557fca72d621912a8ba1347d9ba49468c35755dd2581edb7f3f6e016e2
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:24.0.12":
-  version: 24.0.12
-  resolution: "@types/node@npm:24.0.12"
-  dependencies:
-    undici-types: ~7.8.0
-  checksum: fad1d824df644492f85fc1d29ae500672703145a1599ab59b48897a6fb868ed5065eb74c48027ac9ec68b2ad9557fe214a959884abc6e4cd82dbd85a7eb33b68
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^24.0.3":
+"@types/node@npm:24.5.2, @types/node@npm:^24.0.3":
   version: 24.5.2
   resolution: "@types/node@npm:24.5.2"
   dependencies:
@@ -10002,7 +9984,7 @@ __metadata:
     "@types/express-serve-static-core": 5.0.7
     "@types/express-session": 1.18.2
     "@types/graphql-upload": 16.0.7
-    "@types/node": 22.18.0
+    "@types/node": 24.5.2
     "@types/nodemailer": 6.4.16
     "@types/passport": 1.0.17
     "@types/uuid": 10.0.0
@@ -10067,7 +10049,7 @@ __metadata:
     "@testing-library/react-hooks": 8.0.1
     "@testing-library/user-event": 14.6.1
     "@types/config": 3.3.5
-    "@types/node": 22.18.0
+    "@types/node": 24.5.2
     "@types/react": 19.1.6
     "@types/react-dom": 19.1.5
     "@types/react-relay": 18.2.1
@@ -10129,7 +10111,7 @@ __metadata:
   resolution: "@xtm-hub/test_e2e@workspace:apps/portal-e2e-tests"
   dependencies:
     "@playwright/test": 1.55.0
-    "@types/node": 22.18.0
+    "@types/node": 24.5.2
     graphql: 16.11.0
     graphql-tag: 2.12.6
     knex: 3.1.0
@@ -24905,7 +24887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:^6.15.0, undici-types@npm:~6.21.0":
+"undici-types@npm:^6.15.0":
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
   checksum: 46331c7d6016bf85b3e8f20c159d62f5ae471aba1eb3dc52fff35a0259d58dcc7d592d4cc4f00c5f9243fa738a11cfa48bd20203040d4a9e6bc25e807fab7ab3
@@ -26196,7 +26178,7 @@ __metadata:
     "@nx/react": 21.2.3
     "@nx/web": ^21.2.3
     "@nx/workspace": 21.2.3
-    "@types/node": 24.0.12
+    "@types/node": 24.5.2
     eslint: ^9.30.1
     eslint-config-next: ^15.3.5
     eslint-config-prettier: ^10.1.5
