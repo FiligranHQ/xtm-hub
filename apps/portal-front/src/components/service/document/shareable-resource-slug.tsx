@@ -25,8 +25,6 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   ShareableResource,
@@ -60,24 +58,15 @@ const ShareableResourceSlug: React.FunctionComponent<
   const incrementDownloadNumber = () => {
     setDocumentDownloadNumber((documentDownloadNumber ?? 0) + 1);
   };
-  const isOneOpenAEVRegistrationFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.OPENAEV_REGISTRATION
-  );
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
-    if (documentData.type === ShareableResourceType.OPENAEV_SCENARIO) {
-      return isOneOpenAEVRegistrationFeatureEnabled;
-    }
     return [
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
       ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
+      ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
-  }, [
-    documentData.active,
-    documentData.type,
-    isOneOpenAEVRegistrationFeatureEnabled,
-  ]);
+  }, [documentData.active, documentData.type]);
 
   return (
     <>
