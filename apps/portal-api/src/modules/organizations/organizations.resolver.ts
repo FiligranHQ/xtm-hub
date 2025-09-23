@@ -1,14 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
-import { Organization, Resolvers } from '../../__generated__/resolvers-types';
+import { Resolvers } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { dispatch } from '../../pub';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { StillReferencedError } from '../../utils/error/error.util';
 import { organizationsApp } from './organizations.app';
 import {
-  insertNewOrganizationReturning,
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
@@ -30,20 +27,7 @@ const resolvers: Resolvers = {
     addOrganization: async (_, { input }, context) => {
       // Check if an organization exists with the same name (case insensitive)
       try {
-        const existingOrganization: Organization | undefined =
-          await db<Organization>(context, 'Organization')
-            .where('name', 'ILIKE', input.name)
-            .first('id');
-        if (existingOrganization?.id) {
-          throw new Error(ErrorCode.OrganizationSameNameExists);
-        }
-
-        const [addOrganization] = await insertNewOrganizationReturning({
-          id: uuidv4() as OrganizationId,
-          ...input,
-        });
-
-        return addOrganization;
+        return await organizationsApp.createOrganization(context, input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }

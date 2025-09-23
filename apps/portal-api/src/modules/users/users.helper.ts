@@ -45,6 +45,8 @@ import {
   loadOrganizationsFromEmail,
 } from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildCreateOrganizationEvent } from '../telemetry/telemetry.helper';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
@@ -114,6 +116,18 @@ async function createOrganisationWithAdminUser(email: string) {
   const addedUser = await createUserWithPersonalSpace({
     email,
   });
+
+  try {
+    const createOrgaEvent = buildCreateOrganizationEvent(
+      newOrganization,
+      addedUser.id
+    );
+    telemetryApp.sendTelemetryEvent(createOrgaEvent);
+  } catch (error) {
+    logApp.error('Unable to send telemetry event for create organization', {
+      error,
+    });
+  }
 
   // Insert relation UserOrganization
   const [userOrgRelation] = await createUserOrganizationRelation({

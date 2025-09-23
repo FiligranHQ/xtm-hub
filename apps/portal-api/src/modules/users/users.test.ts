@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import Organization from '../../model/kanel/public/Organization';
@@ -11,6 +11,9 @@ import { loadUserOrganizationPending } from '../common/user-organization-pending
 import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { deleteOrganizationBy } from '../organizations/organizations.helper';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
@@ -20,6 +23,9 @@ import {
 } from './users.helper';
 
 describe('User helpers', async () => {
+  afterEach(async () => {
+    vi.useRealTimers();
+  });
   describe('createNewUserFromInvitation', () => {
     it('should create a new user with Role USER and not add in an existing Organization, but in pending organization', async () => {
       const testMail = `testCreateNewUserFromInvitation${uuidv4()}@filigran.io`;
@@ -44,6 +50,13 @@ describe('User helpers', async () => {
     });
     it('should add new user with Role admin organization with an new Organization', async () => {
       const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
       await createNewUserFromInvitation({
         email: testMail,
       });
@@ -71,6 +84,17 @@ describe('User helpers', async () => {
       ).toBeTruthy();
 
       expect(newOrganization).toBeTruthy();
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.CREATE_ORGANIZATION,
+        organization_id: expect.any(String),
+        organization_name: newOrganization.name,
+        organization_type: 'Professional',
+        source: TELEMETRY_SOURCE,
+        user_id: newUser.id,
+        domains: ['test-new-organization.fr'],
+      });
 
       // Delete corresponding in order to avoid issue with other tests
       await removeUser(contextAdminUser, { email: testMail });

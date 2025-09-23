@@ -20,6 +20,7 @@ import {
 } from './telemetry.const';
 import {
   CreateEvent,
+  CreateOrganizationEvent,
   DownloadEvent,
   LoginEvent,
   OneClickDeployEvent,
@@ -244,6 +245,20 @@ export function buildUpdateOrganizationEvent(
 
   return {
     event_type: TelemetryEventType.UPDATE_ORGANIZATION,
+    ...baseEvent,
+    domains: organization.domains,
+  };
+}
+
+export function buildCreateOrganizationEvent(
+  organization: Organization,
+  user_id: UserId,
+  timestamp?: Date
+): CreateOrganizationEvent {
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+  return {
+    event_type: TelemetryEventType.CREATE_ORGANIZATION,
     ...baseEvent,
     domains: organization.domains,
   };
