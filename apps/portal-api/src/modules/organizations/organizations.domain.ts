@@ -30,7 +30,7 @@ export const loadOrganizationsByUser = async (
 };
 
 export const loadOrganizationBy = async (
-  conditions: Partial<Organization>
+  conditions: OrganizationMutator
 ): Promise<Organization> => {
   return dbUnsecure<Organization>('Organization')
     .where(conditions)
