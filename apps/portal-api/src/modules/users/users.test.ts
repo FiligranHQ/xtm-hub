@@ -9,8 +9,10 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { deleteOrganizationBy } from '../organizations/organizations.helper';
+import {
+  deleteOrganizationBy,
+  loadOrganizationBy,
+} from '../organizations/organizations.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';

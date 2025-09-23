@@ -91,3 +91,7 @@ export const updateOrganization = async (
   }
   return query;
 };
+
+export const deleteOrganizationBy = (conditions: OrganizationMutator) => {
+  return dbUnsecure<Organization>('Organization').delete('*').where(conditions);
+};

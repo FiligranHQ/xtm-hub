@@ -10,7 +10,3 @@ export const loadOrganizationsFromEmail = async (
     .whereRaw('? = ANY("domains")', [extractedDomain])
     .select('*');
 };
-
-export const deleteOrganizationBy = (conditions: Partial<Organization>) => {
-  return dbUnsecure<Organization>('Organization').delete('*').where(conditions);
-};

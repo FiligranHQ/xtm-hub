@@ -6,11 +6,11 @@ import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { StillReferencedError } from '../../utils/error/error.util';
 import { organizationsApp } from './organizations.app';
 import {
+  deleteOrganizationBy,
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
 } from './organizations.domain';
-import { deleteOrganizationBy } from './organizations.helper';
 
 const resolvers: Resolvers = {
   Query: {
