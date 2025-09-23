@@ -13,7 +13,7 @@ import {
   buildUpdateOrganizationEvent,
 } from '../telemetry/telemetry.helper';
 import {
-  insertNewOrganizationReturning,
+  insertNewOrganization,
   updateOrganization,
 } from './organizations.domain';
 
@@ -51,7 +51,7 @@ export const organizationsApp = {
       throw new Error(ErrorCode.OrganizationSameNameExists);
     }
 
-    const [addOrganization] = await insertNewOrganizationReturning({
+    const [addOrganization] = await insertNewOrganization({
       id: uuidv4() as OrganizationId,
       ...input,
     });

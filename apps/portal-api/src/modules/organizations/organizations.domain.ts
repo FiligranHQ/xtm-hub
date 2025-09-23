@@ -62,7 +62,7 @@ export const loadOrganizations = (
   );
 };
 
-export const insertNewOrganizationReturning = (
+export const insertNewOrganization = (
   data: OrganizationInitializer,
   trx?: Knex.Transaction
 ) => {
@@ -73,18 +73,6 @@ export const insertNewOrganizationReturning = (
   if (trx) {
     query.transacting(trx);
   }
-  return query;
-};
-
-export const insertNewOrganization = async (
-  data: OrganizationInitializer,
-  trx?: Knex.Transaction
-) => {
-  const query = dbUnsecure<Organization>('Organization').insert(data);
-  if (trx) {
-    query.transacting(trx);
-  }
-
   return query;
 };
 

@@ -21,7 +21,6 @@ import UserOrganization, {
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
 import {
   insertNewOrganization,
-  insertNewOrganizationReturning,
   loadOrganizationBy,
   updateOrganization,
 } from '../modules/organizations/organizations.domain';
@@ -346,7 +345,7 @@ export const ensureDevOrganizationExists = async (
   }
 
   // Create new organization
-  const [newOrg] = await insertNewOrganizationReturning(
+  const [newOrg] = await insertNewOrganization(
     {
       id: uuidv4() as OrganizationId,
       name: orgConfig.name,

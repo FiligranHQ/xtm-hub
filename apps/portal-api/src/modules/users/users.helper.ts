@@ -39,7 +39,7 @@ import {
   createUserOrganizationRelation,
   createUserOrganizationRelationAndRemovePending,
 } from '../common/user-organization.helper';
-import { insertNewOrganizationReturning } from '../organizations/organizations.domain';
+import { insertNewOrganization } from '../organizations/organizations.domain';
 import {
   deleteOrganizationBy,
   loadOrganizationsFromEmail,
@@ -65,7 +65,7 @@ export const createUserWithPersonalSpace = async (
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
   // Create user personal space organization
-  const [personalSpaceOrganization] = await insertNewOrganizationReturning({
+  const [personalSpaceOrganization] = await insertNewOrganization({
     id: uuid as unknown as OrganizationId,
     name: data.email,
     personal_space: true,
@@ -108,7 +108,7 @@ export const createUserWithPersonalSpace = async (
 async function createOrganisationWithAdminUser(email: string) {
   const extractedDomain = extractDomain(email);
 
-  const [newOrganization] = await insertNewOrganizationReturning({
+  const [newOrganization] = await insertNewOrganization({
     id: uuidv4() as OrganizationId,
     name: extractedDomain.split('.')[0],
     domains: [extractedDomain],
