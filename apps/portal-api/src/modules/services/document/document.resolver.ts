@@ -1,6 +1,9 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { dbTx } from '../../../../knexfile';
-import { Resolvers } from '../../../__generated__/resolvers-types';
+import {
+  Resolvers,
+  SubscriptionModel,
+} from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../utils/app-logger.util';
@@ -8,7 +11,7 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { extractId, omit } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { loadSubscriptionByServiceInstanceAndSelectedOrganization } from '../../subcription/subscription.domain';
+import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   buildShareEvent,
@@ -165,11 +168,13 @@ const resolvers: Resolvers = {
     service_instance: ({ service_instance_id }, _, context) => {
       return getServiceInstance(context, service_instance_id);
     },
-    subscription: ({ service_instance_id }, _, context) => {
-      return loadSubscriptionByServiceInstanceAndSelectedOrganization(
-        context,
-        service_instance_id
-      );
+    subscription: async ({ service_instance_id }, _, context) => {
+      const subscription = await loadSubscriptionBy(context, {
+        service_instance_id: service_instance_id as ServiceInstanceId,
+        organization_id: context.user.selected_organization_id,
+      });
+
+      return subscription as unknown as SubscriptionModel;
     },
   },
   Query: {

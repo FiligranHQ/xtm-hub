@@ -3,6 +3,7 @@ import { dbTx } from '../../../knexfile';
 import {
   ServiceDefinitionIdentifier,
   ServiceInstance as ServiceInstanceGraphQl,
+  SubscriptionModel,
 } from '../../__generated__/resolvers-types';
 import Organization from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -30,6 +31,17 @@ import { addAdminAccess } from '../user_service/user_service.domain';
 import { createSubscription, loadSubscriptionBy } from './subscription.domain';
 
 export const subscriptionApp = {
+  loadSubscriptionModel: async (
+    context: PortalContext,
+    service_instance_id: string
+  ): Promise<SubscriptionModel> => {
+    const subscription = await loadSubscriptionBy(context, {
+      service_instance_id: service_instance_id as ServiceInstanceId,
+      organization_id: context.user.selected_organization_id,
+    });
+
+    return subscription as unknown as SubscriptionModel;
+  },
   subscribeSelectedOrganizationToService: async (
     context: PortalContext,
     { serviceInstanceId }: { serviceInstanceId: ServiceInstanceId }

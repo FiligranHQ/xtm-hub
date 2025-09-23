@@ -120,16 +120,6 @@ export const transferSubscriptionToOrganization = async (
     .where({ id: subscriptionId });
 };
 
-export const loadSubscriptionByServiceInstanceAndSelectedOrganization = async (
-  context: PortalContext,
-  serviceInstanceId: string
-) => {
-  return db<Subscription>(context, 'Subscription')
-    .where('service_instance_id', '=', serviceInstanceId)
-    .where('organization_id', '=', context.user.selected_organization_id)
-    .first();
-};
-
 export const createSubscription = async (
   context: PortalContext,
   data: SubscriptionInitializer

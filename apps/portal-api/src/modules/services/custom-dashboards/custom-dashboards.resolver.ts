@@ -9,7 +9,7 @@ import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
-import { loadSubscriptionByServiceInstanceAndSelectedOrganization } from '../../subcription/subscription.domain';
+import { subscriptionApp } from '../../subcription/subscription.app';
 import {
   deleteDocument,
   getLabels,
@@ -40,11 +40,8 @@ const resolvers: Resolvers = {
       getUploaderOrganization(context, id, { unsecured: true }),
     service_instance: ({ service_instance_id }, _, context) =>
       getServiceInstance(context, service_instance_id),
-    subscription: ({ service_instance_id }, _, context) =>
-      loadSubscriptionByServiceInstanceAndSelectedOrganization(
-        context,
-        service_instance_id
-      ),
+    subscription: async ({ service_instance_id }, _, context) =>
+      subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
