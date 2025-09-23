@@ -13,7 +13,7 @@ await esbuild.build({
 
 await esbuild.build({
   logLevel: 'info',
-  entryPoints: ['src/es-migrations/**.js'],
+  entryPoints: ['src/es-migrations/**.js', 'src/es-migrations/**.ts'],
   bundle: true,
   platform: 'node',
   sourcemap: 'inline',

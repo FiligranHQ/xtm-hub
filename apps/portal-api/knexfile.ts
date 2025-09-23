@@ -1,5 +1,6 @@
 import { type PageInfo } from 'graphql-relay/connection/connection';
 import pkg, { type Knex } from 'knex';
+import { baseConfig } from './knexconfig';
 import { Filter, FilterKey } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
@@ -79,17 +80,7 @@ pkg.QueryBuilder.extend('secureQuery', function (opts: SecuryQueryOpts) {
   return applyDbSecurityLayer(this, opts);
 });
 const config: Knex.Config = {
-  asyncStackTraces:
-    process.env.LOCAL_DEV === 'true' ||
-    ['development', 'test'].includes(process.env.NODE_ENV),
-  client: 'pg',
-  connection: {
-    host: portalConfig.database.host,
-    port: portalConfig.database.port,
-    user: portalConfig.database.user,
-    password: portalConfig.database.password,
-    database: portalConfig.database.database,
-  },
+  ...baseConfig,
   migrations: {
     extension: 'js',
     tableName: 'migrations',

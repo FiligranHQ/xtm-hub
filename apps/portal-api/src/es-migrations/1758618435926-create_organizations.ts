@@ -1,22 +1,36 @@
 'use strict';
 
-import { dbUnsecure } from '../../knexfile.js';
-import Organization from '../model/kanel/public/Organization.js';
-import { buildCreateOrganizationEvent } from '../modules/telemetry/telemetry.helper.js';
+import knex from 'knex';
+import { baseConfig } from '../../knexconfig';
+import { TELEMETRY_SOURCE } from '../modules/telemetry/telemetry.const';
+import { TelemetryEventType } from '../modules/telemetry/telemetry.types';
 import { ADMIN_UUID } from '../portal.const.js';
 import { esDbClient } from '../thirdparty/elasticsearch/client';
 
 export const up = async function (next) {
-  const organizations = await dbUnsecure<Organization[]>('Organization')
+  const database = knex(baseConfig);
+
+  const organizations = await database('Organization')
     .where('personal_space', '=', false)
     .select('*');
+  if (organizations.length > 0) {
+    const events = organizations.flatMap((orga) => [
+      { index: { _index: 'telemetry_v1' } },
+      {
+        '@timestamp': new Date(2025, 0, 1),
+        event_type: TelemetryEventType.CREATE_ORGANIZATION,
+        organization_id: orga.id,
+        organization_name: orga.name,
+        organization_type: 'Professional',
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_UUID,
+        domains: orga.domains,
+      },
+    ]);
 
-  const events = organizations.flatMap((orga) => [
-    { index: { _index: 'telemetry_v1' } },
-    buildCreateOrganizationEvent(orga, ADMIN_UUID, new Date(2025, 1, 1)),
-  ]);
+    await esDbClient.bulk({ refresh: true, operations: events });
+  }
 
-  await esDbClient.bulk({ refresh: true, operations: events });
   next();
 };
 
