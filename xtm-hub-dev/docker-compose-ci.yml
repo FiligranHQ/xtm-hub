@@ -6,78 +6,69 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-front/Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front:development
-    depends_on:
-      portal-api:
-        condition: service_healthy
+    image: filigran/portal-front:${IMAGE_TAGS}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://portal-front:3000/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
       interval: 10s
       timeout: 5s
       retries: 10
-    environment:
-      - SERVER_HTTP_API=http://portal-api:4001
-
-  portal-front-test:
-    container_name: portal-front-test
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-front/test.Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front:development
-    environment:
-      - SERVER_HTTP_API=http://portal-api:4001
-    volumes:
-      - "./coverage:/app/apps/portal-front/coverage"
-  portal-api-test:
-    container_name: portal-api-test
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-api/test.Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-api:main
-        - type=registry,ref=filigran/portal-api:development
     depends_on:
-      portal-postgres:
-        condition: service_healthy
-      portal-minio:
+      portal-api:
         condition: service_healthy
     environment:
-      - DATABASE_HOST=portal-postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=portal
-      - DATABASE_BASE=postgres
-      - DATABASE_PASSWORD=portal-password
-      - ADMIN_EMAIL=admin@filigran.io
-      - ADMIN_PASSWORD=admin
-      - NODE_ENV=development
-      - MINIO_BUCKET_NAME=xtmhubbucket
-      - MINIO_ENDPOINT=portal-minio
-      - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=minio
-      - MINIO_SECRET_KEY=password
-      - MINIO_USE_SSL=false
-    volumes:
-      - "./coverage:/app/apps/portal-api/coverage"
+      - SERVER_HTTP_API=http://localhost:4001
+#
+#  portal-front-test:
+#    container_name: portal-front-test
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "10m"
+#        max-file: "3"
+#    build:
+#      context: ../
+#      dockerfile: apps/portal-front/test.Dockerfile
+#      cache_from:
+#        - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
+#        - type=registry,ref=filigran/portal-front:main
+#        - type=registry,ref=filigran/portal-front:development
+#    environment:
+#      - SERVER_HTTP_API=http://portal-api:4001
+#    volumes:
+#      - "./coverage:/app/apps/portal-front/coverage"
+#  portal-api-test:
+#    container_name: portal-api-test
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "10m"
+#        max-file: "3"
+#    build:
+#      context: ../
+#      dockerfile: apps/portal-api/test.Dockerfile
+#      cache_from:
+#        - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
+#        - type=registry,ref=filigran/portal-api:main
+#        - type=registry,ref=filigran/portal-api:development
+#    environment:
+#      - DATABASE_HOST=postgres
+#      - DATABASE_PORT=5432
+#      - DATABASE_USER=portal
+#      - DATABASE_BASE=postgres
+#      - DATABASE_PASSWORD=portal-password
+#      - ADMIN_EMAIL=admin@filigran.io
+#      - ADMIN_PASSWORD=admin
+#      - NODE_ENV=development
+#      - MINIO_BUCKET_NAME=xtmhubbucket
+#      - MINIO_ENDPOINT=minio
+#      - MINIO_PORT=9000
+#      - MINIO_ACCESS_KEY=minio
+#      - MINIO_SECRET_KEY=password
+#      - MINIO_USE_SSL=false
+#    volumes:
+#      - "./coverage:/app/apps/portal-api/coverage"
   portal-api:
     container_name: portal-api
     logging:
@@ -85,27 +76,15 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-api/Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-api:main
-        - type=registry,ref=filigran/portal-api:development
+    image: filigran/portal-api:${IMAGE_TAGS}
+    network_mode: "host"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://portal-api:4001/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:4001/health"]
       interval: 10s
       timeout: 5s
       retries: 10
-    depends_on:
-      portal-postgres:
-        condition: service_healthy
-      portal-minio:
-        condition: service_healthy
-      portal-elasticsearch:
-        condition: service_healthy
     environment:
-      - DATABASE_HOST=portal-postgres
+      - DATABASE_HOST=localhost
       - DATABASE_PORT=5432
       - DATABASE_USER=portal
       - DATABASE_BASE=test_database
@@ -114,7 +93,7 @@ services:
       - ADMIN_PASSWORD=admin
       - DATA_SEEDING=true
       - MINIO_BUCKET_NAME=xtmhubbucket
-      - MINIO_ENDPOINT=portal-minio
+      - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=portal
       - MINIO_SECRET_KEY=changeme
@@ -122,51 +101,13 @@ services:
       - NODE_ENV=development
       - VITEST_MODE=true
       - START_DEV_SERVER=true
-      - ELASTIC_HOST=portal-elasticsearch
+      - ELASTIC_HOST=localhost
       - ELASTIC_PORT=9200
       - BASE_URL_FRONT=http://portal-front:3000
 
-  portal-postgres:
-    container_name: portal-postgres
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    image: postgres:17.2
-    environment:
-      - POSTGRES_USER=portal
-      - POSTGRES_PASSWORD=portal-password
-      - POSTGRES_DB=test_database
-      - PGDATA=/data/postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "test_database"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  portal-elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
-    container_name: portal-elasticsearch
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    environment:
-      - discovery.type=single-node
-      - xpack.ml.enabled=false
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-    healthcheck:
-      test: [ "CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-
   portal-minio:
     container_name: portal-minio
+    network_mode: "host"
     logging:
       driver: "json-file"
       options:
@@ -189,25 +130,18 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-e2e-tests/Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-e2e-tests:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-e2e-tests:main
-        - type=registry,ref=filigran/portal-e2e-tests:development
+    image: filigran/portal-e2e-tests:${IMAGE_TAGS}
+    network_mode: "host"
     depends_on:
       portal-front:
         condition: service_healthy
       portal-api:
         condition: service_healthy
-      portal-minio:
-        condition: service_healthy
     environment:
       - E2E_BASE_URL=http://portal-front:3000
       - E2E_API_URL=http://portal-api:4001
       - POSTGRES_USER=portal
-      - DATABASE_HOST=portal-postgres
+      - DATABASE_HOST=localhost
       - POSTGRES_DB=test_database
       - POSTGRES_PASSWORD=portal-password
       - DATABASE_PORT=5432
