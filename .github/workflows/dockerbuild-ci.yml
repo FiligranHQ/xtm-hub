@@ -14,6 +14,10 @@ on:
     branches:
       - "main"
       - "development"
+    paths:
+      - "apps/portal-api/**"
+      - "apps/portal-front/**"
+      - "apps/portal-e2e-tests/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -88,49 +92,6 @@ jobs:
       contents: read
       packages: write
       pull-requests: write
-    services:
-      portal-postgres:
-        image: postgres:17.2
-        env:
-          POSTGRES_USER: portal
-          POSTGRES_PASSWORD: portal-password
-          POSTGRES_DB: test_database
-          PGDATA: /data/postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -d test_database -U portal"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      portal-elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
-        env:
-          discovery.type: single-node
-          xpack.ml.enabled: "false"
-          xpack.security.enabled: "false"
-          ES_JAVA_OPTS: "-Xms256m -Xmx256m"
-        ports:
-          - 9200:9200
-        options: >-
-          --health-cmd="curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      portal-minio:
-        image: minio/minio:RELEASE.2025-06-13T11-33-47Z
-        env:
-          MINIO_ROOT_USER: portal
-          MINIO_ROOT_PASSWORD: changeme
-        command: server /data/minio
-        ports:
-          - 9000:9000
-          - 9001:9001
-        options: >-
-          --health-cmd="curl -f http://localhost:9000/minio/health/live || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -231,50 +192,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    if: contains(github.ref, 'refs/tags/') == false
-    services:
-      portal-postgres:
-        image: postgres:17.2
-        env:
-          POSTGRES_USER: portal
-          POSTGRES_PASSWORD: portal-password
-          POSTGRES_DB: test_database
-          PGDATA: /data/postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -d test_database -U portal"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      portal-elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
-        env:
-          discovery.type: single-node
-          xpack.ml.enabled: "false"
-          xpack.security.enabled: "false"
-          ES_JAVA_OPTS: "-Xms256m -Xmx256m"
-        ports:
-          - 9200:9200
-        options: >-
-          --health-cmd="curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      portal-minio:
-        image: minio/minio:RELEASE.2025-06-13T11-33-47Z
-        env:
-          MINIO_ROOT_USER: portal
-          MINIO_ROOT_PASSWORD: changeme
-        command: server /data/minio
-        ports:
-          - 9000:9000
-          - 9001:9001
-        options: >-
-          --health-cmd="curl -f http://localhost:9000/minio/health/live || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
+    if: contains(github.ref , 'refs/tags/') == false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -305,50 +223,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    services:
-      portal-postgres:
-        image: postgres:17.2
-        env:
-          POSTGRES_USER: portal
-          POSTGRES_PASSWORD: portal-password
-          POSTGRES_DB: test_database
-          PGDATA: /data/postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -d test_database -U portal"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      portal-elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
-        env:
-          discovery.type: single-node
-          xpack.ml.enabled: "false"
-          xpack.security.enabled: "false"
-          ES_JAVA_OPTS: "-Xms256m -Xmx256m"
-        ports:
-          - 9200:9200
-        options: >-
-          --health-cmd="curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      portal-minio:
-        image: minio/minio:RELEASE.2025-06-13T11-33-47Z
-        env:
-          MINIO_ROOT_USER: portal
-          MINIO_ROOT_PASSWORD: changeme
-        command: server /data/minio
-        ports:
-          - 9000:9000
-          - 9001:9001
-        options: >-
-          --health-cmd="curl -f http://localhost:9000/minio/health/live || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-    if: contains(github.ref, 'refs/tags/') == false
+    if: contains(github.ref , 'refs/tags/') == false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -434,7 +309,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable=${{ contains(github.ref, 'refs/tags/') }}
+            ${{ contains(github.ref, 'refs/tags/') && 'latest' }} # Add `latest` only for tags (production)
       - name: Determine version
         id: version
         run: |
