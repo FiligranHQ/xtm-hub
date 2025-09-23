@@ -44,5 +44,9 @@ spec:
         env:
         - name: NODE_ENV
           value: {{ .Values.xtmhub.node_env }}
+        {{- with .Values.xtmhub.devUsers }}
+        - name: DEV_USERS
+          value: {{ toString . }}
+        {{- end }}
         - name: SERVER_HTTP_API
           value: "http://$(XTMHUB_API_SERVICE_HOST):$(XTMHUB_API_SERVICE_PORT)"

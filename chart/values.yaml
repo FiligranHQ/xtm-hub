@@ -2,6 +2,7 @@ tls_issuer: le-staging
 ingressClass: nginx
 xtmhub:
   node_env: "production"
+  devUsers: ""
   api:
     repository: "portal-api-prod"
     replicas: 1
