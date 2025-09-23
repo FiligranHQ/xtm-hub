@@ -1,7 +1,6 @@
-import config from 'config';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   SeoServiceInstance,
   ServiceConnection,
@@ -9,7 +8,6 @@ import {
   ServiceInstance,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
-import { ServiceInstanceMutator } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -20,12 +18,11 @@ import UserService, {
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { PortalContext } from '../../model/portal-context';
 import { CAPABILITY_BYPASS } from '../../portal.const';
-import { sendMail } from '../../server/mail-service';
+import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
-import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
@@ -260,23 +257,6 @@ export const loadServiceInstanceById = async (
   return serviceInstanceQuery;
 };
 
-export const loadServiceInstanceByIdWithCapabilities = async (
-  context: PortalContext,
-  service_instance_id: string
-): Promise<ServiceInstance> => {
-  const serviceInstanceQuery = await loadServiceInstanceById(
-    context,
-    service_instance_id
-  );
-  const capabilities = await loadCapabilities(
-    context,
-    service_instance_id,
-    context.user.id,
-    context.user.selected_organization_id
-  );
-  return { ...serviceInstanceQuery, capabilities };
-};
-
 export const loadServiceInstanceBy = async (
   context: PortalContext,
   field: string,
@@ -286,12 +266,6 @@ export const loadServiceInstanceBy = async (
     .where({ [field]: value })
     .select('ServiceInstance.*')
     .first();
-};
-
-export const loadUnsecureServiceInstanceBy = async (
-  field: ServiceInstanceMutator
-) => {
-  return dbUnsecure<ServiceInstance>('ServiceInstance').where(field);
 };
 
 export const loadServiceWithSubscriptions = async (
@@ -520,7 +494,10 @@ export const grantServiceAccess = async (
       ),
       params: {
         name: user.email,
-        serviceLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', serviceInstance.id)}`,
+        serviceLink: buildServiceLink({
+          serviceDefinitionIdentifier: service_definition.identifier,
+          serviceInstanceId: serviceInstance.id,
+        }),
         serviceName: serviceInstance.name,
       },
     });

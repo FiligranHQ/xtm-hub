@@ -1,7 +1,5 @@
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import Subscription, {
-  SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { PortalContext } from '../../model/portal-context';
@@ -118,23 +116,6 @@ export const loadSubscriptionWithOrganizationAndCapabilitiesBy = async (
       'ServiceDefinition.id',
       'Service_Capability.id',
     ]);
-};
-
-export const isOrgMatchingSub = async (
-  organization_id: OrganizationId,
-  subscriptionId: SubscriptionId
-) => {
-  const [subscription] = await loadUnsecureSubscriptionBy({
-    id: subscriptionId,
-  });
-  return subscription.organization_id === organization_id;
-};
-
-export const createSubscription = async (
-  context: PortalContext,
-  dataSubscription: Subscription
-) => {
-  await db<Subscription>(context, 'Subscription').insert(dataSubscription);
 };
 
 export const insertUnsecureSubscription = async (dataSubscription) => {
