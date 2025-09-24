@@ -9,7 +9,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { logApp } from '../../../utils/app-logger.util';
-import { NotFoundError } from '../../../utils/error.util';
+import { NotFoundError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -132,15 +132,12 @@ export const documentDownloadEndpoint = (app) => {
 
           try {
             if (shouldSendEventForService(serviceDefinition.identifier)) {
-              const selectedOrga = await loadOrganizationBy(
-                context,
-                'id',
-                context.user.selected_organization_id
-              );
+              const selectedOrga = await loadOrganizationBy({
+                id: context.user.selected_organization_id,
+              });
 
               const downloadEvent = buildDownloadEvent(
-                context.user.selected_organization_id,
-                selectedOrga.name,
+                selectedOrga,
                 context.user.id,
                 serviceDefinition.identifier,
                 document.id,

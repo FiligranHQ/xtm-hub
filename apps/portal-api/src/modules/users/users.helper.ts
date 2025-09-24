@@ -25,6 +25,7 @@ import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../sessionStoreManager';
 import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
@@ -39,10 +40,13 @@ import {
   createUserOrganizationRelationAndRemovePending,
 } from '../common/user-organization.helper';
 import {
+  deleteOrganizationBy,
   insertNewOrganization,
-  loadOrganizationsFromEmail,
-} from '../organizations/organizations.helper';
+} from '../organizations/organizations.domain';
+import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildCreateOrganizationEvent } from '../telemetry/telemetry.helper';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
@@ -112,6 +116,18 @@ async function createOrganisationWithAdminUser(email: string) {
   const addedUser = await createUserWithPersonalSpace({
     email,
   });
+
+  try {
+    const createOrgaEvent = buildCreateOrganizationEvent(
+      newOrganization,
+      addedUser.id
+    );
+    telemetryApp.sendTelemetryEvent(createOrgaEvent);
+  } catch (error) {
+    logApp.error('Unable to send telemetry event for create organization', {
+      error,
+    });
+  }
 
   // Insert relation UserOrganization
   const [userOrgRelation] = await createUserOrganizationRelation({
@@ -287,9 +303,9 @@ export const removeUser = async (
     .returning('*');
 
   // Organization personalSpace of the user should have the same id
-  await db<Organization>(context, 'Organization')
-    .delete('*')
-    .where({ id: deletedUser.id as unknown as OrganizationId });
+  await deleteOrganizationBy({
+    id: deletedUser.id as unknown as OrganizationId,
+  });
 
   return deletedUser;
 };
@@ -320,7 +336,7 @@ export const preventAdministratorRemovalOfOneOrganization = async (
   );
 
   if (isLastWithCapability) {
-    throw new Error('CANT_REMOVE_LAST_ADMINISTRATOR');
+    throw new Error(ErrorCode.CantRemoveLastAdministrator);
   }
 };
 

@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql';
 import { createLogger, format, QueryOptions, transports } from 'winston';
 import pjson from '../../package.json';
 import User from '../model/kanel/public/User';
-import { UnknownError } from './error.util';
+import { UnknownError } from './error/error.util';
 import { omit } from './utils';
 
 /**

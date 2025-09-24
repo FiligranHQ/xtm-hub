@@ -1,0 +1,23 @@
+name: Auto delete feature env
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions: {}
+
+jobs:
+  delete-feature-env:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install AWX cli
+        run: pip install awxkit
+
+      - name: Delete
+        run: |
+          awx --conf.host https://awx.filigran.io \
+            --conf.token ${{ secrets.AWX_TOKEN }} \
+            -f human job_templates launch 'Delete XTM Hub feature branch for testing' \
+            --inventory eu-west-staging \
+            --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.pull_request.number }}\"}"

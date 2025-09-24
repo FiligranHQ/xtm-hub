@@ -1,6 +1,6 @@
 import { MigrationSet } from 'migrate';
 import { logApp } from '../../utils/app-logger.util';
-import { ElasticSearchService, esDbClient } from './client';
+import ElasticSearchService, { esDbClient } from './client';
 import {
   LOCK_DOC_ID,
   MIGRATION_INDEX,

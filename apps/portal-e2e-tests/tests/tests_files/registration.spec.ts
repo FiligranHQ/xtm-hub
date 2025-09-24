@@ -44,6 +44,7 @@ test.describe('Registration', () => {
       await expect(
         page.getByRole('radio', { name: 'admin@filigran.io', exact: true })
       ).toBeVisible();
+      await expect(page).toHaveScreenshot();
     });
     await test.step('register platform', async () => {
       await page.getByRole('button', { name: 'Register' }).click();
@@ -52,6 +53,19 @@ test.describe('Registration', () => {
           name: 'OpenAEV platform registered successfully',
         })
       ).toBeVisible();
+      await expect(page).toHaveScreenshot();
+    });
+    await test.step('instance should be visible', async () => {
+      const homePage = new HomePage(page);
+
+      await homePage.navigateTo();
+      await waitForReactIdle(page);
+      await expect(
+        page
+          .locator('li')
+          .filter({ hasText: 'Open AEV Instance - Private platform' })
+      ).toBeVisible();
+      await expect(page).toHaveScreenshot();
     });
   });
 
@@ -78,6 +92,7 @@ test.describe('Registration', () => {
           name: 'OpenCTI platform registered successfully',
         })
       ).toBeVisible();
+      await expect(page).toHaveScreenshot();
     });
     await test.step('instance should be visible', async () => {
       const homePage = new HomePage(page);
@@ -89,6 +104,7 @@ test.describe('Registration', () => {
           .locator('li')
           .filter({ hasText: 'Open CTI Instance - Private platform' })
       ).toBeVisible();
+      await expect(page).toHaveScreenshot();
     });
   });
 });

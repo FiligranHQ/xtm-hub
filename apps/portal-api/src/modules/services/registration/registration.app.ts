@@ -23,10 +23,10 @@ import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
 import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
-import { ErrorCode } from '../../common/error-code';
 import { loadUserOrganization } from '../../common/user-organization.domain';
-import { loadOrganizationBy } from '../../organizations/organizations.helper';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
@@ -35,7 +35,7 @@ import {
   updateUser,
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
-import { serviceDefinitionDomain } from '../definition/domain';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import {
   PlatformConfiguration,
@@ -79,7 +79,7 @@ export const registrationApp = {
       throw new Error(ErrorCode.UserIsNotInOrganization);
     }
 
-    return loadOrganizationBy(context, 'id', subscription.organization_id);
+    return loadOrganizationBy({ id: subscription.organization_id });
   },
 
   loadRegisteredPlatforms: async (
@@ -88,7 +88,7 @@ export const registrationApp = {
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms(
       context,
-      input.identifier
+      input?.identifier
     );
 
     return platforms.map((platform) => ({
@@ -98,6 +98,7 @@ export const registrationApp = {
       title: platform.config.platform_title,
       url: platform.config.platform_url,
       contract: platform.config.platform_contract,
+      identifier: platform.identifier,
       version: platform.config.platform_version,
     }));
   },
@@ -234,20 +235,17 @@ export const registrationApp = {
     );
 
     try {
-      const selectedOrga = await loadOrganizationBy(
-        context,
-        'id',
-        organizationId
-      );
+      const selectedOrga = await loadOrganizationBy({
+        id: organizationId as OrganizationId,
+      });
 
       const registerEvent = buildRegisterEvent(
-        organizationId as OrganizationId,
-        selectedOrga.name,
-        selectedOrga.personal_space,
+        selectedOrga,
         context.user.id,
         identifier,
         platform.id,
-        platform.contract
+        platform.contract,
+        platform.version
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {

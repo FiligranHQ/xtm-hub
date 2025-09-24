@@ -4,12 +4,12 @@ import {
 } from '../__generated__/resolvers-types';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { PortalContext } from '../model/portal-context';
-import { ErrorCode } from '../modules/common/error-code';
 import {
   organizationCapabilityMappedByPlatformIdentifier,
   platformIdentifierMappedByServiceDefinitionIdentifier,
 } from '../modules/services/registration/registration.mapping';
-import { ForbiddenAccess } from '../utils/error.util';
+import { ErrorCode } from '../utils/error/error.code';
+import { ForbiddenAccess } from '../utils/error/error.util';
 import { isUserAllowedOnOrganization } from './auth.helper';
 
 export const securityGuard = {

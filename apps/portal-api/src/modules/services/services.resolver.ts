@@ -9,6 +9,7 @@ import {
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
@@ -18,9 +19,11 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
-import { NotFoundError } from '../../utils/error.util';
+import { ErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organizations/organizations.helper';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { uploadNewFile } from './document/document.helper';
 import { serviceInstanceApp } from './service-instance.app';
@@ -116,7 +119,7 @@ const resolvers: Resolvers = {
     seoServiceInstance: async (_, { slug }, context) => {
       const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);
       if (!serviceInstance) {
-        return NotFoundError('SERVICE_NOT_FOUND_ERROR');
+        throw NotFoundError(ErrorCode.ServiceNotFound);
       }
       return {
         ...serviceInstance,
@@ -132,7 +135,8 @@ const resolvers: Resolvers = {
             serviceInstance.logo_document_id
           ),
         }),
-      };
+        __typename: 'SeoServiceInstance',
+      } as SeoServiceInstance;
     },
   },
   Mutation: {
@@ -176,7 +180,7 @@ const resolvers: Resolvers = {
         return updatedServiceInstance;
       } catch (error) {
         await trx.rollback();
-        throw error;
+        throw mapToGraphQLError(error);
       }
     },
     editServiceInstance: async (_, { id, name }, context) => {
@@ -252,18 +256,16 @@ const resolvers: Resolvers = {
         )
           .insert(dataSubscription)
           .returning('*');
-        addedSubscription.organization = await loadOrganizationBy(
-          context,
-          'id',
-          fromGlobalId(input.organization_id).id
-        );
+        addedSubscription.organization = await loadOrganizationBy({
+          id: fromGlobalId(input.organization_id).id as OrganizationId,
+        });
         addedSubscription.service_instance = addedServiceInstance;
         await trx.commit();
         return addedSubscription;
       } catch (error) {
         await trx.rollback();
         logApp.error('Error while adding the new service.', error);
-        throw error;
+        throw mapToGraphQLError(error);
       }
     },
     updatePlatformServiceMetadata: async (_, { input }, context) => {

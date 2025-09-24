@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
-import { serviceDefinitionDomain } from '../definition/domain';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { serviceContractDomain } from './domain';
 
 describe('Service Contract Domain', () => {

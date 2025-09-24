@@ -1,4 +1,5 @@
 import { RefreshUserPlatformTokenMutation } from '@/components/registration/register/register.graphql';
+import { ShareableResourceType } from '@/components/service/document/shareable-resource-slug';
 import useExternalTab from '@/hooks/useExternalTab';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
@@ -9,13 +10,13 @@ import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-const URL_CONFIGS = {
+const OPENCTI_URL_CONFIGS = {
   custom_dashboard: 'deploy-custom-dashboard',
   csv_feed: 'deploy-csv-feed',
 };
 
 interface Props {
-  openCTIBasePath: string;
+  platformBasePath: string;
   documentData: ShareableResource;
 }
 
@@ -23,8 +24,22 @@ interface Return {
   openTab: () => void;
 }
 
+function computeDeployUrl(
+  documentData: ShareableResource,
+  platformBasePath: string
+): string {
+  const { id, service_instance, type } = documentData;
+
+  if (type === ShareableResourceType.OPENAEV_SCENARIO) {
+    return `${platformBasePath}/admin/deploy-scenario/${service_instance?.id}/${id}`;
+  }
+
+  const urlKey = OPENCTI_URL_CONFIGS[type as keyof typeof OPENCTI_URL_CONFIGS];
+  return `${platformBasePath}/dashboard/xtm-hub/${urlKey}/${service_instance?.id}/${id}`;
+}
+
 export const useOneClickDeployTab = ({
-  openCTIBasePath,
+  platformBasePath,
   documentData,
 }: Props): Return => {
   const t = useTranslations();
@@ -50,10 +65,13 @@ export const useOneClickDeployTab = ({
       });
     }
   };
-
+  const url = computeDeployUrl(documentData, platformBasePath);
   const { openTab, postMessage } = useExternalTab({
-    url: `${openCTIBasePath}/dashboard/xtm-hub/${URL_CONFIGS[documentData.type as keyof typeof URL_CONFIGS]}/${documentData.service_instance?.id}/${documentData.id}`,
-    tabName: 'opencti-one-click-deploy',
+    url,
+    tabName:
+      documentData.type === ShareableResourceType.OPENAEV_SCENARIO
+        ? 'openaev-one-click-deploy'
+        : 'opencti-one-click-deploy',
     onMessage: handleMessage,
     preventUnload: false,
   });

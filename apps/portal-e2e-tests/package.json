@@ -5,7 +5,8 @@
   "scripts": {
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "generate-test-e2e": "npx playwright codegen http://localhost:3002/"
+    "generate-test-e2e": "npx playwright codegen http://localhost:3002/",
+    "test:e2e:update-snapshot": "playwright test --update-snapshots"
   },
   "dependencies": {
     "knex": "3.1.0",
@@ -14,8 +15,8 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.54.2",
-    "@types/node": "22.18.0",
+    "@playwright/test": "1.55.0",
+    "@types/node": "24.5.2",
     "graphql": "16.11.0",
     "graphql-tag": "2.12.6",
     "monocart-reporter": "2.9.21",

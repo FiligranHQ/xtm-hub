@@ -51,7 +51,7 @@ const getOwnedServices = (queryRef: PreloadedQuery<userServiceOwnedQuery>) => {
   return ownedServices;
 };
 
-const getOpenCTIInstances = (
+const getRegisteredPlatforms = (
   queryRef: PreloadedQuery<registerRegisteredPlatformsQuery>
 ) => {
   const queryData = usePreloadedQuery<registerRegisteredPlatformsQuery>(
@@ -150,7 +150,7 @@ const getPublicServices = (
 export const useServiceQueries = (
   queryRefUserServiceOwned: PreloadedQuery<userServiceOwnedQuery>,
   queryRefPublicService: PreloadedQuery<publicServiceQuery>,
-  queryRefOpenCTIPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>,
+  queryRefRegisteredPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>,
   onUpdate: () => void,
   handleSuccess: (message: string) => void,
   handleError: (error: Error) => void
@@ -164,7 +164,7 @@ export const useServiceQueries = (
 
   return {
     ownedServices: getOwnedServices(queryRefUserServiceOwned),
-    openCTIPlatforms: getOpenCTIInstances(queryRefOpenCTIPlatforms),
+    registeredPlatforms: getRegisteredPlatforms(queryRefRegisteredPlatforms),
     publicServices,
     addSubscriptionInDb,
   };

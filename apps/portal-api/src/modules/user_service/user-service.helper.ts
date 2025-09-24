@@ -17,6 +17,7 @@ import {
 } from '../../model/kanel/public/UserServiceCapability';
 import { sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
+import { ErrorCode } from '../../utils/error/error.code';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import {
   loadServiceDefinitionByServiceInstance,
@@ -169,7 +170,7 @@ export const createUserServiceAccess = async (
         userOrganization.organization_id === subscription.organization_id
     )
   ) {
-    throw new Error('The user is not in the organization');
+    throw new Error(ErrorCode.UserIsNotInOrganization);
   }
   const [addedUserService] = await db<UserService>(context, 'User_Service')
     .insert(user_service)

@@ -10,15 +10,8 @@ import { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
-import {
-  ALREADY_EXISTS,
-  AlreadyExistsError,
-  FORBIDDEN_ACCESS,
-  ForbiddenAccess,
-  NOT_FOUND,
-  NotFoundError,
-  UnknownError,
-} from '../../utils/error.util';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';
@@ -78,7 +71,7 @@ const resolvers: Resolvers = {
           } as SubscriptionMutator);
 
         if (!subscription) {
-          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
+          throw new Error(ErrorCode.SubscriptionNotFound);
         }
         return userServiceApp.addUserService(
           context,
@@ -89,27 +82,21 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        if (error.name.includes(ALREADY_EXISTS)) {
-          throw AlreadyExistsError('USER_ALREADY_EXISTS_ERROR');
-        }
-        if (error.name.includes(NOT_FOUND)) {
-          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
-        }
-        throw UnknownError('ADD_USER_SERVICE_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
     addUserService: async (_, { input }, context) => {
       const trx = await dbTx();
       try {
         if (input.email.some((email) => email === context.user.email)) {
-          throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
+          throw new Error(ErrorCode.CantSubscribeYourself);
         }
         const [subscription] =
           await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
             'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
           } as SubscriptionMutator);
         if (!subscription) {
-          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
+          throw new Error(ErrorCode.SubscriptionNotFound);
         }
         return userServiceApp.addUserService(
           context,
@@ -120,16 +107,7 @@ const resolvers: Resolvers = {
         );
       } catch (error) {
         await trx.rollback();
-        if (error.name.includes(ALREADY_EXISTS)) {
-          throw AlreadyExistsError('USER_ALREADY_EXISTS_ERROR');
-        }
-        if (error.name.includes(NOT_FOUND)) {
-          throw NotFoundError('SUBSCRIPTION_NOT_FOUND_ERROR');
-        }
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          throw ForbiddenAccess('CANT_SUBSCRIBE_YOURSELF');
-        }
-        throw UnknownError('ADD_USER_SERVICE_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
     deleteUserService: async (_, { input }, context) => {

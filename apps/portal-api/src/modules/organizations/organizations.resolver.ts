@@ -1,14 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
-import { Organization, Resolvers } from '../../__generated__/resolvers-types';
+import { Resolvers } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { dispatch } from '../../pub';
-import { logApp } from '../../utils/app-logger.util';
+import { UnknownErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { StillReferencedError } from '../../utils/error/error.util';
+import { organizationsApp } from './organizations.app';
 import {
-  AlreadyExistsError,
-  StillReferencedError,
-  UnknownError,
-} from '../../utils/error.util';
-import {
+  deleteOrganizationBy,
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
@@ -16,8 +14,8 @@ import {
 
 const resolvers: Resolvers = {
   Query: {
-    organization: async (_, { id }, context) =>
-      loadOrganizationBy(context, 'Organization.id', id),
+    organization: async (_, { id }) =>
+      loadOrganizationBy({ id: id as OrganizationId }),
     organizations: async (_, opts, context) => {
       return loadOrganizations(context, opts);
     },
@@ -28,57 +26,29 @@ const resolvers: Resolvers = {
   Mutation: {
     addOrganization: async (_, { input }, context) => {
       // Check if an organization exists with the same name (case insensitive)
-      const existingOrganization: Organization | undefined =
-        await db<Organization>(context, 'Organization')
-          .where('name', 'ILIKE', input.name)
-          .first('id');
-      if (existingOrganization?.id) {
-        throw AlreadyExistsError('ORGANIZATION_SAME_NAME_EXISTS');
-      }
-
       try {
-        const [addOrganization] = await db<Organization>(
-          context,
-          'Organization'
-        )
-          .insert({ id: uuidv4(), ...input })
-          .returning('*');
-        return addOrganization;
+        return await organizationsApp.createOrganization(context, input);
       } catch (error) {
-        if (
-          error.message.includes(
-            'duplicate key value violates unique constraint "organization_name_unique"'
-          )
-        ) {
-          throw AlreadyExistsError('ORGANIZATION_SAME_NAME_EXISTS');
-        }
-        logApp.error('ADD_ORGANIZATION_ERROR', error);
-        throw UnknownError('ADD_ORGANIZATION_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
     editOrganization: async (_, { id, input }, context) => {
       try {
-        const [updatedOrganization] = await db<Organization>(
+        return await organizationsApp.updateOrganization(
           context,
-          'Organization'
-        )
-          .where({ id })
-          .update({ ...input })
-          .returning('*');
-        return updatedOrganization;
+          id as OrganizationId,
+          input
+        );
       } catch (error) {
-        logApp.error('EDIT_ORGANIZATION_ERROR', error);
-        throw UnknownError('EDIT_ORGANIZATION_ERROR', { detail: error });
+        throw mapToGraphQLError(error, UnknownErrorCode.EditOrganizationError);
       }
     },
-    deleteOrganization: async (_, { id }, context) => {
+    deleteOrganization: async (_, { id }) => {
       try {
-        const [deletedOrganization] = await db<Organization>(
-          context,
-          'Organization'
-        )
-          .where({ id })
-          .delete('*');
+        const [deletedOrganization] = await deleteOrganizationBy({
+          id: id as OrganizationId,
+        });
+
         await dispatch('Organization', 'delete', deletedOrganization);
         return deletedOrganization;
       } catch (error) {
@@ -92,7 +62,11 @@ const resolvers: Resolvers = {
             `${tableName.toUpperCase()}_STILL_IN_ORGANIZATION`
           );
         }
-        throw UnknownError('DELETE_ORGANIZATION', { detail: error });
+
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeleteOrganizationError
+        );
       }
     },
   },

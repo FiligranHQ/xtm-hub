@@ -1,5 +1,6 @@
+import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/components/service/document/shareable-resource-slug';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { oneClickDeployOctiPlatformFragment$data } from '@generated/oneClickDeployOctiPlatformFragment.graphql';
+import { oneClickDeployPlatformFragment$data } from '@generated/oneClickDeployPlatformFragment.graphql';
 import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
@@ -7,18 +8,20 @@ import { z } from 'zod';
 
 interface ChoosePlatformFormProps {
   documentData: ShareableResource;
-  platformsOcti: oneClickDeployOctiPlatformFragment$data[];
-  oneClickDeploy: (octiPlatformUrl: string) => void;
+  platforms: oneClickDeployPlatformFragment$data[];
+  translatedPlatformIdentifier: string;
+  oneClickDeploy: (platformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export const selectOctiPlatformFormSchema = z.object({
-  octiPlatformUrl: z.string().nonempty(),
+export const selectPlatformFormSchema = z.object({
+  platformUrl: z.string().nonempty(),
 });
 
 const ChoosePlatformForm = ({
   documentData,
-  platformsOcti,
+  platforms,
+  translatedPlatformIdentifier,
   oneClickDeploy,
   setIsOpen,
 }: ChoosePlatformFormProps) => {
@@ -27,26 +30,31 @@ const ChoosePlatformForm = ({
     <div className="flex flex-col h-full justify-between gap-m">
       <div className="space-y-m">
         <h1>
-          {t(
-            'Service.ShareableResources.Deploy.DeployDashboardOctiDescription',
-            {
-              dashboardName: documentData.name,
-            }
-          )}
+          {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
+            resourceName: documentData.name,
+            resourceType:
+              SHAREABLE_RESOURCE_TYPE_NAME_MAPPING[
+                documentData.type as keyof typeof SHAREABLE_RESOURCE_TYPE_NAME_MAPPING
+              ],
+          })}
         </h1>
-        <p>{t('Service.ShareableResources.Deploy.DeployOctiQuestionTag')}</p>
+        <p>
+          {t('Service.ShareableResources.Deploy.DeployQuestionTag', {
+            platformType: translatedPlatformIdentifier,
+          })}
+        </p>
       </div>
       <AutoForm
-        formSchema={selectOctiPlatformFormSchema}
-        onSubmit={({ octiPlatformUrl }) => {
-          oneClickDeploy(octiPlatformUrl);
+        formSchema={selectPlatformFormSchema}
+        onSubmit={({ platformUrl }) => {
+          oneClickDeploy(platformUrl);
         }}
         fieldConfig={{
-          octiPlatformUrl: {
+          platformUrl: {
             fieldType: ({ field }) => (
               <FormItem>
                 <div className="flex flex-col gap-2">
-                  {platformsOcti.map((platform) => (
+                  {platforms.map((platform) => (
                     <div
                       key={platform.url}
                       className="flex items-center gap-2">

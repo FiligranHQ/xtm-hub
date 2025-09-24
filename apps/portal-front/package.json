@@ -16,7 +16,8 @@
     "test:ci": "yarn lint && yarn test --coverage --coverage.clean=false",
     "prepare": "cd .. && husky ./.husky",
     "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY",
-    "generate:enum": "tsx scripts/generate-enum.ts"
+    "generate:enum": "tsx scripts/generate-enum.ts",
+    "extract-error-code-translation-key": "tsx scripts/extract-error-code-translation-keys.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "3.10.0",
@@ -26,7 +27,7 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "extract-files": "13.0.0",
-    "filigran-icon": "0.18.1",
+    "filigran-icon": "0.18.8",
     "filigran-ui": "0.39.9",
     "graphql": "16.11.0",
     "graphql-sse": "2.5.4",
@@ -40,6 +41,7 @@
     "react-hook-form": "7.52.0",
     "react-markdown": "10.1.0",
     "react-relay": "18.2.0",
+    "semver": "7.7.2",
     "slugify": "1.6.6",
     "tailwind-merge": "2.6.0",
     "tailwindcss": "3.4.17",
@@ -56,7 +58,7 @@
     "@testing-library/react-hooks": "8.0.1",
     "@testing-library/user-event": "14.6.1",
     "@types/config": "3.3.5",
-    "@types/node": "22.18.0",
+    "@types/node": "24.5.2",
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.5",
     "@types/react-relay": "18.2.1",

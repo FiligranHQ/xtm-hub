@@ -62,7 +62,7 @@ postgres:
 minio:
   image:
     repository: quay.io/minio/minio
-    tag: RELEASE.2024-08-03T04-33-23Z
+    tag: RELEASE.2025-06-13T11-33-47Z
     pullPolicy: IfNotPresent
   ingressWhitelistSourceRange: "149.88.28.168/32,10.0.0.0/8"
   resources:
