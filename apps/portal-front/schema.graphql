@@ -654,7 +654,7 @@ type Subscription {
   ActionTracking: TrackingSubscription
   User: UserSubscription
   MeUser: MeUserSubscription
-  UserPending: UserPendingSubscription
+  UserPending(organizationId: ID!): UserPendingSubscription
 }
 
 type Label implements Node {
@@ -894,6 +894,7 @@ type User implements Node {
   roles_portal: [RolePortal!]
   selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
+  pending_organization_id: ID
 }
 
 type UserEdge {

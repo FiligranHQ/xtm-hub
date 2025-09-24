@@ -1,7 +1,12 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import crypto from 'node:crypto';
 import { dbTx } from '../../../knexfile';
-import { MergeEvent, Resolvers } from '../../__generated__/resolvers-types';
+import {
+  MergeEvent,
+  Resolvers,
+  User,
+  UserPendingSubscription,
+} from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
@@ -326,8 +331,17 @@ const resolvers: Resolvers = {
         const user = await loadUserBy({
           'User.id': extractId(user_id),
         });
-        await dispatch('UserPending', 'delete', user, 'User');
-        return mapUserToGraphqlUser(user);
+        const graphQLUser = mapUserToGraphqlUser(user);
+        await dispatch(
+          'UserPending',
+          'delete',
+          {
+            ...graphQLUser,
+            pending_organization_id: extractId(organization_id),
+          } as User,
+          'User'
+        );
+        return graphQLUser;
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -379,8 +393,18 @@ const resolvers: Resolvers = {
       }),
     },
     UserPending: {
-      subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['UserPending']),
+      subscribe: (_, args, context) => ({
+        [Symbol.asyncIterator]: () =>
+          listen(
+            context,
+            ['UserPending'],
+            (payload: UserPendingSubscription) => {
+              return (
+                payload.delete.pending_organization_id ===
+                extractId(args.organizationId)
+              );
+            }
+          ),
       }),
     },
   },

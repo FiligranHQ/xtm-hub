@@ -1425,6 +1425,11 @@ export type Subscription = {
   UserPending?: Maybe<UserPendingSubscription>;
 };
 
+
+export type SubscriptionUserPendingArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
 export type SubscriptionCapability = Node & {
   __typename?: 'SubscriptionCapability';
   id: Scalars['ID']['output'];
@@ -1538,6 +1543,7 @@ export type User = Node & {
   last_name?: Maybe<Scalars['String']['output']>;
   organization_capabilities?: Maybe<Array<OrganizationCapabilities>>;
   organizations?: Maybe<Array<Organization>>;
+  pending_organization_id?: Maybe<Scalars['ID']['output']>;
   picture?: Maybe<Scalars['String']['output']>;
   roles_portal?: Maybe<Array<RolePortal>>;
   selected_org_capabilities?: Maybe<Array<OrganizationCapability>>;
@@ -2567,7 +2573,7 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
   MeUser?: SubscriptionResolver<Maybe<ResolversTypes['MeUserSubscription']>, "MeUser", ParentType, ContextType>;
   ServiceInstance?: SubscriptionResolver<Maybe<ResolversTypes['ServiceInstanceSubscription']>, "ServiceInstance", ParentType, ContextType>;
   User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType>;
-  UserPending?: SubscriptionResolver<Maybe<ResolversTypes['UserPendingSubscription']>, "UserPending", ParentType, ContextType>;
+  UserPending?: SubscriptionResolver<Maybe<ResolversTypes['UserPendingSubscription']>, "UserPending", ParentType, ContextType, RequireFields<SubscriptionUserPendingArgs, 'organizationId'>>;
 }>;
 
 export type SubscriptionCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscriptionCapability'] = ResolversParentTypes['SubscriptionCapability']> = ResolversObject<{
@@ -2630,6 +2636,7 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization_capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapabilities']>>, ParentType, ContextType>;
   organizations?: Resolver<Maybe<Array<ResolversTypes['Organization']>>, ParentType, ContextType>;
+  pending_organization_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   roles_portal?: Resolver<Maybe<Array<ResolversTypes['RolePortal']>>, ParentType, ContextType>;
   selected_org_capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapability']>>, ParentType, ContextType>;

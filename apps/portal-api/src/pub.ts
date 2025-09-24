@@ -3,6 +3,7 @@ import { ActionType, DatabaseType } from '../knexfile';
 import { Node } from './__generated__/resolvers-types';
 import { PortalContext } from './model/portal-context';
 import { isNodeAccessible } from './security/access';
+import { logApp } from './utils/app-logger.util';
 
 export interface TypedNode extends Node {
   __typename: DatabaseType;
@@ -26,17 +27,31 @@ export const dispatch = async (
   await pubsub.publish(type, { [type]: node });
 };
 
-export const listen = (context: PortalContext, topics: string[]) => {
+export const listen = (
+  context: PortalContext,
+  topics: string[],
+  filter?: (payload: unknown) => boolean
+) => {
   const iteratorFn = () => pubsub.asyncIterator(topics);
   const filterFn = async (event: PubEvent) => {
-    const [topic] = Object.keys(event);
-    const payload = event[topic];
-    if (!payload) return false;
+    try {
+      const [topic] = Object.keys(event);
+      const payload = event[topic];
+      if (!payload) return false;
 
-    const values = Object.values(event);
+      const values = Object.values(event);
 
-    const isAccessible = await isNodeAccessible(context.user, topic, values[0]);
-    return isAccessible;
+      const isAccessible = await isNodeAccessible(
+        context.user,
+        topic,
+        values[0]
+      );
+      const isFiltered = filter ? filter(payload) : true;
+
+      return isAccessible && isFiltered;
+    } catch (error) {
+      logApp.error('Error while sending SSE payload', error);
+    }
   };
   return withFilter(iteratorFn, filterFn)();
 };

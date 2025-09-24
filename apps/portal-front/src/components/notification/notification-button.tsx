@@ -69,7 +69,10 @@ export const NotificationButton: React.FC = () => {
 
   const pendingUserListSubscriptionConfig = useMemo(
     () => ({
-      variables: { connections: [connectionID] },
+      variables: {
+        connections: [connectionID],
+        organizationId: me?.selected_organization_id,
+      },
       subscription: UserPendingListSubscription,
       onNext: () => {
         commitLocalUpdate(environment, (store) => {
@@ -82,7 +85,7 @@ export const NotificationButton: React.FC = () => {
         });
       },
     }),
-    [connectionID, environment]
+    [connectionID, environment, me?.selected_organization_id]
   );
   useSubscription(pendingUserListSubscriptionConfig);
 
