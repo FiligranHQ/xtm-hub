@@ -6,7 +6,17 @@ export const loadOrganizationsFromEmail = async (
   email: string
 ): Promise<Organization[]> => {
   const extractedDomain = extractDomain(email);
+  return hasDomainOverlap([extractedDomain]);
+};
+
+export const hasDomainOverlap = async (
+  domains: string[]
+): Promise<Organization[]> => {
   return dbUnsecure<Organization[]>('Organization')
-    .whereRaw('? = ANY("domains")', [extractedDomain])
+    .where(function () {
+      domains.forEach((domain) => {
+        this.orWhereRaw('? = ANY("domains")', [domain]);
+      });
+    })
     .select('*');
 };
