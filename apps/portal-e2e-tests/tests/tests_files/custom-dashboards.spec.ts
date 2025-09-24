@@ -57,6 +57,7 @@ test.describe('Custom dashboards', () => {
     await dashboardPage.navigateToPublicDashboardDetail(
       DASHBOARD_TEST.shortDescription
     );
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveScreenshot();
   });
 
