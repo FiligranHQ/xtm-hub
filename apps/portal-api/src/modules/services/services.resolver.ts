@@ -289,7 +289,7 @@ const resolvers: Resolvers = {
         );
 
         if (!config) {
-          throw new Error(ErrorCode.ServiceConfigurationNotFound);
+          throw NotFoundError(ErrorCode.ServiceConfigurationNotFound);
         }
 
         const platformConfig = config.config as PlatformConfiguration;
