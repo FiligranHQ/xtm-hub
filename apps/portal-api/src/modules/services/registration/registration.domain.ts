@@ -16,10 +16,10 @@ import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
 import {
+  createSubscription,
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
 } from '../../subcription/subscription.domain';
-import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 import {
