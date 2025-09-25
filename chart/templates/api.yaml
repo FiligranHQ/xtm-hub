@@ -45,9 +45,9 @@ spec:
             port: 4001
             scheme: HTTP
         env:
-        {{- with .Values.xtmhub.api.devUsers }}
+        {{- if not (empty .Values.xtmhub.api.devUsers) }}
         - name: DEV_USERS
-          value: {{ . | toJson | squote  }}
+          value: {{ .Values.xtmhub.api.devUsers | toJson | squote }}
         {{- end }}
         - name: NODE_ENV
           value: {{ .Values.xtmhub.node_env }}
