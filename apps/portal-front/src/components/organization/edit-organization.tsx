@@ -1,12 +1,11 @@
 import { OrganizationForm } from '@/components/organization/organization-form';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
-import { IconActionContext } from '@/components/ui/icon-actions';
 import { organizationEditMutation } from '@generated/organizationEditMutation.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useEffect, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { SheetWithPreventingDialog } from '../ui/sheet-with-preventing-dialog';
@@ -23,11 +22,6 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
   const [openSheet, setOpenSheet] = useState<boolean | null>(!!organization);
-  const { setMenuOpen } = useContext(IconActionContext);
-
-  useEffect(() => {
-    if (!openSheet && openSheet !== null) setMenuOpen(false);
-  }, [openSheet, setMenuOpen]);
 
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     commitOrganizationEditionMutation({

@@ -56,6 +56,7 @@ export enum UnknownErrorCode {
   RemoveUserFromOrgaError = 'REMOVE_USER_FROM_ORGA_ERROR',
   RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
   EditUserSessionError = 'EDIT_USER_SESSION_ERROR',
+  UpdatePlatformServiceMetadataError = 'UPDATE_PLATFORM_SERVICE_METADATA_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
@@ -67,6 +68,7 @@ export enum AlreadyExistsErrorCode {
 
 export enum NotFoundErrorCode {
   ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',
+  ServiceInstanceNotFound = 'SERVICE_INSTANCE_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   ServiceNotFound = 'SERVICE_NOT_FOUND',
