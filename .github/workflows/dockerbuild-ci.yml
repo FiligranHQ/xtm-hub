@@ -8,6 +8,7 @@ on:
     paths:
       - "apps/portal-api/**"
       - "apps/portal-front/**"
+      - "apps/portal-e2e-tests/**"
     tags:
       - "v*"
   pull_request:
