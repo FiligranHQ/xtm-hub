@@ -2,11 +2,8 @@
 
 import { PortalContext } from '@/components/me/app-portal-context';
 import { RegistrationCapabilityMapping } from '@/components/registration/platform-identifier-mapping';
-import {
-  PlatformUpdateSheet,
-  PlatformUpdateSheetTrigger,
-} from '@/components/service/components/platform-update-sheet';
-import { IconActions } from '@/components/ui/icon-actions';
+import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
+import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
 import {
   APP_PATH,
@@ -181,9 +178,9 @@ const ServiceInstanceCard: React.FunctionComponent<
                     <span className="sr-only">{t('Utils.OpenMenu')}</span>
                   </>
                 }>
-                <PlatformUpdateSheetTrigger
-                  setOpenSheet={setOpenPlatformSheet}
-                />
+                <IconActionsItem onClick={() => setOpenPlatformSheet(true)}>
+                  {t('Platform.Update')}
+                </IconActionsItem>
               </IconActions>
             )}
           </div>

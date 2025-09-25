@@ -1,7 +1,6 @@
 'use client';
 
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
-import { IconActionsItem } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { isRegistrationService } from '@/utils/services';
@@ -40,18 +39,6 @@ interface PlatformUpdateSheetProps {
   setOpen: (open: boolean) => void;
 }
 
-export const PlatformUpdateSheetTrigger = (props: {
-  setOpenSheet: (openSheet: boolean | null) => void;
-}) => {
-  const t = useTranslations();
-
-  return (
-    <IconActionsItem onClick={() => props.setOpenSheet(true)}>
-      {t('Platform.Update')}
-    </IconActionsItem>
-  );
-};
-
 export const PlatformUpdateSheet: FunctionComponent<
   PlatformUpdateSheetProps
 > = ({ serviceInstance, open, setOpen }) => {
@@ -72,7 +59,7 @@ export const PlatformUpdateSheet: FunctionComponent<
   });
 
   const onSubmit = (values: z.infer<typeof platformUpdateSchema>) => {
-    const document = Array.from(values.illustration_document);
+    const document = Array.from(values.illustration_document ?? []);
 
     updatePlatformMetadata({
       variables: {
@@ -83,16 +70,16 @@ export const PlatformUpdateSheet: FunctionComponent<
         document,
       },
       uploadables: fileListToUploadableMap(document),
-      onCompleted: (response) => {
+      onCompleted: () => {
         setOpen(false);
         toast({
           title: t('Utils.Success'),
           description: t('Platform.Updated', {
-            platformName: response.updatePlatformServiceMetadata!.title,
+            platformName: values.name,
           }),
         });
         form.reset({
-          name: response.updatePlatformServiceMetadata!.title,
+          name: values.name,
           illustration_document: undefined,
         });
       },

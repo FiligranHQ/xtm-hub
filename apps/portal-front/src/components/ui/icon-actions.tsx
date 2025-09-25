@@ -9,6 +9,7 @@ import {
 import Link from 'next/link';
 import React, {
   ComponentProps,
+  createContext,
   FunctionComponent,
   ReactNode,
   useState,
@@ -21,6 +22,14 @@ interface IconActionsProps {
   label?: ReactNode;
   className?: string;
 }
+
+interface IconActionContextProps {
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const IconActionContext = createContext<IconActionContextProps>({
+  setMenuOpen: () => {},
+});
 export const IconActions: FunctionComponent<IconActionsProps> = ({
   children,
   label,
@@ -46,7 +55,9 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
       <DropdownMenuContent
         align="end"
         className="w-[160px]">
-        {children}
+        <IconActionContext.Provider value={{ setMenuOpen }}>
+          {children}
+        </IconActionContext.Provider>
       </DropdownMenuContent>
     </DropdownMenu>
   );
