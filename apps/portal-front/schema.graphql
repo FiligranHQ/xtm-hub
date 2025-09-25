@@ -50,7 +50,7 @@ type Mutation {
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
-  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!): ServiceInstance
+  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addLabel(input: AddLabelInput!): Label!
   editLabel(id: ID!, input: EditLabelInput!): Label!
   deleteLabel(id: ID!): Label!
@@ -441,6 +441,7 @@ type RegisteredPlatform implements Node {
   platform_id: String!
   identifier: ServiceDefinitionIdentifier!
   version: String
+  illustration_document_id: String
 }
 
 input PlatformInput {
@@ -600,7 +601,6 @@ input AddServiceInput {
 input UpdatePlatformServiceMetadataInput {
   serviceInstanceId: ID!
   name: String
-  document: Upload
 }
 
 type SubscribedServiceInstanceConfiguration {

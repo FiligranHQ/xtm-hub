@@ -21,7 +21,7 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
@@ -272,17 +272,14 @@ const resolvers: Resolvers = {
       }
     },
     updatePlatformServiceMetadata: async (_, { input, document }, context) => {
-      const trx = await dbTx();
       try {
         const updatedServiceInstance =
           await serviceInstanceApp.updatePlatformServiceMetadata(
             context,
             input,
-            document,
-            trx
+            document
           );
 
-        await trx.commit();
         await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
 
         // Get platform configuration to return RegisteredPlatform
@@ -316,8 +313,10 @@ const resolvers: Resolvers = {
               : null,
         } as RegisteredPlatform;
       } catch (error) {
-        await trx.rollback();
-        throw error;
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.UpdatePlatformServiceMetadataError
+        );
       }
     },
   },
