@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser, THALES_ORGA_ID } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ADMIN_UUID } from '../../portal.const';
+import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
@@ -79,7 +80,9 @@ describe('organizationsApp', () => {
         name: 'otherDomain.io',
       });
 
-      await expect(call).rejects.toThrow('ORGANIZATION_SAME_DOMAIN_EXISTS');
+      await expect(call).rejects.toThrow(
+        ErrorCode.OrganizationSameDomainExists
+      );
     });
 
     it('should throw if an organization with the same name exists', async () => {
@@ -94,7 +97,7 @@ describe('organizationsApp', () => {
         name: 'alreadyExistingOrga',
       });
 
-      await expect(call).rejects.toThrow('ORGANIZATION_SAME_NAME_EXISTS');
+      await expect(call).rejects.toThrow(ErrorCode.OrganizationSameNameExists);
     });
   });
 });
