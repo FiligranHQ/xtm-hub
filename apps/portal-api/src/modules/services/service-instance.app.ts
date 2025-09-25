@@ -1,4 +1,4 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { fromGlobalId } from 'graphql-relay/node/node';
 import { dbTx } from '../../../knexfile';
 import {
   RegisteredPlatform,
