@@ -4,30 +4,34 @@ import Image from 'next/image';
 
 interface NoPlatformDisplayProps {
   setIsOpen: (isOpen: boolean) => void;
+  platformIdentifier: string;
 }
 
-const NoPlatformDisplay = ({ setIsOpen }: NoPlatformDisplayProps) => {
+const NoPlatformDisplay = ({
+  setIsOpen,
+  platformIdentifier,
+}: NoPlatformDisplayProps) => {
   const t = useTranslations();
   return (
     <>
       <div className="space-y-m">
         <h1>
-          {t(
-            'Service.ShareableResources.Deploy.DeployOctiDescriptionNoPlatform'
-          )}
+          {t('Service.ShareableResources.Deploy.DeployDescriptionNoPlatform', {
+            platformIdentifier,
+          })}
         </h1>
         <p>
           {t(
-            'Service.ShareableResources.Deploy.DeployOctiDescriptionNoPlatformThen'
+            'Service.ShareableResources.Deploy.DeployDescriptionNoPlatformThen'
           )}
         </p>
         <div className="relative border-2 border-solid rounded w-full h-96">
           <Image
             fill
             objectFit="contain"
-            src={`/register-in-hub.png`}
+            src={`/register-in-hub-${platformIdentifier}.png`}
             alt={t(
-              'Service.ShareableResources.Deploy.DeployOctiDescriptionNoPlatformIllustration'
+              'Service.ShareableResources.Deploy.DeployDescriptionNoPlatformIllustration'
             )}
           />
         </div>

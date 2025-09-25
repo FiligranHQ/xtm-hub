@@ -69,8 +69,9 @@ test.describe('Capabilities', () => {
   test('Should add subscription with capabilities', async ({ page }) => {
     await test.step("Add orga's sub + user with manage access", async () => {
       await servicePage.navigateToServiceListAdmin();
+      await expect(page).toHaveScreenshot();
       await servicePage.navigateToServiceItemAdmin();
-
+      await expect(page).toHaveScreenshot();
       await servicePage.addOrganizationIntoServiceWithCapabilities(
         TEST_CAPABILITY.organizationName
       );
@@ -84,7 +85,7 @@ test.describe('Capabilities', () => {
         'link'
       );
       await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
-
+      await expect(page).toHaveScreenshot();
       await loginPage.logout();
     });
     await test.step('Add simple user access + upload capa', async () => {
@@ -93,7 +94,7 @@ test.describe('Capabilities', () => {
       await documentPage.navigateToVault();
 
       await page.getByRole('link', { name: 'Manage Vault' }).click();
-
+      await expect(page).toHaveScreenshot();
       await servicePage.addUserIntoServiceWithCapability(
         TEST_CAPABILITY.userThalesEmail,
         'UPLOAD access:'
@@ -110,6 +111,7 @@ test.describe('Capabilities', () => {
         page.getByRole('cell', { name: TEST_FILE.name })
       ).toBeVisible();
     });
+    await expect(page).toHaveScreenshot();
     await test.step('Simple user edit document', async () => {
       await documentPage.editDocument('DescriptionModified');
 

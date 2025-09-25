@@ -32,11 +32,9 @@ export const telemetryApp = {
   ) {
     const selected_organization_id = context.user.selected_organization_id;
 
-    const selectedOrga = await loadOrganizationBy(
-      context,
-      'id',
-      selected_organization_id
-    );
+    const selectedOrga = await loadOrganizationBy({
+      id: selected_organization_id,
+    });
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       context,
       extractId<ServiceInstanceId>(input.service_instance_id)

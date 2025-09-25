@@ -24,10 +24,8 @@ import {
   removeUserFromOrganization,
   updateMultipleUserOrgWithCapabilities,
 } from '../common/user-organization.domain';
-import {
-  loadOrganizationBy,
-  loadOrganizationsFromEmail,
-} from '../organizations/organizations.helper';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { usersAdminApp } from './users.admin.app';
 import {
   getCapabilities,
@@ -130,11 +128,9 @@ const resolvers: Resolvers = {
           input.email
         );
 
-        const chosenOrganization = await loadOrganizationBy(
-          context,
-          'id',
-          context.user.selected_organization_id
-        );
+        const chosenOrganization = await loadOrganizationBy({
+          id: context.user.selected_organization_id,
+        });
 
         if (chosenOrganization.personal_space) {
           logApp.warn('You cannot add a user in your personal space');

@@ -8,6 +8,7 @@ on:
     paths:
       - "apps/portal-api/**"
       - "apps/portal-front/**"
+      - "apps/portal-e2e-tests/**"
     tags:
       - "v*"
   pull_request:
@@ -21,7 +22,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
 
@@ -122,6 +123,7 @@ jobs:
           exit ${TEST_EXIT_CODE:-0}
 
       - name: Publish Test Report
+        if: always()
         uses: ctrf-io/github-test-reporter@v1
         with:
           report-path: './ctrf/*.json'

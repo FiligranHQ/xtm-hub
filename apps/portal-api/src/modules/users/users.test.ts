@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import Organization from '../../model/kanel/public/Organization';
@@ -10,9 +10,12 @@ import { createUserOrganizationCapability } from '../common/user-organization-ca
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
 import {
-  deleteOrganizationByName,
-  loadUnsecureOrganizationBy,
-} from '../organizations/organizations.helper';
+  deleteOrganizationBy,
+  loadOrganizationBy,
+} from '../organizations/organizations.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
@@ -22,6 +25,9 @@ import {
 } from './users.helper';
 
 describe('User helpers', async () => {
+  afterEach(async () => {
+    vi.useRealTimers();
+  });
   describe('createNewUserFromInvitation', () => {
     it('should create a new user with Role USER and not add in an existing Organization, but in pending organization', async () => {
       const testMail = `testCreateNewUserFromInvitation${uuidv4()}@filigran.io`;
@@ -46,6 +52,13 @@ describe('User helpers', async () => {
     });
     it('should add new user with Role admin organization with an new Organization', async () => {
       const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
       await createNewUserFromInvitation({
         email: testMail,
       });
@@ -58,26 +71,36 @@ describe('User helpers', async () => {
       expect(newUser).toBeTruthy();
       expect(newUserPendingOrg.length).toBe(0);
 
-      const newOrganization = await loadUnsecureOrganizationBy(
-        'name',
-        'test-new-organization'
-      );
+      const newOrganization = await loadOrganizationBy({
+        name: 'test-new-organization',
+      });
       const userOrgCapa = await loadUserCapabilitiesByOrganization(
         newUser.id as UserId,
         newOrganization.id
       );
-      expect(userOrgCapa.capabilities.length).toBe(1);
+      expect(userOrgCapa.capabilities?.length).toBe(1);
       expect(
-        userOrgCapa.capabilities.includes(
+        userOrgCapa.capabilities?.includes(
           OrganizationCapability.AdministrateOrganization
         )
       ).toBeTruthy();
 
       expect(newOrganization).toBeTruthy();
 
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.CREATE_ORGANIZATION,
+        organization_id: expect.any(String),
+        organization_name: newOrganization.name,
+        organization_type: 'Professional',
+        source: TELEMETRY_SOURCE,
+        user_id: newUser.id,
+        domains: ['test-new-organization.fr'],
+      });
+
       // Delete corresponding in order to avoid issue with other tests
       await removeUser(contextAdminUser, { email: testMail });
-      await deleteOrganizationByName('test-new-organization');
+      await deleteOrganizationBy({ name: 'test-new-organization' });
     });
 
     it('should create a new user with Role USER and should not add it to pending organization if orga does not exist', async () => {
@@ -108,7 +131,7 @@ describe('User helpers', async () => {
       await createNewUserFromInvitation({
         email: userEmail,
       });
-      organization = await loadUnsecureOrganizationBy('name', organizationName);
+      organization = await loadOrganizationBy({ name: organizationName });
 
       expect(organization).toBeTruthy();
 
@@ -125,7 +148,7 @@ describe('User helpers', async () => {
         anotherUser = null;
       }
       if (organization) {
-        await deleteOrganizationByName(organizationName);
+        await deleteOrganizationBy({ name: organizationName });
         organization = null;
       }
     });

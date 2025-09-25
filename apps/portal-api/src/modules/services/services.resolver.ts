@@ -9,6 +9,7 @@ import {
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
@@ -22,7 +23,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organizations/organizations.helper';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { uploadNewFile } from './document/document.helper';
 import { serviceInstanceApp } from './service-instance.app';
@@ -134,7 +135,8 @@ const resolvers: Resolvers = {
             serviceInstance.logo_document_id
           ),
         }),
-      };
+        __typename: 'SeoServiceInstance',
+      } as SeoServiceInstance;
     },
   },
   Mutation: {
@@ -254,11 +256,9 @@ const resolvers: Resolvers = {
         )
           .insert(dataSubscription)
           .returning('*');
-        addedSubscription.organization = await loadOrganizationBy(
-          context,
-          'id',
-          fromGlobalId(input.organization_id).id
-        );
+        addedSubscription.organization = await loadOrganizationBy({
+          id: fromGlobalId(input.organization_id).id as OrganizationId,
+        });
         addedSubscription.service_instance = addedServiceInstance;
         await trx.commit();
         return addedSubscription;

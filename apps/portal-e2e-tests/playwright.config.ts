@@ -22,8 +22,12 @@ export default defineConfig({
   workers: 1,
   expect: {
     toHaveScreenshot: {
-      maxDiffPixels: 100,
+      maxDiffPixelRatio: 0.04,
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
       pathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+      stylePath: './tests/screenshot.css',
     },
   },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -64,6 +68,12 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    headless: true,
+    viewport: { width: 1280, height: 800 }, // or keep Desktop Chrome defaults
+    deviceScaleFactor: 1,
+    colorScheme: 'light',
+    locale: 'en-US',
+    timezoneId: 'UTC',
   },
 
   /* Configure projects for major browsers */

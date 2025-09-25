@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MigrationSet } from 'migrate';
-import { ElasticSearchService } from './client';
+import ElasticSearchService from './client';
 import { createEsStateStorage, StateStore } from './migration-store';
 
 const mockWriteResponse = {

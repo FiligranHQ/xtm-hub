@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { dbTx, dbUnsecure } from '../../knexfile';
-import Organization from '../model/kanel/public/Organization';
 import { UserInitializer } from '../model/kanel/public/User';
 import UserOrganization from '../model/kanel/public/UserOrganization';
+import { loadOrganizationBy } from '../modules/organizations/organizations.domain';
 import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
@@ -80,9 +80,7 @@ describe('Dev users seeding', () => {
       expect(result.personal_space).toBe(false);
 
       // Verify in database
-      const dbOrg = await dbUnsecure<Organization>('Organization')
-        .where({ name: 'Test Organization' })
-        .first();
+      const dbOrg = await loadOrganizationBy({ name: 'Test Organization' });
 
       expect(dbOrg).toBeDefined();
       expect(dbOrg?.domains).toEqual(['test-dev.com']);
@@ -144,9 +142,10 @@ describe('Dev users seeding', () => {
       expect(platformMembership).toBeDefined();
 
       // Verify personal space exists
-      const personalSpace = await dbUnsecure<Organization>('Organization')
-        .where({ id: user?.id, personal_space: true })
-        .first();
+      const personalSpace = await loadOrganizationBy({
+        id: user?.id,
+        personal_space: true,
+      });
 
       expect(personalSpace).toBeDefined();
     });
@@ -195,9 +194,7 @@ describe('Dev users seeding', () => {
       expect(user).toBeDefined();
 
       // Verify organization was created
-      const org = await dbUnsecure<Organization>('Organization')
-        .where({ name: 'User Test Organization' })
-        .first();
+      const org = await loadOrganizationBy({ name: 'User Test Organization' });
 
       expect(org).toBeDefined();
       expect(org?.domains).toEqual(['userorg.test-dev.com']);
@@ -299,9 +296,7 @@ describe('Dev users seeding', () => {
         expect(adminRole).toBeDefined();
 
         // Verify organization for dev3
-        const org = await dbUnsecure<Organization>('Organization')
-          .where({ name: 'Multi User Test Org' })
-          .first();
+        const org = await loadOrganizationBy({ name: 'Multi User Test Org' });
 
         expect(org).toBeDefined();
       } finally {

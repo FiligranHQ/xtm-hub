@@ -3,6 +3,7 @@ ingressClass: nginx
 xtmhub:
   node_env: "production"
   api:
+    devUsers: ""
     repository: "portal-api-prod"
     replicas: 1
     admin:

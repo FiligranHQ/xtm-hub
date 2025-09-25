@@ -43,7 +43,7 @@ test.describe('One Click Deploy', () => {
     await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
   });
 
-  test('should send telemetry event', async ({ page, context }) => {
+  test('should send telemetry event', async ({ page }) => {
     await test.step('Deploy in OpenCTI button is visible', async () => {
       await csvFeedPage.navigateToCsvFeed(CSV_FEED_TEST.shortDescription);
       await expect(
@@ -58,6 +58,7 @@ test.describe('One Click Deploy', () => {
       ).toBeVisible();
     });
     await test.step('Click on Deploy in OpenCTI button displays popup', async () => {
+      await expect(page).toHaveScreenshot();
       await page
         .getByRole('button', {
           name: 'Deploy in OpenCTI',
@@ -67,10 +68,11 @@ test.describe('One Click Deploy', () => {
 
       await expect(
         page.getByRole('heading', {
-          name: `You're about to deploy the ${CSV_FEED_TEST.name} dashboard`,
+          name: `You're about to deploy the ${CSV_FEED_TEST.name} Feed OpenCTI`,
         })
       ).toBeVisible();
       await page.pause();
+      await expect(page).toHaveScreenshot();
     });
     await test.step('Click on popup sends telemetry event and opens new tab', async () => {
       const [graphqlResponse, newTab] = await Promise.all([

@@ -40,10 +40,13 @@ import {
   createUserOrganizationRelationAndRemovePending,
 } from '../common/user-organization.helper';
 import {
+  deleteOrganizationBy,
   insertNewOrganization,
-  loadOrganizationsFromEmail,
-} from '../organizations/organizations.helper';
+} from '../organizations/organizations.domain';
+import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildCreateOrganizationEvent } from '../telemetry/telemetry.helper';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
@@ -113,6 +116,18 @@ async function createOrganisationWithAdminUser(email: string) {
   const addedUser = await createUserWithPersonalSpace({
     email,
   });
+
+  try {
+    const createOrgaEvent = buildCreateOrganizationEvent(
+      newOrganization,
+      addedUser.id
+    );
+    telemetryApp.sendTelemetryEvent(createOrgaEvent);
+  } catch (error) {
+    logApp.error('Unable to send telemetry event for create organization', {
+      error,
+    });
+  }
 
   // Insert relation UserOrganization
   const [userOrgRelation] = await createUserOrganizationRelation({
@@ -288,9 +303,9 @@ export const removeUser = async (
     .returning('*');
 
   // Organization personalSpace of the user should have the same id
-  await db<Organization>(context, 'Organization')
-    .delete('*')
-    .where({ id: deletedUser.id as unknown as OrganizationId });
+  await deleteOrganizationBy({
+    id: deletedUser.id as unknown as OrganizationId,
+  });
 
   return deletedUser;
 };

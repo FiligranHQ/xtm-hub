@@ -1,5 +1,6 @@
-import { Locator, Page } from '@playwright/test';
-import { waitForDrawerToClose, waitForReactIdle } from './common';
+import { Page } from '@playwright/test';
+import { waitForDrawerToClose } from './common';
+import { expect } from '../fixtures/baseFixtures';
 
 const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_csv_feed.json',
@@ -57,6 +58,7 @@ export default class CsvFeedPage {
       .click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
@@ -69,6 +71,7 @@ export default class CsvFeedPage {
     await this.page
       .getByRole('button', { name: 'Delete the CSV Feed' })
       .click();
+    await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Delete' }).click();
 
     await waitForDrawerToClose(this.page);
