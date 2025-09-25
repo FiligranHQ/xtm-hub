@@ -725,7 +725,7 @@ export const loadPlatformConfigurationByServiceInstanceId = async (
     .select('*');
 
   if (trx) {
-    qb.transacting(trx);
+    qb.forUpdate().transacting(trx);
   }
 
   return await qb;
