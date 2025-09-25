@@ -91,7 +91,7 @@ jobs:
           retention-days: 3
           if-no-files-found: error
 
-  juste-pour-voir:
+  run-api-tests:
     runs-on: ubuntu-latest
     needs: build-apps
     container: node:24.8-alpine3.22
@@ -101,9 +101,15 @@ jobs:
       packages: write
     strategy:
       fail-fast: true
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Install build dep
+        run: apk add --no-cache docker docker-cli docker-cli-compose
+      - name: Launch docker compose for services minio, postgres and elastic
+        run: |
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml up -d
       - name: Download all artifacts for front
         uses: actions/download-artifact@v5
         with:
@@ -119,7 +125,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           pattern: build-context-api-config*
-          path: config
+          path: apps/portal-api/dist/config
           merge-multiple: true
       - name: Download node_modules artifacts for api
         uses: actions/download-artifact@v5
@@ -143,7 +149,28 @@ jobs:
           echo "=== API dist==="
           ls -la apps/portal-api/dist
           echo "=== API config==="
-          ls -la apps/portal-api/config
+          ls -la apps/portal-api/dist/config
       - name: Je le démarre pour voir
         run: |
-          node apps/portal-api/dist/index.js
+             export DATABASE_HOST=portal-postgres
+            export DATABASE_PORT=5432
+            export DATABASE_USER=portal
+            export DATABASE_BASE=test_database
+            export DATABASE_PASSWORD=portal-password
+            export ADMIN_EMAIL=admin@filigran.io
+            export ADMIN_PASSWORD=admin
+            export DATA_SEEDING=true
+            export MINIO_BUCKET_NAME=xtmhubbucket
+            export MINIO_ENDPOINT=portal-minio
+            export MINIO_PORT=9000
+            export MINIO_ACCESS_KEY=portal
+            export MINIO_SECRET_KEY=changeme
+            export MINIO_USE_SSL=false
+            export NODE_ENV=development
+            export VITEST_MODE=true
+            export START_DEV_SERVER=true
+            export ELASTIC_HOST=portal-elasticsearch
+            export ELASTIC_PORT=9200
+            export BASE_URL_FRONT=http://portal-front:3000
+            cd apps/portal-api/dist
+            node index.js
