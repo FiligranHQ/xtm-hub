@@ -2,6 +2,7 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
+  RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
   ServiceInstance,
@@ -10,6 +11,7 @@ import {
   Subscription,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
@@ -26,6 +28,7 @@ import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { uploadNewFile } from './document/document.helper';
+import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
 import {
   getUserJoined,
@@ -268,19 +271,50 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    updatePlatformServiceMetadata: async (_, { input }, context) => {
+    updatePlatformServiceMetadata: async (_, { input, document }, context) => {
       const trx = await dbTx();
       try {
         const updatedServiceInstance =
           await serviceInstanceApp.updatePlatformServiceMetadata(
             context,
             input,
+            document,
             trx
           );
 
         await trx.commit();
         await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
-        return updatedServiceInstance;
+
+        // Get platform configuration to return RegisteredPlatform
+        const config: ServiceConfiguration = await db<ServiceConfiguration>(
+          context,
+          'Service_Configuration'
+        )
+          .where('service_instance_id', '=', updatedServiceInstance.id)
+          .first();
+
+        if (!config) {
+          throw new Error('SERVICE_CONFIGURATION_NOT_FOUND');
+        }
+
+        const platformConfig = config.config as PlatformConfiguration;
+        return {
+          __typename: 'RegisteredPlatform',
+          id: updatedServiceInstance.id,
+          platform_id: platformConfig.platform_id,
+          title: platformConfig.platform_title,
+          url: platformConfig.platform_url,
+          contract: platformConfig.platform_contract,
+          version: platformConfig.platform_version,
+          identifier: updatedServiceInstance.identifier,
+          illustration_document_id:
+            updatedServiceInstance.illustration_document_id
+              ? toGlobalId(
+                  'Document',
+                  updatedServiceInstance.illustration_document_id
+                )
+              : null,
+        } as RegisteredPlatform;
       } catch (error) {
         await trx.rollback();
         throw error;

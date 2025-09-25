@@ -83,6 +83,7 @@ export const registerRegisteredPlatformFragment = graphql`
     url
     contract
     identifier
+    illustration_document_id
   }
 `;
 

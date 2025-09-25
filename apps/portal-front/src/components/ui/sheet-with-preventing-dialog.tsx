@@ -77,7 +77,8 @@ export const SheetWithPreventingDialog: FunctionComponent<
         <SheetContent
           side={'right'}
           onInteractOutside={(e) => alertDialogSheetClose(e)}
-          onOpenAutoFocus={onOpenAutoFocus}>
+          onOpenAutoFocus={onOpenAutoFocus}
+          className="z-[50000]">
           <SheetHeader className="bg-page-background">
             <SheetTitle>{title}</SheetTitle>
             <SheetDescription>{description}</SheetDescription>

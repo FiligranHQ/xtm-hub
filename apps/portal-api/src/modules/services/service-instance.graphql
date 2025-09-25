@@ -72,7 +72,6 @@ input AddServiceInput {
 input UpdatePlatformServiceMetadataInput {
   serviceInstanceId: ID!
   name: String
-  document: Upload
 }
 
 type Mutation {
@@ -90,7 +89,8 @@ type Mutation {
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   updatePlatformServiceMetadata(
     input: UpdatePlatformServiceMetadataInput!
-  ): ServiceInstance
+    document: Upload
+  ): RegisteredPlatform
     @auth(
       requires: [
         ADMINISTRATE_ORGANIZATION

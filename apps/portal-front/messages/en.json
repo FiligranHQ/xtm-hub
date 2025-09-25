@@ -786,7 +786,16 @@
     "Validate": "Validate",
     "ValidateForm": "Validate form",
     "Verified": "Verified",
-    "Visualize": "Visualize"
+    "Visualize": "Visualize",
+    "Updating": "Updating..."
+  },
+  "Platform": {
+    "Update": "Update",
+    "UpdateMetadata": "Update Platform Metadata",
+    "Name": "Platform Name",
+    "NamePlaceholder": "Enter platform name",
+    "IllustrationImage": "Illustration Image",
+    "Updated": "{platformName} has been updated successfully"
   },
   "VaultActions": {
     "DocumentAdded": "{file_name} has been added",

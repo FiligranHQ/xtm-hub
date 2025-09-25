@@ -1,17 +1,21 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Knex } from 'knex';
+import { db } from '../../../knexfile';
 import {
+  RegisteredPlatform,
   ServiceInstance,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
+import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
 import { securityGuard } from '../../security/guard';
-import { NotFoundError } from '../../utils/error.util';
-import { extractId } from '../../utils/utils';
+import { NotFoundError } from '../../utils/error/error.util';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { loadUserServiceBy } from '../user_service/user_service.domain';
-import { uploadNewFile } from './document/document.helper';
+import { Upload, uploadNewFile } from './document/document.helper';
+import { PlatformConfiguration } from './registration/registration.domain';
 import {
   grantServiceAccess,
   loadServiceDefinitionByServiceInstance,
@@ -47,13 +51,46 @@ export const serviceInstanceApp = {
   updatePlatformServiceMetadata: async (
     context: PortalContext,
     input: UpdatePlatformServiceMetadataInput,
+    upload: Upload,
     trx: Knex.Transaction
-  ): Promise<ServiceInstance> => {
-    // Get service instance to verify type
-    const serviceInstance = await serviceInstanceApp.loadServiceInstance(
+  ): Promise<RegisteredPlatform> => {
+    const { id } = fromGlobalId(input.serviceInstanceId);
+    context.serviceInstanceId = input.serviceInstanceId;
+
+    const serviceInstance = await db<ServiceInstance>(
       context,
-      extractId<ServiceInstanceId>(input.serviceInstanceId)
-    );
+      'ServiceInstance'
+    )
+      .leftJoin(
+        'Service_Configuration',
+        'Service_Configuration.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .leftJoin(
+        'ServiceDefinition',
+        'ServiceDefinition.id',
+        '=',
+        'ServiceInstance.service_definition_id'
+      )
+      .leftJoin(
+        'Subscription',
+        'Subscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .where('ServiceInstance.id', '=', id)
+      .where(
+        'Subscription.organization_id',
+        '=',
+        context.user.selected_organization_id
+      )
+      .whereIn('ServiceDefinition.identifier', [
+        'opencti_registration',
+        'openaev_registration',
+      ])
+      .select('ServiceInstance.*')
+      .first();
 
     if (!serviceInstance) {
       throw NotFoundError('SERVICE_INSTANCE_NOT_FOUND');
@@ -75,33 +112,57 @@ export const serviceInstanceApp = {
       serviceDefinition
     );
 
-    // Build update object
+    // Build update object for ServiceInstance
     const updateData: Partial<ServiceInstance> = {};
 
-    // Update name if provided
+    // Update ServiceInstance name if provided
     if (input.name) {
       updateData.name = input.name;
     }
 
     // Handle illustration image upload if provided
-    if (input.document) {
-      const document = await uploadNewFile(context, input.document, trx);
+    if (upload) {
+      context.serviceInstanceId = serviceInstance.id;
+      const document = await uploadNewFile(context, upload, trx);
       updateData.illustration_document_id = document.id;
     }
 
-    // Perform update
-    const { db } = await import('../../../knexfile');
-    const [updatedServiceInstance] = await db<ServiceInstance>(
-      context,
-      'ServiceInstance'
-    )
-      .where({
-        id: extractId<ServiceInstanceId>(input.serviceInstanceId),
-      })
-      .update(updateData)
-      .returning('*')
-      .transacting(trx);
+    // Update ServiceInstance if there are fields to update
+    let updatedServiceInstance = serviceInstance;
+    if (Object.keys(updateData).length > 0) {
+      const [result] = await db<ServiceInstance>(context, 'ServiceInstance')
+        .where({ id: serviceInstance.id })
+        .update(updateData)
+        .returning('*')
+        .transacting(trx);
+      updatedServiceInstance = result;
+    }
 
-    return updatedServiceInstance;
+    // For registered platforms, also update the configuration JSON for platform_title
+    if (input.name) {
+      // Get current configuration
+      const currentConfig = await db<ServiceConfiguration>(
+        context,
+        'Service_Configuration'
+      )
+        .where('service_instance_id', '=', serviceInstance.id)
+        .first()
+        .transacting(trx);
+
+      if (currentConfig) {
+        const config = currentConfig.config as PlatformConfiguration;
+        config.platform_title = input.name;
+
+        await db<ServiceConfiguration>(context, 'Service_Configuration')
+          .where('service_instance_id', '=', serviceInstance.id)
+          .update({ config })
+          .transacting(trx);
+      }
+    }
+
+    return {
+      ...updatedServiceInstance,
+      identifier: serviceDefinition.identifier,
+    };
   },
 };
