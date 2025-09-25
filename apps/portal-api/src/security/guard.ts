@@ -54,7 +54,7 @@ export const securityGuard = {
         serviceDefinition.identifier as ServiceDefinitionIdentifier
       )
     ) {
-      throw ForbiddenAccess('PLATFORM_TYPE_NOT_SUPPORTED');
+      throw ForbiddenAccess(ErrorCode.PlatformTypeNotSupported);
     }
 
     // Check specific capabilities based on platform type

@@ -11,7 +11,6 @@ import {
   Subscription,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
@@ -34,6 +33,7 @@ import {
   getUserJoined,
   loadIsSubscribed,
   loadLinks,
+  loadPlatformConfigurationByServiceInstanceId,
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
@@ -283,15 +283,13 @@ const resolvers: Resolvers = {
         await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
 
         // Get platform configuration to return RegisteredPlatform
-        const config: ServiceConfiguration = await db<ServiceConfiguration>(
+        const config = await loadPlatformConfigurationByServiceInstanceId(
           context,
-          'Service_Configuration'
-        )
-          .where('service_instance_id', '=', updatedServiceInstance.id)
-          .first();
+          updatedServiceInstance.id
+        );
 
         if (!config) {
-          throw new Error('SERVICE_CONFIGURATION_NOT_FOUND');
+          throw new Error(ErrorCode.ServiceConfigurationNotFound);
         }
 
         const platformConfig = config.config as PlatformConfiguration;

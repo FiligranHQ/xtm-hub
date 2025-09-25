@@ -14,6 +14,7 @@ export enum ForbiddenErrorCode {
   CantAddDisabledUser = 'CANT_ADD_DISABLED_USER',
   CantRemoveYourselfFromOrgaError = 'CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR',
   YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
+  PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
 }
 
 export enum BadRequestErrorCode {
@@ -72,6 +73,7 @@ export enum NotFoundErrorCode {
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   ServiceNotFound = 'SERVICE_NOT_FOUND',
+  ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
 }
 
 export const ErrorCode = {
