@@ -59,7 +59,7 @@ jobs:
                         number
                       }
                     }
-                    fieldValues(first: 20) {
+                    fieldValues(first: 50) {
                       nodes {
                         __typename
                         ... on ProjectV2ItemFieldTextValue {
@@ -140,17 +140,6 @@ jobs:
                 }
               }
             
-              // Extract domain from feature env URL for subtitle
-              let featureEnvDomain = '';
-              if (featureEnv) {
-                try {
-                  const urlObj = new URL(featureEnv);
-                  featureEnvDomain = urlObj.hostname;
-                } catch (e) {
-                  // If it's not a valid URL, use as is
-                  featureEnvDomain = featureEnv;
-                }
-              }
             
               // Extract PR number from feature env URL
               let prNumber = '';
@@ -174,7 +163,6 @@ jobs:
               console.log(`Title: ${issueTitle}`);
               console.log(`Issue Number: #${issueNumber}`);
               console.log(`Feature env: ${featureEnv}`);
-              console.log(`Feature env domain: ${featureEnvDomain}`);
               console.log(`PR Number: ${prNumber || 'Not found'}`);
               console.log(`PR URL: ${prUrl || 'Not found'}`);
             
@@ -183,7 +171,6 @@ jobs:
               core.setOutput('issue_title', issueTitle);
               core.setOutput('issue_number', issueNumber);
               core.setOutput('feature_env', featureEnv);
-              core.setOutput('feature_env_domain', featureEnvDomain);
               core.setOutput('pr_number', prNumber);
               core.setOutput('pr_url', prUrl);
             
@@ -217,7 +204,6 @@ jobs:
           ISSUE_TITLE="${{ steps.get-info.outputs.issue_title }}"
           ISSUE_NUMBER="${{ steps.get-info.outputs.issue_number }}"
           FEATURE_ENV="${{ steps.get-info.outputs.feature_env }}"
-          FEATURE_ENV_DOMAIN="${{ steps.get-info.outputs.feature_env_domain }}"
           PR_NUMBER="${{ steps.get-info.outputs.pr_number }}"
           PR_URL="${{ steps.get-info.outputs.pr_url }}"
           
@@ -233,7 +219,6 @@ jobs:
             "title": "🚀 ${ISSUE_TITLE}",
             "sections": [{
               "activityTitle": "Environment Ready for Testing",
-              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
               "text": "The feature environment is now deployed and ready for testing.",
               "facts": [
                 {
@@ -264,7 +249,6 @@ jobs:
             "title": "🚀 ${ISSUE_TITLE}",
             "sections": [{
               "activityTitle": "Environment Ready for Testing",
-              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
               "text": "The feature environment is now deployed and ready for testing.",
               "facts": [
                 {
