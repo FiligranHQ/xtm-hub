@@ -168,6 +168,11 @@ export const documentBase = graphql`
     subscription {
       id
     }
+    labels {
+      id
+      name
+      color
+    }
   }
 `;
 export const documentsFragment = graphql`

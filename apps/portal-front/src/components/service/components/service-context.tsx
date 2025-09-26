@@ -2,7 +2,7 @@ import {
   ServiceForm,
   ServiceFormValues,
 } from '@/components/service/components/subscribable-services.types';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import React, { createContext, FunctionComponent, useContext } from 'react';
 
@@ -16,12 +16,12 @@ export interface ServiceContextProps {
   ) => Promise<void>;
   handleUpdateSheet: (
     values: ServiceFormValues,
-    resource: ShareableResource,
+    resource: ShareableResourceSlugType,
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => Promise<void>;
   handleDeleteSheet: (
-    document: ShareableResource,
+    document: ShareableResourceSlugType,
     onCompleted: () => void
   ) => Promise<void>;
   ServiceForm: ServiceForm;

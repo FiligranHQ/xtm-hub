@@ -12,10 +12,9 @@ import {
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
@@ -80,7 +79,7 @@ export function useCustomDashboardsContext(
     useMutation<customDashboardDeleteMutation>(CustomDashboardDeleteMutation);
 
   const handleDeleteSheet = async (
-    document: ShareableResource,
+    document: ShareableResourceSlugType,
     onCompleted: () => void
   ) => {
     deleteCustomDashboardMutation({
@@ -100,11 +99,11 @@ export function useCustomDashboardsContext(
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
-    resource: ShareableResource,
+    resource: ShareableResourceSlugType,
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const customDashboard = resource as customDashboardsItem_fragment$data;
+    const customDashboard = resource;
     const formValues = values as CustomDashboardFormValues;
     const input = {
       ...omit(formValues, ['document', 'images']),

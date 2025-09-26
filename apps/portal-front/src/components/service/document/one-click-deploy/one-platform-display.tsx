@@ -1,12 +1,12 @@
 import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/components/service/document/shareable-resource-slug';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployPlatformFragment$data } from '@generated/oneClickDeployPlatformFragment.graphql';
 import { AlertDialogTitle } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 
 interface OnePlatformDisplayProps {
-  documentData: ShareableResource;
+  documentData: ShareableResourceSlugType;
   platforms: oneClickDeployPlatformFragment$data[];
   setIsOpen: (isOpen: boolean) => void;
   oneClickDeploy: (url: string) => void;

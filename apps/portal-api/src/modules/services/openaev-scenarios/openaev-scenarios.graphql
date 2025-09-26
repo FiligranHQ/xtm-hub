@@ -44,6 +44,7 @@ type OpenAEVScenario implements DocumentBase & Node {
   slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  labels: [Label!]
   # Specific fields for OpenAEVScenario scenarios
   product_version: String
 }

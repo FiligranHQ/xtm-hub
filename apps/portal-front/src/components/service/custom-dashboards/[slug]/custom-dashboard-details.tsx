@@ -2,16 +2,14 @@ import { AppServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import { useCustomDashboardsContext } from '@/components/service/custom-dashboards/use-custom-dashboards-context';
+import { documentBase } from '@/components/service/document/document.graphql';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import { APP_PATH } from '@/utils/path/constant';
 import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
-import { customDashboardsItem_fragment$key } from '@generated/customDashboardsItem_fragment.graphql';
+import { documentBase_fragment$key } from '@generated/documentBase_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
-import {
-  CustomDashboardQuery,
-  customDashboardsItem,
-} from '../custom-dashboard.graphql';
+import { CustomDashboardQuery } from '../custom-dashboard.graphql';
 
 // Component interface
 interface DashboardSlugProps {
@@ -28,8 +26,8 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
     CustomDashboardQuery,
     queryRef
   );
-  const documentData = readInlineData<customDashboardsItem_fragment$key>(
-    customDashboardsItem,
+  const documentData = readInlineData<documentBase_fragment$key>(
+    documentBase,
     data.customDashboard
   );
 

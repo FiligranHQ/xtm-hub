@@ -5,12 +5,12 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import { IconActions } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
 
 interface ServiceCardProps {
-  document: SubscribableResource;
+  document: documentBase_fragment$data;
   detailUrl: string;
   shareLinkUrl: string;
 }

@@ -6,7 +6,7 @@ import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import {
   AutoForm,
   Button,
@@ -40,7 +40,7 @@ interface CsvFeedFormProps {
   userCanDelete?: boolean;
   handleSubmit?: (values: CsvFeedFormValues) => void;
   onDelete?: () => void;
-  document: SubscribableResource | undefined;
+  document: documentBase_fragment$data | undefined;
 }
 
 export const CsvFeedForm = ({

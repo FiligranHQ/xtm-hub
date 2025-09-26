@@ -1,5 +1,5 @@
 import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/components/service/document/shareable-resource-slug';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployPlatformFragment$data } from '@generated/oneClickDeployPlatformFragment.graphql';
 import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
 interface ChoosePlatformFormProps {
-  documentData: ShareableResource;
+  documentData: ShareableResourceSlugType;
   platforms: oneClickDeployPlatformFragment$data[];
   translatedPlatformIdentifier: string;
   oneClickDeploy: (platformUrl: string) => void;

@@ -121,7 +121,7 @@ export const openaevScenariosFragment = graphql`
         node {
           id
           active
-          ...openaevScenariosItem_fragment
+          ...documentBase_fragment
         }
       }
     }
@@ -146,6 +146,7 @@ export const OpenaevScenarioQuery = graphql`
   query openaevScenarioQuery($documentId: ID, $serviceInstanceId: ID) {
     openAEVScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {
       ...openaevScenariosItem_fragment
+      ...documentBase_fragment
     }
   }
 `;

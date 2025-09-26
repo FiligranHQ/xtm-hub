@@ -3,7 +3,6 @@ import {
   SeoResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
@@ -34,9 +33,7 @@ const SlugDocument = async ({
           serviceInstance={
             serviceInstance as unknown as serviceInstance_fragment$data
           }
-          documentData={
-            document as unknown as customDashboardsItem_fragment$data
-          }
+          documentData={document}
         />
       );
   }

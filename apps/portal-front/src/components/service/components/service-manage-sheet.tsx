@@ -12,13 +12,13 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface ServiceManageSheetProps {
-  document?: SubscribableResource;
+  document?: documentBase_fragment$data;
   variant?: 'menu' | 'button';
 }
 

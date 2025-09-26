@@ -2,7 +2,8 @@
 import { Carousel, CarouselItem, DialogContent } from 'filigran-ui/clients';
 import * as React from 'react';
 
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { SeoResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Dialog } from 'filigran-ui';
 import Image from 'next/image';
@@ -10,7 +11,7 @@ import { useState } from 'react';
 
 // Component interface
 interface DashboardCarouselProps {
-  documentData: customDashboardsItem_fragment$data;
+  documentData: documentBase_fragment$data | SeoResource;
   serviceInstance: serviceInstance_fragment$data;
 }
 

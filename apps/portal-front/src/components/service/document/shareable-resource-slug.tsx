@@ -27,11 +27,13 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { ReactNode, useContext } from 'react';
+
 // Component interface
 interface ShareableResourceSlugProps {
-  documentData: ShareableResource;
+  documentData: ShareableResourceSlugType;
   breadcrumbValue: BreadcrumbNavLink[];
   children?: ReactNode;
   updateActions?: ReactNode;

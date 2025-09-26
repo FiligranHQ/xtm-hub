@@ -1,7 +1,7 @@
 import { RefreshUserPlatformTokenMutation } from '@/components/registration/register/register.graphql';
 import { ShareableResourceType } from '@/components/service/document/shareable-resource-slug';
 import useExternalTab from '@/hooks/useExternalTab';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   registerRefreshUserPlatformTokenMutation,
   registerRefreshUserPlatformTokenMutation$data,
@@ -17,7 +17,7 @@ const OPENCTI_URL_CONFIGS = {
 
 interface Props {
   platformBasePath: string;
-  documentData: ShareableResource;
+  documentData: ShareableResourceSlugType;
 }
 
 interface Return {
@@ -25,7 +25,7 @@ interface Return {
 }
 
 function computeDeployUrl(
-  documentData: ShareableResource,
+  documentData: ShareableResourceSlugType,
   platformBasePath: string
 ): string {
   const { id, service_instance, type } = documentData;

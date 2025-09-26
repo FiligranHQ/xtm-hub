@@ -6,13 +6,13 @@ import { Avatar, Label } from 'filigran-ui/clients';
 
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { useTranslations } from 'next-intl';
 
 // Component interface
 interface ShareableResourceDetailsProps {
-  documentData: ShareableResource;
+  documentData: ShareableResourceSlugType;
   downloadNumber?: number;
 }
 

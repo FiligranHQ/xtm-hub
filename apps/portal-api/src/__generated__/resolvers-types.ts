@@ -168,7 +168,7 @@ export type CustomDashboard = DocumentBase & Node & {
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  product_version?: Maybe<Scalars['String']['output']>;
+  product_version: Scalars['String']['output'];
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
   share_number: Scalars['Int']['output'];
@@ -227,6 +227,7 @@ export type DocumentBase = {
   download_number: Scalars['Int']['output'];
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   service_instance?: Maybe<ServiceInstance>;
@@ -710,18 +711,6 @@ export type OneClickDeployInput = {
   resource_id: Scalars['ID']['input'];
   resource_title: Scalars['String']['input'];
   service_instance_id: Scalars['ID']['input'];
-};
-
-export enum OctiPlatformContract {
-  Ce = 'CE',
-  Ee = 'EE'
-}
-
-export type OctiPlatformInput = {
-  contract: OctiPlatformContract;
-  id: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
-  url: Scalars['String']['input'];
 };
 
 export type OpenAevScenario = DocumentBase & Node & {
@@ -1717,7 +1706,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  DocumentBase: ( CsvFeed ) | ( CustomDashboard );
+  DocumentBase: ( CsvFeed ) | ( CustomDashboard ) | ( OpenAevScenario );
   Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( Document ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
@@ -2054,7 +2043,7 @@ export type CustomDashboardResolvers<ContextType = PortalContext, ParentType ext
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  product_version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2111,7 +2100,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type DocumentBaseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DocumentBase'] = ResolversParentTypes['DocumentBase']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'CsvFeed' | 'CustomDashboard' | 'ObasScenario', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CsvFeed' | 'CustomDashboard' | 'OpenAEVScenario', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -2119,6 +2108,7 @@ export type DocumentBaseResolvers<ContextType = PortalContext, ParentType extend
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;

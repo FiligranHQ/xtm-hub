@@ -117,7 +117,7 @@ export const csvFeedsFragment = graphql`
         node {
           id
           active
-          ...csvFeedsItem_fragment
+          ...documentBase_fragment
         }
       }
     }
@@ -142,6 +142,7 @@ export const CsvFeedQuery = graphql`
   query csvFeedQuery($documentId: ID, $serviceInstanceId: ID) {
     csvFeed(id: $documentId, serviceInstanceId: $serviceInstanceId) {
       ...csvFeedsItem_fragment
+      ...documentBase_fragment
     }
   }
 `;

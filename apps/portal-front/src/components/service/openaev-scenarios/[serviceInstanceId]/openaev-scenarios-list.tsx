@@ -1,6 +1,5 @@
 import {
   openaevScenariosFragment,
-  openaevScenariosItem,
   OpenaevScenariosListQuery,
 } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 
@@ -9,10 +8,11 @@ import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { useOpenaevScenarioContext } from '@/components/service/openaev-scenarios/use-openaev-scenario-context';
 
+import { documentBase } from '@/components/service/document/document.graphql';
 import {
-  openaevScenariosItem_fragment$data,
-  openaevScenariosItem_fragment$key,
-} from '@generated/openaevScenariosItem_fragment.graphql';
+  documentBase_fragment$data,
+  documentBase_fragment$key,
+} from '@generated/documentBase_fragment.graphql';
 import { openaevScenariosList$key } from '@generated/openaevScenariosList.graphql';
 import { openaevScenariosQuery } from '@generated/openaevScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -50,9 +50,9 @@ const OpenaevScenariosList = ({
   >(openaevScenariosFragment, queryData);
 
   const [active, draft] = useActiveAndDraftSplit<
-    openaevScenariosItem_fragment$data,
-    openaevScenariosItem_fragment$key
-  >(data?.openAEVScenarios.edges, openaevScenariosItem);
+    documentBase_fragment$data,
+    documentBase_fragment$key
+  >(data?.openAEVScenarios.edges, documentBase);
 
   const connectionId = data?.openAEVScenarios.__id;
 

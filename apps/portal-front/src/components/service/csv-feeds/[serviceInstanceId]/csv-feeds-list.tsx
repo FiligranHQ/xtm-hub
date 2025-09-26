@@ -1,20 +1,19 @@
 import {
   csvFeedsFragment,
-  csvFeedsItem,
   CsvFeedsListQuery,
 } from '@/components/service/csv-feeds/csv-feed.graphql';
-
-import {
-  csvFeedsItem_fragment$data,
-  csvFeedsItem_fragment$key,
-} from '@generated/csvFeedsItem_fragment.graphql';
 
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
+import { documentBase } from '@/components/service/document/document.graphql';
 import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
 import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
+import {
+  documentBase_fragment$data,
+  documentBase_fragment$key,
+} from '@generated/documentBase_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
@@ -50,9 +49,9 @@ const CsvFeedsList = ({
   );
 
   const [active, draft] = useActiveAndDraftSplit<
-    csvFeedsItem_fragment$data,
-    csvFeedsItem_fragment$key
-  >(data?.csvFeeds.edges, csvFeedsItem);
+    documentBase_fragment$data,
+    documentBase_fragment$key
+  >(data?.csvFeeds.edges, documentBase);
 
   const connectionId = data?.csvFeeds.__id;
 

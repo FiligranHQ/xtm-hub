@@ -63,7 +63,44 @@ export const CustomDashboardDeleteMutation = graphql`
 
 export const customDashboardsItem = graphql`
   fragment customDashboardsItem_fragment on CustomDashboard @inline {
-    ...documentBase_fragment
+    id
+    type
+    uploader {
+      first_name
+      last_name
+      email
+      picture
+    }
+    uploader_organization {
+      id
+      name
+      personal_space
+    }
+    service_instance_id
+    name
+    short_description
+    description
+    file_name
+    minio_name
+    active
+    created_at
+    updated_at
+    updater_id
+    download_number
+    share_number
+    children_documents {
+      id
+      file_name
+    }
+    slug
+    service_instance {
+      id
+      slug
+      name
+    }
+    subscription {
+      id
+    }
     labels {
       id
       name
@@ -90,7 +127,7 @@ export const customDashboardsFragment = graphql`
       totalCount
       edges {
         node {
-          ...customDashboardsItem_fragment
+          ...documentBase_fragment
         }
       }
     }
@@ -115,6 +152,7 @@ export const CustomDashboardQuery = graphql`
   query customDashboardQuery($documentId: ID, $serviceInstanceId: ID) {
     customDashboard(id: $documentId, serviceInstanceId: $serviceInstanceId) {
       ...customDashboardsItem_fragment
+      ...documentBase_fragment
     }
   }
 `;

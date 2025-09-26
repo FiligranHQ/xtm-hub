@@ -15,7 +15,7 @@ import {
   fileListCheck,
   NewFile,
 } from '@/utils/documents';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import { AddIcon, DeleteIcon, ReplayIcon } from 'filigran-icon';
 import {
   AutoForm,
@@ -61,7 +61,7 @@ const customDashboardSchema = z.object({
 export type CustomDashboardFormValues = z.infer<typeof customDashboardSchema>;
 
 interface CustomDashboardFormProps {
-  document: SubscribableResource | undefined;
+  document: documentBase_fragment$data | undefined;
   handleSubmit: (values: CustomDashboardFormValues) => void;
   onDelete: () => void;
   userCanDelete: boolean;

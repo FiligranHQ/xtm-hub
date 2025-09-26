@@ -1,4 +1,3 @@
-
 type CsvFeed implements DocumentBase & Node {
   id: ID!
   type: String!
@@ -20,9 +19,9 @@ type CsvFeed implements DocumentBase & Node {
   slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  labels: [Label!]
   #Specific fields for csv-feeds
   remover_id: ID
-  labels: [Label!]
 }
 
 input CreateCsvFeedInput {

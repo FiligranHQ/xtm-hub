@@ -12,7 +12,7 @@ import {
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { openaevScenarioCreateMutation } from '@generated/openaevScenarioCreateMutation.graphql';
 import { openaevScenarioDeleteMutation } from '@generated/openaevScenarioDeleteMutation.graphql';
 import { openaevScenarioUpdateMutation } from '@generated/openaevScenarioUpdateMutation.graphql';
@@ -80,7 +80,7 @@ export function useOpenaevScenarioContext(
     useMutation<openaevScenarioDeleteMutation>(OpenaevScenarioDeleteMutation);
 
   const handleDeleteSheet = async (
-    document: ShareableResource,
+    document: ShareableResourceSlugType,
     onCompleted: () => void
   ) => {
     deleteOpenAEVScenarioMutation({
@@ -100,7 +100,7 @@ export function useOpenaevScenarioContext(
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
-    resource: ShareableResource,
+    resource: ShareableResourceSlugType,
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {

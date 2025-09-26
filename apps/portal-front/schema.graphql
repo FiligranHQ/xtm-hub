@@ -183,8 +183,8 @@ type CsvFeed implements DocumentBase & Node {
   slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  remover_id: ID
   labels: [Label!]
+  remover_id: ID
 }
 
 input CreateCsvFeedInput {
@@ -264,7 +264,7 @@ type CustomDashboard implements DocumentBase & Node {
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   labels: [Label!]
-  product_version: String
+  product_version: String!
 }
 
 type CustomDashboardEdge {
@@ -330,6 +330,7 @@ interface DocumentBase implements Node {
   slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  labels: [Label!]
 }
 
 type Document implements Node {

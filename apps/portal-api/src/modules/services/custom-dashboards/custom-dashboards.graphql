@@ -44,9 +44,9 @@ type CustomDashboard implements DocumentBase & Node {
   slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  # Specific fields for custom dashboards
   labels: [Label!]
-  product_version: String
+    #Specific fields for custom-dashboards
+  product_version: String!
 }
 
 type CustomDashboardEdge {

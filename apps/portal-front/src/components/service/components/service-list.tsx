@@ -14,13 +14,13 @@ import { useServiceContext } from '@/components/service/components/service-conte
 import ServiceButtons from '@/components/service/components/service-list-buttons';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 
 interface ServiceListProps {
-  active: SubscribableResource[];
-  draft: SubscribableResource[];
+  active: documentBase_fragment$data[];
+  draft: documentBase_fragment$data[];
   search: string;
   onSearchChange: (v: string) => void;
   labels?: string[];

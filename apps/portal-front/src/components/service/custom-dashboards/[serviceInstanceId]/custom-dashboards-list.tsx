@@ -2,12 +2,13 @@ import { AppServiceContext } from '@/components/service/components/service-conte
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { useCustomDashboardsContext } from '@/components/service/custom-dashboards/use-custom-dashboards-context';
-import {
-  customDashboardsItem_fragment$data,
-  customDashboardsItem_fragment$key,
-} from '@generated/customDashboardsItem_fragment.graphql';
+import { documentBase } from '@/components/service/document/document.graphql';
 import { customDashboardsList$key } from '@generated/customDashboardsList.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
+import {
+  documentBase_fragment$data,
+  documentBase_fragment$key,
+} from '@generated/documentBase_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
@@ -16,7 +17,6 @@ import {
 } from 'react-relay';
 import {
   customDashboardsFragment,
-  customDashboardsItem,
   CustomDashboardsListQuery,
 } from '../custom-dashboard.graphql';
 
@@ -48,9 +48,9 @@ const CustomDashboardsList = ({
   >(customDashboardsFragment, queryData);
 
   const [active, draft] = useActiveAndDraftSplit<
-    customDashboardsItem_fragment$data,
-    customDashboardsItem_fragment$key
-  >(data?.customDashboards.edges, customDashboardsItem);
+    documentBase_fragment$data,
+    documentBase_fragment$key
+  >(data?.customDashboards.edges, documentBase);
 
   const connectionId = data?.customDashboards.__id;
 

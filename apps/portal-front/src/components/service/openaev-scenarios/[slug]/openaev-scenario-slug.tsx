@@ -2,14 +2,12 @@ import { AppServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
-import {
-  OpenaevScenarioQuery,
-  openaevScenariosItem,
-} from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
+import { documentBase } from '@/components/service/document/document.graphql';
+import { OpenaevScenarioQuery } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 import { useOpenaevScenarioContext } from '@/components/service/openaev-scenarios/use-openaev-scenario-context';
 import { APP_PATH } from '@/utils/path/constant';
+import { documentBase_fragment$key } from '@generated/documentBase_fragment.graphql';
 import { openaevScenarioQuery } from '@generated/openaevScenarioQuery.graphql';
-import { openaevScenariosItem_fragment$key } from '@generated/openaevScenariosItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
@@ -27,8 +25,8 @@ const OpenaevScenarioSlug = ({
     queryRef
   );
 
-  const documentData = readInlineData<openaevScenariosItem_fragment$key>(
-    openaevScenariosItem,
+  const documentData = readInlineData<documentBase_fragment$key>(
+    documentBase,
     data.openAEVScenario
   );
 

@@ -30,6 +30,7 @@ interface DocumentBase implements Node {
   slug: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  labels: [Label!]
 }
 type Document implements Node {
   id: ID!

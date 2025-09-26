@@ -4,10 +4,11 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
+  SeoResource,
   ServiceSlug,
-  ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Badge } from 'filigran-ui/servers';
@@ -17,7 +18,7 @@ import { ReactNode } from 'react';
 import ShareableResourceCardIllustration from './shareable-resource-illustration';
 
 interface ShareableResourceCardProps {
-  document: ShareableResource;
+  document: documentBase_fragment$data | SeoResource;
   detailUrl: string;
   shareLinkUrl: string;
   extraContent?: ReactNode;

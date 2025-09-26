@@ -4,7 +4,7 @@ import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import { ShareableResourceType } from '@/components/service/document/shareable-resource-slug';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
 import { oneClickDeployPlatformFragment$key } from '@generated/oneClickDeployPlatformFragment.graphql';
@@ -41,7 +41,7 @@ export const OneClickDeployPlatformsQuery = graphql`
 `;
 
 interface OneClickDeployProps {
-  documentData: ShareableResource;
+  documentData: ShareableResourceSlugType;
 }
 
 const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {

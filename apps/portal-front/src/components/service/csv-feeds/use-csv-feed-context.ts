@@ -12,11 +12,10 @@ import {
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceSlugType } from '@/utils/shareable-resources/shareable-resources.types';
 import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
 import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
 import { csvFeedUpdateMutation } from '@generated/csvFeedUpdateMutation.graphql';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -81,7 +80,7 @@ export function useCsvFeedContext(
   );
 
   const handleDeleteSheet = async (
-    document: ShareableResource,
+    document: ShareableResourceSlugType,
     onCompleted: () => void
   ) => {
     deleteCsvFeedMutation({
@@ -102,12 +101,12 @@ export function useCsvFeedContext(
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
-    resource: ShareableResource,
+    resource: ShareableResourceSlugType,
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
     const formValues = values as CsvFeedFormValues;
-    const csvFeed = resource as csvFeedsItem_fragment$data;
+    const csvFeed = resource;
     const input = {
       ...omit(formValues, ['document', 'illustration']),
       uploader_id: formValues?.uploader_id ?? '',

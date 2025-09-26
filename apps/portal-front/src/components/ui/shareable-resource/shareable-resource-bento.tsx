@@ -1,7 +1,8 @@
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
 import { formatPersonNames } from '@/utils/format/name';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { SeoResource } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentBase_fragment$data } from '@generated/documentBase_fragment.graphql';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
 
@@ -10,7 +11,7 @@ const ShareableResourceBento = ({
   serviceInstanceId,
   className,
 }: {
-  document: ShareableResource;
+  document: documentBase_fragment$data | SeoResource;
   serviceInstanceId: string;
   className?: string;
 }) => {
