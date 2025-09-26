@@ -188,7 +188,7 @@ jobs:
       - name: Send to Microsoft Teams
         if: success()
         run: |
-          WEBHOOK_URL="${{ secrets.TEAMS_WEBHOOK_URL }}"
+          WEBHOOK_URL="${{ secrets.TEAMS_WEBHOOK_PRODUCT_TESTING_URL }}"
           
           if [ -z "$WEBHOOK_URL" ]; then
             echo "❌ No Teams webhook URL found in secrets"
