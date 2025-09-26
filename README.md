@@ -70,3 +70,4 @@ If you need support or you wish to engage a discussion about the XTM Hub platfor
 XTM Hub is a product designed and developed by the company [Filigran](https://filigran.io).
 
 <a href="https://filigran.io" alt="Filigran"><img src="./.github/img/logo_filigran.png" width="300" /></a>
+
