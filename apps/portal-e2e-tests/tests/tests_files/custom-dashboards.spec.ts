@@ -13,6 +13,7 @@ import { PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
 import { removeDocument } from '../db-utils/document.helper';
 import { getServiceInstanceByName } from '../db-utils/service.helper';
 import { waitForDrawerToClose } from '../model/common';
+import { waitForAllImageLoaded } from '../utils/wait-for-all-image-loaded';
 
 const DASHBOARD_TEST = {
   name: 'e2e dashboard name',
@@ -49,9 +50,7 @@ test.describe('Custom dashboards', () => {
     ).toBeVisible();
   });
 
-  test.skip('Should see the custom dashboard on public page', async ({
-    page,
-  }) => {
+  test('Should see the custom dashboard on public page', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToPublicCustomDashboard();
@@ -59,7 +58,7 @@ test.describe('Custom dashboards', () => {
     await dashboardPage.navigateToPublicDashboardDetail(
       DASHBOARD_TEST.shortDescription
     );
-    await page.waitForLoadState('networkidle');
+    await waitForAllImageLoaded(page);
     await expect(page).toHaveScreenshot();
   });
 

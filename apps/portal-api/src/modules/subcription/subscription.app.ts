@@ -7,7 +7,10 @@ import {
   ServiceInstanceJoinType,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
-import Organization from '../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../model/kanel/public/Organization';
+import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
@@ -29,6 +32,7 @@ import {
   buildSubscribeEvent,
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
+import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
 import { createSubscription, loadSubscriptionBy } from './subscription.domain';
 
@@ -50,6 +54,7 @@ export const subscriptionApp = {
   ): Promise<ServiceInstanceGraphQl> => {
     await assertOrganizationIsNotAlreadySubscribed(context, {
       serviceInstanceId,
+      organizationId: context.user.selected_organization_id,
     });
 
     const trx = await dbTx();
@@ -111,14 +116,68 @@ export const subscriptionApp = {
       throw error;
     }
   },
+
+  subscribeOrganizationToService: async (
+    context: PortalContext,
+    {
+      organizationId,
+      serviceInstanceId,
+      startDate,
+      endDate,
+      capabilityIds,
+    }: {
+      organizationId: OrganizationId;
+      serviceInstanceId: ServiceInstanceId;
+      startDate: Date;
+      endDate: Date;
+      capabilityIds: ServiceCapabilityId[];
+    }
+  ): Promise<void> => {
+    await assertOrganizationIsNotAlreadySubscribed(context, {
+      serviceInstanceId,
+      organizationId,
+    });
+
+    const trx = await dbTx();
+    try {
+      const subscriptionData = {
+        id: uuidv4() as SubscriptionId,
+        service_instance_id: serviceInstanceId,
+        organization_id: organizationId,
+        start_date: startDate,
+        end_date: endDate,
+        billing: 0,
+        status: SubscriptionStatus.ACCEPTED,
+      };
+
+      const createdSubscription = await createSubscription(
+        context,
+        subscriptionData
+      );
+
+      await addCapabilitiesToSubscription(
+        context,
+        createdSubscription.id,
+        capabilityIds
+      );
+
+      await trx.commit();
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
+  },
 };
 
 const assertOrganizationIsNotAlreadySubscribed = async (
   context: PortalContext,
-  { serviceInstanceId }: { serviceInstanceId: ServiceInstanceId }
+  {
+    serviceInstanceId,
+    organizationId,
+  }: { serviceInstanceId: ServiceInstanceId; organizationId: OrganizationId }
 ) => {
   const subscription = await loadSubscriptionBy(context, {
-    organization_id: context.user.selected_organization_id,
+    organization_id: organizationId,
     service_instance_id: serviceInstanceId,
   });
 
