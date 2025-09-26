@@ -1,5 +1,4 @@
 name: Notify Teams - Environment Ready
-
 on:
   workflow_dispatch:
     inputs:
@@ -7,11 +6,9 @@ on:
         description: 'Node ID'
         required: true
         type: string
-
 jobs:
   notify-teams:
     runs-on: ubuntu-latest
-
     steps:
       - name: Generate GitHub App Token
         uses: actions/create-github-app-token@v2
@@ -20,7 +17,6 @@ jobs:
           app-id: ${{ vars.FILIGRANHQ_PROJECT_APP_ID }}
           private-key: ${{ secrets.FILIGRANHQ_PROJECT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-
       - name: Get Issue Information
         id: get-info
         uses: actions/github-script@v7
@@ -39,7 +35,7 @@ jobs:
                     number
                     projectItems(first: 10) {
                       nodes {
-                        fieldValues(first: 20) {
+                        fieldValues(first: 50) {
                           nodes {
                             __typename
                             ... on ProjectV2ItemFieldTextValue {
@@ -156,14 +152,31 @@ jobs:
                 }
               }
             
+              // Extract PR number from feature env URL
+              let prNumber = '';
+              let prUrl = '';
+              if (featureEnv) {
+                // Match pattern: dev-pr-{number}.hub or dev-pr-{number}-something.hub
+                const prMatch = featureEnv.match(/dev-pr-(\d+)[.-]/);
+                if (prMatch && prMatch[1]) {
+                  prNumber = prMatch[1];
+                  // Construct PR URL based on repository
+                  prUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${prNumber}`;
+                  console.log(`Extracted PR number: ${prNumber}`);
+                  console.log(`PR URL: ${prUrl}`);
+                }
+              }
+            
               console.log('='.repeat(50));
               console.log('📋 EXTRACTED INFORMATION');
               console.log('='.repeat(50));
               console.log(`Issue URL: ${issueUrl}`);
               console.log(`Title: ${issueTitle}`);
-              console.log(`Number: #${issueNumber}`);
+              console.log(`Issue Number: #${issueNumber}`);
               console.log(`Feature env: ${featureEnv}`);
               console.log(`Feature env domain: ${featureEnvDomain}`);
+              console.log(`PR Number: ${prNumber || 'Not found'}`);
+              console.log(`PR URL: ${prUrl || 'Not found'}`);
             
               // Set outputs
               core.setOutput('issue_url', issueUrl);
@@ -171,6 +184,8 @@ jobs:
               core.setOutput('issue_number', issueNumber);
               core.setOutput('feature_env', featureEnv);
               core.setOutput('feature_env_domain', featureEnvDomain);
+              core.setOutput('pr_number', prNumber);
+              core.setOutput('pr_url', prUrl);
             
               // Validate required fields
               if (!issueUrl) {
@@ -179,12 +194,14 @@ jobs:
               if (!featureEnv) {
                 core.warning('No Feature env value found');
               }
+              if (!prNumber) {
+                core.warning('Could not extract PR number from Feature env URL');
+              }
             
             } catch (error) {
               core.setFailed(`Error fetching information: ${error.message}`);
               console.error('Full error:', error);
             }
-
       - name: Send to Microsoft Teams
         if: success()
         run: |
@@ -201,9 +218,13 @@ jobs:
           ISSUE_NUMBER="${{ steps.get-info.outputs.issue_number }}"
           FEATURE_ENV="${{ steps.get-info.outputs.feature_env }}"
           FEATURE_ENV_DOMAIN="${{ steps.get-info.outputs.feature_env_domain }}"
+          PR_NUMBER="${{ steps.get-info.outputs.pr_number }}"
+          PR_URL="${{ steps.get-info.outputs.pr_url }}"
           
-          # Create the Teams message card
-          cat > teams-message.json << EOF
+          # Build facts array based on available data
+          if [ -n "$PR_NUMBER" ] && [ -n "$PR_URL" ]; then
+            # Create Teams message with PR link
+            cat > teams-message.json << EOF
           {
             "@type": "MessageCard",
             "@context": "http://schema.org/extensions",
@@ -212,6 +233,38 @@ jobs:
             "title": "🚀 ${ISSUE_TITLE}",
             "sections": [{
               "activityTitle": "Environment Ready for Testing",
+              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
+              "text": "The feature environment is now deployed and ready for testing.",
+              "facts": [
+                {
+                  "name": "Feature env",
+                  "value": "[${FEATURE_ENV}](${FEATURE_ENV})"
+                },
+                {
+                  "name": "GitHub PR",
+                  "value": "[Pull Request #${PR_NUMBER}](${PR_URL})"
+                },
+                {
+                  "name": "GitHub Issue",
+                  "value": "[Issue #${ISSUE_NUMBER}](${ISSUE_URL})"
+                }
+              ],
+              "markdown": true
+            }]
+          }
+          EOF
+          else
+            # Fallback to original format without PR
+            cat > teams-message.json << EOF
+          {
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "00B894",
+            "summary": "${ISSUE_TITLE} - Ready for Testing",
+            "title": "🚀 ${ISSUE_TITLE}",
+            "sections": [{
+              "activityTitle": "Environment Ready for Testing",
+              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
               "text": "The feature environment is now deployed and ready for testing.",
               "facts": [
                 {
@@ -227,6 +280,7 @@ jobs:
             }]
           }
           EOF
+          fi
           
           # Send to Teams
           HTTP_RESPONSE=$(curl -H "Content-Type: application/json" \
@@ -240,7 +294,6 @@ jobs:
             echo "❌ Failed to send Teams notification (HTTP $HTTP_RESPONSE)"
             exit 1
           fi
-
       - name: Summary
         if: always()
         run: |
@@ -252,6 +305,11 @@ jobs:
             echo "- Title: ${{ steps.get-info.outputs.issue_title }}" >> $GITHUB_STEP_SUMMARY
             echo "- Issue Number: #${{ steps.get-info.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
             echo "- Feature Environment: ${{ steps.get-info.outputs.feature_env }}" >> $GITHUB_STEP_SUMMARY
+          
+            if [ "${{ steps.get-info.outputs.pr_number }}" != "" ]; then
+              echo "- Pull Request: #${{ steps.get-info.outputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
+            fi
+          
             echo "- Teams notification sent" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Failed to extract information from node ID**" >> $GITHUB_STEP_SUMMARY
