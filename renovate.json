@@ -7,7 +7,7 @@
     "dependencies",
     "filigran team"
   ],
-  "prConcurrentLimit": 2,
+  "prConcurrentLimit": 5,
   "packageRules": [
     {
       "matchUpdateTypes": [

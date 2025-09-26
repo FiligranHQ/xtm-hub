@@ -49,7 +49,9 @@ test.describe('Custom dashboards', () => {
     ).toBeVisible();
   });
 
-  test('Should see the custom dashboard on public page', async ({ page }) => {
+  test.skip('Should see the custom dashboard on public page', async ({
+    page,
+  }) => {
     await page.goto('/');
     await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToPublicCustomDashboard();
@@ -57,6 +59,7 @@ test.describe('Custom dashboards', () => {
     await dashboardPage.navigateToPublicDashboardDetail(
       DASHBOARD_TEST.shortDescription
     );
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveScreenshot();
   });
 

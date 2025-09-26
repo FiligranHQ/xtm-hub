@@ -1,5 +1,6 @@
 import config from 'config';
 import * as fsPromises from 'fs/promises';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import nodemailer from 'nodemailer';
 import * as path from 'path';
 import { logApp } from '../utils/app-logger.util';
@@ -13,6 +14,16 @@ interface SendMailParams<T extends keyof MailTemplates> {
   template: T;
   params: MailTemplates[T];
 }
+
+export const buildServiceLink = ({
+  serviceDefinitionIdentifier,
+  serviceInstanceId,
+}: {
+  serviceDefinitionIdentifier: string;
+  serviceInstanceId: string;
+}) => {
+  return `${config.get('base_url_front')}/service/${serviceDefinitionIdentifier}/${toGlobalId('ServiceInstance', serviceInstanceId)}`;
+};
 
 export async function renderEmail<T extends keyof MailTemplates>(
   templateName: T,

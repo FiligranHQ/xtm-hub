@@ -1,13 +1,13 @@
 import { db } from '../../../knexfile';
 import {
   ServiceCapability,
-  SubscriptionModel,
   UserService,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
+  SubscriptionInitializer,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
@@ -17,22 +17,6 @@ import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
-
-export const fillSubscription = async (
-  context: PortalContext,
-  updatedSubscription: SubscriptionModel
-): Promise<SubscriptionModel> => {
-  updatedSubscription.organization = await loadOrganizationBy({
-    id: updatedSubscription.organization_id as OrganizationId,
-  });
-
-  updatedSubscription.service_instance = await loadServiceInstanceBy(
-    context,
-    'ServiceInstance.id',
-    updatedSubscription.service_instance_id
-  );
-  return updatedSubscription;
-};
 
 export const getSubscriptionCapability = async (context, id) => {
   return db<UserService>(context, 'Subscription_Capability')
@@ -136,16 +120,20 @@ export const transferSubscriptionToOrganization = async (
     .where({ id: subscriptionId });
 };
 
+export const createSubscription = async (
+  context: PortalContext,
+  data: SubscriptionInitializer
+): Promise<Subscription> => {
+  const [createdSubscription] = await db<Subscription>(context, 'Subscription')
+    .insert(data)
+    .returning('*');
+
+  return createdSubscription;
+};
+
 export const loadSubscriptionBy = async (
   context: PortalContext,
   field: SubscriptionMutator
-): Promise<Subscription | undefined> => {
+): Promise<Subscription | null> => {
   return db<Subscription>(context, 'Subscription').where(field).first();
-};
-
-export const loadSubscription = async (context: PortalContext, id: string) => {
-  return await db<Subscription>(context, 'Subscription')
-    .where('service_instance_id', '=', id)
-    .where('organization_id', '=', context.user.selected_organization_id)
-    .first();
 };
