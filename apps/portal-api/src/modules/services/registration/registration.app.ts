@@ -1,4 +1,4 @@
-import { toGlobalId } from 'graphql-relay/node/node';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterPlatformInput,
