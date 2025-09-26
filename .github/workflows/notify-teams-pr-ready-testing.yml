@@ -1,0 +1,177 @@
+name: Notify Teams - Environment Ready to be Tested
+
+on:
+  workflow_dispatch:
+    inputs:
+      node_id:
+        description: 'Node ID'
+        required: true
+        type: string
+
+jobs:
+  notify-teams:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get Issue or PR Information
+        id: get-info
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const nodeId = '${{ github.event.inputs.node_id }}';
+            
+            const query = `
+              query GetInfo($nodeId: ID!) {
+                node(id: $nodeId) {
+                  __typename
+                  ... on Issue {
+                    url
+                    title
+                    number
+                    projectItems(first: 10) {
+                      nodes {
+                        fieldValues(first: 20) {
+                          nodes {
+                            ... on ProjectV2ItemFieldTextValue {
+                              text
+                              field {
+                                ... on ProjectV2Field {
+                                  name
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  ... on PullRequest {
+                    url
+                    title
+                    number
+                    projectItems(first: 10) {
+                      nodes {
+                        fieldValues(first: 20) {
+                          nodes {
+                            ... on ProjectV2ItemFieldTextValue {
+                              text
+                              field {
+                                ... on ProjectV2Field {
+                                  name
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  ... on ProjectV2Item {
+                    content {
+                      ... on Issue {
+                        url
+                        title
+                        number
+                      }
+                      ... on PullRequest {
+                        url
+                        title
+                        number
+                      }
+                    }
+                    fieldValues(first: 20) {
+                      nodes {
+                        ... on ProjectV2ItemFieldTextValue {
+                          text
+                          field {
+                            ... on ProjectV2Field {
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            
+            const result = await github.graphql(query, { nodeId });
+            const node = result.node;
+            
+            let url = '';
+            let title = '';
+            let number = '';
+            let featureEnv = '';
+            let itemType = 'Issue';
+            
+            if (node.__typename === 'Issue' || node.__typename === 'PullRequest') {
+              url = node.url;
+              title = node.title;
+              number = node.number;
+              itemType = node.__typename === 'PullRequest' ? 'PR' : 'Issue';
+            
+              node.projectItems?.nodes?.[0]?.fieldValues?.nodes?.forEach(field => {
+                if (field.field?.name === 'Feature env') {
+                  featureEnv = field.text;
+                }
+              });
+            } else if (node.__typename === 'ProjectV2Item') {
+              if (node.content) {
+                url = node.content.url;
+                title = node.content.title;
+                number = node.content.number;
+                itemType = node.content.__typename === 'PullRequest' ? 'PR' : 'Issue';
+              }
+            
+              node.fieldValues?.nodes?.forEach(field => {
+                if (field.field?.name === 'Feature env') {
+                  featureEnv = field.text;
+                }
+              });
+            }
+            
+            // Extract domain from feature env URL
+            let featureEnvDomain = '';
+            if (featureEnv) {
+              try {
+                const urlObj = new URL(featureEnv);
+                featureEnvDomain = urlObj.hostname;
+              } catch (e) {
+                featureEnvDomain = featureEnv;
+              }
+            }
+            
+            core.setOutput('url', url);
+            core.setOutput('title', title);
+            core.setOutput('number', number);
+            core.setOutput('feature_env', featureEnv);
+            core.setOutput('feature_env_domain', featureEnvDomain);
+            core.setOutput('item_type', itemType);
+
+      - name: Send to Microsoft Teams
+        run: |
+          curl -H "Content-Type: application/json" -X POST "${{ secrets.TEAMS_WEBHOOK_PRODUCT_TESTING_URL }}" \
+            -d '{
+              "@type": "MessageCard",
+              "@context": "http://schema.org/extensions",
+              "themeColor": "00B894",
+              "summary": "${{ steps.get-info.outputs.title }} - Ready for Testing",
+              "title": "🚀 ${{ steps.get-info.outputs.title }}",
+              "sections": [{
+                "activityTitle": "Environment Ready for Testing",
+                "text": "The feature environment is now ready for testing.",
+                "facts": [
+                  {
+                    "name": "Feature env",
+                    "value": "[${{ steps.get-info.outputs.feature_env }}](${{ steps.get-info.outputs.feature_env }})"
+                  },
+                  {
+                    "name": "GitHub ${{ steps.get-info.outputs.item_type }}",
+                    "value": "[${{ steps.get-info.outputs.item_type }} #${{ steps.get-info.outputs.number }}](${{ steps.get-info.outputs.url }})"
+                  }
+                ],
+                "markdown": true
+              }]
+            }'
