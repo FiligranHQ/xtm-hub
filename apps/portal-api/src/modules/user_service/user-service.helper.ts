@@ -1,5 +1,3 @@
-import config from 'config';
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import { UserServiceCapability } from '../../__generated__/resolvers-types';
@@ -15,7 +13,7 @@ import {
   UserServiceCapabilityId,
   UserServiceCapabilityInitializer,
 } from '../../model/kanel/public/UserServiceCapability';
-import { sendMail } from '../../server/mail-service';
+import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { ErrorCode } from '../../utils/error/error.code';
 import { loadUserOrganization } from '../common/user-organization.domain';
@@ -188,24 +186,25 @@ export const createUserServiceAccess = async (
     .returning('*');
 
   const user = await loadUserBy({ 'User.id': user_id });
-  const service = await loadServiceInstanceBy(
+  const serviceInstance = await loadServiceInstanceBy(
     context,
     'ServiceInstance.id',
     subscription.service_instance_id
   );
-  const service_definition = await loadServiceDefinitionByServiceInstance(
+  const serviceDefinition = await loadServiceDefinitionByServiceInstance(
     context,
-    service.id
+    serviceInstance.id
   );
   await sendMail({
     to: user.email,
-    template: ServiceIdentifierToMailTemplate.get(
-      service_definition.identifier
-    ),
+    template: ServiceIdentifierToMailTemplate.get(serviceDefinition.identifier),
     params: {
       name: user.email,
-      serviceLink: `${config.get('base_url_front')}/service/${service_definition.identifier}/${toGlobalId('ServiceInstance', service.id)}`,
-      serviceName: service.name,
+      serviceLink: buildServiceLink({
+        serviceDefinitionIdentifier: serviceDefinition.identifier,
+        serviceInstanceId: serviceInstance.id,
+      }),
+      serviceName: serviceInstance.name,
     },
   });
   return addedUserService;
