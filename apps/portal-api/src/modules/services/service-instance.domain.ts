@@ -7,10 +7,13 @@ import {
   ServiceConnection,
   ServiceDefinition,
   ServiceDefinitionIdentifier,
-  ServiceInstance,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
+import ServiceInstance, {
+  ServiceInstanceId,
+  ServiceInstanceMutator,
+} from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -591,7 +594,12 @@ export const loadSeoServiceInstances = async (
 export const loadSeoServiceInstanceBySlug = async (
   context: PortalContext,
   slug: string
-): Promise<ServiceInstance> => {
+): Promise<
+  ServiceInstance & {
+    service_definition: ServiceDefinition;
+    links: ServiceLink[];
+  }
+> => {
   const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
@@ -674,8 +682,8 @@ export const loadPlatformServiceInstance = async (
 
 export const updateServiceInstance = async (
   context: PortalContext,
-  id: string,
-  data: Partial<ServiceInstance>,
+  id: ServiceInstanceId,
+  data: ServiceInstanceMutator,
   trx?: Knex.Transaction
 ) => {
   const query = db<ServiceInstance>(context, 'ServiceInstance')

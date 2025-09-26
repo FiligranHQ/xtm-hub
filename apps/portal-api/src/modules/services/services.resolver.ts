@@ -124,7 +124,8 @@ const resolvers: Resolvers = {
       if (!serviceInstance) {
         throw NotFoundError(ErrorCode.ServiceNotFound);
       }
-      return {
+      const result: SeoServiceInstance = {
+        __typename: 'SeoServiceInstance',
         ...serviceInstance,
         ...(serviceInstance.illustration_document_id && {
           illustration_document_id: toGlobalId(
@@ -138,8 +139,8 @@ const resolvers: Resolvers = {
             serviceInstance.logo_document_id
           ),
         }),
-        __typename: 'SeoServiceInstance',
-      } as SeoServiceInstance;
+      };
+      return result;
     },
   },
   Mutation: {

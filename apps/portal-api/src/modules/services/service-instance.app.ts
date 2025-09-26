@@ -5,7 +5,10 @@ import {
   ServiceInstance,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import {
+  ServiceInstanceId,
+  ServiceInstanceMutator,
+} from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
@@ -85,7 +88,7 @@ export const serviceInstanceApp = {
       );
 
       // Build update object for ServiceInstance
-      const updateData: Partial<ServiceInstance> = {};
+      const updateData: ServiceInstanceMutator = {};
 
       // Update ServiceInstance name if provided
       if (input.name) {

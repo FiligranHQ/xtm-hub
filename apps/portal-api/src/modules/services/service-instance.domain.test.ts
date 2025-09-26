@@ -205,7 +205,7 @@ describe('Service instance domain', () => {
 
       const result = await updateServiceInstance(
         contextAdminUser,
-        nonExistentId,
+        nonExistentId as ServiceInstanceId,
         updateData
       );
       expect(result).toBeUndefined();
