@@ -3,7 +3,11 @@ on:
   workflow_dispatch:
     inputs:
       node_id:
-        description: 'Node ID'
+        description: 'Project Item Node ID (PVTI_...)'
+        required: true
+        type: string
+      project_node_id:
+        description: 'Project Node ID (PVT_...)'
         required: true
         type: string
 jobs:
@@ -17,6 +21,7 @@ jobs:
           app-id: ${{ vars.FILIGRANHQ_PROJECT_APP_ID }}
           private-key: ${{ secrets.FILIGRANHQ_PROJECT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
+
       - name: Get Issue Information
         id: get-info
         uses: actions/github-script@v7
@@ -24,48 +29,96 @@ jobs:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const nodeId = '${{ github.event.inputs.node_id }}';
+            const projectNodeId = '${{ github.event.inputs.project_node_id }}';
             
+            console.log('='.repeat(60));
+            console.log('📌 INPUT PARAMETERS');
+            console.log('='.repeat(60));
+            console.log(`Project Item Node ID: ${nodeId}`);
+            console.log(`Project Node ID: ${projectNodeId}`);
+            console.log(`Repository: ${context.repo.owner}/${context.repo.repo}`);
+            
+            // Query to get ALL field types to ensure we're not missing anything
             const query = `
-              query GetInfo($nodeId: ID!) {
+              query GetProjectItem($nodeId: ID!) {
                 node(id: $nodeId) {
                   __typename
-                  ... on Issue {
-                    url
-                    title
-                    number
-                    projectItems(first: 10) {
-                      nodes {
-                        fieldValues(first: 50) {
-                          nodes {
-                            __typename
-                            ... on ProjectV2ItemFieldTextValue {
-                              text
-                              field {
-                                ... on ProjectV2Field {
-                                  name
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
                   ... on ProjectV2Item {
+                    id
+                    project {
+                      title
+                      number
+                      id
+                    }
                     content {
+                      __typename
                       ... on Issue {
+                        number
                         url
                         title
+                        id
+                      }
+                      ... on PullRequest {
                         number
+                        url
+                        title
+                        id
+                      }
+                      ... on DraftIssue {
+                        title
+                        id
                       }
                     }
-                    fieldValues(first: 50) {
+                    fieldValues(first: 100) {
+                      totalCount
                       nodes {
                         __typename
                         ... on ProjectV2ItemFieldTextValue {
+                          id
                           text
                           field {
                             ... on ProjectV2Field {
+                              id
+                              name
+                            }
+                          }
+                        }
+                        ... on ProjectV2ItemFieldSingleSelectValue {
+                          id
+                          name
+                          field {
+                            ... on ProjectV2SingleSelectField {
+                              id
+                              name
+                            }
+                          }
+                        }
+                        ... on ProjectV2ItemFieldNumberValue {
+                          id
+                          number
+                          field {
+                            ... on ProjectV2Field {
+                              id
+                              name
+                            }
+                          }
+                        }
+                        ... on ProjectV2ItemFieldDateValue {
+                          id
+                          date
+                          field {
+                            ... on ProjectV2Field {
+                              id
+                              name
+                            }
+                          }
+                        }
+                        ... on ProjectV2ItemFieldIterationValue {
+                          id
+                          title
+                          field {
+                            ... on ProjectV2IterationField {
+                              id
                               name
                             }
                           }
@@ -78,138 +131,285 @@ jobs:
             `;
             
             try {
+              console.log('\n' + '='.repeat(60));
+              console.log('🔍 EXECUTING GRAPHQL QUERY');
+              console.log('='.repeat(60));
+            
               const result = await github.graphql(query, { nodeId });
             
+              // Log the raw response
+              console.log('\n📦 RAW GRAPHQL RESPONSE:');
+              console.log(JSON.stringify(result, null, 2));
+            
               if (!result.node) {
-                core.setFailed(`No node found with ID: ${nodeId}`);
+                core.setFailed(`❌ No node found with ID: ${nodeId}`);
                 return;
               }
             
-              let issueUrl = '';
-              let issueTitle = '';
-              let issueNumber = '';
+              const projectItem = result.node;
+            
+              console.log('\n' + '='.repeat(60));
+              console.log('📋 NODE INFORMATION');
+              console.log('='.repeat(60));
+              console.log(`Node Type: ${projectItem.__typename}`);
+              console.log(`Node ID: ${projectItem.id}`);
+            
+              if (projectItem.__typename !== 'ProjectV2Item') {
+                core.setFailed(`❌ Node is not a ProjectV2Item. Type: ${projectItem.__typename}`);
+                return;
+              }
+            
+              // Extract content information (could be Issue or PR)
+              let contentUrl = '';
+              let contentTitle = '';
+              let contentNumber = '';
+              let contentType = '';
+            
+              console.log('\n' + '='.repeat(60));
+              console.log('📄 CONTENT INFORMATION');
+              console.log('='.repeat(60));
+            
+              if (projectItem.content) {
+                contentType = projectItem.content.__typename;
+                console.log(`Content Type: ${contentType}`);
+                console.log(`Content ID: ${projectItem.content.id}`);
+            
+                if (contentType === 'Issue' || contentType === 'PullRequest') {
+                  contentUrl = projectItem.content.url;
+                  contentTitle = projectItem.content.title;
+                  contentNumber = projectItem.content.number;
+            
+                  console.log(`✅ Found ${contentType} #${contentNumber}`);
+                  console.log(`   Title: ${contentTitle}`);
+                  console.log(`   URL: ${contentUrl}`);
+                  console.log(`   ID: ${projectItem.content.id}`);
+                } else if (contentType === 'DraftIssue') {
+                  contentTitle = projectItem.content.title;
+                  console.log(`Found Draft Issue: ${contentTitle}`);
+                }
+              } else {
+                console.log('⚠️ No content linked to this project item');
+              }
+            
+              // Extract project information
+              console.log('\n' + '='.repeat(60));
+              console.log('📊 PROJECT INFORMATION');
+              console.log('='.repeat(60));
+              if (projectItem.project) {
+                console.log(`Project Title: ${projectItem.project.title}`);
+                console.log(`Project Number: #${projectItem.project.number}`);
+                console.log(`Project ID: ${projectItem.project.id}`);
+              } else {
+                console.log('⚠️ No project information found');
+              }
+            
+              // Extract ALL field values
+              console.log('\n' + '='.repeat(60));
+              console.log('📝 ALL FIELD VALUES');
+              console.log('='.repeat(60));
+              console.log(`Total Field Values: ${projectItem.fieldValues.totalCount}`);
+              console.log(`Retrieved Field Values: ${projectItem.fieldValues.nodes.length}`);
+            
               let featureEnv = '';
+              let fieldIndex = 0;
             
-              const node = result.node;
-              const nodeType = node.__typename;
+              for (const field of projectItem.fieldValues.nodes) {
+                fieldIndex++;
+                console.log(`\n--- Field ${fieldIndex} ---`);
+                console.log(`Type: ${field.__typename}`);
+                console.log(`Field ID: ${field.id}`);
             
-              // Helper function to check field name case-insensitively
-              const isFeatureEnvField = (fieldName) => {
-                return fieldName && fieldName.toLowerCase() === 'feature env';
-              };
+                let fieldName = '';
+                let fieldValue = '';
             
-              // Handle Issue directly
-              if (nodeType === 'Issue') {
-                issueUrl = node.url;
-                issueTitle = node.title || '';
-                issueNumber = node.number || '';
-            
-                // Look for Feature env in project items (case-insensitive)
-                if (node.projectItems && node.projectItems.nodes) {
-                  for (const projectItem of node.projectItems.nodes) {
-                    if (projectItem.fieldValues && projectItem.fieldValues.nodes) {
-                      for (const field of projectItem.fieldValues.nodes) {
-                        if (field.field && isFeatureEnvField(field.field.name)) {
-                          featureEnv = field.text || '';
-                          console.log(`Found field "${field.field.name}" with value: ${featureEnv}`);
-                          break;
-                        }
-                      }
-                    }
-                    if (featureEnv) break;
-                  }
+                if (field.__typename === 'ProjectV2ItemFieldTextValue') {
+                  fieldName = field.field?.name || 'Unknown';
+                  fieldValue = field.text || '';
+                  console.log(`Field Name: "${fieldName}"`);
+                  console.log(`Text Value: "${fieldValue}"`);
+                } else if (field.__typename === 'ProjectV2ItemFieldSingleSelectValue') {
+                  fieldName = field.field?.name || 'Unknown';
+                  fieldValue = field.name || '';
+                  console.log(`Field Name: "${fieldName}"`);
+                  console.log(`Select Value: "${fieldValue}"`);
+                } else if (field.__typename === 'ProjectV2ItemFieldNumberValue') {
+                  fieldName = field.field?.name || 'Unknown';
+                  fieldValue = field.number?.toString() || '';
+                  console.log(`Field Name: "${fieldName}"`);
+                  console.log(`Number Value: "${fieldValue}"`);
+                } else if (field.__typename === 'ProjectV2ItemFieldDateValue') {
+                  fieldName = field.field?.name || 'Unknown';
+                  fieldValue = field.date || '';
+                  console.log(`Field Name: "${fieldName}"`);
+                  console.log(`Date Value: "${fieldValue}"`);
+                } else if (field.__typename === 'ProjectV2ItemFieldIterationValue') {
+                  fieldName = field.field?.name || 'Unknown';
+                  fieldValue = field.title || '';
+                  console.log(`Field Name: "${fieldName}"`);
+                  console.log(`Iteration Value: "${fieldValue}"`);
                 }
-              } 
-              // Handle ProjectV2Item
-              else if (nodeType === 'ProjectV2Item') {
-                if (node.content) {
-                  issueUrl = node.content.url || '';
-                  issueTitle = node.content.title || '';
-                  issueNumber = node.content.number || '';
-                }
             
-                // Look for Feature env in field values (case-insensitive)
-                if (node.fieldValues && node.fieldValues.nodes) {
-                  for (const field of node.fieldValues.nodes) {
-                    if (field.field && isFeatureEnvField(field.field.name)) {
-                      featureEnv = field.text || '';
-                      console.log(`Found field "${field.field.name}" with value: ${featureEnv}`);
-                      break;
-                    }
-                  }
+                // Check for Feature env field (case-insensitive)
+                if (fieldName && fieldName.toLowerCase() === 'feature env' && fieldValue) {
+                  featureEnv = fieldValue;
+                  console.log(`✅ THIS IS THE FEATURE ENV FIELD!`);
                 }
               }
             
+              console.log('\n' + '='.repeat(60));
+              console.log('🔎 FEATURE ENV PROCESSING');
+              console.log('='.repeat(60));
+            
+              if (!featureEnv) {
+                console.log('❌ Feature env field not found or empty');
+                console.log('   Looked for field name (case-insensitive): "feature env"');
+              } else {
+                console.log(`✅ Feature env found: "${featureEnv}"`);
+              }
+            
+              // Extract domain from feature env URL
+              let featureEnvDomain = '';
+              if (featureEnv) {
+                console.log('\n📍 Extracting domain from Feature env...');
+                try {
+                  const urlObj = new URL(featureEnv);
+                  featureEnvDomain = urlObj.hostname;
+                  console.log(`   Domain extracted: ${featureEnvDomain}`);
+                } catch (e) {
+                  console.log(`   Not a valid URL, using as-is: ${featureEnv}`);
+                  featureEnvDomain = featureEnv;
+                }
+              }
             
               // Extract PR number from feature env URL
+              console.log('\n' + '='.repeat(60));
+              console.log('🔢 PR NUMBER EXTRACTION');
+              console.log('='.repeat(60));
+            
               let prNumber = '';
               let prUrl = '';
+            
               if (featureEnv) {
-                // Match pattern: dev-pr-{number}.hub or dev-pr-{number}-something.hub
-                const prMatch = featureEnv.match(/dev-pr-(\d+)[.-]/);
-                if (prMatch && prMatch[1]) {
-                  prNumber = prMatch[1];
-                  // Construct PR URL based on repository
-                  prUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${prNumber}`;
-                  console.log(`Extracted PR number: ${prNumber}`);
-                  console.log(`PR URL: ${prUrl}`);
+                console.log(`Analyzing Feature env URL: "${featureEnv}"`);
+                console.log('Looking for pattern: dev-pr-{number}');
+            
+                // Try multiple patterns
+                const patterns = [
+                  /dev-pr-(\d+)[.-]/,
+                  /dev-pr-(\d+)/,
+                  /pr-(\d+)[.-]/,
+                  /pr-(\d+)/,
+                  /pull\/(\d+)/
+                ];
+            
+                for (const pattern of patterns) {
+                  console.log(`Trying pattern: ${pattern}`);
+                  const match = featureEnv.match(pattern);
+                  if (match && match[1]) {
+                    prNumber = match[1];
+                    console.log(`✅ Match found! PR number: ${prNumber}`);
+                    break;
+                  }
                 }
+            
+                if (prNumber) {
+                  prUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${prNumber}`;
+                  console.log(`PR URL constructed: ${prUrl}`);
+                } else {
+                  console.log('❌ No PR number found in Feature env URL');
+                  console.log('   Expected format examples:');
+                  console.log('   - https://dev-pr-1014.hub.staging.filigran.io/');
+                  console.log('   - https://dev-pr-1014-something.example.com/');
+                }
+              } else {
+                console.log('⚠️ No Feature env URL to extract PR number from');
               }
             
-              console.log('='.repeat(50));
-              console.log('📋 EXTRACTED INFORMATION');
-              console.log('='.repeat(50));
-              console.log(`Issue URL: ${issueUrl}`);
-              console.log(`Title: ${issueTitle}`);
-              console.log(`Issue Number: #${issueNumber}`);
-              console.log(`Feature env: ${featureEnv}`);
-              console.log(`PR Number: ${prNumber || 'Not found'}`);
-              console.log(`PR URL: ${prUrl || 'Not found'}`);
+              console.log('\n' + '='.repeat(60));
+              console.log('📋 FINAL RESULTS SUMMARY');
+              console.log('='.repeat(60));
+              console.log(`Content Type: ${contentType}`);
+              console.log(`Content Number: #${contentNumber}`);
+              console.log(`Content Title: ${contentTitle}`);
+              console.log(`Content URL: ${contentUrl}`);
+              console.log(`Feature env: ${featureEnv || '❌ Not found'}`);
+              console.log(`Feature env domain: ${featureEnvDomain || '❌ N/A'}`);
+              console.log(`PR Number: ${prNumber ? '#' + prNumber : '❌ Not found'}`);
+              console.log(`PR URL: ${prUrl || '❌ Not constructed'}`);
             
-              // Set outputs
-              core.setOutput('issue_url', issueUrl);
-              core.setOutput('issue_title', issueTitle);
-              core.setOutput('issue_number', issueNumber);
+              // Set outputs - using generic names since it could be Issue or PR
+              core.setOutput('issue_url', contentUrl);
+              core.setOutput('issue_title', contentTitle);
+              core.setOutput('issue_number', contentNumber.toString());
+              core.setOutput('content_type', contentType);
               core.setOutput('feature_env', featureEnv);
+              core.setOutput('feature_env_domain', featureEnvDomain);
               core.setOutput('pr_number', prNumber);
               core.setOutput('pr_url', prUrl);
             
-              // Validate required fields
-              if (!issueUrl) {
-                core.warning('No Issue URL found');
-              }
-              if (!featureEnv) {
-                core.warning('No Feature env value found');
-              }
-              if (!prNumber) {
-                core.warning('Could not extract PR number from Feature env URL');
-              }
+              console.log('\n✅ All outputs set successfully');
             
             } catch (error) {
-              core.setFailed(`Error fetching information: ${error.message}`);
-              console.error('Full error:', error);
+              console.log('\n' + '='.repeat(60));
+              console.log('❌ ERROR OCCURRED');
+              console.log('='.repeat(60));
+              console.log(`Error message: ${error.message}`);
+              console.log(`Error stack: ${error.stack}`);
+              core.setFailed(`Error: ${error.message}`);
             }
+
       - name: Send to Microsoft Teams
         if: success()
         run: |
           WEBHOOK_URL="${{ secrets.TEAMS_WEBHOOK_PRODUCT_TESTING_URL }}"
+          
+          echo "========================================"
+          echo "TEAMS NOTIFICATION PREPARATION"
+          echo "========================================"
           
           if [ -z "$WEBHOOK_URL" ]; then
             echo "❌ No Teams webhook URL found in secrets"
             exit 1
           fi
           
+          echo "✅ Webhook URL found"
+          
           # Get outputs from previous step
           ISSUE_URL="${{ steps.get-info.outputs.issue_url }}"
           ISSUE_TITLE="${{ steps.get-info.outputs.issue_title }}"
           ISSUE_NUMBER="${{ steps.get-info.outputs.issue_number }}"
+          CONTENT_TYPE="${{ steps.get-info.outputs.content_type }}"
           FEATURE_ENV="${{ steps.get-info.outputs.feature_env }}"
+          FEATURE_ENV_DOMAIN="${{ steps.get-info.outputs.feature_env_domain }}"
           PR_NUMBER="${{ steps.get-info.outputs.pr_number }}"
           PR_URL="${{ steps.get-info.outputs.pr_url }}"
           
+          echo ""
+          echo "Collected values:"
+          echo "  Content Type: $CONTENT_TYPE"
+          echo "  Issue/PR URL: $ISSUE_URL"
+          echo "  Title: $ISSUE_TITLE"
+          echo "  Number: $ISSUE_NUMBER"
+          echo "  Feature Env: $FEATURE_ENV"
+          echo "  Feature Env Domain: $FEATURE_ENV_DOMAIN"
+          echo "  PR Number: $PR_NUMBER"
+          echo "  PR URL: $PR_URL"
+          
+          # Determine the label based on content type
+          if [ "$CONTENT_TYPE" = "PullRequest" ]; then
+            GITHUB_LABEL="GitHub PR"
+            GITHUB_TEXT="Pull Request #${ISSUE_NUMBER}"
+          else
+            GITHUB_LABEL="GitHub Issue"
+            GITHUB_TEXT="Issue #${ISSUE_NUMBER}"
+          fi
+          
           # Build facts array based on available data
-          if [ -n "$PR_NUMBER" ] && [ -n "$PR_URL" ]; then
-            # Create Teams message with PR link
+          if [ -n "$PR_NUMBER" ] && [ -n "$PR_URL" ] && [ "$CONTENT_TYPE" != "PullRequest" ]; then
+            echo ""
+            echo "Creating Teams message with separate PR link..."
+          
+            # Create Teams message with PR link (when content is Issue but PR was extracted from URL)
             cat > teams-message.json << EOF
           {
             "@type": "MessageCard",
@@ -219,6 +419,7 @@ jobs:
             "title": "🚀 ${ISSUE_TITLE}",
             "sections": [{
               "activityTitle": "Environment Ready for Testing",
+              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
               "text": "The feature environment is now deployed and ready for testing.",
               "facts": [
                 {
@@ -230,8 +431,8 @@ jobs:
                   "value": "[Pull Request #${PR_NUMBER}](${PR_URL})"
                 },
                 {
-                  "name": "GitHub Issue",
-                  "value": "[Issue #${ISSUE_NUMBER}](${ISSUE_URL})"
+                  "name": "${GITHUB_LABEL}",
+                  "value": "[${GITHUB_TEXT}](${ISSUE_URL})"
                 }
               ],
               "markdown": true
@@ -239,7 +440,10 @@ jobs:
           }
           EOF
           else
-            # Fallback to original format without PR
+            echo ""
+            echo "Creating Teams message without separate PR link..."
+          
+            # Standard format
             cat > teams-message.json << EOF
           {
             "@type": "MessageCard",
@@ -249,15 +453,16 @@ jobs:
             "title": "🚀 ${ISSUE_TITLE}",
             "sections": [{
               "activityTitle": "Environment Ready for Testing",
+              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
               "text": "The feature environment is now deployed and ready for testing.",
               "facts": [
                 {
                   "name": "Feature env",
-                  "value": "[${FEATURE_ENV}](${FEATURE_ENV})"
+                  "value": "${FEATURE_ENV:-Not set}"
                 },
                 {
-                  "name": "GitHub Issue",
-                  "value": "[Issue #${ISSUE_NUMBER}](${ISSUE_URL})"
+                  "name": "${GITHUB_LABEL}",
+                  "value": "[${GITHUB_TEXT}](${ISSUE_URL})"
                 }
               ],
               "markdown": true
@@ -266,11 +471,20 @@ jobs:
           EOF
           fi
           
+          echo ""
+          echo "Teams message JSON:"
+          cat teams-message.json
+          
+          echo ""
+          echo "Sending to Teams..."
+          
           # Send to Teams
           HTTP_RESPONSE=$(curl -H "Content-Type: application/json" \
             -X POST "$WEBHOOK_URL" \
             -d @teams-message.json \
             -s -o /dev/null -w "%{http_code}")
+          
+          echo "HTTP Response Code: $HTTP_RESPONSE"
           
           if [ "$HTTP_RESPONSE" -eq "200" ] || [ "$HTTP_RESPONSE" -eq "1" ]; then
             echo "✅ Teams notification sent successfully"
@@ -278,6 +492,7 @@ jobs:
             echo "❌ Failed to send Teams notification (HTTP $HTTP_RESPONSE)"
             exit 1
           fi
+
       - name: Summary
         if: always()
         run: |
@@ -287,14 +502,16 @@ jobs:
           if [ "${{ steps.get-info.outputs.issue_url }}" != "" ]; then
             echo "✅ **Successfully extracted information:**" >> $GITHUB_STEP_SUMMARY
             echo "- Title: ${{ steps.get-info.outputs.issue_title }}" >> $GITHUB_STEP_SUMMARY
-            echo "- Issue Number: #${{ steps.get-info.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
-            echo "- Feature Environment: ${{ steps.get-info.outputs.feature_env }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Content Type: ${{ steps.get-info.outputs.content_type }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Number: #${{ steps.get-info.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Feature Environment: ${{ steps.get-info.outputs.feature_env || 'Not found' }}" >> $GITHUB_STEP_SUMMARY
           
             if [ "${{ steps.get-info.outputs.pr_number }}" != "" ]; then
-              echo "- Pull Request: #${{ steps.get-info.outputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
+              echo "- Extracted PR: #${{ steps.get-info.outputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
             fi
           
-            echo "- Teams notification sent" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Teams notification sent" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ **Failed to extract information from node ID**" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Failed to extract information**" >> $GITHUB_STEP_SUMMARY
           fi
