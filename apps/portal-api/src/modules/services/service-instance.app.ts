@@ -57,7 +57,7 @@ export const serviceInstanceApp = {
   updatePlatformServiceMetadata: async (
     context: PortalContext,
     input: UpdatePlatformServiceMetadataInput,
-    upload: Upload | null
+    upload: Upload[]
   ): Promise<RegisteredPlatform> => {
     const trx = await dbTx();
 

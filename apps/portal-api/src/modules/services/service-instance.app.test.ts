@@ -277,6 +277,8 @@ describe('Service Instance app', () => {
         promise: Promise.resolve(mockFileUpload),
       };
 
+      const mockUploadArray = [mockUpload];
+
       const mockInput: UpdatePlatformServiceMetadataInput = {
         serviceInstanceId: globalServiceInstanceId,
         name: 'Updated Service Name',
@@ -352,7 +354,7 @@ describe('Service Instance app', () => {
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
           contextAdminUser,
           mockInput,
-          null
+          []
         );
 
         expect(loadPlatformServiceInstanceSpy).toHaveBeenCalledWith(
@@ -411,14 +413,14 @@ describe('Service Instance app', () => {
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
           contextAdminUser,
           mockInput,
-          mockUpload
+          mockUploadArray
         );
 
         expect(uploadNewFileSpy).toHaveBeenCalledWith(
           expect.objectContaining({
             serviceInstanceId: mockServiceInstanceId,
           }),
-          mockUpload,
+          mockUploadArray,
           expect.any(Function)
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
@@ -459,7 +461,7 @@ describe('Service Instance app', () => {
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
           contextAdminUser,
           inputWithoutName,
-          mockUpload
+          mockUploadArray
         );
 
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
@@ -484,7 +486,7 @@ describe('Service Instance app', () => {
           serviceInstanceApp.updatePlatformServiceMetadata(
             contextAdminUser,
             mockInput,
-            null
+            []
           )
         ).rejects.toThrow();
 
@@ -502,7 +504,7 @@ describe('Service Instance app', () => {
           serviceInstanceApp.updatePlatformServiceMetadata(
             contextAdminUser,
             mockInput,
-            null
+            []
           )
         ).rejects.toThrow();
 
@@ -522,7 +524,7 @@ describe('Service Instance app', () => {
           serviceInstanceApp.updatePlatformServiceMetadata(
             contextAdminUser,
             mockInput,
-            null
+            []
           )
         ).rejects.toThrow('Insufficient permissions');
 
@@ -542,7 +544,7 @@ describe('Service Instance app', () => {
           serviceInstanceApp.updatePlatformServiceMetadata(
             contextAdminUser,
             mockInput,
-            mockUpload
+            mockUploadArray
           )
         ).rejects.toThrow('Upload failed');
 
@@ -566,12 +568,54 @@ describe('Service Instance app', () => {
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
           contextAdminUser,
           mockInput,
-          null
+          []
         );
 
         expect(
           updatePlatformConfigurationByServiceInstanceIdSpy
         ).not.toHaveBeenCalled();
+        expect(result).toEqual({
+          ...updatedServiceInstance,
+          identifier: mockServiceDefinition.identifier,
+        });
+      });
+
+      it('should handle empty upload array without updating illustration', async () => {
+        const updatedServiceInstance = {
+          ...mockServiceInstance,
+          name: mockInput.name,
+        };
+
+        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
+        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
+          mockServiceDefinition
+        );
+        assertUserCanModifyPlatformServiceSpy.mockResolvedValue(undefined);
+        updateServiceInstanceSpy.mockResolvedValue(updatedServiceInstance);
+        loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
+          mockServiceConfiguration
+        );
+        updatePlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
+          mockServiceConfiguration
+        );
+
+        const result = await serviceInstanceApp.updatePlatformServiceMetadata(
+          contextAdminUser,
+          mockInput,
+          []
+        );
+
+        // uploadNewFile should not be called with empty array
+        expect(uploadNewFileSpy).not.toHaveBeenCalled();
+
+        // Only name should be updated, no illustration_document_id
+        expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
+          contextAdminUser,
+          mockServiceInstanceId,
+          { name: mockInput.name },
+          expect.any(Function)
+        );
+
         expect(result).toEqual({
           ...updatedServiceInstance,
           identifier: mockServiceDefinition.identifier,
