@@ -59,8 +59,8 @@ export const PlatformUpdateSheet: FunctionComponent<
   });
 
   const onSubmit = (values: z.infer<typeof platformUpdateSchema>) => {
-    const document = values.illustration_document ? Array.from(values.illustration_document) : null;
-    const uploadables = values.illustration_document ? fileListToUploadableMap(document) : null;
+    const document = !values.illustration_document ? null : Array.from(values.illustration_document);
+    const uploadables = !document ? undefined : fileListToUploadableMap(document);
 
     updatePlatformMetadata({
       variables: {
