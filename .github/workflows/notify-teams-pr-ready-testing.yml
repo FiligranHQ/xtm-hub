@@ -89,6 +89,7 @@ jobs:
               let issueTitle = '';
               let issueNumber = '';
               let featureEnv = '';
+              let definitionPage = '';
             
               const node = result.node;
               const nodeType = node.__typename;
@@ -98,25 +99,34 @@ jobs:
                 return fieldName && fieldName.toLowerCase() === 'feature env';
               };
             
+              // Helper function to check Definition page field case-insensitively
+              const isDefinitionPageField = (fieldName) => {
+                return fieldName && fieldName.toLowerCase() === 'definition page';
+              };
+            
               // Handle Issue directly
               if (nodeType === 'Issue') {
                 issueUrl = node.url;
                 issueTitle = node.title || '';
                 issueNumber = node.number || '';
             
-                // Look for Feature env in project items (case-insensitive)
+                // Look for Feature env and Definition page in project items (case-insensitive)
                 if (node.projectItems && node.projectItems.nodes) {
                   for (const projectItem of node.projectItems.nodes) {
                     if (projectItem.fieldValues && projectItem.fieldValues.nodes) {
                       for (const field of projectItem.fieldValues.nodes) {
-                        if (field.field && isFeatureEnvField(field.field.name)) {
-                          featureEnv = field.text || '';
-                          console.log(`Found field "${field.field.name}" with value: ${featureEnv}`);
-                          break;
+                        if (field.field) {
+                          if (isFeatureEnvField(field.field.name)) {
+                            featureEnv = field.text || '';
+                            console.log(`Found field "${field.field.name}" with value: ${featureEnv}`);
+                          }
+                          if (isDefinitionPageField(field.field.name)) {
+                            definitionPage = field.text || '';
+                            console.log(`Found field "${field.field.name}" with value: ${definitionPage}`);
+                          }
                         }
                       }
                     }
-                    if (featureEnv) break;
                   }
                 }
               } 
@@ -128,13 +138,18 @@ jobs:
                   issueNumber = node.content.number || '';
                 }
             
-                // Look for Feature env in field values (case-insensitive)
+                // Look for Feature env and Definition page in field values (case-insensitive)
                 if (node.fieldValues && node.fieldValues.nodes) {
                   for (const field of node.fieldValues.nodes) {
-                    if (field.field && isFeatureEnvField(field.field.name)) {
-                      featureEnv = field.text || '';
-                      console.log(`Found field "${field.field.name}" with value: ${featureEnv}`);
-                      break;
+                    if (field.field) {
+                      if (isFeatureEnvField(field.field.name)) {
+                        featureEnv = field.text || '';
+                        console.log(`Found field "${field.field.name}" with value: ${featureEnv}`);
+                      }
+                      if (isDefinitionPageField(field.field.name)) {
+                        definitionPage = field.text || '';
+                        console.log(`Found field "${field.field.name}" with value: ${definitionPage}`);
+                      }
                     }
                   }
                 }
@@ -173,8 +188,9 @@ jobs:
               console.log(`Issue URL: ${issueUrl}`);
               console.log(`Title: ${issueTitle}`);
               console.log(`Issue Number: #${issueNumber}`);
-              console.log(`Feature env: ${featureEnv}`);
-              console.log(`Feature env domain: ${featureEnvDomain}`);
+              console.log(`Feature env: ${featureEnv || 'Not found'}`);
+              console.log(`Feature env domain: ${featureEnvDomain || 'Not found'}`);
+              console.log(`Definition page: ${definitionPage || 'Not found'}`);
               console.log(`PR Number: ${prNumber || 'Not found'}`);
               console.log(`PR URL: ${prUrl || 'Not found'}`);
             
@@ -184,6 +200,7 @@ jobs:
               core.setOutput('issue_number', issueNumber);
               core.setOutput('feature_env', featureEnv);
               core.setOutput('feature_env_domain', featureEnvDomain);
+              core.setOutput('definition_page', definitionPage);
               core.setOutput('pr_number', prNumber);
               core.setOutput('pr_url', prUrl);
             
@@ -193,6 +210,9 @@ jobs:
               }
               if (!featureEnv) {
                 core.warning('No Feature env value found');
+              }
+              if (!definitionPage) {
+                core.warning('No Definition page value found');
               }
               if (!prNumber) {
                 core.warning('Could not extract PR number from Feature env URL');
@@ -218,44 +238,45 @@ jobs:
           ISSUE_NUMBER="${{ steps.get-info.outputs.issue_number }}"
           FEATURE_ENV="${{ steps.get-info.outputs.feature_env }}"
           FEATURE_ENV_DOMAIN="${{ steps.get-info.outputs.feature_env_domain }}"
+          DEFINITION_PAGE="${{ steps.get-info.outputs.definition_page }}"
           PR_NUMBER="${{ steps.get-info.outputs.pr_number }}"
           PR_URL="${{ steps.get-info.outputs.pr_url }}"
           
-          # Build facts array based on available data
-          if [ -n "$PR_NUMBER" ] && [ -n "$PR_URL" ]; then
-            # Create Teams message with PR link
-            cat > teams-message.json << EOF
-          {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": "00B894",
-            "summary": "${ISSUE_TITLE} - Ready for Testing",
-            "title": "🚀 ${ISSUE_TITLE}",
-            "sections": [{
-              "activityTitle": "Environment Ready for Testing",
-              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
-              "text": "The feature environment is now deployed and ready for testing.",
-              "facts": [
-                {
-                  "name": "Feature env",
-                  "value": "[${FEATURE_ENV}](${FEATURE_ENV})"
-                },
-                {
-                  "name": "GitHub PR",
-                  "value": "[Pull Request #${PR_NUMBER}](${PR_URL})"
-                },
-                {
-                  "name": "GitHub Issue",
-                  "value": "[Issue #${ISSUE_NUMBER}](${ISSUE_URL})"
-                }
-              ],
-              "markdown": true
-            }]
-          }
-          EOF
+          # Build facts array dynamically
+          FACTS='['
+          
+          # Add Feature env - show N/A if empty
+          if [ -n "$FEATURE_ENV" ]; then
+            FACTS="${FACTS}{\"name\":\"Feature env\",\"value\":\"[${FEATURE_ENV}](${FEATURE_ENV})\"}"
           else
-            # Fallback to original format without PR
-            cat > teams-message.json << EOF
+            FACTS="${FACTS}{\"name\":\"Feature env\",\"value\":\"N/A\"}"
+          fi
+          
+          # Add Definition page - show N/A if empty
+          if [ -n "$DEFINITION_PAGE" ]; then
+            FACTS="${FACTS},{\"name\":\"Definition page\",\"value\":\"[${DEFINITION_PAGE}](${DEFINITION_PAGE})\"}"
+          else
+            FACTS="${FACTS},{\"name\":\"Definition page\",\"value\":\"N/A\"}"
+          fi
+          
+          # Add PR link if available
+          if [ -n "$PR_NUMBER" ] && [ -n "$PR_URL" ]; then
+            FACTS="${FACTS},{\"name\":\"GitHub PR\",\"value\":\"[Pull Request #${PR_NUMBER}](${PR_URL})\"}"
+          fi
+          
+          # Always add Issue link
+          FACTS="${FACTS},{\"name\":\"GitHub Issue\",\"value\":\"[Issue #${ISSUE_NUMBER}](${ISSUE_URL})\"}"
+          FACTS="${FACTS}]"
+          
+          # Set subtitle - use "N/A" if no feature env domain
+          if [ -n "$FEATURE_ENV_DOMAIN" ]; then
+            SUBTITLE="$FEATURE_ENV_DOMAIN"
+          else
+            SUBTITLE="Environment information not available"
+          fi
+          
+          # Create Teams message
+          cat > teams-message.json << EOF
           {
             "@type": "MessageCard",
             "@context": "http://schema.org/extensions",
@@ -264,23 +285,12 @@ jobs:
             "title": "🚀 ${ISSUE_TITLE}",
             "sections": [{
               "activityTitle": "Environment Ready for Testing",
-              "activitySubtitle": "${FEATURE_ENV_DOMAIN}",
               "text": "The feature environment is now deployed and ready for testing.",
-              "facts": [
-                {
-                  "name": "Feature env",
-                  "value": "[${FEATURE_ENV}](${FEATURE_ENV})"
-                },
-                {
-                  "name": "GitHub Issue",
-                  "value": "[Issue #${ISSUE_NUMBER}](${ISSUE_URL})"
-                }
-              ],
+              "facts": ${FACTS},
               "markdown": true
             }]
           }
           EOF
-          fi
           
           # Send to Teams
           HTTP_RESPONSE=$(curl -H "Content-Type: application/json" \
@@ -304,11 +314,22 @@ jobs:
             echo "✅ **Successfully extracted information:**" >> $GITHUB_STEP_SUMMARY
             echo "- Title: ${{ steps.get-info.outputs.issue_title }}" >> $GITHUB_STEP_SUMMARY
             echo "- Issue Number: #${{ steps.get-info.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
-            echo "- Feature Environment: ${{ steps.get-info.outputs.feature_env }}" >> $GITHUB_STEP_SUMMARY
           
+            if [ "${{ steps.get-info.outputs.feature_env }}" != "" ]; then
+              echo "- Feature Environment: ${{ steps.get-info.outputs.feature_env }}" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- Feature Environment: N/A" >> $GITHUB_STEP_SUMMARY
+            fi
             if [ "${{ steps.get-info.outputs.pr_number }}" != "" ]; then
               echo "- Pull Request: #${{ steps.get-info.outputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
             fi
+            if [ "${{ steps.get-info.outputs.definition_page }}" != "" ]; then
+              echo "- Definition Page: ${{ steps.get-info.outputs.definition_page }}" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- Definition Page: N/A" >> $GITHUB_STEP_SUMMARY
+            fi
+          
+            
           
             echo "- Teams notification sent" >> $GITHUB_STEP_SUMMARY
           else
