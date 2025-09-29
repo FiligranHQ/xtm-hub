@@ -96,7 +96,7 @@ export const serviceInstanceApp = {
       }
 
       // Handle illustration image upload if provided
-      if (upload) {
+      if (Array.isArray(upload) && upload.length > 0) {
         context.serviceInstanceId = serviceInstance.id;
         const document = await uploadNewFile(context, upload, trx);
         updateData.illustration_document_id = document.id;

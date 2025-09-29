@@ -312,6 +312,7 @@ const resolvers: Resolvers = {
               : null,
         } as RegisteredPlatform;
       } catch (error) {
+        console.error(error);
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.UpdatePlatformServiceMetadataError

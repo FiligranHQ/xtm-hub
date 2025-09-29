@@ -238,7 +238,7 @@ const ServiceInstanceCard: React.FunctionComponent<
               </Link>
             )}
 
-            <div className="flex ml-auto gap-m items-center">
+            <div className="flex pl-s ml-auto gap-m items-center">
             {isExternalService(
               serviceInstance.service_definition_identifier
               ) && <ArrowOutwardIcon className="size-3 shrink-0" />}
