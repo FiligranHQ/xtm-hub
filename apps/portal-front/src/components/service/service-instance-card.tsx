@@ -169,20 +169,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 backgroundRepeat: 'no-repeat',
               }}
             />
-            {canUpdatePlatform() && (
-              <IconActions
-                className="absolute right-2 top-2 z-[3]"
-                icon={
-                  <>
-                    <MoreVertIcon className="h-4 w-4 text-white" />
-                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                  </>
-                }>
-                <IconActionsItem onClick={() => setOpenPlatformSheet(true)}>
-                  {t('Platform.Update')}
-                </IconActionsItem>
-              </IconActions>
-            )}
+
           </div>
           <AspectRatio
             ratio={16 / 9}
@@ -251,9 +238,26 @@ const ServiceInstanceCard: React.FunctionComponent<
               </Link>
             )}
 
+            <div className="flex ml-auto gap-m items-center">
             {isExternalService(
               serviceInstance.service_definition_identifier
-            ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
+              ) && <ArrowOutwardIcon className="size-3 shrink-0" />}
+            {canUpdatePlatform() && (
+              <div className='relative'>
+              <IconActions
+                icon={
+                  <>
+                    <MoreVertIcon className="h-4 w-4 text-white" />
+                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                  </>
+                }>
+                <IconActionsItem onClick={() => setOpenPlatformSheet(true)}>
+                  {t('Platform.Update')}
+                </IconActionsItem>
+              </IconActions>
+              </div>
+            )}
+            </div>
           </div>
           {(isRegistrationService(serviceInstance) && (
             <RegistrationDetails
