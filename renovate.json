@@ -8,12 +8,26 @@
     "filigran team"
   ],
   "prConcurrentLimit": 5,
+  "rebaseWhen": "behind-base-branch",
   "packageRules": [
     {
-      "matchUpdateTypes": [
-        "minor"
+      "schedule": "on sunday after 4am and before 5am",
+      "description": "auto merge and batch on sunday morning, non-major update of dev dependencies",
+      "matchDepTypes": [
+        "devDependencies"
       ],
-      "prPriority": 5
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "groupName": "devDependencies (non-major)",
+      "groupSlug": "dev-dependencies-non-major"
     }
-  ]
+  ],
+  "lockFileMaintenance": {
+    "schedule": "on sunday after 5am and before 6am",
+    "enabled": true
+  }
 }
