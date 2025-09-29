@@ -57,7 +57,7 @@ export const serviceInstanceApp = {
   updatePlatformServiceMetadata: async (
     context: PortalContext,
     input: UpdatePlatformServiceMetadataInput,
-    upload: Upload[]
+    upload: Upload | null
   ): Promise<RegisteredPlatform> => {
     const trx = await dbTx();
 
@@ -96,7 +96,7 @@ export const serviceInstanceApp = {
       }
 
       // Handle illustration image upload if provided
-      if (Array.isArray(upload) && upload.length > 0) {
+      if (upload) {
         context.serviceInstanceId = serviceInstance.id;
         const document = await uploadNewFile(context, upload, trx);
         updateData.illustration_document_id = document.id;
