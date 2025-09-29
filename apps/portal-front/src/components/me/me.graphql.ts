@@ -32,6 +32,21 @@ export const MeResetPasswordMutation = graphql`
   }
 `;
 
+export const MeRequestTransferPersonalSpaceMutation = graphql`
+  mutation meRequestTransferPersonalSpaceMutation($new_email: String) {
+    requestTransferPersonalSpace(new_email: $new_email) {
+      success
+    }
+  }
+`;
+export const MeTransferPersonalSpaceMutation = graphql`
+  mutation meTransferPersonalSpaceMutation($from: ID!, $to: ID!) {
+    transferPersonalSpace(from: $from, to: $to) {
+      success
+    }
+  }
+`;
+
 export const MeEditUserMutation = graphql`
   mutation meEditUserMutation(
     $first_name: String

@@ -8,3 +8,8 @@ export const isAuthorizedEmail = (email: string) => {
 export const extractDomain = (email: string) => {
   return email.split('@')[1];
 };
+
+export const isValidEmail = (email: string) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};

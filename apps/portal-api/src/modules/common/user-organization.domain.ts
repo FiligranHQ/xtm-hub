@@ -153,3 +153,20 @@ export const removeUserFromOrganization = async (
     .where({ user_id, organization_id })
     .delete('*');
 };
+
+export const updateUserOrganization = async (
+  context: PortalContext,
+  field: UserOrganizationMutator,
+  input: UserOrganizationMutator
+): Promise<UserOrganization> => {
+  const [updatedUserOrganization] = await db<UserOrganization>(
+    context,
+    'User_Organization'
+  )
+    .where(field)
+    .update(input)
+    .returning('*')
+    .secureQuery();
+
+  return updatedUserOrganization;
+};

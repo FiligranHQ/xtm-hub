@@ -278,6 +278,28 @@ const resolvers: Resolvers = {
       await resetPassword(context);
       return { success: true };
     },
+    requestTransferPersonalSpace: async (_, { new_email }, context) => {
+      try {
+        await usersProfileApp.requestTransferPersonalSpace(context, new_email);
+
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
+      }
+    },
+    transferPersonalSpace: async (_, { from, to }, context) => {
+      try {
+        await usersProfileApp.transferPersonalSpace(
+          context,
+          from as UserId,
+          to as UserId
+        );
+
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
+      }
+    },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateUser(context, context.user.id, {
         selected_organization_id: fromGlobalId(organization_id)

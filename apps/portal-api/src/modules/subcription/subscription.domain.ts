@@ -1,4 +1,5 @@
-import { db } from '../../../knexfile';
+import { Knex } from 'knex';
+import { db, dbUnsecure } from '../../../knexfile';
 import {
   ServiceCapability,
   UserService,
@@ -136,4 +137,20 @@ export const loadSubscriptionBy = async (
   field: SubscriptionMutator
 ): Promise<Subscription | null> => {
   return db<Subscription>(context, 'Subscription').where(field).first();
+};
+
+export const updateSubscriptionBy = async (
+  field: SubscriptionMutator,
+  data: SubscriptionMutator,
+  trx?: Knex.Transaction
+): Promise<Subscription[]> => {
+  let query = dbUnsecure<Subscription>('Subscription')
+    .where(field)
+    .update(data)
+    .returning('*');
+
+  if (trx) {
+    query = query.transacting(trx);
+  }
+  return query;
 };
