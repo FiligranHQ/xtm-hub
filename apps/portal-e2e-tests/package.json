@@ -15,7 +15,7 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.55.0",
+    "@playwright/test": "1.55.1",
     "@types/node": "24.5.2",
     "graphql": "16.11.0",
     "graphql-tag": "2.12.6",
