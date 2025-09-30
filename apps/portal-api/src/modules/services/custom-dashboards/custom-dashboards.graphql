@@ -23,7 +23,7 @@ input UpdateCustomDashboardInput {
   product_version: String
 }
 
-type CustomDashboard implements Node {
+type CustomDashboard implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User

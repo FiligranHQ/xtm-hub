@@ -10,6 +10,30 @@ enum DocumentOrdering {
   download_number
 }
 
+interface DocumentBase implements Node {
+    id: ID!
+    type: String!
+    uploader: User
+    uploader_organization: Organization
+    name: String!
+    short_description: String
+    description: String
+    file_name: String!
+    minio_name: String!
+    active: Boolean!
+    created_at: Date!
+    updated_at: Date
+    updater_id: String
+    download_number: Int!
+    share_number: Int!
+    slug: String!
+    labels: [Label!]
+    service_instance_id: String!
+    service_instance: ServiceInstance
+    subscription: SubscriptionModel
+    children_documents: [ShareableResourceImage!]
+}
+
 type Document implements Node {
   id: ID!
   type: String!
