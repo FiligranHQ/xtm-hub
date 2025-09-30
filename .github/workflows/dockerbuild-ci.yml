@@ -107,17 +107,47 @@ jobs:
     permissions:
       contents: read
       packages: write
+    services:
+      postgres:
+        image: postgres:17.2
+        env:
+          POSTGRES_USER: portal
+          POSTGRES_PASSWORD: portal-password
+          POSTGRES_DB: test_database
+          PGDATA: /data/postgres
+        options: >-
+          --health-cmd "pg_isready -d test_database"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
+        env:
+          discovery.type: single-node
+          xpack.ml.enabled: false
+          xpack.security.enabled: false
+          ES_JAVA_OPTS: -Xms256m -Xmx256m
+        options: >-
+          --health-cmd "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      minio:
+        image: minio/minio:RELEASE.2025-06-13T11-33-47Z
+        env:
+          MINIO_ROOT_USER: portal
+          MINIO_ROOT_PASSWORD: changeme
     strategy:
       fail-fast: true
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install build dep
-        run: apk add --no-cache docker docker-cli docker-cli-compose
-      - name: Launch docker compose for services minio, postgres and elastic
-        run: |
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml up -d
+#      - name: Install build dep
+#        run: apk add --no-cache docker docker-cli docker-cli-compose
+#      - name: Launch docker compose for services minio, postgres and elastic
+#        run: |
+#          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml up -d
       - name: Download all artifacts for front
         uses: actions/download-artifact@v5
         with:
@@ -158,9 +188,38 @@ jobs:
           ls -la apps/portal-api/dist
           echo "=== API config==="
           ls -la apps/portal-api/dist/config
+      - name: Install dependencies for health checks
+        run: |
+          apk add --no-cache curl postgresql-client
+
+      - name: Wait for services
+        run: |
+          echo "Waiting for PostgreSQL..."
+          until pg_isready -h postgres -p 5432 -U portal; do
+            echo "PostgreSQL is not ready yet..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+          
+          echo "Waiting for Elasticsearch..."
+          until curl -s http://elasticsearch:9200/_cluster/health?wait_for_status=yellow; do
+            echo "Elasticsearch is not ready yet..."
+            sleep 2
+          done
+          echo "Elasticsearch is ready!"
+          
+          echo "Waiting for Minio..."
+          for i in {1..30}; do
+            if curl -s -f http://minio:9000/minio/health/live; then
+              echo "Minio is ready!"
+              break
+            fi
+            echo "Minio is not ready yet..."
+            sleep 2
+          done
       - name: Je le démarre pour voir
         run: |
-            export DATABASE_HOST=portal-postgres
+            export DATABASE_HOST=postgres
             export DATABASE_PORT=5432
             export DATABASE_USER=portal
             export DATABASE_BASE=test_database
@@ -169,7 +228,7 @@ jobs:
             export ADMIN_PASSWORD=admin
             export DATA_SEEDING=true
             export MINIO_BUCKET_NAME=xtmhubbucket
-            export MINIO_ENDPOINT=portal-minio
+            export MINIO_ENDPOINT=minio
             export MINIO_PORT=9000
             export MINIO_ACCESS_KEY=portal
             export MINIO_SECRET_KEY=changeme
@@ -177,7 +236,7 @@ jobs:
             export NODE_ENV=development
             export VITEST_MODE=true
             export START_DEV_SERVER=true
-            export ELASTIC_HOST=portal-elasticsearch
+            export ELASTIC_HOST=elasticsearch
             export ELASTIC_PORT=9200
             export BASE_URL_FRONT=http://portal-front:3000
             cd apps/portal-api/dist
