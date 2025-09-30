@@ -3750,23 +3750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/plugin-helpers@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@graphql-codegen/plugin-helpers@npm:5.1.0"
-  dependencies:
-    "@graphql-tools/utils": ^10.0.0
-    change-case-all: 1.0.15
-    common-tags: 1.8.2
-    import-from: 4.0.0
-    lodash: ~4.17.0
-    tslib: ~2.6.0
-  peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 235762e2e7a55898e71fb1d52ef3093c26787c16e7eb5a3df6e06a7b2003da641b9a9c96833091e9fb11f9cf72da9e7c5f19ce124074d5d7d33a419117d050a9
-  languageName: node
-  linkType: hard
-
-"@graphql-codegen/plugin-helpers@npm:^5.0.3, @graphql-codegen/plugin-helpers@npm:^5.0.4, @graphql-codegen/plugin-helpers@npm:^5.1.0, @graphql-codegen/plugin-helpers@npm:^5.1.1":
+"@graphql-codegen/plugin-helpers@npm:5.1.1, @graphql-codegen/plugin-helpers@npm:^5.0.3, @graphql-codegen/plugin-helpers@npm:^5.0.4, @graphql-codegen/plugin-helpers@npm:^5.1.0, @graphql-codegen/plugin-helpers@npm:^5.1.1":
   version: 5.1.1
   resolution: "@graphql-codegen/plugin-helpers@npm:5.1.1"
   dependencies:
@@ -10063,7 +10047,7 @@ __metadata:
     "@elastic/elasticsearch": 8.19.1
     "@eslint/js": 9.35.0
     "@graphql-codegen/cli": 5.0.2
-    "@graphql-codegen/plugin-helpers": 5.1.0
+    "@graphql-codegen/plugin-helpers": 5.1.1
     "@graphql-codegen/typescript": 4.0.9
     "@graphql-codegen/typescript-resolvers": 4.2.1
     "@graphql-tools/load-files": 7.0.1
