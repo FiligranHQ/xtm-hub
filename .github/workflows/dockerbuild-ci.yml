@@ -5,12 +5,20 @@ on:
     branches:
       - "main"
       - "development"
+    paths:
+      - "apps/portal-api/**"
+      - "apps/portal-front/**"
+      - "apps/portal-e2e-tests/**"
     tags:
       - "v*"
   pull_request:
     branches:
       - "main"
       - "development"
+    paths:
+      - "apps/portal-api/**"
+      - "apps/portal-front/**"
+      - "apps/portal-e2e-tests/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
