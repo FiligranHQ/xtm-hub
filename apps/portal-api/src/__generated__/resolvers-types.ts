@@ -425,6 +425,7 @@ export type Mutation = {
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
   updateOpenAEVScenario: OpenAevScenario;
+  updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
 };
 
 
@@ -699,6 +700,12 @@ export type MutationUpdateOpenAevScenarioArgs = {
   input: UpdateOpenAevScenarioInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
+};
+
+
+export type MutationUpdatePlatformServiceMetadataArgs = {
+  document?: InputMaybe<Scalars['Upload']['input']>;
+  input: UpdatePlatformServiceMetadataInput;
 };
 
 export type Node = {
@@ -1207,6 +1214,7 @@ export type RegisteredPlatform = Node & {
   contract: PlatformContract;
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
+  illustration_document_id?: Maybe<Scalars['String']['output']>;
   platform_id: Scalars['String']['output'];
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
@@ -1511,6 +1519,11 @@ export type UpdateOpenAevScenarioInput = {
   slug?: InputMaybe<Scalars['String']['input']>;
   uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdatePlatformServiceMetadataInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: Scalars['ID']['input'];
 };
 
 export type User = Node & {
@@ -1824,6 +1837,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
+  UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -1939,6 +1953,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
+  UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   Upload: Scalars['Upload']['output'];
   User: User;
   UserConnection: UserConnection;
@@ -2251,6 +2266,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
+  updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
@@ -2409,6 +2425,7 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   contract?: Resolver<ResolversTypes['PlatformContract'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
+  illustration_document_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

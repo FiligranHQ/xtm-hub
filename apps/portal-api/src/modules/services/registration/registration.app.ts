@@ -1,3 +1,4 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterPlatformInput,
@@ -93,13 +94,16 @@ export const registrationApp = {
 
     return platforms.map((platform) => ({
       __typename: 'RegisteredPlatform',
-      id: platform.config.platform_id,
+      id: platform.id,
       platform_id: platform.config.platform_id,
       title: platform.config.platform_title,
       url: platform.config.platform_url,
       contract: platform.config.platform_contract,
       identifier: platform.identifier,
       version: platform.config.platform_version,
+      illustration_document_id: platform.illustration_document_id
+        ? toGlobalId('Document', platform.illustration_document_id)
+        : null,
     }));
   },
 

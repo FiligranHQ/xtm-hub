@@ -1,17 +1,30 @@
+'use client';
+
+import { PortalContext } from '@/components/me/app-portal-context';
+import { RegistrationCapabilityMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
+import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { isExternalService, isRegistrationService } from '@/utils/services';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
-import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
+import {
+  ArrowOutwardIcon,
+  LogoFiligranIcon,
+  MoreVertIcon,
+} from 'filigran-icon';
 import { AspectRatio } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, useContext, useState } from 'react';
 
 export interface ServiceInstanceCardData {
   id: string;
@@ -75,6 +88,8 @@ const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className, seo }) => {
   const t = useTranslations();
+  const { hasOrganizationCapability, hasCapability } =
+    useContext(PortalContext);
   const isDisabled =
     serviceInstance.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING;
@@ -95,6 +110,46 @@ const ServiceInstanceCard: React.FunctionComponent<
     backgroundImage = `url(/${serviceInstance.service_definition_identifier}-private-platform-logo.png)`;
   }
 
+  // Check if user can update platform
+  const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
+
+  const canUpdatePlatform = () => {
+    if (!isRegistrationService(serviceInstance)) {
+      return false;
+    }
+
+    // Allow BYPASS users to update platforms
+    if (hasCapability && hasCapability(RestrictionEnum.BYPASS)) {
+      return true;
+    }
+
+    // Check standard organization capabilities
+    if (!hasOrganizationCapability) {
+      return false;
+    }
+
+    // Check ADMINISTRATE_ORGANIZATION capability
+    const hasAdminCap = hasOrganizationCapability(
+      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+    );
+
+    if (!hasAdminCap) {
+      return false;
+    }
+
+    // Check specific platform capability
+    const platformIdentifier =
+      serviceInstance.service_definition_identifier ===
+      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
+        ? PlatformIdentifierEnum.OPENCTI
+        : PlatformIdentifierEnum.OPENAEV;
+
+    const requiredCapability =
+      RegistrationCapabilityMapping[platformIdentifier];
+
+    return hasOrganizationCapability(requiredCapability);
+  };
+
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
@@ -114,6 +169,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 backgroundRepeat: 'no-repeat',
               }}
             />
+
           </div>
           <AspectRatio
             ratio={16 / 9}
@@ -123,25 +179,27 @@ const ServiceInstanceCard: React.FunctionComponent<
                 ? 'overflow-visible'
                 : 'overflow-hidden'
             )}>
-            {serviceInstance.illustration_document_id && (
-              <Image
-                fill
-                src={`/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`}
-                objectPosition="top"
-                objectFit="cover"
-                alt={`Illustration of ${serviceInstance.name}`}
-              />
-            )}
-            {isRegistrationService(serviceInstance) && (
+            {(isRegistrationService(serviceInstance) && (
               <>
                 <Image
                   width="580"
                   height="281"
-                  src={`/${serviceInstance.service_definition_identifier}-private-platform-illustration.png`}
+                  src={
+                    serviceInstance.illustration_document_id
+                      ? `/document/visualize/${serviceInstance.id}/${serviceInstance.illustration_document_id}`
+                      : `/${serviceInstance.service_definition_identifier}-private-platform-illustration.png`
+                  }
                   priority={false}
                   loading="lazy"
                   alt={`Illustration of ${serviceInstance.name}`}
-                  className="absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45"
+                  className={
+                    !serviceInstance.illustration_document_id
+                      ? 'absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45'
+                      : ''
+                  }
+                  unoptimized={
+                    serviceInstance.illustration_document_id ? true : false
+                  }
                 />
                 <h3
                   className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
@@ -149,7 +207,16 @@ const ServiceInstanceCard: React.FunctionComponent<
                   {serviceInstance.name}
                 </h3>
               </>
-            )}
+            )) ||
+              (serviceInstance.illustration_document_id && (
+                <Image
+                  fill
+                  src={`/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`}
+                  objectPosition="top"
+                  objectFit="cover"
+                  alt={`Illustration of ${serviceInstance.name}`}
+                />
+              ))}
           </AspectRatio>
         </div>
         <div className="min-h-40 flex flex-col p-l gap-l flex-1 bg-page-background group-hover:bg-hover">
@@ -171,9 +238,26 @@ const ServiceInstanceCard: React.FunctionComponent<
               </Link>
             )}
 
+            <div className="flex pl-s ml-auto gap-m items-start">
             {isExternalService(
               serviceInstance.service_definition_identifier
-            ) && <ArrowOutwardIcon className="ml-auto size-3 shrink-0" />}
+              ) && <div className="pt-2"><ArrowOutwardIcon className="size-3 shrink-0" /></div>}
+            {canUpdatePlatform() && (
+              <div className='relative'>
+              <IconActions
+                icon={
+                  <>
+                    <MoreVertIcon className="h-4 w-4 text-white" />
+                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                  </>
+                }>
+                <IconActionsItem onClick={() => setOpenPlatformSheet(true)}>
+                  {t('Platform.Update')}
+                </IconActionsItem>
+              </IconActions>
+              </div>
+            )}
+            </div>
           </div>
           {(isRegistrationService(serviceInstance) && (
             <RegistrationDetails
@@ -194,6 +278,13 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}
         </div>
       </div>
+      {canUpdatePlatform() && (
+        <PlatformUpdateSheet
+          serviceInstance={serviceInstance}
+          open={openPlatformSheet}
+          setOpen={setOpenPlatformSheet}
+        />
+      )}
     </li>
   );
 };

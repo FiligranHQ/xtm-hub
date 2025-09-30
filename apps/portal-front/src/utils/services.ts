@@ -44,7 +44,9 @@ export const registeredPlatformToServiceInstanceCardData = (
     creation_status: ServiceInstanceCreationStatusEnum.CREATED,
     name: platform.title,
     platform_contract: platform.contract,
-    illustration_document_id: null,
+    illustration_document_id: platform.illustration_document_id
+      ? platform.illustration_document_id
+      : null,
     logo_document_id: null,
     service_definition_identifier: platformIdentifier,
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,

@@ -1,13 +1,19 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   SeoServiceInstance,
   ServiceConnection,
   ServiceDefinition,
-  ServiceInstance,
+  ServiceDefinitionIdentifier,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
+import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
+import ServiceInstance, {
+  ServiceInstanceId,
+  ServiceInstanceMutator,
+} from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
@@ -26,6 +32,7 @@ import { loadSubscriptionCapabilities } from '../user_service/service-capability
 import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
+import { PlatformConfiguration } from './registration/registration.domain';
 
 export const loadSubscribedServiceInstancesByIdentifier = async (
   context: PortalContext,
@@ -587,7 +594,12 @@ export const loadSeoServiceInstances = async (
 export const loadSeoServiceInstanceBySlug = async (
   context: PortalContext,
   slug: string
-): Promise<ServiceInstance> => {
+): Promise<
+  ServiceInstance & {
+    service_definition: ServiceDefinition;
+    links: ServiceLink[];
+  }
+> => {
   const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
     .leftJoin(
       'Service_Link',
@@ -629,4 +641,96 @@ export const getServiceInstance = async (context, id) => {
   return await db<ServiceInstance>(context, 'ServiceInstance')
     .where('ServiceInstance.id', '=', id)
     .first();
+};
+
+export const loadPlatformServiceInstance = async (
+  context: PortalContext,
+  serviceInstanceId: string
+) => {
+  return await db<ServiceInstance>(context, 'ServiceInstance')
+    .leftJoin(
+      'Service_Configuration',
+      'Service_Configuration.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceDefinition.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
+    .leftJoin(
+      'Subscription',
+      'Subscription.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .where('ServiceInstance.id', '=', serviceInstanceId)
+    .where(
+      'Subscription.organization_id',
+      '=',
+      context.user.selected_organization_id
+    )
+    .whereIn('ServiceDefinition.identifier', [
+      ServiceDefinitionIdentifier.OpenaevRegistration,
+      ServiceDefinitionIdentifier.OpenctiRegistration,
+    ])
+    .select('ServiceInstance.*')
+    .first();
+};
+
+export const updateServiceInstance = async (
+  context: PortalContext,
+  id: ServiceInstanceId,
+  data: ServiceInstanceMutator,
+  trx?: Knex.Transaction
+) => {
+  const query = db<ServiceInstance>(context, 'ServiceInstance')
+    .where({ id })
+    .update(data)
+    .returning('*');
+
+  if (trx) {
+    query.transacting(trx);
+  }
+
+  const [result] = await query;
+  return result;
+};
+
+export const loadPlatformConfigurationByServiceInstanceId = async (
+  context: PortalContext,
+  serviceInstanceId: string,
+  trx?: Knex.Transaction
+): Promise<ServiceConfiguration | null> => {
+  const qb = db(context, 'Service_Configuration')
+    .where('service_instance_id', '=', serviceInstanceId)
+    .first()
+    .select('*');
+
+  if (trx) {
+    qb.forUpdate().transacting(trx);
+  }
+
+  return await qb;
+};
+
+export const updatePlatformConfigurationByServiceInstanceId = async (
+  context: PortalContext,
+  serviceInstanceId: string,
+  config: PlatformConfiguration,
+  trx?: Knex.Transaction
+): Promise<ServiceConfiguration | null> => {
+  const qb = db(context, 'Service_Configuration')
+    .where('service_instance_id', '=', serviceInstanceId)
+    .update({ config })
+    .returning('*');
+
+  if (trx) {
+    qb.transacting(trx);
+  }
+
+  const [result] = await qb;
+  return result;
 };

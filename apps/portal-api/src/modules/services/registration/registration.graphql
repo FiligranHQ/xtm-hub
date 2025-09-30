@@ -11,6 +11,7 @@ type RegisteredPlatform implements Node {
   platform_id: String!
   identifier: ServiceDefinitionIdentifier!
   version: String
+  illustration_document_id: String
 }
 
 input PlatformInput {

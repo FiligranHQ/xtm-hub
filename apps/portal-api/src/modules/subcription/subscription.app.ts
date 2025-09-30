@@ -2,7 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { dbTx } from '../../../knexfile';
 import {
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
   ServiceInstance as ServiceInstanceGraphQl,
+  ServiceInstanceJoinType,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
 import Organization, {
@@ -104,6 +106,9 @@ export const subscriptionApp = {
 
       return {
         ...serviceInstance,
+        creation_status:
+          serviceInstance.creation_status as ServiceInstanceCreationStatus,
+        join_type: serviceInstance.join_type as ServiceInstanceJoinType,
         capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
       };
     } catch (error) {

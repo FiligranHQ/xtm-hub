@@ -1,12 +1,31 @@
-import { ServiceInstance } from '../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { dbTx } from '../../../knexfile';
+import {
+  RegisteredPlatform,
+  ServiceInstance,
+  UpdatePlatformServiceMetadataInput,
+} from '../../__generated__/resolvers-types';
+import {
+  ServiceInstanceId,
+  ServiceInstanceMutator,
+} from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
+import { securityGuard } from '../../security/guard';
+import { ErrorCode } from '../../utils/error/error.code';
+import { NotFoundError } from '../../utils/error/error.util';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { loadUserServiceBy } from '../user_service/user_service.domain';
+import { Upload, uploadNewFile } from './document/document.helper';
+import { PlatformConfiguration } from './registration/registration.domain';
 import {
   grantServiceAccess,
+  loadPlatformConfigurationByServiceInstanceId,
+  loadPlatformServiceInstance,
+  loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
+  updatePlatformConfigurationByServiceInstanceId,
+  updateServiceInstance,
 } from './service-instance.domain';
 
 export const serviceInstanceApp = {
@@ -33,5 +52,98 @@ export const serviceInstanceApp = {
       }
     }
     return loadServiceInstanceBy(context, 'id', serviceInstanceId);
+  },
+
+  updatePlatformServiceMetadata: async (
+    context: PortalContext,
+    input: UpdatePlatformServiceMetadataInput,
+    upload: Upload | null
+  ): Promise<RegisteredPlatform> => {
+    const trx = await dbTx();
+
+    try {
+      const { id } = fromGlobalId(input.serviceInstanceId);
+      context.serviceInstanceId = input.serviceInstanceId;
+
+      const serviceInstance = await loadPlatformServiceInstance(context, id);
+
+      if (!serviceInstance) {
+        throw NotFoundError(ErrorCode.ServiceInstanceNotFound);
+      }
+
+      // Get service definition
+      const serviceDefinition = await loadServiceDefinitionByServiceInstance(
+        context,
+        serviceInstance.id
+      );
+
+      if (!serviceDefinition) {
+        throw NotFoundError(ErrorCode.ServiceDefinitionNotFound);
+      }
+
+      // Verify platform type and check capabilities
+      await securityGuard.assertUserCanModifyPlatformService(
+        context,
+        serviceDefinition
+      );
+
+      // Build update object for ServiceInstance
+      const updateData: ServiceInstanceMutator = {};
+
+      // Update ServiceInstance name if provided
+      if (input.name) {
+        updateData.name = input.name;
+      }
+
+      // Handle illustration image upload if provided
+      if (upload) {
+        context.serviceInstanceId = serviceInstance.id;
+        const document = await uploadNewFile(context, upload, trx);
+        updateData.illustration_document_id = document.id;
+      }
+
+      // Update ServiceInstance if there are fields to update
+      let updatedServiceInstance = serviceInstance;
+      if (Object.keys(updateData).length > 0) {
+        updatedServiceInstance = await updateServiceInstance(
+          context,
+          serviceInstance.id,
+          updateData,
+          trx
+        );
+      }
+
+      // For registered platforms, also update the configuration JSON for platform_title
+      if (input.name) {
+        // Get current configuration
+        const currentConfig =
+          await loadPlatformConfigurationByServiceInstanceId(
+            context,
+            serviceInstance.id
+          );
+
+        if (currentConfig) {
+          const config = currentConfig.config as PlatformConfiguration;
+          config.platform_title = input.name;
+
+          await updatePlatformConfigurationByServiceInstanceId(
+            context,
+            serviceInstance.id,
+            config,
+            trx
+          );
+        }
+      }
+
+      await trx.commit();
+
+      return {
+        ...updatedServiceInstance,
+        identifier: serviceDefinition.identifier,
+      };
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
   },
 };
