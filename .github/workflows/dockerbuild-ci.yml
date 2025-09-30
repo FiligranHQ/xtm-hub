@@ -160,7 +160,7 @@ jobs:
           ls -la apps/portal-api/dist/config
       - name: Je le démarre pour voir
         run: |
-             export DATABASE_HOST=portal-postgres
+            export DATABASE_HOST=portal-postgres
             export DATABASE_PORT=5432
             export DATABASE_USER=portal
             export DATABASE_BASE=test_database
