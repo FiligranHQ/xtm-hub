@@ -63,6 +63,14 @@ jobs:
           yarn build 
           ls -la
           cd ../portal-api 
+          if [ -d "tests/seeds" ]; then
+            mkdir -p dist/tests
+            cp -r tests/seeds dist/tests/
+          fi
+          if [ -d "config" ]; then
+            mkdir -p dist/config
+            cp -r config dist/config/
+          fi
           yarn build
       - name: Upload artifact front
         uses: actions/upload-artifact@v4
@@ -90,6 +98,14 @@ jobs:
           overwrite: true
           retention-days: 3
           if-no-files-found: error
+      - name: Upload artifact node_modules front
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-context-front-node_modules-${{ github.event.pull_request.number || github.ref }}
+          path: node_modules
+          overwrite: true
+          retention-days: 3
+          if-no-files-found: error
       - name: Upload artifact config directory
         uses: actions/upload-artifact@v4
         with:
@@ -102,57 +118,24 @@ jobs:
   run-api-tests:
     runs-on: ubuntu-latest
     needs: build-apps
-    container: node:24.8-alpine3.22
     timeout-minutes: 10
     permissions:
       contents: read
       packages: write
-    services:
-      postgres:
-        image: postgres:17.2
-        env:
-          POSTGRES_USER: portal
-          POSTGRES_PASSWORD: portal-password
-          POSTGRES_DB: test_database
-          PGDATA: /data/postgres
-        options: >-
-          --health-cmd "pg_isready -d test_database"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-      elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
-        env:
-          discovery.type: single-node
-          xpack.ml.enabled: false
-          xpack.security.enabled: false
-          ES_JAVA_OPTS: -Xms256m -Xmx256m
-        options: >-
-          --health-cmd "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-      minio:
-        image: minio/minio:RELEASE.2025-06-13T11-33-47Z
-        env:
-          MINIO_ROOT_USER: portal
-          MINIO_ROOT_PASSWORD: changeme
-    strategy:
-      fail-fast: true
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-#      - name: Install build dep
-#        run: apk add --no-cache docker docker-cli docker-cli-compose
-#      - name: Launch docker compose for services minio, postgres and elastic
-#        run: |
-#          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml up -d
+      - name: Run docker-compose
+        run: |
+          docker compose -f xtm-hub-dev/docker-compose-ci.yml up -d
       - name: Download all artifacts for front
         uses: actions/download-artifact@v5
         with:
           pattern: build-context-front*
           path: apps/portal-front/.next
+      - name: Corepack Enable
+        run: corepack enable
       - name: Download dist artifacts for api
         uses: actions/download-artifact@v5
         with:
@@ -171,6 +154,13 @@ jobs:
           pattern: build-context-api-node_modules*
           path: node_modules
           merge-multiple: true
+      - name: Download node_modules artifacts for front
+        uses: actions/download-artifact@v5
+        with:
+          pattern: build-context-front-node_modules*
+          path: apps/portal-front/node_modules
+          merge-multiple: true
+
       - name: List downloaded artifacts
         run: |
           echo "=== Structure des artifacts téléchargés ==="
@@ -188,38 +178,46 @@ jobs:
           ls -la apps/portal-api/dist
           echo "=== API config==="
           ls -la apps/portal-api/dist/config
-      - name: Install dependencies for health checks
-        run: |
-          apk add --no-cache curl postgresql-client
-
-      - name: Wait for services
+      - name: Wait for services to be ready
         run: |
           echo "Waiting for PostgreSQL..."
-          until pg_isready -h postgres -p 5432 -U portal; do
-            echo "PostgreSQL is not ready yet..."
-            sleep 2
-          done
-          echo "PostgreSQL is ready!"
-          
-          echo "Waiting for Elasticsearch..."
-          until curl -s http://elasticsearch:9200/_cluster/health?wait_for_status=yellow; do
-            echo "Elasticsearch is not ready yet..."
-            sleep 2
-          done
-          echo "Elasticsearch is ready!"
-          
-          echo "Waiting for Minio..."
           for i in {1..30}; do
-            if curl -s -f http://minio:9000/minio/health/live; then
-              echo "Minio is ready!"
+            if pg_isready -h localhost -p 5432 -U portal -d test_database; then
+              echo "PostgreSQL is ready!"
               break
             fi
-            echo "Minio is not ready yet..."
+            echo "Waiting for PostgreSQL... attempt $i/30"
             sleep 2
           done
+
+          echo "Waiting for Elasticsearch..."
+          for i in {1..30}; do
+            if curl -s http://localhost:9200/_cluster/health?wait_for_status=yellow; then
+              echo "Elasticsearch is ready!"
+              break
+            fi
+            echo "Waiting for Elasticsearch... attempt $i/30"
+            sleep 2
+          done
+
+          echo "Waiting for MinIO..."
+          for i in {1..30}; do
+            if curl -s http://localhost:9000/minio/health/live; then
+              echo "MinIO is ready!"
+              break
+            fi
+            echo "Waiting for MinIO... attempt $i/30"
+            sleep 2
+          done
+
+          echo "All services status:"
+          docker ps
+          docker logs portal-postgres
+          docker logs portal-elasticsearch
+          docker logs portal-minio
       - name: Je le démarre pour voir
         run: |
-            export DATABASE_HOST=postgres
+            export DATABASE_HOST=localhost
             export DATABASE_PORT=5432
             export DATABASE_USER=portal
             export DATABASE_BASE=test_database
@@ -228,7 +226,7 @@ jobs:
             export ADMIN_PASSWORD=admin
             export DATA_SEEDING=true
             export MINIO_BUCKET_NAME=xtmhubbucket
-            export MINIO_ENDPOINT=minio
+            export MINIO_ENDPOINT=localhost
             export MINIO_PORT=9000
             export MINIO_ACCESS_KEY=portal
             export MINIO_SECRET_KEY=changeme
@@ -236,8 +234,13 @@ jobs:
             export NODE_ENV=development
             export VITEST_MODE=true
             export START_DEV_SERVER=true
-            export ELASTIC_HOST=elasticsearch
+            export ELASTIC_HOST=localhost
             export ELASTIC_PORT=9200
             export BASE_URL_FRONT=http://portal-front:3000
             cd apps/portal-api/dist
-            node index.js
+            node index.js &
+      - name: Start frontend
+        run: |
+          cd apps/portal-front
+          yarn dev
+          
