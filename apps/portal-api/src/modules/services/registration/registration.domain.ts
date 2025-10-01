@@ -16,10 +16,10 @@ import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
 import {
+  createSubscription,
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
 } from '../../subcription/subscription.domain';
-import { createSubscription } from '../../subcription/subscription.helper';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
 import {
@@ -144,7 +144,12 @@ export const registrationDomain = {
     platformIdentifier?: PlatformIdentifier,
     opts: QueryOpts = {}
   ): Promise<
-    { config: PlatformConfiguration; identifier: ServiceDefinitionIdentifier }[]
+    {
+      config: PlatformConfiguration;
+      identifier: ServiceDefinitionIdentifier;
+      illustration_document_id: string | null;
+      id: string;
+    }[]
   > => {
     const userSelectedOrganization = context.user.selected_organization_id;
     const serviceDefinitionIdentifier =
@@ -188,7 +193,12 @@ export const registrationDomain = {
         );
       })
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
-      .select(['Service_Configuration.config', 'ServiceDefinition.identifier'])
+      .select([
+        'Service_Configuration.config',
+        'ServiceDefinition.identifier',
+        'ServiceInstance.illustration_document_id',
+        'ServiceInstance.id',
+      ])
       .secureQuery();
   },
 };

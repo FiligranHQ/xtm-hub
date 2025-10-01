@@ -110,7 +110,7 @@ async function createOrganisationWithAdminUser(email: string) {
 
   const [newOrganization] = await insertNewOrganization({
     id: uuidv4() as OrganizationId,
-    name: extractedDomain.split('.')[0],
+    name: extractedDomain,
     domains: [extractedDomain],
   });
   const addedUser = await createUserWithPersonalSpace({

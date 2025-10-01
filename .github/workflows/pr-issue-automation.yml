@@ -279,6 +279,14 @@ jobs:
             const issueNumbers = "${{ steps.extract_issues.outputs.issue_numbers }}".split(',').filter(num => num);
             const pr = context.payload.pull_request;
             let status = '';
+            
+            // List of statuses we're allowed to modify
+            const modifiableStatuses = [
+              'ready for dev',
+              'dev in progress', 
+              'in review'
+            ];
+            
             // Determine the status based on PR state
             if (context.eventName === 'pull_request') {
               if (pr.draft) {
@@ -345,7 +353,7 @@ jobs:
               for (const issueNumber of issueNumbers) {
                 try {
                   console.log(`Processing issue #${issueNumber}...`);
-                  // Query for the issue and its project items
+                  // Query for the issue and its project items WITH current status
                   const issueQuery = `
                     query($owner: String!, $repo: String!, $issueNumber: Int!) {
                       repository(owner: $owner, name: $repo) {
@@ -357,6 +365,11 @@ jobs:
                               project {
                                 id
                                 number
+                              }
+                              fieldValueByName(name: "Status") {
+                                ... on ProjectV2ItemFieldSingleSelectValue {
+                                  name
+                                }
                               }
                             }
                           }
@@ -381,8 +394,19 @@ jobs:
                     console.log(`Issue #${issueNumber} is not in project #${process.env.PROJECT_NUMBER}, skipping...`);
                     continue;
                   }
+            
+                  // Check current status
+                  const currentStatus = projectItem.fieldValueByName?.name?.toLowerCase() || '';
+                  console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
+            
+                  // Only update if current status is in the modifiable list
+                  if (!modifiableStatuses.includes(currentStatus)) {
+                    console.log(`⚠️ Issue #${issueNumber} has status "${currentStatus}" which should not be modified. Skipping...`);
+                    continue;
+                  }
+            
                   // Update the status field
-                  console.log(`Updating status for issue #${issueNumber}...`);
+                  console.log(`Updating status for issue #${issueNumber} from "${currentStatus}" to "${status}"...`);
                   const updateMutation = `
                     mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                       updateProjectV2ItemFieldValue(
@@ -523,6 +547,7 @@ jobs:
                     continue;
                   }
             
+                  // When PR is merged, always update to "Ready to be deployed" regardless of current status
                   await github.graphql(`
                     mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                       updateProjectV2ItemFieldValue(
@@ -567,6 +592,13 @@ jobs:
               console.log(`Workflow run conclusion: ${context.payload.workflow_run.conclusion}. Skipping status update.`);
               return;
             }
+            
+            // List of statuses we're allowed to modify
+            const modifiableStatuses = [
+              'ready for dev',
+              'dev in progress', 
+              'in review'
+            ];
             
             // Get PR data using the PR number from extract_issues step
             const { data: pr } = await github.rest.pulls.get({
@@ -638,7 +670,8 @@ jobs:
             let newStatus = '';
             
             if (hasNeedsFeatureEnvLabel) {
-              newStatus = 'Ready for product testing';
+            // In case of needs feature env do nothing
+              return; 
             } else {
               newStatus = 'Ready for merging';
             }
@@ -686,7 +719,7 @@ jobs:
                     try {
                       console.log(`Processing issue #${issueNumber} for approval status...`);
             
-                      // Query for the issue and its project items
+                      // Query for the issue and its project items WITH current status
                       const issueQuery = `
                         query($owner: String!, $repo: String!, $issueNumber: Int!) {
                           repository(owner: $owner, name: $repo) {
@@ -698,6 +731,11 @@ jobs:
                                   project {
                                     id
                                     number
+                                  }
+                                  fieldValueByName(name: "Status") {
+                                    ... on ProjectV2ItemFieldSingleSelectValue {
+                                      name
+                                    }
                                   }
                                 }
                               }
@@ -727,6 +765,22 @@ jobs:
                         continue;
                       }
             
+                      // Check current status
+                      const currentStatus = projectItem.fieldValueByName?.name?.toLowerCase() || '';
+                      console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
+            
+                      // Only update if current status is in the modifiable list OR if we're setting to "Ready for merging"
+                      if (!modifiableStatuses.includes(currentStatus) && newStatus.toLowerCase() !== 'ready for merging') {
+                        console.log(`⚠️ Issue #${issueNumber} has status "${currentStatus}" which should not be modified. Skipping...`);
+                        continue;
+                      }
+            
+                      // Don't update if already at "Ready for merging"
+                      if (currentStatus === 'ready for merging') {
+                        console.log(`⚠️ Issue #${issueNumber} is already at "Ready for merging" status. Not updating.`);
+                        continue;
+                      }
+            
                       await github.graphql(`
                         mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                           updateProjectV2ItemFieldValue(
@@ -747,7 +801,7 @@ jobs:
                         optionId: statusOption.id
                       });
             
-                      console.log(`✅ Updated issue #${issueNumber} status to "${newStatus}"`);
+                      console.log(`✅ Updated issue #${issueNumber} status from "${currentStatus}" to "${newStatus}"`);
                     } catch (error) {
                       console.error(`Error updating issue #${issueNumber}:`, error);
                     }

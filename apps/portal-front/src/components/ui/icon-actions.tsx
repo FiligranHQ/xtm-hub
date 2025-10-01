@@ -14,6 +14,7 @@ import React, {
   ReactNode,
   useState,
 } from 'react';
+export { DropdownMenuItem as IconActionsItem } from 'filigran-ui/clients';
 
 interface IconActionsProps {
   children: ReactNode;

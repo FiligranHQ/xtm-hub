@@ -9,7 +9,7 @@ import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
-import { loadSubscription } from '../../subcription/subscription.domain';
+import { subscriptionApp } from '../../subcription/subscription.app';
 import {
   deleteDocument,
   getLabels,
@@ -98,7 +98,7 @@ const resolvers: Resolvers = {
     service_instance: ({ service_instance_id }, _, context) =>
       getServiceInstance(context, service_instance_id),
     subscription: ({ service_instance_id }, _, context) =>
-      loadSubscription(context, service_instance_id),
+      subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
   Query: {
     csvFeeds: async (_, input, context) =>

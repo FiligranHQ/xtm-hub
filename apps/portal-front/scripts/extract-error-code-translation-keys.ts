@@ -12,20 +12,15 @@ const ERROR_CODE_FILE_PATH = path.join(
   'error.code.ts'
 );
 
-const ENGLISH_TRANSLATION_FILE = path.join(
-  APPS_PATH,
-  'portal-front',
-  'messages',
-  'en.json'
-);
-
-const mergeWithExistingData = (errorTranslationKeys: string[]) => {
+const mergeWithExistingData = (
+  file: string,
+  errorTranslationKeys: string[]
+) => {
   try {
-    const existingData = fs.readFileSync(ENGLISH_TRANSLATION_FILE, 'utf8');
+    const existingData = fs.readFileSync(file, 'utf8');
     const existingValues = JSON.parse(existingData);
     const updatedValues = { ...existingValues['Error']['Server'] };
 
-    console.log('-- Add Frontend new keys --\n');
     let isNewKeyAdded = false;
     for (const key of errorTranslationKeys) {
       if (!updatedValues.hasOwnProperty(key)) {
@@ -35,15 +30,12 @@ const mergeWithExistingData = (errorTranslationKeys: string[]) => {
       }
     }
 
-    console.log('\n-- Remove Frontend useless keys --\n');
     for (const key in updatedValues) {
       if (!errorTranslationKeys.includes(key)) {
         console.log(`🧹 ${key}`);
         delete updatedValues[key];
       }
     }
-
-    console.log('\n-- End --\n');
 
     const sortedKeys = Object.keys(updatedValues).sort((a, b) =>
       a.toLowerCase().localeCompare(b.toLowerCase())
@@ -54,7 +46,7 @@ const mergeWithExistingData = (errorTranslationKeys: string[]) => {
     });
 
     fs.writeFileSync(
-      ENGLISH_TRANSLATION_FILE,
+      file,
       JSON.stringify(
         {
           ...existingValues,
@@ -82,7 +74,17 @@ const main = () => {
   const regex = /'([^']*)'/g;
   const matches = Array.from(fileContent.matchAll(regex), (m) => m[1]);
   const errorTranslationKeys = matches.filter((m) => m).map((m) => `${m}`);
-  mergeWithExistingData(errorTranslationKeys);
+  for (const locale of ['fr', 'en']) {
+    console.log(`-- PROCESS ${locale.toUpperCase()} --`);
+    const file = path.join(
+      APPS_PATH,
+      'portal-front',
+      'messages',
+      locale + '.json'
+    );
+    mergeWithExistingData(file, errorTranslationKeys);
+    console.log('-- END --');
+  }
 };
 
 main();

@@ -2,6 +2,7 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
+  RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
   ServiceInstance,
@@ -19,18 +20,20 @@ import ServicePrice, {
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { uploadNewFile } from './document/document.helper';
+import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
 import {
   getUserJoined,
   loadIsSubscribed,
   loadLinks,
+  loadPlatformConfigurationByServiceInstanceId,
   loadPublicServiceInstances,
   loadSeoServiceInstanceBySlug,
   loadSeoServiceInstances,
@@ -121,7 +124,8 @@ const resolvers: Resolvers = {
       if (!serviceInstance) {
         throw NotFoundError(ErrorCode.ServiceNotFound);
       }
-      return {
+      const result: SeoServiceInstance = {
+        __typename: 'SeoServiceInstance',
         ...serviceInstance,
         ...(serviceInstance.illustration_document_id && {
           illustration_document_id: toGlobalId(
@@ -135,8 +139,8 @@ const resolvers: Resolvers = {
             serviceInstance.logo_document_id
           ),
         }),
-        __typename: 'SeoServiceInstance',
-      } as SeoServiceInstance;
+      };
+      return result;
     },
   },
   Mutation: {
@@ -266,6 +270,53 @@ const resolvers: Resolvers = {
         await trx.rollback();
         logApp.error('Error while adding the new service.', error);
         throw mapToGraphQLError(error);
+      }
+    },
+    updatePlatformServiceMetadata: async (_, { input, document }, context) => {
+      try {
+        const updatedServiceInstance =
+          await serviceInstanceApp.updatePlatformServiceMetadata(
+            context,
+            input,
+            document
+          );
+
+        await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+
+        // Get platform configuration to return RegisteredPlatform
+        const config = await loadPlatformConfigurationByServiceInstanceId(
+          context,
+          updatedServiceInstance.id
+        );
+
+        if (!config) {
+          throw NotFoundError(ErrorCode.ServiceConfigurationNotFound);
+        }
+
+        const platformConfig = config.config as PlatformConfiguration;
+        return {
+          __typename: 'RegisteredPlatform',
+          id: updatedServiceInstance.id,
+          platform_id: platformConfig.platform_id,
+          title: platformConfig.platform_title,
+          url: platformConfig.platform_url,
+          contract: platformConfig.platform_contract,
+          version: platformConfig.platform_version,
+          identifier: updatedServiceInstance.identifier,
+          illustration_document_id:
+            updatedServiceInstance.illustration_document_id
+              ? toGlobalId(
+                  'Document',
+                  updatedServiceInstance.illustration_document_id
+                )
+              : null,
+        } as RegisteredPlatform;
+      } catch (error) {
+        console.error(error);
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.UpdatePlatformServiceMetadataError
+        );
       }
     },
   },

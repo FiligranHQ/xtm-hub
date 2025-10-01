@@ -69,6 +69,11 @@ input AddServiceInput {
   url: String
 }
 
+input UpdatePlatformServiceMetadataInput {
+  serviceInstanceId: ID!
+  name: String
+}
+
 type Mutation {
   editServiceInstance(id: ID!, name: String!): ServiceInstance
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
@@ -82,6 +87,17 @@ type Mutation {
     isLogo: Boolean
   ): ServiceInstance
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+  updatePlatformServiceMetadata(
+    input: UpdatePlatformServiceMetadataInput!
+    document: Upload
+  ): RegisteredPlatform
+    @auth(
+      requires: [
+        ADMINISTRATE_ORGANIZATION
+        MANAGE_OPENCTI_REGISTRATION
+        MANAGE_OPENAEV_REGISTRATION
+      ]
+    )
 }
 
 type Query {

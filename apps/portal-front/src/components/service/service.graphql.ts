@@ -29,6 +29,17 @@ export const ServiceAddPicture = graphql`
   }
 `;
 
+export const UpdatePlatformServiceMetadata = graphql`
+  mutation serviceUpdatePlatformServiceMetadataMutation(
+    $input: UpdatePlatformServiceMetadataInput!
+    $document: Upload
+  ) {
+    updatePlatformServiceMetadata(input: $input, document: $document) {
+      ...registerRegisteredPlatformFragment
+    }
+  }
+`;
+
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ID) {
     serviceInstanceById(service_instance_id: $service_instance_id) {

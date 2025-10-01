@@ -51,7 +51,9 @@ describe('User helpers', async () => {
       await removeUser(contextAdminUser, { email: newUser.email });
     });
     it('should add new user with Role admin organization with an new Organization', async () => {
-      const testMail = `testCreateNewUserFromInvitation${uuidv4()}@test-new-organization.fr`;
+      const organizationName = 'test-new-organization.fr';
+      const testMail = `testCreateNewUserFromInvitation${uuidv4()}@${organizationName}`;
+
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -72,7 +74,7 @@ describe('User helpers', async () => {
       expect(newUserPendingOrg.length).toBe(0);
 
       const newOrganization = await loadOrganizationBy({
-        name: 'test-new-organization',
+        name: organizationName,
       });
       const userOrgCapa = await loadUserCapabilitiesByOrganization(
         newUser.id as UserId,
@@ -100,7 +102,7 @@ describe('User helpers', async () => {
 
       // Delete corresponding in order to avoid issue with other tests
       await removeUser(contextAdminUser, { email: testMail });
-      await deleteOrganizationBy({ name: 'test-new-organization' });
+      await deleteOrganizationBy({ name: organizationName });
     });
 
     it('should create a new user with Role USER and should not add it to pending organization if orga does not exist', async () => {
@@ -121,13 +123,13 @@ describe('User helpers', async () => {
   });
 
   describe('delete last administrator prevention', () => {
-    const organizationName = 'test-new-organization';
+    const organizationName = 'test-new-organization.fr';
     let organization: Organization;
     let user: UserLoadUserBy;
     let anotherUser: UserLoadUserBy;
 
     beforeEach(async () => {
-      const userEmail = `testLastOrganizationAdministrator${uuidv4()}@${organizationName}.fr`;
+      const userEmail = `testLastOrganizationAdministrator${uuidv4()}@${organizationName}`;
       await createNewUserFromInvitation({
         email: userEmail,
       });
@@ -164,7 +166,7 @@ describe('User helpers', async () => {
       });
 
       it(`should not throw when another user in the organization has ${OrganizationCapability.AdministrateOrganization}`, async () => {
-        const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
+        const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}`;
         await createNewUserFromInvitation({
           email: anotherUserEmail,
         });

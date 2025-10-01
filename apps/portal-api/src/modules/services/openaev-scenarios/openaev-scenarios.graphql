@@ -23,7 +23,7 @@ input UpdateOpenAEVScenarioInput {
   product_version: String
 }
 
-type OpenAEVScenario implements Node {
+type OpenAEVScenario implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User

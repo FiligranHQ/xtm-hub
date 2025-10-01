@@ -50,6 +50,7 @@ type Mutation {
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
+  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addLabel(input: AddLabelInput!): Label!
   editLabel(id: ID!, input: EditLabelInput!): Label!
   deleteLabel(id: ID!): Label!
@@ -162,7 +163,7 @@ enum ServiceConfigurationStatus {
   inactive
 }
 
-type CsvFeed implements Node {
+type CsvFeed implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
@@ -178,7 +179,7 @@ type CsvFeed implements Node {
   updater_id: String
   download_number: Int!
   share_number: Int!
-  slug: String
+  slug: String!
   labels: [Label!]
   service_instance_id: String!
   service_instance: ServiceInstance
@@ -242,7 +243,7 @@ input UpdateCustomDashboardInput {
   product_version: String
 }
 
-type CustomDashboard implements Node {
+type CustomDashboard implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
@@ -307,6 +308,30 @@ enum DocumentOrdering {
   description
   created_at
   download_number
+}
+
+interface DocumentBase implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
 }
 
 type Document implements Node {
@@ -382,7 +407,7 @@ input UpdateOpenAEVScenarioInput {
   product_version: String
 }
 
-type OpenAEVScenario implements Node {
+type OpenAEVScenario implements DocumentBase & Node {
   id: ID!
   type: String!
   uploader: User
@@ -440,6 +465,7 @@ type RegisteredPlatform implements Node {
   platform_id: String!
   identifier: ServiceDefinitionIdentifier!
   version: String
+  illustration_document_id: String
 }
 
 input PlatformInput {
@@ -594,6 +620,11 @@ input AddServiceInput {
   price: Int
   organization_id: String
   url: String
+}
+
+input UpdatePlatformServiceMetadataInput {
+  serviceInstanceId: ID!
+  name: String
 }
 
 type SubscribedServiceInstanceConfiguration {
