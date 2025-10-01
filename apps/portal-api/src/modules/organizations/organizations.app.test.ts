@@ -1,10 +1,14 @@
+import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser, THALES_ORGA_ID } from '../../../tests/tests.const';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ADMIN_UUID } from '../../portal.const';
+import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { organizationsApp } from './organizations.app';
+import { insertNewOrganization } from './organizations.domain';
 
 describe('organizationsApp', () => {
   afterEach(async () => {
@@ -62,6 +66,38 @@ describe('organizationsApp', () => {
         user_id: ADMIN_UUID,
         domains: ['test.com', 'test.fr'],
       });
+    });
+
+    it('should throw if an organization with the same domain exists', async () => {
+      await insertNewOrganization({
+        id: uuidv4() as OrganizationId,
+        name: 'domain1.io',
+        domains: ['domain1.io', 'domain2.io'],
+      });
+
+      const call = organizationsApp.createOrganization(contextAdminUser, {
+        domains: ['domain1.io'],
+        name: 'otherDomain.io',
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.OrganizationSameDomainExists
+      );
+    });
+
+    it('should throw if an organization with the same name exists', async () => {
+      await insertNewOrganization({
+        id: uuidv4() as OrganizationId,
+        name: 'alreadyExistingOrga',
+        domains: ['alreadyExistingOrga.io'],
+      });
+
+      const call = organizationsApp.createOrganization(contextAdminUser, {
+        domains: ['whatever.io'],
+        name: 'alreadyExistingOrga',
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.OrganizationSameNameExists);
     });
   });
 });

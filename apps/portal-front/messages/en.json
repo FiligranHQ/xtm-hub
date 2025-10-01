@@ -96,6 +96,7 @@
       "OPENAEV_SCENARIO_INSERTION_ERROR": "An error occurred while creating an OpenAEV Scenario",
       "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "An OpenAEV scenario with the same slug already exists",
       "OPENAEV_SCENARIO_UPDATE_ERROR": "An error occurred while updating an OpenAEV Scenario",
+      "ORGANIZATION_SAME_DOMAIN_EXISTS": "An organization with the same domain already exists",
       "ORGANIZATION_SAME_NAME_EXISTS": "An organization with the same name already exists",
       "PLATFORM_NOT_REGISTERED": "The platform is not registered",
       "PLATFORM_TYPE_NOT_SUPPORTED": "The platform type is not supported",

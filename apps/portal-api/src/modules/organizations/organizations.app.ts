@@ -16,6 +16,7 @@ import {
   insertNewOrganization,
   updateOrganization,
 } from './organizations.domain';
+import { hasDomainOverlap } from './organizations.helper';
 
 export const organizationsApp = {
   async updateOrganization(
@@ -49,6 +50,11 @@ export const organizationsApp = {
         .first('id');
     if (existingOrganization?.id) {
       throw new Error(ErrorCode.OrganizationSameNameExists);
+    }
+
+    const overlappingDomains = await hasDomainOverlap(input.domains);
+    if (overlappingDomains.length > 0) {
+      throw new Error(ErrorCode.OrganizationSameDomainExists);
     }
 
     const [addOrganization] = await insertNewOrganization({

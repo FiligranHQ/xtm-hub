@@ -96,6 +96,7 @@
       "OPENAEV_SCENARIO_INSERTION_ERROR": "Une erreur s'est produite lors de la création d'un scénario OpenAEV",
       "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "Un scénario OpenAEV avec le même slug existe déjà",
       "OPENAEV_SCENARIO_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour d'un scénario OpenAEV",
+      "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
       "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
       "PLATFORM_NOT_REGISTERED": "La plateforme n'est pas enregistrée",
       "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
@@ -401,9 +402,8 @@
     },
     "ComingSoon": "Bientôt disponible",
     "Connectors": {
-      "Name": "Connecteurs",
-      "Description": "Explorer une gamme de connecteurs OpenCTI partagés par l'équipe Filigran",
       "DataImport": "Importation de données",
+      "Description": "Explorer une gamme de connecteurs OpenCTI partagés par l'équipe Filigran",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Dernière vérification",
       "Search": "Rechercher un connecteur par nom...",
