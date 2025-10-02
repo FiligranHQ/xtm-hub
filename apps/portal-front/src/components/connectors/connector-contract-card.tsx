@@ -5,7 +5,9 @@ import {
   ingestionConnectorTypeMetadata,
 } from '@/components/connectors/connector.utils';
 import BadgeOverflowCounter from '@/components/ui/badge-overflow-counter';
+import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { Contract } from '@/utils/connectors/connector.model';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
 import Image from 'next/image';
@@ -15,10 +17,12 @@ import { FunctionComponent } from 'react';
 interface ConnectorContractCardProps {
   contract: Contract;
   version?: string;
+  metadataBase: string;
 }
 
 const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
   contract,
+  metadataBase,
 }) => {
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
@@ -75,6 +79,10 @@ const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
               }
             </Badge>
           )}
+          <ShareLinkButton
+            documentId={contract.slug}
+            url={`${metadataBase}${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-connectors/${contract?.slug}`}
+          />
         </div>
       </Link>
     </li>

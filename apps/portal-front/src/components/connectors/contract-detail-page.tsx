@@ -2,7 +2,9 @@ import { getBadgesValues } from '@/components/connectors/connector.utils';
 import ContractDetailsInformationPage from '@/components/connectors/contract-details';
 import BadgeOverflowCounter from '@/components/ui/badge-overflow-counter';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { Contract } from '@/utils/connectors/connector.model';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { VerifiedIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -10,10 +12,12 @@ import React from 'react';
 
 interface ContractDetailPageProps {
   contract: Contract;
+  metadataBase: string;
 }
 
 const ContractDetailPage: React.FC<ContractDetailPageProps> = ({
   contract,
+  metadataBase,
 }) => {
   const t = useTranslations();
 
@@ -57,6 +61,12 @@ const ContractDetailPage: React.FC<ContractDetailPageProps> = ({
                   {t('Utils.Verified')}
                 </div>
               )}
+              <div className="ml-auto">
+                <ShareLinkButton
+                  documentId={contract.slug}
+                  url={`${metadataBase}${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-connectors/${contract?.slug}`}
+                />
+              </div>
             </div>
 
             <div className="w-full mt-s mb-xs">
