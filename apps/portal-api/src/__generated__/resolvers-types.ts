@@ -1426,6 +1426,11 @@ export type Subscription = {
 };
 
 
+export type SubscriptionUserArgs = {
+  organizationId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type SubscriptionUserPendingArgs = {
   organizationId: Scalars['ID']['input'];
 };
@@ -2572,7 +2577,7 @@ export type SubscriptionResolvers<ContextType = PortalContext, ParentType extend
   ActionTracking?: SubscriptionResolver<Maybe<ResolversTypes['TrackingSubscription']>, "ActionTracking", ParentType, ContextType>;
   MeUser?: SubscriptionResolver<Maybe<ResolversTypes['MeUserSubscription']>, "MeUser", ParentType, ContextType>;
   ServiceInstance?: SubscriptionResolver<Maybe<ResolversTypes['ServiceInstanceSubscription']>, "ServiceInstance", ParentType, ContextType>;
-  User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType>;
+  User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType, Partial<SubscriptionUserArgs>>;
   UserPending?: SubscriptionResolver<Maybe<ResolversTypes['UserPendingSubscription']>, "UserPending", ParentType, ContextType, RequireFields<SubscriptionUserPendingArgs, 'organizationId'>>;
 }>;
 

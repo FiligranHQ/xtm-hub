@@ -1,3 +1,4 @@
+import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql';
 import { PubSub, withFilter } from 'graphql-subscriptions';
 import { ActionType, DatabaseType } from '../knexfile';
 import { Node } from './__generated__/resolvers-types';
@@ -30,9 +31,19 @@ export const dispatch = async (
 export const listen = (
   context: PortalContext,
   topics: string[],
+  info?: GraphQLResolveInfo,
   filter?: (payload: unknown) => boolean
 ) => {
   const iteratorFn = () => pubsub.asyncIterator(topics);
+  const getRequestedFields = () => {
+    if (!info) return null;
+
+    const selections = info.fieldNodes[0].selectionSet?.selections || [];
+    return selections
+      .filter((sel): sel is FieldNode => sel.kind === Kind.FIELD)
+      .map((sel) => sel.name.value);
+  };
+
   const filterFn = async (event: PubEvent) => {
     try {
       const [topic] = Object.keys(event);
@@ -40,6 +51,12 @@ export const listen = (
       if (!payload) return false;
 
       const values = Object.values(event);
+      const [action] = Object.keys(payload);
+      const requestedFields = getRequestedFields();
+
+      if (requestedFields && !requestedFields.includes(action)) {
+        return false;
+      }
 
       const isAccessible = await isNodeAccessible(
         context.user,
@@ -47,10 +64,9 @@ export const listen = (
         values[0]
       );
       const isFiltered = filter ? filter(payload) : true;
-
       return isAccessible && isFiltered;
     } catch (error) {
-      logApp.error('Error while sending SSE payload', error);
+      logApp.error('Error while sending SSE payload', { error });
     }
   };
   return withFilter(iteratorFn, filterFn)();

@@ -652,7 +652,7 @@ type ServiceInstanceSubscription {
 type Subscription {
   ServiceInstance: ServiceInstanceSubscription
   ActionTracking: TrackingSubscription
-  User: UserSubscription
+  User(organizationId: ID): UserSubscription
   MeUser: MeUserSubscription
   UserPending(organizationId: ID!): UserPendingSubscription
 }

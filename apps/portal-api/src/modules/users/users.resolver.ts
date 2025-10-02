@@ -6,6 +6,7 @@ import {
   Resolvers,
   User,
   UserPendingSubscription,
+  UserSubscription,
 } from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -383,21 +384,33 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     User: {
-      subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['User']),
-      }),
+      subscribe: (_, args, context, info) => {
+        return {
+          [Symbol.asyncIterator]: () =>
+            listen(context, ['User'], info, (payload: UserSubscription) => {
+              if (!args.organizationId || payload.merge) {
+                return true;
+              }
+              const user = payload.add ?? payload.delete ?? payload.edit;
+              return user.organizations
+                .map((org) => org.id)
+                .includes(extractId(args.organizationId));
+            }),
+        };
+      },
     },
     MeUser: {
-      subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['MeUser']),
+      subscribe: (_, __, context, info) => ({
+        [Symbol.asyncIterator]: () => listen(context, ['MeUser'], info),
       }),
     },
     UserPending: {
-      subscribe: (_, args, context) => ({
+      subscribe: (_, args, context, info) => ({
         [Symbol.asyncIterator]: () =>
           listen(
             context,
             ['UserPending'],
+            info,
             (payload: UserPendingSubscription) => {
               return (
                 payload.delete.pending_organization_id ===
