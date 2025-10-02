@@ -1,10 +1,14 @@
 import { dbTx } from '../../../../knexfile';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { createDocumentWithChildren } from '../document/document.domain';
-import { Upload } from '../document/document.helper';
+import {
+  loadDocumentWithCountersById,
+  Upload,
+} from '../document/document.helper';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA,
@@ -51,5 +55,16 @@ export const OpenAEVScenariosApp = {
       await trx.rollback();
       throw error;
     }
+  },
+
+  loadOpenAEVScenario: async (
+    context: PortalContext,
+    documentId: DocumentId
+  ) => {
+    return loadDocumentWithCountersById(
+      context,
+      documentId,
+      OPENAEV_SCENARIO_METADATA
+    );
   },
 };

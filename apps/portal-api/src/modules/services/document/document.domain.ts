@@ -11,6 +11,7 @@ import {
   CsvFeedConnection,
   CustomDashboardConnection,
   DocumentConnection,
+  Document as DocumentResolverType,
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
   Organization,
@@ -43,7 +44,6 @@ import {
 } from './document.helper';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
 import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';

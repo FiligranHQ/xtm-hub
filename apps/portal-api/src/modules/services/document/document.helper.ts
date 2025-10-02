@@ -9,8 +9,15 @@ import {
 import Label from '../../../model/kanel/public/Label';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
+import { logApp } from '../../../utils/app-logger.util';
 import { extractId } from '../../../utils/utils';
-import { createDocument, sendFileToS3 } from './document.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import {
+  createDocument,
+  loadDocumentById,
+  sendFileToS3,
+} from './document.domain';
 
 export type Document = DocumentModel & { labels: Label[] };
 export type FullDocumentMutator = Partial<DocumentModel> & {
@@ -171,4 +178,28 @@ export const deleteDocuments = async () => {
 
 export const deleteDocumentBy = async (field: DocumentMutator) => {
   return dbUnsecure<Document>('Document').where(field).delete('*');
+};
+
+export const loadDocumentWithCountersById = async <T extends Document>(
+  context: PortalContext,
+  id: string,
+  include_metadata: string[] = []
+): Promise<T> => {
+  const document: T = await loadDocumentById(context, id, include_metadata);
+
+  let download_number = 0;
+  let share_number = 0;
+  try {
+    [download_number, share_number] = await Promise.all([
+      telemetryApp.countEventsByDocumentId(TelemetryEventType.DOWNLOAD, id),
+      telemetryApp.countEventsByDocumentId(TelemetryEventType.SHARE, id),
+    ]);
+  } catch (error) {
+    logApp.error('Unable to fetch counters from elastic search', error);
+  }
+
+  document.download_number = download_number;
+  document.share_number = share_number;
+
+  return document;
 };

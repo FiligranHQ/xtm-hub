@@ -15,7 +15,6 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
-  loadDocumentById,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentBySlug,
@@ -108,7 +107,7 @@ const resolvers: Resolvers = {
         input
       ),
     csvFeed: async (_, { id }, context) =>
-      loadDocumentById(context, extractId<DocumentId>(id)),
+      csvFeedsApp.loadCsvFeed(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
       loadSeoDocumentsByServiceSlug(
         CSV_FEED_DOCUMENT_TYPE,

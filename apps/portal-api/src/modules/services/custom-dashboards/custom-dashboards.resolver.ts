@@ -15,7 +15,6 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
-  loadDocumentById,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentBySlug,
@@ -79,10 +78,9 @@ const resolvers: Resolvers = {
       );
     },
     customDashboard: async (_, { id }, context) =>
-      loadDocumentById(
+      CustomDashboardsApp.loadCustomDashboard(
         context,
-        extractId<DocumentId>(id),
-        CUSTOM_DASHBOARD_METADATA
+        extractId<DocumentId>(id)
       ),
   },
   Mutation: {

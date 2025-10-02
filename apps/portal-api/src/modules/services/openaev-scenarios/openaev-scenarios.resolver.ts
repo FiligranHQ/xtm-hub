@@ -15,7 +15,6 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
-  loadDocumentById,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentBySlug,
@@ -78,10 +77,9 @@ const resolvers: Resolvers = {
       );
     },
     openAEVScenario: async (_, { id }, context) =>
-      loadDocumentById(
+      OpenAEVScenariosApp.loadOpenAEVScenario(
         context,
-        extractId<DocumentId>(id),
-        OPENAEV_SCENARIO_METADATA
+        extractId<DocumentId>(id)
       ),
   },
   Mutation: {
