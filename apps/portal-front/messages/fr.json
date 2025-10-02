@@ -552,9 +552,9 @@
     "ShareableResources": {
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
       "Deploy": {
-        "DeployDescriptionNoPlatform": "Vous devez être administrateur ou contactez votre administrateur pour enregistrer votre plateforme {platformIdentifier}.",
-        "DeployDescriptionNoPlatformIllustration": "{platformIdentifier} S'enregistrer dans l'illustration du Hub XTM",
-        "DeployDescriptionNoPlatformThen": "L'enregistrement peut être fait sur la page Filigran Experience dans la section suivante :",
+        "DeployDescriptionNoPlatform": "Vous n'avez pas de plateforme {platformIdentifier} enregistrée.",
+        "DeployDescriptionNoPlatformIllustration": "Illustration de l'enregistrement XTM Hub",
+        "DeployDescriptionNoPlatformThen": "Pour déployer une ressource, vous devez d'abord enregistrer votre plateforme {platformIdentifier}.\n\nÉtapes d'enregistrement :\n1. Assurez-vous d'être administrateur {platformIdentifier}, ou contactez votre administrateur pour obtenir de l'aide.\n2. Connectez-vous à votre plateforme {platformIdentifier} et accédez aux paramètres &gt; Expérience Filigran.\n3. Cliquez sur le bouton &quot;Enregistrer&quot; pour terminer l'enregistrement comme dans l'image ci-dessous",
         "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",

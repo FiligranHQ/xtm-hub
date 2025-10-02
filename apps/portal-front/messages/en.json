@@ -553,9 +553,9 @@
     "ShareableResources": {
       "Copied": "URL copied! You can now paste and share it.",
       "Deploy": {
-        "DeployDescriptionNoPlatform": "You must be an administrator, or contact your administrator, to register your {platformIdentifier} platform",
-        "DeployDescriptionNoPlatformIllustration": "{platformIdentifier} Register in XTM Hub illustration",
-        "DeployDescriptionNoPlatformThen": "The registration can be completed through the Filigran Experience page in the section below:",
+        "DeployDescriptionNoPlatform": "You don't have any registered {platformIdentifier} platform",
+        "DeployDescriptionNoPlatformIllustration": "Register in XTM Hub illustration",
+        "DeployDescriptionNoPlatformThen": "To deploy a resource, you must first register your {platformIdentifier} platform.\n\nRegistration steps:\n1. Ensure you are an {platformIdentifier} administrator, or contact your administrator for assistance.\n2. Log in to your {platformIdentifier} platform and navigate to Settings &gt; Filigran Experience.\n3. Click the &quot;Register&quot; button to complete the registration like in the screenshot below",
         "DeployDescriptionOnePlatform": "Do you want to deploy it in the {platformName} platform?",
         "DeployPlatform": "Deploy in {platformName}",
         "DeployQuestionTag": "In which {platformType} platform do you want to deploy it?",
