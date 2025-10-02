@@ -52,6 +52,15 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
   useEventListener('resize', updateVisibility);
 
   const hiddenCount = badges.length - visibleTags;
+  const firstHiddenBadge =
+    visibleTags < badges.length ? badges[visibleTags] : null;
+  const remainingHiddenCount = hiddenCount - 1;
+  const truncateText = (text: string) => {
+    const firstWord = text.split(' ')[0];
+    if (firstWord === text) return text;
+    return firstWord + '…';
+  };
+
   return (
     <div
       ref={containerRef}
@@ -72,9 +81,16 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge className="whitespace-nowrap cursor-pointer">
-                +{hiddenCount}...
-              </Badge>
+              <span className="inline-flex items-center gap-s cursor-pointer ">
+                <Badge
+                  className="uppercase"
+                  color={firstHiddenBadge?.color}>
+                  {firstHiddenBadge && truncateText(firstHiddenBadge.name)}
+                </Badge>
+                {remainingHiddenCount > 0 && (
+                  <Badge>{remainingHiddenCount}</Badge>
+                )}
+              </span>
             </TooltipTrigger>
             <TooltipContent className="bg-gray-50">
               <div className="flex gap-s">
