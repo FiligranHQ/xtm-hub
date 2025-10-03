@@ -6,6 +6,7 @@
   "schedule": ["on sunday after 4am and before 6am"],
 
   "labels": ["dependencies", "filigran team"],
+  "ignorePaths": ["charts/**"],
   "prConcurrentLimit": 5,
   "rebaseWhen": "behind-base-branch",
 
@@ -16,6 +17,12 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "groupName": "devDependencies (non-major)",
       "groupSlug": "dev-dependencies-non-major"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["elasticsearch", "docker.elastic.co/elasticsearch/elasticsearch", "docker.elastic.co/kibana/kibana"],
+      "enabled": false,
+      "description": "Ignore Elasticsearch Docker image updates"
     }
   ],
   "lockFileMaintenance": {
