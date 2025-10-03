@@ -23,7 +23,7 @@ export function RelayProvider({ children }: RelayProviderProps) {
     } else {
       return createClientSideRelayEnvironment();
     }
-  }, []);
+  }, [observer]);
 
   const scriptIndex = useRef(0);
 

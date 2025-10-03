@@ -133,7 +133,15 @@ const getPublicServices = (
         commitMutation('REQUESTED', t('Service.SubscriptionRequestSuccessful'));
       }
     },
-    [connectionID]
+    [
+      connectionID,
+      commitSubscriptionCreateMutation,
+      handleError,
+      handleSuccess,
+      onUpdate,
+      router,
+      t,
+    ]
   );
 
   const publicServices: serviceList_fragment$data[] =
