@@ -1,33 +1,25 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
-  ],
-  "labels": [
-    "dependencies",
-    "filigran team"
-  ],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json ",
+  "extends": ["config:base"],
+
+  "timezone": "Europe/Paris",
+  "schedule": ["on sunday after 4am and before 6am"],
+
+  "labels": ["dependencies", "filigran team"],
   "prConcurrentLimit": 5,
   "rebaseWhen": "behind-base-branch",
+
   "packageRules": [
     {
-      "schedule": "on sunday after 4am and before 5am",
-      "description": "auto merge and batch on sunday morning, non-major update of dev dependencies",
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest"
-      ],
+      "description": "batch on sunday morning, non-major update of dev dependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "groupName": "devDependencies (non-major)",
       "groupSlug": "dev-dependencies-non-major"
     }
   ],
   "lockFileMaintenance": {
-    "schedule": "on sunday after 5am and before 6am",
-    "enabled": true
+    "enabled": true,
+    "schedule": ["on sunday after 5am and before 6am"]
   }
 }
