@@ -60,7 +60,7 @@ services:
 
   portal-kibana:
     container_name: portal-kibana
-    image: docker.elastic.co/kibana/kibana:8.18.5
+    image: docker.elastic.co/kibana/kibana:8.19.4
     environment:
       - ELASTICSEARCH_HOSTS=http://portal-elasticsearch:9200
     restart: unless-stopped
