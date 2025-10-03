@@ -346,16 +346,11 @@ describe('Documents loading', () => {
     expect(response?.totalCount).toStrictEqual('1');
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
   });
+});
 
-  it('should send a share telemetry event when incrementing shared counter', async () => {
-    vi.useFakeTimers();
-    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-    vi.setSystemTime(date);
-    const telemetrySpy = vi
-      .spyOn(telemetryApp, 'sendTelemetryEvent')
-      .mockResolvedValue();
-    const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
-
+describe('increment shared counter', () => {
+  const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
+  beforeAll(async () => {
     const trx = await dbTx();
     await createDocument(
       {
@@ -375,6 +370,15 @@ describe('Documents loading', () => {
       trx
     );
     await trx.commit();
+  });
+
+  it('should send a share telemetry event for a logged user', async () => {
+    vi.useFakeTimers();
+    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+    vi.setSystemTime(date);
+    const telemetrySpy = vi
+      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .mockResolvedValue();
 
     await documentResolver.Mutation.incrementShareNumberDocument(
       {},
@@ -391,6 +395,33 @@ describe('Documents loading', () => {
       organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
+      service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+      service_type: TelemetryEventServiceType.CSV_FEEDS,
+      resource_id: documentId,
+      resource_title: 'csvfilename',
+    });
+  });
+
+  it('should send a share telemetry event for an anonymous user', async () => {
+    vi.useFakeTimers();
+    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+    vi.setSystemTime(date);
+    const telemetrySpy = vi
+      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .mockResolvedValue();
+
+    await documentResolver.Mutation.incrementShareNumberDocument(
+      {},
+      {
+        documentId: toGlobalId('DocumentId', documentId),
+      },
+      {}
+    );
+    expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+      '@timestamp': '2025-02-03T13:12:15.000Z',
+      event_type: TelemetryEventType.SHARE,
+      organization_type: 'Public',
+      source: TELEMETRY_SOURCE,
       service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,

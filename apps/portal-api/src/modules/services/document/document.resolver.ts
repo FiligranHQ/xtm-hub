@@ -115,7 +115,6 @@ const resolvers: Resolvers = {
         const [document] = await incrementShareNumber(
           extractId<DocumentId>(documentId)
         );
-
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
@@ -124,13 +123,15 @@ const resolvers: Resolvers = {
             );
 
           if (shouldSendEventForService(serviceDefinition.identifier)) {
-            const selectedOrga = await loadOrganizationBy({
-              id: context.user.selected_organization_id,
-            });
+            const selectedOrga = context.user
+              ? await loadOrganizationBy({
+                  id: context.user.selected_organization_id,
+                })
+              : undefined;
 
             const shareEvent = buildShareEvent(
               selectedOrga,
-              context.user.id,
+              context.user?.id,
               serviceDefinition.identifier,
               document.id,
               document.file_name
