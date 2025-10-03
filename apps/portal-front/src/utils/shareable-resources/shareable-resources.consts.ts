@@ -30,10 +30,10 @@ export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
     description:
       '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
   },
-  [ServiceSlug.OPEN_BAS_SCENARIOS]: {
+  [ServiceSlug.OPEN_AEV_SCENARIOS]: {
     redirectPath: 'openaev_scenarios',
     description:
-      '. Discover more widgets like this in our OpenBAS Scenarios Library, available for download on the XTM Hub.',
+      '. Discover more widgets like this in our OpenAEV Scenarios Library, available for download on the XTM Hub.',
   },
 };
 
@@ -63,7 +63,6 @@ export const localeMap: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'CsvFeed',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'CustomDashboards',
   [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
-
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {

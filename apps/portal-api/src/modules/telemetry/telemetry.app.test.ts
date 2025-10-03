@@ -103,7 +103,7 @@ describe('TelemetryApp', () => {
         config: {
           token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
           platform_id: platform_id,
-          platform_url: 'https://testing.obas.staging.filigran.io/',
+          platform_url: 'https://testing.oaev.staging.filigran.io/',
           registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
           platform_title: 'Open AEV Instance',
           platform_version: '1.0.0',
@@ -165,7 +165,7 @@ describe('TelemetryApp', () => {
         config: {
           token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
           platform_id: platformId,
-          platform_url: 'https://testing.obas.staging.filigran.io/',
+          platform_url: 'https://testing.oaev.staging.filigran.io/',
           registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
           platform_title: 'Open AEV Instance',
           platform_contract: 'EE',
