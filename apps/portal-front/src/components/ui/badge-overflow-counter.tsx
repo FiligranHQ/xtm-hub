@@ -1,5 +1,4 @@
 'use client';
-
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -26,32 +25,53 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
   badges = [],
   className,
 }) => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [visibleTags, setVisibleTags] = useState<number>(badges.length);
+
   const updateVisibility = () => {
-    if (!containerRef.current) {
+    if (!containerRef.current || badges.length === 0) {
       return;
     }
-    const container: HTMLDivElement = containerRef.current;
-    let totalWidth = 56;
-    let lastVisibleIndex = badges.length;
-    const children = Array.from(container.children) as unknown as HTMLElement[];
-    for (let i = 0; i < children.length; i++) {
-      totalWidth += children[i]!.offsetWidth;
-      if (totalWidth > container.offsetWidth) {
-        lastVisibleIndex = i;
-        break;
+
+    const container = containerRef.current;
+    const counterBadgeWidth = 56;
+    let totalWidth = 0;
+    let lastVisibleIndex = 1;
+    const children = Array.from(container.children) as HTMLElement[];
+
+    for (let i = 0; i < badges.length; i++) {
+      if (children[i]) {
+        totalWidth += children[i]!.offsetWidth + 8;
+
+        if (i > 0 && totalWidth + counterBadgeWidth > container.offsetWidth) {
+          break;
+        }
+        lastVisibleIndex = i + 1;
       }
     }
+
+    if (lastVisibleIndex === badges.length - 1 && badges.length > 1) {
+      if (totalWidth > container.offsetWidth) {
+        lastVisibleIndex = 1;
+      }
+    }
+
     setVisibleTags(lastVisibleIndex);
   };
 
   useEffect(() => {
     updateVisibility();
   }, [badges]);
+
   useEventListener('resize', updateVisibility);
 
   const hiddenCount = badges.length - visibleTags;
+  const firstBadge = badges[0];
+
+  if (badges.length === 0) {
+    return null;
+  }
+
   return (
     <div
       ref={containerRef}
@@ -59,35 +79,54 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
         'flex gap-s overflow-hidden flex-1 items-center',
         className
       )}>
-      {badges.map(({ id, name, color }, index) => (
+      {firstBadge && (
         <Badge
-          className="whitespace-nowrap aria-hidden:invisible aria-hidden:absolute uppercase"
+          className="uppercase min-w-0 max-w-full"
+          key={firstBadge.id}
+          color={firstBadge.color}
+          title={firstBadge.name}>
+          <span className="truncate block">{firstBadge.name}</span>
+        </Badge>
+      )}
+
+      {badges.slice(1, visibleTags).map(({ id, name, color }, index) => (
+        <Badge
+          className="whitespace-nowrap uppercase aria-hidden:invisible aria-hidden:absolute"
           aria-hidden={index >= visibleTags}
           key={id}
           color={color}>
           {name}
         </Badge>
       ))}
+
+      {badges.slice(visibleTags).map(({ id, name, color }) => (
+        <Badge
+          className="whitespace-nowrap uppercase invisible absolute"
+          aria-hidden={true}
+          key={id}
+          color={color}>
+          {name}
+        </Badge>
+      ))}
+
       {hiddenCount > 0 && (
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge className="whitespace-nowrap cursor-pointer">
+              <Badge className="whitespace-nowrap cursor-pointer shrink-0">
                 +{hiddenCount}...
               </Badge>
             </TooltipTrigger>
             <TooltipContent className="bg-gray-50">
-              <div className="flex gap-s">
-                {badges.map(({ id, name, color }, index) =>
-                  index >= visibleTags ? (
-                    <Badge
-                      className="uppercase"
-                      key={id}
-                      color={color}>
-                      {name}
-                    </Badge>
-                  ) : null
-                )}
+              <div className="flex flex-wrap gap-s max-w-sm">
+                {badges.slice(visibleTags).map(({ id, name, color }) => (
+                  <Badge
+                    className="uppercase"
+                    key={id}
+                    color={color}>
+                    {name}
+                  </Badge>
+                ))}
               </div>
             </TooltipContent>
           </Tooltip>
