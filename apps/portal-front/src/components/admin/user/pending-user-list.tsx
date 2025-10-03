@@ -34,6 +34,7 @@ import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import {
   FunctionComponent,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -138,81 +139,86 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
   );
   useSubscription(pendingUserListSubscriptionConfig);
 
-  function rejectUser(row: userList_fragment$data) {
-    removeUserMutation({
-      variables: {
-        user_id: row.id,
-        organization_id: me!.selected_organization_id,
-      },
-    });
-    return undefined;
-  }
+  const rejectUser = useCallback(
+    (row: userList_fragment$data) => {
+      removeUserMutation({
+        variables: {
+          user_id: row.id,
+          organization_id: me!.selected_organization_id,
+        },
+      });
+    },
+    [removeUserMutation, me]
+  );
 
-  const columns: ColumnDef<userList_fragment$data>[] = [
-    {
-      accessorKey: 'email',
-      id: 'email',
-      header: t('UserListPage.Email'),
-      cell: ({ row }) => {
-        return <span className="truncate">{row.original.email}</span>;
+  const columns: ColumnDef<userList_fragment$data>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'email',
+        id: 'email',
+        header: t('UserListPage.Email'),
+        cell: ({ row }) => {
+          return <span className="truncate">{row.original.email}</span>;
+        },
       },
-    },
-    {
-      accessorKey: 'first_name',
-      id: 'first_name',
-      header: t('UserListPage.FirstName'),
-      cell: ({ row }) => {
-        return <span className="truncate">{row.original.first_name}</span>;
+      {
+        accessorKey: 'first_name',
+        id: 'first_name',
+        header: t('UserListPage.FirstName'),
+        cell: ({ row }) => {
+          return <span className="truncate">{row.original.first_name}</span>;
+        },
       },
-    },
-    {
-      accessorKey: 'last_name',
-      id: 'last_name',
-      header: t('UserListPage.LastName'),
-      cell: ({ row }) => {
-        return <span className="truncate">{row.original.last_name}</span>;
+      {
+        accessorKey: 'last_name',
+        id: 'last_name',
+        header: t('UserListPage.LastName'),
+        cell: ({ row }) => {
+          return <span className="truncate">{row.original.last_name}</span>;
+        },
       },
-    },
-    {
-      accessorKey: 'actions',
-      id: 'actions',
-      size: 40,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      header: undefined,
-      cell: ({ row }) => {
-        return (
-          <>
-            <AlertDialogComponent
-              AlertTitle={t('PendingUserListPage.WarningUserRejection.Title')}
-              // description={t('PendingUserListPage.WarningUserRejectionDescription')}
-              actionButtonText={t(
-                'PendingUserListPage.WarningUserRejection.Confirm'
-              )}
-              triggerElement={
-                <Button
-                  variant="ghost-destructive"
-                  size="icon"
-                  className="border m-1">
-                  <CloseIcon className="h-4 w-4" />
-                </Button>
-              }
-              onClickContinue={() => rejectUser!(row.original)}>
-              {t('PendingUserListPage.WarningUserRejection.Description')}
-            </AlertDialogComponent>
-            <Button
-              variant="ghost-primary"
-              size="icon"
-              className="border"
-              onClick={() => setUserEdit(row.original)}>
-              <CheckIcon className="h-4 w-4" />
-            </Button>
-          </>
-        );
+      {
+        accessorKey: 'actions',
+        id: 'actions',
+        size: 40,
+        enableHiding: false,
+        enableSorting: false,
+        enableResizing: false,
+        header: undefined,
+        cell: ({ row }) => {
+          return (
+            <>
+              <AlertDialogComponent
+                AlertTitle={t('PendingUserListPage.WarningUserRejection.Title')}
+                // description={t('PendingUserListPage.WarningUserRejectionDescription')}
+                actionButtonText={t(
+                  'PendingUserListPage.WarningUserRejection.Confirm'
+                )}
+                triggerElement={
+                  <Button
+                    variant="ghost-destructive"
+                    size="icon"
+                    className="border m-1">
+                    <CloseIcon className="h-4 w-4" />
+                  </Button>
+                }
+                onClickContinue={() => rejectUser!(row.original)}>
+                {t('PendingUserListPage.WarningUserRejection.Description')}
+              </AlertDialogComponent>
+              <Button
+                variant="ghost-primary"
+                size="icon"
+                className="border"
+                onClick={() => setUserEdit(row.original)}>
+                <CheckIcon className="h-4 w-4" />
+              </Button>
+            </>
+          );
+        },
       },
-    },
-  ];
+    ],
+    [t, rejectUser, setUserEdit]
+  );
 
   useEffect(() => {
     if (columnOrder.length === 0) {

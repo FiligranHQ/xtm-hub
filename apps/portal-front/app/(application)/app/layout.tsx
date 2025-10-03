@@ -23,6 +23,8 @@ import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
   return {

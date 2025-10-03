@@ -12,6 +12,8 @@ import { serviceList_fragment$data } from '@generated/serviceList_fragment.graph
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const isConnectorPageEnable = await isFeatureEnabled(
     FeatureFlag.CONNECTORS_PAGE
