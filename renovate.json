@@ -22,7 +22,6 @@
     }
   ],
   "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["on sunday after 5am and before 6am"]
+    "enabled": true
   }
 }
