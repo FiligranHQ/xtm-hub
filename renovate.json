@@ -1,15 +1,11 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json ",
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
-
   "timezone": "Europe/Paris",
-  "schedule": ["on sunday after 4am and before 6am"],
-
   "labels": ["dependencies", "filigran team"],
   "ignorePaths": ["charts/**"],
   "prConcurrentLimit": 5,
   "rebaseWhen": "behind-base-branch",
-
   "packageRules": [
     {
       "description": "batch on sunday morning, non-major update of dev dependencies",
