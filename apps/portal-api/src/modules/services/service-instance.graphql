@@ -91,13 +91,7 @@ type Mutation {
     input: UpdatePlatformServiceMetadataInput!
     document: Upload
   ): RegisteredPlatform
-    @auth(
-      requires: [
-        ADMINISTRATE_ORGANIZATION
-        MANAGE_OPENCTI_REGISTRATION
-        MANAGE_OPENAEV_REGISTRATION
-      ]
-    )
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
 
 type Query {

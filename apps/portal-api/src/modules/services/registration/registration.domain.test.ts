@@ -158,7 +158,6 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
-          platformIdentifier: PlatformIdentifier.Opencti,
         }
       );
 
@@ -175,7 +174,6 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
-          platformIdentifier: PlatformIdentifier.Opencti,
         }
       );
 
@@ -196,7 +194,6 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
-          platformIdentifier: PlatformIdentifier.Opencti,
         });
 
         expect(updateConfigurationSpy).toHaveBeenCalledWith(
@@ -227,7 +224,6 @@ describe('Registration domain', () => {
             configuration,
             serviceInstanceId,
             targetOrganizationId,
-            platformIdentifier: PlatformIdentifier.Opencti,
           }
         );
 
@@ -256,7 +252,6 @@ describe('Registration domain', () => {
             configuration,
             serviceInstanceId,
             targetOrganizationId,
-            platformIdentifier: PlatformIdentifier.Opencti,
           }
         );
 
@@ -272,7 +267,6 @@ describe('Registration domain', () => {
           configuration,
           serviceInstanceId,
           targetOrganizationId,
-          platformIdentifier: PlatformIdentifier.Opencti,
         });
 
         expect(transferSubscriptionToOrganizationSpy).toHaveBeenCalledWith(
