@@ -7,6 +7,7 @@ import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { createDocumentWithChildren } from '../document/document.domain';
 import {
   loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
   Upload,
 } from '../document/document.helper';
 import {
@@ -56,5 +57,13 @@ export const csvFeedsApp = {
 
   loadCsvFeed: async (context: PortalContext, documentId: DocumentId) => {
     return loadDocumentWithCountersById(context, documentId);
+  },
+
+  loadSeoCsvFeed: async (slug: string) => {
+    return loadSeoDocumentWithCountersBySlug(
+      CSV_FEED_DOCUMENT_TYPE,
+      slug,
+      CSV_FEED_METADATA
+    );
   },
 };

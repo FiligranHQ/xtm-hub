@@ -17,7 +17,6 @@ import {
   getUploaderOrganization,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
-  loadSeoDocumentBySlug,
   loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../document/document.domain';
@@ -114,8 +113,7 @@ const resolvers: Resolvers = {
         serviceSlug,
         CSV_FEED_METADATA
       ),
-    seoCsvFeedBySlug: async (_, { slug }) =>
-      loadSeoDocumentBySlug(CSV_FEED_DOCUMENT_TYPE, slug, CSV_FEED_METADATA),
+    seoCsvFeedBySlug: async (_, { slug }) => csvFeedsApp.loadSeoCsvFeed(slug),
   },
 };
 

@@ -17,7 +17,6 @@ import {
   getUploaderOrganization,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
-  loadSeoDocumentBySlug,
   loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../document/document.domain';
@@ -62,11 +61,7 @@ const resolvers: Resolvers = {
       );
     },
     seoOpenAEVScenarioBySlug: async (_, { slug }) => {
-      return loadSeoDocumentBySlug(
-        OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        slug,
-        OPENAEV_SCENARIO_METADATA
-      );
+      return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
     },
     openAEVScenarios: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(

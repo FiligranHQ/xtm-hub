@@ -122,6 +122,50 @@ describe('openaev scenarios app', () => {
     expect(documentLoaded.share_number).toBe(12);
   });
 
+  it('customDashboard should return the document with elastic search counters', async () => {
+    const documentId = 'bee63ef6-0919-406e-8432-ce4acd3aaf1c' as DocumentId;
+    vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+      async (eventType: TelemetryEventType, documentId: string) => {
+        if (
+          documentId === documentId &&
+          eventType === TelemetryEventType.DOWNLOAD
+        )
+          return 8;
+        if (documentId === documentId && eventType === TelemetryEventType.SHARE)
+          return 13;
+        return 0; // default
+      }
+    );
+
+    const trx = await dbTx();
+    await createDocumentWithChildren<OpenAEVScenario>(
+      OPENAEV_SCENARIO_DOCUMENT_TYPE,
+      {
+        id: documentId as DocumentId,
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        name: 'myOpenAEV scenario',
+        slug: 'myOpenAEV-scenario',
+        description: 'description',
+        minio_name: 'minioName',
+        file_name: 'openAEVfilename',
+        service_instance_id: SERVICE_OPENAEV_SCENARIOS_ID as ServiceInstanceId,
+        type: OPENAEV_SCENARIO_DOCUMENT_TYPE,
+        active: true,
+      },
+      [],
+      OPENAEV_SCENARIO_METADATA,
+      contextAdminUser,
+      trx
+    );
+    await trx.commit();
+
+    const documentLoaded =
+      await OpenAEVScenariosApp.loadSeoOpenAEVScenario('myOpenAEV-scenario');
+
+    expect(documentLoaded.download_number).toBe(8);
+    expect(documentLoaded.share_number).toBe(13);
+  });
+
   afterAll(async () => {
     await deleteDocuments();
     vi.useRealTimers();

@@ -7,6 +7,7 @@ import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { createDocumentWithChildren } from '../document/document.domain';
 import {
   loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
   Upload,
 } from '../document/document.helper';
 import {
@@ -64,6 +65,14 @@ export const OpenAEVScenariosApp = {
     return loadDocumentWithCountersById(
       context,
       documentId,
+      OPENAEV_SCENARIO_METADATA
+    );
+  },
+
+  loadSeoOpenAEVScenario: async (slug: string) => {
+    return loadSeoDocumentWithCountersBySlug(
+      OPENAEV_SCENARIO_DOCUMENT_TYPE,
+      slug,
       OPENAEV_SCENARIO_METADATA
     );
   },

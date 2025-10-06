@@ -17,7 +17,6 @@ import {
   getUploaderOrganization,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
-  loadSeoDocumentBySlug,
   loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../document/document.domain';
@@ -63,11 +62,7 @@ const resolvers: Resolvers = {
       return dashboards;
     },
     seoCustomDashboardBySlug: async (_, { slug }) => {
-      return loadSeoDocumentBySlug(
-        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-        slug,
-        CUSTOM_DASHBOARD_METADATA
-      );
+      return CustomDashboardsApp.loadSeoCustomDashboard(slug);
     },
     customDashboards: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(

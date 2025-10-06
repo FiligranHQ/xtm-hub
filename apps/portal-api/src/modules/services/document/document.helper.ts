@@ -13,9 +13,13 @@ import { logApp } from '../../../utils/app-logger.util';
 import { extractId } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { CSV_FEED_DOCUMENT_TYPE } from '../csv-feeds/csv-feeds.domain';
+import { CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import {
   createDocument,
   loadDocumentById,
+  loadSeoDocumentBySlug,
   sendFileToS3,
 } from './document.domain';
 
@@ -180,19 +184,21 @@ export const deleteDocumentBy = async (field: DocumentMutator) => {
   return dbUnsecure<Document>('Document').where(field).delete('*');
 };
 
-export const loadDocumentWithCountersById = async <T extends Document>(
-  context: PortalContext,
-  id: string,
-  include_metadata: string[] = []
+const updateDocumentWithCounters = async <T extends Document>(
+  document: T
 ): Promise<T> => {
-  const document: T = await loadDocumentById(context, id, include_metadata);
-
   let download_number = 0;
   let share_number = 0;
   try {
     [download_number, share_number] = await Promise.all([
-      telemetryApp.countEventsByDocumentId(TelemetryEventType.DOWNLOAD, id),
-      telemetryApp.countEventsByDocumentId(TelemetryEventType.SHARE, id),
+      telemetryApp.countEventsByDocumentId(
+        TelemetryEventType.DOWNLOAD,
+        document.id
+      ),
+      telemetryApp.countEventsByDocumentId(
+        TelemetryEventType.SHARE,
+        document.id
+      ),
     ]);
   } catch (error) {
     logApp.error('Unable to fetch counters from elastic search', error);
@@ -200,6 +206,28 @@ export const loadDocumentWithCountersById = async <T extends Document>(
 
   document.download_number = download_number;
   document.share_number = share_number;
+  return document;
+};
 
+export const loadDocumentWithCountersById = async <T extends Document>(
+  context: PortalContext,
+  id: string,
+  include_metadata: string[] = []
+): Promise<T> => {
+  const document: T = await loadDocumentById(context, id, include_metadata);
+  await updateDocumentWithCounters(document);
+  return document;
+};
+
+export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
+  type:
+    | typeof CSV_FEED_DOCUMENT_TYPE
+    | typeof CUSTOM_DASHBOARD_DOCUMENT_TYPE
+    | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  slug: string,
+  include_metadata: string[] = []
+): Promise<T> => {
+  const document: T = await loadSeoDocumentBySlug(type, slug, include_metadata);
+  await updateDocumentWithCounters(document);
   return document;
 };

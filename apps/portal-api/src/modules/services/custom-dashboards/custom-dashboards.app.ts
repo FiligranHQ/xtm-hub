@@ -7,6 +7,7 @@ import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { createDocumentWithChildren } from '../document/document.domain';
 import {
   loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
   Upload,
 } from '../document/document.helper';
 import {
@@ -64,6 +65,14 @@ export const CustomDashboardsApp = {
     return loadDocumentWithCountersById(
       context,
       documentId,
+      CUSTOM_DASHBOARD_METADATA
+    );
+  },
+
+  loadSeoCustomDashboard: async (slug: string) => {
+    return loadSeoDocumentWithCountersBySlug(
+      CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+      slug,
       CUSTOM_DASHBOARD_METADATA
     );
   },
