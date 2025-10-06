@@ -31,8 +31,27 @@ jobs:
           private-key: ${{ secrets.FILIGRANHQ_PROJECT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
+      - name: Check if PR is from Renovate
+        id: check_renovate
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            const pr = context.payload.pull_request;
+            const isRenovate = pr.user.login === 'renovate[bot]' || 
+                               pr.user.login === 'renovate-bot' ||
+                               pr.user.type === 'Bot' && pr.user.login.includes('renovate');
+            
+            if (isRenovate) {
+              console.log('🤖 This is a Renovate PR - skipping issue status management');
+              return 'true';
+            }
+            return 'false';
+
       - name: Assign PR to creator
-        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        if: github.event_name == 'pull_request' && github.event.action == 'opened' && steps.check_renovate.outputs.result != 'true'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -133,12 +152,33 @@ jobs:
             console.log(`Processing PR #${prNumber}: ${pullRequest.title}`);
             const issueNumbers = new Set();
             
-            // Extract from PR body - simplified regex to match all #123 patterns
+            // Check if this is a Renovate PR
+            const isRenovate = pullRequest.user.login === 'renovate[bot]' || 
+                               pullRequest.user.login === 'renovate-bot' ||
+                               pullRequest.user.type === 'Bot' && pullRequest.user.login.includes('renovate');
+            
+            if (isRenovate) {
+              console.log('🤖 Renovate PR detected - skipping issue extraction');
+              core.setOutput('issue_numbers', '');
+              core.setOutput('pr_number', prNumber.toString());
+              return [];
+            }
+            
+            // Extract from PR body - excluding release notes sections
             const body = pullRequest.body || '';
             if (body) {
-              const bodyMatches = body.matchAll(/#(\d+)/g);
+              // Remove release notes sections (case-insensitive)
+              const cleanedBody = body.replace(/#{1,}\s*release\s*notes?\s*[\s\S]*?(?=#{1,}|$)/gi, '');
+            
+              // Extract issue numbers from cleaned body
+              const bodyMatches = cleanedBody.matchAll(/#(\d+)/g);
               for (const match of bodyMatches) {
                 issueNumbers.add(match[1]);
+              }
+            
+              // Log if release notes were found and excluded
+              if (body !== cleanedBody) {
+                console.log('ℹ️ Excluded issue references from Release Notes section');
               }
             }
             
@@ -286,11 +326,11 @@ jobs:
             const pr = context.payload.pull_request;
             let status = '';
             
-            // List of statuses we're allowed to modify
-            const modifiableStatuses = [
-              'ready for dev',
-              'dev in progress', 
-              'in review'
+            // List of statuses we should NOT modify (immutable statuses)
+            const immutableStatuses = [
+              'done',
+              'cancelled',
+              'archived'
             ];
             
             // Determine the status based on PR state
@@ -449,9 +489,11 @@ jobs:
                   const currentStatus = currentStatusField?.name?.toLowerCase() || '';
                   console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
             
-                  // Only update if current status is in the modifiable list
-                  if (!modifiableStatuses.includes(currentStatus)) {
-                    console.log(`⚠️ Issue #${issueNumber} has status "${currentStatus}" which should not be modified. Skipping...`);
+                  // Check if the current status is immutable (should not be modified)
+                  if (immutableStatuses.some(immutableStatus => 
+                    currentStatus.toLowerCase() === immutableStatus.toLowerCase()
+                  )) {
+                    console.log(`⚠️ Issue #${issueNumber} is in "${currentStatus}" status and should not be modified. Skipping...`);
                     continue;
                   }
             
@@ -737,11 +779,12 @@ jobs:
               return;
             }
             
-            // List of statuses we're allowed to modify
-            const modifiableStatuses = [
-              'ready for dev',
-              'dev in progress', 
-              'in review'
+            // List of statuses we should NOT modify (immutable statuses)
+            const immutableStatuses = [
+              'done',
+              'cancelled',
+              'archived',
+              'ready for merging'
             ];
             
             // Get PR data using the PR number from extract_issues step
@@ -926,15 +969,11 @@ jobs:
                       const currentStatus = currentStatusField?.name?.toLowerCase() || '';
                       console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
             
-                      // Only update if current status is in the modifiable list OR if we're setting to "Ready for merging"
-                      if (!modifiableStatuses.includes(currentStatus) && newStatus.toLowerCase() !== 'ready for merging') {
+                      // Check if the current status is immutable (should not be modified)
+                      if (immutableStatuses.some(immutableStatus => 
+                        currentStatus.toLowerCase() === immutableStatus.toLowerCase()
+                      )) {
                         console.log(`⚠️ Issue #${issueNumber} has status "${currentStatus}" which should not be modified. Skipping...`);
-                        continue;
-                      }
-            
-                      // Don't update if already at "Ready for merging"
-                      if (currentStatus === 'ready for merging') {
-                        console.log(`⚠️ Issue #${issueNumber} is already at "Ready for merging" status. Not updating.`);
                         continue;
                       }
             
