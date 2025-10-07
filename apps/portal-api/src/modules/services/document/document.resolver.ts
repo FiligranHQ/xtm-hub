@@ -27,7 +27,6 @@ import {
   getChildrenDocuments,
   getUploader,
   getUploaderOrganization,
-  incrementShareNumber,
   loadDocumentById,
   loadDocuments,
   updateDocument,
@@ -35,6 +34,7 @@ import {
 import {
   checkDocumentExists,
   createFileInMinIO,
+  loadUnsecureDocumentsBy,
   normalizeDocumentName,
   waitForUploads,
 } from './document.helper';
@@ -112,9 +112,9 @@ const resolvers: Resolvers = {
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [document] = await incrementShareNumber(
-          extractId<DocumentId>(documentId)
-        );
+        const [document] = await loadUnsecureDocumentsBy({
+          id: extractId<DocumentId>(documentId),
+        });
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
@@ -143,7 +143,6 @@ const resolvers: Resolvers = {
             error,
           });
         }
-
         return document;
       } catch (error) {
         throw mapToGraphQLError(

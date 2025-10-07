@@ -21,7 +21,7 @@ import { loadUserBy } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { downloadFile } from './document-storage';
-import { incrementDocumentsDownloads, loadDocumentBy } from './document.domain';
+import { loadDocumentBy } from './document.domain';
 
 const documentDownloadRateLimiter = rateLimit({
   windowMs: 180 * 1000, // 3 minutes
@@ -121,7 +121,7 @@ export const documentDownloadEndpoint = (app) => {
           if (attach) {
             res.attachment(document.file_name);
           }
-          await incrementDocumentsDownloads(context, document, trx);
+
           await trx.commit();
 
           const serviceDefinition =

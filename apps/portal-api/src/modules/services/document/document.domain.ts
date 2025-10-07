@@ -366,20 +366,6 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   return updatedDocument;
 };
 
-export const incrementDocumentsDownloads = async (
-  context: PortalContext,
-  document: DocumentModel,
-  trx: Knex.Transaction
-) => {
-  await db<DocumentModel>(context, 'Document')
-    .where('id', '=', document.id)
-    .update({
-      download_number: document.download_number + 1,
-    })
-    .returning('*')
-    .transacting(trx);
-};
-
 export const deleteDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentId: DocumentId,
@@ -612,13 +598,6 @@ export const getLabels = (
     .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
     .where('ol.object_id', '=', documentId)
     .returning('Label.*');
-
-export const incrementShareNumber = (documentId: DocumentId) => {
-  return dbUnsecure<Document>('Document')
-    .where('id', '=', documentId)
-    .increment('share_number', 1)
-    .returning('*');
-};
 
 export const loadDocumentById = async <T extends Document>(
   context: PortalContext,
