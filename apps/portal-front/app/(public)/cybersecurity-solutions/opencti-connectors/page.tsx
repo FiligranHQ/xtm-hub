@@ -28,6 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
+  const { metadataBase } = await generateMetadata();
   const connectorManifest = await getConnectorManifest('master');
   const t = await getTranslations();
   const breadcrumbValue = [
@@ -48,7 +49,10 @@ export default async function Page() {
       <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
         {t('Service.Connectors.Name')}
       </h1>
-      <ConnectorsList contracts={connectorManifest.contracts} />
+      <ConnectorsList
+        metadataBase={metadataBase?.toString() ?? ''}
+        contracts={connectorManifest.contracts}
+      />
     </main>
   );
 }

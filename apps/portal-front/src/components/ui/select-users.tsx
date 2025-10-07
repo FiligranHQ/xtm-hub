@@ -124,17 +124,20 @@ const SelectUsersFormField = React.forwardRef<
     userListQuery,
     userList_users$key
   >(userListFragment, queryData);
-  const users =
-    data?.users?.edges?.map((edge) => {
-      const user = readInlineData<userList_fragment$key>(
-        UserFragment,
-        edge.node
-      );
-      return {
-        value: user.id,
-        label: user.email,
-      };
-    }) || [];
+  const users = useMemo(
+    () =>
+      data?.users?.edges?.map((edge) => {
+        const user = readInlineData<userList_fragment$key>(
+          UserFragment,
+          edge.node
+        );
+        return {
+          value: user.id,
+          label: user.email,
+        };
+      }) || [],
+    [data?.users?.edges]
+  );
 
   const handleRefetch = (value: string) => {
     filterRef.current = {
@@ -170,51 +173,57 @@ const SelectUsersFormField = React.forwardRef<
     }
   };
 
-  const toggleOption = (value: string) => {
-    if (selectedValuesSet.current.has(value)) {
-      selectedValuesSet.current.clear();
-      setSelectedValues([]);
-      onValueChange('');
-    } else {
-      selectedValuesSet.current = new Set([value]);
-      setSelectedValues([value]);
-      onValueChange(value);
-      setIsPopoverOpen(false);
-    }
-  };
+  const toggleOption = useCallback(
+    (value: string) => {
+      if (selectedValuesSet.current.has(value)) {
+        selectedValuesSet.current.clear();
+        setSelectedValues([]);
+        onValueChange('');
+      } else {
+        selectedValuesSet.current = new Set([value]);
+        setSelectedValues([value]);
+        onValueChange(value);
+        setIsPopoverOpen(false);
+      }
+    },
+    [onValueChange, setIsPopoverOpen]
+  );
 
   const hiddenCount = selectedValues.length - visibleBadges;
 
-  const renderBadges = (values: string[]) =>
-    values.map((value) => {
-      const option = users.find((opt) => String(opt.value) === value);
-      return (
-        <Badge key={value}>
-          {option ? String(option.label) : value}
-          <span
-            className="ml-s flex items-center justify-center"
-            onClick={(event) => {
-              event.stopPropagation();
-              toggleOption(value);
-            }}
-            aria-label={`Remove ${option ? String(option.label) : value}`}>
-            <CloseIcon className="h-3 w-3 cursor-pointer" />
-          </span>
-        </Badge>
-      );
-    });
+  const renderBadges = useCallback(
+    (values: string[]) =>
+      values.map((value) => {
+        const option = users.find((opt) => String(opt.value) === value);
+        return (
+          <Badge key={value}>
+            {option ? String(option.label) : value}
+            <span
+              className="ml-s flex items-center justify-center"
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleOption(value);
+              }}
+              aria-label={`Remove ${option ? String(option.label) : value}`}>
+              <CloseIcon className="h-3 w-3 cursor-pointer" />
+            </span>
+          </Badge>
+        );
+      }),
+    [users, toggleOption]
+  );
 
   const memoizedBadgesMeasurement = useMemo(() => {
     return renderBadges(selectedValues);
-  }, [selectedValues, visibleBadges, users, 'label', 'value', toggleOption]);
+  }, [selectedValues, renderBadges]);
 
   const memoizedBadges = useMemo(() => {
     return renderBadges(selectedValues.slice(0, visibleBadges));
-  }, [selectedValues, visibleBadges, users, 'label', 'value', toggleOption]);
+  }, [selectedValues, visibleBadges, renderBadges]);
 
   const memoizedBadgesTooltip = useMemo(() => {
     return renderBadges(selectedValues.slice(visibleBadges));
-  }, [selectedValues, visibleBadges, users, 'label', 'value', toggleOption]);
+  }, [selectedValues, visibleBadges, renderBadges]);
 
   return (
     <TooltipProvider delayDuration={0}>

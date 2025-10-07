@@ -1,7 +1,7 @@
 services:
   portal-postgres:
     container_name: portal-postgres
-    image: postgres:17.2
+    image: postgres:17.6
     volumes:
       - pgdata:/data/postgres
     environment:

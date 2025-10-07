@@ -21,9 +21,6 @@
     h1 {
       @apply txt-title;
     }
-  }
-
-  @layer base {
     h2 {
       @apply txt-subtitle;
     }
@@ -31,6 +28,10 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  ol {
+      @apply list-decimal pl-8;
   }
 }
 

@@ -114,7 +114,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
         (item, index, self) =>
           index === self.findIndex((t) => t.value === item.value)
       );
-  }, []);
+  }, [serviceData]);
 
   const handleInputChange = (inputValue: string) => {
     refetch({ searchTerm: inputValue });

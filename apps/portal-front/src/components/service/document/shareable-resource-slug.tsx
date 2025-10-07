@@ -78,7 +78,11 @@ const ShareableResourceSlug: React.FunctionComponent<
       ShareableResourceType.OPENCTI_CUSTOMDASHBOARD,
       ShareableResourceType.OPENCTI_CSVFEED,
     ].includes(documentData.type as ShareableResourceType);
-  }, [documentData.active, documentData.type]);
+  }, [
+    documentData.active,
+    documentData.type,
+    isOneOpenAEVRegistrationFeatureEnabled,
+  ]);
 
   return (
     <>

@@ -30,8 +30,28 @@ jobs:
           app-id: ${{ vars.FILIGRANHQ_PROJECT_APP_ID }}
           private-key: ${{ secrets.FILIGRANHQ_PROJECT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
+
+      - name: Check if PR is from Renovate
+        id: check_renovate
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            const pr = context.payload.pull_request;
+            const isRenovate = pr.user.login === 'renovate[bot]' || 
+                               pr.user.login === 'renovate-bot' ||
+                               pr.user.type === 'Bot' && pr.user.login.includes('renovate');
+            
+            if (isRenovate) {
+              console.log('🤖 This is a Renovate PR - skipping issue status management');
+              return 'true';
+            }
+            return 'false';
+
       - name: Assign PR to creator
-        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        if: github.event_name == 'pull_request' && github.event.action == 'opened' && steps.check_renovate.outputs.result != 'true'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,6 +70,7 @@ jobs:
             } catch (error) {
               console.error(`Failed to assign PR to ${prCreator}:`, error);
             }
+
       - name: Check if creator is in FiligranHQ organization
         if: github.event_name == 'pull_request' && github.event.action == 'opened'
         id: check_org_membership
@@ -69,6 +90,7 @@ jobs:
               }
               throw error;
             }
+
       - name: Add Filigran Team label
         if: steps.check_org_membership.outputs.result == 'true'
         uses: actions/github-script@v7
@@ -81,6 +103,7 @@ jobs:
               issue_number: context.issue.number,
               labels: ['Filigran Team']
             });
+
       - name: Extract issue numbers from PR body and title
         id: extract_issues
         uses: actions/github-script@v7
@@ -129,12 +152,33 @@ jobs:
             console.log(`Processing PR #${prNumber}: ${pullRequest.title}`);
             const issueNumbers = new Set();
             
-            // Extract from PR body - simplified regex to match all #123 patterns
+            // Check if this is a Renovate PR
+            const isRenovate = pullRequest.user.login === 'renovate[bot]' || 
+                               pullRequest.user.login === 'renovate-bot' ||
+                               pullRequest.user.type === 'Bot' && pullRequest.user.login.includes('renovate');
+            
+            if (isRenovate) {
+              console.log('🤖 Renovate PR detected - skipping issue extraction');
+              core.setOutput('issue_numbers', '');
+              core.setOutput('pr_number', prNumber.toString());
+              return [];
+            }
+            
+            // Extract from PR body - excluding release notes sections
             const body = pullRequest.body || '';
             if (body) {
-              const bodyMatches = body.matchAll(/#(\d+)/g);
+              // Remove release notes sections (case-insensitive)
+              const cleanedBody = body.replace(/#{1,}\s*release\s*notes?\s*[\s\S]*?(?=#{1,}|$)/gi, '');
+            
+              // Extract issue numbers from cleaned body
+              const bodyMatches = cleanedBody.matchAll(/#(\d+)/g);
               for (const match of bodyMatches) {
                 issueNumbers.add(match[1]);
+              }
+            
+              // Log if release notes were found and excluded
+              if (body !== cleanedBody) {
+                console.log('ℹ️ Excluded issue references from Release Notes section');
               }
             }
             
@@ -158,6 +202,7 @@ jobs:
               console.log('No issue references found in PR');
             }
             return uniqueIssues;
+
       - name: Update Feature env field when "needs feature env" label is added
         if: github.event_name == 'pull_request_target' && github.event.action == 'labeled' && github.event.label.name == 'needs feature env' && steps.extract_issues.outputs.issue_numbers != ''
         uses: actions/github-script@v7
@@ -270,7 +315,8 @@ jobs:
                 }
               }
             }
-      - name: Update issues status in project
+
+      - name: Update issues status and start date in project
         if: steps.extract_issues.outputs.issue_numbers != '' && github.event.action != 'closed'
         uses: actions/github-script@v7
         with:
@@ -280,11 +326,11 @@ jobs:
             const pr = context.payload.pull_request;
             let status = '';
             
-            // List of statuses we're allowed to modify
-            const modifiableStatuses = [
-              'ready for dev',
-              'dev in progress', 
-              'in review'
+            // List of statuses we should NOT modify (immutable statuses)
+            const immutableStatuses = [
+              'done',
+              'cancelled',
+              'archived'
             ];
             
             // Determine the status based on PR state
@@ -295,6 +341,7 @@ jobs:
                 status = 'In review';
               }
             }
+            
             if (status && issueNumbers.length > 0) {
               // First, get the project details to find the status field and options
               const projectQuery = `
@@ -317,6 +364,7 @@ jobs:
                           ... on ProjectV2Field {
                             id
                             name
+                            dataType
                           }
                         }
                       }
@@ -331,29 +379,45 @@ jobs:
               });
               const project = projectData.organization.projectV2;
               console.log(`Found project: ${project.title}`);
+            
               // Find the Status field
               const statusField = project.fields.nodes.find(field => 
                 field.name === 'Status' && field.options
               );
+            
+              // Find the Start date field using lowercase comparison
+              const startDateField = project.fields.nodes.find(field => 
+                field.name.toLowerCase() === 'start date' && field.dataType === 'DATE'
+              );
+            
               if (!statusField) {
                 console.log('Status field not found');
                 console.log('Available fields:', project.fields.nodes.map(f => f.name));
                 return;
               }
+            
+              if (!startDateField) {
+                console.log('Start date field not found');
+                console.log('Available date fields:', project.fields.nodes.filter(f => f.dataType === 'DATE').map(f => `${f.name} (${f.dataType})`));
+              }
+            
               // Find the matching status option
               const statusOption = statusField.options.find(option => 
                 option.name.toLowerCase() === status.toLowerCase()
               );
+            
               if (!statusOption) {
                 console.log(`Status option "${status}" not found`);
                 console.log('Available options:', statusField.options.map(o => o.name));
                 return;
               }
+            
               // Process each issue
               for (const issueNumber of issueNumbers) {
                 try {
                   console.log(`Processing issue #${issueNumber}...`);
-                  // Query for the issue and its project items WITH current status
+            
+                  // Query for the issue and its project items with field values
                   const issueQuery = `
                     query($owner: String!, $repo: String!, $issueNumber: Int!) {
                       repository(owner: $owner, name: $repo) {
@@ -366,9 +430,27 @@ jobs:
                                 id
                                 number
                               }
-                              fieldValueByName(name: "Status") {
-                                ... on ProjectV2ItemFieldSingleSelectValue {
-                                  name
+                              fieldValues(first: 40) {
+                                nodes {
+                                  __typename
+                                  ... on ProjectV2ItemFieldSingleSelectValue {
+                                    field {
+                                      ... on ProjectV2SingleSelectField {
+                                        id
+                                        name
+                                      }
+                                    }
+                                    name
+                                  }
+                                  ... on ProjectV2ItemFieldDateValue {
+                                    field {
+                                      ... on ProjectV2Field {
+                                        id
+                                        name
+                                      }
+                                    }
+                                    date
+                                  }
                                 }
                               }
                             }
@@ -377,31 +459,41 @@ jobs:
                       }
                     }
                   `;
+            
                   const issueData = await github.graphql(issueQuery, {
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issueNumber: parseInt(issueNumber)
                   });
+            
                   if (!issueData.repository.issue) {
                     console.log(`Issue #${issueNumber} not found`);
                     continue;
                   }
+            
                   // Find the project item for our specific project
                   const projectItem = issueData.repository.issue.projectItems.nodes.find(item => 
                     item.project.number === parseInt(process.env.PROJECT_NUMBER)
                   );
+            
                   if (!projectItem) {
                     console.log(`Issue #${issueNumber} is not in project #${process.env.PROJECT_NUMBER}, skipping...`);
                     continue;
                   }
             
-                  // Check current status
-                  const currentStatus = projectItem.fieldValueByName?.name?.toLowerCase() || '';
+                  // Find current status from field values
+                  const currentStatusField = projectItem.fieldValues.nodes.find(fv => 
+                    fv.__typename === 'ProjectV2ItemFieldSingleSelectValue' && 
+                    fv.field?.name === 'Status'
+                  );
+                  const currentStatus = currentStatusField?.name?.toLowerCase() || '';
                   console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
             
-                  // Only update if current status is in the modifiable list
-                  if (!modifiableStatuses.includes(currentStatus)) {
-                    console.log(`⚠️ Issue #${issueNumber} has status "${currentStatus}" which should not be modified. Skipping...`);
+                  // Check if the current status is immutable (should not be modified)
+                  if (immutableStatuses.some(immutableStatus => 
+                    currentStatus.toLowerCase() === immutableStatus.toLowerCase()
+                  )) {
+                    console.log(`⚠️ Issue #${issueNumber} is in "${currentStatus}" status and should not be modified. Skipping...`);
                     continue;
                   }
             
@@ -425,6 +517,7 @@ jobs:
                       }
                     }
                   `;
+            
                   await github.graphql(updateMutation, {
                     projectId: project.id,
                     itemId: projectItem.id,
@@ -432,6 +525,49 @@ jobs:
                     optionId: statusOption.id
                   });
                   console.log(`✅ Successfully updated issue #${issueNumber} status to "${status}"`);
+            
+                  // Update Start date if not already set and status is "dev in progress"
+                  if (status.toLowerCase() === 'dev in progress' && startDateField) {
+                    // Find current start date from field values using lowercase comparison
+                    const currentStartDateField = projectItem.fieldValues.nodes.find(fv => 
+                      fv.__typename === 'ProjectV2ItemFieldDateValue' && 
+                      fv.field?.name?.toLowerCase() === 'start date'
+                    );
+                    const currentStartDate = currentStartDateField?.date;
+            
+                    if (!currentStartDate) {
+                      const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+                      console.log(`Setting Start date for issue #${issueNumber} to ${today}...`);
+            
+                      await github.graphql(`
+                        mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+                          updateProjectV2ItemFieldValue(
+                            input: {
+                              projectId: $projectId
+                              itemId: $itemId
+                              fieldId: $fieldId
+                              value: { 
+                                date: $date
+                              }
+                            }
+                          ) {
+                            projectV2Item {
+                              id
+                            }
+                          }
+                        }
+                      `, {
+                        projectId: project.id,
+                        itemId: projectItem.id,
+                        fieldId: startDateField.id,
+                        date: today
+                      });
+                      console.log(`✅ Successfully set Start date for issue #${issueNumber}`);
+                    } else {
+                      console.log(`Start date already set for issue #${issueNumber}: ${currentStartDate}`);
+                    }
+                  }
+            
                 } catch (error) {
                   console.error(`Error updating issue #${issueNumber}:`, error);
                   if (error.errors) {
@@ -440,7 +576,8 @@ jobs:
                 }
               }
             }
-      - name: Update issues status to Ready to be deployed on merge
+
+      - name: Update issues status to Ready to be deployed and set Effective end date on merge
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && steps.extract_issues.outputs.issue_numbers != ''
         uses: actions/github-script@v7
         with:
@@ -454,7 +591,7 @@ jobs:
             }
             
             const newStatus = 'Ready to be deployed';
-            console.log(`PR merged! Updating ${issueNumbers.length} issue(s) to status: "${newStatus}"`);
+            console.log(`PR merged! Updating ${issueNumbers.length} issue(s) to status: "${newStatus}" and setting Effective end date`);
             
             try {
               // Get project once
@@ -465,6 +602,7 @@ jobs:
                       id
                       fields(first: 40) {
                         nodes {
+                          __typename
                           ... on ProjectV2SingleSelectField {
                             id
                             name
@@ -472,6 +610,11 @@ jobs:
                               id
                               name
                             }
+                          }
+                          ... on ProjectV2Field {
+                            id
+                            name
+                            dataType
                           }
                         }
                       }
@@ -486,9 +629,19 @@ jobs:
               const project = projectData.organization.projectV2;
               const statusField = project.fields.nodes.find(f => f.name === 'Status' && f.options);
             
+              // Find the Effective end date field using lowercase comparison
+              const effectiveEndDateField = project.fields.nodes.find(field => 
+                field.name.toLowerCase() === 'effective end date' && field.dataType === 'DATE'
+              );
+            
               if (!statusField) {
                 console.log('Status field not found');
                 return;
+              }
+            
+              if (!effectiveEndDateField) {
+                console.log('Effective end date field not found');
+                console.log('Available date fields:', project.fields.nodes.filter(f => f.dataType === 'DATE').map(f => `${f.name} (${f.dataType})`));
               }
             
               const statusOption = statusField.options.find(o => 
@@ -569,6 +722,38 @@ jobs:
                   });
             
                   console.log(`✅ Updated issue #${issueNumber} status to "${newStatus}"`);
+            
+                  // Set Effective end date
+                  if (effectiveEndDateField) {
+                    const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+                    console.log(`Setting Effective end date for issue #${issueNumber} to ${today}...`);
+            
+                    await github.graphql(`
+                      mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+                        updateProjectV2ItemFieldValue(
+                          input: {
+                            projectId: $projectId
+                            itemId: $itemId
+                            fieldId: $fieldId
+                            value: { 
+                              date: $date
+                            }
+                          }
+                        ) {
+                          projectV2Item {
+                            id
+                          }
+                        }
+                      }
+                    `, {
+                      projectId: project.id,
+                      itemId: projectItem.id,
+                      fieldId: effectiveEndDateField.id,
+                      date: today
+                    });
+                    console.log(`✅ Successfully set Effective end date for issue #${issueNumber}`);
+                  }
+            
                 } catch (error) {
                   console.error(`Error updating issue #${issueNumber}:`, error);
                 }
@@ -576,6 +761,7 @@ jobs:
             } catch (error) {
               console.error('Error updating project status:', error);
             }
+
       - name: Check for approval and label
         if: github.event_name == 'pull_request_review' || github.event_name == 'pull_request_target' || github.event_name == 'workflow_run'
         uses: actions/github-script@v7
@@ -593,11 +779,12 @@ jobs:
               return;
             }
             
-            // List of statuses we're allowed to modify
-            const modifiableStatuses = [
-              'ready for dev',
-              'dev in progress', 
-              'in review'
+            // List of statuses we should NOT modify (immutable statuses)
+            const immutableStatuses = [
+              'done',
+              'cancelled',
+              'archived',
+              'ready for merging'
             ];
             
             // Get PR data using the PR number from extract_issues step
@@ -719,7 +906,7 @@ jobs:
                     try {
                       console.log(`Processing issue #${issueNumber} for approval status...`);
             
-                      // Query for the issue and its project items WITH current status
+                      // Query for the issue and its project items with field values
                       const issueQuery = `
                         query($owner: String!, $repo: String!, $issueNumber: Int!) {
                           repository(owner: $owner, name: $repo) {
@@ -732,9 +919,18 @@ jobs:
                                     id
                                     number
                                   }
-                                  fieldValueByName(name: "Status") {
-                                    ... on ProjectV2ItemFieldSingleSelectValue {
-                                      name
+                                  fieldValues(first: 40) {
+                                    nodes {
+                                      __typename
+                                      ... on ProjectV2ItemFieldSingleSelectValue {
+                                        field {
+                                          ... on ProjectV2SingleSelectField {
+                                            id
+                                            name
+                                          }
+                                        }
+                                        name
+                                      }
                                     }
                                   }
                                 }
@@ -765,19 +961,19 @@ jobs:
                         continue;
                       }
             
-                      // Check current status
-                      const currentStatus = projectItem.fieldValueByName?.name?.toLowerCase() || '';
+                      // Find current status from field values
+                      const currentStatusField = projectItem.fieldValues.nodes.find(fv => 
+                        fv.__typename === 'ProjectV2ItemFieldSingleSelectValue' && 
+                        fv.field?.name === 'Status'
+                      );
+                      const currentStatus = currentStatusField?.name?.toLowerCase() || '';
                       console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
             
-                      // Only update if current status is in the modifiable list OR if we're setting to "Ready for merging"
-                      if (!modifiableStatuses.includes(currentStatus) && newStatus.toLowerCase() !== 'ready for merging') {
+                      // Check if the current status is immutable (should not be modified)
+                      if (immutableStatuses.some(immutableStatus => 
+                        currentStatus.toLowerCase() === immutableStatus.toLowerCase()
+                      )) {
                         console.log(`⚠️ Issue #${issueNumber} has status "${currentStatus}" which should not be modified. Skipping...`);
-                        continue;
-                      }
-            
-                      // Don't update if already at "Ready for merging"
-                      if (currentStatus === 'ready for merging') {
-                        console.log(`⚠️ Issue #${issueNumber} is already at "Ready for merging" status. Not updating.`);
                         continue;
                       }
             
