@@ -53,7 +53,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "23"
+          node-version: "24.9"
           cache: "yarn"
           cache-dependency-path: |
             yarn.lock
@@ -69,7 +69,6 @@ jobs:
         working-directory: .
         run: |
           yarn install
-          yarn plugin import version
 
       - name: Bump deployment version in portal-api
         working-directory: ./apps/portal-api
