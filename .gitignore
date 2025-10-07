@@ -8,6 +8,8 @@
 .DS_Store
 
 .yarn
+.pnp.cjs
+.pnp.loader.mjs
 
 .nx/cache
 .nx/workspace-data
