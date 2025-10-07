@@ -893,6 +893,7 @@ export type Query = {
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
   publicServiceInstances: ServiceConnection;
+  refreshOpenCTIManifest?: Maybe<Scalars['Boolean']['output']>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
@@ -2384,6 +2385,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  refreshOpenCTIManifest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;

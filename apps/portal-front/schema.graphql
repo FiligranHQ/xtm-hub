@@ -24,6 +24,56 @@ type Success {
   success: Boolean!
 }
 
+type Query {
+  refreshOpenCTIManifest: Boolean
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  userOrganizations: [Organization!]!
+  rolePortal(id: ID!): RolePortal
+  rolesPortal: [RolePortal!]!
+  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
+  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
+  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
+  seoCsvFeedBySlug(slug: String): CsvFeed
+  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
+  seoCustomDashboardBySlug(slug: String): CustomDashboard
+  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
+  customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
+  documentExists(documentName: String, service_instance_id: String): Boolean
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  document(documentId: ID, serviceInstanceId: ID): Document
+  seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
+  seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
+  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
+  openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
+  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
+  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
+  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
+  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
+  platformAssociatedOrganization(platformId: String!): Organization
+  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): ServiceConnection!
+  serviceInstanceById(service_instance_id: ID): ServiceInstance
+  serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
+  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
+  seoServiceInstances: [SeoServiceInstance!]!
+  seoServiceInstance(slug: String!): SeoServiceInstance!
+  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
+  label(id: ID!): Label
+  settings: Settings!
+  subscriptionById(subscription_id: ID): SubscriptionModel
+  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
+  me: User
+  user(id: ID!): User
+  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  userHasOrganizationWithSubscription: Boolean!
+  node(id: ID!): Node
+}
+
 type Mutation {
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   addOrganization(input: OrganizationInput!): Organization
@@ -97,55 +147,6 @@ type OrganizationConnection {
   totalCount: Int!
   edges: [OrganizationEdge!]!
   pageInfo: PageInfo!
-}
-
-type Query {
-  organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
-  userOrganizations: [Organization!]!
-  rolePortal(id: ID!): RolePortal
-  rolesPortal: [RolePortal!]!
-  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
-  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
-  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
-  seoCsvFeedBySlug(slug: String): CsvFeed
-  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
-  seoCustomDashboardBySlug(slug: String): CustomDashboard
-  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
-  customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
-  documentExists(documentName: String, service_instance_id: String): Boolean
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
-  document(documentId: ID, serviceInstanceId: ID): Document
-  seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
-  seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
-  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
-  openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
-  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
-  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
-  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
-  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
-  platformAssociatedOrganization(platformId: String!): Organization
-  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): ServiceConnection!
-  serviceInstanceById(service_instance_id: ID): ServiceInstance
-  serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
-  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
-  seoServiceInstances: [SeoServiceInstance!]!
-  seoServiceInstance(slug: String!): SeoServiceInstance!
-  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
-  label(id: ID!): Label
-  settings: Settings!
-  subscriptionById(subscription_id: ID): SubscriptionModel
-  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
-  me: User
-  user(id: ID!): User
-  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  userHasOrganizationWithSubscription: Boolean!
-  node(id: ID!): Node
 }
 
 input OrganizationInput {

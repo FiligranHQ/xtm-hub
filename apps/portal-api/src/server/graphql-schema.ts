@@ -2,6 +2,7 @@ import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { glob } from 'glob';
 import fs from 'node:fs';
+import ingestManifestResolver from '../modules/ingest-manifest/ingest-manifest.resolver';
 import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
@@ -51,6 +52,7 @@ const resolvers = mergeResolvers([
   openAEVScenariosResolver,
   registrationResolver,
   telemetryResolver,
+  ingestManifestResolver,
 ]);
 
 const createSchema = () => {
