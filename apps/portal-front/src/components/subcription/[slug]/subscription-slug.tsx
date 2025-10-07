@@ -18,7 +18,13 @@ import { MoreVertIcon } from 'filigran-icon';
 import { Badge, Button, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
-import { FunctionComponent, useContext, useMemo, useState } from 'react';
+import {
+  FunctionComponent,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActionContext, IconActions } from '@/components/ui/icon-actions';
@@ -65,6 +71,8 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
 
   const { me } = useContext(PortalContext);
   const { setMenuOpen } = useContext(IconActionContext);
+  const [commitUserServiceDeletingMutation] =
+    useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
 
   useEffect(() => {
     if (!openSheet && openSheet !== null) setMenuOpen(false);
@@ -123,7 +131,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
     )
     .filter((data) => !!data);
 
-  const canManageService = () => {
+  const canManageService = useCallback(() => {
     return userData.some((userService) => {
       return (
         userService?.user?.id === me?.id &&
@@ -134,7 +142,27 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
         )
       );
     });
-  };
+  }, [userData, me?.id]);
+
+  const deleteCurrentUser = useCallback(
+    (email: string) => {
+      commitUserServiceDeletingMutation({
+        variables: {
+          connections: [userServices.userServiceFromSubscription?.__id ?? ''],
+          input: {
+            email,
+            subscriptionId,
+          },
+        },
+        onCompleted() {},
+      });
+    },
+    [
+      commitUserServiceDeletingMutation,
+      userServices.userServiceFromSubscription?.__id,
+      subscriptionId,
+    ]
+  );
   const columns: ColumnDef<userServices_fragment$data>[] = useMemo(
     () => [
       {
@@ -242,23 +270,16 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
         },
       },
     ],
-    []
+    [
+      canManageService,
+      deleteCurrentUser,
+      me?.capabilities,
+      queryDataSubscription,
+      t,
+      userServices.userServiceFromSubscription?.__id,
+    ]
   );
-  const [commitUserServiceDeletingMutation] =
-    useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
 
-  const deleteCurrentUser = (email: string) => {
-    commitUserServiceDeletingMutation({
-      variables: {
-        connections: [userServices.userServiceFromSubscription?.__id ?? ''],
-        input: {
-          email,
-          subscriptionId,
-        },
-      },
-      onCompleted() {},
-    });
-  };
   const [pagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 500,

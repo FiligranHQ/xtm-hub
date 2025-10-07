@@ -16,7 +16,7 @@ import {
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   graphql,
   useFragment,
@@ -85,27 +85,38 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
   const [shouldOpenTab, setShouldOpenTab] = useState(false);
   const { openTab } = useOneClickDeployTab({ platformBasePath, documentData });
 
-  const onOneClickDeploy = (basePath: string) => {
-    const [platform] = platforms.filter(
-      (platform) => platform.url === basePath
-    );
-    if (platform) {
-      sendOneClickDeployEvent({
-        variables: {
-          input: {
-            platform_identifier: platformIdentifier,
-            service_instance_id: documentData.service_instance!.id,
-            resource_id: documentData.id,
-            resource_title: documentData.name,
-            platform_id: platform!.id,
+  const onOneClickDeploy = useCallback(
+    (basePath: string) => {
+      const [platform] = platforms.filter(
+        (platform) => platform.url === basePath
+      );
+      if (platform) {
+        sendOneClickDeployEvent({
+          variables: {
+            input: {
+              platform_identifier: platformIdentifier,
+              service_instance_id: documentData.service_instance!.id,
+              resource_id: documentData.id,
+              resource_title: documentData.name,
+              platform_id: platform!.id,
+            },
           },
-        },
-      });
-    }
-
-    setPlatformBasePath(basePath);
-    setShouldOpenTab(true);
-  };
+        });
+      }
+      setPlatformBasePath(basePath);
+      setShouldOpenTab(true);
+    },
+    [
+      platforms,
+      sendOneClickDeployEvent,
+      platformIdentifier,
+      documentData.service_instance,
+      documentData.id,
+      documentData.name,
+      setPlatformBasePath,
+      setShouldOpenTab,
+    ]
+  );
 
   if (shouldOpenTab) {
     openTab();
@@ -146,7 +157,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
         />
       );
     }
-  }, [platforms]);
+  }, [platforms, documentData, onOneClickDeploy, platformIdentifier]);
 
   return (
     <AlertDialog open={isOpen}>
