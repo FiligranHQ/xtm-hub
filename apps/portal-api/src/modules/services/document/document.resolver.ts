@@ -134,7 +134,7 @@ const resolvers: Resolvers = {
               context.user?.id,
               serviceDefinition.identifier,
               document.id,
-              document.file_name
+              document.name
             );
             telemetryApp.sendTelemetryEvent(shareEvent);
           }

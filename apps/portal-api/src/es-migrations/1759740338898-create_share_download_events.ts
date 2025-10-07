@@ -78,7 +78,7 @@ async function buildDocumentList(
           service: service,
           service_type: serviceType,
           resource_id: doc.id,
-          resource_title: doc.file_name,
+          resource_title: doc.name,
         }
       );
     }
@@ -92,7 +92,7 @@ export const up = async function (next) {
   const docs = await database('Document')
     .where('download_number', '>', 0)
     .orWhere('share_number', '>', 0)
-    .select('id', 'file_name', 'download_number', 'share_number', 'type');
+    .select('id', 'name', 'download_number', 'share_number', 'type');
 
   if (docs.length > 0) {
     const downloadDocToInsert = await buildDocumentList(docs, 'download');

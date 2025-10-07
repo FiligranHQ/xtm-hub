@@ -360,6 +360,7 @@ describe('increment shared counter', () => {
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        name: 'Csv Feed',
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'csvfilename',
@@ -398,7 +399,7 @@ describe('increment shared counter', () => {
       service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,
-      resource_title: 'csvfilename',
+      resource_title: 'Csv Feed',
     });
   });
 
@@ -425,7 +426,7 @@ describe('increment shared counter', () => {
       service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,
-      resource_title: 'csvfilename',
+      resource_title: 'Csv Feed',
     });
   });
 

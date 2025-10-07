@@ -141,7 +141,7 @@ export const documentDownloadEndpoint = (app) => {
                 context.user.id,
                 serviceDefinition.identifier,
                 document.id,
-                document.file_name
+                document.name
               );
               telemetryApp.sendTelemetryEvent(downloadEvent);
             }
