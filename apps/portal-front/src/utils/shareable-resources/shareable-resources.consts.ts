@@ -37,8 +37,8 @@ function makeSingleQueryMapEntry<TReturn>({
 }
 
 export const localeMap: Record<ServiceSlug, string> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'CsvFeed',
-  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'CustomDashboards',
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'OpenctiIntegrationFeeds',
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
   [ServiceSlug.OPEN_BAS_SCENARIOS]: 'ObasScenario',
 };
 

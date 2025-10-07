@@ -1306,11 +1306,11 @@ export type ServiceDefinition = Node & {
 };
 
 export enum ServiceDefinitionIdentifier {
-  CsvFeeds = 'csv_feeds',
-  CustomDashboards = 'custom_dashboards',
   Link = 'link',
   OpenaevRegistration = 'openaev_registration',
   OpenaevScenarios = 'openaev_scenarios',
+  OpenctiCustomDashboards = 'opencti_custom_dashboards',
+  OpenctiIntegrationFeeds = 'opencti_integration_feeds',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault'
 }

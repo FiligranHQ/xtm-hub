@@ -24,16 +24,22 @@ export const ServiceIdentifierToMailTemplate = new Map<
   keyof MailTemplates
 >([
   [ServiceDefinitionIdentifier.OpenaevScenarios, 'openaev_scenarios'],
-  [ServiceDefinitionIdentifier.CustomDashboards, 'custom_dashboards'],
-  [ServiceDefinitionIdentifier.CsvFeeds, 'csv_feeds'],
+  [
+    ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+    'opencti_custom_dashboards',
+  ],
+  [
+    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
+    'opencti_integration_feeds',
+  ],
   [ServiceDefinitionIdentifier.Vault, 'vault'],
 ]);
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {
   welcome: WelcomeMailModel;
   vault: GenericServiceMailModel;
-  custom_dashboards: GenericServiceMailModel;
-  csv_feeds: GenericServiceMailModel;
+  opencti_custom_dashboards: GenericServiceMailModel;
+  opencti_integration_feeds: GenericServiceMailModel;
   openaev_scenarios: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
   opencti_platform_registered: PlatformRegisteredModel;
@@ -48,9 +54,9 @@ export const templateSubjects: {
   welcome: () => 'Welcome to XTM Hub – Let’s Get Started!',
   vault: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
-  custom_dashboards: (params: GenericServiceMailModel) =>
+  opencti_custom_dashboards: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
-  csv_feeds: (params: GenericServiceMailModel) =>
+  opencti_integration_feeds: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   openaev_scenarios: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
