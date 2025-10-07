@@ -69,6 +69,7 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const { metadataBase } = await generateMetadata({ params });
   const connectorManifest: Connector = await getConnectorManifest();
   const connectorContract: Contract | undefined =
     connectorManifest.contracts.find((contract) => contract.slug === slug);
@@ -78,7 +79,12 @@ export default async function Page({
   }
   return (
     <main>
-      {connectorContract && <ContractDetailPage contract={connectorContract} />}
+      {connectorContract && (
+        <ContractDetailPage
+          metadataBase={metadataBase?.toString() ?? ''}
+          contract={connectorContract}
+        />
+      )}
     </main>
   );
 }

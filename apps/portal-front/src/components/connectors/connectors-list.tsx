@@ -10,9 +10,13 @@ import { useDebounceCallback } from 'usehooks-ts';
 
 interface ContractDetailsInformationPageProps {
   contracts: Contract[];
+  metadataBase: string;
 }
 
-const ConnectorsList = ({ contracts }: ContractDetailsInformationPageProps) => {
+const ConnectorsList = ({
+  contracts,
+  metadataBase,
+}: ContractDetailsInformationPageProps) => {
   const t = useTranslations();
   const [filteredContracts, setFilteredContracts] =
     useState<Contract[]>(contracts);
@@ -49,6 +53,7 @@ const ConnectorsList = ({ contracts }: ContractDetailsInformationPageProps) => {
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-l">
         {filteredContracts.map((contract) => (
           <ConnectorContractCard
+            metadataBase={metadataBase}
             key={contract.slug}
             contract={contract}
           />
