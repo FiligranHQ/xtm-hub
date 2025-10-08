@@ -40,8 +40,8 @@ export const MeRequestTransferPersonalSpaceMutation = graphql`
   }
 `;
 export const MeTransferPersonalSpaceMutation = graphql`
-  mutation meTransferPersonalSpaceMutation($from: ID!, $to: ID!) {
-    transferPersonalSpace(from: $from, to: $to) {
+  mutation meTransferPersonalSpaceMutation($requestId: ID!) {
+    transferPersonalSpace(requestId: $requestId) {
       success
     }
   }

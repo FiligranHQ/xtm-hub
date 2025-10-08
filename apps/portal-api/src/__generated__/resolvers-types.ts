@@ -676,8 +676,7 @@ export type MutationRequestTransferPersonalSpaceArgs = {
 
 
 export type MutationTransferPersonalSpaceArgs = {
-  from: Scalars['ID']['input'];
-  to: Scalars['ID']['input'];
+  requestId: Scalars['ID']['input'];
 };
 
 
@@ -2276,7 +2275,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   requestTransferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationRequestTransferPersonalSpaceArgs>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
-  transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'from' | 'to'>>;
+  transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;

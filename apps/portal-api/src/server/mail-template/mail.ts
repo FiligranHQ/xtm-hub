@@ -18,6 +18,7 @@ export interface RequestTransferPersonalSpaceMailModel {
   previousUserId: string;
   previousUserEmail: string;
   previousUserName: string;
+  transferRequestId: string;
 }
 
 export interface PlatformRegisteredModel {
