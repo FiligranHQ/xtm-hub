@@ -5,15 +5,9 @@ import { useSearchParams } from 'next/navigation';
 const PageLoader = () => {
   const searchParams = useSearchParams();
 
-  const from = searchParams.get('from');
-  const to = searchParams.get('to');
+  const requestId = searchParams.get('id');
 
-  return (
-    <TransferPersonalSpace
-      from={from}
-      to={to}
-    />
-  );
+  return <TransferPersonalSpace requestId={requestId} />;
 };
 
 export default PageLoader;

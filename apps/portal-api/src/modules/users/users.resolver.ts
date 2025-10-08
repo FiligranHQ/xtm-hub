@@ -10,6 +10,7 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
+import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
@@ -287,12 +288,10 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
       }
     },
-    transferPersonalSpace: async (_, { from, to }, context) => {
+    transferPersonalSpace: async (_, { requestId }) => {
       try {
         await usersProfileApp.transferPersonalSpace(
-          context,
-          from as UserId,
-          to as UserId
+          requestId as UserTransferRequestId
         );
 
         return { success: true };

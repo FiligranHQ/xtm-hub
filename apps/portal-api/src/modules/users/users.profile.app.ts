@@ -1,6 +1,6 @@
 import { dbTx } from '../../../knexfile';
 import { EditMeUserInput } from '../../__generated__/resolvers-types';
-import { UserId } from '../../model/kanel/public/User';
+import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../sessionStoreManager';
@@ -14,6 +14,10 @@ import {
   loadUserByOrganization,
 } from '../organizations/organizations.domain';
 import { updateSubscriptionBy } from '../subcription/subscription.domain';
+import {
+  insertNewUserTransfer,
+  loadUserTransfer,
+} from './user_transferRequest/user_transferRequest.domain';
 import { loadSimpleUserBy, loadUserDetails, updateUser } from './users.domain';
 import { mapUserToGraphqlUser } from './users.helper';
 
@@ -59,7 +63,13 @@ export const usersProfileApp = {
     if (!existingPersonalSpace) {
       throw new Error(ErrorCode.PersonalSpaceMustAlreadyExist);
     }
+
     const newUser = await loadUserByOrganization(existingPersonalSpace.id);
+
+    const userTransferRequest = await insertNewUserTransfer({
+      from_user_id: context.user.id,
+      to_user_id: newUser[0].id,
+    });
     await sendMail({
       to: newEmail,
       template: 'request_transfer_personal_space',
@@ -69,14 +79,24 @@ export const usersProfileApp = {
         previousUserId: context.user.id,
         previousUserEmail: context.user.email,
         previousUserName: `${context.user.firstname} ${context.user.lastname}`,
+        transferRequestId: `${userTransferRequest[0].id}`,
       },
     });
   },
-  transferPersonalSpace: async (context, from: UserId, to: UserId) => {
+  transferPersonalSpace: async (
+    transferPersonalSpaceId: UserTransferRequestId
+  ) => {
     const trx = await dbTx();
     try {
-      const fromUser = await loadSimpleUserBy({ id: from });
-      const toUser = await loadSimpleUserBy({ id: to });
+      const userTransferRequest = await loadUserTransfer({
+        id: transferPersonalSpaceId,
+      });
+      const fromUser = await loadSimpleUserBy({
+        id: userTransferRequest.from_user_id,
+      });
+      const toUser = await loadSimpleUserBy({
+        id: userTransferRequest.to_user_id,
+      });
 
       const personalSpaceToTransfer = await loadOrganizationBy({
         name: fromUser.email,

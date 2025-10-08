@@ -73,7 +73,7 @@ type Mutation {
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   resetPassword: Success!
   requestTransferPersonalSpace(new_email: String): Success!
-  transferPersonalSpace(from: ID!, to: ID!): Success!
+  transferPersonalSpace(requestId: ID!): Success!
   login(email: String!, password: String): User
   logout: ID!
 }

@@ -7,13 +7,12 @@ import { FunctionComponent, useEffect } from 'react';
 import { useMutation } from 'react-relay';
 
 interface TransferPersonalSpaceProps {
-  from: string | null;
-  to: string | null;
+  requestId: string | null;
 }
 
 export const TransferPersonalSpace: FunctionComponent<
   TransferPersonalSpaceProps
-> = ({ from, to }) => {
+> = ({ requestId }) => {
   const router = useRouter();
 
   const t = useTranslations();
@@ -21,11 +20,10 @@ export const TransferPersonalSpace: FunctionComponent<
     MeTransferPersonalSpaceMutation
   );
   useEffect(() => {
-    if (from && to) {
+    if (requestId) {
       commitTransferPersonalSpaceMutation({
         variables: {
-          from: from,
-          to: to,
+          requestId,
         },
         onError(error) {
           toast({
@@ -43,7 +41,7 @@ export const TransferPersonalSpace: FunctionComponent<
         },
       });
     }
-  }, [from, to]);
+  }, [requestId]);
   return (
     <div className="absolute inset-0 z-50 m-auto h-20 w-20">
       <FiligranLoader />

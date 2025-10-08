@@ -132,7 +132,7 @@ type Mutation {
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   resetPassword: Success! @auth
   requestTransferPersonalSpace(new_email: String): Success! @auth
-  transferPersonalSpace(from: ID!, to: ID!): Success! @auth
+  transferPersonalSpace(requestId: ID!): Success! @auth
 
   # Login
   login(email: String!, password: String): User
