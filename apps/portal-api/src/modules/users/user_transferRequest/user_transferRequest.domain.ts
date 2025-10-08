@@ -10,14 +10,13 @@ export const insertNewUserTransfer = (
   data: UserTransferRequestInitializer,
   trx?: Knex.Transaction
 ) => {
-  const query = dbUnsecure<UserTransferRequest>('User_TransferRequest')
+  return dbUnsecure<UserTransferRequest>('User_TransferRequest')
     .insert(data)
+    .returning('*')
+    .modify((qb) => {
+      if (trx) qb.transacting(trx);
+    })
     .returning('*');
-
-  if (trx) {
-    query.transacting(trx);
-  }
-  return query;
 };
 
 export const loadUserTransfer = (
