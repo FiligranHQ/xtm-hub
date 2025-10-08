@@ -1,4 +1,5 @@
 export interface ManifestInformation {
+  version: string;
   name: string;
   description: string;
   shortDescription: string;
