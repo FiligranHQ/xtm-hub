@@ -129,8 +129,7 @@ export const getRolesPortal = (
 export const loadSimpleUserBy = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<User> => {
-  const [foundUser] = await dbUnsecure<User>('User').where(field);
-  return foundUser;
+  return dbUnsecure<User>('User').where(field).first();
 };
 
 export const loadUserBy = async (

@@ -144,13 +144,11 @@ export const updateSubscriptionBy = async (
   data: SubscriptionMutator,
   trx?: Knex.Transaction
 ): Promise<Subscription[]> => {
-  let query = dbUnsecure<Subscription>('Subscription')
+  return dbUnsecure<Subscription>('Subscription')
     .where(field)
     .update(data)
+    .modify((qb) => {
+      if (trx) qb.transacting(trx);
+    })
     .returning('*');
-
-  if (trx) {
-    query = query.transacting(trx);
-  }
-  return query;
 };

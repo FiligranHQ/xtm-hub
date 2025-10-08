@@ -90,28 +90,24 @@ export const updateOrganizationBy = async (
   data: OrganizationMutator,
   trx?: Knex.Transaction
 ) => {
-  let query = dbUnsecure<Organization>('Organization')
+  return dbUnsecure<Organization>('Organization')
     .where(field)
     .update(data)
+    .modify((qb) => {
+      if (trx) qb.transacting(trx);
+    })
     .returning('*');
-
-  if (trx) {
-    query = query.transacting(trx);
-  }
-  return query;
 };
 
 export const deleteOrganizationBy = (
   conditions: OrganizationMutator,
   trx?: Knex.Transaction
 ) => {
-  let query = dbUnsecure<Organization>('Organization')
-    .delete('*')
+  return dbUnsecure<Organization>('Organization')
     .where(conditions)
+    .delete()
+    .modify((qb) => {
+      if (trx) qb.transacting(trx);
+    })
     .returning('*');
-
-  if (trx) {
-    query = query.transacting(trx);
-  }
-  return query;
 };

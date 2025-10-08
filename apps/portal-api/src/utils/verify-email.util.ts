@@ -1,3 +1,5 @@
+import z from 'zod';
+
 const NotAuthorizeEmail = ['gmail.com', 'yahoo.com', 'hotmail.com'];
 
 export const isAuthorizedEmail = (email: string) => {
@@ -10,6 +12,5 @@ export const extractDomain = (email: string) => {
 };
 
 export const isValidEmail = (email: string) => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
+  return z.string().email().safeParse(email).success;
 };
