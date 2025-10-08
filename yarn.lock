@@ -10158,21 +10158,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.5.2, @types/node@npm:^24.0.3":
-  version: 24.5.2
-  resolution: "@types/node@npm:24.5.2"
-  dependencies:
-    undici-types: "npm:~7.12.0"
-  checksum: 10c0/96baaca6564d39c6f7f6eddd73ce41e2a7594ef37225cd52df3be36fad31712af8ae178387a72d0b80f2e2799e7fd30c014bc0ae9eb9f962d9079b691be00c48
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:24.7.0":
   version: 24.7.0
   resolution: "@types/node@npm:24.7.0"
   dependencies:
     undici-types: "npm:~7.14.0"
   checksum: 10c0/f036c78062cb3a0d5c6586bf2dac347ed3f4af121cef4ab92c85c44e32be1c50aab5ba96955842b7f8165f0e0f1c8066d1813ae259372df6c0fa9fadb1116a3e
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^24.0.3":
+  version: 24.5.2
+  resolution: "@types/node@npm:24.5.2"
+  dependencies:
+    undici-types: "npm:~7.12.0"
+  checksum: 10c0/96baaca6564d39c6f7f6eddd73ce41e2a7594ef37225cd52df3be36fad31712af8ae178387a72d0b80f2e2799e7fd30c014bc0ae9eb9f962d9079b691be00c48
   languageName: node
   linkType: hard
 
@@ -28157,7 +28157,7 @@ __metadata:
     "@nx/react": "npm:21.6.3"
     "@nx/web": "npm:^21.2.3"
     "@nx/workspace": "npm:21.6.3"
-    "@types/node": "npm:24.5.2"
+    "@types/node": "npm:24.7.0"
     eslint: "npm:^9.30.1"
     eslint-config-next: "npm:^15.3.5"
     eslint-config-prettier: "npm:^10.1.5"
