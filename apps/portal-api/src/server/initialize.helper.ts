@@ -25,7 +25,8 @@ import {
   updateOrganization,
 } from '../modules/organizations/organizations.domain';
 import {
-  ADMIN_UUID,
+  PLATFORM_DOMAIN,
+  PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
   ROLE_ADMIN_ORGA,
@@ -171,24 +172,24 @@ export const insertPlatformOrganization = async (trx) => {
     await insertNewOrganization(
       {
         id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
-        name: 'Filigran',
-        domains: ['filigran.io'],
+        name: PLATFORM_NAME,
+        domains: PLATFORM_DOMAIN,
       },
       trx
     );
   }
 };
 
-export const insertUserAdminOrganization = async (trx) => {
+export const insertUserAdminOrganization = async (user_id, email, trx) => {
   const adminOrganization = await loadOrganizationBy({
-    id: ADMIN_UUID as unknown as OrganizationId,
+    id: user_id as unknown as OrganizationId,
   });
 
   if (!adminOrganization) {
     await insertNewOrganization(
       {
-        id: ADMIN_UUID as unknown as OrganizationId,
-        name: portalConfig.admin.email,
+        id: user_id as unknown as OrganizationId,
+        name: email,
         personal_space: true,
       },
       trx
@@ -196,9 +197,9 @@ export const insertUserAdminOrganization = async (trx) => {
   }
 };
 
-export const insertAdminUser = async (trx, email, data) => {
+export const insertAdminUser = async (user_id, email, data, trx) => {
   const userData = {
-    id: ADMIN_UUID,
+    id: user_id,
     email,
     selected_organization_id: PLATFORM_ORGANIZATION_UUID,
     ...data,
@@ -206,9 +207,9 @@ export const insertAdminUser = async (trx, email, data) => {
   await dbUnsecure<UserInitializer>('User').insert(userData).transacting(trx);
 };
 
-export const updateUserPassword = async (data) => {
+export const updateUserPassword = async (user_id, data) => {
   await dbUnsecure<UserInitializer>('User')
-    .where({ id: ADMIN_UUID as UserId })
+    .where({ id: user_id as UserId })
     .update(data)
     .returning('*');
 };

@@ -20,7 +20,7 @@ export async function up(knex) {
   if (documents.length > 0) {
     const metadataEntries = documents.map((doc) => ({
       document_id: doc.id,
-      key: 'type',
+      key: 'integration_type',
       value: 'csv_feed',
     }));
 
@@ -44,7 +44,7 @@ export async function down(knex) {
 
     await knex('Document_Metadata')
       .whereIn('document_id', documentIds)
-      .andWhere('key', 'type')
+      .andWhere('key', 'integration_type')
       .andWhere('value', 'csv_feed')
       .delete();
   }

@@ -21,7 +21,7 @@ export const csvFeedsApp = {
     try {
       const doc = await createDocumentWithChildren<CsvFeed>(
         CSV_FEED_DOCUMENT_TYPE,
-        input,
+        { ...input, integration_type: 'csv_feed' },
         document,
         CSV_FEED_METADATA,
         context,
