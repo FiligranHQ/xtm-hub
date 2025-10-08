@@ -6,7 +6,8 @@ import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../sessionStoreManager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { isImgUrl } from '../../utils/utils';
 import { isValidEmail } from '../../utils/verify-email.util';
 import {
@@ -61,7 +62,10 @@ export const usersProfileApp = {
       personal_space: true,
     });
     if (!existingPersonalSpace) {
-      throw new Error(ErrorCode.PersonalSpaceMustAlreadyExist);
+      logApp.info(
+        `The user ${context.user.id} has requested a transfer to a unknown user: ${newEmail}`
+      );
+      return; // Best way to hide from the vilain user that the account does not exist. The email will just never be sent.
     }
 
     const newUser = await loadUserByOrganization(existingPersonalSpace.id);
@@ -78,7 +82,7 @@ export const usersProfileApp = {
         recipientId: newUser[0].id,
         previousUserId: context.user.id,
         previousUserEmail: context.user.email,
-        previousUserName: `${context.user.firstname} ${context.user.lastname}`,
+        previousUserName: `${context.user.first_name} ${context.user.last_name}`,
         transferRequestId: `${userTransferRequest[0].id}`,
       },
     });
@@ -91,6 +95,9 @@ export const usersProfileApp = {
       const userTransferRequest = await loadUserTransfer({
         id: transferPersonalSpaceId,
       });
+      if (!userTransferRequest) {
+        throw new Error();
+      }
       const fromUser = await loadSimpleUserBy({
         id: userTransferRequest.from_user_id,
       });
@@ -107,6 +114,14 @@ export const usersProfileApp = {
         name: toUser.email,
         personal_space: true,
       });
+      if (
+        !fromUser ||
+        !toUser ||
+        !personalSpaceToTransfer ||
+        !currentToUserSpace
+      ) {
+        throw new Error();
+      }
 
       await updateSubscriptionBy(
         { organization_id: personalSpaceToTransfer.id },
@@ -115,8 +130,9 @@ export const usersProfileApp = {
       );
 
       await trx.commit();
-    } catch {
+    } catch (error) {
       await trx.rollback();
+      throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
     }
   },
 };

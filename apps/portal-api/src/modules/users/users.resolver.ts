@@ -296,7 +296,7 @@ const resolvers: Resolvers = {
 
         return { success: true };
       } catch (error) {
-        throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
+        throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
       }
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {

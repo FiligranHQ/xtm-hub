@@ -9,7 +9,7 @@ import { addPrefixToObject } from '../../../utils/typescript';
 export const insertNewUserTransfer = (
   data: UserTransferRequestInitializer,
   trx?: Knex.Transaction
-) => {
+): Promise<UserTransferRequest[]> => {
   return dbUnsecure<UserTransferRequest>('User_TransferRequest')
     .insert(data)
     .returning('*')
@@ -27,4 +27,13 @@ export const loadUserTransfer = (
   return dbUnsecure<UserTransferRequest>('User_TransferRequest')
     .where(field)
     .first();
+};
+
+export const deleteUserTransferRequest = async (
+  field: UserTransferRequestMutator
+) => {
+  return dbUnsecure<UserTransferRequest>('User_TransferRequest')
+    .where(field)
+    .delete('*')
+    .returning('*');
 };
