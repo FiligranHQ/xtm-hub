@@ -45,7 +45,7 @@ export const isEmpty = (value: unknown): boolean => {
   return false;
 };
 
-export const getEnv = () => process.env.APP_ENV;
+export const getEnv = () => process.env.NEXT_PUBLIC_APP_ENV;
 export const isProduction = () => getEnv() === 'production';
 export const isDevelopment = () =>
   getEnv() !== 'staging' && getEnv() !== 'production';
