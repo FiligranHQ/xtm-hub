@@ -49,7 +49,7 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CsvFeed>(
-          'csv_feed',
+          CSV_FEED_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           CSV_FEED_METADATA,
@@ -103,7 +103,7 @@ const resolvers: Resolvers = {
   Query: {
     csvFeeds: async (_, input, context) =>
       loadParentDocumentsByServiceInstance<CsvFeedConnection>(
-        'csv_feed',
+        CSV_FEED_DOCUMENT_TYPE,
         context,
         input
       ),

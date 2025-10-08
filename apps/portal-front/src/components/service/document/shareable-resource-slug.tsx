@@ -39,14 +39,14 @@ interface ShareableResourceSlugProps {
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
-  OPENCTI_CSVFEED = 'csv_feed',
-  OPENCTI_CUSTOMDASHBOARD = 'custom_dashboard',
+  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration_feed',
+  OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
 }
 
 export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
   openaev_scenario: 'Scenario OpenAEV',
-  csv_feed: 'Feed OpenCTI',
-  custom_dashboard: 'Custom Dashboard OpenCTI',
+  opencti_integration_feed: 'Feed OpenCTI',
+  opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
 };
 
 // Component
@@ -73,10 +73,9 @@ const ShareableResourceSlug: React.FunctionComponent<
     if (documentData.type === ShareableResourceType.OPENAEV_SCENARIO) {
       return isOneOpenAEVRegistrationFeatureEnabled;
     }
-
     return [
-      ShareableResourceType.OPENCTI_CUSTOMDASHBOARD,
-      ShareableResourceType.OPENCTI_CSVFEED,
+      ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
+      ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
     ].includes(documentData.type as ShareableResourceType);
   }, [
     documentData.active,

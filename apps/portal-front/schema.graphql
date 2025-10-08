@@ -282,8 +282,8 @@ type CustomDashboardConnection {
 enum ServiceDefinitionIdentifier {
   vault
   link
-  custom_dashboards
-  csv_feeds
+  opencti_custom_dashboards
+  opencti_integration_feeds
   openaev_scenarios
   opencti_registration
   openaev_registration

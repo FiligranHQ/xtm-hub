@@ -34,7 +34,7 @@ export function getServiceInfo(
 export const isCustomDashboard = (
   document: ShareableResource
 ): document is customDashboardsItem_fragment$data => {
-  return document.type === 'custom_dashboard';
+  return document.type === 'opencti_custom_dashboards';
 };
 
 export const docHasMetadata = <T, K extends string>(

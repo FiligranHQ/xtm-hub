@@ -1,7 +1,7 @@
 import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
 import Document from '../../../model/kanel/public/Document';
 
-export const CSV_FEED_DOCUMENT_TYPE = 'csv_feed';
+export const CSV_FEED_DOCUMENT_TYPE = 'opencti_integration_feed';
 
 export type CsvFeed = Document;
 

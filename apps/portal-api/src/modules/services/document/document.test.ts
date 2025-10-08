@@ -369,7 +369,7 @@ describe('Documents loading', () => {
         minio_name: 'xminioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
-        type: 'csv_feed',
+        type: 'opencti_integration_feeds',
       },
       [],
       trx

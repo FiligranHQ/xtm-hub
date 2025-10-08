@@ -21,7 +21,7 @@ export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
 export interface SeoCustomDashboard {
   description: string;
   id: string;
-  type: 'custom_dashboard';
+  type: 'opencti_custom_dashboards';
   children_documents: {
     id: string;
   }[];
@@ -58,7 +58,7 @@ export interface SeoCustomDashboard {
 export interface SeoCsvFeed {
   description: string;
   id: string;
-  type: 'csv_feed';
+  type: 'opencti_integration_feeds';
   children_documents: {
     id: string;
   }[];

@@ -29,8 +29,10 @@ const mapNewIdentifierToOldIdentifier = (
   identifier: string
 ): ServiceDefinitionIdentifierEnum => {
   const mapValue: Record<string, ServiceDefinitionIdentifierEnum> = {
-    octi_custom_dashboards: ServiceDefinitionIdentifierEnum.CUSTOM_DASHBOARDS,
-    octi_integration_feeds: ServiceDefinitionIdentifierEnum.CSV_FEEDS,
+    octi_custom_dashboards:
+      ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_DASHBOARDS,
+    octi_integration_feeds:
+      ServiceDefinitionIdentifierEnum.OPENCTI_INTEGRATION_FEEDS,
   };
   return (
     mapValue[identifier] ?? (identifier as ServiceDefinitionIdentifierEnum)

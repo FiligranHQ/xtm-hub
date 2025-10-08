@@ -20,7 +20,9 @@ export const setQueryForDocument = <T>(
     ).then((serviceDef) => {
       if (
         !capabilities?.includes(ServiceRestriction.Upload) &&
-        ['custom_dashboards', 'csv_feeds'].includes(serviceDef.identifier)
+        ['opencti_custom_dashboards', 'opencti_integration_feeds'].includes(
+          serviceDef.identifier
+        )
       ) {
         queryContext.where('Document.active', '=', 'true');
       }

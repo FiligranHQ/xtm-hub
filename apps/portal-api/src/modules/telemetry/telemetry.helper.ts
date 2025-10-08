@@ -58,11 +58,11 @@ const ServiceIdentifierToEventService = new Map<
     TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY,
   ],
   [
-    ServiceDefinitionIdentifier.CsvFeeds,
+    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
     TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
   ],
   [
-    ServiceDefinitionIdentifier.CustomDashboards,
+    ServiceDefinitionIdentifier.OpenctiCustomDashboards,
     TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
   ],
 ]);
@@ -85,7 +85,10 @@ const ServiceIdentifierToEventServiceType = new Map<
   ServiceDefinitionIdentifier,
   TelemetryEventServiceType
 >([
-  [ServiceDefinitionIdentifier.CsvFeeds, TelemetryEventServiceType.CSV_FEEDS],
+  [
+    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
+    TelemetryEventServiceType.CSV_FEEDS,
+  ],
 ]);
 
 export function buildLoginEvent(

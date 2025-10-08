@@ -165,7 +165,7 @@ export async function seed(knex) {
         name: 'csv feeds',
         description: 'csv description',
         public: true,
-        identifier: 'csv_feeds',
+        identifier: 'opencti_integration_feeds',
       },
       {
         id: '97280ba3-8587-4a3e-87ad-ed279b0e768f',
@@ -179,7 +179,7 @@ export async function seed(knex) {
         name: 'custom dashboards',
         description: 'custom dashboards description',
         public: true,
-        identifier: 'custom_dashboards',
+        identifier: 'opencti_custom_dashboards',
       },
     ])
     .onConflict('id')
