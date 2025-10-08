@@ -31,7 +31,7 @@ ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 WORKDIR /app/apps/portal-front
 RUN corepack enable && \
     echo "NEXT_PUBLIC_APP_VERSION=$APP_VERSION" > .env.local && \
-    yarn build
+    yarn dlx nx --no-cloud build portal-front
 
 # Production image, copy all the files and run next
 FROM base AS runner
