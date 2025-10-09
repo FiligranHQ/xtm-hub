@@ -2,7 +2,7 @@ import { organizationDeletion } from '@/components/organization/organization.gra
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { organizationDeletionMutation } from '@generated/organizationDeletionMutation.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
-import { Button, useToast } from 'filigran-ui';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
@@ -10,11 +10,15 @@ import { useMutation } from 'react-relay';
 interface DeleteOrganizationProps {
   organization: organizationItem_fragment$data;
   connectionId: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
 export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
   organization,
   connectionId,
+  open,
+  setOpen,
 }) => {
   const [deleteOrganizationMutation] =
     useMutation<organizationDeletionMutation>(organizationDeletion);
@@ -43,14 +47,8 @@ export const DeleteOrganization: FunctionComponent<DeleteOrganizationProps> = ({
       actionButtonText={t('Utils.Delete')}
       variantName={'destructive'}
       AlertTitle={t('OrganizationForm.DeleteOrganization')}
-      triggerElement={
-        <Button
-          variant="ghost"
-          className="w-full justify-start normal-case"
-          aria-label={t('OrganizationForm.DeleteOrganization')}>
-          {t('Utils.Delete')}
-        </Button>
-      }
+      isOpen={open}
+      onOpenChange={setOpen}
       onClickContinue={() => onDeletedOrganization(organization.id)}>
       {t('OrganizationForm.SureDeleteOrganization', {
         organizationName: organization.name,

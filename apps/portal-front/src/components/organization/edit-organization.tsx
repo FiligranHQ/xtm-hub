@@ -5,23 +5,27 @@ import { organizationEditMutation } from '@generated/organizationEditMutation.gr
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 import { SheetWithPreventingDialog } from '../ui/sheet-with-preventing-dialog';
 
 interface EditOrganizationProps {
   organization: organizationItem_fragment$data;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
 export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   organization,
+  open,
+  setOpen,
 }) => {
   const t = useTranslations();
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
-  const [openSheet, setOpenSheet] = useState<boolean | null>(!!organization);
+
 
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     commitOrganizationEditionMutation({
@@ -33,7 +37,7 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
       },
 
       onCompleted: () => {
-        setOpenSheet(false);
+        setOpen(false);
         toast({
           title: t('Utils.Success'),
           description: t('OrganizationActions.OrganizationUpdated', {
@@ -52,8 +56,8 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   };
   return (
     <SheetWithPreventingDialog
-      open={openSheet ?? false}
-      setOpen={setOpenSheet}
+      open={open}
+      setOpen={setOpen}
       title={t('OrganizationForm.EditOrganization')}>
       <OrganizationForm
         organization={organization}

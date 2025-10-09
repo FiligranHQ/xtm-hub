@@ -10,7 +10,7 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { IconActions } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
@@ -19,13 +19,16 @@ import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { MoreVertIcon } from 'filigran-icon';
-import { Badge, Button, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
+import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, Suspense, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 const OrganizationList: FunctionComponent = () => {
   const t = useTranslations();
   const [editOrganization, setEditOrganization] = useState<
+    organizationItem_fragment$data | undefined
+  >(undefined);
+  const [deleteOrganization, setDeleteOrganization] = useState<
     organizationItem_fragment$data | undefined
   >(undefined);
   const columns: ColumnDef<organizationItem_fragment$data>[] = [
@@ -71,17 +74,12 @@ const OrganizationList: FunctionComponent = () => {
                 <span className="sr-only">{t('Utils.OpenMenu')}</span>
               </>
             }>
-            <Button
-              variant="ghost"
-              className="w-full justify-start normal-case"
-              onClick={() => setEditOrganization(row.original)}
-              aria-label={t('OrganizationForm.EditOrganization')}>
+            <IconActionsItem onClick={() => setEditOrganization(row.original)}>
               {t('Utils.Update')}
-            </Button>
-            <DeleteOrganization
-              connectionId={organizationData.organizations.__id}
-              organization={row.original}
-            />
+            </IconActionsItem>
+            <IconActionsItem onClick={() => setDeleteOrganization(row.original)}>
+              {t('Utils.Delete')}
+            </IconActionsItem>
           </IconActions>
         </div>
       ),
@@ -228,8 +226,19 @@ const OrganizationList: FunctionComponent = () => {
       </Suspense>
       {editOrganization && (
         <EditOrganization
-          key={editOrganization.id}
+          key={`edit-${editOrganization.id}`}
           organization={editOrganization}
+          open={!!editOrganization}
+          setOpen={(open) => setEditOrganization(open ? editOrganization : undefined)}
+        />
+      )}
+      {deleteOrganization && (
+        <DeleteOrganization
+          key={`delete-${deleteOrganization.id}`}
+          connectionId={organizationData.organizations.__id}
+          organization={deleteOrganization}
+          open={!!deleteOrganization}
+          setOpen={(open) => setDeleteOrganization(open ? deleteOrganization : undefined)}
         />
       )}
     </>
