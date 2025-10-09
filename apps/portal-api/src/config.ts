@@ -44,6 +44,10 @@ interface PortalConfig {
       reject_unauthorized: boolean;
     };
   };
+  session_store: {
+    type: 'postgresql' | 'memory';
+    cleanup_interval_minutes: number;
+  };
   services: Services[];
   serviceCapabilities: ServiceCapability[];
   service_definitions: ServiceDefinitions[];
@@ -89,6 +93,12 @@ const portalConfig: PortalConfig = {
   services: config.get('init_services'),
   serviceCapabilities: config.get('init_service_capabilities'),
   service_definitions: config.get('init_service_definitions'),
+  session_store: {
+    type: config.get<'postgresql' | 'memory'>('session_store.type'),
+    cleanup_interval_minutes: config.get<number>(
+      'session_store.cleanup_interval_minutes'
+    ),
+  },
   environment: config.get<string>('environment'),
   enabled_features: config.get<string[]>('enabled_features') ?? [],
   dev_users: parseAndValidateDevUsers(),

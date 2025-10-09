@@ -30,6 +30,7 @@ import platformInit, { minioInit } from './server/initialize';
 import { getSessionStoreInstance } from './sessionStoreManager';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
 import { logApp } from './utils/app-logger.util';
+import { startSessionCleanup } from './utils/session-cleanup';
 import { extractId } from './utils/utils';
 const { json } = pkg;
 
@@ -142,8 +143,9 @@ const middlewareExpress = expressMiddleware(server, {
   context: async ({ req, res }) => {
     const { user } = req.session;
     // extract id, only done for request with id directly
-    req?.body?.variables?.id &&
-      (req.body.variables.id = extractId(req.body.variables.id));
+    if (req?.body?.variables?.id) {
+      req.body.variables.id = extractId(req.body.variables.id);
+    }
 
     const serviceInstanceId = req?.body?.variables?.serviceInstanceId
       ? fromGlobalId(req?.body?.variables?.serviceInstanceId)?.id
@@ -206,6 +208,9 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   );
   await minioInit();
   logApp.debug('[MinIO] Bucket ready');
+
+  startSessionCleanup();
+
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: portalConfig.port }, resolve)
   );
