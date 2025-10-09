@@ -107,7 +107,118 @@ export const insertDocument = async (
 
   return createDocument<Document>(context, documentData, [], trx);
 };
+export const upsertDocumentWithChildren = async <T extends DocumentModel>(
+  type: string,
+  input: Partial<T>,
+  uploads: Upload[] | Upload,
+  metadataKeys: DocumentMetadataKeys<T>,
+  context: PortalContext,
+  trx: Knex.Transaction
+) => {
+  const doc = await upsertDocument<T>(
+    context,
+    {
+      ...input,
+      type,
+    },
+    metadataKeys,
+    trx
+  );
 
+  return doc;
+};
+export const upsertDocument = async <T extends DocumentModel>(
+  context: PortalContext,
+  documentData: Omit<Partial<T>, 'labels'> & {
+    labels?: string[];
+    parent_document_id?: string;
+  },
+  metadataKeys: DocumentMetadataKeys<T> = [],
+  trx: Knex.Transaction
+): Promise<T> => {
+  // Prepare the data to insert
+  const insertData = {
+    ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
+    uploader_id: context.user.id,
+    uploader_organization_id: context.user.selected_organization_id,
+  };
+
+  // Upsert on slug
+  const [document] = await db<DocumentModel>(context, 'Document')
+    .insert(insertData)
+    .onConflict('slug')
+    .merge({
+      ...omit(insertData, ['uploader_id']),
+      updated_at: new Date(),
+      updater_id: insertData.uploader_id,
+    })
+    .returning('*')
+    .transacting(trx);
+
+  const documentWasUpdated = !!document.updated_at;
+
+  // Handle parent document relationship
+  if (documentData.parent_document_id) {
+    // First, delete existing relationship if it exists (for upsert scenario)
+    if (documentWasUpdated) {
+      await db<DocumentChildren>(context, 'Document_Children')
+        .where({ child_document_id: document.id })
+        .delete()
+        .transacting(trx);
+    }
+    // Insert new relationship
+    await db<DocumentChildren>(context, 'Document_Children')
+      .insert({
+        parent_document_id: documentData.parent_document_id as DocumentId,
+        child_document_id: document.id,
+      })
+      .transacting(trx);
+  }
+
+  // if (documentData.labels?.length) {
+  //   await db<ObjectLabel>(context, 'Object_Label')
+  //     .insert(
+  //       documentData.labels.map((id: string) => ({
+  //         object_id: document.id as unknown as ObjectLabelObjectId,
+  //         label_id: extractId(id) as LabelId,
+  //       }))
+  //     )
+  //     .transacting(trx);
+  // }
+
+  if (metadataKeys.length > 0) {
+    // If document was updated (not created)
+    if (documentWasUpdated) {
+      // Delete all existing metadata except 'version'
+      await db<DocumentMetadata>(context, 'Document_Metadata')
+        .where('document_id', document.id)
+        .whereNot('key', 'version') // Keep version metadata
+        .delete()
+        .transacting(trx);
+    }
+
+    // Insert new metadata (excluding version) if documentWasUpdated
+    const metadataToInsert = metadataKeys
+      .filter((key) => key !== 'version' || !documentWasUpdated) // Insert version if it on creation
+      .map((key) => ({
+        document_id: document.id,
+        key: key as DocumentMetadataKey,
+        value: documentData[key] as string,
+      }));
+
+    if (metadataToInsert.length > 0) {
+      const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+        .insert(metadataToInsert)
+        .returning('*')
+        .transacting(trx);
+
+      for (const metadata of metadatas) {
+        document[metadata.key] = metadata.value;
+      }
+    }
+  }
+  return document as T;
+};
 export const createDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentData: Omit<Partial<T>, 'labels'> & {

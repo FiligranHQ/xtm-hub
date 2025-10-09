@@ -18,7 +18,9 @@
         "container_image": "docker.io/example/image:latest",
         "container_type": "docker",
         "source_code": "https://github.com/example/repo",
-        "subscription_link": "https://example.com/subscribe"
+        "subscription_link": "https://example.com/subscribe",
+        "manager_supported": true,
+        "playbook_supported": false
       },
       {
         "title": "Contract Two",
@@ -31,7 +33,9 @@
         "container_image": "docker.io/example/image2:latest",
         "container_type": "kubernetes",
         "source_code": "https://github.com/example/repo2",
-        "subscription_link": "https://example.com/subscribe2"
+        "subscription_link": "https://example.com/subscribe2",
+        "manager_supported": false,
+        "playbook_supported": true
       }
     ]
   }

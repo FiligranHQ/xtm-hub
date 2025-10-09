@@ -6,6 +6,7 @@ export async function up(knex) {
   // Add the column
   await knex.schema.table('Document', function (table) {
     table.string('source_type').defaultTo('internal');
+    table.unique('slug');
   });
 
   // Update all existing rows to have 'internal' as the value
@@ -52,5 +53,6 @@ export async function down(knex) {
   // Remove source_type column
   return knex.schema.table('Document', function (table) {
     table.dropColumn('source_type');
+    table.dropUnique('slug');
   });
 }

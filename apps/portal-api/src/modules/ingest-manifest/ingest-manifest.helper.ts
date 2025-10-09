@@ -1,6 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import z from 'zod';
+import {
+  INTEGRATION_FEED_CONNECTORS_TYPE,
+  INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from '../services/integration-feeds/integration-feeds.model';
 import { ManifestInformation } from './ingest-manifest.model';
 
 const CACHE_DIR = '.cache';
@@ -76,18 +81,27 @@ export const extractManifestInformation = (
     // Type-safe mapping - all fields guaranteed to exist
     return result.data.data.contracts.map(
       (contract): ManifestInformation => ({
-        version: result.data.data.version,
+        /* Document properties */
         name: contract.title,
         description: contract.description,
-        shortDescription: contract.short_description,
-        containerImage: contract.container_image,
+        short_description: contract.short_description?.slice(0, 250),
         slug: contract.slug,
-        logo: contract.logo,
+        service_instance_id: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
+        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        source_type: 'external',
+        /* Document metadata properties */
+        container_image: contract.container_image,
+        version: result.data.data.version,
         verified: contract.verified,
-        containerType: contract.container_type,
-        useCases: contract.use_cases,
-        sourceCode: contract.source_code,
-        subscriptionLink: contract.subscription_link,
+        integration_subtype: contract.container_type,
+        integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
+        source_code: contract.source_code,
+        subscription_link: contract.subscription_link,
+        manager_supported: contract.manager_supported,
+        playbook_supported: contract.playbook_supported,
+        /*Label and picture*/
+        labels: contract.use_cases,
+        logo: contract.logo,
       })
     );
   } catch (error) {
@@ -105,12 +119,14 @@ const ContractSchema = z.object({
   description: z.string().min(1),
   short_description: z.string().min(1),
   logo: z.string().min(1),
-  use_cases: z.array(z.string()).min(1), // At least one use case
+  use_cases: z.array(z.string()), // At least one use case
   verified: z.boolean(),
   container_image: z.string().min(1),
   container_type: z.string().min(1),
   source_code: z.string().url(),
   subscription_link: z.string().url().or(z.literal('')),
+  manager_supported: z.boolean(),
+  playbook_supported: z.boolean(),
 });
 
 const ManifestSchema = z.object({

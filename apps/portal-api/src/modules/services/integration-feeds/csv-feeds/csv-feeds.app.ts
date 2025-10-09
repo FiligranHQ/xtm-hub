@@ -1,15 +1,16 @@
-import { dbTx } from '../../../../knexfile';
-import { PortalContext } from '../../../model/portal-context';
-import { logApp } from '../../../utils/app-logger.util';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import { buildCreateEvent } from '../../telemetry/telemetry.helper';
-import { createDocumentWithChildren } from '../document/document.domain';
-import { Upload } from '../document/document.helper';
+import { dbTx } from '../../../../../knexfile';
+import { PortalContext } from '../../../../model/portal-context';
+import { logApp } from '../../../../utils/app-logger.util';
+import { telemetryApp } from '../../../telemetry/telemetry.app';
+import { buildCreateEvent } from '../../../telemetry/telemetry.helper';
+import { createDocumentWithChildren } from '../../document/document.domain';
+import { Upload } from '../../document/document.helper';
 import {
-  CSV_FEED_DOCUMENT_TYPE,
   CSV_FEED_METADATA,
   CsvFeed,
-} from './csv-feeds.domain';
+  INTEGRATION_FEED_CSV_FEED_TYPE,
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from '../integration-feeds.model';
 
 export const csvFeedsApp = {
   createCsvFeed: async (
@@ -20,8 +21,8 @@ export const csvFeedsApp = {
     const trx = await dbTx();
     try {
       const doc = await createDocumentWithChildren<CsvFeed>(
-        CSV_FEED_DOCUMENT_TYPE,
-        { ...input, integration_type: 'csv_feed' },
+        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        { ...input, integration_type: INTEGRATION_FEED_CSV_FEED_TYPE },
         document,
         CSV_FEED_METADATA,
         context,

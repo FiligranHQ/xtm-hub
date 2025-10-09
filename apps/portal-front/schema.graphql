@@ -31,10 +31,6 @@ type Query {
   userOrganizations: [Organization!]!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
-  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
-  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
-  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
-  seoCsvFeedBySlug(slug: String): CsvFeed
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
   seoCustomDashboardBySlug(slug: String): CustomDashboard
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
@@ -42,6 +38,10 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
+  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
+  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
+  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
+  seoCsvFeedBySlug(slug: String): CsvFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
@@ -79,9 +79,6 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
-  updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
-  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
   createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
   updateCustomDashboard(documentId: ID!, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
@@ -89,6 +86,9 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
+  createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
+  updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
+  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
   createOpenAEVScenario(input: CreateOpenAEVScenarioInput!, document: [Upload!]!, serviceInstanceId: String): OpenAEVScenario!
   updateOpenAEVScenario(documentId: ID!, input: UpdateOpenAEVScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): OpenAEVScenario!
   deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
@@ -162,63 +162,6 @@ type RolePortal implements Node {
 enum ServiceConfigurationStatus {
   active
   inactive
-}
-
-type CsvFeed implements DocumentBase & Node {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String!
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int!
-  share_number: Int!
-  slug: String!
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
-  remover_id: ID
-}
-
-input CreateCsvFeedInput {
-  name: String!
-  slug: String!
-  uploader_id: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-}
-
-input UpdateCsvFeedInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-}
-
-type CsvFeedEdge {
-  cursor: String!
-  node: CsvFeed!
-}
-
-type CsvFeedConnection {
-  totalCount: Int!
-  edges: [CsvFeedEdge!]!
-  pageInfo: PageInfo!
 }
 
 input CreateCustomDashboardInput {
@@ -383,6 +326,63 @@ type ServiceLink implements Node {
   service_instance_id: ID
   url: String
   name: String
+}
+
+type CsvFeed implements DocumentBase & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int!
+  share_number: Int!
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
+  remover_id: ID
+}
+
+input CreateCsvFeedInput {
+  name: String!
+  slug: String!
+  uploader_id: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+}
+
+input UpdateCsvFeedInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
+  uploader_id: String
+}
+
+type CsvFeedEdge {
+  cursor: String!
+  node: CsvFeed!
+}
+
+type CsvFeedConnection {
+  totalCount: Int!
+  edges: [CsvFeedEdge!]!
+  pageInfo: PageInfo!
 }
 
 input CreateOpenAEVScenarioInput {

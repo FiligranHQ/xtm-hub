@@ -1,4 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import {
+  INTEGRATION_FEED_CONNECTORS_TYPE,
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from '../services/integration-feeds/integration-feeds.model';
 import { extractManifestInformation } from './ingest-manifest.helper';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleManifest from './test/sample-manifest.json';
@@ -14,81 +18,81 @@ describe('Ingest manifest helper', () => {
           name: 'Contract One',
           slug: 'contract-one',
           description: 'This is the first contract',
-          shortDescription: 'First contract',
+          short_description: 'First contract',
           logo: 'data:image/png;base64,abc123',
-          useCases: ['automation', 'integration'],
+          labels: ['automation', 'integration'],
           verified: true,
-          containerImage: 'docker.io/example/image:latest',
-          containerType: 'docker',
-          sourceCode: 'https://github.com/example/repo',
-          subscriptionLink: 'https://example.com/subscribe',
+          container_image: 'docker.io/example/image:latest',
+          integration_subtype: 'docker',
+          source_code: 'https://github.com/example/repo',
+          subscription_link: 'https://example.com/subscribe',
+          type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
+          manager_supported: true,
+          playbook_supported: false,
         });
-
         expect(result[1]).toEqual({
           version: '1.0.0',
           name: 'Contract Two',
           slug: 'contract-two',
           description: 'This is the second contract',
-          shortDescription: 'Second contract',
+          short_description: 'Second contract',
           logo: 'https://example.com/logo.png',
-          useCases: ['monitoring'],
+          labels: ['monitoring'],
           verified: false,
-          containerImage: 'docker.io/example/image2:latest',
-          containerType: 'kubernetes',
-          sourceCode: 'https://github.com/example/repo2',
-          subscriptionLink: 'https://example.com/subscribe2',
+          container_image: 'docker.io/example/image2:latest',
+          integration_subtype: 'kubernetes',
+          source_code: 'https://github.com/example/repo2',
+          subscription_link: 'https://example.com/subscribe2',
+          type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
+          manager_supported: false,
+          playbook_supported: true,
         });
       });
 
       it('should return correct ManifestInformation type with expected properties', () => {
         const manifestInfo: ManifestInformation[] =
           extractManifestInformation(sampleManifest);
-
-        // Check that we have results
         expect(manifestInfo).toBeDefined();
         expect(manifestInfo.length).toBeGreaterThan(0);
-
-        // Check the structure of the first item to ensure it matches ManifestInformation type
         const firstItem = manifestInfo[0];
-
-        // Check required properties exist and are of correct type
-        expect(firstItem).toHaveProperty('version');
-        expect(typeof firstItem!.name).toBe('string');
-
-        expect(firstItem).toHaveProperty('name');
-        expect(typeof firstItem!.name).toBe('string');
-
-        expect(firstItem).toHaveProperty('description');
-        expect(typeof firstItem!.description).toBe('string');
-
-        expect(firstItem).toHaveProperty('shortDescription');
-        expect(typeof firstItem!.shortDescription).toBe('string');
-
-        expect(firstItem).toHaveProperty('containerImage');
-        expect(typeof firstItem!.containerImage).toBe('string');
-
-        expect(firstItem).toHaveProperty('slug');
-        expect(typeof firstItem!.slug).toBe('string');
-
-        expect(firstItem).toHaveProperty('logo');
-        expect(typeof firstItem!.logo).toBe('string');
-
-        expect(firstItem).toHaveProperty('verified');
-        expect(typeof firstItem!.verified).toBe('boolean');
-
-        expect(firstItem).toHaveProperty('containerType');
-        expect(typeof firstItem!.containerType).toBe('string');
-
-        expect(firstItem).toHaveProperty('useCases');
-        expect(Array.isArray(firstItem!.useCases)).toBe(true);
-
-        // Check optional properties if they exist
-        if (firstItem!.sourceCode !== undefined) {
-          expect(typeof firstItem!.sourceCode).toBe('string');
+        expect(firstItem).toBeTruthy();
+        if (!firstItem) {
+          return;
         }
+        expect(firstItem).toHaveProperty('version');
+        expect(typeof firstItem.version).toBe('string');
+        expect(firstItem).toHaveProperty('name');
+        expect(typeof firstItem.name).toBe('string');
+        expect(firstItem).toHaveProperty('description');
+        expect(typeof firstItem.description).toBe('string');
+        expect(firstItem).toHaveProperty('short_description');
+        expect(typeof firstItem.short_description).toBe('string');
+        expect(firstItem).toHaveProperty('container_image');
+        expect(typeof firstItem.container_image).toBe('string');
+        expect(firstItem).toHaveProperty('slug');
+        expect(typeof firstItem.slug).toBe('string');
+        expect(firstItem).toHaveProperty('logo');
+        expect(typeof firstItem.logo).toBe('string');
+        expect(firstItem).toHaveProperty('verified');
+        expect(typeof firstItem.verified).toBe('boolean');
+        expect(firstItem).toHaveProperty('integration_subtype');
+        expect(typeof firstItem.integration_subtype).toBe('string');
+        expect(firstItem).toHaveProperty('integration_type');
+        expect(typeof firstItem.integration_type).toBe('string');
+        expect(firstItem).toHaveProperty('type');
+        expect(typeof firstItem.type).toBe('string');
+        expect(firstItem).toHaveProperty('labels');
+        expect(Array.isArray(firstItem.labels)).toBe(true);
+        expect(firstItem).toHaveProperty('manager_supported');
+        expect(typeof firstItem.manager_supported).toBe('boolean');
+        expect(firstItem).toHaveProperty('playbook_supported');
+        expect(typeof firstItem.playbook_supported).toBe('boolean');
+        expect(typeof firstItem.source_code).toBe('string');
 
-        if (firstItem!.subscriptionLink !== undefined) {
-          expect(typeof firstItem!.subscriptionLink).toBe('string');
+        if (firstItem.subscription_link !== undefined) {
+          expect(typeof firstItem.subscription_link).toBe('string');
         }
       });
     });
@@ -97,13 +101,10 @@ describe('Ingest manifest helper', () => {
       it('should return empty array for invalid data structure', () => {
         const invalidData = {
           data: {
-            // Missing contracts array
             id: 'test',
           },
         };
-
         const result = extractManifestInformation(invalidData);
-
         expect(result).toEqual([]);
       });
 
@@ -113,32 +114,26 @@ describe('Ingest manifest helper', () => {
             contracts: [
               {
                 title: 'Test Contract',
-                // Missing required fields
               },
             ],
           },
         };
-
         const result = extractManifestInformation(invalidManifest);
-
         expect(result).toEqual([]);
       });
 
       it('should return empty array for null input', () => {
         const result = extractManifestInformation(null);
-
         expect(result).toEqual([]);
       });
 
       it('should return empty array for undefined input', () => {
         const result = extractManifestInformation(undefined);
-
         expect(result).toEqual([]);
       });
 
       it('should return empty array for non-object input', () => {
         const result = extractManifestInformation('not an object');
-
         expect(result).toEqual([]);
       });
     });
@@ -150,9 +145,7 @@ describe('Ingest manifest helper', () => {
             contracts: [],
           },
         };
-
         const result = extractManifestInformation(emptyContractsManifest);
-
         expect(result).toEqual([]);
       });
     });

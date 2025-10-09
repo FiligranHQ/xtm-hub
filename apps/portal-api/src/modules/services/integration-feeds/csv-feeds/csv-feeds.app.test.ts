@@ -2,21 +2,24 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
   SERVICE_CSV_FEEDS_ID,
-} from '../../../../tests/tests.const';
-import { DocumentId } from '../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../../../../tests/tests.const';
+import { DocumentId } from '../../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import {
+  ADMIN_UUID,
+  PLATFORM_ORGANIZATION_UUID,
+} from '../../../../portal.const';
+import { telemetryApp } from '../../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
-} from '../../telemetry/telemetry.const';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import * as DocumentHelper from '../document/document.helper';
-import { deleteDocuments } from '../document/document.helper';
+} from '../../../telemetry/telemetry.const';
+import { TelemetryEventType } from '../../../telemetry/telemetry.types';
+import * as DocumentHelper from '../../document/document.helper';
+import { deleteDocuments } from '../../document/document.helper';
+import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds.model';
 import { csvFeedsApp } from './csv-feeds.app';
-import { CSV_FEED_DOCUMENT_TYPE } from './csv-feeds.domain';
 
 describe('csv feeds app', () => {
   it('should send a create telemetry event when creating a document', async () => {
@@ -50,7 +53,7 @@ describe('csv feeds app', () => {
         minio_name: 'minioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
-        type: CSV_FEED_DOCUMENT_TYPE,
+        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         active: false,
       },
       []
