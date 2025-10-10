@@ -1,5 +1,4 @@
 import {
-  OrganizationCapability,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -34,14 +33,6 @@ export const platformIdentifierMappedByServiceDefinitionIdentifier: Partial<
 > = {
   [ServiceDefinitionIdentifier.OpenctiRegistration]: PlatformIdentifier.Opencti,
   [ServiceDefinitionIdentifier.OpenaevRegistration]: PlatformIdentifier.Openaev,
-};
-
-export const organizationCapabilityMappedByPlatformIdentifier: Record<
-  PlatformIdentifier,
-  OrganizationCapability
-> = {
-  opencti: OrganizationCapability.ManageOpenctiRegistration,
-  openaev: OrganizationCapability.ManageOpenaevRegistration,
 };
 
 export const serviceInstanceNameMappedByPlatformIdentifier: Record<

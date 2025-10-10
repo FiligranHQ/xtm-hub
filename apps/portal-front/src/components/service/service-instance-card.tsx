@@ -1,7 +1,6 @@
 'use client';
 
 import { PortalContext } from '@/components/me/app-portal-context';
-import { RegistrationCapabilityMapping } from '@/components/registration/platform-identifier-mapping';
 import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
@@ -11,7 +10,6 @@ import {
 } from '@/utils/path/constant';
 import { isExternalService, isRegistrationService } from '@/utils/services';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -137,17 +135,9 @@ const ServiceInstanceCard: React.FunctionComponent<
       return false;
     }
 
-    // Check specific platform capability
-    const platformIdentifier =
-      serviceInstance.service_definition_identifier ===
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
-        ? PlatformIdentifierEnum.OPENCTI
-        : PlatformIdentifierEnum.OPENAEV;
-
-    const requiredCapability =
-      RegistrationCapabilityMapping[platformIdentifier];
-
-    return hasOrganizationCapability(requiredCapability);
+    return hasOrganizationCapability(
+      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+    );
   };
 
   return (
@@ -169,7 +159,6 @@ const ServiceInstanceCard: React.FunctionComponent<
                 backgroundRepeat: 'no-repeat',
               }}
             />
-
           </div>
           <AspectRatio
             ratio={16 / 9}
@@ -239,24 +228,28 @@ const ServiceInstanceCard: React.FunctionComponent<
             )}
 
             <div className="flex pl-s ml-auto gap-m items-start">
-            {isExternalService(
-              serviceInstance.service_definition_identifier
-              ) && <div className="pt-2"><ArrowOutwardIcon className="size-3 shrink-0" /></div>}
-            {canUpdatePlatform() && (
-              <div className='relative'>
-              <IconActions
-                icon={
-                  <>
-                    <MoreVertIcon className="h-4 w-4 text-white" />
-                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                  </>
-                }>
-                <IconActionsItem onClick={() => setOpenPlatformSheet(true)}>
-                  {t('Platform.Update')}
-                </IconActionsItem>
-              </IconActions>
-              </div>
-            )}
+              {isExternalService(
+                serviceInstance.service_definition_identifier
+              ) && (
+                <div className="pt-2">
+                  <ArrowOutwardIcon className="size-3 shrink-0" />
+                </div>
+              )}
+              {canUpdatePlatform() && (
+                <div className="relative">
+                  <IconActions
+                    icon={
+                      <>
+                        <MoreVertIcon className="h-4 w-4 text-white" />
+                        <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                      </>
+                    }>
+                    <IconActionsItem onClick={() => setOpenPlatformSheet(true)}>
+                      {t('Platform.Update')}
+                    </IconActionsItem>
+                  </IconActions>
+                </div>
+              )}
             </div>
           </div>
           {(isRegistrationService(serviceInstance) && (

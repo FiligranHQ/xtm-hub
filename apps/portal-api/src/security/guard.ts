@@ -4,10 +4,6 @@ import {
 } from '../__generated__/resolvers-types';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { PortalContext } from '../model/portal-context';
-import {
-  organizationCapabilityMappedByPlatformIdentifier,
-  platformIdentifierMappedByServiceDefinitionIdentifier,
-} from '../modules/services/registration/registration.mapping';
 import { ErrorCode } from '../utils/error/error.code';
 import { ForbiddenAccess } from '../utils/error/error.util';
 import { isUserAllowedOnOrganization } from './auth.helper';
@@ -57,19 +53,9 @@ export const securityGuard = {
       throw ForbiddenAccess(ErrorCode.PlatformTypeNotSupported);
     }
 
-    // Check specific capabilities based on platform type
-    const platformIdentifier =
-      platformIdentifierMappedByServiceDefinitionIdentifier[
-        serviceDefinition.identifier as ServiceDefinitionIdentifier
-      ];
-
-    if (platformIdentifier) {
-      const requiredCapability =
-        organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
-      await securityGuard.assertUserIsAllowedOnOrganization(context, {
-        organizationId: context.user.selected_organization_id,
-        requiredCapability,
-      });
-    }
+    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      organizationId: context.user.selected_organization_id,
+      requiredCapability: OrganizationCapability.ManagePlatformRegistration,
+    });
   },
 };

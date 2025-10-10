@@ -798,8 +798,7 @@ export type OrganizationCapabilitiesInput = {
 export enum OrganizationCapability {
   AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
   ManageAccess = 'MANAGE_ACCESS',
-  ManageOpenaevRegistration = 'MANAGE_OPENAEV_REGISTRATION',
-  ManageOpenctiRegistration = 'MANAGE_OPENCTI_REGISTRATION',
+  ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
   ManageSubscription = 'MANAGE_SUBSCRIPTION'
 }
 
@@ -1241,8 +1240,7 @@ export enum Restriction {
   FrtManageUser = 'FRT_MANAGE_USER',
   FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER',
   ManageAccess = 'MANAGE_ACCESS',
-  ManageOpenaevRegistration = 'MANAGE_OPENAEV_REGISTRATION',
-  ManageOpenctiRegistration = 'MANAGE_OPENCTI_REGISTRATION',
+  ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
   ManageSubscription = 'MANAGE_SUBSCRIPTION'
 }
 

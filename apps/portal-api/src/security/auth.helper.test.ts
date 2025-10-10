@@ -9,7 +9,7 @@ describe('AuthHelper', () => {
       const result = isUserAllowed({
         userCapabilities: [CAPABILITY_BYPASS],
         organizationCapabilities: [],
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
       expect(result).toBeTruthy();
@@ -19,9 +19,9 @@ describe('AuthHelper', () => {
       const result = isUserAllowed({
         userCapabilities: [],
         organizationCapabilities: [
-          OrganizationCapability.ManageOpenctiRegistration,
+          OrganizationCapability.ManagePlatformRegistration,
         ],
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
       expect(result).toBeTruthy();
@@ -33,7 +33,7 @@ describe('AuthHelper', () => {
         organizationCapabilities: [
           OrganizationCapability.AdministrateOrganization,
         ],
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
       expect(result).toBeTruthy();
@@ -43,7 +43,7 @@ describe('AuthHelper', () => {
       const result = isUserAllowed({
         userCapabilities: [],
         organizationCapabilities: [],
-        requiredCapability: OrganizationCapability.ManageOpenctiRegistration,
+        requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
       expect(result).toBeFalsy();
