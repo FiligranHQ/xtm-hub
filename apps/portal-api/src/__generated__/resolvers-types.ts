@@ -124,7 +124,7 @@ export type CsvFeed = DocumentBase & Node & {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number: Scalars['Int']['output'];
-  file_name: Scalars['String']['output'];
+  file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
@@ -225,7 +225,7 @@ export type DocumentBase = {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number: Scalars['Int']['output'];
-  file_name: Scalars['String']['output'];
+  file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
@@ -2015,7 +2015,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2122,7 +2122,7 @@ export type DocumentBaseResolvers<ContextType = PortalContext, ParentType extend
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

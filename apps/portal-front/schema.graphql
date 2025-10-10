@@ -262,7 +262,7 @@ interface DocumentBase implements Node {
   name: String!
   short_description: String
   description: String
-  file_name: String!
+  file_name: String
   minio_name: String!
   active: Boolean!
   created_at: Date!
@@ -336,7 +336,7 @@ type CsvFeed implements DocumentBase & Node {
   name: String!
   short_description: String
   description: String
-  file_name: String!
+  file_name: String
   minio_name: String!
   active: Boolean!
   created_at: Date!

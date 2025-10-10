@@ -1,7 +1,10 @@
 import fs from 'fs';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import path from 'path';
+import { Readable } from 'stream';
 import z from 'zod';
 import { logApp } from '../../utils/app-logger.util';
+import { Upload } from '../services/document/document.helper';
 import {
   INTEGRATION_FEED_CONNECTORS_TYPE,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
@@ -137,3 +140,34 @@ const ManifestSchema = z.object({
     contracts: z.array(ContractSchema),
   }),
 });
+
+export const base64ToUpload = (
+  base64String: string,
+  filename: string = 'image.png'
+): Upload => {
+  // Remove data URL prefix if present
+  const base64Data = base64String.replace(/^data:.*?;base64,/, '');
+
+  // Extract MIME type
+  const mimeMatch = base64String.match(/^data:(.*?);base64,/);
+  const mimetype = mimeMatch ? mimeMatch[1] : 'image/png';
+
+  // Convert to Buffer
+  const buffer = Buffer.from(base64Data, 'base64');
+
+  // Create the FileUpload object
+  const fileUpload: FileUpload = {
+    filename,
+    mimetype,
+    encoding: '7bit',
+    createReadStream: () => Readable.from(buffer),
+  };
+
+  // Create the promise that resolves to the same FileUpload
+  const promise = Promise.resolve(fileUpload);
+
+  return {
+    file: fileUpload,
+    promise,
+  };
+};

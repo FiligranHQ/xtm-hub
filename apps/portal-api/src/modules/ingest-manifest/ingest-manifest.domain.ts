@@ -7,6 +7,7 @@ import {
   CSV_FEED_CONNECTOR_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../services/integration-feeds/integration-feeds.model';
+import { base64ToUpload } from './ingest-manifest.helper';
 import { ManifestInformation } from './ingest-manifest.model';
 
 export const upsertConnectors = async (
@@ -18,10 +19,14 @@ export const upsertConnectors = async (
   for (const connector of manifestInfo) {
     const trx = await dbTx();
     try {
+      const uploadLogo = base64ToUpload(
+        connector.logo,
+        `${connector.name}-logo.png`
+      );
       const doc = await upsertDocumentWithChildren<Connector>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         { ...omit(connector, ['logo']) } as Connector,
-        [],
+        uploadLogo,
         CSV_FEED_CONNECTOR_METADATA,
         context,
         trx

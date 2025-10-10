@@ -30,7 +30,11 @@ import User, { UserId } from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
 import { formatRawObject } from '../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../utils/utils';
-import { insertFileInMinio, UploadedFile } from './document-storage';
+import {
+  deleteFileToMinio,
+  insertFileInMinio,
+  UploadedFile,
+} from './document-storage';
 import {
   Document,
   FullDocumentMutator,
@@ -126,8 +130,59 @@ export const upsertDocumentWithChildren = async <T extends DocumentModel>(
     trx
   );
 
+  await upsertImage(context, doc, uploads, trx);
   return doc;
 };
+
+export const upsertImage = async <T extends DocumentModel>(
+  context: PortalContext,
+  doc: T,
+  upload: Upload[] | Upload,
+  trx: Knex.Transaction
+) => {
+  const files = await processUploads(upload, context);
+
+  // Get all existing child image documents
+  const childDocumentIds = db(context, 'Document_Children')
+    .select('child_document_id')
+    .where('parent_document_id', doc.id);
+
+  // Delete all existing image documents for this parent
+  const deletedDocuments = await db(context, 'Document')
+    .delete()
+    .whereIn('id', childDocumentIds)
+    .andWhere('type', 'image')
+    .returning(['id', 'minio_name'])
+    .transacting(trx);
+
+  // Create all new image documents
+  await Promise.all(
+    files.map((file) =>
+      createDocument(
+        context,
+        {
+          type: 'image',
+          parent_document_id: doc.id as DocumentId,
+          file_name: file.fileName,
+          minio_name: file.minioName,
+          mime_type: file.mimeType,
+        },
+        [],
+        trx
+      )
+    )
+  );
+
+  // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
+  if (deletedDocuments.length > 0) {
+    await Promise.all(
+      deletedDocuments.map((doc) => {
+        return deleteFileToMinio(doc.minio_name);
+      })
+    );
+  }
+};
+
 export const upsertDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentData: Omit<Partial<T>, 'labels'> & {

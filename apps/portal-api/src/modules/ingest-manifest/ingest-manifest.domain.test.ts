@@ -4,7 +4,10 @@ import {
   SYSTEM_USER_CONTEXT,
   SYSTEM_USER_UUID,
 } from '../../portal.const';
-import { getLabels } from '../services/document/document.domain';
+import {
+  getLabels,
+  loadImagesByDocumentId,
+} from '../services/document/document.domain';
 import {
   Connector,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
@@ -117,6 +120,11 @@ describe('upsertConnectors', () => {
         expect(labelNames).toHaveLength(2);
         expect(labelNames).toContain('automation');
         expect(labelNames).toContain('integration');
+      });
+      it('should have related logo', async () => {
+        const images = await loadImagesByDocumentId(contractOne.id);
+        expect(images).toHaveLength(1);
+        expect(images[0].file_name).toBe('contract-one-logo.png');
       });
     });
 
@@ -247,6 +255,14 @@ describe('upsertConnectors', () => {
         expect(labelNames).toContain('updated label 1');
         expect(labelNames).toContain('updated label 2');
       }
+    });
+    it('should have updated logo', async () => {
+      secondResult.forEach(async (doc, index) => {
+        const images = await loadImagesByDocumentId(doc.id);
+        // Verify that we still have only one image after updating
+        expect(images).toHaveLength(1);
+        expect(images[0].file_name).toBe(`${doc.slug}-logo.png`);
+      });
     });
   });
 
