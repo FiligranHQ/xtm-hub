@@ -1,18 +1,16 @@
 import { KnexQueryBuilder } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { PortalContext } from '../../model/portal-context';
+import { requireRequestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 import { checkUserCapabilities } from '../utils/user';
 
 /**
  * Apply security rules for Document table operations
  */
-export const setSelectSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
+export const setSelectSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  if (!context || !qb) {
+  requireRequestContext();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
 
@@ -20,33 +18,24 @@ export const setSelectSecurity = (
   throw new Error('Missing security logic');
 };
 
-export const setInsertSecurity = async (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  await checkUserCapabilities(context, [
+export const setInsertSecurity = async (qb: KnexQueryBuilder) => {
+  await checkUserCapabilities([
     OrganizationCapability.AdministrateOrganization,
     OrganizationCapability.ManageAccess,
   ]);
   return qb;
 };
 
-export const setUpdateSecurity = async (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  await checkUserCapabilities(context, [
+export const setUpdateSecurity = async (qb: KnexQueryBuilder) => {
+  await checkUserCapabilities([
     OrganizationCapability.AdministrateOrganization,
     OrganizationCapability.ManageAccess,
   ]);
   return qb;
 };
 
-export const setDeleteSecurity = async (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  await checkUserCapabilities(context, [
+export const setDeleteSecurity = async (qb: KnexQueryBuilder) => {
+  await checkUserCapabilities([
     OrganizationCapability.AdministrateOrganization,
     OrganizationCapability.ManageAccess,
   ]);

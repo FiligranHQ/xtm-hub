@@ -1,12 +1,12 @@
 import { dbUnsecure } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { PortalContext } from '../../model/portal-context';
+import { requireRequestContext } from '../../requestContext';
 import { ForbiddenAccess } from '../../utils/error/error.util';
 
 export const checkUserCapabilities = async (
-  context: PortalContext,
   requiredCapabilities: OrganizationCapability[]
 ) => {
+  const requestContext = requireRequestContext();
   // TODO Replace this query by adding a mapping org/capa and check the user capabilities depending of the organization
   const getUserCapability = await dbUnsecure('User')
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
@@ -16,7 +16,7 @@ export const checkUserCapabilities = async (
       'UserOrganization_Capability.user_organization_id'
     )
     .where({
-      'User.id': context.user.id,
+      'User.id': requestContext.user.id,
     })
     .whereIn('UserOrganization_Capability.name', requiredCapabilities)
     .first();

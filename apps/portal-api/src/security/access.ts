@@ -21,6 +21,7 @@ import {
 } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
+import { requireRequestContext } from '../requestContext';
 import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
@@ -34,7 +35,6 @@ import { userServiceCapabilitySecurityLayer } from './layer/user-service-capabil
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (
-    context: PortalContext,
     qb: KnexQueryBuilder,
     opts?: SecuryQueryOpts
   ) => KnexQueryBuilder | Promise<KnexQueryBuilder>;
@@ -173,7 +173,7 @@ export const applyDbSecurityLayer = async (
   opts: SecuryQueryOpts
 ) => {
   const table = qb._queryContext.__typename;
-  const context = qb._queryContext.context;
+  const requestContext = requireRequestContext();
   let method = qb.toSQL().method;
 
   // First check if we have a valid table type
@@ -200,12 +200,12 @@ export const applyDbSecurityLayer = async (
     if (method && tableSecurityMap[table][method]) {
       // We could perform the verification earlier, but I want to be able to check everything in development.
       // By default, we're in ADMIN_PLTFM in dev, so this helps ensure the security is properly implemented.
-      if (isUserAdminPlatform(context.user) || opts?.unsecured) {
+      if (isUserAdminPlatform(requestContext.user) || opts?.unsecured) {
         return qb;
       }
       // Check the promise and then if it not throwing error we return qb.
       // QB in promise execute automatically the query but we don't always want to execute the query at this moment
-      await tableSecurityMap[table][method](context, qb, opts);
+      await tableSecurityMap[table][method](qb, opts);
       return qb;
     } else {
       logApp.warn(`No ${method} security handler for ${table}`);

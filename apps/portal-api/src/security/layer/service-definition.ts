@@ -1,42 +1,34 @@
 import { KnexQueryBuilder } from '../../../knexfile';
-import { PortalContext } from '../../model/portal-context';
+import { requireRequestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 
-export const setSelectSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  if (!context || !qb) {
+export const setSelectSecurity = (qb: KnexQueryBuilder) => {
+  requireRequestContext();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
   return qb;
 };
 
-export const setInsertSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  if (!context || !qb) {
+export const setInsertSecurity = (qb: KnexQueryBuilder) => {
+  requireRequestContext();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
   return qb;
 };
 
-export const setUpdateSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  if (!context || !qb) {
+export const setUpdateSecurity = (qb: KnexQueryBuilder) => {
+  requireRequestContext();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
   return qb;
 };
 
-export const setDeleteSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  if (!context || !qb) {
+export const setDeleteSecurity = (qb: KnexQueryBuilder) => {
+  requireRequestContext();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
   return qb;
