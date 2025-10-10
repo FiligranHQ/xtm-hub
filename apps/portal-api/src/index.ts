@@ -8,7 +8,7 @@ import express from 'express';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 import promBundle from 'express-prom-bundle';
-import expressSession, { SessionData } from 'express-session';
+import expressSession, { SessionData } from 'express-session/index.js';
 import { createHandler } from 'graphql-sse/lib/use/express';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 import { printSchema } from 'graphql/utilities/index.js';
@@ -21,6 +21,7 @@ import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
+import { runWithRequestContext, updateRequestContext } from './requestContext';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import { operationMetricsPlugin } from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
@@ -93,6 +94,12 @@ if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
   fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
 }
 
+app.use(function (req, res, next) {
+  runWithRequestContext({ user: req.session.user }, () => {
+    next();
+  });
+});
+
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
 // const drainPlugin = {
@@ -142,7 +149,11 @@ const middlewareExpress = expressMiddleware(server, {
       ? fromGlobalId(req?.body?.variables?.serviceInstanceId)?.id
       : '';
     // TODO Add build session from request authorization
-    return { user, req, res, serviceInstanceId };
+
+    const portalContext: PortalContext = { user, req, res, serviceInstanceId };
+
+    updateRequestContext({ portalContext: portalContext });
+    return portalContext;
   },
 });
 const handler = createHandler({
