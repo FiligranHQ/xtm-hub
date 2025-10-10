@@ -1,125 +1,256 @@
-import { PLATFORM_ORGANIZATION_UUID } from '@xtm-hub/test_e2e/tests/db-utils/const';
-import { describe, expect, it } from 'vitest';
-import { SYSTEM_USER_CONTEXT, SYSTEM_USER_UUID } from '../../portal.const';
-import { INTEGRATION_FEEDS_SERVICE_INSTANCE_ID } from '../services/integration-feeds/integration-feeds.model';
+import { beforeAll, describe, expect, it } from 'vitest';
+import {
+  PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_CONTEXT,
+  SYSTEM_USER_UUID,
+} from '../../portal.const';
+import { getLabels } from '../services/document/document.domain';
+import {
+  Connector,
+  INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
+} from '../services/integration-feeds/integration-feeds.model';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';
 
 describe('upsertConnectors', () => {
-  describe('with valid manifest data', () => {
-    it('should call upsertConnectors with extracted manifest', async () => {
-      const result = await upsertConnectors(
+  describe('when creating new connectors', () => {
+    let result: Connector[];
+
+    beforeAll(async () => {
+      result = await upsertConnectors(
         SYSTEM_USER_CONTEXT,
         sampleExtractedManifest as ManifestInformation[]
       );
+    });
 
+    it('should return an array with correct length', () => {
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
       expect(result).toHaveLength(sampleExtractedManifest.length);
-
-      result.forEach((doc, index) => {
-        const expectedManifest = sampleExtractedManifest[index];
-
-        // Check uploader fields
-        expect(doc.uploader_id).toBe(SYSTEM_USER_UUID);
-        expect(doc.uploader_organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
-        expect(doc.service_instance_id).toBe(
-          INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
-        );
-
-        expect(expectedManifest).toBeTruthy();
-        if (!expectedManifest) {
-          return;
-        }
-        // Check document content fields
-        expect(doc.name).toBe(expectedManifest.name);
-        expect(doc.description).toBe(expectedManifest.description);
-        expect(doc.short_description).toBe(expectedManifest.short_description);
-        expect(doc.slug).toBe(expectedManifest.slug);
-        expect(doc.version).toBe(expectedManifest.version);
-        expect(doc.type).toBe('opencti_integration_feed');
-        expect(doc.source_type).toBe('external');
-
-        expect(doc.active).toBe(true);
-        expect(doc.download_number).toBe(0);
-        expect(doc.share_number).toBe(0);
-        expect(doc.created_at).toBeDefined();
-        expect(new Date(doc.created_at)).toBeInstanceOf(Date);
-
-        expect(doc.updated_at).toBeNull();
-        expect(doc.updater_id).toBeNull();
-        expect(doc.remover_id).toBeNull();
-        expect(doc.file_name).toBeNull();
-        expect(doc.minio_name).toBeNull();
-        expect(doc.mime_type).toBeNull();
-      });
-
-      // Verify specific documents
-      const contractOne = result.find((doc) => doc.slug === 'contract-one');
-      expect(contractOne).toBeDefined();
-      expect(contractOne?.name).toBe('Contract One');
-      expect(contractOne?.description).toBe('This is the first contract');
-      expect(contractOne?.short_description).toBe('First contract');
-
-      const contractTwo = result.find((doc) => doc.slug === 'contract-two');
-      expect(contractTwo).toBeDefined();
-      expect(contractTwo?.name).toBe('Contract Two');
-      expect(contractTwo?.description).toBe('This is the second contract');
-      expect(contractTwo?.short_description).toBe('Second contract');
     });
 
-    // Additional test for update scenario
-    it('should update existing connectors on second call', async () => {
-      const firstResult = await upsertConnectors(
+    describe('system fields', () => {
+      it('should set correct uploader information', () => {
+        result.forEach((doc) => {
+          expect(doc.uploader_id).toBe(SYSTEM_USER_UUID);
+          expect(doc.uploader_organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
+          expect(doc.service_instance_id).toBe(
+            INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+          );
+        });
+      });
+
+      it('should set correct document type and status', () => {
+        result.forEach((doc) => {
+          expect(doc.type).toBe('opencti_integration_feed');
+          expect(doc.source_type).toBe('external');
+          expect(doc.active).toBe(true);
+        });
+      });
+
+      it('should initialize counters to zero', () => {
+        result.forEach((doc) => {
+          expect(doc.download_number).toBe(0);
+          expect(doc.share_number).toBe(0);
+        });
+      });
+
+      it('should set creation timestamp and null update fields', () => {
+        result.forEach((doc) => {
+          expect(doc.created_at).toBeDefined();
+          expect(new Date(doc.created_at)).toBeInstanceOf(Date);
+          expect(doc.updated_at).toBeNull();
+          expect(doc.updater_id).toBeNull();
+          expect(doc.remover_id).toBeNull();
+        });
+      });
+
+      it('should have null file-related fields', () => {
+        result.forEach((doc) => {
+          expect(doc.file_name).toBeNull();
+          expect(doc.minio_name).toBeNull();
+          expect(doc.mime_type).toBeNull();
+        });
+      });
+    });
+
+    describe('manifest content mapping', () => {
+      it('should correctly map all manifest fields', () => {
+        result.forEach((doc, index) => {
+          const expectedManifest = sampleExtractedManifest[index];
+          expect(expectedManifest).toBeTruthy();
+          if (!expectedManifest) {
+            return;
+          }
+
+          expect(doc.name).toBe(expectedManifest.name);
+          expect(doc.description).toBe(expectedManifest.description);
+          expect(doc.short_description).toBe(
+            expectedManifest.short_description
+          );
+          expect(doc.slug).toBe(expectedManifest.slug);
+          expect(doc.version).toBe(expectedManifest.version);
+        });
+      });
+    });
+
+    describe('Contract One connector', () => {
+      let contractOne: Connector;
+
+      beforeAll(() => {
+        contractOne = result.find(
+          (doc) => doc.slug === 'contract-one'
+        ) as Connector;
+      });
+
+      it('should exist with correct content', () => {
+        expect(contractOne.name).toBe('Contract One');
+        expect(contractOne.description).toBe('This is the first contract');
+        expect(contractOne.short_description).toBe('First contract');
+      });
+
+      it('should have automation and integration labels', async () => {
+        const labels = await getLabels(SYSTEM_USER_CONTEXT, contractOne.id);
+        const labelNames = labels.map((label) => label.name);
+
+        expect(labelNames).toHaveLength(2);
+        expect(labelNames).toContain('automation');
+        expect(labelNames).toContain('integration');
+      });
+    });
+
+    describe('Contract Two connector', () => {
+      let contractTwo: Connector;
+
+      beforeAll(() => {
+        contractTwo = result.find(
+          (doc) => doc.slug === 'contract-two'
+        ) as Connector;
+      });
+
+      it('should exist with correct content', () => {
+        expect(contractTwo).toBeDefined();
+        expect(contractTwo.name).toBe('Contract Two');
+        expect(contractTwo.description).toBe('This is the second contract');
+        expect(contractTwo.short_description).toBe('Second contract');
+      });
+      it('should have automation and integration labels', async () => {
+        const labels = await getLabels(SYSTEM_USER_CONTEXT, contractTwo.id);
+        const labelNames = labels.map((label) => label.name);
+
+        expect(labelNames).toHaveLength(1);
+        expect(labelNames).toContain('monitoring');
+      });
+    });
+  });
+
+  describe('when updating existing connectors', () => {
+    let firstResult: Connector[];
+    let secondResult: Connector[];
+    let updatedManifest: ManifestInformation[];
+
+    beforeAll(async () => {
+      // First creation
+      firstResult = await upsertConnectors(
         SYSTEM_USER_CONTEXT,
         sampleExtractedManifest as ManifestInformation[]
       );
 
-      // Modify the manifest data
-      const updatedManifest = sampleExtractedManifest.map((manifest) => ({
+      // Prepare updated manifest
+      updatedManifest = sampleExtractedManifest.map((manifest) => ({
         ...manifest,
         description: `${manifest.description} - Updated`,
         short_description: `${manifest.short_description} - Updated`,
         version: '1.2.2-test',
-      }));
+        labels: ['updated label 1', 'updated label 2'],
+      })) as ManifestInformation[];
 
       // Second call - update
-      const secondResult = await upsertConnectors(
+      secondResult = await upsertConnectors(
         SYSTEM_USER_CONTEXT,
         updatedManifest as ManifestInformation[]
       );
+    });
 
+    it('should return same number of documents', () => {
       expect(secondResult).toHaveLength(updatedManifest.length);
+    });
 
-      // Verify updates
+    it('should preserve document IDs', () => {
+      secondResult.forEach((doc, index) => {
+        expect(doc.id).toBe((firstResult[index] as Connector).id);
+      });
+    });
+
+    it('should update description fields', () => {
       secondResult.forEach((doc, index) => {
         const expectedManifest = updatedManifest[index];
-        const originalDoc = firstResult[index];
-
-        expect(expectedManifest).toBeTruthy();
+        expect(expectedManifest).toBeDefined();
         if (!expectedManifest) {
           return;
         }
-        expect(doc.id).toBe(originalDoc.id);
-
         expect(doc.description).toBe(expectedManifest.description);
         expect(doc.short_description).toBe(expectedManifest.short_description);
         expect(doc.description).toContain('- Updated');
         expect(doc.short_description).toContain('- Updated');
-
-        // Name and slug should remain the same
-        expect(doc.name).toBe(originalDoc.name);
-        expect(doc.slug).toBe(originalDoc.slug);
-        expect(doc.version).toBe(originalDoc.version);
-
-        // Timestamps should reflect update
-        expect(doc.created_at).toEqual(originalDoc.created_at);
-        expect(doc.updated_at).not.toBeNull();
-        expect(doc.updater_id).not.toBeNull();
-        expect(doc.updater_id).toEqual(SYSTEM_USER_UUID);
       });
     });
+
+    it('should preserve slug', () => {
+      secondResult.forEach((doc, index) => {
+        expect(doc.slug).toBe((firstResult[index] as Connector).slug);
+      });
+    });
+
+    it('should preserve version from first creation', () => {
+      secondResult.forEach((doc, index) => {
+        expect(doc.version).toBe((firstResult[index] as Connector).version);
+      });
+    });
+
+    it('should update timestamps and updater information', () => {
+      secondResult.forEach((doc, index) => {
+        expect(doc.created_at).toEqual(
+          (firstResult[index] as Connector).created_at
+        );
+        expect(doc.updated_at).not.toBeNull();
+        expect(doc.updater_id).toBe(SYSTEM_USER_UUID);
+      });
+    });
+    it('should update labels to new values', async () => {
+      // Test labels for each document
+      for (const doc of secondResult) {
+        const labels = await getLabels(SYSTEM_USER_CONTEXT, doc.id);
+        const labelNames = labels.map((label) => label.name);
+
+        expect(labelNames).toHaveLength(2);
+        expect(labelNames).toContain('updated label 1');
+        expect(labelNames).toContain('updated label 2');
+      }
+    });
+
+    it('should replace old labels with new ones', async () => {
+      // Specifically verify that old labels are replaced, not added to
+      const contractOne = secondResult.find(
+        (doc) => doc.slug === 'contract-one'
+      );
+      if (contractOne) {
+        const labels = await getLabels(SYSTEM_USER_CONTEXT, contractOne.id);
+        const labelNames = labels.map((label) => label.name);
+
+        // Should NOT have the original labels
+        expect(labelNames).not.toContain('automation');
+        expect(labelNames).not.toContain('integration');
+
+        // Should have the new labels
+        expect(labelNames).toContain('updated label 1');
+        expect(labelNames).toContain('updated label 2');
+      }
+    });
+  });
+
+  describe('edge cases', () => {
     it('should handle empty manifest array', async () => {
       const result = await upsertConnectors(SYSTEM_USER_CONTEXT, []);
 

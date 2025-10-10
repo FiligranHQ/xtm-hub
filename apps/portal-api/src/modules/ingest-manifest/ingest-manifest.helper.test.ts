@@ -30,6 +30,8 @@ describe('Ingest manifest helper', () => {
           integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
           manager_supported: true,
           playbook_supported: false,
+          source_type: 'external',
+          service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
         });
         expect(result[1]).toEqual({
           version: '1.0.0',
@@ -48,6 +50,8 @@ describe('Ingest manifest helper', () => {
           integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
           manager_supported: false,
           playbook_supported: true,
+          source_type: 'external',
+          service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
         });
       });
 

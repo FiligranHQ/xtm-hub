@@ -48,6 +48,7 @@ import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { getOrCreateLabel } from '../../settings/labels/labels.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
   Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
@@ -175,16 +176,25 @@ export const upsertDocument = async <T extends DocumentModel>(
       .transacting(trx);
   }
 
-  // if (documentData.labels?.length) {
-  //   await db<ObjectLabel>(context, 'Object_Label')
-  //     .insert(
-  //       documentData.labels.map((id: string) => ({
-  //         object_id: document.id as unknown as ObjectLabelObjectId,
-  //         label_id: extractId(id) as LabelId,
-  //       }))
-  //     )
-  //     .transacting(trx);
-  // }
+  if (documentData.labels?.length) {
+    if (documentWasUpdated) {
+      await db<ObjectLabel>(context, 'Object_Label')
+        .where('object_id', document.id as unknown as ObjectLabelObjectId)
+        .delete()
+        .transacting(trx);
+    }
+    const insertObjectLabel = [];
+    for (const name of documentData.labels) {
+      const label = await getOrCreateLabel({ context, name });
+      insertObjectLabel.push({
+        object_id: document.id as unknown as ObjectLabelObjectId,
+        label_id: label.id,
+      });
+    }
+    await db<ObjectLabel>(context, 'Object_Label')
+      .insert(insertObjectLabel)
+      .transacting(trx);
+  }
 
   if (metadataKeys.length > 0) {
     // If document was updated (not created)
@@ -195,6 +205,17 @@ export const upsertDocument = async <T extends DocumentModel>(
         .whereNot('key', 'version') // Keep version metadata
         .delete()
         .transacting(trx);
+      const existingVersion = await db<DocumentMetadata>(
+        context,
+        'Document_Metadata'
+      )
+        .where('document_id', document.id)
+        .where('key', 'version')
+        .select('value')
+        .first();
+      if (existingVersion) {
+        document['version'] = existingVersion.value;
+      }
     }
 
     // Insert new metadata (excluding version) if documentWasUpdated
@@ -249,17 +270,6 @@ export const createDocument = async <T extends DocumentModel>(
         parent_document_id: documentData.parent_document_id as DocumentId,
         child_document_id: document.id,
       })
-      .transacting(trx);
-  }
-
-  if (documentData.labels?.length) {
-    await db<ObjectLabel>(context, 'Object_Label')
-      .insert(
-        documentData.labels.map((id: string) => ({
-          object_id: document.id as unknown as ObjectLabelObjectId,
-          label_id: extractId(id) as LabelId,
-        }))
-      )
       .transacting(trx);
   }
 

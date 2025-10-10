@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import z from 'zod';
+import { logApp } from '../../utils/app-logger.util';
 import {
   INTEGRATION_FEED_CONNECTORS_TYPE,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
@@ -39,7 +40,7 @@ const getFromCache = async () => {
       return JSON.parse(fileContent);
     }
   } catch (error) {
-    console.error('Error reading cache:', error);
+    logApp.error('Error reading cache:', error);
   }
   return null;
 };
@@ -105,10 +106,7 @@ export const extractManifestInformation = (
       })
     );
   } catch (error) {
-    console.error(
-      'Error extracting manifest info:',
-      error instanceof Error ? error.message : 'Unknown error'
-    );
+    logApp.error(`Error extracting manifest info: ${error.message}`);
     return [];
   }
 };

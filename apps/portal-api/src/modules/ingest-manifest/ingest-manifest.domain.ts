@@ -13,8 +13,7 @@ export const upsertConnectors = async (
   context: PortalContext,
   manifestInfo: ManifestInformation[]
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const results: Array<any> = [];
+  const results: Array<Connector> = [];
 
   for (const connector of manifestInfo) {
     const trx = await dbTx();
