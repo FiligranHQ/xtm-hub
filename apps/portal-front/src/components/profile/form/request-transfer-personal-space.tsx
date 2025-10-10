@@ -13,6 +13,7 @@ import {
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -23,6 +24,7 @@ const formSchema = z.object({
 export type RequestTransferPersonalSpaceSchema = z.infer<typeof formSchema>;
 
 export const RequestTransferPersonalSpace = () => {
+  const router = useRouter();
   const t = useTranslations();
   const [pendingValues, setPendingValues] =
     useState<RequestTransferPersonalSpaceSchema>();
@@ -51,8 +53,10 @@ export const RequestTransferPersonalSpace = () => {
       },
       onCompleted() {
         toast({
-          title: t('ProfilePage.PersonalSpace.SuccessRequest'),
+          title: t('Utils.Success'),
+          description: t('ProfilePage.PersonalSpace.SuccessRequest'),
         });
+        router.push('/app');
       },
     });
   };
@@ -60,7 +64,7 @@ export const RequestTransferPersonalSpace = () => {
     <>
       <Separator className="my-s" />
       <h2 className="text-red">{t('Utils.DangerZone')}</h2>
-      <Card className="border-2 border-red bg-red-100">
+      <Card className="border-2 border-red">
         <CardHeader>
           <CardTitle>
             {t('ProfilePage.PersonalSpace.TitleDangerZone')}

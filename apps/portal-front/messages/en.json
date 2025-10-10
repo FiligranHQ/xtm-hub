@@ -269,12 +269,12 @@
     "PersonalSpace": {
       "SuccessTransfer": "Personal space successfully transfered",
       "SuccessRequest": "Personal space transfer request successfully sent",
-      "TitleDangerZone": "Transfer personal space",
-      "TransferPersoSpaceExplanation": "You can request a personal space transfer for all of your subscriptions (the other account must already exist).",
+      "TitleDangerZone": "Transfer of personal space",
+      "TransferPersoSpaceExplanation": "You can request a personal space transfer for all of your subscriptions (the other account must already exists).",
       "EmailPlaceholder": "email.i.want.to.transfer.to@email.com",
       "TransferPersoSpace": "Transfer personal space",
       "Transfer": "Transfer",
-      "TransferConfirmSentence": "Are you sure you want to transfer your personal space's subscription? While the new user has not confirmed by email, it won't be effective."
+      "TransferConfirmSentence": "Are you sure you want to transfer your personal space's subscriptions? While the new user has not confirmed by email, it won't be effective."
     }
   },
   "RedirectPage": {
