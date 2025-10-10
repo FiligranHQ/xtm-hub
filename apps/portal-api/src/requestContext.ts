@@ -2,6 +2,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
+import { UnknownErrorCode } from './utils/error/error.code';
 
 export interface RequestContext {
   user: UserLoadUserBy;
@@ -20,9 +21,7 @@ export function getRequestContext(): RequestContext | undefined {
 export function requireRequestContext(): RequestContext {
   const context = requestContextStorage.getStore();
   if (!context) {
-    throw new Error(
-      'No async context available. Make sure contextMiddleware is applied.'
-    );
+    throw UnknownErrorCode.NoAsyncContextAvailableError;
   }
   return context;
 }

@@ -92,6 +92,7 @@
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
+      "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
       "OPENAEV_SCENARIO_DELETE_ERROR": "Une erreur s'est produite lors de la suppression d'un scénario OpenAEV",
       "OPENAEV_SCENARIO_INSERTION_ERROR": "Une erreur s'est produite lors de la création d'un scénario OpenAEV",
       "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "Un scénario OpenAEV avec le même slug existe déjà",
