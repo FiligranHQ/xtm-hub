@@ -1,5 +1,7 @@
 import { beforeAll } from 'vitest';
+import { RequestContext } from '../src/requestContext';
 import { closeDbTestConnection, getDbTestConnection } from './config-test';
+import { requestContextAdminUser } from './tests.const';
 
 function isUtilOrHelper(filepath?: string) {
   if (!filepath) return true;
@@ -7,6 +9,56 @@ function isUtilOrHelper(filepath?: string) {
     filepath
   );
 }
+
+const testRequestStorage = new Map<string, RequestContext>();
+
+function getTestKey(): string {
+  // Vitest provides a unique test ID for each test
+  // @ts-ignore
+  const testId = globalThis.__vitest_worker__?.current?.id;
+  return testId || 'default';
+}
+
+vi.mock('async_hooks', () => {
+  class MockAsyncLocalStorage<T> {
+    getStore() {
+      const key = getTestKey();
+      return testRequestStorage.get(key) as T;
+    }
+
+    run(store: T, callback: () => any) {
+      const key = getTestKey();
+      const prev = testRequestStorage.get(key);
+      testRequestStorage.set(key, store as any);
+      try {
+        return callback();
+      } finally {
+        if (prev) {
+          testRequestStorage.set(key, prev);
+        } else {
+          testRequestStorage.delete(key);
+        }
+      }
+    }
+
+    enterWith(store: T) {
+      const key = getTestKey();
+      testRequestStorage.set(key, store as any);
+    }
+  }
+
+  return { AsyncLocalStorage: MockAsyncLocalStorage };
+});
+
+beforeEach(() => {
+  const key = getTestKey();
+  testRequestStorage.set(key, requestContextAdminUser);
+});
+
+afterEach(() => {
+  const key = getTestKey();
+  testRequestStorage.delete(key);
+});
 
 beforeAll(async (suite) => {
   const currentFile = suite?.file?.name;
