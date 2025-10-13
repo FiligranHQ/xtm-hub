@@ -1,3 +1,4 @@
+import { PublicTryOpenCTICallout } from '@/components/service/trial-instances/public-try-opencti-callout';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { Button } from 'filigran-ui/servers';
 import 'filigran-ui/theme.css';
@@ -17,6 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <div className="flex flex-col min-h-screen">
+      <PublicTryOpenCTICallout />
       <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between sticky top-0 z-[20]">
         <Link href="/">
           <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
