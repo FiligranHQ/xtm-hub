@@ -1,42 +1,38 @@
 {
-  "url": "https://example.com/manifest",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "data": {
-    "id": "test-manifest",
-    "name": "Test Manifest",
-    "description": "Test manifest description",
-    "version": "1.0.0",
-    "contracts": [
-      {
-        "title": "Contract One",
-        "slug": "contract-one",
-        "description": "This is the first contract",
-        "short_description": "First contract",
-        "logo": "data:image/png;base64,abc123",
-        "use_cases": ["automation", "integration"],
-        "verified": true,
-        "container_image": "docker.io/example/image:latest",
-        "container_type": "docker",
-        "source_code": "https://github.com/example/repo",
-        "subscription_link": "https://example.com/subscribe",
-        "manager_supported": true,
-        "playbook_supported": false
-      },
-      {
-        "title": "Contract Two",
-        "slug": "contract-two",
-        "description": "This is the second contract",
-        "short_description": "Second contract",
-        "logo": "https://example.com/logo.png",
-        "use_cases": ["monitoring"],
-        "verified": false,
-        "container_image": "docker.io/example/image2:latest",
-        "container_type": "kubernetes",
-        "source_code": "https://github.com/example/repo2",
-        "subscription_link": "https://example.com/subscribe2",
-        "manager_supported": false,
-        "playbook_supported": true
-      }
-    ]
-  }
+  "id": "test-manifest",
+  "name": "Test Manifest",
+  "description": "Test manifest description",
+  "version": "1.0.0",
+  "contracts": [
+    {
+      "title": "Contract One",
+      "slug": "contract-one",
+      "description": "This is the first contract",
+      "short_description": "First contract",
+      "logo": "data:image/png;base64,abc123",
+      "use_cases": ["automation", "integration"],
+      "verified": true,
+      "container_image": "docker.io/example/image:latest",
+      "container_type": "docker",
+      "source_code": "https://github.com/example/repo",
+      "subscription_link": "https://example.com/subscribe",
+      "manager_supported": true,
+      "playbook_supported": false
+    },
+    {
+      "title": "Contract Two",
+      "slug": "contract-two",
+      "description": "This is the second contract",
+      "short_description": "Second contract",
+      "logo": "https://example.com/logo.png",
+      "use_cases": ["monitoring"],
+      "verified": false,
+      "container_image": "docker.io/example/image2:latest",
+      "container_type": "kubernetes",
+      "source_code": "https://github.com/example/repo2",
+      "subscription_link": "https://example.com/subscribe2",
+      "manager_supported": false,
+      "playbook_supported": true
+    }
+  ]
 }

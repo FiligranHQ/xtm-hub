@@ -1,9 +1,8 @@
-import fs from 'fs';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
-import path from 'path';
 import { Readable } from 'stream';
 import z from 'zod';
 import { logApp } from '../../utils/app-logger.util';
+import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
 import { Upload } from '../services/document/document.helper';
 import {
   INTEGRATION_FEED_CONNECTORS_TYPE,
@@ -12,59 +11,19 @@ import {
 } from '../services/integration-feeds/integration-feeds.model';
 import { ManifestInformation } from './ingest-manifest.model';
 
-const CACHE_DIR = '.cache';
 const CACHE_OPENCTI_FILE_NAME = 'manifest_octi_connectors.json';
-if (!fs.existsSync(CACHE_DIR)) {
-  fs.mkdirSync(CACHE_DIR);
-}
 
 export const fetchManifest = async (url: string) => {
-  const cachedData = await getFromCache();
-  if (cachedData) {
-    return cachedData;
-  }
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
+  return fetchWithCacheForLocalTesting(CACHE_OPENCTI_FILE_NAME, async () => {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+    return response.json();
   });
-
-  const data = await response.json();
-  await storeInCache(url, data);
-  return data;
 };
-
-const getFromCache = async () => {
-  try {
-    const filePath = path.join(CACHE_DIR, CACHE_OPENCTI_FILE_NAME);
-    if (fs.existsSync(filePath)) {
-      const fileContent = await fs.promises.readFile(filePath, 'utf-8');
-      return JSON.parse(fileContent);
-    }
-  } catch (error) {
-    logApp.error('Error reading cache:', error);
-  }
-  return null;
-};
-
-// TODO we don't need to keep in cache. Will be removed once the dev is finished
-const storeInCache = async (url: string, data: unknown) => {
-  try {
-    const filePath = path.join(CACHE_DIR, CACHE_OPENCTI_FILE_NAME);
-
-    const cacheData = {
-      url,
-      timestamp: new Date().toISOString(),
-      data,
-    };
-
-    await fs.promises.writeFile(filePath, JSON.stringify(cacheData, null, 2));
-  } catch (error) {
-    console.error('Error storing cache:', error);
-  }
-};
-
 export const extractManifestInformation = (
   jsonData: unknown
 ): ManifestInformation[] => {
@@ -83,7 +42,7 @@ export const extractManifestInformation = (
     }
 
     // Type-safe mapping - all fields guaranteed to exist
-    return result.data.data.contracts.map(
+    return result.data.contracts.map(
       (contract): ManifestInformation => ({
         /* Document properties */
         name: contract.title,
@@ -95,7 +54,7 @@ export const extractManifestInformation = (
         source_type: 'external',
         /* Document metadata properties */
         container_image: contract.container_image,
-        version: result.data.data.version,
+        version: result.data.version,
         verified: contract.verified,
         integration_subtype: contract.container_type,
         integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
@@ -131,14 +90,11 @@ const ContractSchema = z.object({
 });
 
 const ManifestSchema = z.object({
-  url: z.string().url(),
-  data: z.object({
-    id: z.string().min(1),
-    name: z.string().min(1),
-    description: z.string(),
-    version: z.string().min(1),
-    contracts: z.array(ContractSchema),
-  }),
+  id: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string(),
+  version: z.string().min(1),
+  contracts: z.array(ContractSchema),
 });
 
 export const base64ToUpload = (
