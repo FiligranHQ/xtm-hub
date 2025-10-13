@@ -4,6 +4,7 @@ import {
   SYSTEM_USER_CONTEXT,
   SYSTEM_USER_UUID,
 } from '../../portal.const';
+import { minioInit } from '../../server/initialize';
 import {
   getLabels,
   loadImagesByDocumentId,
@@ -17,6 +18,9 @@ import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';
 
 describe('upsertConnectors', () => {
+  beforeAll(async () => {
+    await minioInit();
+  });
   describe('when creating new connectors', () => {
     let result: Connector[];
 
@@ -257,7 +261,7 @@ describe('upsertConnectors', () => {
       }
     });
     it('should have updated logo', async () => {
-      secondResult.forEach(async (doc, index) => {
+      secondResult.forEach(async (doc) => {
         const images = await loadImagesByDocumentId(doc.id);
         // Verify that we still have only one image after updating
         expect(images).toHaveLength(1);
