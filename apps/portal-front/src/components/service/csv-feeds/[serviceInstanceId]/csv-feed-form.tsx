@@ -73,11 +73,11 @@ export const CsvFeedForm = ({
   const formSchema = useMemo(
     () =>
       csvFeed
-        ? csvFeedFormSchema.merge(
+        ? csvFeedFormSchema.extend(
             z.object({
               document: z.custom<FileList>(fileListCheck).optional(),
               illustration: z.custom<FileList>(fileListCheck).optional(),
-            })
+            }).shape
           )
         : csvFeedFormSchema,
     [csvFeed]

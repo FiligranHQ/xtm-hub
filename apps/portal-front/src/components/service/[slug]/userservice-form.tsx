@@ -100,7 +100,9 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
           text: z.string(),
         })
       )
-      .min(1, { message: 'Please provide at least one email.' }),
+      .min(1, {
+        error: 'Please provide at least one email.',
+      }),
   });
 
   const getCurrentCapabilities = (): string[] => {

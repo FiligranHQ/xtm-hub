@@ -62,7 +62,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
     resolver: zodResolver(
       z.object({
         organization_id: z.string().min(2, {
-          message: 'You must choose an organization.',
+          error: 'You must choose an organization.',
         }),
         capability_ids: z.array(z.string()),
         start_date: z.coerce.date(),

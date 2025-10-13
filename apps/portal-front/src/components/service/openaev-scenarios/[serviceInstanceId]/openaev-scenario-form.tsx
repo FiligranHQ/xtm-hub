@@ -29,7 +29,7 @@ const openAEVScenarioFormSchema = z.object({
   uploader_id: z.string().optional(),
   short_description: z.string().min(1, 'Required').max(250),
   product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
-    message: 'Product version must be X.Y.Z',
+    error: 'Product version must be X.Y.Z',
   }),
   description: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
@@ -77,11 +77,11 @@ export const OpenaevScenarioForm = ({
   const formSchema = useMemo(
     () =>
       openAEVScenario
-        ? openAEVScenarioFormSchema.merge(
+        ? openAEVScenarioFormSchema.extend(
             z.object({
               document: z.custom<FileList>(fileListCheck).optional(),
               illustration: z.custom<FileList>(fileListCheck).optional(),
-            })
+            }).shape
           )
         : openAEVScenarioFormSchema,
     [openAEVScenario]

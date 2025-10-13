@@ -49,7 +49,7 @@ const customDashboardSchema = z.object({
   short_description: z.string().max(255).min(1, 'Required'),
   description: z.string().min(1, 'Required'),
   product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
-    message: 'Product version must be X.Y.Z',
+    error: 'Product version must be X.Y.Z',
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
@@ -127,11 +127,11 @@ export const CustomDashboardForm = ({
   const formSchema = useMemo(
     () =>
       customDashboard
-        ? customDashboardSchema.merge(
+        ? customDashboardSchema.extend(
             z.object({
               document: z.custom<FileList>(fileListCheck).optional(),
               images: z.custom<FileList>(fileListCheck).optional(),
-            })
+            }).shape
           )
         : customDashboardSchema,
     [customDashboard]

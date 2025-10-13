@@ -22,7 +22,7 @@ interface ServiceCreateFormProps {
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: 'Username must be at least 2 characters.',
+    error: 'Username must be at least 2 characters.',
   }),
 });
 const ServiceCreateForm: React.FunctionComponent<ServiceCreateFormProps> = ({
