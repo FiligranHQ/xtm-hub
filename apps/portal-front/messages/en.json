@@ -595,6 +595,22 @@
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
     "SureWantSubscriptionDirect": "Do you want to subscribe to the {serviceName} service ? This service is free and gives you access to resources built carefully by the Filigran Team.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
+    "Trials": {
+      "Explore": "Explore OpenCTI platform with 30 days",
+      "FreeTrial": "Free Trial!",
+      "LearnMore": "Learn more",
+      "StartTrial": "Start a Trial",
+      "Form": {
+        "Region": "Region",
+        "AssociatedEmail": "Associated Email",
+        "JobTitle": "Job title",
+        "ActivitySector": "Activity sector",
+        "UseCase": "Use case",
+        "MSSA": "MSSA",
+        "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
+        "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
+      }
+    },
     "Vault": {
       "DeleteDocument": "Delete document",
       "DropFile": "Drop the document here",
@@ -802,11 +818,11 @@
     "Reset": "Reset",
     "Success": "Success",
     "Update": "Update",
+    "Updating": "Updating...",
     "Validate": "Validate",
     "ValidateForm": "Validate form",
     "Verified": "Verified",
     "Visualize": "Visualize",
-    "Updating": "Updating...",
     "DangerZone": "Danger Zone"
   },
   "Platform": {

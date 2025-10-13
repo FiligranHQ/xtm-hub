@@ -595,6 +595,22 @@
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "SureWantSubscriptionDirect": "Voulez-vous souscrire au service {serviceName} ? Ce service est gratuit et vous donne accès aux ressources créées par l'équipe Filigran.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
+    "Trials": {
+      "Explore": "Explorer la plateforme OpenCTI avec 30 jours",
+      "FreeTrial": "D'essai gratuit !",
+      "LearnMore": "En savoir plus",
+      "StartTrial": "Commencer un essai",
+      "Form": {
+        "Region": "Région",
+        "AssociatedEmail": "Email associé",
+        "JobTitle": "Titre du poste",
+        "ActivitySector": "Secteur d'activité",
+        "UseCase": "Cas d'utilisation",
+        "MSSA": "MSSA",
+        "MSSAAgreement": "*Je reconnais avoir lu, compris et accepté les conditions du procès de",
+        "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"
+      }
+    },
     "Vault": {
       "DeleteDocument": "Effacer le document",
       "DropFile": "Lâchez le document ici",
@@ -802,11 +818,11 @@
     "Reset": "Effacer",
     "Success": "Succès",
     "Update": "Editer",
+    "Updating": "Mise à jour...",
     "Validate": "Valider",
     "ValidateForm": "Valider le formulaire",
     "Verified": "Vérifié",
     "Visualize": "Visualiser",
-    "Updating": "Mise à jour...",
     "DangerZone": "Zone de danger"
   },
   "Platform": {
