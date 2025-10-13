@@ -39,7 +39,7 @@
     "test:integration": "VITEST_MODE=true && vitest --config vitest.integration.config.ts",
     "test:all": "VITEST_MODE=true && yarn test:unit && yarn test:integration",
     "test:coverage": "test:all --coverage",
-    "test:ci": "yarn check-ts && yarn lint && test:all --coverage --coverage.clean=false",
+    "test:ci": "yarn check-ts && yarn lint && yarn test:all --coverage --coverage.clean=false",
     "prepare": "cd .. && husky ./.husky",
     "seed:make:test": "VITEST_MODE=true && yarn knex:run seed:make",
     "start-dev-test": "VITEST_MODE=true && START_DEV_SERVER=true && yarn start-dev",
