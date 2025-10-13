@@ -371,6 +371,18 @@ describe('increment shared counter', () => {
       trx
     );
     await trx.commit();
+    vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+      async (eventType: TelemetryEventType, documentId: string) => {
+        if (
+          documentId === documentId &&
+          eventType === TelemetryEventType.DOWNLOAD
+        )
+          return 5;
+        if (documentId === documentId && eventType === TelemetryEventType.SHARE)
+          return 12;
+        return 0; // default
+      }
+    );
   });
 
   it('should send a share telemetry event for a logged user', async () => {

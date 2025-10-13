@@ -36,6 +36,7 @@ import {
   createFileInMinIO,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
+  updateDocumentWithCounters,
   waitForUploads,
 } from './document.helper';
 
@@ -115,6 +116,7 @@ const resolvers: Resolvers = {
         const [document] = await loadUnsecureDocumentsBy({
           id: extractId<DocumentId>(documentId),
         });
+        await updateDocumentWithCounters(document);
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(

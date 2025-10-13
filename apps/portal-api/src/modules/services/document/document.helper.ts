@@ -184,7 +184,7 @@ export const deleteDocumentBy = async (field: DocumentMutator) => {
   return dbUnsecure<Document>('Document').where(field).delete('*');
 };
 
-const updateDocumentWithCounters = async <T extends Document>(
+export const updateDocumentWithCounters = async <T extends Document>(
   document: T
 ): Promise<T> => {
   let download_number = 0;
