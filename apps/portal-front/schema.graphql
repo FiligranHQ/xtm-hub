@@ -35,6 +35,7 @@ type Mutation {
   createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
   updateCustomDashboard(documentId: ID!, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
+  createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -296,6 +297,48 @@ type ServiceDefinition implements Node {
   public: Boolean
   identifier: ServiceDefinitionIdentifier!
   service_capability: [ServiceCapability]
+}
+
+enum PlatformRegion {
+  europe
+  us
+  apac
+}
+
+enum DeploymentType {
+  trial
+}
+
+enum DeploymentRequestStatus {
+  QUEUED
+  PENDING
+  PROVISIONING
+  ACTIVE
+  EXPIRED
+  FAILED
+  CANCELLED
+}
+
+type DeploymentRequest implements Node {
+  id: ID!
+  platform_identifier: PlatformIdentifier!
+  region: PlatformRegion!
+  type: DeploymentType!
+  intention: String
+  job_title: String
+  activity_sector: String
+  start_date: Date
+  end_date: Date
+  status: DeploymentRequestStatus!
+}
+
+input CreateDeploymentRequestInput {
+  platform_identifier: PlatformIdentifier!
+  region: PlatformRegion!
+  type: DeploymentType!
+  intention: String
+  job_title: String
+  activity_sector: String
 }
 
 type ShareableResourceImage {
