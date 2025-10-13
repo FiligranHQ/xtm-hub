@@ -3,20 +3,13 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     globals: true,
-    include: [
+    globalSetup: './tests/config-test.ts',
+    setupFiles: './tests/setup-test.ts',
+    exclude: [
+      '**/node_modules/**',
       '**/*{util,utils,helper,helpers,pure,mock,stub,constant,constants,types}.{spec,test}.{ts,tsx}',
     ],
-    exclude: [
-      'builder/**',
-      'src/__generated__/**',
-      'src/migrations/**',
-      'tests/**',
-      'config/**',
-      '.kanelrc.js',
-      '**/*.config.*',
-      '**/*.d.ts',
-      '**/*.mjs',
-    ],
+    fileParallelism: false,
     coverage: {
       provider: 'v8',
       exclude: [
