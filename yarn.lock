@@ -11263,7 +11263,7 @@ __metadata:
     knex: "npm:3.1.0"
     lint-staged: "npm:15.5.2"
     migrate: "npm:^2.1.0"
-    nodemailer: "npm:6.9.15"
+    nodemailer: "npm:7.0.7"
     openid-client: "npm:5.7.1"
     passport: "npm:0.7.0"
     pg: "npm:8.16.3"
@@ -21082,10 +21082,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:6.9.15":
-  version: 6.9.15
-  resolution: "nodemailer@npm:6.9.15"
-  checksum: 10c0/92493406310cb1bb0bac575d604b3c75b67e420e8af94711bd55cb012ee02d3bf6fda57c663d66c15bdd89acd5f9cd540922644b089617c6e191596536503b5b
+"nodemailer@npm:7.0.7":
+  version: 7.0.7
+  resolution: "nodemailer@npm:7.0.7"
+  checksum: 10c0/9f7215f3c76b0db3e76a9a6a10fa4fdca3e3ea907fa82430498b6598b40700df287efd586e1d5bc56fe4b903144e5d70413e01f621106e4417e7af7eb1dccaee
   languageName: node
   linkType: hard
 

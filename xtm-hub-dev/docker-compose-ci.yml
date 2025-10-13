@@ -133,7 +133,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    image: postgres:17.6
+    image: postgres:17.2
     environment:
       - POSTGRES_USER=portal
       - POSTGRES_PASSWORD=portal-password
