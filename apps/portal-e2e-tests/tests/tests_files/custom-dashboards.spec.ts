@@ -1,17 +1,11 @@
 import { test, expect } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import DashboardPage, {
-  SERVICE_NAME,
   TEST_2_IMAGE_FILE,
   TEST_2_JSON_FILE,
   TEST_3_IMAGE_FILE,
-  TEST_IMAGE_FILE,
   TEST_JSON_FILE,
 } from '../model/dashboard.pageModel';
-import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
-import { PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
-import { removeDocument } from '../db-utils/document.helper';
-import { getServiceInstanceByName } from '../db-utils/service.helper';
 import { waitForDrawerToClose } from '../model/common';
 import { waitForAllImageLoaded } from '../utils/wait-for-all-image-loaded';
 
@@ -67,7 +61,7 @@ test.describe('Custom dashboards', () => {
       await page
         .getByRole('button', { name: 'Open menu', exact: true })
         .click();
-      await page.getByRole('button', { name: 'Update' }).click();
+      await page.getByRole('menuitem', { name: 'Update' }).click();
     };
 
     await expect(

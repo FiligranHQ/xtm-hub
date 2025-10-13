@@ -105,7 +105,7 @@ export default class ServicePage {
       .getByRole('button')
       .click();
     await this.page
-      .getByRole('button', { name: "Edit service's pictures" })
+      .getByRole('menuitem', { name: "Edit service's pictures" })
       .click();
     const fileInputIllustration = this.page
       .locator('input[type="file"]')

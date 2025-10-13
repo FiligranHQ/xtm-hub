@@ -5,6 +5,7 @@ import { APP_PATH } from '@/utils/path/constant';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useState } from 'react';
 
 interface ServiceButtonsProps {
   firstServiceSubscriptionId: string;
@@ -13,7 +14,8 @@ const ServiceButtons = ({
   firstServiceSubscriptionId,
 }: ServiceButtonsProps) => {
   const t = useTranslations();
-  const { serviceInstance } = useServiceContext();
+  const { serviceInstance, translationKey } = useServiceContext();
+  const [openSheet, setOpenSheet] = useState(false);
 
   const canManageService = serviceInstance.capabilities.includes(
     GenericCapabilityName.MANAGE_ACCESS
@@ -30,7 +32,13 @@ const ServiceButtons = ({
           </Link>
         </Button>
       )}
-      <ServiceManageSheet />
+      <Button onClick={() => setOpenSheet(true)}>
+        {t(`${translationKey}.AddService`)}
+      </Button>
+      <ServiceManageSheet
+        open={openSheet}
+        setOpen={setOpenSheet}
+      />
     </>
   );
 };
