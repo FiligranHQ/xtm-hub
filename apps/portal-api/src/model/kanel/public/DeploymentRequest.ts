@@ -30,7 +30,7 @@ export default interface DeploymentRequest {
 
   end_date: Date | null;
 
-  product_type: string;
+  platform_identifier: string;
 
   intention: string | null;
 
@@ -66,7 +66,7 @@ export interface DeploymentRequestInitializer {
 
   end_date?: Date | null;
 
-  product_type: string;
+  platform_identifier: string;
 
   intention?: string | null;
 
@@ -101,7 +101,7 @@ export interface DeploymentRequestMutator {
 
   end_date?: Date | null;
 
-  product_type?: string;
+  platform_identifier?: string;
 
   intention?: string | null;
 
