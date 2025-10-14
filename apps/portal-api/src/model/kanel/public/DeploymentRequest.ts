@@ -14,97 +14,104 @@ export type DeploymentRequestId = string & {
 export default interface DeploymentRequest {
   id: DeploymentRequestId;
 
-  user_requester_id: UserId | null;
+  user_requester_id: UserId;
 
-  organization_requester_id: OrganizationId | null;
+  organization_requester_id: OrganizationId;
 
-  service_instance_id: ServiceInstanceId | null;
+  service_instance_id: ServiceInstanceId;
 
-  status: string | null;
+  status: string;
 
-  type: string | null;
+  type: string;
 
-  request_date: Date | null;
+  request_date: Date;
 
   start_date: Date | null;
 
   end_date: Date | null;
 
-  product_type: string | null;
+  product_type: string;
 
   intention: string | null;
 
-  region: string | null;
+  region: string;
 
   activity_sector: string | null;
 
   platform_token: string | null;
 
   product_service_instance_id: string | null;
+
+  failure_reason: string | null;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
 export interface DeploymentRequestInitializer {
   id: DeploymentRequestId;
 
-  user_requester_id?: UserId | null;
+  user_requester_id: UserId;
 
-  organization_requester_id?: OrganizationId | null;
+  organization_requester_id: OrganizationId;
 
-  service_instance_id?: ServiceInstanceId | null;
+  service_instance_id: ServiceInstanceId;
 
-  status?: string | null;
+  status: string;
 
-  type?: string | null;
+  type: string;
 
-  request_date?: Date | null;
+  /** Default value: CURRENT_TIMESTAMP */
+  request_date?: Date;
 
   start_date?: Date | null;
 
   end_date?: Date | null;
 
-  product_type?: string | null;
+  product_type: string;
 
   intention?: string | null;
 
-  region?: string | null;
+  region: string;
 
   activity_sector?: string | null;
 
   platform_token?: string | null;
 
   product_service_instance_id?: string | null;
+
+  failure_reason?: string | null;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
 export interface DeploymentRequestMutator {
   id?: DeploymentRequestId;
 
-  user_requester_id?: UserId | null;
+  user_requester_id?: UserId;
 
-  organization_requester_id?: OrganizationId | null;
+  organization_requester_id?: OrganizationId;
 
-  service_instance_id?: ServiceInstanceId | null;
+  service_instance_id?: ServiceInstanceId;
 
-  status?: string | null;
+  status?: string;
 
-  type?: string | null;
+  type?: string;
 
-  request_date?: Date | null;
+  request_date?: Date;
 
   start_date?: Date | null;
 
   end_date?: Date | null;
 
-  product_type?: string | null;
+  product_type?: string;
 
   intention?: string | null;
 
-  region?: string | null;
+  region?: string;
 
   activity_sector?: string | null;
 
   platform_token?: string | null;
 
   product_service_instance_id?: string | null;
+
+  failure_reason?: string | null;
 }

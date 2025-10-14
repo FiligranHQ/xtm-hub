@@ -8,27 +8,30 @@ export async function up(knex) {
 
     table
       .uuid('user_requester_id')
+      .notNullable()
       .references('id')
       .inTable('User')
       .onDelete('CASCADE');
     table
       .uuid('organization_requester_id')
+      .notNullable()
       .references('id')
       .inTable('Organization')
       .onDelete('CASCADE');
     table
       .uuid('service_instance_id')
+      .notNullable()
       .references('id')
       .inTable('ServiceInstance');
 
-    table.string('status');
-    table.string('type');
-    table.date('request_date');
+    table.string('status').notNullable();
+    table.string('type').notNullable();
+    table.date('request_date').notNullable().defaultTo(knex.fn.now());
     table.date('start_date');
     table.date('end_date');
-    table.string('product_type');
+    table.string('product_type').notNullable();
     table.string('intention');
-    table.string('region');
+    table.string('region').notNullable();
     table.string('activity_sector');
 
     table.string('platform_token');
