@@ -30,42 +30,39 @@ import {
   updateUserPassword,
 } from './initialize.helper';
 
-const initAdminUser = async () => {
-  const { email, password } = portalConfig.admin;
-  const adminUser = await dbUnsecure<User>('User')
-    .where({ id: ADMIN_UUID })
+const initializeUser = async ({ userId, email, password, roleId }) => {
+  const existingUser = await dbUnsecure<User>('User')
+    .where({ id: userId })
     .first();
+
   const { salt, hash } = hashPassword(password);
-  const data = { salt, password: hash };
-  if (adminUser) {
-    // Update the password and salt
-    await updateUserPassword(ADMIN_UUID, data);
+  const passwordData = { salt, password: hash };
+
+  if (existingUser) {
+    await updateUserPassword(userId, passwordData);
   } else {
-    // User not yet exist, need a complete init
-    await completeUserInitialization(ADMIN_UUID, email, data);
+    await completeUserInitialization(userId, email, passwordData);
   }
-  ensureUserRoleExist(ADMIN_UUID, ROLE_ADMIN.id);
-  ensurePersonalSpaceExist(ADMIN_UUID, email);
+
+  await ensureUserRoleExist(userId, roleId);
+  await ensurePersonalSpaceExist(userId, email);
 };
 
-const initSystemUser = async () => {
-  const email = SYSTEM_USER_EMAIL;
-  const { password } = portalConfig.admin;
-  const systemUser = await dbUnsecure<User>('User')
-    .where({ id: SYSTEM_USER_UUID })
-    .first();
-  const { salt, hash } = hashPassword(password);
-  const data = { salt, password: hash };
-  if (systemUser) {
-    // Update the password and salt
-    await updateUserPassword(SYSTEM_USER_UUID, data);
-  } else {
-    // User not yet exist, need a complete init
-    await completeUserInitialization(SYSTEM_USER_UUID, email, data);
-  }
-  ensureUserRoleExist(SYSTEM_USER_UUID, ROLE_ADMIN.id);
-  ensurePersonalSpaceExist(SYSTEM_USER_UUID, email);
-};
+const initAdminUser = () =>
+  initializeUser({
+    userId: ADMIN_UUID,
+    email: portalConfig.admin.email,
+    password: portalConfig.admin.password,
+    roleId: ROLE_ADMIN.id,
+  });
+
+const initSystemUser = () =>
+  initializeUser({
+    userId: SYSTEM_USER_UUID,
+    email: SYSTEM_USER_EMAIL,
+    password: portalConfig.admin.password,
+    roleId: ROLE_ADMIN.id,
+  });
 
 const completeUserInitialization = async (user_id, email, data) => {
   const trx = await dbTx();

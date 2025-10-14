@@ -14,7 +14,7 @@ describe('Ingest manifest helper', () => {
         const result = extractManifestInformation(sampleManifest);
         expect(result).toHaveLength(2);
         expect(result[0]).toEqual({
-          version: '1.0.0',
+          product_version: '1.0.0',
           name: 'Contract One',
           slug: 'contract-one',
           description: 'This is the first contract',
@@ -34,7 +34,7 @@ describe('Ingest manifest helper', () => {
           service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
         });
         expect(result[1]).toEqual({
-          version: '1.0.0',
+          product_version: '1.0.0',
           name: 'Contract Two',
           slug: 'contract-two',
           description: 'This is the second contract',
@@ -65,8 +65,8 @@ describe('Ingest manifest helper', () => {
         if (!firstItem) {
           return;
         }
-        expect(firstItem).toHaveProperty('version');
-        expect(typeof firstItem.version).toBe('string');
+        expect(firstItem).toHaveProperty('product_version');
+        expect(typeof firstItem.product_version).toBe('string');
         expect(firstItem).toHaveProperty('name');
         expect(typeof firstItem.name).toBe('string');
         expect(firstItem).toHaveProperty('description');

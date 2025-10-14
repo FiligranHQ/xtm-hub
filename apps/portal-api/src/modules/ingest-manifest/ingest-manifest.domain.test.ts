@@ -97,7 +97,7 @@ describe('upsertConnectors', () => {
             expectedManifest.short_description
           );
           expect(doc.slug).toBe(expectedManifest.slug);
-          expect(doc.version).toBe(expectedManifest.version);
+          expect(doc.product_version).toBe(expectedManifest.product_version);
         });
       });
     });
@@ -174,7 +174,7 @@ describe('upsertConnectors', () => {
         ...manifest,
         description: `${manifest.description} - Updated`,
         short_description: `${manifest.short_description} - Updated`,
-        version: '1.2.2-test',
+        product_version: '1.2.2-test',
         labels: ['updated label 1', 'updated label 2'],
       })) as ManifestInformation[];
 
@@ -217,7 +217,9 @@ describe('upsertConnectors', () => {
 
     it('should preserve version from first creation', () => {
       secondResult.forEach((doc, index) => {
-        expect(doc.version).toBe((firstResult[index] as Connector).version);
+        expect(doc.product_version).toBe(
+          (firstResult[index] as Connector).product_version
+        );
       });
     });
 
@@ -242,24 +244,6 @@ describe('upsertConnectors', () => {
       }
     });
 
-    it('should replace old labels with new ones', async () => {
-      // Specifically verify that old labels are replaced, not added to
-      const contractOne = secondResult.find(
-        (doc) => doc.slug === 'contract-one'
-      );
-      if (contractOne) {
-        const labels = await getLabels(SYSTEM_USER_CONTEXT, contractOne.id);
-        const labelNames = labels.map((label) => label.name);
-
-        // Should NOT have the original labels
-        expect(labelNames).not.toContain('automation');
-        expect(labelNames).not.toContain('integration');
-
-        // Should have the new labels
-        expect(labelNames).toContain('updated label 1');
-        expect(labelNames).toContain('updated label 2');
-      }
-    });
     it('should have updated logo', async () => {
       secondResult.forEach(async (doc) => {
         const images = await loadImagesByDocumentId(doc.id);

@@ -54,7 +54,7 @@ export const extractManifestInformation = (
         source_type: 'external',
         /* Document metadata properties */
         container_image: contract.container_image,
-        version: result.data.version,
+        product_version: result.data.version,
         verified: contract.verified,
         integration_subtype: contract.container_type,
         integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,

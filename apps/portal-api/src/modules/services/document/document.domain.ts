@@ -257,7 +257,7 @@ export const upsertDocument = async <T extends DocumentModel>(
       // Delete all existing metadata except 'version'
       await db<DocumentMetadata>(context, 'Document_Metadata')
         .where('document_id', document.id)
-        .whereNot('key', 'version') // Keep version metadata
+        .whereNot('key', 'product_version') // Keep version metadata
         .delete()
         .transacting(trx);
       const existingVersion = await db<DocumentMetadata>(
@@ -265,17 +265,17 @@ export const upsertDocument = async <T extends DocumentModel>(
         'Document_Metadata'
       )
         .where('document_id', document.id)
-        .where('key', 'version')
+        .where('key', 'product_version')
         .select('value')
         .first();
       if (existingVersion) {
-        document['version'] = existingVersion.value;
+        document['product_version'] = existingVersion.value;
       }
     }
 
     // Insert new metadata (excluding version) if documentWasUpdated
     const metadataToInsert = metadataKeys
-      .filter((key) => key !== 'version' || !documentWasUpdated) // Insert version if it on creation
+      .filter((key) => key !== 'product_version' || !documentWasUpdated) // Insert version if it on creation
       .map((key) => ({
         document_id: document.id,
         key: key as DocumentMetadataKey,

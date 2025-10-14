@@ -1,9 +1,9 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { dbTx } from '../../../../../knexfile';
 import {
   contextAdminUser,
   SERVICE_CSV_FEEDS_ID,
 } from '../../../../../tests/tests.const';
-import { dbTx } from '../../../../../knexfile';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import {

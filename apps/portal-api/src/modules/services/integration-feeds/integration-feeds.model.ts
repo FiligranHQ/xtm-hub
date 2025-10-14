@@ -13,7 +13,7 @@ export const INTEGRATION_FEED_CSV_FEED_TYPE = 'csv_feed';
 export type IntegrationFeed = Document & { integration_type: string };
 export type CsvFeed = IntegrationFeed;
 export type Connector = IntegrationFeed & {
-  version: string;
+  product_version: string;
   container_image?: string | null; // Docker/container identifier
   verified: boolean;
   source_code?: string | null; // URL to repository
@@ -34,7 +34,7 @@ export type ConnectorMetadataKeys = Array<
 
 export const CSV_FEED_METADATA: CsvFeedMetadataKeys = ['integration_type'];
 export const CSV_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
-  'version',
+  'product_version',
   'container_image',
   'verified',
   'source_code',
