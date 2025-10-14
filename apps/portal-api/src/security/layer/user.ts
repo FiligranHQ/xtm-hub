@@ -1,11 +1,11 @@
 import { KnexQueryBuilder } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { requireRequestContext } from '../../requestContext';
+import { requestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 import { checkUserCapabilities } from '../utils/user';
 
 export const setSelectSecurity = (qb: KnexQueryBuilder): KnexQueryBuilder => {
-  const requestContext = requireRequestContext();
+  const context = requestContext.require();
   return qb
     .innerJoin(
       'User_Organization as securityUserOrg',
@@ -16,11 +16,11 @@ export const setSelectSecurity = (qb: KnexQueryBuilder): KnexQueryBuilder => {
     .where(
       'securityUserOrg.organization_id',
       '=',
-      requestContext.user.selected_organization_id
+      context.user.selected_organization_id
     );
 };
 export const setInsertSecurity = (qb: KnexQueryBuilder) => {
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }
@@ -38,7 +38,7 @@ export const setUpdateSecurity = async (qb: KnexQueryBuilder) => {
 
 export const setDeleteSecurity = (qb: KnexQueryBuilder) => {
   // Validate parameters exist
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }

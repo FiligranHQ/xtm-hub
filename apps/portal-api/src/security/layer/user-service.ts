@@ -1,12 +1,12 @@
 import { KnexQueryBuilder } from '../../../knexfile';
-import { requireRequestContext } from '../../requestContext';
+import { requestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 
 /**
  * Apply security rules for Document table operations
  */
 export const setSelectSecurity = (qb: KnexQueryBuilder) => {
-  const requestContext = requireRequestContext();
+  const context = requestContext.require();
   return qb
     .innerJoin(
       'Subscription as securitySubscription',
@@ -16,13 +16,13 @@ export const setSelectSecurity = (qb: KnexQueryBuilder) => {
     )
     .where(
       'securitySubscription.organization_id',
-      requestContext.user.selected_organization_id
+      context.user.selected_organization_id
     );
 };
 
 export const setInsertSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }
@@ -33,7 +33,7 @@ export const setInsertSecurity = (qb: KnexQueryBuilder) => {
 
 export const setUpdateSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }
@@ -44,7 +44,7 @@ export const setUpdateSecurity = (qb: KnexQueryBuilder) => {
 
 export const setDeleteSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }

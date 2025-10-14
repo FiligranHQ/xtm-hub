@@ -1,9 +1,9 @@
 import { KnexQueryBuilder } from '../../../knexfile';
-import { requireRequestContext } from '../../requestContext';
+import { requestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 
 const setDeleteSecurity = (qb: KnexQueryBuilder): KnexQueryBuilder => {
-  const requestContext = requireRequestContext();
+  const context = requestContext.require();
   qb.innerJoin(
     'User_Organization as securityUserOrg',
     'User.id',
@@ -12,7 +12,7 @@ const setDeleteSecurity = (qb: KnexQueryBuilder): KnexQueryBuilder => {
   ).where(
     'securityUserOrg.organization_id',
     '=',
-    requestContext.user.selected_organization_id
+    context.user.selected_organization_id
   );
   return qb;
 };

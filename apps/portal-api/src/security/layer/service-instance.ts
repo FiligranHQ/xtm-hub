@@ -1,9 +1,9 @@
 import { KnexQueryBuilder } from '../../../knexfile';
-import { requireRequestContext } from '../../requestContext';
+import { requestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 
 export const setSelectSecurity = (qb: KnexQueryBuilder) => {
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }
@@ -11,7 +11,7 @@ export const setSelectSecurity = (qb: KnexQueryBuilder) => {
 };
 
 export const setInsertSecurity = (qb: KnexQueryBuilder) => {
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }
@@ -19,7 +19,7 @@ export const setInsertSecurity = (qb: KnexQueryBuilder) => {
 };
 
 export const setUpdateSecurity = (qb: KnexQueryBuilder) => {
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }
@@ -27,7 +27,7 @@ export const setUpdateSecurity = (qb: KnexQueryBuilder) => {
 };
 
 export const setDeleteSecurity = (qb: KnexQueryBuilder) => {
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }

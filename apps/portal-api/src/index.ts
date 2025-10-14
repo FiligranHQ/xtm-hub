@@ -21,7 +21,7 @@ import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
-import { runWithRequestContext, updateRequestContext } from './requestContext';
+import { requestContext } from './requestContext';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import { operationMetricsPlugin } from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
@@ -95,7 +95,7 @@ if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
 }
 
 app.use(function (req, res, next) {
-  runWithRequestContext({ user: req.session.user }, () => {
+  requestContext.run({ user: req.session.user }, () => {
     next();
   });
 });
@@ -152,7 +152,7 @@ const middlewareExpress = expressMiddleware(server, {
 
     const portalContext: PortalContext = { user, req, res, serviceInstanceId };
 
-    updateRequestContext({ portalContext: portalContext });
+    requestContext.update({ portalContext: portalContext });
     return portalContext;
   },
 });

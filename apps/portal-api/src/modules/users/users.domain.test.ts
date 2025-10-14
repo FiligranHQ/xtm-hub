@@ -10,7 +10,7 @@ import {
 } from '../../../tests/tests.const';
 import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { setRequestContext } from '../../requestContext';
+import { requestContext } from '../../requestContext';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { loadUserBy, updateUser, updateUserAtLogin } from './users.domain';
@@ -30,7 +30,7 @@ describe('Users domain', () => {
 
   it('should throw FORBIDDEN_ACCESS when Simple User calls EditUser', async () => {
     try {
-      setRequestContext(requestContextSimpleUserThales);
+      requestContext.set(requestContextSimpleUserThales);
       await updateUser(
         contextSimpleUserThales,
         THALES_ADMIN_ORGA_ID as UserId,

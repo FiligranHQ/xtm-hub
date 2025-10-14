@@ -1,6 +1,6 @@
 import { KnexQueryBuilder } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { requireRequestContext } from '../../requestContext';
+import { requestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 import { checkUserCapabilities } from '../utils/user';
 
@@ -10,7 +10,7 @@ import { checkUserCapabilities } from '../utils/user';
 
 export const setSelectSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  requireRequestContext();
+  requestContext.require();
   if (!qb) {
     throw new Error('Invalid parameters');
   }

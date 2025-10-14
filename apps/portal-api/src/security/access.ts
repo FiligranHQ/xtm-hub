@@ -21,7 +21,7 @@ import {
 } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
-import { requireRequestContext } from '../requestContext';
+import { requestContext } from '../requestContext';
 import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
@@ -173,7 +173,7 @@ export const applyDbSecurityLayer = async (
   opts: SecuryQueryOpts
 ) => {
   const table = qb._queryContext.__typename;
-  const requestContext = requireRequestContext();
+  const context = requestContext.require();
   let method = qb.toSQL().method;
 
   // First check if we have a valid table type
@@ -200,7 +200,7 @@ export const applyDbSecurityLayer = async (
     if (method && tableSecurityMap[table][method]) {
       // We could perform the verification earlier, but I want to be able to check everything in development.
       // By default, we're in ADMIN_PLTFM in dev, so this helps ensure the security is properly implemented.
-      if (isUserAdminPlatform(requestContext.user) || opts?.unsecured) {
+      if (isUserAdminPlatform(context.user) || opts?.unsecured) {
         return qb;
       }
       // Check the promise and then if it not throwing error we return qb.
