@@ -22,7 +22,7 @@ import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCa
 import {
   insertNewOrganization,
   loadOrganizationBy,
-  updateOrganization,
+  updateOrganizationBy,
 } from '../modules/organizations/organizations.domain';
 import {
   PLATFORM_DOMAIN,
@@ -335,8 +335,8 @@ export const ensureDevOrganizationExists = async (
   if (existingOrg) {
     // Update domains if provided
     if (orgConfig.domains && orgConfig.domains.length > 0) {
-      const [updatedOrg] = await updateOrganization(
-        existingOrg.id,
+      const [updatedOrg] = await updateOrganizationBy(
+        { id: existingOrg.id },
         { domains: orgConfig.domains },
         trx
       );

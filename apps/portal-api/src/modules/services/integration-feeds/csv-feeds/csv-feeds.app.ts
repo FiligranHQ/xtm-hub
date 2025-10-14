@@ -1,10 +1,15 @@
 import { dbTx } from '../../../../../knexfile';
+import { DocumentId } from '../../../../model/kanel/public/Document';
 import { PortalContext } from '../../../../model/portal-context';
 import { logApp } from '../../../../utils/app-logger.util';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../../telemetry/telemetry.helper';
 import { createDocumentWithChildren } from '../../document/document.domain';
-import { Upload } from '../../document/document.helper';
+import {
+  loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
+  Upload,
+} from '../../document/document.helper';
 import {
   CSV_FEED_METADATA,
   CsvFeed,
@@ -49,5 +54,17 @@ export const csvFeedsApp = {
       await trx.rollback();
       throw error;
     }
+  },
+
+  loadCsvFeed: async (context: PortalContext, documentId: DocumentId) => {
+    return loadDocumentWithCountersById(context, documentId);
+  },
+
+  loadSeoCsvFeed: async (slug: string) => {
+    return loadSeoDocumentWithCountersBySlug(
+      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      slug,
+      CSV_FEED_METADATA
+    );
   },
 };

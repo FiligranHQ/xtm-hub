@@ -27,7 +27,6 @@ import {
   getChildrenDocuments,
   getUploader,
   getUploaderOrganization,
-  incrementShareNumber,
   loadDocumentById,
   loadDocuments,
   updateDocument,
@@ -35,7 +34,9 @@ import {
 import {
   checkDocumentExists,
   createFileInMinIO,
+  loadUnsecureDocumentsBy,
   normalizeDocumentName,
+  updateDocumentWithCounters,
   waitForUploads,
 } from './document.helper';
 
@@ -112,10 +113,10 @@ const resolvers: Resolvers = {
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [document] = await incrementShareNumber(
-          extractId<DocumentId>(documentId)
-        );
-
+        const [document] = await loadUnsecureDocumentsBy({
+          id: extractId<DocumentId>(documentId),
+        });
+        await updateDocumentWithCounters(document);
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
@@ -124,16 +125,18 @@ const resolvers: Resolvers = {
             );
 
           if (shouldSendEventForService(serviceDefinition.identifier)) {
-            const selectedOrga = await loadOrganizationBy({
-              id: context.user.selected_organization_id,
-            });
+            const selectedOrga = context.user
+              ? await loadOrganizationBy({
+                  id: context.user.selected_organization_id,
+                })
+              : undefined;
 
             const shareEvent = buildShareEvent(
               selectedOrga,
-              context.user.id,
+              context.user?.id,
               serviceDefinition.identifier,
               document.id,
-              document.file_name
+              document.name
             );
             telemetryApp.sendTelemetryEvent(shareEvent);
           }
@@ -142,7 +145,6 @@ const resolvers: Resolvers = {
             error,
           });
         }
-
         return document;
       } catch (error) {
         throw mapToGraphQLError(

@@ -8,6 +8,7 @@ import organizationsResolver from '../modules/organizations/organizations.resolv
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import customDashboardsResolver from '../modules/services/custom-dashboards/custom-dashboards.resolver';
 import ServiceDefinitionResolver from '../modules/services/definition/service-definition.resolver';
+import deploymentResolver from '../modules/services/deployments/deployments.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 import csvFeedsResolver from '../modules/services/integration-feeds/csv-feeds/csv-feeds.resolver';
 import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
@@ -52,6 +53,7 @@ const resolvers = mergeResolvers([
   openAEVScenariosResolver,
   registrationResolver,
   telemetryResolver,
+  deploymentResolver,
   ingestManifestResolver,
 ]);
 

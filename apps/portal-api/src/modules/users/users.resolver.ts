@@ -1,7 +1,13 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import crypto from 'node:crypto';
 import { dbTx } from '../../../knexfile';
-import { MergeEvent, Resolvers } from '../../__generated__/resolvers-types';
+import {
+  MergeEvent,
+  Resolvers,
+  User,
+  UserPendingSubscription,
+  UserSubscription,
+} from '../../__generated__/resolvers-types';
 import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
@@ -10,6 +16,7 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
+import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
@@ -278,6 +285,26 @@ const resolvers: Resolvers = {
       await resetPassword(context);
       return { success: true };
     },
+    requestTransferPersonalSpace: async (_, { new_email }, context) => {
+      try {
+        await usersProfileApp.requestTransferPersonalSpace(context, new_email);
+
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
+      }
+    },
+    transferPersonalSpace: async (_, { requestId }) => {
+      try {
+        await usersProfileApp.transferPersonalSpace(
+          requestId as UserTransferRequestId
+        );
+
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
+      }
+    },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
       const updatedUser = await updateUser(context, context.user.id, {
         selected_organization_id: fromGlobalId(organization_id)
@@ -326,8 +353,17 @@ const resolvers: Resolvers = {
         const user = await loadUserBy({
           'User.id': extractId(user_id),
         });
-        await dispatch('UserPending', 'delete', user, 'User');
-        return mapUserToGraphqlUser(user);
+        const graphQLUser = mapUserToGraphqlUser(user);
+        await dispatch(
+          'UserPending',
+          'delete',
+          {
+            ...graphQLUser,
+            pending_organization_id: extractId(organization_id),
+          } as User,
+          'User'
+        );
+        return graphQLUser;
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -369,18 +405,40 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     User: {
-      subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['User']),
-      }),
+      subscribe: (_, args, context, info) => {
+        return {
+          [Symbol.asyncIterator]: () =>
+            listen(context, ['User'], info, (payload: UserSubscription) => {
+              if (!args.organizationId || payload.merge) {
+                return true;
+              }
+              const user = payload.add ?? payload.delete ?? payload.edit;
+              return user.organizations
+                .map((org) => org.id)
+                .includes(extractId(args.organizationId));
+            }),
+        };
+      },
     },
     MeUser: {
-      subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['MeUser']),
+      subscribe: (_, __, context, info) => ({
+        [Symbol.asyncIterator]: () => listen(context, ['MeUser'], info),
       }),
     },
     UserPending: {
-      subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['UserPending']),
+      subscribe: (_, args, context, info) => ({
+        [Symbol.asyncIterator]: () =>
+          listen(
+            context,
+            ['UserPending'],
+            info,
+            (payload: UserPendingSubscription) => {
+              return (
+                payload.delete.pending_organization_id ===
+                extractId(args.organizationId)
+              );
+            }
+          ),
       }),
     },
   },

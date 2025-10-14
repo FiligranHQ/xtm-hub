@@ -346,16 +346,11 @@ describe('Documents loading', () => {
     expect(response?.totalCount).toStrictEqual('1');
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
   });
+});
 
-  it('should send a share telemetry event when incrementing shared counter', async () => {
-    vi.useFakeTimers();
-    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-    vi.setSystemTime(date);
-    const telemetrySpy = vi
-      .spyOn(telemetryApp, 'sendTelemetryEvent')
-      .mockResolvedValue();
-    const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
-
+describe('increment shared counter', () => {
+  const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
+  beforeAll(async () => {
     const trx = await dbTx();
     await createDocument(
       {
@@ -365,6 +360,7 @@ describe('Documents loading', () => {
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        name: 'Csv Feed',
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'csvfilename',
@@ -375,6 +371,27 @@ describe('Documents loading', () => {
       trx
     );
     await trx.commit();
+    vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+      async (eventType: TelemetryEventType, documentId: string) => {
+        if (
+          documentId === documentId &&
+          eventType === TelemetryEventType.DOWNLOAD
+        )
+          return 5;
+        if (documentId === documentId && eventType === TelemetryEventType.SHARE)
+          return 12;
+        return 0; // default
+      }
+    );
+  });
+
+  it('should send a share telemetry event for a logged user', async () => {
+    vi.useFakeTimers();
+    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+    vi.setSystemTime(date);
+    const telemetrySpy = vi
+      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .mockResolvedValue();
 
     await documentResolver.Mutation.incrementShareNumberDocument(
       {},
@@ -394,7 +411,34 @@ describe('Documents loading', () => {
       service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,
-      resource_title: 'csvfilename',
+      resource_title: 'Csv Feed',
+    });
+  });
+
+  it('should send a share telemetry event for an anonymous user', async () => {
+    vi.useFakeTimers();
+    const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+    vi.setSystemTime(date);
+    const telemetrySpy = vi
+      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .mockResolvedValue();
+
+    await documentResolver.Mutation.incrementShareNumberDocument(
+      {},
+      {
+        documentId: toGlobalId('DocumentId', documentId),
+      },
+      {}
+    );
+    expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+      '@timestamp': '2025-02-03T13:12:15.000Z',
+      event_type: TelemetryEventType.SHARE,
+      organization_type: 'Public',
+      source: TELEMETRY_SOURCE,
+      service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+      service_type: TelemetryEventServiceType.CSV_FEEDS,
+      resource_id: documentId,
+      resource_title: 'Csv Feed',
     });
   });
 

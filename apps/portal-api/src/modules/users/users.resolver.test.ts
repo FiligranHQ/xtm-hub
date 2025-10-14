@@ -9,7 +9,9 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from 'vitest';
+import { SubscriptionSpy } from '../../../tests/test-utils';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
@@ -261,6 +263,63 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
+    it('should should send a add event in sse', async () => {
+      const filigranSpy = new SubscriptionSpy();
+      const thalesSpy = new SubscriptionSpy();
+      // @ts-ignore
+      await filigranSpy.spy(
+        usersResolver.Subscription.User,
+        {
+          organizationId: toGlobalId(
+            'Organization',
+            PLATFORM_ORGANIZATION_UUID
+          ),
+        },
+        contextAdminUser,
+        ['add']
+      );
+
+      await thalesSpy.spy(
+        usersResolver.Subscription.User,
+        {
+          organizationId: toGlobalId('Organization', THALES_ORGA_ID),
+        },
+        contextAdminOrgaThales,
+        ['add']
+      );
+
+      const email = 'sseEventAddUser@filigran.io';
+      // @ts-ignore
+      await usersResolver.Mutation.adminAddUser(
+        undefined,
+        {
+          input: {
+            email: email,
+            password: DEFAULT_ADMIN_PASSWORD,
+            organization_capabilities: [
+              {
+                organization_id: toGlobalId(
+                  'Organization',
+                  PLATFORM_ORGANIZATION_UUID
+                ),
+                capabilities: [],
+              },
+            ],
+          } as AddUserInput,
+        },
+        contextAdminUser
+      );
+
+      const events = await filigranSpy.waitForEvents(1);
+
+      expect(events).toHaveLength(1);
+      expect(events[0].User.add.email).toBe(email);
+      await thalesSpy.expectNoEvents();
+
+      await filigranSpy.cleanup();
+      await thalesSpy.cleanup();
+    });
+
     describe('create user with personal space', async () => {
       let user: UserLoadUserBy;
       let organizations: Organization[];
@@ -845,6 +904,51 @@ describe('User mutation resolver', () => {
 
       expect(usersPendingOrg.length).toBe(0);
       await removeUser(contextAdminUser, { email: pendingUser.email });
+    });
+
+    it('should dispatch event when pending user is removed from organization', async () => {
+      const testContext = {
+        ...contextAdminOrgaThales,
+        user: {
+          ...contextAdminOrgaThales.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      const email = `testPending${uuidv4()}@thales.com`;
+      const pendingUser = await loginFromProvider({
+        email: email,
+        first_name: 'testToRemove',
+        last_name: 'pending',
+        roles: [],
+      });
+      const userId = toGlobalId('User', pendingUser.id);
+      const organizationId = toGlobalId('Organization', THALES_ORGA_ID);
+      const subscriptionSpy = new SubscriptionSpy();
+      await subscriptionSpy.spy(
+        usersResolver.Subscription?.UserPending,
+        {
+          organizationId: organizationId,
+        },
+        contextAdminOrgaThales,
+        ['delete']
+      );
+
+      await usersResolver.Mutation.removePendingUserFromOrganization(
+        undefined,
+        {
+          user_id: userId,
+          organization_id: organizationId,
+        },
+        testContext,
+        undefined
+      );
+
+      const events = await subscriptionSpy.waitForEvents(1);
+      expect(events).toHaveLength(1);
+      expect(events[0].UserPending.delete.email).toBe(email);
+
+      await removeUser(contextAdminUser, { email: pendingUser.email });
+      await subscriptionSpy.cleanup();
     });
   });
 });

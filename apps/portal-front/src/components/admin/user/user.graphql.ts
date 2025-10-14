@@ -127,8 +127,11 @@ export const UserPendingListFragment = graphql`
 `;
 
 export const UserPendingListSubscription = graphql`
-  subscription userPendingListSubscription($connections: [ID!]!) {
-    UserPending {
+  subscription userPendingListSubscription(
+    $connections: [ID!]!
+    $organizationId: ID!
+  ) {
+    UserPending(organizationId: $organizationId) {
       delete {
         id @deleteEdge(connections: $connections)
       }

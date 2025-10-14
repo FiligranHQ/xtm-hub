@@ -10,7 +10,7 @@ import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { serviceContractDomain } from '../services/contract/domain';
 import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import { buildOneClickDeployEvent } from './telemetry.helper';
-import { TelemetryEvent } from './telemetry.types';
+import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
 const TELEMETRY_INDEX = 'telemetry';
 
@@ -24,6 +24,23 @@ export const telemetryApp = {
     } catch (error) {
       logApp.error('Error sending telemetry event ', { event, error });
     }
+  },
+
+  async countEventsByDocumentId(
+    eventType: TelemetryEventType,
+    documentId: string
+  ) {
+    return await esDbClient.count({
+      index: TELEMETRY_INDEX,
+      query: {
+        bool: {
+          filter: [
+            { term: { event_type: eventType } },
+            { term: { resource_id: documentId } },
+          ],
+        },
+      },
+    });
   },
 
   async sendOneClickDeployEvent(

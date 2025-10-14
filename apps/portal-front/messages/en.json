@@ -86,6 +86,7 @@
       "INCREMENT_SHARE_NUMBER": "Error occurred while incrementing share number",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "INVALID_ACTION_SIZE": "An unknown error occurred",
+      "INVALID_EMAIL": "The email should be in valid format.",
       "INVALID_IMAGE_URL": "The image URL is not valid",
       "INVALID_PLATFORM_IDENTIFIER": "Platform identifier is invalid",
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
@@ -97,6 +98,7 @@
       "OPENAEV_SCENARIO_UPDATE_ERROR": "An error occurred while updating an OpenAEV Scenario",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "An organization with the same domain already exists",
       "ORGANIZATION_SAME_NAME_EXISTS": "An organization with the same name already exists",
+      "PERSONAL_SPACE_MUST_ALREADY_EXIST": "If you want to transfer your personal space, your future account must already exist.",
       "PLATFORM_NOT_REGISTERED": "The platform is not registered",
       "PLATFORM_TYPE_NOT_SUPPORTED": "The platform type is not supported",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "An unknown error occurred while refreshing user platform token",
@@ -111,6 +113,7 @@
       "SERVICE_NOT_FOUND": "Service was not found",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
       "SUBSCRIPTION_NOT_FOUND": "Subscription was not found",
+      "TRANSFER_ME_ERROR": "Error while requesting personal space transfer.",
       "UNKNOWN_ERROR": "An unknown error occurred",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
@@ -261,7 +264,17 @@
       "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenBAS platforms."
     },
     "Title": "Profile",
-    "UpdateProfile": "Update profile"
+    "UpdateProfile": "Update profile",
+    "PersonalSpace": {
+      "SuccessTransfer": "Personal space successfully transfered",
+      "SuccessRequest": "Personal space transfer request successfully sent",
+      "TitleDangerZone": "Transfer of personal space",
+      "TransferPersoSpaceExplanation": "You can request a personal space transfer for all of your subscriptions (the other account must already exists).",
+      "EmailPlaceholder": "email.i.want.to.transfer.to@email.com",
+      "TransferPersoSpace": "Transfer personal space",
+      "Transfer": "Transfer",
+      "TransferConfirmSentence": "Are you sure you want to transfer your personal space's subscriptions? While the new user has not confirmed by email, it won't be effective."
+    }
   },
   "RedirectPage": {
     "ExploringOurRoad": "Hold tight—you're just 3 seconds away from exploring our roadmap and learning more.",
@@ -791,7 +804,8 @@
     "ValidateForm": "Validate form",
     "Verified": "Verified",
     "Visualize": "Visualize",
-    "Updating": "Updating..."
+    "Updating": "Updating...",
+    "DangerZone": "Danger Zone"
   },
   "Platform": {
     "Update": "Update",
