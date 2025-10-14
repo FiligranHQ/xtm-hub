@@ -29,7 +29,7 @@ export async function up(knex) {
     table.date('request_date').notNullable().defaultTo(knex.fn.now());
     table.date('start_date');
     table.date('end_date');
-    table.string('product_type').notNullable();
+    table.string('platform_identifier').notNullable();
     table.string('intention');
     table.string('region').notNullable();
     table.string('activity_sector');
