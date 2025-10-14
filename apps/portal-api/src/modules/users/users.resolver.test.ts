@@ -621,7 +621,7 @@ describe('User mutation resolver', () => {
 
     it('should edit capabilities', async () => {
       expect(thalesUser.selected_org_capabilities).not.to.includes(
-        'MANAGE_OPENCTI_REGISTRATION'
+        'MANAGE_PLATFORM_REGISTRATION'
       );
 
       const testContext = {
@@ -637,7 +637,7 @@ describe('User mutation resolver', () => {
           id: THALES_ADMIN_ORGA_ID,
           input: {
             capabilities: [
-              'MANAGE_OPENCTI_REGISTRATION',
+              'MANAGE_PLATFORM_REGISTRATION',
               'ADMINISTRATE_ORGANIZATION',
             ],
           },
@@ -647,7 +647,7 @@ describe('User mutation resolver', () => {
       );
       thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
       expect(thalesUser.selected_org_capabilities).to.includes(
-        'MANAGE_OPENCTI_REGISTRATION'
+        'MANAGE_PLATFORM_REGISTRATION'
       );
       // Put back the original capabilities
       await usersResolver.Mutation.editUserCapabilities(
@@ -684,7 +684,7 @@ describe('User mutation resolver', () => {
           id: pendingUser.id,
           input: {
             capabilities: [
-              'MANAGE_OCTI_ENROLLMENT',
+              'MANAGE_PLATFORM_REGISTRATION',
               'ADMINISTRATE_ORGANIZATION',
             ],
           },

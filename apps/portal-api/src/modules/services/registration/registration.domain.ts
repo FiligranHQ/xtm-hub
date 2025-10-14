@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, QueryOpts } from '../../../../knexfile';
 import {
+  OrganizationCapability,
   PlatformContract,
   PlatformIdentifier,
   ServiceConfigurationStatus,
@@ -22,10 +23,7 @@ import {
 } from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceInstanceDomain } from '../instances/domain';
-import {
-  organizationCapabilityMappedByPlatformIdentifier,
-  serviceDefinitionIdentifierMappedByPlatformIdentifier,
-} from './registration.mapping';
+import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
 export type PlatformConfiguration = {
   registerer_id: string;
@@ -52,11 +50,9 @@ export const registrationDomain = {
       platformIdentifier: PlatformIdentifier;
     }
   ) => {
-    const requiredCapability =
-      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId,
-      requiredCapability,
+      requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
 
     const serviceInstanceId =
@@ -91,19 +87,15 @@ export const registrationDomain = {
       configuration,
       serviceInstanceId,
       targetOrganizationId,
-      platformIdentifier,
     }: {
       configuration: PlatformConfiguration;
       serviceInstanceId: ServiceInstanceId;
       targetOrganizationId: OrganizationId;
-      platformIdentifier: PlatformIdentifier;
     }
   ) => {
-    const requiredCapability =
-      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId: targetOrganizationId,
-      requiredCapability,
+      requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
     const subscription = await loadSubscriptionBy(context, {
       service_instance_id: serviceInstanceId,
@@ -123,7 +115,7 @@ export const registrationDomain = {
 
       await securityGuard.assertUserIsAllowedOnOrganization(context, {
         organizationId: subscription.organization_id,
-        requiredCapability,
+        requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
       await transferSubscriptionToOrganization(context, {
