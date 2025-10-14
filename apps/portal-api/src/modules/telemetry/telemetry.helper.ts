@@ -32,17 +32,20 @@ import {
 } from './telemetry.types';
 
 function buildBaseEvent(
-  organization: Organization,
-  user_id: UserId,
+  organization: Organization | undefined,
+  user_id: UserId | undefined,
   timestamp?: Date
 ) {
   const eventTimestamp = timestamp || new Date();
-  return {
-    organization_id: organization.id,
-    organization_name: organization.name,
-    organization_type: organization.personal_space
+  const organization_type: TelemetryOrganizationType = !organization
+    ? TelemetryOrganizationType.PUBLIC
+    : organization.personal_space
       ? TelemetryOrganizationType.PERSONAL
-      : TelemetryOrganizationType.PROFESSIONAL,
+      : TelemetryOrganizationType.PROFESSIONAL;
+  return {
+    organization_id: organization?.id,
+    organization_name: organization?.name,
+    organization_type: organization_type,
     user_id,
     '@timestamp': eventTimestamp.toISOString(),
     source: TELEMETRY_SOURCE,
@@ -140,8 +143,8 @@ export function buildDownloadEvent(
 }
 
 export function buildShareEvent(
-  organization: Organization,
-  user_id: UserId,
+  organization: Organization | undefined,
+  user_id: UserId | undefined,
   service: ServiceDefinitionIdentifier,
   resource_id: string,
   resource_title: string,

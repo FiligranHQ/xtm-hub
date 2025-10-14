@@ -118,6 +118,16 @@ class ElasticSearchService {
       throw error;
     }
   }
+
+  async count(params: estypes.CountRequest): Promise<number> {
+    try {
+      const result = await this.elasticsearchClient.count(params);
+      return result.count;
+    } catch (error) {
+      logApp.error('ES count error', { error });
+      throw error;
+    }
+  }
 }
 
 export default ElasticSearchService;

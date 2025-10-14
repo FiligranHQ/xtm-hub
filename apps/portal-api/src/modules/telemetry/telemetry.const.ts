@@ -18,4 +18,5 @@ export enum TelemetryTargetProduct {
 export enum TelemetryOrganizationType {
   PERSONAL = 'Personal',
   PROFESSIONAL = 'Professional',
+  PUBLIC = 'Public',
 }

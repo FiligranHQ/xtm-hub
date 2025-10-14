@@ -1,10 +1,15 @@
 import { dbTx } from '../../../../knexfile';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { createDocumentWithChildren } from '../document/document.domain';
-import { Upload } from '../document/document.helper';
+import {
+  loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
+  Upload,
+} from '../document/document.helper';
 import {
   CUSTOM_DASHBOARD_DOCUMENT_TYPE,
   CUSTOM_DASHBOARD_METADATA,
@@ -51,5 +56,24 @@ export const CustomDashboardsApp = {
       await trx.rollback();
       throw error;
     }
+  },
+
+  loadCustomDashboard: async (
+    context: PortalContext,
+    documentId: DocumentId
+  ) => {
+    return loadDocumentWithCountersById(
+      context,
+      documentId,
+      CUSTOM_DASHBOARD_METADATA
+    );
+  },
+
+  loadSeoCustomDashboard: async (slug: string) => {
+    return loadSeoDocumentWithCountersBySlug(
+      CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+      slug,
+      CUSTOM_DASHBOARD_METADATA
+    );
   },
 };
