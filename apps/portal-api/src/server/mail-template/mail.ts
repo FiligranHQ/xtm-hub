@@ -12,6 +12,15 @@ export interface NewUserOrganizationMailModel {
   invitedName: string;
 }
 
+export interface RequestTransferPersonalSpaceMailModel {
+  recipientName: string;
+  recipientId: string;
+  previousUserId: string;
+  previousUserEmail: string;
+  previousUserName: string;
+  transferRequestId: string;
+}
+
 export interface PlatformRegisteredModel {
   adminName: string;
 }
@@ -42,6 +51,7 @@ export type MailTemplates = {
   opencti_integration_feeds: GenericServiceMailModel;
   openaev_scenarios: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
+  request_transfer_personal_space: RequestTransferPersonalSpaceMailModel;
   opencti_platform_registered: PlatformRegisteredModel;
   opencti_platform_unregistered: PlatformUnregisteredModel;
   openaev_platform_registered: PlatformRegisteredModel;
@@ -62,6 +72,8 @@ export const templateSubjects: {
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   new_user_organization: (params: NewUserOrganizationMailModel) =>
     `XTM Hub - You've been added to the ${params.organizationName} organization`,
+  request_transfer_personal_space: () =>
+    `Confirmation of Personal Space Transfer in XTM Hub`,
   opencti_platform_registered: () =>
     `OpenCTI Platform Successfully Registered to XTM Hub – Integration Now Active`,
   opencti_platform_unregistered: () =>

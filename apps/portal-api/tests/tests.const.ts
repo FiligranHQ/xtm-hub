@@ -12,7 +12,10 @@ import {
 export const DEFAULT_ADMIN_EMAIL = 'admin@filigran.io';
 export const DEFAULT_ADMIN_PASSWORD = 'admin';
 export const SIMPLE_USER_FILIGRAN_ID = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
+export const ADMIN_USER_ID = 'ba091095-418f-4b4f-b150-6c9295e232c3';
 export const DEFAULT_ORG = 'Filigran';
+export const FILIGRAN_ORGA_ID =
+  'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId;
 
 export const THALES_ORGA_ID =
   '681fb117-e2c3-46d3-945a-0e921b5d4b6c' as OrganizationId;
@@ -27,15 +30,15 @@ export const SERVICE_CUSTOM_DASHBOARDS_ID =
   'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4';
 export const THALES_SIMPLE_USER_ID = '154006e2-f24b-42da-b39c-e0fb17bead00';
 export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
-
+export const FILIGRAN_USER_ID = '77b4b845-4ab4-4df8-8e12-0651da813ebb';
 export const contextAdminUser: PortalContext = {
   user: {
     id: ADMIN_UUID,
     email: DEFAULT_ADMIN_EMAIL,
     password: null,
     salt: null,
-    first_name: null,
-    last_name: null,
+    first_name: 'firstName',
+    last_name: 'lastName',
     selected_organization_id: PLATFORM_ORGANIZATION_UUID,
     organizations: [
       {

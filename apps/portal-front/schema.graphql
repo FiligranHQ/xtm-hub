@@ -72,6 +72,8 @@ type Mutation {
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   resetPassword: Success!
+  requestTransferPersonalSpace(new_email: String): Success!
+  transferPersonalSpace(requestId: ID!): Success!
   login(email: String!, password: String): User
   logout: ID!
 }

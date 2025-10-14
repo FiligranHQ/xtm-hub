@@ -2919,6 +2919,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electric-sql/pglite@npm:0.3.10":
+  version: 0.3.10
+  resolution: "@electric-sql/pglite@npm:0.3.10"
+  checksum: 10c0/59f82e6bb83ab6d9558cffcc04120ee9b7bada0158a4fdaba7b959f2f16e8373ea86fe1856e37c7623353197f836a8ccfbfb0740ef6e40d6b2a3b36e569cf955
+  languageName: node
+  linkType: hard
+
 "@emnapi/core@npm:^1.1.0, @emnapi/core@npm:^1.4.3":
   version: 1.4.4
   resolution: "@emnapi/core@npm:1.4.4"
@@ -10792,6 +10799,7 @@ __metadata:
     "@aws-sdk/lib-storage": "npm:3.908.0"
     "@dmitryrechkin/json-schema-to-zod": "npm:1.0.1"
     "@elastic/elasticsearch": "npm:8.19.1"
+    "@electric-sql/pglite": "npm:0.3.10"
     "@eslint/js": "npm:9.37.0"
     "@graphql-codegen/cli": "npm:5.0.7"
     "@graphql-codegen/plugin-helpers": "npm:5.1.1"

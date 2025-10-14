@@ -14,7 +14,7 @@ import {
 } from '../telemetry/telemetry.helper';
 import {
   insertNewOrganization,
-  updateOrganization,
+  updateOrganizationBy,
 } from './organizations.domain';
 import { hasDomainOverlap } from './organizations.helper';
 
@@ -24,8 +24,8 @@ export const organizationsApp = {
     id: OrganizationId,
     input: OrganizationInput
   ) {
-    const [updatedOrganization] = await updateOrganization(
-      id as OrganizationId,
+    const [updatedOrganization] = await updateOrganizationBy(
+      { id },
       { ...input }
     );
     try {

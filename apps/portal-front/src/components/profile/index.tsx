@@ -9,6 +9,7 @@ import {
   ProfileFormEdit,
   ProfileFormEditSchema,
 } from '@/components/profile/form/edit';
+import { RequestTransferPersonalSpace } from '@/components/profile/form/request-transfer-personal-space';
 import { ProfileFormResetPassword } from '@/components/profile/form/reset-password';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { toast } from 'filigran-ui';
@@ -89,6 +90,7 @@ export const Profile: React.FC = () => {
       <section className="flex flex-col gap-xl w-8/12 m-auto">
         <ProfileFormEdit onSubmit={handleSubmit} />
         <ProfileFormResetPassword onSubmit={handleResetPassword} />
+        <RequestTransferPersonalSpace />
       </section>
       <AlertDialogComponent
         isOpen={isDialogOpen}

@@ -2,6 +2,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { NextRequest } from 'next/server';
 import { redirectToRegistration } from './registration';
 import { redirectToResource } from './resource';
+import { redirectToTransferPersoSpace } from './transfer-perso-space';
 
 interface RedirectIdentifierGetRouteProps {
   params: Promise<{
@@ -39,6 +40,8 @@ export async function GET(
         'unregister',
         PlatformIdentifierEnum.OPENAEV
       );
+    case 'transfer-personal-space':
+      return redirectToTransferPersoSpace(request);
   }
 
   return redirectToResource(awaitedParams, request);

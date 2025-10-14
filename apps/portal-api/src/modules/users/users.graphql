@@ -131,6 +131,8 @@ type Mutation {
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   resetPassword: Success! @auth
+  requestTransferPersonalSpace(new_email: String): Success! @auth
+  transferPersonalSpace(requestId: ID!): Success! @auth
 
   # Login
   login(email: String!, password: String): User
