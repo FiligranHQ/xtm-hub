@@ -31,7 +31,11 @@ import User, { UserId } from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
 import { formatRawObject } from '../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../utils/utils';
-import { insertFileInMinio, UploadedFile } from './document-storage';
+import {
+  deleteFileToMinio,
+  insertFileInMinio,
+  UploadedFile,
+} from './document-storage';
 import {
   Document,
   FullDocumentMutator,
@@ -48,6 +52,7 @@ import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { getOrCreateLabel } from '../../settings/labels/labels.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
   Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
@@ -107,7 +112,189 @@ export const insertDocument = async (
 
   return createDocument<Document>(context, documentData, [], trx);
 };
+export const upsertDocumentWithChildren = async <T extends DocumentModel>(
+  type: string,
+  input: Partial<T>,
+  uploads: Upload[] | Upload,
+  metadataKeys: DocumentMetadataKeys<T>,
+  context: PortalContext,
+  trx: Knex.Transaction
+) => {
+  const doc = await upsertDocument<T>(
+    context,
+    {
+      ...input,
+      type,
+    },
+    metadataKeys,
+    trx
+  );
 
+  await upsertImage(context, doc, uploads, trx);
+  return doc;
+};
+
+export const upsertImage = async <T extends DocumentModel>(
+  context: PortalContext,
+  doc: T,
+  upload: Upload[] | Upload,
+  trx: Knex.Transaction
+) => {
+  const files = await processUploads(upload, context);
+
+  // Get all existing child image documents
+  const childDocumentIds = db(context, 'Document_Children')
+    .select('child_document_id')
+    .where('parent_document_id', doc.id);
+
+  // Delete all existing image documents for this parent
+  const deletedDocuments = await db(context, 'Document')
+    .delete()
+    .whereIn('id', childDocumentIds)
+    .andWhere('type', 'image')
+    .returning(['id', 'minio_name'])
+    .transacting(trx);
+
+  // Create all new image documents
+  await Promise.all(
+    files.map((file) =>
+      createDocument(
+        context,
+        {
+          type: 'image',
+          parent_document_id: doc.id as DocumentId,
+          file_name: file.fileName,
+          minio_name: file.minioName,
+          mime_type: file.mimeType,
+        },
+        [],
+        trx
+      )
+    )
+  );
+
+  // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
+  if (deletedDocuments.length > 0) {
+    await Promise.all(
+      deletedDocuments.map((doc) => {
+        return deleteFileToMinio(doc.minio_name);
+      })
+    );
+  }
+};
+
+export const upsertDocument = async <T extends DocumentModel>(
+  context: PortalContext,
+  documentData: Omit<Partial<T>, 'labels'> & {
+    labels?: string[];
+    parent_document_id?: string;
+  },
+  metadataKeys: DocumentMetadataKeys<T> = [],
+  trx: Knex.Transaction
+): Promise<T> => {
+  // Prepare the data to insert
+  const insertData = {
+    ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
+    uploader_id: context.user.id,
+    uploader_organization_id: context.user.selected_organization_id,
+  };
+
+  // Upsert on slug
+  const [document] = await db<DocumentModel>(context, 'Document')
+    .insert(insertData)
+    .onConflict('slug')
+    .merge({
+      ...omit(insertData, ['uploader_id']),
+      updated_at: new Date(),
+      updater_id: insertData.uploader_id,
+    })
+    .returning('*')
+    .transacting(trx);
+
+  const documentWasUpdated = !!document.updated_at;
+
+  // Handle parent document relationship
+  if (documentData.parent_document_id) {
+    // First, delete existing relationship if it exists (for upsert scenario)
+    if (documentWasUpdated) {
+      await db<DocumentChildren>(context, 'Document_Children')
+        .where({ child_document_id: document.id })
+        .delete()
+        .transacting(trx);
+    }
+    // Insert new relationship
+    await db<DocumentChildren>(context, 'Document_Children')
+      .insert({
+        parent_document_id: documentData.parent_document_id as DocumentId,
+        child_document_id: document.id,
+      })
+      .transacting(trx);
+  }
+
+  if (documentData.labels?.length) {
+    if (documentWasUpdated) {
+      await db<ObjectLabel>(context, 'Object_Label')
+        .where('object_id', document.id as unknown as ObjectLabelObjectId)
+        .delete()
+        .transacting(trx);
+    }
+    const insertObjectLabel = [];
+    for (const name of documentData.labels) {
+      const label = await getOrCreateLabel({ context, name });
+      insertObjectLabel.push({
+        object_id: document.id as unknown as ObjectLabelObjectId,
+        label_id: label.id,
+      });
+    }
+    await db<ObjectLabel>(context, 'Object_Label')
+      .insert(insertObjectLabel)
+      .transacting(trx);
+  }
+
+  if (metadataKeys.length > 0) {
+    // If document was updated (not created)
+    if (documentWasUpdated) {
+      // Delete all existing metadata except 'version'
+      await db<DocumentMetadata>(context, 'Document_Metadata')
+        .where('document_id', document.id)
+        .whereNot('key', 'product_version') // Keep version metadata
+        .delete()
+        .transacting(trx);
+      const existingVersion = await db<DocumentMetadata>(
+        context,
+        'Document_Metadata'
+      )
+        .where('document_id', document.id)
+        .where('key', 'product_version')
+        .select('value')
+        .first();
+      if (existingVersion) {
+        document['product_version'] = existingVersion.value;
+      }
+    }
+
+    // Insert new metadata (excluding version) if documentWasUpdated
+    const metadataToInsert = metadataKeys
+      .filter((key) => key !== 'product_version' || !documentWasUpdated) // Insert version if it on creation
+      .map((key) => ({
+        document_id: document.id,
+        key: key as DocumentMetadataKey,
+        value: documentData[key] as string,
+      }));
+
+    if (metadataToInsert.length > 0) {
+      const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+        .insert(metadataToInsert)
+        .returning('*')
+        .transacting(trx);
+
+      for (const metadata of metadatas) {
+        document[metadata.key] = metadata.value;
+      }
+    }
+  }
+  return document as T;
+};
 export const createDocument = async <T extends DocumentModel>(
   context: PortalContext,
   documentData: Omit<Partial<T>, 'labels'> & {
@@ -138,17 +325,6 @@ export const createDocument = async <T extends DocumentModel>(
         parent_document_id: documentData.parent_document_id as DocumentId,
         child_document_id: document.id,
       })
-      .transacting(trx);
-  }
-
-  if (documentData.labels?.length) {
-    await db<ObjectLabel>(context, 'Object_Label')
-      .insert(
-        documentData.labels.map((id: string) => ({
-          object_id: document.id as unknown as ObjectLabelObjectId,
-          label_id: extractId(id) as LabelId,
-        }))
-      )
       .transacting(trx);
   }
 

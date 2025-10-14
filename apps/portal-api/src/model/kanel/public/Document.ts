@@ -45,6 +45,8 @@ export default interface Document {
   uploader_organization_id: string | null;
 
   type: string;
+
+  source_type: string | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -91,6 +93,9 @@ export interface DocumentInitializer {
   uploader_organization_id?: string | null;
 
   type: string;
+
+  /** Default value: 'internal'::character varying */
+  source_type?: string | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -132,4 +137,6 @@ export interface DocumentMutator {
   uploader_organization_id?: string | null;
 
   type?: string;
+
+  source_type?: string | null;
 }

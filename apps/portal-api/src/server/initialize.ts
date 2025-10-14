@@ -8,6 +8,8 @@ import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
+  SYSTEM_USER_EMAIL,
+  SYSTEM_USER_UUID,
 } from '../portal.const';
 import { logApp } from '../utils/app-logger.util';
 import { hashPassword } from '../utils/hash-password.util';
@@ -28,42 +30,54 @@ import {
   updateUserPassword,
 } from './initialize.helper';
 
-const initAdminUser = async () => {
-  const { email, password } = portalConfig.admin;
-  const adminUser = await dbUnsecure<User>('User')
-    .where({ id: ADMIN_UUID })
+const initializeUser = async ({ userId, email, password, roleId }) => {
+  const existingUser = await dbUnsecure<User>('User')
+    .where({ id: userId })
     .first();
+
   const { salt, hash } = hashPassword(password);
-  const data = { salt, password: hash };
-  if (adminUser) {
-    // Update the password and salt
-    await updateUserPassword(data);
+  const passwordData = { salt, password: hash };
+
+  if (existingUser) {
+    await updateUserPassword(userId, passwordData);
   } else {
-    // User not yet exist, need a complete init
-    await completeUserInitialization(email, data);
+    await completeUserInitialization(userId, email, passwordData);
   }
-  ensureUserRoleExist(ADMIN_UUID, ROLE_ADMIN.id);
-  ensurePersonalSpaceExist(ADMIN_UUID, email);
+
+  await ensureUserRoleExist(userId, roleId);
+  await ensurePersonalSpaceExist(userId, email);
 };
 
-const completeUserInitialization = async (email, data) => {
+const initAdminUser = () =>
+  initializeUser({
+    userId: ADMIN_UUID,
+    email: portalConfig.admin.email,
+    password: portalConfig.admin.password,
+    roleId: ROLE_ADMIN.id,
+  });
+
+const initSystemUser = () =>
+  initializeUser({
+    userId: SYSTEM_USER_UUID,
+    email: SYSTEM_USER_EMAIL,
+    password: portalConfig.admin.password,
+    roleId: ROLE_ADMIN.id,
+  });
+
+const completeUserInitialization = async (user_id, email, data) => {
   const trx = await dbTx();
   try {
     // Check the platform organization
 
     await insertPlatformOrganization(trx);
-    await insertUserAdminOrganization(trx);
+    await insertUserAdminOrganization(user_id, email, trx);
 
-    await insertAdminUser(trx, email, data);
+    await insertAdminUser(user_id, email, data, trx);
 
+    await ensureUserOrganizationExist(user_id, PLATFORM_ORGANIZATION_UUID, trx);
     await ensureUserOrganizationExist(
-      ADMIN_UUID,
-      PLATFORM_ORGANIZATION_UUID,
-      trx
-    );
-    await ensureUserOrganizationExist(
-      ADMIN_UUID,
-      ADMIN_UUID as unknown as OrganizationId,
+      user_id,
+      user_id as unknown as OrganizationId,
       trx
     );
 
@@ -94,6 +108,8 @@ const initializeBuiltInAdministrator = async () => {
   await initCapabilityAndRole();
   // Initialize default admin user
   await initAdminUser();
+  // Initialize system user
+  await initSystemUser();
 };
 
 const logEnabledFeatureFlags = () => {

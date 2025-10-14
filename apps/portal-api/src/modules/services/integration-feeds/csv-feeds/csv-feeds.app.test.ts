@@ -1,28 +1,31 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dbTx } from '../../../../knexfile';
+import { dbTx } from '../../../../../knexfile';
 import {
   contextAdminUser,
   SERVICE_CSV_FEEDS_ID,
-} from '../../../../tests/tests.const';
-import { DocumentId } from '../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../../../../tests/tests.const';
+import { DocumentId } from '../../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import {
+  ADMIN_UUID,
+  PLATFORM_ORGANIZATION_UUID,
+} from '../../../../portal.const';
+import { telemetryApp } from '../../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
-} from '../../telemetry/telemetry.const';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { createDocumentWithChildren } from '../document/document.domain';
-import * as DocumentHelper from '../document/document.helper';
-import { deleteDocuments } from '../document/document.helper';
-import { csvFeedsApp } from './csv-feeds.app';
+} from '../../../telemetry/telemetry.const';
+import { TelemetryEventType } from '../../../telemetry/telemetry.types';
+import { createDocumentWithChildren } from '../../document/document.domain';
+import * as DocumentHelper from '../../document/document.helper';
 import {
-  CSV_FEED_DOCUMENT_TYPE,
   CSV_FEED_METADATA,
   CsvFeed,
-} from './csv-feeds.domain';
+  INTEGRATION_FEED_CSV_FEED_TYPE,
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from '../integration-feeds.model';
+import { csvFeedsApp } from './csv-feeds.app';
 
 describe('csv feeds app', () => {
   const minioFileMock = {
@@ -58,7 +61,7 @@ describe('csv feeds app', () => {
         minio_name: 'minioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
-        type: CSV_FEED_DOCUMENT_TYPE,
+        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         active: false,
       },
       []
@@ -96,7 +99,7 @@ describe('csv feeds app', () => {
 
     const trx = await dbTx();
     await createDocumentWithChildren<CsvFeed>(
-      CSV_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       {
         id: documentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -105,8 +108,8 @@ describe('csv feeds app', () => {
         minio_name: 'minioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
-        type: CSV_FEED_DOCUMENT_TYPE,
         active: false,
+        integration_type: INTEGRATION_FEED_CSV_FEED_TYPE,
       },
       [],
       CSV_FEED_METADATA,
@@ -140,7 +143,7 @@ describe('csv feeds app', () => {
 
     const trx = await dbTx();
     await createDocumentWithChildren<CsvFeed>(
-      CSV_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       {
         id: documentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -150,7 +153,7 @@ describe('csv feeds app', () => {
         minio_name: 'minioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
-        type: CSV_FEED_DOCUMENT_TYPE,
+        type: INTEGRATION_FEED_CSV_FEED_TYPE,
         active: true,
       },
       [],
@@ -166,7 +169,6 @@ describe('csv feeds app', () => {
   });
 
   afterAll(async () => {
-    await deleteDocuments();
     vi.useRealTimers();
   });
 });

@@ -5,23 +5,22 @@ import CapabilityPortal, {
 import { OrganizationId } from './model/kanel/public/Organization';
 import RolePortal, { RolePortalId } from './model/kanel/public/RolePortal';
 import { UserId } from './model/kanel/public/User';
+import { PortalContext } from './model/portal-context';
 
+export const SYSTEM_USER_EMAIL = 'system_user@filigran.io';
+export const SYSTEM_USER_UUID: UserId =
+  'f0587688-ef35-466a-9f71-a8807ba460b8' as UserId;
 export const ADMIN_UUID: UserId =
   'ba091095-418f-4b4f-b150-6c9295e232c3' as UserId;
+export const PLATFORM_NAME = 'Filigran';
+export const PLATFORM_DOMAIN = ['filigran.io'];
 export const PLATFORM_ORGANIZATION_UUID: OrganizationId =
   'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId;
 export const CAPABILITY_BYPASS: CapabilityPortal = {
   id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09' as CapabilityPortalId,
   name: Restriction.Bypass,
 };
-export const CAPABILITY_BCK_MANAGE_SERVICES = {
-  id: '6ff7515e-5d86-49e8-84b6-f301d12e6038',
-  name: Restriction.ManageSubscription,
-};
-export const CAPABILITY_FRT_SERVICE_SUBSCRIBER = {
-  id: '993b2b86-2310-47e9-90f2-b56ad9b15405',
-  name: Restriction.FrtServiceSubscriber,
-};
+
 export const ROLE_ADMIN: RolePortal = {
   id: '6b632cf2-9105-46ec-a463-ad59ab58c770' as RolePortalId,
   name: 'ADMIN',
@@ -41,3 +40,31 @@ export const JOIN_TYPE = {
   JOIN_AUTO: 'JOIN_AUTO',
   JOIN_SELF: 'JOIN_SELF',
 };
+
+export const SYSTEM_USER_CONTEXT: PortalContext = {
+  user: {
+    id: SYSTEM_USER_UUID,
+    email: SYSTEM_USER_EMAIL,
+    selected_organization_id: PLATFORM_ORGANIZATION_UUID,
+    organizations: [
+      {
+        id: PLATFORM_ORGANIZATION_UUID,
+        name: PLATFORM_NAME,
+        personal_space: false,
+        domains: PLATFORM_DOMAIN,
+      },
+      {
+        id: SYSTEM_USER_UUID,
+        name: SYSTEM_USER_EMAIL,
+        personal_space: true,
+        domains: [],
+      },
+    ],
+    capabilities: [{ id: CAPABILITY_BYPASS.id, name: Restriction.Bypass }],
+    roles_portal: [
+      {
+        ...ROLE_ADMIN,
+      },
+    ],
+  },
+} as PortalContext;

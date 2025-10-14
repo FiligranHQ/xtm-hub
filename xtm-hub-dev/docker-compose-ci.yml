@@ -73,8 +73,8 @@ services:
       - MINIO_BUCKET_NAME=xtmhubbucket
       - MINIO_ENDPOINT=portal-minio
       - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=minio
-      - MINIO_SECRET_KEY=password
+      - MINIO_ACCESS_KEY=portal
+      - MINIO_SECRET_KEY=changeme
       - MINIO_USE_SSL=false
     volumes:
       - "./coverage:/app/apps/portal-api/coverage"
