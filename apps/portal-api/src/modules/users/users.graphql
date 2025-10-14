@@ -33,6 +33,7 @@ type User implements Node {
   roles_portal: [RolePortal!]
   selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
+  pending_organization_id: ID
 }
 
 type UserEdge {
@@ -156,9 +157,9 @@ type UserPendingSubscription {
 }
 
 type Subscription {
-  User: UserSubscription
+  User(organizationId: ID): UserSubscription
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   MeUser: MeUserSubscription @auth
-  UserPending: UserPendingSubscription
+  UserPending(organizationId: ID!): UserPendingSubscription
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
 }

@@ -451,7 +451,12 @@ export const acceptPendingUserWithCapabilities = async (
 
     await dispatch('User', 'edit', user);
     await dispatch('MeUser', 'edit', userMapped, 'User');
-    await dispatch('UserPending', 'delete', user, 'User');
+    const userPendingPayload: GraphqlUser = {
+      ...userMapped,
+      pending_organization_id: organization_id,
+    };
+
+    await dispatch('UserPending', 'delete', userPendingPayload, 'User');
     await dispatch('User', 'add', user);
     return user;
   } catch (e) {

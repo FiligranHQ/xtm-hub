@@ -159,8 +159,11 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
   setConnectionId(connectionID);
 
   const userListSubscription = graphql`
-    subscription userListSubscription($connections: [ID!]!) {
-      User {
+    subscription userListSubscription(
+      $connections: [ID!]!
+      $organizationId: ID
+    ) {
+      User(organizationId: $organizationId) {
         add @appendNode(connections: $connections, edgeTypeName: "UserEdge") {
           ...userList_fragment
         }
@@ -170,10 +173,13 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
 
   const userListSubscriptionConfig = useMemo(
     () => ({
-      variables: { connections: [connectionID] },
+      variables: {
+        connections: [connectionID],
+        organizationId: isAdminPath ? undefined : organization,
+      },
       subscription: userListSubscription,
     }),
-    [connectionID, userListSubscription]
+    [connectionID, isAdminPath, organization, userListSubscription]
   );
   useSubscription(userListSubscriptionConfig);
 

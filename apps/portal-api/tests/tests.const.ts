@@ -67,6 +67,7 @@ export const contextAdminOrgaThales: PortalContext = {
     first_name: null,
     last_name: null,
     selected_organization_id: THALES_ORGA_ID,
+    selected_org_capabilities: ['ADMINISTRATE_ORGANIZATION'],
     organizations: [
       {
         id: THALES_ORGA_ID,
@@ -82,13 +83,22 @@ export const contextAdminOrgaThales: PortalContext = {
       },
     ],
     capabilities: [],
-    roles_portal: [
+    organization_capabilities: [
       {
-        ...ROLE_ADMIN,
+        id: 12,
+        organization: THALES_ORGA_ID,
+        capabilities: ['ADMINISTRATE_ORGANIZATION'],
+      },
+      {
+        id: 13,
+        organization: THALES_ADMIN_ORGA_ID,
+        capabilities: ['ADMINISTRATE_ORGANIZATION'],
       },
     ],
+    roles_portal: [],
   },
-} as PortalContext;
+} as unknown as PortalContext;
+
 export const contextSimpleUserThales: PortalContext = {
   user: {
     id: THALES_SIMPLE_USER_ID,

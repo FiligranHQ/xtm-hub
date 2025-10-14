@@ -66,7 +66,7 @@ const removePendingUser = graphql`
 `;
 
 interface PendingUserListProps {
-  organization?: string;
+  organization: string;
 }
 
 // Component
@@ -129,13 +129,15 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
   >(UserPendingListFragment, queryData);
 
   const connectionID = data?.pendingUsers?.__id;
-
   const pendingUserListSubscriptionConfig = useMemo(
     () => ({
-      variables: { connections: [connectionID] },
+      variables: {
+        connections: [connectionID],
+        organizationId: organization,
+      },
       subscription: UserPendingListSubscription,
     }),
-    [connectionID]
+    [connectionID, organization]
   );
   useSubscription(pendingUserListSubscriptionConfig);
 
