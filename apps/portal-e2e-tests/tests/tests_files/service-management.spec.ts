@@ -2,11 +2,7 @@ import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
 import ServicePage from '../model/service.pageModel';
-import {
-  clickRowAction,
-  waitForReactIdle,
-  waitForToasterToHide,
-} from '../model/common.js';
+import { clickRowAction, waitForReactIdle } from '../model/common.js';
 
 const TEST_SUBSCRIPTION = {
   organizationName: 'Thales',
@@ -47,8 +43,7 @@ test.describe('Service Management', () => {
       await clickRowAction(
         page,
         page.getByRole('row', { name: TEST_SUBSCRIPTION.organizationName }),
-        'Manage users',
-        'link'
+        'Manage users'
       );
       await expect(page).toHaveScreenshot();
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);

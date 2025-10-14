@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { expect } from '../fixtures/baseFixtures';
 import {
   clickRowAction,
@@ -33,8 +33,10 @@ export default class DocumentPage {
   async editDocument(newDescription: string) {
     const row = this.page.locator('table tbody tr').first();
     const dropdown = await openAndGetRowActionsDropdown(this.page, row);
-    await expect(dropdown.getByLabel('Delete document')).not.toBeVisible();
-    await this.page.getByLabel('Update document').click();
+    await expect(
+      dropdown.getByRole('menuitem', { name: 'Delete' })
+    ).not.toBeVisible();
+    await this.page.getByRole('menuitem', { name: 'Update' }).click();
     await expect(this.page).toHaveScreenshot();
     await this.page
       .getByRole('textbox', { name: 'Description' })

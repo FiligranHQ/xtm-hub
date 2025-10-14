@@ -1,8 +1,9 @@
-import { IconActionContext } from '@/components/ui/icon-actions';
+import {
+  IconActionContext,
+  IconActionsItem,
+} from '@/components/ui/icon-actions';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import { cn } from '@/lib/utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { buttonVariants } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { commitLocalUpdate, useRelayEnvironment } from 'react-relay';
@@ -30,23 +31,17 @@ export const DownloadDocument: FunctionComponent<DownloadDocumentProps> = ({
   };
 
   return (
-    <a
-      href={`/document/get/${slug}/${documentData.id}?attach=1`}
-      onClick={(e) => {
-        setDownloadNumber();
-        e.stopPropagation();
-        setMenuOpen(false);
-      }}
-      className={cn(
-        buttonVariants({
-          variant: 'ghost',
-          className: cn(
-            'normal-case h-9 w-full justify-start rounded-none border-none'
-          ),
-        })
-      )}>
-      {t('Utils.Download')}
-    </a>
+    <IconActionsItem asChild>
+      <a
+        href={`/document/get/${slug}/${documentData.id}?attach=1`}
+        onClick={(e) => {
+          setDownloadNumber();
+          e.stopPropagation();
+          setMenuOpen(false);
+        }}>
+        {t('Utils.Download')}
+      </a>
+    </IconActionsItem>
   );
 };
 

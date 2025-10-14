@@ -1,9 +1,5 @@
 import { Page } from '@playwright/test';
-import {
-  clickRowAction,
-  waitForDrawerToClose,
-  waitForReactIdle,
-} from './common';
+import { clickRowAction, waitForDrawerToClose } from './common';
 import { expect } from '../fixtures/baseFixtures';
 
 export default class ServicePage {
@@ -20,8 +16,7 @@ export default class ServicePage {
     await clickRowAction(
       this.page,
       this.page.getByRole('row', { name: 'Vault' }),
-      'Manage',
-      'link'
+      'Manage'
     );
     await expect(this.page).toHaveScreenshot();
   }
@@ -104,9 +99,7 @@ export default class ServicePage {
       .getByRole('row', { name: serviceName })
       .getByRole('button')
       .click();
-    await this.page
-      .getByRole('menuitem', { name: "Edit service's pictures" })
-      .click();
+    await this.page.getByRole('menuitem', { name: 'Pictures' }).click();
     const fileInputIllustration = this.page
       .locator('input[type="file"]')
       .nth(0);

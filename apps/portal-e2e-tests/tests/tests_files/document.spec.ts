@@ -1,6 +1,5 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeDocument } from '../db-utils/document.helper';
 import DocumentPage from '../model/document.pageModel';
 
 export const TEST_FILE = {

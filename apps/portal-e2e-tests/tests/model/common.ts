@@ -6,7 +6,8 @@ export async function forceCloseAllDropdowns(page: Page) {
 }
 
 export async function openAndGetRowActionsDropdown(page: Page, row: Locator) {
-  await forceCloseAllDropdowns(page);
+  //await forceCloseAllDropdowns(page);
+  await page.waitForTimeout(100);
   const button = row.locator('td:last-child').getByRole('button');
   await button.click();
   const dropdown = page.getByRole('menu');
@@ -18,7 +19,7 @@ export async function clickRowAction(
   page: Page,
   row: Locator,
   actionLabel: string,
-  role = 'button'
+  role: 'menuitem' | 'button' = 'menuitem'
 ) {
   const dropdown = await openAndGetRowActionsDropdown(page, row);
   const button = dropdown.getByRole(role, { name: actionLabel });
