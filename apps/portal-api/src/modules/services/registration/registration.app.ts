@@ -173,7 +173,6 @@ export const registrationApp = {
 
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
-        context,
         identifier
       );
     if (!serviceDefinition) {
@@ -203,7 +202,7 @@ export const registrationApp = {
         configuration,
       });
     } else {
-      await registrationDomain.registerNewPlatform(context, {
+      await registrationDomain.registerNewPlatform({
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,

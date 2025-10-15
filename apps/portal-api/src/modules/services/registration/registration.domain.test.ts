@@ -45,7 +45,7 @@ describe('Registration domain', () => {
 
   describe('registerNewPlatform', () => {
     it('save registration data', async () => {
-      await registrationDomain.registerNewPlatform(contextAdminUser, {
+      await registrationDomain.registerNewPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
@@ -100,14 +100,11 @@ describe('Registration domain', () => {
       expect(configuration.platform_contract).toBe(platformContract);
     });
     it('can create pending platforms', async () => {
-      const serviceInstanceId = await registrationDomain.registerNewPlatform(
-        contextAdminUser,
-        {
-          organizationId: PLATFORM_ORGANIZATION_UUID,
-          serviceDefinitionId,
-          platformIdentifier: PlatformIdentifier.Opencti,
-        }
-      );
+      const serviceInstanceId = await registrationDomain.registerNewPlatform({
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        serviceDefinitionId,
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
 
       const serviceInstance = await dbUnsecure<ServiceInstance>(
         'ServiceInstance'
@@ -338,7 +335,7 @@ describe('Registration domain', () => {
     const openAEVServiceDefinitionId = 'e66a6b50-1f92-4f62-b84c-88ed6b871790';
 
     beforeEach(async () => {
-      await registrationDomain.registerNewPlatform(contextAdminUser, {
+      await registrationDomain.registerNewPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
@@ -353,7 +350,7 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationDomain.registerNewPlatform(contextAdminUser, {
+      await registrationDomain.registerNewPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId: openAEVServiceDefinitionId,
         configuration: {

@@ -23,7 +23,6 @@ export const DeploymentsApp = {
     const context = requestContext.require();
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
-        context.portalContext,
         input.platform_identifier
       );
     if (!serviceDefinition) {
@@ -33,14 +32,11 @@ export const DeploymentsApp = {
     const trx = await dbTx();
     requestContext.update({ trx });
     try {
-      const serviceInstanceId = await registrationDomain.registerNewPlatform(
-        context.portalContext,
-        {
-          serviceDefinitionId: serviceDefinition.id,
-          organizationId: context.user.selected_organization_id,
-          platformIdentifier: input.platform_identifier,
-        }
-      );
+      const serviceInstanceId = await registrationDomain.registerNewPlatform({
+        serviceDefinitionId: serviceDefinition.id,
+        organizationId: context.user.selected_organization_id,
+        platformIdentifier: input.platform_identifier,
+      });
 
       const [createdDeploymentRequest] = await insertDeploymentRequest({
         id: uuidv4() as DeploymentRequestId,

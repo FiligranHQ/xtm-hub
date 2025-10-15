@@ -14,6 +14,7 @@ import {
   contextAdminOrgaThales,
   contextAdminUser,
   contextSimpleUserThales,
+  FILIGRAN_ORGA_ID,
   requestContextAdminUser,
   requestContextSimpleUserThales,
   requestContextThalesUser,
@@ -83,16 +84,17 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not belong to the organization', async () => {
+      requestContext.set(requestContextThalesUser);
       const call = registrationApp.registerPlatform(
         {
-          ...contextAdminUser,
+          ...contextAdminOrgaThales,
           user: {
-            ...contextAdminUser.user,
+            ...contextAdminOrgaThales.user,
             capabilities: [],
           },
         },
         {
-          organizationId: THALES_ORGA_ID,
+          organizationId: FILIGRAN_ORGA_ID,
           platform,
           identifier: PlatformIdentifier.Opencti,
         }
