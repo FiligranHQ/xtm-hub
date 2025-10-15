@@ -26,6 +26,7 @@ type DeploymentRequest implements Node {
   intention: String
   job_title: String
   activity_sector: String
+  use_case: String
   start_date: Date
   end_date: Date
   status: DeploymentRequestStatus!
@@ -38,10 +39,12 @@ input CreateDeploymentRequestInput {
   intention: String
   job_title: String
   activity_sector: String
+  use_case: String
 }
 
 extend type Mutation {
   createDeploymentRequest(
     input: CreateDeploymentRequestInput
-  ): DeploymentRequest! @auth
+  ): DeploymentRequest!
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
