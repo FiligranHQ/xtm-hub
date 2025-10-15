@@ -151,7 +151,7 @@ export const db = <T>(
   );
 
   const reqContext = requestContext.get();
-  if (reqContext?.trx) {
+  if (reqContext?.trx && !reqContext.trx.isCompleted()) {
     queryContext.transacting(reqContext.trx);
   }
 
