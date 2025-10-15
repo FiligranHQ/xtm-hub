@@ -4,6 +4,7 @@ import { baseConfig } from './knexconfig';
 import { Filter, FilterKey } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
+import { requestContext } from './src/requestContext';
 import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
@@ -149,8 +150,9 @@ export const db = <T>(
     opts
   );
 
-  if (context?.trx) {
-    queryContext.transacting(context.trx);
+  const reqContext = requestContext.get();
+  if (reqContext?.trx) {
+    queryContext.transacting(reqContext.trx);
   }
 
   return securedQueryContext;

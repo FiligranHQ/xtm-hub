@@ -31,6 +31,7 @@ export const DeploymentsApp = {
     }
 
     const trx = await dbTx();
+    requestContext.update({ trx });
     try {
       const serviceInstanceId = await registrationDomain.registerNewPlatform(
         context.portalContext,
