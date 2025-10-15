@@ -8,6 +8,7 @@ import {
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
@@ -67,6 +68,9 @@ describe('Registration domain', () => {
         .first();
 
       expect(serviceInstance).toBeDefined();
+      expect(serviceInstance?.creation_status).toBe(
+        ServiceInstanceCreationStatus.Ready
+      );
 
       const subscription = await dbUnsecure<Subscription>('Subscription')
         .where('service_instance_id', '=', serviceInstance.id)
@@ -94,6 +98,45 @@ describe('Registration domain', () => {
       expect(configuration.platform_title).toBe(platformTitle);
       expect(configuration.platform_url).toBe(platformUrl);
       expect(configuration.platform_contract).toBe(platformContract);
+    });
+    it('can create pending platforms', async () => {
+      const serviceInstanceId = await registrationDomain.registerNewPlatform(
+        contextAdminUser,
+        {
+          organizationId: PLATFORM_ORGANIZATION_UUID,
+          serviceDefinitionId,
+          platformIdentifier: PlatformIdentifier.Opencti,
+        }
+      );
+
+      const serviceInstance = await dbUnsecure<ServiceInstance>(
+        'ServiceInstance'
+      )
+        .where('id', '=', serviceInstanceId)
+        .select('*')
+        .first();
+
+      expect(serviceInstance).toBeDefined();
+      expect(serviceInstance?.creation_status).toBe(
+        ServiceInstanceCreationStatus.Pending
+      );
+
+      const subscription = await dbUnsecure<Subscription>('Subscription')
+        .where('service_instance_id', '=', serviceInstanceId)
+        .select('*')
+        .first();
+
+      expect(subscription).toBeDefined();
+      expect(subscription.organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
+
+      const serviceConfiguration = await dbUnsecure<ServiceConfiguration>(
+        'Service_Configuration'
+      )
+        .where('service_instance_id', '=', serviceInstanceId)
+        .select('*')
+        .first();
+
+      expect(serviceConfiguration).toBeUndefined();
     });
   });
 

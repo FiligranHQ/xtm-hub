@@ -6,6 +6,7 @@ import {
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
@@ -46,10 +47,10 @@ export const registrationDomain = {
     }: {
       serviceDefinitionId: string;
       organizationId: OrganizationId;
-      configuration: PlatformConfiguration;
+      configuration?: PlatformConfiguration;
       platformIdentifier: PlatformIdentifier;
     }
-  ) => {
+  ): Promise<ServiceInstanceId> => {
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -59,7 +60,10 @@ export const registrationDomain = {
       await serviceInstanceDomain.createPlatformServiceInstance(
         context,
         serviceDefinitionId,
-        platformIdentifier
+        platformIdentifier,
+        configuration
+          ? ServiceInstanceCreationStatus.Ready
+          : ServiceInstanceCreationStatus.Pending
       );
 
     await createSubscription(context, {
@@ -74,11 +78,14 @@ export const registrationDomain = {
       justification: null,
     });
 
-    await serviceContractDomain.createConfiguration(
-      context,
-      serviceInstanceId,
-      configuration
-    );
+    if (configuration) {
+      await serviceContractDomain.createConfiguration(
+        context,
+        serviceInstanceId,
+        configuration
+      );
+    }
+    return serviceInstanceId;
   },
 
   refreshExistingPlatform: async (
