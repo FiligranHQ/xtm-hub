@@ -19,6 +19,30 @@ export type SubscribableResource =
   | openaevScenariosItem_fragment$data
   | customDashboardsItem_fragment$data;
 
+export enum ShareableResourceType {
+  OPENAEV_SCENARIO = 'openaev_scenario',
+  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration_feed',
+  OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
+}
+
+export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
+  openaev_scenario: 'Scenario OpenAEV',
+  opencti_integration_feed: 'Feed OpenCTI',
+  opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
+};
+
+export const isIntegrationFeedItem = (
+  resource: SubscribableResource
+): resource is integrationFeedsItem_fragment$data => {
+  return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
+};
+
+export const isConnectorResource = (
+  resource: SubscribableResource
+): resource is integrationFeedsItem_fragment$data => {
+  return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
+};
+
 export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
 
 export interface SeoCustomDashboard {
