@@ -32,8 +32,6 @@ export default interface DeploymentRequest {
 
   platform_identifier: string;
 
-  intention: string | null;
-
   region: string;
 
   activity_sector: string | null;
@@ -72,8 +70,6 @@ export interface DeploymentRequestInitializer {
 
   platform_identifier: string;
 
-  intention?: string | null;
-
   region: string;
 
   activity_sector?: string | null;
@@ -110,8 +106,6 @@ export interface DeploymentRequestMutator {
   end_date?: Date | null;
 
   platform_identifier?: string;
-
-  intention?: string | null;
 
   region?: string;
 

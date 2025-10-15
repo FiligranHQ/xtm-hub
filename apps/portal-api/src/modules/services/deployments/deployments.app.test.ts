@@ -19,7 +19,6 @@ describe('Deployment app', () => {
     it('should create a deployment request with associated registration', async () => {
       const deployment = await DeploymentsApp.createDeployment({
         activity_sector: 'cybersecurity',
-        intention: 'test',
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
@@ -35,7 +34,6 @@ describe('Deployment app', () => {
         PlatformIdentifier.Opencti
       );
       expect(dbDeploymentRequest.region).toBe(PlatformRegion.Us);
-      expect(dbDeploymentRequest.intention).toBe('test');
       expect(dbDeploymentRequest.job_title).toBe('myJob');
       expect(dbDeploymentRequest.activity_sector).toBe('cybersecurity');
       expect(dbDeploymentRequest.use_case).toBe('use_case');

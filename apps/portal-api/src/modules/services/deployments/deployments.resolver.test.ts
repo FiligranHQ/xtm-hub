@@ -15,7 +15,6 @@ describe('Deployment app', () => {
         {
           input: {
             activity_sector: 'cybersecurity',
-            intention: 'test',
             job_title: 'myJob',
             use_case: 'use_case',
             platform_identifier: PlatformIdentifier.Opencti,
@@ -28,7 +27,6 @@ describe('Deployment app', () => {
       expect(deployment.type).toBe(DeploymentType.Trial);
       expect(deployment.platform_identifier).toBe(PlatformIdentifier.Opencti);
       expect(deployment.region).toBe(PlatformRegion.Us);
-      expect(deployment.intention).toBe('test');
       expect(deployment.job_title).toBe('myJob');
       expect(deployment.activity_sector).toBe('cybersecurity');
       expect(deployment.use_case).toBe('use_case');

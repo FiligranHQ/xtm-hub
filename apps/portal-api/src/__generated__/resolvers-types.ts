@@ -108,7 +108,6 @@ export type CreateCustomDashboardInput = {
 
 export type CreateDeploymentRequestInput = {
   activity_sector?: InputMaybe<Scalars['String']['input']>;
-  intention?: InputMaybe<Scalars['String']['input']>;
   job_title?: InputMaybe<Scalars['String']['input']>;
   platform_identifier: PlatformIdentifier;
   region: PlatformRegion;
@@ -210,7 +209,6 @@ export type DeploymentRequest = Node & {
   activity_sector?: Maybe<Scalars['String']['output']>;
   end_date?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
-  intention?: Maybe<Scalars['String']['output']>;
   job_title?: Maybe<Scalars['String']['output']>;
   platform_identifier: PlatformIdentifier;
   region: PlatformRegion;
@@ -2174,7 +2172,6 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  intention?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;

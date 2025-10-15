@@ -6,6 +6,7 @@ export async function up(knex) {
   await knex.schema.alterTable('DeploymentRequest', (table) => {
     table.string('job_title');
     table.string('use_case');
+    table.dropColumn('intention');
   });
 }
 

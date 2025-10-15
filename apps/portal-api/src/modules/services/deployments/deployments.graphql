@@ -23,7 +23,6 @@ type DeploymentRequest implements Node {
   platform_identifier: PlatformIdentifier!
   region: PlatformRegion!
   type: DeploymentType!
-  intention: String
   job_title: String
   activity_sector: String
   use_case: String
@@ -36,7 +35,6 @@ input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
   region: PlatformRegion!
   type: DeploymentType!
-  intention: String
   job_title: String
   activity_sector: String
   use_case: String
