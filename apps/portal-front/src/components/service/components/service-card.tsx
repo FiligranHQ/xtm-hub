@@ -4,8 +4,12 @@ import { useServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
+import ShareableResourceConnectorCard from '@/components/ui/shareable-resource/shareable-resource-connector-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isConnectorResource,
+  SubscribableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { MoreVertIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -34,6 +38,15 @@ const ServiceCard = ({
     ServiceCapabilityName.Delete,
     serviceInstance
   );
+
+  if (isConnectorResource(document)) {
+    return (
+      <ShareableResourceConnectorCard
+        integrationFeed={document}
+        serviceInstance={serviceInstance}
+      />
+    );
+  }
 
   return (
     <ShareableResourceCard
