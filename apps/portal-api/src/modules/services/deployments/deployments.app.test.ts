@@ -29,21 +29,21 @@ describe('Deployment app', () => {
       const dbDeploymentRequest = await loadDeploymentRequestBy({
         id: deployment.id as DeploymentRequestId,
       });
-      expect(dbDeploymentRequest.type).toBe(DeploymentType.Trial);
-      expect(dbDeploymentRequest.platform_identifier).toBe(
-        PlatformIdentifier.Opencti
-      );
-      expect(dbDeploymentRequest.region).toBe(PlatformRegion.Us);
-      expect(dbDeploymentRequest.job_title).toBe('myJob');
-      expect(dbDeploymentRequest.activity_sector).toBe('cybersecurity');
-      expect(dbDeploymentRequest.use_case).toBe('use_case');
-      expect(dbDeploymentRequest.status).toBe(DeploymentRequestStatus.Pending);
-      expect(dbDeploymentRequest.platform_token).toBeDefined();
-      expect(dbDeploymentRequest.request_date).toBeDefined();
-      expect(dbDeploymentRequest.organization_requester_id).toBe(
-        PLATFORM_ORGANIZATION_UUID
-      );
-      expect(dbDeploymentRequest.user_requester_id).toBe(ADMIN_UUID);
+      expect(dbDeploymentRequest).toMatchObject({
+        activity_sector: 'cybersecurity',
+        id: expect.any(String),
+        job_title: 'myJob',
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        platform_identifier: PlatformIdentifier.Opencti,
+        platform_token: expect.any(String),
+        region: PlatformRegion.Us,
+        request_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+        status: DeploymentRequestStatus.Pending,
+        type: DeploymentType.Trial,
+        use_case: 'use_case',
+        user_requester_id: ADMIN_UUID,
+      });
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
         contextAdminUser,

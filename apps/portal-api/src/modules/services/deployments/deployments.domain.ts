@@ -7,9 +7,12 @@ import DeploymentRequest, {
 export const insertDeploymentRequest = async (
   deploymentRequest: DeploymentRequestInitializer
 ) => {
-  return dbUnsecure<DeploymentRequest>('DeploymentRequest')
+  const [createdDeploymentRequest] = await dbUnsecure<DeploymentRequest>(
+    'DeploymentRequest'
+  )
     .insert(deploymentRequest)
     .returning('*');
+  return createdDeploymentRequest;
 };
 
 export const loadDeploymentRequestBy = async (

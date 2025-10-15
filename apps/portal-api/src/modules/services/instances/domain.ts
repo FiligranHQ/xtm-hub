@@ -16,7 +16,7 @@ export const serviceInstanceDomain = {
     context: PortalContext,
     serviceDefinitionId: string,
     platformIdentifier: PlatformIdentifier,
-    status: string = ServiceInstanceCreationStatus.Ready
+    creation_status: ServiceInstanceCreationStatus = ServiceInstanceCreationStatus.Ready
   ): Promise<ServiceInstanceId> => {
     const id = uuidv4() as ServiceInstanceId;
     await db(context, 'ServiceInstance').insert([
@@ -24,7 +24,7 @@ export const serviceInstanceDomain = {
         id,
         name: serviceInstanceNameMappedByPlatformIdentifier[platformIdentifier],
         description: '',
-        creation_status: status,
+        creation_status,
         public: false,
         join_type: 'JOIN_AUTO',
         tags: [

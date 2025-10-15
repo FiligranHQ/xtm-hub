@@ -38,7 +38,7 @@ export const DeploymentsApp = {
         platformIdentifier: input.platform_identifier,
       });
 
-      const [createdDeploymentRequest] = await insertDeploymentRequest({
+      const createdDeploymentRequest = await insertDeploymentRequest({
         id: uuidv4() as DeploymentRequestId,
         user_requester_id: context.user.id,
         organization_requester_id: context.user.selected_organization_id,

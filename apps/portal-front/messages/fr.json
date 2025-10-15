@@ -65,7 +65,7 @@
       "CANT_REMOVE_LAST_ADMINISTRATOR": "Vous ne pouvez pas supprimer le dernier administrateur d'une organisation",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
-      "CREATE_DEPLOYMENT_REQUEST_ERROR": "",
+      "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
       "CSV_FEED_DELETION_ERROR": "Erreur survenue lors de la suppression d'un flux CSV",
       "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
       "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
