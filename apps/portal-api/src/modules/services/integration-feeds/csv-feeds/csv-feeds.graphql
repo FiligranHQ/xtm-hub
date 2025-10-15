@@ -1,5 +1,8 @@
-type CsvFeed implements DocumentBase & Node {
+type CsvFeed implements Node & DocumentBase & IntegrationFeed {
+  # Node
   id: ID!
+
+  # Document Base
   type: String!
   uploader: User
   uploader_organization: Organization
@@ -20,7 +23,10 @@ type CsvFeed implements DocumentBase & Node {
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
+
+  # IntegrationFeed
   remover_id: ID
+  integration_type: String!
 }
 
 input CreateCsvFeedInput {
@@ -63,28 +69,7 @@ type Mutation {
     @service_capa(requires: [DELETE])
 }
 
-type CsvFeedEdge {
-  cursor: String!
-  node: CsvFeed!
-}
-
-type CsvFeedConnection {
-  totalCount: Int!
-  edges: [CsvFeedEdge!]!
-  pageInfo: PageInfo!
-}
-
 type Query {
-  csvFeeds(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    filters: [Filter!]
-    serviceInstanceId: String
-  ): CsvFeedConnection! @auth
-  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed @auth
   seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
   seoCsvFeedBySlug(slug: String): CsvFeed
 }

@@ -11,6 +11,7 @@ import ServiceDefinitionResolver from '../modules/services/definition/service-de
 import deploymentResolver from '../modules/services/deployments/deployments.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 import csvFeedsResolver from '../modules/services/integration-feeds/csv-feeds/csv-feeds.resolver';
+import integrationFeedsResolver from '../modules/services/integration-feeds/integration-feeds.resolver';
 import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
@@ -53,6 +54,7 @@ const resolvers = mergeResolvers([
   telemetryResolver,
   deploymentResolver,
   ingestManifestResolver,
+  integrationFeedsResolver,
 ]);
 
 const createSchema = () => {

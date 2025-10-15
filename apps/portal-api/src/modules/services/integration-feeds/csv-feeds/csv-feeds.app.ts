@@ -1,5 +1,6 @@
 import { dbTx } from '../../../../../knexfile';
 import { DocumentId } from '../../../../model/kanel/public/Document';
+import Label from '../../../../model/kanel/public/Label';
 import { PortalContext } from '../../../../model/portal-context';
 import { logApp } from '../../../../utils/app-logger.util';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
@@ -60,8 +61,8 @@ export const csvFeedsApp = {
     return loadDocumentWithCountersById(context, documentId);
   },
 
-  loadSeoCsvFeed: async (slug: string) => {
-    return loadSeoDocumentWithCountersBySlug(
+  loadSeoCsvFeed: async (slug: string): Promise<CsvFeed> => {
+    return loadSeoDocumentWithCountersBySlug<CsvFeed & { labels: Label[] }>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       slug,
       CSV_FEED_METADATA

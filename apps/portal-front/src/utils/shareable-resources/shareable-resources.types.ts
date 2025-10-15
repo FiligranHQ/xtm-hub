@@ -1,11 +1,13 @@
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
   | customDashboardsItem_fragment$data
   | csvFeedsItem_fragment$data
+  | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
   | SeoCsvFeed
   | SeoCustomDashboard
@@ -13,6 +15,7 @@ export type ShareableResource =
 
 export type SubscribableResource =
   | csvFeedsItem_fragment$data
+  | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
   | customDashboardsItem_fragment$data;
 
