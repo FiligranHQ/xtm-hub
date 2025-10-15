@@ -5,18 +5,16 @@
  */
 
 import { KnexQueryBuilder } from '../../../knexfile';
-import { PortalContext } from '../../model/portal-context';
+import { requestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 
 /**
  * Apply security rules for Document table operations
  */
-export const setSelectSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
+export const setSelectSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  if (!context || !qb) {
+  requestContext.require();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
 
@@ -24,12 +22,10 @@ export const setSelectSecurity = (
   throw new Error('Missing select security logic');
 };
 
-export const setInsertSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
+export const setInsertSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  if (!context || !qb) {
+  requestContext.require();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
 
@@ -37,12 +33,10 @@ export const setInsertSecurity = (
   throw new Error('Missing insert security logic');
 };
 
-export const setUpdateSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
+export const setUpdateSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  if (!context || !qb) {
+  requestContext.require();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
 
@@ -50,12 +44,10 @@ export const setUpdateSecurity = (
   throw new Error('Missing update security logic');
 };
 
-export const setDeleteSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
+export const setDeleteSecurity = (qb: KnexQueryBuilder) => {
   //Can be remove after implementing security.
-  if (!context || !qb) {
+  requestContext.require();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
   // Implement document-specific delete security logic

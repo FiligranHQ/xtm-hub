@@ -1,14 +1,10 @@
 import { KnexQueryBuilder } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { PortalContext } from '../../model/portal-context';
 import { SecuryQueryHandlers } from '../access';
 import { checkUserCapabilities } from '../utils/user';
 
-export const setDeleteSecurity = async (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  await checkUserCapabilities(context, [
+export const setDeleteSecurity = async (qb: KnexQueryBuilder) => {
+  await checkUserCapabilities([
     OrganizationCapability.AdministrateOrganization,
     OrganizationCapability.ManageAccess,
   ]);

@@ -58,6 +58,11 @@ export const contextAdminUser: PortalContext = {
   serviceInstanceId: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
 } as PortalContext;
 
+export const requestContextAdminUser = {
+  user: contextAdminUser.user,
+  portalContext: contextAdminUser,
+};
+
 export const contextAdminOrgaThales: PortalContext = {
   user: {
     id: THALES_ADMIN_ORGA_ID,
@@ -99,6 +104,11 @@ export const contextAdminOrgaThales: PortalContext = {
   },
 } as unknown as PortalContext;
 
+export const requestContextThalesUser = {
+  user: contextAdminOrgaThales.user,
+  portalContext: contextAdminOrgaThales,
+};
+
 export const contextSimpleUserThales: PortalContext = {
   user: {
     id: THALES_SIMPLE_USER_ID,
@@ -126,3 +136,8 @@ export const contextSimpleUserThales: PortalContext = {
     roles_portal: [],
   },
 } as PortalContext;
+
+export const requestContextSimpleUserThales = {
+  user: contextSimpleUserThales.user,
+  portalContext: contextSimpleUserThales,
+};

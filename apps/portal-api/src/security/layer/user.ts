@@ -1,13 +1,11 @@
 import { KnexQueryBuilder } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { PortalContext } from '../../model/portal-context';
+import { requestContext } from '../../requestContext';
 import { SecuryQueryHandlers } from '../access';
 import { checkUserCapabilities } from '../utils/user';
 
-export const setSelectSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-): KnexQueryBuilder => {
+export const setSelectSecurity = (qb: KnexQueryBuilder): KnexQueryBuilder => {
+  const context = requestContext.require();
   return qb
     .innerJoin(
       'User_Organization as securityUserOrg',
@@ -21,34 +19,27 @@ export const setSelectSecurity = (
       context.user.selected_organization_id
     );
 };
-export const setInsertSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  if (!context || !qb) {
+export const setInsertSecurity = (qb: KnexQueryBuilder) => {
+  requestContext.require();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
   // Implement user-specific insert security logic
   throw new Error('Missing security logic');
 };
 
-export const setUpdateSecurity = async (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
-  await checkUserCapabilities(context, [
+export const setUpdateSecurity = async (qb: KnexQueryBuilder) => {
+  await checkUserCapabilities([
     OrganizationCapability.AdministrateOrganization,
     OrganizationCapability.ManageAccess,
   ]);
   return qb;
 };
 
-export const setDeleteSecurity = (
-  context: PortalContext,
-  qb: KnexQueryBuilder
-) => {
+export const setDeleteSecurity = (qb: KnexQueryBuilder) => {
   // Validate parameters exist
-  if (!context || !qb) {
+  requestContext.require();
+  if (!qb) {
     throw new Error('Invalid parameters');
   }
 
