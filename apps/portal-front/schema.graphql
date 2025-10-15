@@ -273,6 +273,7 @@ type DeploymentRequest implements Node {
   intention: String
   job_title: String
   activity_sector: String
+  use_case: String
   start_date: Date
   end_date: Date
   status: DeploymentRequestStatus!
@@ -285,6 +286,7 @@ input CreateDeploymentRequestInput {
   intention: String
   job_title: String
   activity_sector: String
+  use_case: String
 }
 
 type ShareableResourceImage {

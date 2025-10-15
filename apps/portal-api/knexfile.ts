@@ -61,7 +61,8 @@ export type DatabaseType =
   | 'Document_Children'
   | 'Document_Metadata'
   | 'Service_Contract'
-  | 'Service_Configuration';
+  | 'Service_Configuration'
+  | 'DeploymentRequest';
 
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 export type MethodType = 'select' | 'insert' | 'update' | 'del';

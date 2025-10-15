@@ -43,6 +43,10 @@ export default interface DeploymentRequest {
   product_service_instance_id: string | null;
 
   failure_reason: string | null;
+
+  job_title: string | null;
+
+  use_case: string | null;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
@@ -79,6 +83,10 @@ export interface DeploymentRequestInitializer {
   product_service_instance_id?: string | null;
 
   failure_reason?: string | null;
+
+  job_title?: string | null;
+
+  use_case?: string | null;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
@@ -114,4 +122,8 @@ export interface DeploymentRequestMutator {
   product_service_instance_id?: string | null;
 
   failure_reason?: string | null;
+
+  job_title?: string | null;
+
+  use_case?: string | null;
 }

@@ -113,6 +113,7 @@ export type CreateDeploymentRequestInput = {
   platform_identifier: PlatformIdentifier;
   region: PlatformRegion;
   type: DeploymentType;
+  use_case?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateOpenAevScenarioInput = {
@@ -216,6 +217,7 @@ export type DeploymentRequest = Node & {
   start_date?: Maybe<Scalars['Date']['output']>;
   status: DeploymentRequestStatus;
   type: DeploymentType;
+  use_case?: Maybe<Scalars['String']['output']>;
 };
 
 export enum DeploymentRequestStatus {
@@ -2179,6 +2181,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DeploymentRequestStatus'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentType'], ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
