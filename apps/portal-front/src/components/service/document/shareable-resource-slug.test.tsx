@@ -81,14 +81,14 @@ const mockSettings = {
 
 describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
   it.each`
-    shouldShowOneClickComponent | documentType          | documentActive | featureFlagScenarioEnabled
-    ${true}                     | ${'custom_dashboard'} | ${true}        | ${true}
-    ${false}                    | ${'custom_dashboard'} | ${false}       | ${true}
-    ${true}                     | ${'csv_feed'}         | ${true}        | ${true}
-    ${false}                    | ${'csv_feed'}         | ${false}       | ${true}
-    ${false}                    | ${'openaev_scenario'} | ${false}       | ${true}
-    ${true}                     | ${'openaev_scenario'} | ${true}        | ${true}
-    ${false}                    | ${'openaev_scenario'} | ${true}        | ${false}
+    shouldShowOneClickComponent | documentType                  | documentActive | featureFlagScenarioEnabled
+    ${true}                     | ${'opencti_custom_dashboard'} | ${true}        | ${true}
+    ${false}                    | ${'opencti_custom_dashboard'} | ${false}       | ${true}
+    ${true}                     | ${'opencti_integration_feed'} | ${true}        | ${true}
+    ${false}                    | ${'opencti_integration_feed'} | ${false}       | ${true}
+    ${false}                    | ${'openaev_scenario'}         | ${false}       | ${true}
+    ${true}                     | ${'openaev_scenario'}         | ${true}        | ${true}
+    ${false}                    | ${'openaev_scenario'}         | ${true}        | ${false}
   `(
     'should show OneClickDeploy=$shouldShowOneClickComponent when document is $documentType is $documentActive',
     ({

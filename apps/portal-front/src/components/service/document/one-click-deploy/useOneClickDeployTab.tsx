@@ -11,8 +11,8 @@ import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
 const OPENCTI_URL_CONFIGS = {
-  custom_dashboard: 'deploy-custom-dashboard',
-  csv_feed: 'deploy-csv-feed',
+  opencti_custom_dashboard: 'deploy-custom-dashboard',
+  opencti_integration_feed: 'deploy-csv-feed',
 };
 
 interface Props {

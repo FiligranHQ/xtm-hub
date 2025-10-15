@@ -15,8 +15,7 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Possibilités de toutes les capacités au sein d'une organisation",
       "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
-      "MANAGE_OPENAEV_REGISTRATION": "Possibilité d'inscrire et de désinscrire les plateformes OpenAEV",
-      "MANAGE_OPENCTI_REGISTRATION": "Possibilité d'inscrire et de désinscrire des plateformes OpenCTI",
+      "MANAGE_PLATFORM_REGISTRATION": "Possibilité d'inscrire et de désinscrire les plateformes",
       "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
     },
     "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
@@ -87,6 +86,7 @@
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du numéro de part",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
+      "INVALID_EMAIL": "L'email doit être dans un format valide.",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
@@ -98,6 +98,7 @@
       "OPENAEV_SCENARIO_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour d'un scénario OpenAEV",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
       "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
+      "PERSONAL_SPACE_MUST_ALREADY_EXIST": "Si vous voulez transférer votre personal space, votre futur compte doit déjà exister.",
       "PLATFORM_NOT_REGISTERED": "La plateforme n'est pas enregistrée",
       "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plate-forme de l'utilisateur",
@@ -112,6 +113,7 @@
       "SERVICE_NOT_FOUND": "Le service n'a pas été trouvé",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
       "SUBSCRIPTION_NOT_FOUND": "L'abonnement n'a pas été trouvé",
+      "TRANSFER_ME_ERROR": "Une erreur s'est produite lors de la requête de transfert de personal space.",
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
@@ -262,7 +264,17 @@
       "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenBAS."
     },
     "Title": "Profile",
-    "UpdateProfile": "Mise à jour du profil"
+    "UpdateProfile": "Mise à jour du profil",
+    "PersonalSpace": {
+      "SuccessTransfer": "Espace personnel transféré avec succès",
+      "SuccessRequest": "Demande de transfert d'espace personnel envoyée avec succès",
+      "TitleDangerZone": "Transfert de l'espace personnel",
+      "TransferPersoSpaceExplanation": "Vous pouvez demander un transfert d'espace personnel pour tous vos abonnements (l'autre compte doit déjà exister).",
+      "EmailPlaceholder": "email.i.want.to.transfer.to@email.com",
+      "TransferPersoSpace": "Transférer l'espace personnel",
+      "Transfer": "Transférer",
+      "TransferConfirmSentence": "Etes-vous sûr de vouloir transférer l'abonnement de votre espace personnel ? Si le nouvel utilisateur n'a pas confirmé par email, le transfert ne sera pas effectif."
+    }
   },
   "RedirectPage": {
     "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus.",
@@ -406,6 +418,7 @@
       "Description": "Explorer une gamme de connecteurs OpenCTI partagés par l'équipe Filigran",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Dernière vérification",
+      "Name": "Connecteurs OpenCTI",
       "Search": "Rechercher un connecteur par nom...",
       "Type": "Type",
       "VendorContact": "Contact vendeur",
@@ -791,7 +804,8 @@
     "ValidateForm": "Valider le formulaire",
     "Verified": "Vérifié",
     "Visualize": "Visualiser",
-    "Updating": "Mise à jour..."
+    "Updating": "Mise à jour...",
+    "DangerZone": "Zone de danger"
   },
   "Platform": {
     "Update": "Mettre à jour",

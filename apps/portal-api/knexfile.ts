@@ -57,6 +57,7 @@ export type DatabaseType =
   | 'Label'
   | 'Object_Label'
   | 'UserOrganization_Capability'
+  | 'User_TransferRequest'
   | 'Document_Children'
   | 'Document_Metadata'
   | 'Service_Contract'

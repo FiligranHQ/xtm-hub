@@ -1,0 +1,47 @@
+enum PlatformRegion {
+  europe
+  us
+  apac
+}
+
+enum DeploymentType {
+  trial
+}
+
+enum DeploymentRequestStatus {
+  QUEUED
+  PENDING
+  PROVISIONING
+  ACTIVE
+  EXPIRED
+  FAILED
+  CANCELLED
+}
+
+type DeploymentRequest implements Node {
+  id: ID!
+  platform_identifier: PlatformIdentifier!
+  region: PlatformRegion!
+  type: DeploymentType!
+  intention: String
+  job_title: String
+  activity_sector: String
+  start_date: Date
+  end_date: Date
+  status: DeploymentRequestStatus!
+}
+
+input CreateDeploymentRequestInput {
+  platform_identifier: PlatformIdentifier!
+  region: PlatformRegion!
+  type: DeploymentType!
+  intention: String
+  job_title: String
+  activity_sector: String
+}
+
+extend type Mutation {
+  createDeploymentRequest(
+    input: CreateDeploymentRequestInput
+  ): DeploymentRequest! @auth
+}

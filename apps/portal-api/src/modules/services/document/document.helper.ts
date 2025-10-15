@@ -9,8 +9,19 @@ import {
 import Label from '../../../model/kanel/public/Label';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
+import { logApp } from '../../../utils/app-logger.util';
 import { extractId } from '../../../utils/utils';
-import { createDocument, sendFileToS3 } from './document.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
+import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
+import {
+  createDocument,
+  loadDocumentById,
+  loadSeoDocumentBySlug,
+  sendFileToS3,
+} from './document.domain';
 
 export type Document = DocumentModel & { labels: Label[] };
 export type FullDocumentMutator = Partial<DocumentModel> & {
@@ -171,4 +182,52 @@ export const deleteDocuments = async () => {
 
 export const deleteDocumentBy = async (field: DocumentMutator) => {
   return dbUnsecure<Document>('Document').where(field).delete('*');
+};
+
+export const updateDocumentWithCounters = async <T extends Document>(
+  document: T
+): Promise<T> => {
+  let download_number = 0;
+  let share_number = 0;
+  try {
+    [download_number, share_number] = await Promise.all([
+      telemetryApp.countEventsByDocumentId(
+        TelemetryEventType.DOWNLOAD,
+        document.id
+      ),
+      telemetryApp.countEventsByDocumentId(
+        TelemetryEventType.SHARE,
+        document.id
+      ),
+    ]);
+  } catch (error) {
+    logApp.error('Unable to fetch counters from elastic search', error);
+  }
+
+  document.download_number = download_number;
+  document.share_number = share_number;
+  return document;
+};
+
+export const loadDocumentWithCountersById = async <T extends Document>(
+  context: PortalContext,
+  id: string,
+  include_metadata: string[] = []
+): Promise<T> => {
+  const document: T = await loadDocumentById(context, id, include_metadata);
+  await updateDocumentWithCounters(document);
+  return document;
+};
+
+export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
+  type:
+    | typeof OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE
+    | typeof CUSTOM_DASHBOARD_DOCUMENT_TYPE
+    | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  slug: string,
+  include_metadata: string[] = []
+): Promise<T> => {
+  const document: T = await loadSeoDocumentBySlug(type, slug, include_metadata);
+  await updateDocumentWithCounters(document);
+  return document;
 };

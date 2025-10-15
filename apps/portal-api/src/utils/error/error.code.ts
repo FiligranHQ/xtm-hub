@@ -15,6 +15,7 @@ export enum ForbiddenErrorCode {
   CantRemoveYourselfFromOrgaError = 'CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR',
   YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
+  PersonalSpaceMustAlreadyExist = 'PERSONAL_SPACE_MUST_ALREADY_EXIST',
 }
 
 export enum BadRequestErrorCode {
@@ -23,6 +24,7 @@ export enum BadRequestErrorCode {
   PlatformNotRegistered = 'PLATFORM_NOT_REGISTERED',
   InvalidPlatformIdentifier = 'INVALID_PLATFORM_IDENTIFIER',
   InvalidActionSize = 'INVALID_ACTION_SIZE',
+  InvalidEmail = 'INVALID_EMAIL',
 }
 
 export enum UnknownErrorCode {
@@ -54,6 +56,7 @@ export enum UnknownErrorCode {
   AddingUserError = 'ADDING_USER_ERROR',
   EditUserError = 'EDIT_USER_ERROR',
   EditMeUserError = 'EDIT_ME_USER_ERROR',
+  TransferMeError = 'TRANSFER_ME_ERROR',
   RemoveUserFromOrgaError = 'REMOVE_USER_FROM_ORGA_ERROR',
   RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
   EditUserSessionError = 'EDIT_USER_SESSION_ERROR',

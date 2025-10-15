@@ -33,6 +33,7 @@ type User implements Node {
   roles_portal: [RolePortal!]
   selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
+  pending_organization_id: ID
 }
 
 type UserEdge {
@@ -131,6 +132,8 @@ type Mutation {
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   resetPassword: Success! @auth
+  requestTransferPersonalSpace(new_email: String): Success! @auth
+  transferPersonalSpace(requestId: ID!): Success! @auth
 
   # Login
   login(email: String!, password: String): User
@@ -154,9 +157,9 @@ type UserPendingSubscription {
 }
 
 type Subscription {
-  User: UserSubscription
+  User(organizationId: ID): UserSubscription
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   MeUser: MeUserSubscription @auth
-  UserPending: UserPendingSubscription
+  UserPending(organizationId: ID!): UserPendingSubscription
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
 }

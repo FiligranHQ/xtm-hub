@@ -168,7 +168,7 @@ export const OpenaevScenarioForm = ({
           document: {
             label: openAEVScenario
               ? t('Service.ObasScenario.Form.ExistingObasScenarioFile', {
-                  file_name: openAEVScenario.file_name,
+                  file_name: openAEVScenario.file_name ?? '',
                 })
               : t('Service.ObasScenario.Form.ObasScenarioFile'),
             fieldType: 'file',

@@ -97,7 +97,7 @@ const UserListPage: FunctionComponent<UserListPageProps> = ({
             <UserList organization={organization} />
           </TabsContent>
           <TabsContent value="pendingUsers">
-            <PendingUserList organization={organization} />
+            {organization && <PendingUserList organization={organization} />}
           </TabsContent>
         </Tabs>
       )}

@@ -43,7 +43,6 @@ import {
   registrationDomain,
 } from './registration.domain';
 import {
-  organizationCapabilityMappedByPlatformIdentifier,
   platformIdentifierMappedByServiceDefinitionIdentifier,
   registeredMailTemplateMappedByPlatformIdentifier,
   serviceDefinitionIdentifierMappedByPlatformIdentifier,
@@ -205,7 +204,6 @@ export const registrationApp = {
         serviceInstanceId: serviceConfiguration.service_instance_id,
         targetOrganizationId: organizationId as OrganizationId,
         configuration,
-        platformIdentifier: identifier,
       });
     } else {
       await registrationDomain.registerNewPlatform(context, {
@@ -216,12 +214,13 @@ export const registrationApp = {
       });
     }
 
-    const requiredCapability =
-      organizationCapabilityMappedByPlatformIdentifier[identifier];
     const users = await loadUsersByCapabilitiesInOrganization(
       context,
       organizationId,
-      [OrganizationCapability.AdministrateOrganization, requiredCapability]
+      [
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManagePlatformRegistration,
+      ]
     );
 
     const mailTemplate =
@@ -299,11 +298,9 @@ export const registrationApp = {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
 
-    const requiredCapability =
-      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId: subscription.organization_id,
-      requiredCapability,
+      requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
 
     await serviceContractDomain.updateConfiguration(
@@ -315,7 +312,10 @@ export const registrationApp = {
     const users = await loadUsersByCapabilitiesInOrganization(
       context,
       subscription.organization_id,
-      [OrganizationCapability.AdministrateOrganization, requiredCapability]
+      [
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManagePlatformRegistration,
+      ]
     );
 
     const template =
@@ -400,18 +400,11 @@ export const registrationApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const platformIdentifier =
-      platformIdentifierMappedByServiceDefinitionIdentifier[
-        serviceDefinition.identifier
-      ];
-
-    const requiredCapability =
-      organizationCapabilityMappedByPlatformIdentifier[platformIdentifier];
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       context,
       {
         organizationId: subscription.organization_id,
-        requiredCapability,
+        requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       }
     );
 

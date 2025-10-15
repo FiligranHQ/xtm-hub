@@ -2,6 +2,7 @@ import { db, paginate } from '../../../../knexfile';
 import { LabelConnection } from '../../../__generated__/resolvers-types';
 import Label, { LabelMutator } from '../../../model/kanel/public/Label';
 import ObjectLabel from '../../../model/kanel/public/ObjectLabel';
+import { PortalContext } from '../../../model/portal-context';
 
 export const loadLabels = async (context, opts) =>
   paginate<Label, LabelConnection>(context, 'Label', opts);
@@ -31,4 +32,31 @@ export const deleteLabelBy = async (context, field: LabelMutator) => {
     .delete('*');
   await db<Label>(context, 'Label').where(field).delete('*');
   return label;
+};
+
+export const getOrCreateLabel = async ({
+  context,
+  name,
+  color = '#0099cc',
+}: {
+  context: PortalContext;
+  name: string;
+  color?: string;
+}): Promise<Label> => {
+  const existing = await db(context, 'Label')
+    .where('name', 'ILIKE', name)
+    .select('*')
+    .first();
+
+  if (existing) {
+    return existing;
+  }
+
+  const newLabel = await db<Label>(context, 'Label')
+    .insert({
+      name,
+      color,
+    })
+    .returning('*');
+  return newLabel[0];
 };

@@ -42,7 +42,7 @@ spec:
             port: 3000
             scheme: HTTP
         env:
-        - name: APP_ENV
+        - name: NEXT_PUBLIC_APP_ENV
           value: {{ .Values.xtmhub.node_env }}
         - name: NODE_ENV
           value: {{ .Values.xtmhub.node_env }}

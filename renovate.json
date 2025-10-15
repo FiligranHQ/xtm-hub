@@ -20,6 +20,11 @@
       "matchPackageNames": ["elasticsearch", "docker.elastic.co/elasticsearch/elasticsearch", "docker.elastic.co/kibana/kibana"],
       "enabled": false,
       "description": "Ignore Elasticsearch Docker image updates"
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "enabled": false,
+      "description": "Ignore all Docker Compose file updates"
     }
   ],
   "lockFileMaintenance": {

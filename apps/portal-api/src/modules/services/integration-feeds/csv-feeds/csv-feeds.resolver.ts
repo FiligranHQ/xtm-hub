@@ -1,34 +1,35 @@
-import { dbTx } from '../../../../knexfile';
+import { dbTx } from '../../../../../knexfile';
 import {
   CsvFeedConnection,
   Resolvers,
-} from '../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
-import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { AlreadyExistsError } from '../../../utils/error/error.util';
-import { extractId } from '../../../utils/utils';
-import { subscriptionApp } from '../../subcription/subscription.app';
+} from '../../../../__generated__/resolvers-types';
+import { DocumentId } from '../../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import {
+  ErrorCode,
+  UnknownErrorCode,
+} from '../../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
+import { AlreadyExistsError } from '../../../../utils/error/error.util';
+import { extractId } from '../../../../utils/utils';
+import { subscriptionApp } from '../../../subcription/subscription.app';
 import {
   deleteDocument,
   getLabels,
   getUploader,
   getUploaderOrganization,
-  loadDocumentById,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
-  loadSeoDocumentBySlug,
   loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
-} from '../document/document.domain';
-import { getServiceInstance } from '../service-instance.domain';
-import { csvFeedsApp } from './csv-feeds.app';
+} from '../../document/document.domain';
+import { getServiceInstance } from '../../service-instance.domain';
 import {
-  CSV_FEED_DOCUMENT_TYPE,
   CSV_FEED_METADATA,
   CsvFeed,
-} from './csv-feeds.domain';
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from '../integration-feeds.model';
+import { csvFeedsApp } from './csv-feeds.app';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -49,7 +50,7 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CsvFeed>(
-          'csv_feed',
+          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           CSV_FEED_METADATA,
@@ -103,20 +104,19 @@ const resolvers: Resolvers = {
   Query: {
     csvFeeds: async (_, input, context) =>
       loadParentDocumentsByServiceInstance<CsvFeedConnection>(
-        'csv_feed',
+        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         context,
         input
       ),
     csvFeed: async (_, { id }, context) =>
-      loadDocumentById(context, extractId<DocumentId>(id)),
+      csvFeedsApp.loadCsvFeed(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
       loadSeoDocumentsByServiceSlug(
-        CSV_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         serviceSlug,
         CSV_FEED_METADATA
       ),
-    seoCsvFeedBySlug: async (_, { slug }) =>
-      loadSeoDocumentBySlug(CSV_FEED_DOCUMENT_TYPE, slug, CSV_FEED_METADATA),
+    seoCsvFeedBySlug: async (_, { slug }) => csvFeedsApp.loadSeoCsvFeed(slug),
   },
 };
 

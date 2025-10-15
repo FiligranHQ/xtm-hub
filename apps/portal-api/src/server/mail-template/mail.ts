@@ -12,6 +12,15 @@ export interface NewUserOrganizationMailModel {
   invitedName: string;
 }
 
+export interface RequestTransferPersonalSpaceMailModel {
+  recipientName: string;
+  recipientId: string;
+  previousUserId: string;
+  previousUserEmail: string;
+  previousUserName: string;
+  transferRequestId: string;
+}
+
 export interface PlatformRegisteredModel {
   adminName: string;
 }
@@ -24,18 +33,25 @@ export const ServiceIdentifierToMailTemplate = new Map<
   keyof MailTemplates
 >([
   [ServiceDefinitionIdentifier.OpenaevScenarios, 'openaev_scenarios'],
-  [ServiceDefinitionIdentifier.CustomDashboards, 'custom_dashboards'],
-  [ServiceDefinitionIdentifier.CsvFeeds, 'csv_feeds'],
+  [
+    ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+    'opencti_custom_dashboards',
+  ],
+  [
+    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
+    'opencti_integration_feeds',
+  ],
   [ServiceDefinitionIdentifier.Vault, 'vault'],
 ]);
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {
   welcome: WelcomeMailModel;
   vault: GenericServiceMailModel;
-  custom_dashboards: GenericServiceMailModel;
-  csv_feeds: GenericServiceMailModel;
+  opencti_custom_dashboards: GenericServiceMailModel;
+  opencti_integration_feeds: GenericServiceMailModel;
   openaev_scenarios: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
+  request_transfer_personal_space: RequestTransferPersonalSpaceMailModel;
   opencti_platform_registered: PlatformRegisteredModel;
   opencti_platform_unregistered: PlatformUnregisteredModel;
   openaev_platform_registered: PlatformRegisteredModel;
@@ -48,14 +64,16 @@ export const templateSubjects: {
   welcome: () => 'Welcome to XTM Hub – Let’s Get Started!',
   vault: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
-  custom_dashboards: (params: GenericServiceMailModel) =>
+  opencti_custom_dashboards: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
-  csv_feeds: (params: GenericServiceMailModel) =>
+  opencti_integration_feeds: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   openaev_scenarios: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   new_user_organization: (params: NewUserOrganizationMailModel) =>
     `XTM Hub - You've been added to the ${params.organizationName} organization`,
+  request_transfer_personal_space: () =>
+    `Confirmation of Personal Space Transfer in XTM Hub`,
   opencti_platform_registered: () =>
     `OpenCTI Platform Successfully Registered to XTM Hub – Integration Now Active`,
   opencti_platform_unregistered: () =>

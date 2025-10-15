@@ -15,10 +15,8 @@ import {
   getLabels,
   getUploader,
   getUploaderOrganization,
-  loadDocumentById,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
-  loadSeoDocumentBySlug,
   loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../document/document.domain';
@@ -63,11 +61,7 @@ const resolvers: Resolvers = {
       );
     },
     seoOpenAEVScenarioBySlug: async (_, { slug }) => {
-      return loadSeoDocumentBySlug(
-        OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        slug,
-        OPENAEV_SCENARIO_METADATA
-      );
+      return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
     },
     openAEVScenarios: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
@@ -78,10 +72,9 @@ const resolvers: Resolvers = {
       );
     },
     openAEVScenario: async (_, { id }, context) =>
-      loadDocumentById(
+      OpenAEVScenariosApp.loadOpenAEVScenario(
         context,
-        extractId<DocumentId>(id),
-        OPENAEV_SCENARIO_METADATA
+        extractId<DocumentId>(id)
       ),
   },
   Mutation: {

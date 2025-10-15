@@ -39,14 +39,14 @@ interface ShareableResourceSlugProps {
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
-  OPENCTI_CSVFEED = 'csv_feed',
-  OPENCTI_CUSTOMDASHBOARD = 'custom_dashboard',
+  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration_feed',
+  OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
 }
 
 export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
   openaev_scenario: 'Scenario OpenAEV',
-  csv_feed: 'Feed OpenCTI',
-  custom_dashboard: 'Custom Dashboard OpenCTI',
+  opencti_integration_feed: 'Feed OpenCTI',
+  opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
 };
 
 // Component
@@ -73,10 +73,9 @@ const ShareableResourceSlug: React.FunctionComponent<
     if (documentData.type === ShareableResourceType.OPENAEV_SCENARIO) {
       return isOneOpenAEVRegistrationFeatureEnabled;
     }
-
     return [
-      ShareableResourceType.OPENCTI_CUSTOMDASHBOARD,
-      ShareableResourceType.OPENCTI_CSVFEED,
+      ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
+      ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
     ].includes(documentData.type as ShareableResourceType);
   }, [
     documentData.active,
@@ -91,13 +90,12 @@ const ShareableResourceSlug: React.FunctionComponent<
         <h1 className="whitespace-nowrap">{documentData.name}</h1>
 
         <BadgeOverflowCounter badges={documentData.labels as BadgeOverflow[]} />
-
-        <ShareLinkButton
-          documentId={documentData.id}
-          url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
-        />
-        {shouldShowOneClickDeployComponent ? (
-          <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2 ml-auto">
+          <ShareLinkButton
+            documentId={documentData.id}
+            url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
+          />
+          {shouldShowOneClickDeployComponent ? (
             <TooltipProvider>
               <Tooltip
                 delayDuration={50}
@@ -119,10 +117,7 @@ const ShareableResourceSlug: React.FunctionComponent<
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {updateActions}
-          </div>
-        ) : (
-          <>
+          ) : (
             <Button
               onClick={() => {
                 incrementDownloadNumber();
@@ -130,13 +125,12 @@ const ShareableResourceSlug: React.FunctionComponent<
               }}>
               {t('Utils.Download')}
             </Button>
-            <div>{updateActions}</div>
-          </>
-        )}
-
-        {shouldShowOneClickDeployComponent && (
-          <OneClickDeploy documentData={documentData} />
-        )}
+          )}
+          {updateActions}
+          {shouldShowOneClickDeployComponent && (
+            <OneClickDeploy documentData={documentData} />
+          )}
+        </div>
       </div>
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
