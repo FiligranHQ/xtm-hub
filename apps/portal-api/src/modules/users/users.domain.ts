@@ -333,7 +333,7 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
     ])
     .groupBy(['User.id']);
 
-  if (!isAdmin(context)) {
+  if (!isAdmin()) {
     loadUserQuery.where(
       'UserOrg.organization_id',
       context.user.selected_organization_id

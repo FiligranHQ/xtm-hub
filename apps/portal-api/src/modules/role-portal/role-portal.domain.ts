@@ -1,14 +1,13 @@
 import { db, dbUnsecure } from '../../../knexfile';
 import RolePortal from '../../model/kanel/public/RolePortal';
-import { PortalContext } from '../../model/portal-context';
 import { ROLE_ADMIN } from '../../portal.const';
+import { requestContext } from '../../requestContext';
 
 export const loadRolePortalBy = async (
-  context: PortalContext,
   field: string,
   value: string
 ): Promise<RolePortal> => {
-  return db<RolePortal>(context, 'RolePortal')
+  return db<RolePortal>('RolePortal')
     .where({ [field]: value })
     .select('*');
 };
@@ -20,6 +19,7 @@ export const loadAllRolePortalBy = async (
   return dbUnsecure<RolePortal>('RolePortal').whereIn(field, value);
 };
 
-export const isAdmin = (context: PortalContext) => {
-  return context.user.roles_portal.some((role) => role.id === ROLE_ADMIN.id);
+export const isAdmin = () => {
+  const { user } = requestContext.require();
+  return user.roles_portal.some((role) => role.id === ROLE_ADMIN.id);
 };
