@@ -71,10 +71,10 @@ export const loadOrganizations = (
   );
 };
 
-export const insertNewOrganization = (
+export const insertNewOrganization = async (
   data: OrganizationInitializer,
   trx?: Knex.Transaction
-) => {
+): Promise<Organization> => {
   const query = dbUnsecure<Organization>('Organization')
     .insert(data)
     .returning('*');
@@ -82,32 +82,37 @@ export const insertNewOrganization = (
   if (trx) {
     query.transacting(trx);
   }
-  return query;
+
+  const [createdOrganization] = await query;
+  return createdOrganization;
 };
 
 export const updateOrganizationBy = async (
   field: OrganizationMutator,
   data: OrganizationMutator,
   trx?: Knex.Transaction
-) => {
-  return dbUnsecure<Organization>('Organization')
+): Promise<Organization> => {
+  const [updatedOrganization] = await dbUnsecure<Organization>('Organization')
     .where(field)
     .update(data)
     .modify((qb) => {
       if (trx) qb.transacting(trx);
     })
     .returning('*');
+
+  return updatedOrganization;
 };
 
-export const deleteOrganizationBy = (
+export const deleteOrganizationBy = async (
   conditions: OrganizationMutator,
   trx?: Knex.Transaction
-) => {
-  return dbUnsecure<Organization>('Organization')
+): Promise<Organization> => {
+  const [deletedOrganization] = await dbUnsecure<Organization>('Organization')
     .where(conditions)
     .delete()
     .modify((qb) => {
       if (trx) qb.transacting(trx);
     })
     .returning('*');
+  return deletedOrganization;
 };

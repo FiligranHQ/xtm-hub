@@ -65,7 +65,7 @@ export const createUserWithPersonalSpace = async (
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
   // Create user personal space organization
-  const [personalSpaceOrganization] = await insertNewOrganization({
+  const personalSpaceOrganization = await insertNewOrganization({
     id: uuid as unknown as OrganizationId,
     name: data.email,
     personal_space: true,
@@ -108,7 +108,7 @@ export const createUserWithPersonalSpace = async (
 async function createOrganisationWithAdminUser(email: string) {
   const extractedDomain = extractDomain(email);
 
-  const [newOrganization] = await insertNewOrganization({
+  const newOrganization = await insertNewOrganization({
     id: uuidv4() as OrganizationId,
     name: extractedDomain,
     domains: [extractedDomain],

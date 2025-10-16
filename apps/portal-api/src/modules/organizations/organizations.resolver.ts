@@ -25,7 +25,6 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     addOrganization: async (_, { input }, context) => {
-      // Check if an organization exists with the same name (case insensitive)
       try {
         return await organizationsApp.createOrganization(context, input);
       } catch (error) {
@@ -45,11 +44,12 @@ const resolvers: Resolvers = {
     },
     deleteOrganization: async (_, { id }) => {
       try {
-        const [deletedOrganization] = await deleteOrganizationBy({
+        const deletedOrganization = await deleteOrganizationBy({
           id: id as OrganizationId,
         });
 
         await dispatch('Organization', 'delete', deletedOrganization);
+
         return deletedOrganization;
       } catch (error) {
         const regexErrorName = /is still referenced from table "([^"]+)"/;

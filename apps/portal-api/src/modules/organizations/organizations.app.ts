@@ -24,10 +24,11 @@ export const organizationsApp = {
     id: OrganizationId,
     input: OrganizationInput
   ) {
-    const [updatedOrganization] = await updateOrganizationBy(
+    const updatedOrganization = await updateOrganizationBy(
       { id },
       { ...input }
     );
+
     try {
       const updateOrgaEvent = buildUpdateOrganizationEvent(
         updatedOrganization,
@@ -57,14 +58,14 @@ export const organizationsApp = {
       throw new Error(ErrorCode.OrganizationSameDomainExists);
     }
 
-    const [addOrganization] = await insertNewOrganization({
+    const createdOrganization = await insertNewOrganization({
       id: uuidv4() as OrganizationId,
       ...input,
     });
 
     try {
       const createOrgaEvent = buildCreateOrganizationEvent(
-        addOrganization,
+        createdOrganization,
         context.user.id
       );
       telemetryApp.sendTelemetryEvent(createOrgaEvent);
@@ -74,6 +75,6 @@ export const organizationsApp = {
       });
     }
 
-    return addOrganization;
+    return createdOrganization;
   },
 };
