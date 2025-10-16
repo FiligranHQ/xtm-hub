@@ -3,8 +3,8 @@ import {
   QueryIntegrationFeedsArgs,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
-import Label from '../../../model/kanel/public/Label';
 import { PortalContext } from '../../../model/portal-context';
+import { WithLabels } from '../../../utils/types';
 import { loadParentDocumentsByServiceInstance } from '../document/document.domain';
 import { loadDocumentWithCountersById } from '../document/document.helper';
 import {
@@ -28,7 +28,7 @@ export const integrationFeedsApp = {
   loadIntegrationFeed: async (
     context: PortalContext,
     documentId: DocumentId
-  ): Promise<IntegrationFeed & { labels: Label[] }> => {
+  ): Promise<WithLabels<IntegrationFeed>> => {
     return loadDocumentWithCountersById(
       context,
       documentId,

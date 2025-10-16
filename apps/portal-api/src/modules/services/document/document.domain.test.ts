@@ -69,7 +69,7 @@ describe('Document domain', () => {
 
       await trx.commit();
 
-      await upsertConnectors(contextAdminUser, [
+      await upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 

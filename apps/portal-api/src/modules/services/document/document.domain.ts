@@ -852,9 +852,9 @@ export const loadImagesByDocumentId = async (documentId: string) => {
 
 const addIncludeMetadataQuery = (
   qb: Knex.QueryBuilder,
-  include_metadata: string[]
+  include_metadata: string[] = []
 ) => {
-  (include_metadata ?? []).forEach((metaKey, index) => {
+  include_metadata.forEach((metaKey, index) => {
     const metaAlias = `meta${index}`;
     qb.select(`${metaAlias}.value as ${metaKey}`)
       .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {

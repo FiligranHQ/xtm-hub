@@ -15,8 +15,8 @@ interface IntegrationFeed implements Node & DocumentBase {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -45,8 +45,8 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!

@@ -22,8 +22,7 @@ export const IngestManifestApp = {
     if (result.errors.length > 0) {
       const errorDetails = result.errors
         .map(
-          (err) =>
-            `${err.contractTitle} (${err.contractSlug}): ${err.error}`
+          (err) => `${err.contractTitle} (${err.contractSlug}): ${err.error}`
         )
         .join('; ');
 
