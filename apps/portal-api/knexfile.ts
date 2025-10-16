@@ -133,11 +133,36 @@ export const dbRaw = (
 
 export const dbTx = () => database.transaction();
 
-export const db = <T>(
+export function db<T>(
   context: PortalContext,
   type: DatabaseType,
-  opts: Partial<QueryOpts> = {}
-) => {
+  opts?: Partial<QueryOpts>
+): Knex.QueryBuilder<T, unknown>;
+
+export function db<T>(
+  type: DatabaseType,
+  opts?: Partial<QueryOpts>
+): Knex.QueryBuilder<T, unknown>;
+
+export function db<T>(
+  contextOrType: PortalContext | DatabaseType,
+  typeOrOpts?: DatabaseType | Partial<QueryOpts>,
+  options: Partial<QueryOpts> = {}
+): Knex.QueryBuilder<T, unknown> {
+  const isPortalContextProvided = typeof contextOrType !== 'string';
+
+  const { context, type, opts } = isPortalContextProvided
+    ? {
+        context: contextOrType as PortalContext,
+        type: typeOrOpts as DatabaseType,
+        opts: options,
+      }
+    : {
+        context: requestContext.require().portalContext,
+        type: contextOrType as DatabaseType,
+        opts: (typeOrOpts as Partial<QueryOpts>) || {},
+      };
+
   const queryContext = database<T>(type).queryContext({
     __typename: type,
     context,
@@ -156,7 +181,7 @@ export const db = <T>(
   }
 
   return securedQueryContext;
-};
+}
 
 export const dbUnsecure = <T>(type: DatabaseType) => {
   const context = { user: null, req: null, res: null };
