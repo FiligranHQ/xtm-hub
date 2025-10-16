@@ -3,7 +3,7 @@ import { EditMeUserInput } from '../../__generated__/resolvers-types';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
-import { updateUserSession } from '../../sessionStoreManager';
+import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
