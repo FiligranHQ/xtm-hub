@@ -13,11 +13,28 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
+import { requestContext } from '../../requestContext';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
+
+export const subscriptionDomain = {
+  deleteSubscription: async (
+    id: SubscriptionId
+  ): Promise<Subscription | null> => {
+    const { portalContext } = requestContext.require();
+
+    const [deletedSubscription] = await db<Subscription>(
+      portalContext,
+      'Subscription'
+    )
+      .where({ id })
+      .delete('*');
+    return deletedSubscription;
+  },
+};
 
 export const getSubscriptionCapability = async (context, id) => {
   return db<UserService>(context, 'Subscription_Capability')

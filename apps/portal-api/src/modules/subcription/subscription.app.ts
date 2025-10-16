@@ -34,7 +34,11 @@ import {
 } from '../telemetry/telemetry.helper';
 import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
 import { addAdminAccess } from '../user_service/user_service.domain';
-import { createSubscription, loadSubscriptionBy } from './subscription.domain';
+import {
+  createSubscription,
+  loadSubscriptionBy,
+  subscriptionDomain,
+} from './subscription.domain';
 
 export const subscriptionApp = {
   loadSubscriptionModel: async (
@@ -48,6 +52,7 @@ export const subscriptionApp = {
 
     return subscription as unknown as SubscriptionModel;
   },
+
   subscribeSelectedOrganizationToService: async (
     context: PortalContext,
     { serviceInstanceId }: { serviceInstanceId: ServiceInstanceId }
@@ -166,6 +171,22 @@ export const subscriptionApp = {
       await trx.rollback();
       throw error;
     }
+  },
+
+  deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
+    // TODO: to be rethought when billing is used in XTM
+    // const [subscription] =
+    //   await loadSubscriptionWithOrganizationAndCapabilitiesBy(portalContext, {
+    //     'Subscription.id': id,
+    //   } as SubscriptionMutator);
+    // if (subscription.billing !== 0) {
+    //     logApp.warn(
+    //       'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
+    //     );
+    //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
+    // }
+
+    return subscriptionDomain.deleteSubscription(id);
   },
 };
 

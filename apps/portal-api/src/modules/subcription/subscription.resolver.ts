@@ -1,6 +1,4 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
-import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
+import { Resolvers } from '../../__generated__/resolvers-types';
 
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
@@ -82,7 +80,7 @@ const resolvers: Resolvers = {
 
         return loadServiceWithSubscriptions(
           context,
-          fromGlobalId(service_instance_id).id
+          extractId<ServiceInstanceId>(service_instance_id)
         );
       } catch (error) {
         throw mapToGraphQLError(
@@ -93,27 +91,12 @@ const resolvers: Resolvers = {
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
       try {
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
-            'Subscription.id': extractId<SubscriptionId>(subscription_id),
-          } as SubscriptionMutator);
+        const { service_instance_id } =
+          await subscriptionApp.deleteSubscription(
+            extractId<SubscriptionId>(subscription_id)
+          );
 
-        // TODO: to be rethought when billing is used in XTM
-        // if (subscription.billing !== 0) {
-        //     logApp.warn(
-        //       'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
-        //     );
-        //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
-        // }
-
-        await db<Subscription>(context, 'Subscription')
-          .where({ id: fromGlobalId(subscription_id).id })
-          .delete('*');
-
-        return loadServiceWithSubscriptions(
-          context,
-          subscription.service_instance_id
-        );
+        return loadServiceWithSubscriptions(context, service_instance_id);
       } catch (error) {
         throw mapToGraphQLError(
           error,
