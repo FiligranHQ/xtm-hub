@@ -115,12 +115,24 @@ export const deleteOrganizationBy = async (
   conditions: OrganizationMutator,
   trx?: Knex.Transaction
 ): Promise<Organization> => {
-  const [deletedOrganization] = await dbUnsecure<Organization>('Organization')
-    .where(conditions)
-    .delete()
-    .modify((qb) => {
-      if (trx) qb.transacting(trx);
-    })
-    .returning('*');
-  return deletedOrganization;
+  try {
+    const [deletedOrganization] = await dbUnsecure<Organization>('Organization')
+      .where(conditions)
+      .delete()
+      .modify((qb) => {
+        if (trx) qb.transacting(trx);
+      })
+      .returning('*');
+    return deletedOrganization;
+  } catch (error) {
+    const regexErrorName = /is still referenced from table "([^"]+)"/;
+    const match =
+      error.detail.match(regexErrorName) || error.message.match(regexErrorName);
+    if (match) {
+      const tableName = match[1];
+      throw new Error(`${tableName.toUpperCase()}_STILL_IN_ORGANIZATION`);
+    }
+
+    throw error;
+  }
 };

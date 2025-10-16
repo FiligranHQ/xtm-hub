@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { OrganizationInput } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
+import { dispatch } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -10,6 +11,7 @@ import {
   buildUpdateOrganizationEvent,
 } from '../telemetry/telemetry.helper';
 import {
+  deleteOrganizationBy,
   insertNewOrganization,
   organizationDomain,
   updateOrganizationBy,
@@ -72,5 +74,15 @@ export const organizationsApp = {
     }
 
     return createdOrganization;
+  },
+
+  async deleteOrganization(id: OrganizationId) {
+    const deletedOrganization = await deleteOrganizationBy({
+      id,
+    });
+
+    await dispatch('Organization', 'delete', deletedOrganization);
+
+    return deletedOrganization;
   },
 };
