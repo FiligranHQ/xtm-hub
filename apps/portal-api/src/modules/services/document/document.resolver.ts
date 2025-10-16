@@ -116,7 +116,7 @@ const resolvers: Resolvers = {
         const [document] = await loadUnsecureDocumentsBy({
           id: extractId<DocumentId>(documentId),
         });
-        await updateDocumentWithCounters(document);
+        const documentWithCounters = await updateDocumentWithCounters(document);
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
@@ -145,7 +145,7 @@ const resolvers: Resolvers = {
             error,
           });
         }
-        return document;
+        return documentWithCounters;
       } catch (error) {
         throw mapToGraphQLError(
           error,
