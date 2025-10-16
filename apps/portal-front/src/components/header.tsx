@@ -1,16 +1,16 @@
 'use client';
 
 import I18nSelect from '@/components/i18n-select';
-import Logout from '@/components/logout';
+import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { NavigationApp } from '@/components/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
-import { IconActions } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn, isDevelopment } from '@/lib/utils';
+import { APP_PATH } from '@/utils/path/constant';
 
 import { NotificationButton } from '@/components/notification/notification-button';
-import { ProfileMenuButton } from '@/components/profile/menu/button';
 import { formatPersonNames } from '@/utils/format/name';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { Avatar, Skeleton } from 'filigran-ui';
@@ -24,9 +24,11 @@ import {
 } from 'filigran-ui/clients';
 import { MenuIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
+import { useMutation } from 'react-relay';
 
 // Component interface
 interface HeaderComponentProps {
@@ -39,7 +41,9 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const { me, hasOrganizationCapability } = useContext(PortalContext);
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
+  const router = useRouter();
   const t = useTranslations();
+  const [commitLogoutMutation] = useMutation(LogoutMutation);
   useEffect(() => setOpen(false), [currentPath]);
 
   const canManageUser =
@@ -81,8 +85,25 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
           }>
-          <ProfileMenuButton className="normal-case w-full justify-start" />
-          <Logout className="normal-case w-full justify-start" />
+          <IconActionsItem asChild>
+            <Link href={`/${APP_PATH}/profile`}>
+              {t('MenuUser.Profile')}
+            </Link>
+          </IconActionsItem>
+          <IconActionsItem onClick={() => {
+            commitLogoutMutation({
+              variables: {},
+              updater: (store) => {
+                store.invalidateStore();
+              },
+              onCompleted() {
+                router.push('/');
+                router.refresh();
+              },
+            });
+          }}>
+            {t('LoginPage.Logout')}
+          </IconActionsItem>
         </IconActions>
         {isDevelopment() && (
           <>
@@ -118,8 +139,27 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
             <div className="flex flex-1 flex-col h-full justify-between">
               <NavigationApp open={true} />
               <div className="pb-xl flex flex-col text-center">
-                <ProfileMenuButton className="w-full" />
-                <Logout />
+                <Link href={`/${APP_PATH}/profile`}>
+                  <div className="w-full p-2 hover:bg-hover rounded">
+                    {t('MenuUser.Profile')}
+                  </div>
+                </Link>
+                <div
+                  className="p-2 hover:bg-hover rounded cursor-pointer"
+                  onClick={() => {
+                    commitLogoutMutation({
+                      variables: {},
+                      updater: (store) => {
+                        store.invalidateStore();
+                      },
+                      onCompleted() {
+                        router.push('/');
+                        router.refresh();
+                      },
+                    });
+                  }}>
+                  {t('LoginPage.Logout')}
+                </div>
               </div>
             </div>
           </SheetContent>

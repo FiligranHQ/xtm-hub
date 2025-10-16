@@ -41,7 +41,7 @@ export default class OrganizationPage {
       })
       .getByRole('button')
       .click();
-    await this.page.getByLabel('Edit Organization').click();
+    await this.page.getByRole('menuitem', { name: 'Update' }).click();
     await this.page.getByPlaceholder('Name').fill(organizationNewName);
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
@@ -57,7 +57,7 @@ export default class OrganizationPage {
       })
       .getByRole('button')
       .click();
-    await this.page.getByLabel('Delete Organization').click();
+    await this.page.getByRole('menuitem', { name: 'Delete' }).click();
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Delete' }).click();
   }

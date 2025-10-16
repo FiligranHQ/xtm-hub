@@ -4,9 +4,9 @@ import {
   VaultNewFileForm,
 } from '@/components/service/vault/vault-new-file-form';
 import { IconActionContext } from '@/components/ui/icon-actions';
-import { Button, useToast } from 'filigran-ui';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useState } from 'react';
+import { FunctionComponent, useContext } from 'react';
 
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
@@ -17,12 +17,15 @@ import { z } from 'zod';
 
 interface EditDocumentProps {
   documentData: documentItem_fragment$data;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-const EditDocument: FunctionComponent<EditDocumentProps> = ({
+export const EditDocument: FunctionComponent<EditDocumentProps> = ({
   documentData,
+  open,
+  setOpen,
 }) => {
-  const [openSheet, setOpenSheet] = useState(false);
   const { toast } = useToast();
   const t = useTranslations();
   const [vaultUpdateDocumentMutation] = useMutation<documentUpdateMutation>(
@@ -44,7 +47,7 @@ const EditDocument: FunctionComponent<EditDocumentProps> = ({
         },
       },
       onCompleted: (response) => {
-        setOpenSheet(false);
+        setOpen(false);
         setMenuOpen(false);
         toast({
           title: t('Utils.Success'),
@@ -64,17 +67,8 @@ const EditDocument: FunctionComponent<EditDocumentProps> = ({
   };
   return (
     <SheetWithPreventingDialog
-      open={openSheet}
-      setOpen={setOpenSheet}
-      trigger={
-        <Button
-          onClick={(e) => e.stopPropagation()}
-          variant="ghost"
-          className="w-full justify-start normal-case"
-          aria-label={t('Service.Vault.UpdateDocument')}>
-          {t('Utils.Update')}
-        </Button>
-      }
+      open={open}
+      setOpen={setOpen}
       title={t('Service.Vault.FileForm.EditFile')}>
       <VaultNewFileForm
         document={documentData}

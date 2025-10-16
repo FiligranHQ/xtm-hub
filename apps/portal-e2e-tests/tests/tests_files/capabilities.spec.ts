@@ -1,16 +1,9 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import DocumentPage from '../model/document.pageModel';
-import {
-  addServiceCapability,
-  deleteServiceCapability,
-} from '../db-utils/service.helper';
+import { addServiceCapability } from '../db-utils/service.helper';
 import ServicePage from '../model/service.pageModel';
-import {
-  addDocumentInVault,
-  removeDocument,
-} from '../db-utils/document.helper';
-import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
+import { addDocumentInVault } from '../db-utils/document.helper';
 import { clickRowAction } from '../model/common.js';
 
 const TEST_FILE = {
@@ -81,8 +74,7 @@ test.describe('Capabilities', () => {
         page.getByRole('row', {
           name: `${TEST_CAPABILITY.organizationName} DELETE UPLOAD Open menu`,
         }),
-        'Manage users',
-        'link'
+        'Manage users'
       );
       await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
       await expect(page).toHaveScreenshot();

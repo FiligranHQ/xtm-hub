@@ -1,9 +1,6 @@
 import { test, expect } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import CsvFeedPage from '../model/csvFeed.pageModel';
-import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
-import { removeDocument } from '../db-utils/document.helper';
-import { PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
 
 const CSV_FEED_TEST = {
   name: 'e2e CSV Feed name',
@@ -37,7 +34,7 @@ test.describe('CSV Feeds', () => {
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await csvFeedPage.deleteCsvFeed();
+    await csvFeedPage.deleteCsvFeed('menuitem');
 
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
@@ -45,7 +42,7 @@ test.describe('CSV Feeds', () => {
   });
   test('Should delete CSV Feed from the detailed page', async ({ page }) => {
     await csvFeedPage.navigateToCsvFeed(CSV_FEED_TEST.shortDescription);
-    await csvFeedPage.deleteCsvFeed();
+    await csvFeedPage.deleteCsvFeed('button');
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();

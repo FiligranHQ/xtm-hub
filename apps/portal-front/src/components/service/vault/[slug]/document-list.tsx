@@ -20,7 +20,7 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { IconActions } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { SearchInput } from '@/components/ui/search-input';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
@@ -75,6 +75,12 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
     queryRef
   );
   const t = useTranslations();
+  const [editDocument, setEditDocument] = useState<
+    documentItem_fragment$data | undefined
+  >(undefined);
+  const [deleteDocument, setDeleteDocument] = useState<
+    documentItem_fragment$data | undefined
+  >(undefined);
   const [data, refetch] = useRefetchableFragment<
     documentsQuery,
     documentsList$key
@@ -146,26 +152,34 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
               </>
             }>
             <GuardCapacityComponent displayError={false}>
-              <EditDocument documentData={row.original} />
+              <IconActionsItem onClick={() => setEditDocument(row.original)}>
+                {t('Utils.Update')}
+              </IconActionsItem>
             </GuardCapacityComponent>
             {serviceInstance?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceCapabilityName.Upload
-            ) && <EditDocument documentData={row.original} />}
-            <DownloadDocument documentData={row.original} />
-            <VisualizeDocument documentData={row.original} />
+            ) && (
+              <IconActionsItem onClick={() => setEditDocument(row.original)}>
+                {t('Utils.Update')}
+              </IconActionsItem>
+            )}
+            <IconActionsItem asChild>
+              <DownloadDocument documentData={row.original} />
+            </IconActionsItem>
+            <IconActionsItem asChild>
+              <VisualizeDocument documentData={row.original} />
+            </IconActionsItem>
             <GuardCapacityComponent displayError={false}>
-              <DeleteDocument
-                documentData={row.original}
-                connectionId={data.documents.__id}
-              />
+              <IconActionsItem onClick={() => setDeleteDocument(row.original)}>
+                {t('Utils.Delete')}
+              </IconActionsItem>
             </GuardCapacityComponent>
             {serviceInstance?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceCapabilityName.Delete
             ) && (
-              <DeleteDocument
-                documentData={row.original}
-                connectionId={data.documents.__id}
-              />
+              <IconActionsItem onClick={() => setDeleteDocument(row.original)}>
+                {t('Utils.Delete')}
+              </IconActionsItem>
             )}
           </IconActions>
         </div>
@@ -317,6 +331,23 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           },
         }}
       />
+      {editDocument && (
+        <EditDocument
+          key={`edit-${editDocument.id}`}
+          documentData={editDocument}
+          open={!!editDocument}
+          setOpen={(open) => setEditDocument(open ? editDocument : undefined)}
+        />
+      )}
+      {deleteDocument && (
+        <DeleteDocument
+          key={`delete-${deleteDocument.id}`}
+          documentData={deleteDocument}
+          connectionId={data.documents.__id}
+          open={!!deleteDocument}
+          setOpen={(open) => setDeleteDocument(open ? deleteDocument : undefined)}
+        />
+      )}
     </>
   );
 };

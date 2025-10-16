@@ -11,7 +11,7 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { IconActions, IconActionsLink } from '@/components/ui/icon-actions';
+import { IconActions, IconActionsItem, IconActionsLink } from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { i18nKey } from '@/utils/datatable';
@@ -52,6 +52,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const [shouldDisplayPersonalSpaces, setShouldDisplayPersonalSpaces] =
     useState(false);
+  const [removeSubscription, setRemoveSubscription] = useState<
+    subscriptionWithUserService_fragment$data | undefined
+  >(undefined);
 
   const isAdminPath = useAdminPath();
 
@@ -118,25 +121,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 href={`/${APP_PATH}/admin/service/${row.id}/subscription`}>
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
-              <AlertDialogComponent
-                AlertTitle={t('Service.Management.RemoveAccess')}
-                actionButtonText={t('Service.Management.RemoveAccess')}
-                variantName={'destructive'}
-                triggerElement={
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start normal-case"
-                    aria-label={t('Utils.Delete')}>
-                    {t('Utils.Delete')}
-                  </Button>
-                }
-                onClickContinue={() =>
-                  removeOrganization(
-                    row.original as subscriptionWithUserService_fragment$data
-                  )
-                }>
-                {'Sure ?'}
-              </AlertDialogComponent>
+              <IconActionsItem onClick={() => setRemoveSubscription(row.original)}>
+                {t('Utils.Delete')}
+              </IconActionsItem>
             </IconActions>
           </div>
         );
@@ -245,6 +232,21 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           columnPinning: { right: ['actions'] },
         }}
       />
+      {removeSubscription && (
+        <AlertDialogComponent
+          key={`remove-${removeSubscription.id}`}
+          AlertTitle={t('Service.Management.RemoveAccess')}
+          actionButtonText={t('Service.Management.RemoveAccess')}
+          variantName={'destructive'}
+          isOpen={!!removeSubscription}
+          onOpenChange={(open) => setRemoveSubscription(open ? removeSubscription : undefined)}
+          onClickContinue={() => {
+            removeOrganization(removeSubscription);
+            setRemoveSubscription(undefined);
+          }}>
+          {'Sure ?'}
+        </AlertDialogComponent>
+      )}
     </>
   );
 };

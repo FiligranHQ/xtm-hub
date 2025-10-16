@@ -4,7 +4,7 @@ import { Button, toast } from 'filigran-ui';
 
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
-import { IconActionsButton } from '@/components/ui/icon-actions';
+
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
@@ -20,15 +20,23 @@ import { useState } from 'react';
 interface ServiceManageSheetProps {
   document?: SubscribableResource;
   variant?: 'menu' | 'button';
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
 }
 
 export const ServiceManageSheet = ({
   document,
   variant,
+  open: externalOpen,
+  setOpen: externalSetOpen,
 }: ServiceManageSheetProps) => {
   const router = useRouter();
   const t = useTranslations();
-  const [openSheet, setOpenSheet] = useState(false);
+  const [internalOpenSheet, setInternalOpenSheet] = useState(false);
+
+  // Use external state if provided, otherwise use internal state
+  const openSheet = externalOpen !== undefined ? externalOpen : internalOpenSheet;
+  const setOpenSheet = externalSetOpen !== undefined ? externalSetOpen : setInternalOpenSheet;
 
   const {
     serviceInstance,
@@ -109,20 +117,9 @@ export const ServiceManageSheet = ({
           <SheetWithPreventingDialog
             open={openSheet}
             setOpen={setOpenSheet}
-            trigger={
-              variant === 'button' ? (
-                <Button variant="outline">{t('Utils.Update')}</Button>
-              ) : (
-                <IconActionsButton
-                  className="normal-case"
-                  onClick={() => {
-                    setOpenSheet(true);
-                  }}
-                  aria-label={t('MenuActions.Update')}>
-                  {t('MenuActions.Update')}
-                </IconActionsButton>
-              )
-            }
+            trigger={variant === 'button' ? (
+              <Button variant="outline">{t('Utils.Update')}</Button>
+            ) : undefined}
             title={t(`${translationKey}.UpdateService`, {
               name: document.name,
             })}>
@@ -149,7 +146,7 @@ export const ServiceManageSheet = ({
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
-          trigger={<Button>{t(`${translationKey}.AddService`)}</Button>}
+          trigger={variant === 'button' ? <Button>{t(`${translationKey}.AddService`)}</Button> : undefined}
           title={t(`${translationKey}.AddService`)}>
           {
             <ServiceForm

@@ -1,7 +1,11 @@
 'use client';
 
 import { EditService } from '@/components/service/edit-service';
-import { IconActions, IconActionsLink } from '@/components/ui/icon-actions';
+import {
+  IconActions,
+  IconActionsItem,
+  IconActionsLink,
+} from '@/components/ui/icon-actions';
 import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
@@ -25,6 +29,9 @@ interface AdminServiceTabProps {
 
 const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
   const t = useTranslations();
+  const [open, setOpen] = useState(false);
+  const [editedService, setEditedService] =
+    useState<serviceList_fragment$data>();
   const [selectedValue, setSelectedValue] = useState<
     | {
         value: string;
@@ -79,30 +86,40 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
       id: 'actions',
       cell: ({ row }) => {
         return (
-          <div className="flex items-center justify-end">
-            <IconActions
-              icon={
-                <>
-                  <MoreVertIcon
-                    aria-hidden={true}
-                    focusable={false}
-                    className="h-4 w-4 text-primary"
-                  />
-                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                </>
-              }>
-              {row.original.service_definition?.identifier !== 'link' && (
-                <IconActionsLink href={`/${APP_PATH}/admin/service/${row.id}`}>
-                  {t('Service.GoToAdminLabel')}
-                </IconActionsLink>
-              )}
-              <EditService service={row.original} />
-            </IconActions>
-          </div>
+          <>
+            <div className="flex items-center justify-end">
+              <IconActions
+                icon={
+                  <>
+                    <MoreVertIcon
+                      aria-hidden={true}
+                      focusable={false}
+                      className="h-4 w-4 text-primary"
+                    />
+                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                  </>
+                }>
+                {row.original.service_definition?.identifier !== 'link' && (
+                  <IconActionsLink
+                    href={`/${APP_PATH}/admin/service/${row.id}`}>
+                    {t('Service.GoToAdminLabel')}
+                  </IconActionsLink>
+                )}
+                <IconActionsItem onClick={() => editService(row.original)}>
+                  {t('ServiceForm.UpdatePictures')}
+                </IconActionsItem>
+              </IconActions>
+            </div>
+          </>
         );
       },
     },
   ];
+
+  const editService = (service: serviceList_fragment$data) => {
+    setEditedService(service);
+    setOpen(true);
+  };
 
   const getServiceDefinitionData = useMemo(() => {
     return serviceData
@@ -143,31 +160,39 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
   );
 
   return (
-    <DataTable
-      columns={columns}
-      i18nKey={i18nKey(t)}
-      data={serviceData}
-      toolbar={
-        <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-          <SearchInput
-            containerClass="w-full sm:w-1/3"
-            placeholder={t('Service.SearchServices')}
-            onChange={debounceHandleInput}
-          />
-          <Combobox
-            dataTab={getServiceDefinitionData}
-            order={'Filter by service'}
-            placeholder={'Choose a value'}
-            emptyCommand={'Not found'}
-            onValueChange={handleIdentifierChange}
-            value={selectedValue}
-          />
-        </div>
-      }
-      tableOptions={{
-        getSortedRowModel: getSortedRowModel(),
-      }}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        i18nKey={i18nKey(t)}
+        data={serviceData}
+        toolbar={
+          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+            <SearchInput
+              containerClass="w-full sm:w-1/3"
+              placeholder={t('Service.SearchServices')}
+              onChange={debounceHandleInput}
+            />
+            <Combobox
+              dataTab={getServiceDefinitionData}
+              order={'Filter by service'}
+              placeholder={'Choose a value'}
+              emptyCommand={'Not found'}
+              onValueChange={handleIdentifierChange}
+              value={selectedValue}
+            />
+          </div>
+        }
+        tableOptions={{
+          getSortedRowModel: getSortedRowModel(),
+        }}
+      />
+
+      <EditService
+        setOpen={setOpen}
+        open={open}
+        service={editedService as serviceList_fragment$data}
+      />
+    </>
   );
 };
 export default AdminServiceTab;
