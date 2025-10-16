@@ -1,26 +1,37 @@
-import { UserForm } from '@/components/admin/user/user-form';
-import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import { UserAdminForm } from '@/components/admin/user/forms/admin/user-admin-form';
+import { userAdminFormSchema } from '@/components/admin/user/forms/user-form.schema';
 import { getUserListContext } from '@/components/admin/user/user-list-page';
-import { UserListCreateMutation } from '@/components/admin/user/user.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import { userListCreateMutation } from '@generated/userListCreateMutation.graphql';
+import { adminAddUserMutation } from '@generated/adminAddUserMutation.graphql';
 import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
-import { useMutation } from 'react-relay';
+import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
 
-export const AddUser: FunctionComponent = () => {
+export const AdminAddUserMutation = graphql`
+  mutation adminAddUserMutation(
+    $input: AdminAddUserInput!
+    $connections: [ID!]!
+  ) {
+    adminAddUser(input: $input)
+      @prependNode(connections: $connections, edgeTypeName: "UserEdge") {
+      ...userList_fragment
+    }
+  }
+`;
+
+export const AdminAddUser: FunctionComponent = () => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
 
   const { toast } = useToast();
-  const [commitUserMutation] = useMutation<userListCreateMutation>(
-    UserListCreateMutation
-  );
+  const [commitUserMutation] =
+    useMutation<adminAddUserMutation>(AdminAddUserMutation);
 
   const { connectionID } = getUserListContext();
-  const handleSubmit = (values: z.infer<typeof userFormSchema>) => {
+
+  const handleSubmit = (values: z.infer<typeof userAdminFormSchema>) => {
     commitUserMutation({
       variables: {
         input: {
@@ -51,10 +62,7 @@ export const AddUser: FunctionComponent = () => {
       setOpen={setOpenSheet}
       open={openSheet}
       trigger={<Button>{t('UserActions.AddUser')}</Button>}>
-      <UserForm
-        handleSubmit={handleSubmit}
-        validationSchema={userFormSchema}
-      />
+      <UserAdminForm handleSubmit={handleSubmit} />
     </SheetWithPreventingDialog>
   );
 };

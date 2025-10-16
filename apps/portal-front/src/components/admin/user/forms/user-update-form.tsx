@@ -1,6 +1,6 @@
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
+import { userEditFormSchema } from '@/components/admin/user/forms/user-form.schema';
 import { RemoveUserFromOrga } from '@/components/admin/user/remove-user-from-orga';
-import { userEditFormSchema } from '@/components/admin/user/user-form.schema';
 import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';

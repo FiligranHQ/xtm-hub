@@ -3,63 +3,55 @@ import {
   UserOrganizationFormProps,
 } from '@/components/admin/user/autocomplete-organization';
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
-import { userEditAdminFormSchema } from '@/components/admin/user/user-form.schema';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { userAdminFormSchema } from '@/components/admin/user/forms/user-form.schema';
 import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { cn, isEmpty } from '@/lib/utils';
-import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { cn, isDevelopment, isEmpty } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
 import {
-  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
+  Label,
   SheetFooter,
-  toast,
-} from 'filigran-ui';
-import { Label } from 'filigran-ui/clients';
+} from 'filigran-ui/clients';
+import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
 
-interface AdminUserUpdateFormProps {
-  user: userList_fragment$data;
-  callback: () => void;
+interface UserAdminFormProps {
+  handleSubmit: (values: z.infer<typeof userAdminFormSchema>) => void;
 }
-
-export const AdminUserUpdateFormMutation = graphql`
-  mutation adminUserUpdateFormMutation($id: ID!, $input: AdminEditUserInput!) {
-    adminEditUser(id: $id, input: $input) {
-      ...userList_fragment
-    }
-  }
-`;
-
-export const AdminUserUpdateForm: FunctionComponent<
-  AdminUserUpdateFormProps
-> = ({ user, callback }) => {
-  const t = useTranslations();
+export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
+  handleSubmit,
+}) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-
+  const t = useTranslations();
   const [userOrganization, setUserOrganization] = useState<
     UserOrganizationFormProps[]
-  >(
-    user.organization_capabilities?.map(({ organization }) => organization) ??
-      []
-  );
+  >([]);
 
   const addUserOrganization = (value: UserOrganizationFormProps) => {
     setUserOrganization([...userOrganization, value]);
   };
 
+  const form = useForm<z.infer<typeof userAdminFormSchema>>({
+    resolver: zodResolver(userAdminFormSchema),
+    defaultValues: {
+      password: '',
+      organization_capabilities: [],
+    },
+  });
+  const { fields, append, remove } = useFieldArray({
+    name: 'organization_capabilities',
+    control: form.control,
+  });
   const onChangeAutocompleteOrganizationValue = (
     value?: UserOrganizationFormProps
   ) => {
@@ -71,88 +63,35 @@ export const AdminUserUpdateForm: FunctionComponent<
       addUserOrganization(value);
     }
   };
-
-  const form = useForm<z.infer<typeof userEditAdminFormSchema>>({
-    resolver: zodResolver(userEditAdminFormSchema),
-    defaultValues: {
-      first_name: user.first_name ?? '',
-      last_name: user.last_name ?? '',
-      organization_capabilities: (user.organization_capabilities ?? [])
-        .filter((org) => !org.organization.personal_space)
-        .map((o) => ({
-          organization_id: o.organization.id ?? '',
-          capabilities: [...(o.capabilities ?? [])],
-        })),
-    },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    name: 'organization_capabilities',
-    control: form.control,
-  });
-
   // Some issue with addUser, the formState isDirty without any modification, so for now we check if dirtyFields get any key
   setIsDirty(!isEmpty(form.formState.dirtyFields));
 
-  const [updateUserMutation] = useMutation(AdminUserUpdateFormMutation);
-
-  const updateUser = (values: z.infer<typeof userEditAdminFormSchema>) => {
-    updateUserMutation({
-      variables: {
-        input: {
-          ...values,
-        },
-        id: user.id,
-      },
-      onCompleted: () => {
-        toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserUpdated', { email: user.email }),
-        });
-        callback();
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
+  const onSubmit = (values: z.infer<typeof userAdminFormSchema>) => {
+    handleSubmit({
+      ...values,
     });
-  };
-
-  const disableUser = (values: { disabled: boolean }) => {
-    const input = values;
-    updateUserMutation({
-      variables: {
-        input,
-        id: user.id,
-      },
-      onCompleted: () => {
-        toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserUpdated', { email: user.email }),
-        });
-        callback();
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
-  };
-
-  const onSubmit = (values: z.infer<typeof userEditAdminFormSchema>) => {
-    updateUser(values);
   };
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full space-y-xl">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('UserForm.Email')}</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t('UserForm.Email')}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="first_name"
@@ -185,7 +124,28 @@ export const AdminUserUpdateForm: FunctionComponent<
             </FormItem>
           )}
         />
+        {isDevelopment() && (
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('UserForm.Password')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder={t('UserForm.Password')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         <CapabilityDescription />
+
         <div className="flex items-center gap-m">
           <Label>{t('UserForm.Organizations')}</Label>
           <AutocompleteOrganization
@@ -198,7 +158,7 @@ export const AdminUserUpdateForm: FunctionComponent<
 
         <div
           className={cn(
-            '!mt-m px-l py-m space-y-s',
+            '!mt-m px-l py-s space-y-s',
             fields.length > 0 && 'border border-primary rounded'
           )}>
           {fields.map((field, index) => {
@@ -241,42 +201,18 @@ export const AdminUserUpdateForm: FunctionComponent<
           })}
         </div>
 
-        <SheetFooter className="justify-between sm:justify-between pb-0">
-          {user.disabled ? (
-            <Button
-              variant="outline-primary"
-              onClick={() => disableUser({ disabled: false })}>
-              {t('UserActions.Enable')}
-            </Button>
-          ) : (
-            <AlertDialogComponent
-              AlertTitle={t('MenuActions.Disable')}
-              actionButtonText={t('MenuActions.Disable')}
-              variantName={'destructive'}
-              triggerElement={
-                <Button variant="outline-destructive">
-                  {t('UserActions.Disable')}
-                </Button>
-              }
-              onClickContinue={() => disableUser({ disabled: true })}>
-              {t('DisableUserDialog.TextDisableThisUser', {
-                email: user.email,
-              })}
-            </AlertDialogComponent>
-          )}
-          <div className="flex gap-s">
-            <Button
-              variant="outline"
-              type="button"
-              onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
-            </Button>
-            <Button
-              disabled={!form.formState.isValid}
-              type="submit">
-              {t('Utils.Validate')}
-            </Button>
-          </div>
+        <SheetFooter className="pt-2">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={(e) => handleCloseSheet(e)}>
+            {t('Utils.Cancel')}
+          </Button>
+          <Button
+            disabled={!form.formState.isDirty}
+            type="submit">
+            {t('Utils.Validate')}
+          </Button>
         </SheetFooter>
       </form>
     </Form>

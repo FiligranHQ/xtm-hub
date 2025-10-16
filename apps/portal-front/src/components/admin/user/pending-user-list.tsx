@@ -1,4 +1,4 @@
-import { EditUser } from '@/components/admin/user/[slug]/user-edit';
+import { EditUser } from '@/components/admin/user/forms/user-update';
 import { useUserListLocalstorage } from '@/components/admin/user/pending-user-list-localstorage';
 import { UserFragment } from '@/components/admin/user/user-list';
 import {

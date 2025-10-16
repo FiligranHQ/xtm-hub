@@ -1,5 +1,5 @@
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
-import { userFormSchema } from '@/components/admin/user/user-form.schema';
+import { userFormSchema } from '@/components/admin/user/forms/user-form.schema';
 import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';

@@ -1,5 +1,5 @@
-import { AdminUserUpdateForm } from '@/components/admin/user/admin-user-update-form';
-import { UserUpdateForm } from '@/components/admin/user/user-update-form';
+import { AdminUserUpdateForm } from '@/components/admin/user/forms/admin/admin-user-update-form';
+import { UserUpdateForm } from '@/components/admin/user/forms/user-update-form';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { userList_fragment$data } from '@generated/userList_fragment.graphql';
