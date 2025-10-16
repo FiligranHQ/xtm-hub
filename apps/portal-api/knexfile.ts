@@ -223,11 +223,10 @@ const searchAttributes = [
 ];
 
 export const paginate = async <T, U>(
-  context: PortalContext,
   type: DatabaseType,
   pagination: Pagination,
   opts: Partial<QueryOpts> = {},
-  queryContext = db<T>(context, type, opts)
+  queryContext = db<T>(type, opts)
 ) => {
   const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
   const columns = Object.keys(await database(type).columnInfo());

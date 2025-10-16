@@ -12,7 +12,6 @@ import Organization, {
   OrganizationMutator,
 } from '../../model/kanel/public/Organization';
 import User, { UserId } from '../../model/kanel/public/User';
-import { requestContext } from '../../requestContext';
 
 export const organizationDomain = {
   loadOrganizationByLikeName: (name: string) => {
@@ -56,24 +55,19 @@ export const loadOrganizationBy = async (
 
 export const loadOrganizations = (opts: QueryOrganizationsArgs) => {
   const { first, after, orderMode, orderBy, searchTerm } = opts;
-  const { portalContext } = requestContext.require();
-  return paginate<Organization, OrganizationConnection>(
-    portalContext,
-    'Organization',
-    {
-      first,
-      after,
-      orderMode,
-      orderBy,
-      searchTerm,
-      filters: [
-        {
-          key: FilterKey.PersonalSpace,
-          value: [false],
-        } as unknown as Filter,
-      ],
-    }
-  );
+  return paginate<Organization, OrganizationConnection>('Organization', {
+    first,
+    after,
+    orderMode,
+    orderBy,
+    searchTerm,
+    filters: [
+      {
+        key: FilterKey.PersonalSpace,
+        value: [false],
+      } as unknown as Filter,
+    ],
+  });
 };
 
 export const insertNewOrganization = async (

@@ -183,7 +183,6 @@ export const loadUserServiceBySubscription = (
       ),
     ]);
   return paginate<UserService, UserServiceConnection>(
-    context,
     'User_Service',
     opts,
     undefined,
@@ -231,7 +230,6 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
     .groupBy(['User_Service.id', 'service.name', 'service.ordering', 'sub.id']);
 
   return paginate<UserService, UserServiceConnection>(
-    context,
     'User_Service',
     opts,
     undefined,

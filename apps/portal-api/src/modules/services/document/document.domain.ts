@@ -702,13 +702,7 @@ export const loadDocuments = async <
     });
   }
 
-  return paginate<Document, T>(
-    context,
-    'Document',
-    opts,
-    undefined,
-    loadDocumentQuery
-  );
+  return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
 };
 
 export const loadDocumentBy = async (

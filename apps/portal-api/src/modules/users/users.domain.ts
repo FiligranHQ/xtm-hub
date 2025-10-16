@@ -340,7 +340,6 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
     );
   }
   return paginate<UserGenerated, UserConnection>(
-    context,
     'User',
     {
       ...opts,
@@ -377,7 +376,6 @@ export const loadPendingUsers = (
     );
 
   return paginate<UserGenerated, UserConnection>(
-    context,
     'User',
     opts,
     { unsecured: true },

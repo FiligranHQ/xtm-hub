@@ -123,7 +123,6 @@ export const loadPublicServiceInstances = (context: PortalContext, opts) => {
     .andWhereRaw(`("subscription"."id" IS NULL OR "userService"."id" IS NULL)`);
 
   return paginate<ServiceInstance, ServiceConnection>(
-    context,
     'ServiceInstance',
     {
       first,
@@ -163,16 +162,12 @@ export const loadIsSubscribed = async (context, id) => {
 
 export const loadServiceInstances = async (context: PortalContext, opts) => {
   const { filters, searchTerm, orderBy } = opts;
-  return paginate<ServiceInstance, ServiceConnection>(
-    context,
-    'ServiceInstance',
-    {
-      ...opts,
-      orderBy: `ServiceInstance.${orderBy}`,
-      filters,
-      searchTerm,
-    }
-  );
+  return paginate<ServiceInstance, ServiceConnection>('ServiceInstance', {
+    ...opts,
+    orderBy: `ServiceInstance.${orderBy}`,
+    filters,
+    searchTerm,
+  });
 };
 
 export const loadServiceInstanceSubscriptions = async (context, id) => {
