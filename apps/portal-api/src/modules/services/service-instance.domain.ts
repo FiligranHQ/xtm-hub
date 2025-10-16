@@ -277,7 +277,7 @@ export const loadServiceInstanceBy = async (
 
 export const loadServiceWithSubscriptions = async (
   context: PortalContext,
-  service_instance_id
+  serviceInstanceId: ServiceInstanceId
 ) => {
   const queryUserServiceCapabilities = db(context, 'UserService_Capability')
     .leftJoin(
@@ -352,7 +352,7 @@ export const loadServiceWithSubscriptions = async (
     );
 
   const querySubscriptions = db<Subscription>(context, 'Subscription')
-    .where('Subscription.service_instance_id', '=', service_instance_id)
+    .where('Subscription.service_instance_id', '=', serviceInstanceId)
     .leftJoin(
       queryUserServiceWithCapa.as('userService'),
       'userService.subscription_id',
@@ -418,7 +418,7 @@ export const loadServiceWithSubscriptions = async (
     context,
     'ServiceInstance'
   )
-    .where('ServiceInstance.id', '=', service_instance_id)
+    .where('ServiceInstance.id', '=', serviceInstanceId)
     .leftJoin(
       'ServiceDefinition',
       'ServiceInstance.service_definition_id',
