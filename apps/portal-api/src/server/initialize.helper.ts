@@ -335,7 +335,7 @@ export const ensureDevOrganizationExists = async (
   if (existingOrg) {
     // Update domains if provided
     if (orgConfig.domains && orgConfig.domains.length > 0) {
-      const [updatedOrg] = await updateOrganizationBy(
+      const updatedOrg = await updateOrganizationBy(
         { id: existingOrg.id },
         { domains: orgConfig.domains },
         trx
@@ -346,7 +346,7 @@ export const ensureDevOrganizationExists = async (
   }
 
   // Create new organization
-  const [newOrg] = await insertNewOrganization(
+  const newOrg = await insertNewOrganization(
     {
       id: uuidv4() as OrganizationId,
       name: orgConfig.name,

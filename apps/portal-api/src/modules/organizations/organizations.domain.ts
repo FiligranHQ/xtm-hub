@@ -14,6 +14,14 @@ import Organization, {
 import User, { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 
+export const organizationDomain = {
+  loadOrganizationByLikeName: (context: PortalContext, name: string) => {
+    return db<Organization>(context, 'Organization')
+      .where('name', 'ILIKE', name)
+      .first('id');
+  },
+};
+
 export const loadOrganizationsByUser = async (
   context: PortalContext,
   userId: UserId
@@ -71,10 +79,10 @@ export const loadOrganizations = (
   );
 };
 
-export const insertNewOrganization = (
+export const insertNewOrganization = async (
   data: OrganizationInitializer,
   trx?: Knex.Transaction
-) => {
+): Promise<Organization> => {
   const query = dbUnsecure<Organization>('Organization')
     .insert(data)
     .returning('*');
@@ -82,32 +90,49 @@ export const insertNewOrganization = (
   if (trx) {
     query.transacting(trx);
   }
-  return query;
+
+  const [createdOrganization] = await query;
+  return createdOrganization;
 };
 
 export const updateOrganizationBy = async (
   field: OrganizationMutator,
   data: OrganizationMutator,
   trx?: Knex.Transaction
-) => {
-  return dbUnsecure<Organization>('Organization')
+): Promise<Organization> => {
+  const [updatedOrganization] = await dbUnsecure<Organization>('Organization')
     .where(field)
     .update(data)
     .modify((qb) => {
       if (trx) qb.transacting(trx);
     })
     .returning('*');
+
+  return updatedOrganization;
 };
 
-export const deleteOrganizationBy = (
+export const deleteOrganizationBy = async (
   conditions: OrganizationMutator,
   trx?: Knex.Transaction
-) => {
-  return dbUnsecure<Organization>('Organization')
-    .where(conditions)
-    .delete()
-    .modify((qb) => {
-      if (trx) qb.transacting(trx);
-    })
-    .returning('*');
+): Promise<Organization> => {
+  try {
+    const [deletedOrganization] = await dbUnsecure<Organization>('Organization')
+      .where(conditions)
+      .delete()
+      .modify((qb) => {
+        if (trx) qb.transacting(trx);
+      })
+      .returning('*');
+    return deletedOrganization;
+  } catch (error) {
+    const regexErrorName = /is still referenced from table "([^"]+)"/;
+    const match =
+      error.detail.match(regexErrorName) || error.message.match(regexErrorName);
+    if (match) {
+      const tableName = match[1];
+      throw new Error(`${tableName.toUpperCase()}_STILL_IN_ORGANIZATION`);
+    }
+
+    throw error;
+  }
 };

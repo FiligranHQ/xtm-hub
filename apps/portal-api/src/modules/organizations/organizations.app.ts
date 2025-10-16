@@ -1,10 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
 import { OrganizationInput } from '../../__generated__/resolvers-types';
-import Organization, {
-  OrganizationId,
-} from '../../model/kanel/public/Organization';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
+import { dispatch } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -13,7 +11,9 @@ import {
   buildUpdateOrganizationEvent,
 } from '../telemetry/telemetry.helper';
 import {
+  deleteOrganizationBy,
   insertNewOrganization,
+  organizationDomain,
   updateOrganizationBy,
 } from './organizations.domain';
 import { hasDomainOverlap } from './organizations.helper';
@@ -24,10 +24,11 @@ export const organizationsApp = {
     id: OrganizationId,
     input: OrganizationInput
   ) {
-    const [updatedOrganization] = await updateOrganizationBy(
+    const updatedOrganization = await updateOrganizationBy(
       { id },
       { ...input }
     );
+
     try {
       const updateOrgaEvent = buildUpdateOrganizationEvent(
         updatedOrganization,
@@ -44,10 +45,8 @@ export const organizationsApp = {
   },
 
   async createOrganization(context: PortalContext, input: OrganizationInput) {
-    const existingOrganization: Organization | undefined =
-      await db<Organization>(context, 'Organization')
-        .where('name', 'ILIKE', input.name)
-        .first('id');
+    const existingOrganization =
+      await organizationDomain.loadOrganizationByLikeName(context, input.name);
     if (existingOrganization?.id) {
       throw new Error(ErrorCode.OrganizationSameNameExists);
     }
@@ -57,14 +56,14 @@ export const organizationsApp = {
       throw new Error(ErrorCode.OrganizationSameDomainExists);
     }
 
-    const [addOrganization] = await insertNewOrganization({
+    const createdOrganization = await insertNewOrganization({
       id: uuidv4() as OrganizationId,
       ...input,
     });
 
     try {
       const createOrgaEvent = buildCreateOrganizationEvent(
-        addOrganization,
+        createdOrganization,
         context.user.id
       );
       telemetryApp.sendTelemetryEvent(createOrgaEvent);
@@ -74,6 +73,16 @@ export const organizationsApp = {
       });
     }
 
-    return addOrganization;
+    return createdOrganization;
+  },
+
+  async deleteOrganization(id: OrganizationId) {
+    const deletedOrganization = await deleteOrganizationBy({
+      id,
+    });
+
+    await dispatch('Organization', 'delete', deletedOrganization);
+
+    return deletedOrganization;
   },
 };
