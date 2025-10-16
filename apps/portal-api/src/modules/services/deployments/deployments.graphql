@@ -23,9 +23,9 @@ type DeploymentRequest implements Node {
   platform_identifier: PlatformIdentifier!
   region: PlatformRegion!
   type: DeploymentType!
-  intention: String
   job_title: String
   activity_sector: String
+  use_case: String
   start_date: Date
   end_date: Date
   status: DeploymentRequestStatus!
@@ -35,13 +35,14 @@ input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
   region: PlatformRegion!
   type: DeploymentType!
-  intention: String
   job_title: String
   activity_sector: String
+  use_case: String
 }
 
 extend type Mutation {
   createDeploymentRequest(
     input: CreateDeploymentRequestInput
-  ): DeploymentRequest! @auth
+  ): DeploymentRequest!
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }

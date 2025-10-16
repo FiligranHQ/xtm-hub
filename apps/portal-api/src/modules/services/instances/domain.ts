@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
-import { PlatformIdentifier } from '../../../__generated__/resolvers-types';
+import {
+  PlatformIdentifier,
+  ServiceInstanceCreationStatus,
+} from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import {
@@ -12,7 +15,8 @@ export const serviceInstanceDomain = {
   createPlatformServiceInstance: async (
     context: PortalContext,
     serviceDefinitionId: string,
-    platformIdentifier: PlatformIdentifier
+    platformIdentifier: PlatformIdentifier,
+    creation_status: ServiceInstanceCreationStatus = ServiceInstanceCreationStatus.Ready
   ): Promise<ServiceInstanceId> => {
     const id = uuidv4() as ServiceInstanceId;
     await db(context, 'ServiceInstance').insert([
@@ -20,7 +24,7 @@ export const serviceInstanceDomain = {
         id,
         name: serviceInstanceNameMappedByPlatformIdentifier[platformIdentifier],
         description: '',
-        creation_status: 'READY',
+        creation_status,
         public: false,
         join_type: 'JOIN_AUTO',
         tags: [

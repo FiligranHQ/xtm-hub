@@ -45,7 +45,6 @@ import {
 import {
   platformIdentifierMappedByServiceDefinitionIdentifier,
   registeredMailTemplateMappedByPlatformIdentifier,
-  serviceDefinitionIdentifierMappedByPlatformIdentifier,
   unregisteredMailTemplateMappedByPlatformIdentifier,
 } from './registration.mapping';
 
@@ -172,13 +171,10 @@ export const registrationApp = {
       token,
     };
 
-    const serviceDefinitionIdentifier =
-      serviceDefinitionIdentifierMappedByPlatformIdentifier[identifier];
-
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-        identifier: serviceDefinitionIdentifier,
-      });
+      await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
+        identifier
+      );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
@@ -206,7 +202,7 @@ export const registrationApp = {
         configuration,
       });
     } else {
-      await registrationDomain.registerNewPlatform(context, {
+      await registrationDomain.registerNewPlatform({
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,

@@ -20,7 +20,7 @@ describe('Service Contract Domain', () => {
 
     it('should return true when configuration match the schema specifications', async () => {
       const serviceDefinition =
-        await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
+        await serviceDefinitionDomain.loadServiceDefinitionBy({
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
@@ -46,7 +46,7 @@ describe('Service Contract Domain', () => {
 
     it('should return false when configuration does not match the schema specifications', async () => {
       const serviceDefinition =
-        await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
+        await serviceDefinitionDomain.loadServiceDefinitionBy({
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 

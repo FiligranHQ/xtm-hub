@@ -1,6 +1,5 @@
 import express from 'express';
 
-import { Knex } from 'knex';
 import { UserLoadUserBy } from './user';
 
 export interface PortalContext {
@@ -9,5 +8,4 @@ export interface PortalContext {
   serviceInstanceId?: string;
   req: express.Request;
   res: express.Response;
-  trx?: Knex.Transaction;
 }

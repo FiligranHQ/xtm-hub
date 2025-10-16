@@ -6,6 +6,7 @@ import {
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
@@ -13,6 +14,7 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
+import { requestContext } from '../../../requestContext';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
@@ -36,20 +38,18 @@ export type PlatformConfiguration = {
 };
 
 export const registrationDomain = {
-  registerNewPlatform: async (
-    context: PortalContext,
-    {
-      serviceDefinitionId,
-      organizationId,
-      configuration,
-      platformIdentifier,
-    }: {
-      serviceDefinitionId: string;
-      organizationId: OrganizationId;
-      configuration: PlatformConfiguration;
-      platformIdentifier: PlatformIdentifier;
-    }
-  ) => {
+  registerNewPlatform: async ({
+    serviceDefinitionId,
+    organizationId,
+    configuration,
+    platformIdentifier,
+  }: {
+    serviceDefinitionId: string;
+    organizationId: OrganizationId;
+    configuration?: PlatformConfiguration;
+    platformIdentifier: PlatformIdentifier;
+  }): Promise<ServiceInstanceId> => {
+    const context = requestContext.require().portalContext;
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -59,7 +59,10 @@ export const registrationDomain = {
       await serviceInstanceDomain.createPlatformServiceInstance(
         context,
         serviceDefinitionId,
-        platformIdentifier
+        platformIdentifier,
+        configuration
+          ? ServiceInstanceCreationStatus.Ready
+          : ServiceInstanceCreationStatus.Pending
       );
 
     await createSubscription(context, {
@@ -74,11 +77,14 @@ export const registrationDomain = {
       justification: null,
     });
 
-    await serviceContractDomain.createConfiguration(
-      context,
-      serviceInstanceId,
-      configuration
-    );
+    if (configuration) {
+      await serviceContractDomain.createConfiguration(
+        context,
+        serviceInstanceId,
+        configuration
+      );
+    }
+    return serviceInstanceId;
   },
 
   refreshExistingPlatform: async (
