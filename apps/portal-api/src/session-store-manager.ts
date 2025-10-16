@@ -1,7 +1,7 @@
 import { MemoryStore, SessionData } from 'express-session';
 import portalConfig from './config';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from './model/user';
-import { PostgreSQLSessionStore } from './stores/PostgreSQLSessionStore';
+import { PostgreSQLSessionStore } from './stores/postgresql-session-store';
 import { logApp } from './utils/app-logger.util';
 import { UnknownErrorCode } from './utils/error/error.code';
 

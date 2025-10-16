@@ -1,4 +1,5 @@
 import { MemoryStore, SessionData } from 'express-session';
+import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getDbTestConnection } from '../tests/config-test';
@@ -6,10 +7,14 @@ import { UserWithOrganizationsAndRole } from './model/user';
 import {
   getSessionStoreInstance,
   updateUserSession,
-} from './sessionStoreManager';
+} from './session-store-manager';
+
+type SessionDataWithUser = SessionData & {
+  user?: UserWithOrganizationsAndRole;
+};
 
 describe('SessionStoreManager - Configuration-based Store Selection', () => {
-  let db: any;
+  let db: Knex;
 
   beforeAll(async () => {
     db = getDbTestConnection();
@@ -80,7 +85,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
         const userId = 'update-test-' + uuidv4();
         const sessionId = 'session-' + uuidv4();
 
-        const sessionData: SessionData = {
+        const sessionData: SessionDataWithUser = {
           cookie: {
             maxAge: 3600000,
             expires: new Date(Date.now() + 3600000),
@@ -113,7 +118,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         // Verify update
-        const updatedSession = await new Promise<SessionData | null>(
+        const updatedSession = await new Promise<SessionDataWithUser | null>(
           (resolve, reject) => {
             store.get(sessionId, (err, session) => {
               if (err || !session) reject(err);
@@ -158,7 +163,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
 
         await new Promise((resolve) => setTimeout(resolve, 50));
 
-        const updatedSession = await new Promise<SessionData | null>(
+        const updatedSession = await new Promise<SessionDataWithUser | null>(
           (resolve, reject) => {
             store.get(sessionId, (err, session) => {
               if (err) reject(err);
@@ -167,9 +172,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
           }
         );
 
-        expect((updatedSession as any)?.user?.first_name).toBe(
-          'Memory Updated'
-        );
+        expect(updatedSession?.user?.first_name).toBe('Memory Updated');
       }
       // Skip if not Memory store - test passes automatically
     });
@@ -194,7 +197,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
       });
 
       // Read
-      const retrievedSession = await new Promise<SessionData | null>(
+      const retrievedSession = await new Promise<SessionDataWithUser | null>(
         (resolve, reject) => {
           store.get(sessionId, (err, session) => {
             if (err) reject(err);
@@ -204,7 +207,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
       );
 
       expect(retrievedSession).toBeDefined();
-      expect((retrievedSession as any)?.user?.name).toBe('Test User');
+      expect(retrievedSession?.user?.name).toBe('Test User');
 
       // Delete
       await new Promise<void>((resolve, reject) => {
@@ -280,10 +283,12 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
 
   describe('Error handling', () => {
     it('should handle updateUserSession with invalid user gracefully', () => {
-      const invalidUser = null as any;
+      const invalidUser = null;
 
       expect(() => {
-        updateUserSession(invalidUser);
+        updateUserSession(
+          invalidUser as unknown as UserWithOrganizationsAndRole
+        );
       }).not.toThrow();
     });
 

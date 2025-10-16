@@ -27,7 +27,7 @@ import { operationMetricsPlugin } from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
-import { getSessionStoreInstance } from './sessionStoreManager';
+import { getSessionStoreInstance } from './session-store-manager';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
 import { logApp } from './utils/app-logger.util';
 import { startSessionCleanup } from './utils/session-cleanup';

@@ -23,7 +23,7 @@ import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
-import { updateUserSession } from '../../sessionStoreManager';
+import { updateUserSession } from '../../session-store-manager';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { hashPassword } from '../../utils/hash-password.util';

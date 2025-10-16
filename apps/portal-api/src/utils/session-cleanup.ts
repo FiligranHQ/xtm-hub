@@ -1,6 +1,6 @@
 import portalConfig from '../config';
-import { getSessionStoreInstance } from '../sessionStoreManager';
-import { PostgreSQLSessionStore } from '../stores/PostgreSQLSessionStore';
+import { getSessionStoreInstance } from '../session-store-manager';
+import { PostgreSQLSessionStore } from '../stores/postgresql-session-store';
 import { logApp } from './app-logger.util';
 
 interface SessionCleanupOptions {
