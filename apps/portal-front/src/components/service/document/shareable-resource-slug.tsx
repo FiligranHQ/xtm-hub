@@ -62,7 +62,7 @@ const ShareableResourceSlug: React.FunctionComponent<
   );
 
   const incrementDownloadNumber = () => {
-    setDocumentDownloadNumber(documentDownloadNumber + 1);
+    setDocumentDownloadNumber((documentDownloadNumber ?? 0) + 1);
   };
   const isOneOpenAEVRegistrationFeatureEnabled = useIsFeatureEnabled(
     FeatureFlag.OPENAEV_REGISTRATION
@@ -146,7 +146,7 @@ const ShareableResourceSlug: React.FunctionComponent<
             {documentData && (
               <ShareableResourceDetails
                 documentData={documentData}
-                downloadNumber={documentDownloadNumber}
+                downloadNumber={documentDownloadNumber ?? 0}
               />
             )}
           </section>
