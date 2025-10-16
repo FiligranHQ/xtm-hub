@@ -4,9 +4,9 @@ import { IngestManifestApp } from './ingest-manifest.app';
 
 const resolvers: Resolvers = {
   Query: {
-    refreshOpenCTIManifest: () =>
+    refreshOpenCTIManifest: (_, __, context) =>
       isFeatureEnabled('CONNECTORS_INTEGRATION_FEEDS')
-        ? IngestManifestApp.refreshOpenCTIManifest()
+        ? IngestManifestApp.refreshOpenCTIManifest(context)
         : false,
   },
 };

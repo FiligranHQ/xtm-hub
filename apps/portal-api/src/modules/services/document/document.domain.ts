@@ -143,14 +143,13 @@ export const upsertImage = async <T extends DocumentModel>(
   const files = await processUploads(upload, context);
 
   // Get all existing child image documents
-  const childDocumentIds = db(context, 'Document_Children')
-    .select('child_document_id')
-    .where('parent_document_id', doc.id);
-
-  // Delete all existing image documents for this parent
   const deletedDocuments = await db(context, 'Document')
     .delete()
-    .whereIn('id', childDocumentIds)
+    .whereIn('id', function () {
+      this.select('child_document_id')
+        .from('Document_Children')
+        .where('parent_document_id', doc.id);
+    })
     .andWhere('type', 'image')
     .returning(['id', 'minio_name'])
     .transacting(trx);
@@ -313,8 +312,10 @@ export const createDocument = async <T extends DocumentModel>(
       ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
       active: documentData.active ?? true,
       uploader_id,
-      service_instance_id: context.serviceInstanceId as ServiceInstanceId,
       uploader_organization_id: context.user.selected_organization_id,
+      ...(!!context.serviceInstanceId && {
+        service_instance_id: context.serviceInstanceId as ServiceInstanceId,
+      }),
     })
     .returning('*')
     .transacting(trx);

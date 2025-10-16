@@ -1,3 +1,5 @@
+directive @system_token repeatable on OBJECT | FIELD_DEFINITION
+
 directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION

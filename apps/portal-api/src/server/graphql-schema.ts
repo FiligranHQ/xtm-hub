@@ -23,7 +23,7 @@ import serviceCapabilityResolver from '../modules/user_service/service-capabilit
 import userServiceResolver from '../modules/user_service/user_service.resolver';
 import usersResolver from '../modules/users/users.resolver';
 import nodesResolver from '../nodes/nodes.resolver';
-import { authDirectiveTransformer } from '../security/directive-auth';
+import { authDirectiveTransformer } from '../security/directive-graphql/directive-auth';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);

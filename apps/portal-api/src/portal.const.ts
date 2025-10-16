@@ -67,4 +67,5 @@ export const SYSTEM_USER_CONTEXT: PortalContext = {
       },
     ],
   },
+  serviceInstanceId: undefined,
 } as PortalContext;

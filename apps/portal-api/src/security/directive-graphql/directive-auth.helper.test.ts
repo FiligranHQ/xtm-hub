@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { OrganizationCapability } from '../__generated__/resolvers-types';
-import { UserLoadUserBy } from '../model/user';
-import { CAPABILITY_BYPASS } from '../portal.const';
-import * as AuthHelper from './auth.helper';
+import { OrganizationCapability } from '../../__generated__/resolvers-types';
+import { UserLoadUserBy } from '../../model/user';
+import { CAPABILITY_BYPASS } from '../../portal.const';
+import * as AuthHelper from '../auth.helper';
 import { authDirectives } from './directive-auth';
 
 describe('Auth directives', () => {
@@ -57,12 +57,12 @@ describe('Auth directives', () => {
     });
 
     it.each`
-      description                                             | expected | expectedError                                                                                                                   | isUserBypass | isUserOrganizationAdmin | areIdsMissing | hasRequiredCapabilities
-      ${'allow bypass user'}                                  | ${true}  | ${null}                                                                                                                         | ${true}      | ${false}                | ${false}      | ${false}
-      ${'not allow user when he is the organization admin'}   | ${false} | ${null}                                                                                                                         | ${false}     | ${true}                 | ${false}      | ${false}
-      ${'throw an error when ids are missing'}                | ${false} | ${'serviceInstanceId or service_instance_id or subscription_id is undefined, please provide one of them to use this directive'} | ${false}     | ${false}                | ${true}       | ${false}
-      ${'allow user with the required service capability'}    | ${true}  | ${null}                                                                                                                         | ${false}     | ${false}                | ${false}      | ${true}
-      ${'not allow user without required service capability'} | ${false} | ${null}                                                                                                                         | ${false}     | ${false}                | ${false}      | ${false}
+      description                                             | expected | expectedError                                                                                                | isUserBypass | isUserOrganizationAdmin | areIdsMissing | hasRequiredCapabilities
+      ${'allow bypass user'}                                  | ${true}  | ${null}                                                                                                      | ${true}      | ${false}                | ${false}      | ${false}
+      ${'not allow user when he is the organization admin'}   | ${false} | ${null}                                                                                                      | ${false}     | ${true}                 | ${false}      | ${false}
+      ${'throw an error when ids are missing'}                | ${false} | ${'serviceInstanceId, service_instance_id, or subscription_id is required for service capability directive'} | ${false}     | ${false}                | ${true}       | ${false}
+      ${'allow user with the required service capability'}    | ${true}  | ${null}                                                                                                      | ${false}     | ${false}                | ${false}      | ${true}
+      ${'not allow user without required service capability'} | ${false} | ${null}                                                                                                      | ${false}     | ${false}                | ${false}      | ${false}
     `(
       'should $description',
       async ({
