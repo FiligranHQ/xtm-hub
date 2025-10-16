@@ -14,25 +14,24 @@ const resolvers: Resolvers = {
   Query: {
     organization: async (_, { id }) =>
       loadOrganizationBy({ id: id as OrganizationId }),
-    organizations: async (_, opts, context) => {
-      return loadOrganizations(context, opts);
+    organizations: async (_, opts) => {
+      return loadOrganizations(opts);
     },
     userOrganizations: async (_, __, context) => {
-      return loadOrganizationsByUser(context, context.user.id);
+      return loadOrganizationsByUser(context.user.id);
     },
   },
   Mutation: {
-    addOrganization: async (_, { input }, context) => {
+    addOrganization: async (_, { input }) => {
       try {
-        return await organizationsApp.createOrganization(context, input);
+        return await organizationsApp.createOrganization(input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
-    editOrganization: async (_, { id, input }, context) => {
+    editOrganization: async (_, { id, input }) => {
       try {
         return await organizationsApp.updateOrganization(
-          context,
           id as OrganizationId,
           input
         );

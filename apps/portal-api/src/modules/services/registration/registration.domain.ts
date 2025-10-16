@@ -111,10 +111,7 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      const userOrganizations = await loadOrganizationsByUser(
-        context,
-        context.user.id
-      );
+      const userOrganizations = await loadOrganizationsByUser(context.user.id);
       if (userOrganizations.length > 2) {
         throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
       }

@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { OrganizationInput } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { PortalContext } from '../../model/portal-context';
 import { dispatch } from '../../pub';
+import { requestContext } from '../../requestContext';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -19,20 +19,17 @@ import {
 import { hasDomainOverlap } from './organizations.helper';
 
 export const organizationsApp = {
-  async updateOrganization(
-    context: PortalContext,
-    id: OrganizationId,
-    input: OrganizationInput
-  ) {
+  async updateOrganization(id: OrganizationId, input: OrganizationInput) {
     const updatedOrganization = await updateOrganizationBy(
       { id },
       { ...input }
     );
 
     try {
+      const { user } = requestContext.require();
       const updateOrgaEvent = buildUpdateOrganizationEvent(
         updatedOrganization,
-        context.user.id
+        user.id
       );
       telemetryApp.sendTelemetryEvent(updateOrgaEvent);
     } catch (error) {
@@ -44,9 +41,9 @@ export const organizationsApp = {
     return updatedOrganization;
   },
 
-  async createOrganization(context: PortalContext, input: OrganizationInput) {
+  async createOrganization(input: OrganizationInput) {
     const existingOrganization =
-      await organizationDomain.loadOrganizationByLikeName(context, input.name);
+      await organizationDomain.loadOrganizationByLikeName(input.name);
     if (existingOrganization?.id) {
       throw new Error(ErrorCode.OrganizationSameNameExists);
     }
@@ -62,9 +59,10 @@ export const organizationsApp = {
     });
 
     try {
+      const { user } = requestContext.require();
       const createOrgaEvent = buildCreateOrganizationEvent(
         createdOrganization,
-        context.user.id
+        user.id
       );
       telemetryApp.sendTelemetryEvent(createOrgaEvent);
     } catch (error) {
