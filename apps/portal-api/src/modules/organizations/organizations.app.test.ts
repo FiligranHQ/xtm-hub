@@ -8,7 +8,10 @@ import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { organizationsApp } from './organizations.app';
-import { insertNewOrganization } from './organizations.domain';
+import {
+  insertNewOrganization,
+  loadOrganizationBy,
+} from './organizations.domain';
 
 describe('organizationsApp', () => {
   afterEach(async () => {
@@ -98,6 +101,27 @@ describe('organizationsApp', () => {
       });
 
       await expect(call).rejects.toThrow(ErrorCode.OrganizationSameNameExists);
+    });
+  });
+
+  describe('deleteOrganization', () => {
+    it('should delete the organization', async () => {
+      const organizationId = uuidv4() as OrganizationId;
+      await insertNewOrganization({
+        id: organizationId,
+        name: 'newOrganization',
+        domains: ['orga.com'],
+      });
+
+      const newOrganization = await loadOrganizationBy({ id: organizationId });
+      expect(newOrganization).toBeDefined();
+
+      await organizationsApp.deleteOrganization(organizationId);
+
+      const deletedOrganization = await loadOrganizationBy({
+        id: organizationId,
+      });
+      expect(deletedOrganization).toBeUndefined();
     });
   });
 });
