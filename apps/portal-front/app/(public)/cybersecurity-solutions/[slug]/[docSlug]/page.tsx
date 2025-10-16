@@ -1,4 +1,5 @@
-import DashboardDetails from '@/components/service/document/shareable-resouce-details';
+import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -270,19 +271,14 @@ const Page = async ({
               </div>
             </section>
           </div>
-          <div className="flex-1">
-            <h3 className="py-s txt-container-title truncate text-ellipsis text-muted-foreground">
-              Basic Information
-            </h3>
-            <section className="border rounded border-border-light bg-page-background flex space-y-xl p-l">
-              {document && (
-                <DashboardDetails
-                  documentData={document}
-                  downloadNumber={document.download_number}
-                />
-              )}
-            </section>
-          </div>
+          <ShareableResourceBasicInformation>
+            {document && (
+              <ShareableResourceDetails
+                documentData={document}
+                downloadNumber={document.download_number}
+              />
+            )}
+          </ShareableResourceBasicInformation>
         </div>
       </>
     );

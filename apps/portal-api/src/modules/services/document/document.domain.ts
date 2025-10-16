@@ -61,7 +61,7 @@ export type DocumentMetadataKeys<T extends DocumentModel> = Array<
 
 type MutationUpdateDocumentArgs =
   | MutationUpdateCustomDashboardArgs
-  | MutationUpdateCsvFeedArgs;
+  | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
 
 export const sendFileToS3 = async (
   file: UploadedFile,

@@ -1,8 +1,7 @@
 'use client';
 import {
   getBadgesValues,
-  IngestionConnectorType,
-  ingestionConnectorTypeMetadata,
+  getIngestionConnectorMetadata,
 } from '@/components/connectors/connector.utils';
 import BadgeOverflowCounter from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
@@ -24,6 +23,9 @@ const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
   contract,
   metadataBase,
 }) => {
+  const connectorMetadata = getIngestionConnectorMetadata(
+    contract.container_type
+  );
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
       <Link
@@ -61,22 +63,12 @@ const ConnectorContractCard: FunctionComponent<ConnectorContractCardProps> = ({
           {contract.short_description}
         </p>
         <div className="flex items-center justify-end mt-auto p-l">
-          {ingestionConnectorTypeMetadata[
-            contract.container_type as IngestionConnectorType
-          ] && (
+          {connectorMetadata && (
             <Badge
               className="mr-auto"
               variant="outline"
-              color={
-                ingestionConnectorTypeMetadata[
-                  contract.container_type as IngestionConnectorType
-                ]?.color
-              }>
-              {
-                ingestionConnectorTypeMetadata[
-                  contract.container_type as IngestionConnectorType
-                ]?.label
-              }
+              color={connectorMetadata.color}>
+              {connectorMetadata.label}
             </Badge>
           )}
           <ShareLinkButton
