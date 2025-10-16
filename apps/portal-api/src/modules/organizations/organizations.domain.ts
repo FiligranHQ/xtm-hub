@@ -14,6 +14,14 @@ import Organization, {
 import User, { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 
+export const organizationDomain = {
+  loadOrganizationByLikeName: (context: PortalContext, name: string) => {
+    return db<Organization>(context, 'Organization')
+      .where('name', 'ILIKE', name)
+      .first('id');
+  },
+};
+
 export const loadOrganizationsByUser = async (
   context: PortalContext,
   userId: UserId

@@ -1,9 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
 import { OrganizationInput } from '../../__generated__/resolvers-types';
-import Organization, {
-  OrganizationId,
-} from '../../model/kanel/public/Organization';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
@@ -14,6 +11,7 @@ import {
 } from '../telemetry/telemetry.helper';
 import {
   insertNewOrganization,
+  organizationDomain,
   updateOrganizationBy,
 } from './organizations.domain';
 import { hasDomainOverlap } from './organizations.helper';
@@ -45,10 +43,8 @@ export const organizationsApp = {
   },
 
   async createOrganization(context: PortalContext, input: OrganizationInput) {
-    const existingOrganization: Organization | undefined =
-      await db<Organization>(context, 'Organization')
-        .where('name', 'ILIKE', input.name)
-        .first('id');
+    const existingOrganization =
+      await organizationDomain.loadOrganizationByLikeName(context, input.name);
     if (existingOrganization?.id) {
       throw new Error(ErrorCode.OrganizationSameNameExists);
     }
