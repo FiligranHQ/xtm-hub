@@ -972,7 +972,6 @@ export type Query = {
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
-  user?: Maybe<User>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
@@ -1212,11 +1211,6 @@ export type QuerySubscriptionByIdArgs = {
 };
 
 
-export type QueryUserArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type QueryUserServiceFromSubscriptionArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1293,14 +1287,7 @@ export type RegistrationResponse = {
 
 export enum Restriction {
   AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
-  BckManageCommunities = 'BCK_MANAGE_COMMUNITIES',
-  BckManageServices = 'BCK_MANAGE_SERVICES',
   Bypass = 'BYPASS',
-  FrtAccessBilling = 'FRT_ACCESS_BILLING',
-  FrtAccessServices = 'FRT_ACCESS_SERVICES',
-  FrtManageSettings = 'FRT_MANAGE_SETTINGS',
-  FrtManageUser = 'FRT_MANAGE_USER',
-  FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER',
   ManageAccess = 'MANAGE_ACCESS',
   ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
   ManageSubscription = 'MANAGE_SUBSCRIPTION'
@@ -2502,7 +2489,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;

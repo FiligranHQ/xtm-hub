@@ -68,7 +68,6 @@ type Query {
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   me: User
-  user(id: ID!): User
   usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
@@ -1020,13 +1019,6 @@ enum Restriction {
   ADMINISTRATE_ORGANIZATION
   MANAGE_ACCESS
   MANAGE_SUBSCRIPTION
-  BCK_MANAGE_SERVICES
-  BCK_MANAGE_COMMUNITIES
-  FRT_SERVICE_SUBSCRIBER
-  FRT_MANAGE_SETTINGS
-  FRT_ACCESS_BILLING
-  FRT_MANAGE_USER
-  FRT_ACCESS_SERVICES
   MANAGE_PLATFORM_REGISTRATION
 }
 
