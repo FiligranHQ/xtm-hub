@@ -132,7 +132,7 @@ export type CsvFeed = DocumentBase & Node & {
   children_documents?: Maybe<Array<ShareableResourceImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  download_number: Scalars['Int']['output'];
+  download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   labels?: Maybe<Array<Label>>;
@@ -141,7 +141,7 @@ export type CsvFeed = DocumentBase & Node & {
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
-  share_number: Scalars['Int']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
@@ -171,7 +171,7 @@ export type CustomDashboard = DocumentBase & Node & {
   children_documents?: Maybe<Array<ShareableResourceImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  download_number: Scalars['Int']['output'];
+  download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   labels?: Maybe<Array<Label>>;
@@ -180,7 +180,7 @@ export type CustomDashboard = DocumentBase & Node & {
   product_version?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
-  share_number: Scalars['Int']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
@@ -238,14 +238,14 @@ export type Document = Node & {
   children_documents?: Maybe<Array<Document>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  download_number: Scalars['Int']['output'];
+  download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
-  share_number: Scalars['Int']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
   subscription?: Maybe<SubscriptionModel>;
@@ -261,7 +261,7 @@ export type DocumentBase = {
   children_documents?: Maybe<Array<ShareableResourceImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  download_number: Scalars['Int']['output'];
+  download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   labels?: Maybe<Array<Label>>;
@@ -269,7 +269,7 @@ export type DocumentBase = {
   name: Scalars['String']['output'];
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
-  share_number: Scalars['Int']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
@@ -781,7 +781,7 @@ export type OpenAevScenario = DocumentBase & Node & {
   children_documents?: Maybe<Array<ShareableResourceImage>>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  download_number: Scalars['Int']['output'];
+  download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   labels?: Maybe<Array<Label>>;
@@ -790,7 +790,7 @@ export type OpenAevScenario = DocumentBase & Node & {
   product_version?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
   service_instance_id: Scalars['String']['output'];
-  share_number: Scalars['Int']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
@@ -2095,7 +2095,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
@@ -2104,7 +2104,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
@@ -2134,7 +2134,7 @@ export type CustomDashboardResolvers<ContextType = PortalContext, ParentType ext
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
@@ -2143,7 +2143,7 @@ export type CustomDashboardResolvers<ContextType = PortalContext, ParentType ext
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
@@ -2191,14 +2191,14 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   children_documents?: Resolver<Maybe<Array<ResolversTypes['Document']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
@@ -2216,7 +2216,7 @@ export type DocumentBaseResolvers<ContextType = PortalContext, ParentType extend
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
@@ -2224,7 +2224,7 @@ export type DocumentBaseResolvers<ContextType = PortalContext, ParentType extend
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
@@ -2378,7 +2378,7 @@ export type OpenAevScenarioResolvers<ContextType = PortalContext, ParentType ext
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResourceImage']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  download_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
@@ -2387,7 +2387,7 @@ export type OpenAevScenarioResolvers<ContextType = PortalContext, ParentType ext
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  share_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;

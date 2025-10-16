@@ -206,8 +206,8 @@ type CustomDashboard implements DocumentBase & Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -315,8 +315,8 @@ interface DocumentBase implements Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -340,8 +340,8 @@ type Document implements Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   children_documents: [Document!]
   slug: String
   service_instance: ServiceInstance
@@ -389,8 +389,8 @@ type CsvFeed implements DocumentBase & Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -469,8 +469,8 @@ type OpenAEVScenario implements DocumentBase & Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
