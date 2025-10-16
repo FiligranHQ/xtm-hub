@@ -65,7 +65,7 @@ export const registrationDomain = {
           : ServiceInstanceCreationStatus.Pending
       );
 
-    await createSubscription(context, {
+    await createSubscription({
       id: uuidv4() as SubscriptionId,
       organization_id: organizationId,
       service_instance_id: serviceInstanceId,
@@ -103,7 +103,7 @@ export const registrationDomain = {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
     });
     if (!subscription) {
@@ -121,7 +121,7 @@ export const registrationDomain = {
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
-      await transferSubscriptionToOrganization(context, {
+      await transferSubscriptionToOrganization({
         subscriptionId: subscription.id,
         organizationId: targetOrganizationId,
       });

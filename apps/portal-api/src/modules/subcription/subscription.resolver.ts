@@ -24,27 +24,22 @@ import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscriptio
 
 const resolvers: Resolvers = {
   SubscriptionModel: {
-    subscription_capability: ({ id }, _, context) =>
-      getSubscriptionCapability(context, id),
+    subscription_capability: ({ id }, _) => getSubscriptionCapability(id),
     service_instance: ({ service_instance_id }, _, context) =>
       loadServiceInstanceBy(context, 'id', service_instance_id),
-    user_service: ({ id }, _, context) => getUserService(context, id),
+    user_service: ({ id }, _) => getUserService(id),
   },
   SubscriptionCapability: {
-    service_capability: ({ id }, _, context) =>
-      getServiceCapability(context, id),
+    service_capability: ({ id }, _) => getServiceCapability(id),
   },
   Mutation: {
-    addSubscription: async (_, { service_instance_id }, context) => {
+    addSubscription: async (_, { service_instance_id }) => {
       const serviceInstanceId =
         extractId<ServiceInstanceId>(service_instance_id);
       try {
-        return await subscriptionApp.subscribeSelectedOrganizationToService(
-          context,
-          {
-            serviceInstanceId,
-          }
-        );
+        return await subscriptionApp.subscribeSelectedOrganizationToService({
+          serviceInstanceId,
+        });
       } catch (error) {
         throw mapToGraphQLError(error);
       }
@@ -70,7 +65,7 @@ const resolvers: Resolvers = {
           extractId<ServiceCapabilityId>(capability_id)
         );
 
-        await subscriptionApp.subscribeOrganizationToService(context, {
+        await subscriptionApp.subscribeOrganizationToService({
           organizationId,
           serviceInstanceId,
           startDate: start_date,
@@ -106,9 +101,9 @@ const resolvers: Resolvers = {
     },
   },
   Query: {
-    subscriptionById: async (_, { subscription_id }, context) => {
+    subscriptionById: async (_, { subscription_id }) => {
       const subscriptions =
-        await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
           'Subscription.id': extractId<SubscriptionId>(subscription_id),
         } as SubscriptionMutator);
 

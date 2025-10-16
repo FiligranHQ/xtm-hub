@@ -62,7 +62,7 @@ export const registrationApp = {
       return null;
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -270,7 +270,7 @@ export const registrationApp = {
       return;
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: activeServiceConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -343,7 +343,7 @@ export const registrationApp = {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -381,7 +381,7 @@ export const registrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {

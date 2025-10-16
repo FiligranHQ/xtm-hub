@@ -17,6 +17,7 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
+import { requestContext } from '../../requestContext';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
@@ -45,7 +46,7 @@ export const subscriptionApp = {
     context: PortalContext,
     service_instance_id: string
   ): Promise<SubscriptionModel> => {
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: service_instance_id as ServiceInstanceId,
       organization_id: context.user.selected_organization_id,
     });
@@ -53,38 +54,43 @@ export const subscriptionApp = {
     return subscription as unknown as SubscriptionModel;
   },
 
-  subscribeSelectedOrganizationToService: async (
-    context: PortalContext,
-    { serviceInstanceId }: { serviceInstanceId: ServiceInstanceId }
-  ): Promise<ServiceInstanceGraphQl> => {
-    await assertOrganizationIsNotAlreadySubscribed(context, {
+  subscribeSelectedOrganizationToService: async ({
+    serviceInstanceId,
+  }: {
+    serviceInstanceId: ServiceInstanceId;
+  }): Promise<ServiceInstanceGraphQl> => {
+    const { portalContext, user } = requestContext.require();
+    await assertOrganizationIsNotAlreadySubscribed({
       serviceInstanceId,
-      organizationId: context.user.selected_organization_id,
+      organizationId: user.selected_organization_id,
     });
 
     const trx = await dbTx();
     try {
       const selectedOrganization = await loadOrganizationBy({
-        id: context.user.selected_organization_id,
+        id: user.selected_organization_id,
       });
 
-      await createSubscriptionWithAdminAccess(context, {
+      await createSubscriptionWithAdminAccess({
         serviceInstanceId,
         organization: selectedOrganization,
       });
 
       const [serviceDefinition, serviceInstance] = await Promise.all([
-        loadServiceDefinitionByServiceInstance(context, serviceInstanceId),
-        loadServiceInstanceById(context, serviceInstanceId),
+        loadServiceDefinitionByServiceInstance(
+          portalContext,
+          serviceInstanceId
+        ),
+        loadServiceInstanceById(portalContext, serviceInstanceId),
       ]);
 
       await sendMail({
-        to: context.user.email,
+        to: user.email,
         template: ServiceIdentifierToMailTemplate.get(
           serviceDefinition.identifier
         ),
         params: {
-          name: context.user.email,
+          name: user.email,
           serviceLink: buildServiceLink({
             serviceDefinitionIdentifier: serviceDefinition.identifier,
             serviceInstanceId,
@@ -103,7 +109,7 @@ export const subscriptionApp = {
 
       await trx.commit();
 
-      sendSubscriptionTelemetryEvent(context, {
+      sendSubscriptionTelemetryEvent(portalContext, {
         selectedOrganization,
         serviceDefinitionIdentifier:
           serviceDefinition.identifier as ServiceDefinitionIdentifier,
@@ -122,23 +128,20 @@ export const subscriptionApp = {
     }
   },
 
-  subscribeOrganizationToService: async (
-    context: PortalContext,
-    {
-      organizationId,
-      serviceInstanceId,
-      startDate,
-      endDate,
-      capabilityIds,
-    }: {
-      organizationId: OrganizationId;
-      serviceInstanceId: ServiceInstanceId;
-      startDate: Date;
-      endDate: Date;
-      capabilityIds: ServiceCapabilityId[];
-    }
-  ): Promise<void> => {
-    await assertOrganizationIsNotAlreadySubscribed(context, {
+  subscribeOrganizationToService: async ({
+    organizationId,
+    serviceInstanceId,
+    startDate,
+    endDate,
+    capabilityIds,
+  }: {
+    organizationId: OrganizationId;
+    serviceInstanceId: ServiceInstanceId;
+    startDate: Date;
+    endDate: Date;
+    capabilityIds: ServiceCapabilityId[];
+  }): Promise<void> => {
+    await assertOrganizationIsNotAlreadySubscribed({
       serviceInstanceId,
       organizationId,
     });
@@ -155,13 +158,10 @@ export const subscriptionApp = {
         status: SubscriptionStatus.ACCEPTED,
       };
 
-      const createdSubscription = await createSubscription(
-        context,
-        subscriptionData
-      );
-
+      const createdSubscription = await createSubscription(subscriptionData);
+      const { portalContext } = requestContext.require();
       await addCapabilitiesToSubscription(
-        context,
+        portalContext,
         createdSubscription.id,
         capabilityIds
       );
@@ -190,14 +190,14 @@ export const subscriptionApp = {
   },
 };
 
-const assertOrganizationIsNotAlreadySubscribed = async (
-  context: PortalContext,
-  {
-    serviceInstanceId,
-    organizationId,
-  }: { serviceInstanceId: ServiceInstanceId; organizationId: OrganizationId }
-) => {
-  const subscription = await loadSubscriptionBy(context, {
+const assertOrganizationIsNotAlreadySubscribed = async ({
+  serviceInstanceId,
+  organizationId,
+}: {
+  serviceInstanceId: ServiceInstanceId;
+  organizationId: OrganizationId;
+}) => {
+  const subscription = await loadSubscriptionBy({
     organization_id: organizationId,
     service_instance_id: serviceInstanceId,
   });
@@ -211,20 +211,18 @@ const assertOrganizationIsNotAlreadySubscribed = async (
   }
 };
 
-const createSubscriptionWithAdminAccess = async (
-  context: PortalContext,
-  {
-    serviceInstanceId,
-    organization,
-  }: {
-    serviceInstanceId: ServiceInstanceId;
-    organization: Organization;
-  }
-): Promise<{ createdSubscription: Subscription }> => {
+const createSubscriptionWithAdminAccess = async ({
+  serviceInstanceId,
+  organization,
+}: {
+  serviceInstanceId: ServiceInstanceId;
+  organization: Organization;
+}): Promise<{ createdSubscription: Subscription }> => {
+  const { user, portalContext } = requestContext.require();
   const subscriptionInitializerData = {
     id: uuidv4() as SubscriptionId,
     service_instance_id: serviceInstanceId,
-    organization_id: context.user.selected_organization_id,
+    organization_id: user.selected_organization_id,
     start_date: new Date(),
     end_date: undefined,
     billing: 100,
@@ -232,13 +230,12 @@ const createSubscriptionWithAdminAccess = async (
   };
 
   const createdSubscription = await createSubscription(
-    context,
     subscriptionInitializerData
   );
 
   await addAdminAccess(
-    context,
-    context.user.id as UserId,
+    portalContext,
+    user.id as UserId,
     createdSubscription.id,
     organization.personal_space
   );

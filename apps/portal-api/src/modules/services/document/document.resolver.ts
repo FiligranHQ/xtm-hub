@@ -171,7 +171,7 @@ const resolvers: Resolvers = {
       return getServiceInstance(context, service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
-      const subscription = await loadSubscriptionBy(context, {
+      const subscription = await loadSubscriptionBy({
         service_instance_id: service_instance_id as ServiceInstanceId,
         organization_id: context.user.selected_organization_id,
       });
