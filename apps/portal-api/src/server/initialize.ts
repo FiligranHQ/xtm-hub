@@ -8,6 +8,8 @@ import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
   ROLE_ADMIN,
+  ROLE_ADMIN_ORGA,
+  ROLE_USER,
   SYSTEM_USER_EMAIL,
   SYSTEM_USER_UUID,
 } from '../portal.const';
@@ -93,6 +95,8 @@ const initCapabilityAndRole = async () => {
   try {
     await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
     await ensureRoleExists(ROLE_ADMIN, trx);
+    await ensureRoleExists(ROLE_USER, trx);
+    await ensureRoleExists(ROLE_ADMIN_ORGA, trx);
     // Ensure ROLE_ADMIN has CAPABILITY_BYPASS
     await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS, trx);
 
