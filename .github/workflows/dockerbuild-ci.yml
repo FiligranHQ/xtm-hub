@@ -360,6 +360,27 @@ jobs:
             -f human job_templates launch 'Deploy XTM Hub' \
             --inventory eu-west-production \
             --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"
+      - name: Send n8n Webhook Notification
+        if: contains(github.ref, 'refs/tags/')
+        run: |
+          echo "Sending n8n webhook notification..."
+          response=$(curl -X POST \
+            -w "\n%{http_code}" \
+            -o /tmp/webhook_response.txt \
+            "${{ secrets.N8N_NOTIF_DEPLOYMENT_WEBHOOK }}?version=${GITHUB_REF_NAME}&status=completed")
+
+          http_code=$(echo "$response" | tail -n1)
+          response_body=$(cat /tmp/webhook_response.txt)
+
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "✅ Webhook notification sent successfully (HTTP $http_code)"
+            echo "Response: $response_body"
+          else
+            echo "⚠️ Webhook notification failed (HTTP $http_code)"
+            echo "Response: $response_body"
+            # Optionally fail the workflow if webhook is critical
+            # exit 1
+          fi
       - name: Deploy on Staging
         if: github.ref == 'refs/heads/main'
         run: |

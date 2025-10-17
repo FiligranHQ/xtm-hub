@@ -105,6 +105,27 @@ jobs:
             -d '{"ref":"v${{ env.NEW_VERSION }}"}'
           echo "✅ Docker build workflow triggered successfully"
 
+      - name: Send n8n Webhook Notification
+        run: |
+          echo "Sending n8n webhook notification..."
+          response=$(curl -X POST \
+            -w "\n%{http_code}" \
+            -o /tmp/webhook_response.txt \
+            "${{ secrets.N8N_NOTIF_DEPLOYMENT_WEBHOOK }}?version=v${{ env.NEW_VERSION }}&status=requested")
+          
+          http_code=$(echo "$response" | tail -n1)
+          response_body=$(cat /tmp/webhook_response.txt)
+          
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "✅ Webhook notification sent successfully (HTTP $http_code)"
+            echo "Response: $response_body"
+          else
+            echo "⚠️ Webhook notification failed (HTTP $http_code)"
+            echo "Response: $response_body"
+            # Optionally fail the workflow if webhook is critical
+            # exit 1
+          fi
+
       - name: Summary
         run: |
           echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
