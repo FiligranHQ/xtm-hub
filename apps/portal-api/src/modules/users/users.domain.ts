@@ -333,14 +333,13 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
     ])
     .groupBy(['User.id']);
 
-  if (!isAdmin(context)) {
+  if (!isAdmin()) {
     loadUserQuery.where(
       'UserOrg.organization_id',
       context.user.selected_organization_id
     );
   }
   return paginate<UserGenerated, UserConnection>(
-    context,
     'User',
     {
       ...opts,
@@ -377,7 +376,6 @@ export const loadPendingUsers = (
     );
 
   return paginate<UserGenerated, UserConnection>(
-    context,
     'User',
     opts,
     { unsecured: true },

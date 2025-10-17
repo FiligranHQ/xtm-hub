@@ -2,7 +2,6 @@ import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import { PortalContext } from '../../model/portal-context';
 import { formatRawObject } from '../../utils/queryRaw.util';
 
 export const deleteSubscriptionUnsecure = async (
@@ -21,10 +20,9 @@ export const loadUnsecureSubscriptionBy = async (
 };
 
 export const loadSubscriptionWithOrganizationAndCapabilitiesBy = async (
-  context: PortalContext,
   field: SubscriptionMutator
 ) => {
-  return db<Subscription>(context, 'Subscription')
+  return db<Subscription>('Subscription')
     .where(field)
     .leftJoin(
       'Organization',

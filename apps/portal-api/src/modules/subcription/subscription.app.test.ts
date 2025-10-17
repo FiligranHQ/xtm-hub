@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
 import {
-  contextAdminUser,
   FILIGRAN_ORGA_ID,
   SERVICE_CSV_FEEDS_ID,
 } from '../../../tests/tests.const';
@@ -13,7 +12,7 @@ describe('Subscription app', () => {
   describe(`${subscriptionApp.deleteSubscription.name}`, () => {
     it('should delete the subscription', async () => {
       const id = uuidv4() as SubscriptionId;
-      const subscription = await createSubscription(contextAdminUser, {
+      const subscription = await createSubscription({
         id,
         organization_id: FILIGRAN_ORGA_ID,
         service_instance_id: SERVICE_CSV_FEEDS_ID,

@@ -35,7 +35,6 @@ const resolvers: Resolvers = {
         await insertCapabilities(context, trx, input.capabilities, userService);
         await trx.commit();
         return fillSubscriptionWithOrgaServiceAndUserService(
-          context,
           userService.subscription_id
         );
       } catch (error) {

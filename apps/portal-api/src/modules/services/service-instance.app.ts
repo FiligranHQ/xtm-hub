@@ -33,7 +33,7 @@ export const serviceInstanceApp = {
     context: PortalContext,
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
     });
     const userService = await loadUserServiceBy(context, {

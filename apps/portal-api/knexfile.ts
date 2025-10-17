@@ -133,11 +133,39 @@ export const dbRaw = (
 
 export const dbTx = () => database.transaction();
 
-export const db = <T>(
+export function db<T>(
   context: PortalContext,
   type: DatabaseType,
-  opts: Partial<QueryOpts> = {}
-) => {
+  opts?: Partial<QueryOpts>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Knex.QueryBuilder<T, any>;
+
+export function db<T>(
+  type: DatabaseType,
+  opts?: Partial<QueryOpts>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Knex.QueryBuilder<T, any>;
+
+export function db<T>(
+  contextOrType: PortalContext | DatabaseType,
+  typeOrOpts?: DatabaseType | Partial<QueryOpts>,
+  options: Partial<QueryOpts> = {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Knex.QueryBuilder<T, any> {
+  const isPortalContextProvided = typeof contextOrType !== 'string';
+
+  const { context, type, opts } = isPortalContextProvided
+    ? {
+        context: contextOrType as PortalContext,
+        type: typeOrOpts as DatabaseType,
+        opts: options,
+      }
+    : {
+        context: requestContext.require().portalContext,
+        type: contextOrType as DatabaseType,
+        opts: (typeOrOpts as Partial<QueryOpts>) || {},
+      };
+
   const queryContext = database<T>(type).queryContext({
     __typename: type,
     context,
@@ -156,7 +184,7 @@ export const db = <T>(
   }
 
   return securedQueryContext;
-};
+}
 
 export const dbUnsecure = <T>(type: DatabaseType) => {
   const context = { user: null, req: null, res: null };
@@ -198,11 +226,10 @@ const searchAttributes = [
 ];
 
 export const paginate = async <T, U>(
-  context: PortalContext,
   type: DatabaseType,
   pagination: Pagination,
   opts: Partial<QueryOpts> = {},
-  queryContext = db<T>(context, type, opts)
+  queryContext = db<T>(type, opts)
 ) => {
   const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
   const columns = Object.keys(await database(type).columnInfo());

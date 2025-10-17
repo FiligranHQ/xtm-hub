@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextAdminUser, THALES_ORGA_ID } from '../../../tests/tests.const';
+import { THALES_ORGA_ID } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ADMIN_UUID } from '../../portal.const';
 import { ErrorCode } from '../../utils/error/error.code';
@@ -26,11 +26,10 @@ describe('organizationsApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationsApp.updateOrganization(
-        contextAdminUser,
-        THALES_ORGA_ID,
-        { domains: ['thales.com', 'thales.fr'], name: 'new Thales' }
-      );
+      await organizationsApp.updateOrganization(THALES_ORGA_ID, {
+        domains: ['thales.com', 'thales.fr'],
+        name: 'new Thales',
+      });
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -54,7 +53,7 @@ describe('organizationsApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationsApp.createOrganization(contextAdminUser, {
+      await organizationsApp.createOrganization({
         domains: ['test.com', 'test.fr'],
         name: 'test.com',
       });
@@ -78,7 +77,7 @@ describe('organizationsApp', () => {
         domains: ['domain1.io', 'domain2.io'],
       });
 
-      const call = organizationsApp.createOrganization(contextAdminUser, {
+      const call = organizationsApp.createOrganization({
         domains: ['domain1.io'],
         name: 'otherDomain.io',
       });
@@ -95,7 +94,7 @@ describe('organizationsApp', () => {
         domains: ['alreadyExistingOrga.io'],
       });
 
-      const call = organizationsApp.createOrganization(contextAdminUser, {
+      const call = organizationsApp.createOrganization({
         domains: ['whatever.io'],
         name: 'alreadyExistingOrga',
       });

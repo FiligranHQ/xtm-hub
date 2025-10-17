@@ -12,21 +12,19 @@ import Organization, {
   OrganizationMutator,
 } from '../../model/kanel/public/Organization';
 import User, { UserId } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
 
 export const organizationDomain = {
-  loadOrganizationByLikeName: (context: PortalContext, name: string) => {
-    return db<Organization>(context, 'Organization')
+  loadOrganizationByLikeName: (name: string) => {
+    return db<Organization>('Organization')
       .where('name', 'ILIKE', name)
       .first('id');
   },
 };
 
 export const loadOrganizationsByUser = async (
-  context: PortalContext,
   userId: UserId
 ): Promise<Organization[]> => {
-  return db<Organization>(context, 'Organization')
+  return db<Organization>('Organization')
     .leftJoin(
       'User_Organization',
       'User_Organization.organization_id',
@@ -55,28 +53,21 @@ export const loadOrganizationBy = async (
     .first();
 };
 
-export const loadOrganizations = (
-  context: PortalContext,
-  opts: QueryOrganizationsArgs
-) => {
+export const loadOrganizations = (opts: QueryOrganizationsArgs) => {
   const { first, after, orderMode, orderBy, searchTerm } = opts;
-  return paginate<Organization, OrganizationConnection>(
-    context,
-    'Organization',
-    {
-      first,
-      after,
-      orderMode,
-      orderBy,
-      searchTerm,
-      filters: [
-        {
-          key: FilterKey.PersonalSpace,
-          value: [false],
-        } as unknown as Filter,
-      ],
-    }
-  );
+  return paginate<Organization, OrganizationConnection>('Organization', {
+    first,
+    after,
+    orderMode,
+    orderBy,
+    searchTerm,
+    filters: [
+      {
+        key: FilterKey.PersonalSpace,
+        value: [false],
+      } as unknown as Filter,
+    ],
+  });
 };
 
 export const insertNewOrganization = async (

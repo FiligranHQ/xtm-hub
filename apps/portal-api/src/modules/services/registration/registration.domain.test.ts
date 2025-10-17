@@ -309,10 +309,10 @@ describe('Registration domain', () => {
           targetOrganizationId,
         });
 
-        expect(transferSubscriptionToOrganizationSpy).toHaveBeenCalledWith(
-          contextAdminUser,
-          { subscriptionId, organizationId: targetOrganizationId }
-        );
+        expect(transferSubscriptionToOrganizationSpy).toHaveBeenCalledWith({
+          subscriptionId,
+          organizationId: targetOrganizationId,
+        });
 
         expect(updateConfigurationSpy).toHaveBeenCalledWith(
           contextAdminUser,

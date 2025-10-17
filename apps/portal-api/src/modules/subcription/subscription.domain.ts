@@ -5,14 +5,12 @@ import {
   UserService,
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
   SubscriptionInitializer,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
 import { requestContext } from '../../requestContext';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
@@ -24,32 +22,27 @@ export const subscriptionDomain = {
   deleteSubscription: async (
     id: SubscriptionId
   ): Promise<Subscription | null> => {
-    const { portalContext } = requestContext.require();
-
-    const [deletedSubscription] = await db<Subscription>(
-      portalContext,
-      'Subscription'
-    )
+    const [deletedSubscription] = await db<Subscription>('Subscription')
       .where({ id })
       .delete('*');
     return deletedSubscription;
   },
 };
 
-export const getSubscriptionCapability = async (context, id) => {
-  return db<UserService>(context, 'Subscription_Capability')
+export const getSubscriptionCapability = async (id) => {
+  return db<UserService>('Subscription_Capability')
     .where('Subscription_Capability.subscription_id', '=', id)
     .select('Subscription_Capability.*');
 };
 
-export const getUserService = (context, id) => {
-  return db<UserService>(context, 'User_Service')
+export const getUserService = (id) => {
+  return db<UserService>('User_Service')
     .where('User_Service.subscription_id', '=', id)
     .select('User_Service.*');
 };
 
-export const getServiceCapability = async (context, id) => {
-  return db<ServiceCapability>(context, 'Service_Capability')
+export const getServiceCapability = async (id) => {
+  return db<ServiceCapability>('Service_Capability')
     .leftJoin(
       'Subscription_Capability',
       'Subscription_Capability.service_capability_id',
@@ -61,33 +54,18 @@ export const getServiceCapability = async (context, id) => {
     .first();
 };
 
-export const checkSubscriptionExists = async (
-  context: PortalContext,
-  organization_id: OrganizationId,
-  service_instance_id: ServiceInstanceId
-): Promise<Subscription | false> => {
-  const subscriptionQuery = db<Subscription>(context, 'Subscription')
-    .where({ organization_id, service_instance_id })
-    .select('*')
-    .first();
-  const sub = await subscriptionQuery;
-  return sub ?? false;
-};
-
 export const fillSubscriptionWithOrgaServiceAndUserService = async (
-  context: PortalContext,
   subscriptionId: SubscriptionId
 ) => {
-  const [sub] = await loadSubscriptionWithOrganizationAndCapabilitiesBy(
-    context,
-    {
-      'Subscription.id': subscriptionId,
-    } as SubscriptionMutator
-  );
+  const [sub] = await loadSubscriptionWithOrganizationAndCapabilitiesBy({
+    'Subscription.id': subscriptionId,
+  } as SubscriptionMutator);
 
   const organization = await loadOrganizationBy({ id: sub.organization_id });
+
+  const { portalContext } = requestContext.require();
   const serviceInstance = await loadServiceInstanceBy(
-    context,
+    portalContext,
     'ServiceInstance.id',
     sub.service_instance_id
   );
@@ -126,23 +104,22 @@ export const fillUserServiceData = async (userServices: UserService[]) => {
   return userServicesData;
 };
 
-export const transferSubscriptionToOrganization = async (
-  context: PortalContext,
-  {
-    subscriptionId,
-    organizationId,
-  }: { subscriptionId: SubscriptionId; organizationId: OrganizationId }
-) => {
-  return db<Subscription>(context, 'Subscription')
+export const transferSubscriptionToOrganization = async ({
+  subscriptionId,
+  organizationId,
+}: {
+  subscriptionId: SubscriptionId;
+  organizationId: OrganizationId;
+}) => {
+  return db<Subscription>('Subscription')
     .update({ organization_id: organizationId })
     .where({ id: subscriptionId });
 };
 
 export const createSubscription = async (
-  context: PortalContext,
   data: SubscriptionInitializer
 ): Promise<Subscription> => {
-  const [createdSubscription] = await db<Subscription>(context, 'Subscription')
+  const [createdSubscription] = await db<Subscription>('Subscription')
     .insert(data)
     .returning('*');
 
@@ -150,10 +127,9 @@ export const createSubscription = async (
 };
 
 export const loadSubscriptionBy = async (
-  context: PortalContext,
   field: SubscriptionMutator
 ): Promise<Subscription | null> => {
-  return db<Subscription>(context, 'Subscription').where(field).first();
+  return db<Subscription>('Subscription').where(field).first();
 };
 
 export const updateSubscriptionBy = async (

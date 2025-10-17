@@ -5,7 +5,7 @@ import ObjectLabel from '../../../model/kanel/public/ObjectLabel';
 import { PortalContext } from '../../../model/portal-context';
 
 export const loadLabels = async (context, opts) =>
-  paginate<Label, LabelConnection>(context, 'Label', opts);
+  paginate<Label, LabelConnection>('Label', opts);
 
 export const loadLabel = (context, id) =>
   db<Label>(context, 'Label').where({ id }).first();

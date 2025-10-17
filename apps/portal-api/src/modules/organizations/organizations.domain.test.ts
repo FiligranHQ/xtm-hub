@@ -12,7 +12,6 @@ describe('OrganizationsDomain', () => {
   describe('loadOrganizationsByUser', () => {
     it('should return the user organizations when user exists', async () => {
       const organizations = await loadOrganizationsByUser(
-        contextAdminUser,
         contextAdminUser.user.id
       );
 
@@ -21,10 +20,7 @@ describe('OrganizationsDomain', () => {
 
     it('should return the user organizations when user exists', async () => {
       const userId = uuidv4() as UserId;
-      const organizations = await loadOrganizationsByUser(
-        contextAdminUser,
-        userId
-      );
+      const organizations = await loadOrganizationsByUser(userId);
 
       expect(organizations.length).toBe(0);
     });
