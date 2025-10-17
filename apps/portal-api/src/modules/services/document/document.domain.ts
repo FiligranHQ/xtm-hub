@@ -52,6 +52,7 @@ import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { requestContext } from '../../../requestContext';
 import { getOrCreateLabel } from '../../settings/labels/labels.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
@@ -117,11 +118,9 @@ export const upsertDocumentWithChildren = async <T extends DocumentModel>(
   input: Partial<T>,
   uploads: Upload[] | Upload,
   metadataKeys: DocumentMetadataKeys<T>,
-  context: PortalContext,
   trx: Knex.Transaction
 ) => {
   const doc = await upsertDocument<T>(
-    context,
     {
       ...input,
       type,
@@ -130,20 +129,20 @@ export const upsertDocumentWithChildren = async <T extends DocumentModel>(
     trx
   );
 
-  await upsertImage(context, doc, uploads, trx);
+  await upsertImage(doc, uploads, trx);
   return doc;
 };
 
 export const upsertImage = async <T extends DocumentModel>(
-  context: PortalContext,
   doc: T,
   upload: Upload[] | Upload,
   trx: Knex.Transaction
 ) => {
-  const files = await processUploads(upload, context);
+  const { portalContext } = requestContext.require();
+  const files = await processUploads(upload, portalContext);
 
   // Get all existing child image documents
-  const deletedDocuments = await db(context, 'Document')
+  const deletedDocuments = await db(portalContext, 'Document')
     .delete()
     .whereIn('id', function () {
       this.select('child_document_id')
@@ -158,7 +157,7 @@ export const upsertImage = async <T extends DocumentModel>(
   await Promise.all(
     files.map((file) =>
       createDocument(
-        context,
+        portalContext,
         {
           type: 'image',
           parent_document_id: doc.id as DocumentId,
@@ -183,7 +182,6 @@ export const upsertImage = async <T extends DocumentModel>(
 };
 
 export const upsertDocument = async <T extends DocumentModel>(
-  context: PortalContext,
   documentData: Omit<Partial<T>, 'labels'> & {
     labels?: string[];
     parent_document_id?: string;
@@ -192,14 +190,16 @@ export const upsertDocument = async <T extends DocumentModel>(
   trx: Knex.Transaction
 ): Promise<T> => {
   // Prepare the data to insert
+  const contextUser = requestContext.require().user;
+  const { portalContext } = requestContext.require();
   const insertData = {
     ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
-    uploader_id: context.user.id,
-    uploader_organization_id: context.user.selected_organization_id,
+    uploader_id: contextUser.id,
+    uploader_organization_id: contextUser.selected_organization_id,
   };
 
   // Upsert on slug
-  const [document] = await db<DocumentModel>(context, 'Document')
+  const [document] = await db<DocumentModel>(portalContext, 'Document')
     .insert(insertData)
     .onConflict('slug')
     .merge({
@@ -216,13 +216,13 @@ export const upsertDocument = async <T extends DocumentModel>(
   if (documentData.parent_document_id) {
     // First, delete existing relationship if it exists (for upsert scenario)
     if (documentWasUpdated) {
-      await db<DocumentChildren>(context, 'Document_Children')
+      await db<DocumentChildren>(portalContext, 'Document_Children')
         .where({ child_document_id: document.id })
         .delete()
         .transacting(trx);
     }
     // Insert new relationship
-    await db<DocumentChildren>(context, 'Document_Children')
+    await db<DocumentChildren>(portalContext, 'Document_Children')
       .insert({
         parent_document_id: documentData.parent_document_id as DocumentId,
         child_document_id: document.id,
@@ -232,20 +232,20 @@ export const upsertDocument = async <T extends DocumentModel>(
 
   if (documentData.labels?.length) {
     if (documentWasUpdated) {
-      await db<ObjectLabel>(context, 'Object_Label')
+      await db<ObjectLabel>(portalContext, 'Object_Label')
         .where('object_id', document.id as unknown as ObjectLabelObjectId)
         .delete()
         .transacting(trx);
     }
     const insertObjectLabel = [];
     for (const name of documentData.labels) {
-      const label = await getOrCreateLabel({ context, name });
+      const label = await getOrCreateLabel({ context: portalContext, name });
       insertObjectLabel.push({
         object_id: document.id as unknown as ObjectLabelObjectId,
         label_id: label.id,
       });
     }
-    await db<ObjectLabel>(context, 'Object_Label')
+    await db<ObjectLabel>(portalContext, 'Object_Label')
       .insert(insertObjectLabel)
       .transacting(trx);
   }
@@ -254,13 +254,13 @@ export const upsertDocument = async <T extends DocumentModel>(
     // If document was updated (not created)
     if (documentWasUpdated) {
       // Delete all existing metadata except 'version'
-      await db<DocumentMetadata>(context, 'Document_Metadata')
+      await db<DocumentMetadata>(portalContext, 'Document_Metadata')
         .where('document_id', document.id)
         .whereNot('key', 'product_version') // Keep version metadata
         .delete()
         .transacting(trx);
       const existingVersion = await db<DocumentMetadata>(
-        context,
+        portalContext,
         'Document_Metadata'
       )
         .where('document_id', document.id)
@@ -282,7 +282,10 @@ export const upsertDocument = async <T extends DocumentModel>(
       }));
 
     if (metadataToInsert.length > 0) {
-      const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+      const metadatas = await db<DocumentMetadata>(
+        portalContext,
+        'Document_Metadata'
+      )
         .insert(metadataToInsert)
         .returning('*')
         .transacting(trx);

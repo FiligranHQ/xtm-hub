@@ -1,6 +1,7 @@
 import config from 'config';
 import { PortalContext } from '../../../model/portal-context';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
+import { requestContext } from '../../../requestContext';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 
 export const SYSTEM_TOKEN_HEADER = 'x-xtm-hub-token';
@@ -49,9 +50,10 @@ export const createSystemTokenResolver = (originalResolve) => {
         ...portalContext,
         user: SYSTEM_USER_CONTEXT.user,
       };
-
-      // Execute resolver with system context
-      return originalResolve(source, args, enhancedContext, info);
+      requestContext.update({
+        user: SYSTEM_USER_CONTEXT.user,
+        portalContext: enhancedContext,
+      });
     }
 
     // Execute with original context
