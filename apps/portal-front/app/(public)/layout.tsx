@@ -7,7 +7,6 @@ import Link from 'next/link';
 import * as React from 'react';
 import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
 import '../../styles/globals.css';
-import { PublicTryOpenCTICallout } from './cybersecurity-solutions/free-trial/public-free-trial-callout';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await getDefaultMetadata();
@@ -32,7 +31,6 @@ export default function RootLayout({
           <Link href="/login">Sign In</Link>
         </Button>
       </header>
-      <PublicTryOpenCTICallout />
       <main className="container flex-grow">
         <div className="pt-l">{children}</div>
       </main>
