@@ -4,8 +4,8 @@ import {
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
 import { dispatch } from '../../pub';
+import { requestContext } from '../../requestContext';
 import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -24,10 +24,13 @@ import {
 } from './users.helper';
 
 export const usersAdminApp = {
-  editUser: async (
-    context: PortalContext,
-    { userId, input }: { userId: UserId; input: AdminEditUserInput }
-  ) => {
+  editUser: async ({
+    userId,
+    input,
+  }: {
+    userId: UserId;
+    input: AdminEditUserInput;
+  }) => {
     const { organization_capabilities, ...userInput } = input;
     const mappedCapabilities = (organization_capabilities ?? []).map(
       (orgCapability) => ({
@@ -53,9 +56,9 @@ export const usersAdminApp = {
     } catch (err) {
       logApp.error(err);
     }
-
+    const { portalContext } = requestContext.require();
     await updateMultipleUserOrgWithCapabilities(
-      context,
+      portalContext,
       userId,
       organization_capabilities
     );
@@ -77,18 +80,22 @@ export const usersAdminApp = {
     return user;
   },
 
-  editUserCapabilities: async (
-    context: PortalContext,
-    { userId, input }: { userId: UserId; input: EditUserCapabilitiesInput }
-  ) => {
-    const organization_id = context.user.selected_organization_id;
+  editUserCapabilities: async ({
+    userId,
+    input,
+  }: {
+    userId: UserId;
+    input: EditUserCapabilitiesInput;
+  }) => {
+    const { user, portalContext } = requestContext.require();
+    const organization_id = user.selected_organization_id;
     await preventAdministratorRemovalOfOneOrganization(
       userId,
       organization_id,
       input.capabilities
     );
 
-    const [userOrganization] = await loadUserOrganization(context, {
+    const [userOrganization] = await loadUserOrganization(portalContext, {
       user_id: userId,
       organization_id,
     });

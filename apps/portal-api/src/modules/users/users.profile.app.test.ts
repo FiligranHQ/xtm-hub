@@ -48,16 +48,22 @@ describe('User profile app', () => {
       });
     });
     it('should update one field and return user', async () => {
-      const userReturned = await usersProfileApp.editMeUser(contextAdminUser, {
-        first_name: 'anotherFirstName',
-      });
+      const userReturned = await usersProfileApp.editMeUser(
+        contextAdminUser.user,
+        {
+          first_name: 'anotherFirstName',
+        }
+      );
       expect(userReturned.first_name).toStrictEqual('anotherFirstName');
     });
     it('should update multiple fields and return user', async () => {
-      const userReturned = await usersProfileApp.editMeUser(contextAdminUser, {
-        last_name: 'anotherLastName',
-        picture: 'https://s.gravatar.com/avatar/aaaa.png',
-      });
+      const userReturned = await usersProfileApp.editMeUser(
+        contextAdminUser.user,
+        {
+          last_name: 'anotherLastName',
+          picture: 'https://s.gravatar.com/avatar/aaaa.png',
+        }
+      );
       expect(userReturned.last_name).toStrictEqual('anotherLastName');
       expect(userReturned.picture).toStrictEqual(
         'https://s.gravatar.com/avatar/aaaa.png'
@@ -72,7 +78,7 @@ describe('User profile app', () => {
     it('Should send error if email is not valid format', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
-          contextAdminUser,
+          contextAdminUser.user,
           'emailNotValid'
         )
       ).rejects.toThrow('INVALID_EMAIL');
@@ -80,7 +86,7 @@ describe('User profile app', () => {
     it('Should not send error if email does not already exist (for vilain users)', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
-          contextAdminUser,
+          contextAdminUser.user,
           'emailNotExists@filigran.io'
         )
       ).resolves.toBeUndefined();
@@ -93,7 +99,7 @@ describe('User profile app', () => {
         'insertNewUserTransfer'
       ).mockResolvedValue(mockTransferRequestData);
       await usersProfileApp.requestTransferPersonalSpace(
-        contextAdminUser,
+        contextAdminUser.user,
         'user15@test.fr'
       );
       expect(mockSendMail).toHaveBeenCalledOnce();

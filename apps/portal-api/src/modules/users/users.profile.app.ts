@@ -23,7 +23,7 @@ import { loadSimpleUserBy, loadUserDetails, updateUser } from './users.domain';
 import { mapUserToGraphqlUser } from './users.helper';
 
 export const usersProfileApp = {
-  editMeUser: async (context, input: EditMeUserInput) => {
+  editMeUser: async (meUser, input: EditMeUserInput) => {
     if (input.picture) {
       const isPictureImgUrl = await isImgUrl(input.picture);
       if (!isPictureImgUrl) {
@@ -31,7 +31,7 @@ export const usersProfileApp = {
       }
     }
 
-    const updatedUser = await updateUser(context.user.id, input);
+    const updatedUser = await updateUser(meUser.id, input);
 
     try {
       await auth0Client.updateUser({
@@ -43,7 +43,7 @@ export const usersProfileApp = {
     }
 
     const user = await loadUserDetails({
-      'User.id': context.user.id,
+      'User.id': meUser.id,
     });
 
     updateUserSession(user);
@@ -53,7 +53,7 @@ export const usersProfileApp = {
 
     return mappedUser;
   },
-  requestTransferPersonalSpace: async (context, newEmail: string) => {
+  requestTransferPersonalSpace: async (user, newEmail: string) => {
     if (!isValidEmail(newEmail)) {
       throw new Error(ErrorCode.InvalidEmail);
     }
@@ -63,7 +63,7 @@ export const usersProfileApp = {
     });
     if (!existingPersonalSpace) {
       logApp.info(
-        `The user ${context.user.id} has requested a transfer to a unknown user: ${newEmail}`
+        `The user ${user.id} has requested a transfer to a unknown user: ${newEmail}`
       );
       return; // Best way to hide from the vilain user that the account does not exist. The email will just never be sent.
     }
@@ -71,7 +71,7 @@ export const usersProfileApp = {
     const newUser = await loadUserByOrganization(existingPersonalSpace.id);
 
     const userTransferRequest = await insertNewUserTransfer({
-      from_user_id: context.user.id,
+      from_user_id: user.id,
       to_user_id: newUser[0].id,
     });
     await sendMail({
@@ -80,9 +80,9 @@ export const usersProfileApp = {
       params: {
         recipientName: `${newUser[0].first_name} ${newUser[0].last_name}`,
         recipientId: newUser[0].id,
-        previousUserId: context.user.id,
-        previousUserEmail: context.user.email,
-        previousUserName: `${context.user.first_name} ${context.user.last_name}`,
+        previousUserId: user.id,
+        previousUserEmail: user.email,
+        previousUserName: `${user.first_name} ${user.last_name}`,
         transferRequestId: `${userTransferRequest[0].id}`,
       },
     });

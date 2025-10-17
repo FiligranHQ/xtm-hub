@@ -246,9 +246,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.AddingUserError);
       }
     },
-    editUserCapabilities: async (_, { id, input }, context) => {
+    editUserCapabilities: async (_, { id, input }) => {
       try {
-        return await usersAdminApp.editUserCapabilities(context, {
+        return await usersAdminApp.editUserCapabilities({
           userId: id as UserId,
           input,
         });
@@ -256,9 +256,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.EditUserError);
       }
     },
-    adminEditUser: async (_, { id, input }, context) => {
+    adminEditUser: async (_, { id, input }) => {
       try {
-        return await usersAdminApp.editUser(context, {
+        return await usersAdminApp.editUser({
           userId: id as UserId,
           input,
         });
@@ -269,7 +269,7 @@ const resolvers: Resolvers = {
 
     editMeUser: async (_, { input }, context) => {
       try {
-        return await usersProfileApp.editMeUser(context, input);
+        return await usersProfileApp.editMeUser(context.user, input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
       }
@@ -280,7 +280,10 @@ const resolvers: Resolvers = {
     },
     requestTransferPersonalSpace: async (_, { new_email }, context) => {
       try {
-        await usersProfileApp.requestTransferPersonalSpace(context, new_email);
+        await usersProfileApp.requestTransferPersonalSpace(
+          context.user,
+          new_email
+        );
 
         return { success: true };
       } catch (error) {
