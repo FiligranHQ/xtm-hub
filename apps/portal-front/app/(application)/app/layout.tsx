@@ -10,6 +10,7 @@ import { TestEnvCallout } from '@/components/admin/test-env-callout';
 import { ContentLayout } from '@/components/content-layout';
 import HeaderComponent from '@/components/header';
 import Menu from '@/components/menu/menu';
+import { TryOpenCTICallout } from '@/components/service/trial-instances/try-opencti-callout';
 import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
@@ -63,6 +64,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
             <div className="flex flex-col w-full h-screen">
               <TestEnvCallout />
               <AdminCallout />
+              <TryOpenCTICallout />
               <div className="flex flex-row flex-grow overflow-hidden">
                 <Menu />
                 <div className="flex flex-col w-full h-full overflow-auto">
