@@ -1,23 +1,18 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { type LabelMutator } from '../../../model/kanel/public/Label';
-import {
-  addLabel,
-  deleteLabelBy,
-  editLabel,
-  loadLabel,
-  loadLabels,
-} from './labels.domain';
+import { LabelId, LabelMutator } from '../../../model/kanel/public/Label';
+import { labelsApp } from './labels.app';
+import { labelsDomain } from './labels.domain';
 
 const resolvers: Resolvers = {
   Query: {
-    labels: (_, opts, context) => loadLabels(context, opts),
-    label: (_, { id }, context) => loadLabel(context, id),
+    labels: (_, opts) => labelsDomain.loadLabels(opts),
+    label: (_, { id }) => labelsDomain.loadLabelBy({ id } as LabelMutator),
   },
   Mutation: {
-    addLabel: (_, { input }, context) => addLabel(context, input),
-    editLabel: (_, { id, input }, context) => editLabel(context, { id, input }),
-    deleteLabel: (_, { id }, context) =>
-      deleteLabelBy(context, { id } as LabelMutator),
+    addLabel: (_, { input }) => labelsDomain.insertLabel(input),
+    editLabel: (_, { id, input }) =>
+      labelsDomain.updateLabel(id as LabelId, input),
+    deleteLabel: (_, { id }) => labelsApp.deleteLabelBy({ id } as LabelMutator),
   },
 };
 

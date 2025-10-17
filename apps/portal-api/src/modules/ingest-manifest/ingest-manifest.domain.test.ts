@@ -6,14 +6,12 @@ import {
 } from '../../portal.const';
 import { requestContext } from '../../requestContext';
 import { minioInit } from '../../server/initialize';
-import {
-  getLabels,
-  loadImagesByDocumentId,
-} from '../services/document/document.domain';
+import { loadImagesByDocumentId } from '../services/document/document.domain';
 import {
   Connector,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
 } from '../services/integration-feeds/integration-feeds.model';
+import { labelsDomain } from '../settings/labels/labels.domain';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';
@@ -115,7 +113,9 @@ describe('upsertConnectors', () => {
       });
 
       it('should have automation and integration labels', async () => {
-        const labels = await getLabels(SYSTEM_USER_CONTEXT, contractOne.id);
+        const labels = await labelsDomain.loadLabelsByDocumentId(
+          contractOne.id
+        );
         const labelNames = labels.map((label) => label.name);
 
         expect(labelNames).toHaveLength(2);
@@ -145,7 +145,9 @@ describe('upsertConnectors', () => {
         expect(contractTwo.short_description).toBe('Second contract');
       });
       it('should have automation and integration labels', async () => {
-        const labels = await getLabels(SYSTEM_USER_CONTEXT, contractTwo.id);
+        const labels = await labelsDomain.loadLabelsByDocumentId(
+          contractTwo.id
+        );
         const labelNames = labels.map((label) => label.name);
 
         expect(labelNames).toHaveLength(1);
@@ -234,7 +236,7 @@ describe('upsertConnectors', () => {
     it('should update labels to new values', async () => {
       // Test labels for each document
       for (const doc of secondResult) {
-        const labels = await getLabels(SYSTEM_USER_CONTEXT, doc.id);
+        const labels = await labelsDomain.loadLabelsByDocumentId(doc.id);
         const labelNames = labels.map((label) => label.name);
 
         expect(labelNames).toHaveLength(2);
@@ -244,12 +246,12 @@ describe('upsertConnectors', () => {
     });
 
     it('should have updated logo', async () => {
-      secondResult.forEach(async (doc) => {
+      for (const doc of secondResult) {
         const images = await loadImagesByDocumentId(doc.id);
         // Verify that we still have only one image after updating
         expect(images).toHaveLength(1);
         expect(images[0].file_name).toBe(`${doc.slug}-logo.png`);
-      });
+      }
     });
   });
 
