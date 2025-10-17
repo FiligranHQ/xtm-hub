@@ -39,12 +39,11 @@ export const usersAdminApp = {
     );
     if (!input.disabled) {
       await preventAdministratorRemovalOfAllOrganizations(
-        context,
         userId,
         mappedCapabilities
       );
     }
-    const updatedUser = await updateUser(context, userId, userInput);
+    const updatedUser = await updateUser(userId, userInput);
 
     try {
       await auth0Client.updateUser({
@@ -95,12 +94,12 @@ export const usersAdminApp = {
     });
 
     return userOrganization
-      ? await updateUserOrgCapabilitiesAndDispatch(context, {
+      ? await updateUserOrgCapabilitiesAndDispatch({
           user_id: userId,
           organization_id,
           orgCapabilities: input.capabilities,
         })
-      : await acceptPendingUserWithCapabilities(context, {
+      : await acceptPendingUserWithCapabilities({
           user_id: userId,
           organization_id,
           orgCapabilities: input.capabilities,

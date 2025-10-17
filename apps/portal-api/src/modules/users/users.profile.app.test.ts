@@ -40,7 +40,7 @@ describe('User profile app', () => {
 
   describe('editMeUser', () => {
     afterEach(async () => {
-      await updateUser(contextAdminUser, ADMIN_UUID, {
+      await updateUser(ADMIN_UUID, {
         first_name: 'firstName',
         last_name: 'lastName',
         picture: null,

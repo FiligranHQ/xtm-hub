@@ -31,13 +31,9 @@ describe('Users domain', () => {
   it('should throw FORBIDDEN_ACCESS when Simple User calls EditUser', async () => {
     try {
       requestContext.set(requestContextSimpleUserThales);
-      await updateUser(
-        contextSimpleUserThales,
-        THALES_ADMIN_ORGA_ID as UserId,
-        {
-          email: THALES_ADMIN_ORGA_EMAIL,
-        }
-      );
+      await updateUser(THALES_ADMIN_ORGA_ID as UserId, {
+        email: THALES_ADMIN_ORGA_EMAIL,
+      });
     } catch (error) {
       expect(error.name).toBe('FORBIDDEN_ACCESS');
     }

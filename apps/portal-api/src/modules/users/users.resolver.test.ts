@@ -137,7 +137,7 @@ describe('User query resolver', () => {
       expect(response.edges[0].node.id).toBe(pendingUser.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser(contextAdminUser, { email: pendingUser.email });
+      await removeUser({ email: pendingUser.email });
     });
     it('should list pending users from the orga if orga filter exists', async () => {
       const testContext = {
@@ -186,8 +186,8 @@ describe('User query resolver', () => {
       expect(response.edges[0].node.id).toBe(pendingUserThales.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser(contextAdminUser, { email: pendingUserThales.email });
-      await removeUser(contextAdminUser, { email: pendingUserFiligran.email });
+      await removeUser({ email: pendingUserThales.email });
+      await removeUser({ email: pendingUserFiligran.email });
     });
     it('should list pending users in the user orga even if no filter is specified', async () => {
       const testContext = {
@@ -232,8 +232,8 @@ describe('User query resolver', () => {
       expect(response.edges[0].node.id).toBe(pendingUserThales.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser(contextAdminUser, { email: pendingUserThales.email });
-      await removeUser(contextAdminUser, { email: pendingUserFiligran.email });
+      await removeUser({ email: pendingUserThales.email });
+      await removeUser({ email: pendingUserFiligran.email });
     });
   });
 });
@@ -791,7 +791,7 @@ describe('User mutation resolver', () => {
       );
       expect(usersPendingOrg.length).toBe(0);
 
-      await removeUser(contextAdminUser, { email: pendingUser.email });
+      await removeUser({ email: pendingUser.email });
     });
   });
   describe('editMeUser', () => {
@@ -937,7 +937,7 @@ describe('User mutation resolver', () => {
       );
 
       expect(usersPendingOrg.length).toBe(0);
-      await removeUser(contextAdminUser, { email: pendingUser.email });
+      await removeUser({ email: pendingUser.email });
     });
 
     it('should dispatch event when pending user is removed from organization', async () => {
@@ -985,7 +985,7 @@ describe('User mutation resolver', () => {
       expect(events).toHaveLength(1);
       expect(events[0].UserPending.delete.email).toBe(email);
 
-      await removeUser(contextAdminUser, { email: pendingUser.email });
+      await removeUser({ email: pendingUser.email });
       await subscriptionSpy.cleanup();
     });
   });

@@ -27,7 +27,7 @@ export const userServiceApp = {
           email: email,
         });
 
-        await insertUserIntoOrganization(context, user, subscription.id);
+        await insertUserIntoOrganization(user, subscription.id);
         const userServiceAlreadyExist = await isUserServiceExist(
           user.id as UserId,
           subscription.id

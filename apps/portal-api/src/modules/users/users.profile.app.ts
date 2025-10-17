@@ -31,7 +31,7 @@ export const usersProfileApp = {
       }
     }
 
-    const updatedUser = await updateUser(context, context.user.id, input);
+    const updatedUser = await updateUser(context.user.id, input);
 
     try {
       await auth0Client.updateUser({
