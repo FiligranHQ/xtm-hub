@@ -137,18 +137,21 @@ export function db<T>(
   context: PortalContext,
   type: DatabaseType,
   opts?: Partial<QueryOpts>
-): Knex.QueryBuilder<T, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Knex.QueryBuilder<T, any>;
 
 export function db<T>(
   type: DatabaseType,
   opts?: Partial<QueryOpts>
-): Knex.QueryBuilder<T, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Knex.QueryBuilder<T, any>;
 
 export function db<T>(
   contextOrType: PortalContext | DatabaseType,
   typeOrOpts?: DatabaseType | Partial<QueryOpts>,
   options: Partial<QueryOpts> = {}
-): Knex.QueryBuilder<T, unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Knex.QueryBuilder<T, any> {
   const isPortalContextProvided = typeof contextOrType !== 'string';
 
   const { context, type, opts } = isPortalContextProvided
