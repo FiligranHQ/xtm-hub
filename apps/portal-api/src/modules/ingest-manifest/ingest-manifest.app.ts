@@ -1,4 +1,3 @@
-import { SYSTEM_USER_CONTEXT } from '../../portal.const';
 import { upsertConnectors } from './ingest-manifest.domain';
 import {
   extractManifestInformation,
@@ -9,11 +8,9 @@ const OpenCTIConnectorsManifest =
   'https://raw.githubusercontent.com/OpenCTI-Platform/connectors/master/manifest.json';
 
 export const IngestManifestApp = {
-  async refreshOpenCTIManifest() {
+  async refreshOpenCTIManifest(): Promise<boolean> {
     const manifest = await fetchManifest(OpenCTIConnectorsManifest);
-
-    // TODO need to create system_user_context from directive on checking token
-    upsertConnectors(SYSTEM_USER_CONTEXT, extractManifestInformation(manifest));
+    await upsertConnectors(extractManifestInformation(manifest));
     return true;
   },
 };

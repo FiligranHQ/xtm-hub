@@ -28,7 +28,7 @@ const getPageData = cache(async (slug: string) => {
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug },
-    { cache: 'force-cache' }
+    { cache: undefined, next: { revalidate: 3600 } }
   );
 
   const serviceInstance = serviceResponse.data
