@@ -190,8 +190,7 @@ export const upsertDocument = async <T extends DocumentModel>(
   trx: Knex.Transaction
 ): Promise<T> => {
   // Prepare the data to insert
-  const contextUser = requestContext.require().user;
-  const { portalContext } = requestContext.require();
+  const { portalContext, user: contextUser } = requestContext.require();
   const insertData = {
     ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
     uploader_id: contextUser.id,
