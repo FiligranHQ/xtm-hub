@@ -141,7 +141,6 @@ export const upsertImage = async <T extends DocumentModel>(
   const { portalContext } = requestContext.require();
   const files = await processUploads(upload, portalContext);
 
-  // Get all existing child image documents
   const deletedDocuments = await db(portalContext, 'Document')
     .delete()
     .whereIn('id', function () {
