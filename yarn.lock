@@ -4632,22 +4632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:10.9.0, @graphql-tools/utils@npm:^10.0.0, @graphql-tools/utils@npm:^10.5.6, @graphql-tools/utils@npm:^10.8.1, @graphql-tools/utils@npm:^10.9.0":
-  version: 10.9.0
-  resolution: "@graphql-tools/utils@npm:10.9.0"
-  dependencies:
-    "@graphql-typed-document-node/core": "npm:^3.1.1"
-    "@whatwg-node/promise-helpers": "npm:^1.0.0"
-    cross-inspect: "npm:1.0.1"
-    dset: "npm:^3.1.4"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10c0/fd8e82ff87c3debd78f774327160da81381c9b6746022b7e1e20861690c11c71022a6924d61da38460414046416a48eb8355556fd36dfc726ed160501ba009f7
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/utils@npm:^10.9.1":
+"@graphql-tools/utils@npm:10.9.1, @graphql-tools/utils@npm:^10.9.1":
   version: 10.9.1
   resolution: "@graphql-tools/utils@npm:10.9.1"
   dependencies:
@@ -4659,6 +4644,21 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 10c0/97199f52d0235124d4371f7f54cc0df5ce9df6d8aae716ac05d8ebeda4b5ee3faf1fca94d5d1c521a565e152f8e02a1abfb9c2629ffe805c14468aec0c3d41cf
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/utils@npm:^10.0.0, @graphql-tools/utils@npm:^10.5.6, @graphql-tools/utils@npm:^10.8.1, @graphql-tools/utils@npm:^10.9.0":
+  version: 10.9.0
+  resolution: "@graphql-tools/utils@npm:10.9.0"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@whatwg-node/promise-helpers": "npm:^1.0.0"
+    cross-inspect: "npm:1.0.1"
+    dset: "npm:^3.1.4"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10c0/fd8e82ff87c3debd78f774327160da81381c9b6746022b7e1e20861690c11c71022a6924d61da38460414046416a48eb8355556fd36dfc726ed160501ba009f7
   languageName: node
   linkType: hard
 
@@ -10808,7 +10808,7 @@ __metadata:
     "@graphql-tools/load-files": "npm:7.0.1"
     "@graphql-tools/merge": "npm:9.1.1"
     "@graphql-tools/schema": "npm:10.0.25"
-    "@graphql-tools/utils": "npm:10.9.0"
+    "@graphql-tools/utils": "npm:10.9.1"
     "@types/config": "npm:3.3.5"
     "@types/cors": "npm:2.8.19"
     "@types/express": "npm:4.17.23"
