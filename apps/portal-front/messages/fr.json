@@ -132,7 +132,7 @@
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
   },
   "GenericActions": {
-    "FilterLabels": "Filtrer par étiquettes...",
+    "FilterUseCases": "Cas d'utilisation...",
     "Search": "Recherche..."
   },
   "GoToProd": "Allez sur la production",

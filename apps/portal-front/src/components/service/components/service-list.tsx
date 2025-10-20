@@ -68,7 +68,7 @@ const ServiceList = ({
             <MultiSelectFormField
               options={labelOptions}
               defaultValue={labels}
-              placeholder={t('GenericActions.FilterLabels')}
+              placeholder={t('GenericActions.FilterUseCases')}
               noResultString={t('Utils.NotFound')}
               onValueChange={onLabelFilterChange}
               variant="inverted"
