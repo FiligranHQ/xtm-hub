@@ -40,8 +40,6 @@ export type DatabaseType =
   | 'RolePortal'
   | 'CapabilityPortal'
   | 'RolePortal_CapabilityPortal'
-  | 'ActionTracking'
-  | 'MessageTracking'
   | 'Subscription'
   | 'Service_Price'
   | 'Service_Link'

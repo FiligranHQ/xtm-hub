@@ -41,7 +41,6 @@ import {
   loadPendingUsers,
   loadUnsecureUser,
   loadUserBy,
-  loadUserDetails,
   loadUsers,
   loadUsersByCapabilitiesInOrganization,
   resetPassword,
@@ -75,11 +74,6 @@ const resolvers: Resolvers = {
         return null;
       }
       return mapUserToGraphqlUser(context.user);
-    },
-    user: async (_, { id }) => {
-      return loadUserDetails({
-        'User.id': id as UserId,
-      });
     },
     usersWithCapabilitiesInOrganization: async (_, { input }, context) => {
       return loadUsersByCapabilitiesInOrganization(

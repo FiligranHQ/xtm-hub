@@ -20,17 +20,6 @@ export type Scalars = {
   Upload: { input: any; output: any; }
 };
 
-export type ActionTracking = Node & {
-  __typename?: 'ActionTracking';
-  contextual_id: Scalars['String']['output'];
-  created_at: Scalars['Date']['output'];
-  ended_at?: Maybe<Scalars['Date']['output']>;
-  id: Scalars['ID']['output'];
-  message_tracking: Array<MessageTracking>;
-  status?: Maybe<Scalars['String']['output']>;
-  type: Scalars['String']['output'];
-};
-
 export type AddLabelInput = {
   color: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -400,16 +389,6 @@ export type MergeEvent = Node & {
   from: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   target: Scalars['ID']['output'];
-};
-
-export type MessageTracking = Node & {
-  __typename?: 'MessageTracking';
-  created_at: Scalars['Date']['output'];
-  id: Scalars['ID']['output'];
-  technical?: Maybe<Scalars['Boolean']['output']>;
-  tracking_id?: Maybe<Scalars['ID']['output']>;
-  tracking_info?: Maybe<Scalars['JSON']['output']>;
-  type: Scalars['String']['output'];
 };
 
 export type Mutation = {
@@ -972,7 +951,6 @@ export type Query = {
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
-  user?: Maybe<User>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
@@ -1212,11 +1190,6 @@ export type QuerySubscriptionByIdArgs = {
 };
 
 
-export type QueryUserArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type QueryUserServiceFromSubscriptionArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1293,14 +1266,7 @@ export type RegistrationResponse = {
 
 export enum Restriction {
   AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
-  BckManageCommunities = 'BCK_MANAGE_COMMUNITIES',
-  BckManageServices = 'BCK_MANAGE_SERVICES',
   Bypass = 'BYPASS',
-  FrtAccessBilling = 'FRT_ACCESS_BILLING',
-  FrtAccessServices = 'FRT_ACCESS_SERVICES',
-  FrtManageSettings = 'FRT_MANAGE_SETTINGS',
-  FrtManageUser = 'FRT_MANAGE_USER',
-  FrtServiceSubscriber = 'FRT_SERVICE_SUBSCRIBER',
   ManageAccess = 'MANAGE_ACCESS',
   ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
   ManageSubscription = 'MANAGE_SUBSCRIPTION'
@@ -1478,7 +1444,6 @@ export type SubscribedServiceInstanceConfiguration = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  ActionTracking?: Maybe<TrackingSubscription>;
   MeUser?: Maybe<MeUserSubscription>;
   ServiceInstance?: Maybe<ServiceInstanceSubscription>;
   User?: Maybe<UserSubscription>;
@@ -1542,13 +1507,6 @@ export type TelemetryResponse = {
   __typename?: 'TelemetryResponse';
   message?: Maybe<Scalars['String']['output']>;
   result: Scalars['Boolean']['output'];
-};
-
-export type TrackingSubscription = {
-  __typename?: 'TrackingSubscription';
-  add?: Maybe<ActionTracking>;
-  delete?: Maybe<ActionTracking>;
-  edit?: Maybe<ActionTracking>;
 };
 
 export type UnregisterPlatformInput = {
@@ -1791,12 +1749,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   DocumentBase: ( CsvFeed ) | ( CustomDashboard ) | ( OpenAevScenario );
-  Node: ( ActionTracking ) | ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( DeploymentRequest ) | ( Document ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( MessageTracking ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( CsvFeed ) | ( CustomDashboard ) | ( DeploymentRequest ) | ( Document ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  ActionTracking: ResolverTypeWrapper<ActionTracking>;
   AddLabelInput: AddLabelInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
@@ -1845,7 +1802,6 @@ export type ResolversTypes = ResolversObject<{
   LabelOrdering: LabelOrdering;
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
-  MessageTracking: ResolverTypeWrapper<MessageTracking>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OneClickDeployInput: OneClickDeployInput;
@@ -1908,7 +1864,6 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
-  TrackingSubscription: ResolverTypeWrapper<TrackingSubscription>;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
@@ -1935,7 +1890,6 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  ActionTracking: ActionTracking;
   AddLabelInput: AddLabelInput;
   AddServiceInput: AddServiceInput;
   AddUserInput: AddUserInput;
@@ -1979,7 +1933,6 @@ export type ResolversParentTypes = ResolversObject<{
   LabelEdge: LabelEdge;
   MeUserSubscription: MeUserSubscription;
   MergeEvent: MergeEvent;
-  MessageTracking: MessageTracking;
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   OneClickDeployInput: OneClickDeployInput;
@@ -2026,7 +1979,6 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionModel: SubscriptionModel;
   Success: Success;
   TelemetryResponse: TelemetryResponse;
-  TrackingSubscription: TrackingSubscription;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
@@ -2064,17 +2016,6 @@ export type Service_CapaDirectiveResolver<Result, Parent, ContextType = PortalCo
 export type System_TokenDirectiveArgs = { };
 
 export type System_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = System_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type ActionTrackingResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ActionTracking'] = ResolversParentTypes['ActionTracking']> = ResolversObject<{
-  contextual_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  ended_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  message_tracking?: Resolver<Array<ResolversTypes['MessageTracking']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
 
 export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnregisterResponse'] = ResolversParentTypes['CanUnregisterResponse']> = ResolversObject<{
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -2303,16 +2244,6 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type MessageTrackingResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['MessageTracking'] = ResolversParentTypes['MessageTracking']> = ResolversObject<{
-  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  technical?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  tracking_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  tracking_info?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationAddDocumentArgs, 'type'>>;
   addLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationAddLabelArgs, 'input'>>;
@@ -2369,7 +2300,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ActionTracking' | 'Capability' | 'CsvFeed' | 'CustomDashboard' | 'DeploymentRequest' | 'Document' | 'GenericServiceCapability' | 'IsPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'MessageTracking' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'CsvFeed' | 'CustomDashboard' | 'DeploymentRequest' | 'Document' | 'GenericServiceCapability' | 'IsPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2502,7 +2433,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
@@ -2663,7 +2593,6 @@ export type SubscribedServiceInstanceConfigurationResolvers<ContextType = Portal
 }>;
 
 export type SubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  ActionTracking?: SubscriptionResolver<Maybe<ResolversTypes['TrackingSubscription']>, "ActionTracking", ParentType, ContextType>;
   MeUser?: SubscriptionResolver<Maybe<ResolversTypes['MeUserSubscription']>, "MeUser", ParentType, ContextType>;
   ServiceInstance?: SubscriptionResolver<Maybe<ResolversTypes['ServiceInstanceSubscription']>, "ServiceInstance", ParentType, ContextType>;
   User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType, Partial<SubscriptionUserArgs>>;
@@ -2705,13 +2634,6 @@ export type SuccessResolvers<ContextType = PortalContext, ParentType extends Res
 export type TelemetryResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TelemetryResponse'] = ResolversParentTypes['TelemetryResponse']> = ResolversObject<{
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   result?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type TrackingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TrackingSubscription'] = ResolversParentTypes['TrackingSubscription']> = ResolversObject<{
-  add?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
-  delete?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
-  edit?: Resolver<Maybe<ResolversTypes['ActionTracking']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2804,7 +2726,6 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 }>;
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
-  ActionTracking?: ActionTrackingResolvers<ContextType>;
   CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
@@ -2828,7 +2749,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   LabelEdge?: LabelEdgeResolvers<ContextType>;
   MeUserSubscription?: MeUserSubscriptionResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
-  MessageTracking?: MessageTrackingResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
@@ -2866,7 +2786,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   SubscriptionModel?: SubscriptionModelResolvers<ContextType>;
   Success?: SuccessResolvers<ContextType>;
   TelemetryResponse?: TelemetryResponseResolvers<ContextType>;
-  TrackingSubscription?: TrackingSubscriptionResolvers<ContextType>;
   Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;

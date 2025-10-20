@@ -70,14 +70,6 @@ export const userMeSubscription = graphql`
   }
 `;
 
-export const UserSlugQuery = graphql`
-  query userSlugQuery($id: ID!) {
-    user(id: $id) {
-      ...userList_fragment
-    }
-  }
-`;
-
 export const ListUsersWithCapabilitiesInOrganizationQuery = graphql`
   query userWithCapabilitiesInOrganizationQuery(
     $input: UsersWithCapabilitiesInOrganizationInput!

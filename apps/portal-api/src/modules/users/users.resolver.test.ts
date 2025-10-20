@@ -37,7 +37,7 @@ import { loginFromProvider } from '../../auth/auth-user';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { requestContext } from '../../requestContext';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
@@ -99,15 +99,6 @@ describe('User query resolver', () => {
     });
   });
 
-  it('should fetch User', async () => {
-    // @ts-ignore
-    const response = await usersResolver.Query.user(
-      {},
-      { id: ADMIN_UUID },
-      contextAdminUser
-    );
-    expect(response).toBeTruthy();
-  });
   describe('listPendingUser', () => {
     it('should list pending users from any organization for bypass', async () => {
       const testContext = {
