@@ -426,6 +426,11 @@
       "VisitVendor": "Visit the vendor's page to learn more and get in touch"
     },
     "CreationStatus": "Creation status",
+    "OpenctiIntegrationFeeds": {
+      "Actions": {
+        "Share": "Share integration Feed"
+      }
+    },
     "CsvFeed": {
       "Actions": {
         "Added": "The CSV {name} has been added successfully",
@@ -457,7 +462,7 @@
       "SureDeleteService": "Are you sure you want to delete the CSV Feed {name}?",
       "UpdateService": "Update the CSV Feed {name}"
     },
-    "CustomDashboards": {
+    "OpenctiCustomDashboards": {
       "Actions": {
         "Added": "The custom dashboard {name} has been added successfully",
         "Deleted": "The custom dashboard {name} has been deleted successfully",
