@@ -12,19 +12,21 @@ import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/
 import ServiceCard from '@/components/service/components/service-card';
 import { useServiceContext } from '@/components/service/components/service-context';
 import ServiceButtons from '@/components/service/components/service-list-buttons';
+import { ServiceListFilterContainer } from '@/components/service/components/service-list-filter-container';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 
-interface ServiceListProps {
+export interface ServiceListProps {
   active: SubscribableResource[];
   draft: SubscribableResource[];
   search: string;
   onSearchChange: (v: string) => void;
   labels?: string[];
   onLabelFilterChange: (v: string[]) => void;
+  additionalFilters?: React.ReactNode;
 }
 const ServiceList = ({
   active,
@@ -33,6 +35,7 @@ const ServiceList = ({
   onSearchChange,
   labels,
   onLabelFilterChange,
+  additionalFilters,
 }: ServiceListProps) => {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
@@ -60,7 +63,8 @@ const ServiceList = ({
             defaultValue={search}
             onChange={debounceHandleInput(onSearchChange)}
           />
-          <div className="w-[20rem] flex-1 max-w-[50%]">
+          {additionalFilters}
+          <ServiceListFilterContainer>
             <MultiSelectFormField
               options={labelOptions}
               defaultValue={labels}
@@ -69,7 +73,7 @@ const ServiceList = ({
               onValueChange={onLabelFilterChange}
               variant="inverted"
             />
-          </div>
+          </ServiceListFilterContainer>
         </div>
         <div className="flex gap-s">
           <ServiceButtons

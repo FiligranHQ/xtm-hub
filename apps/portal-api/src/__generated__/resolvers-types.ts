@@ -86,7 +86,7 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_subtype: Scalars['String']['output'];
-  integration_type: Scalars['String']['output'];
+  integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
   manager_supported: Scalars['String']['output'];
   minio_name: Scalars['String']['output'];
@@ -160,7 +160,7 @@ export type CsvFeed = DocumentBase & IntegrationFeed & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_type: Scalars['String']['output'];
+  integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -374,6 +374,7 @@ export type Filter = {
 };
 
 export enum FilterKey {
+  IntegrationType = 'integration_type',
   Label = 'label',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
@@ -394,7 +395,7 @@ export type IntegrationFeed = {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_type: Scalars['String']['output'];
+  integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -424,6 +425,15 @@ export type IntegrationFeedEdge = {
   cursor: Scalars['String']['output'];
   node: IntegrationFeed;
 };
+
+export enum IntegrationFeedType {
+  Connector = 'connector',
+  CsvFeed = 'csv_feed',
+  JsonFeed = 'json_feed',
+  OpenctiStreamFeed = 'opencti_stream_feed',
+  RssFeed = 'rss_feed',
+  ThirdPartyIntegration = 'third_party_integration'
+}
 
 export type IsPlatformRegisteredInput = {
   platformId: Scalars['String']['input'];
@@ -1932,6 +1942,7 @@ export type ResolversTypes = ResolversObject<{
   IntegrationFeed: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['IntegrationFeed']>;
   IntegrationFeedConnection: ResolverTypeWrapper<Omit<IntegrationFeedConnection, 'edges'> & { edges: Array<ResolversTypes['IntegrationFeedEdge']> }>;
   IntegrationFeedEdge: ResolverTypeWrapper<Omit<IntegrationFeedEdge, 'node'> & { node: ResolversTypes['IntegrationFeed'] }>;
+  IntegrationFeedType: IntegrationFeedType;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
   IsPlatformRegisteredResponse: ResolverTypeWrapper<IsPlatformRegisteredResponse>;
@@ -2190,7 +2201,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_subtype?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2223,7 +2234,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2389,7 +2400,7 @@ export type IntegrationFeedResolvers<ContextType = PortalContext, ParentType ext
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

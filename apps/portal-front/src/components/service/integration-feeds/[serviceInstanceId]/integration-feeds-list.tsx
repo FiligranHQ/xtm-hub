@@ -7,12 +7,14 @@ import {
   integrationFeedsItem,
   IntegrationFeedsListQuery,
 } from '@/components/service/integration-feeds/integration-feed.graphql';
+import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
 import {
   integrationFeedsItem_fragment$data,
   integrationFeedsItem_fragment$key,
 } from '@generated/integrationFeedsItem_fragment.graphql';
 import { integrationFeedsList$key } from '@generated/integrationFeedsList.graphql';
 import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
+import { IntegrationFeedTypeEnum } from '@generated/models/IntegrationFeedType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
@@ -27,6 +29,7 @@ interface IntegrationFeedsListProps {
   search: string;
   onSearchChange: (v: string) => void;
   onLabelFilterChange: (v: string[]) => void;
+  onIntegrationFeedTypeChange: (v: IntegrationFeedTypeEnum[]) => void;
 }
 
 const IntegrationFeedsList = ({
@@ -35,6 +38,7 @@ const IntegrationFeedsList = ({
   search,
   onSearchChange,
   onLabelFilterChange,
+  onIntegrationFeedTypeChange,
   labels,
 }: IntegrationFeedsListProps) => {
   const queryData = usePreloadedQuery<integrationFeedsQuery>(
@@ -65,6 +69,11 @@ const IntegrationFeedsList = ({
         onSearchChange={onSearchChange}
         labels={labels}
         onLabelFilterChange={onLabelFilterChange}
+        additionalFilters={
+          <IntegrationFeedFilters
+            onIntegrationFeedTypeChange={onIntegrationFeedTypeChange}
+          />
+        }
       />
     </AppServiceContext>
   );

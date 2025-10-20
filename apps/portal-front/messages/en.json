@@ -433,6 +433,17 @@
     "OpenctiIntegrationFeeds": {
       "Actions": {
         "Share": "Share integration Feed"
+      },
+      "Filter": {
+        "Type": {
+          "Placeholder": "Type...",
+          "csv_feed": "CSV Feeds",
+          "connector": "Connectors",
+          "rss_feed": "RSS Feeds",
+          "json_feed": "JSON Feeds",
+          "opencti_stream_feed": "OpenCTI Stream feeds",
+          "third_party_integration": "Third party integrations"
+        }
       }
     },
     "CsvFeed": {

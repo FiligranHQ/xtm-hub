@@ -17,8 +17,15 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<integrationFeedsQuery>(
     IntegrationFeedsListQuery
   );
-  const { count, search, labels, setSearch, setLabels } =
-    serviceListLocalStorage('csvFeed');
+  const {
+    count,
+    search,
+    labels,
+    integrationTypes,
+    setSearch,
+    setLabels,
+    setIntegrationTypes,
+  } = serviceListLocalStorage('csvFeed');
 
   useEffect(() => {
     loadQuery(
@@ -28,13 +35,16 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
-        filters: [{ key: 'label', value: labels }],
+        filters: [
+          { key: 'label', value: labels },
+          { key: 'integration_type', value: integrationTypes },
+        ],
       },
       {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, count, serviceInstance, search, labels]);
+  }, [loadQuery, count, serviceInstance, search, labels, integrationTypes]);
 
   return (
     <>
@@ -45,6 +55,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
           search={search}
           onSearchChange={setSearch}
           onLabelFilterChange={setLabels}
+          onIntegrationFeedTypeChange={setIntegrationTypes}
           labels={labels}
         />
       ) : (

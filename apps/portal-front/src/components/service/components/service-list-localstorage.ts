@@ -1,3 +1,4 @@
+import { IntegrationFeedTypeEnum } from '@generated/models/IntegrationFeedType.enum';
 import { useLocalStorage } from 'usehooks-ts';
 
 export const serviceListLocalStorage = (serviceName: string) => {
@@ -14,6 +15,9 @@ export const serviceListLocalStorage = (serviceName: string) => {
     'label',
     []
   );
+
+  const [integrationTypes, setIntegrationTypes, removeIntegrationTypes] =
+    useLocalStorage<IntegrationFeedTypeEnum[]>('integrationType', []);
 
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     `count${serviceName}List`,
@@ -37,5 +41,8 @@ export const serviceListLocalStorage = (serviceName: string) => {
     labels,
     setLabels,
     removeLabels,
+    integrationTypes,
+    setIntegrationTypes,
+    removeIntegrationTypes,
   };
 };

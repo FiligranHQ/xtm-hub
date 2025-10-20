@@ -6,6 +6,7 @@ import { contextAdminUser } from '../../../../tests/tests.const';
 import {
   DocumentOrdering,
   IntegrationFeedConnection,
+  IntegrationFeedType,
   OrderingMode,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -17,8 +18,6 @@ import {
   CSV_FEED_CONNECTOR_METADATA,
   CSV_FEED_METADATA,
   CsvFeed,
-  INTEGRATION_FEED_CONNECTORS_TYPE,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
   INTEGRATION_FEED_METADATA,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
@@ -56,7 +55,7 @@ describe('Document domain', () => {
           minio_name: 'minioName',
           file_name: 'csvfilename',
           active: true,
-          integration_type: INTEGRATION_FEED_CSV_FEED_TYPE,
+          integration_type: IntegrationFeedType.CsvFeed,
         },
         [],
         CSV_FEED_METADATA,
@@ -91,15 +90,13 @@ describe('Document domain', () => {
 
       const csvFeeds = connection.edges
         .filter(
-          (feed) =>
-            feed.node.integration_type === INTEGRATION_FEED_CSV_FEED_TYPE
+          (feed) => feed.node.integration_type === IntegrationFeedType.CsvFeed
         )
         .map((feed) => feed.node);
       expect(csvFeeds.length).toBeTruthy();
 
       const connectors = connection.edges.filter(
-        (feed) =>
-          feed.node.integration_type === INTEGRATION_FEED_CONNECTORS_TYPE
+        (feed) => feed.node.integration_type === IntegrationFeedType.Connector
       );
 
       expect(connectors.length).toBeTruthy();

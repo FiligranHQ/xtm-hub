@@ -1,3 +1,12 @@
+enum IntegrationFeedType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  opencti_stream_feed
+  third_party_integration
+}
+
 interface IntegrationFeed implements Node & DocumentBase {
   # Node
   id: ID!
@@ -25,7 +34,7 @@ interface IntegrationFeed implements Node & DocumentBase {
   children_documents: [ShareableResourceImage!]
 
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
 }
 
 type Connector implements Node & DocumentBase & IntegrationFeed {
@@ -54,7 +63,7 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   children_documents: [ShareableResourceImage!]
   # Integration Feed
   remover_id: ID @auth
-  integration_type: String!
+  integration_type: IntegrationFeedType!
   product_version: String!
   container_image: String
   verified: String!

@@ -4,6 +4,7 @@ import {
   contextAdminUser,
   SERVICE_CSV_FEEDS_ID,
 } from '../../../../../tests/tests.const';
+import { IntegrationFeedType } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import {
   ADMIN_UUID,
@@ -21,7 +22,6 @@ import * as DocumentHelper from '../../document/document.helper';
 import {
   CSV_FEED_METADATA,
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds.model';
 import { csvFeedsApp } from './csv-feeds.app';
@@ -108,7 +108,7 @@ describe('csv feeds app', () => {
         file_name: 'csvfilename',
         service_instance_id: SERVICE_CSV_FEEDS_ID,
         active: false,
-        integration_type: INTEGRATION_FEED_CSV_FEED_TYPE,
+        integration_type: IntegrationFeedType.CsvFeed,
       },
       [],
       CSV_FEED_METADATA,

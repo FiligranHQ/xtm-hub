@@ -7,6 +7,7 @@ enum FilterKey {
   organization_id
   personal_space
   serviceDefinition_identifier
+  integration_type
 }
 
 input Filter {

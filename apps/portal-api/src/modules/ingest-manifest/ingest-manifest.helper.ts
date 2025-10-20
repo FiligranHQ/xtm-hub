@@ -1,11 +1,11 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Readable } from 'stream';
 import z from 'zod';
+import { IntegrationFeedType } from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
 import { Upload } from '../services/document/document.helper';
 import {
-  INTEGRATION_FEED_CONNECTORS_TYPE,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../services/integration-feeds/integration-feeds.model';
@@ -105,7 +105,7 @@ export const extractManifestInformation = (
         product_version: manifestData.version,
         verified: validContract.verified,
         integration_subtype: validContract.container_type,
-        integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
+        integration_type: IntegrationFeedType.Connector,
         source_code: validContract.source_code,
         subscription_link: validContract.subscription_link,
         manager_supported: validContract.manager_supported,
