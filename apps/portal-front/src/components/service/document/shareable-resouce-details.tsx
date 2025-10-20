@@ -76,7 +76,7 @@ const ShareableResourceDetails: React.FunctionComponent<
         <Label className="block pb-s">
           {t('Service.ShareableResources.Details.Shares')}
         </Label>
-        <span>{roundToNearest(documentData.share_number)}</span>
+        <span>{roundToNearest(documentData.share_number ?? 0)}</span>
       </div>
     </div>
   );

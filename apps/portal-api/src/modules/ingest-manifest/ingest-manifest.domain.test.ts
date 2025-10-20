@@ -60,13 +60,6 @@ describe('upsertConnectors', () => {
         });
       });
 
-      it('should initialize counters to zero', () => {
-        result.forEach((doc) => {
-          expect(doc.download_number).toBe(0);
-          expect(doc.share_number).toBe(0);
-        });
-      });
-
       it('should set creation timestamp and null update fields', () => {
         result.forEach((doc) => {
           expect(doc.created_at).toBeDefined();

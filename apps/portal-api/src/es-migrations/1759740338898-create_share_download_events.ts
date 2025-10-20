@@ -89,20 +89,26 @@ async function buildDocumentList(
 export const up = async function (next) {
   const database = knex(baseConfig);
 
-  const docs = await database('Document')
-    .where('download_number', '>', 0)
-    .orWhere('share_number', '>', 0)
-    .select('id', 'name', 'download_number', 'share_number', 'type');
+  const columnExists = await database.schema.hasColumn(
+    'Document',
+    'download_number'
+  );
+  if (columnExists) {
+    const docs = await database('Document')
+      .where('download_number', '>', 0)
+      .orWhere('share_number', '>', 0)
+      .select('id', 'name', 'download_number', 'share_number', 'type');
 
-  if (docs.length > 0) {
-    const downloadDocToInsert = await buildDocumentList(docs, 'download');
-    const shareDocToInsert = await buildDocumentList(docs, 'share');
+    if (docs.length > 0) {
+      const downloadDocToInsert = await buildDocumentList(docs, 'download');
+      const shareDocToInsert = await buildDocumentList(docs, 'share');
 
-    if (downloadDocToInsert.length > 0 || shareDocToInsert.length > 0) {
-      await esDbClient.bulk({
-        refresh: true,
-        operations: [...downloadDocToInsert, ...shareDocToInsert],
-      });
+      if (downloadDocToInsert.length > 0 || shareDocToInsert.length > 0) {
+        await esDbClient.bulk({
+          refresh: true,
+          operations: [...downloadDocToInsert, ...shareDocToInsert],
+        });
+      }
     }
   }
 

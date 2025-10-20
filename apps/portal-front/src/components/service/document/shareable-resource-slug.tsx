@@ -13,7 +13,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
@@ -61,8 +61,12 @@ const ShareableResourceSlug: React.FunctionComponent<
     documentData.download_number
   );
 
+  useEffect(() => {
+    setDocumentDownloadNumber(documentData.download_number ?? 0);
+  }, [documentData.download_number]);
+
   const incrementDownloadNumber = () => {
-    setDocumentDownloadNumber(documentDownloadNumber + 1);
+    setDocumentDownloadNumber((documentDownloadNumber ?? 0) + 1);
   };
   const isOneOpenAEVRegistrationFeatureEnabled = useIsFeatureEnabled(
     FeatureFlag.OPENAEV_REGISTRATION
@@ -146,7 +150,7 @@ const ShareableResourceSlug: React.FunctionComponent<
             {documentData && (
               <ShareableResourceDetails
                 documentData={documentData}
-                downloadNumber={documentDownloadNumber}
+                downloadNumber={documentDownloadNumber ?? 0}
               />
             )}
           </section>
