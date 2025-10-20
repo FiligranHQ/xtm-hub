@@ -11,6 +11,15 @@ import {
 } from '../services/integration-feeds/integration-feeds.model';
 import { ManifestInformation } from './ingest-manifest.model';
 
+export interface ManifestExtractionResult {
+  validContracts: ManifestInformation[];
+  errors: {
+    contractTitle?: string;
+    contractSlug?: string;
+    error: string;
+  }[];
+}
+
 const CACHE_OPENCTI_FILE_NAME = 'manifest_octi_connectors.json';
 
 export const fetchManifest = async (url: string) => {
@@ -24,52 +33,98 @@ export const fetchManifest = async (url: string) => {
     return response.json();
   });
 };
+// Type for partially valid contract data (used for error reporting)
+type PartialContract = {
+  title?: string;
+  slug?: string;
+};
+
 export const extractManifestInformation = (
   jsonData: unknown
-): ManifestInformation[] => {
-  try {
-    // Validate only the fields we need
-    const result = ManifestSchema.safeParse(jsonData);
+): ManifestExtractionResult => {
+  const validContracts: ManifestInformation[] = [];
+  const errors: Array<{
+    contractTitle?: string;
+    contractSlug?: string;
+    error: string;
+  }> = [];
 
-    if (!result.success) {
-      // Log detailed validation errors
-      const formattedError = result.error.issues
+  try {
+    const manifestResult = ManifestSchema.safeParse(jsonData);
+
+    if (!manifestResult.success) {
+      const formattedError = manifestResult.error.issues
         .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
         .join(', ');
 
-      console.error('Manifest validation failed:', formattedError);
-      return [];
+      logApp.error('Manifest validation failed:', { formattedError });
+      errors.push({ error: `Manifest structure invalid: ${formattedError}` });
+      return { validContracts, errors };
     }
 
-    // Type-safe mapping - all fields guaranteed to exist
-    return result.data.contracts.map(
-      (contract): ManifestInformation => ({
+    const manifestData = manifestResult.data;
+
+    for (const contract of manifestData.contracts) {
+      const contractResult = ContractSchema.safeParse(contract);
+
+      if (!contractResult.success) {
+        const formattedError = contractResult.error.issues
+          .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+          .join(', ');
+
+        const partialContract = contract as PartialContract;
+        const contractIdentifier = {
+          contractTitle: partialContract.title ?? 'Unknown',
+          contractSlug: partialContract.slug ?? 'Unknown',
+        };
+
+        logApp.error(
+          `Contract validation failed for ${contractIdentifier.contractTitle} (${contractIdentifier.contractSlug}): ${formattedError}`
+        );
+
+        errors.push({
+          ...contractIdentifier,
+          error: formattedError,
+        });
+
+        continue;
+      }
+
+      const validContract = contractResult.data;
+      validContracts.push({
         /* Document properties */
-        name: contract.title,
-        description: contract.description,
-        short_description: contract.short_description?.slice(0, 250),
-        slug: contract.slug,
+        name: validContract.title,
+        description: validContract.description,
+        short_description: validContract.short_description?.slice(0, 250),
+        slug: validContract.slug,
         service_instance_id: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
         type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         source_type: 'external',
         /* Document metadata properties */
-        container_image: contract.container_image,
-        product_version: result.data.version,
-        verified: contract.verified,
-        integration_subtype: contract.container_type,
+        container_image: validContract.container_image,
+        product_version: manifestData.version,
+        verified: validContract.verified,
+        integration_subtype: validContract.container_type,
         integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
-        source_code: contract.source_code,
-        subscription_link: contract.subscription_link,
-        manager_supported: contract.manager_supported,
-        playbook_supported: contract.playbook_supported,
+        source_code: validContract.source_code,
+        subscription_link: validContract.subscription_link,
+        manager_supported: validContract.manager_supported,
+        playbook_supported: validContract.playbook_supported,
         /*Label and picture*/
-        labels: contract.use_cases,
-        logo: contract.logo,
-      })
+        labels: validContract.use_cases,
+        logo: validContract.logo,
+      });
+    }
+
+    logApp.info(
+      `Processed manifest: ${validContracts.length} valid contracts, ${errors.length} invalid contracts`
     );
+
+    return { validContracts, errors };
   } catch (error) {
     logApp.error(`Error extracting manifest info: ${error.message}`);
-    return [];
+    errors.push({ error: `Unexpected error: ${error.message}` });
+    return { validContracts, errors };
   }
 };
 
@@ -94,7 +149,7 @@ const ManifestSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
   version: z.string().min(1),
-  contracts: z.array(ContractSchema),
+  contracts: z.array(z.unknown()),
 });
 
 export const base64ToUpload = (
