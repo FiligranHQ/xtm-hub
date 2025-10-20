@@ -88,27 +88,27 @@ export const usersAdminApp = {
     input: EditUserCapabilitiesInput;
   }) => {
     const { user, portalContext } = requestContext.require();
-    const organization_id = user.selected_organization_id;
+    const organizationId = user.selected_organization_id;
     await preventAdministratorRemovalOfOneOrganization(
       userId,
-      organization_id,
+      organizationId,
       input.capabilities
     );
 
     const [userOrganization] = await loadUserOrganization(portalContext, {
       user_id: userId,
-      organization_id,
+      organization_id: organizationId,
     });
 
     return userOrganization
       ? await updateUserOrgCapabilitiesAndDispatch({
           user_id: userId,
-          organization_id,
+          organization_id: organizationId,
           orgCapabilities: input.capabilities,
         })
       : await acceptPendingUserWithCapabilities({
           user_id: userId,
-          organization_id,
+          organization_id: organizationId,
           orgCapabilities: input.capabilities,
         });
   },
