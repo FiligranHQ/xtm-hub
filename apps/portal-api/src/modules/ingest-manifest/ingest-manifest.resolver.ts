@@ -4,10 +4,16 @@ import { IngestManifestApp } from './ingest-manifest.app';
 
 const resolvers: Resolvers = {
   Query: {
-    refreshOpenCTIManifest: () =>
-      isFeatureEnabled('CONNECTORS_INTEGRATION_FEEDS')
-        ? IngestManifestApp.refreshOpenCTIManifest()
-        : false,
+    refreshOpenCTIManifest: async () => {
+      if (!isFeatureEnabled('CONNECTORS_INTEGRATION_FEEDS')) {
+        return false;
+      }
+
+      // Error handling is now done in the app layer
+      await IngestManifestApp.refreshOpenCTIManifest();
+      
+      return true;
+    },
   },
 };
 
