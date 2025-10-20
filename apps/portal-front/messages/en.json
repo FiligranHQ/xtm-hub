@@ -435,6 +435,11 @@
         "Share": "Share integration Feed"
       },
       "Filter": {
+        "Connector": {
+          "Type": {
+            "Placeholder": "Connector type..."
+          }
+        },
         "Type": {
           "Placeholder": "Type...",
           "csv_feed": "CSV Feeds",

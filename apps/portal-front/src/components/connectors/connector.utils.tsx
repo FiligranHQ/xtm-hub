@@ -2,7 +2,8 @@ export type IngestionConnectorType =
   | 'INTERNAL_ENRICHMENT'
   | 'EXTERNAL_IMPORT'
   | 'INTERNAL_EXPORT_FILE'
-  | 'INTERNAL_IMPORT_FILE';
+  | 'INTERNAL_IMPORT_FILE'
+  | 'STREAM';
 
 const ingestionConnectorTypeMetadata: Record<
   IngestionConnectorType,
@@ -23,6 +24,10 @@ const ingestionConnectorTypeMetadata: Record<
   INTERNAL_IMPORT_FILE: {
     label: 'Internal import file',
     color: '#20cb28',
+  },
+  STREAM: {
+    label: 'Stream',
+    color: '#e6700f',
   },
 };
 

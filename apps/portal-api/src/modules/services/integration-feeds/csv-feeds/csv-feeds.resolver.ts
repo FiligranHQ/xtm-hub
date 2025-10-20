@@ -1,5 +1,8 @@
 import { dbTx } from '../../../../../knexfile';
-import { Resolvers } from '../../../../__generated__/resolvers-types';
+import {
+  IntegrationFeedType,
+  Resolvers,
+} from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import {
@@ -16,7 +19,6 @@ import {
 import {
   CSV_FEED_METADATA,
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds.model';
 import { csvFeedsApp } from './csv-feeds.app';
@@ -46,7 +48,7 @@ const resolvers: Resolvers = {
             ...input,
             input: {
               ...input.input,
-              integration_type: INTEGRATION_FEED_CSV_FEED_TYPE,
+              integration_type: IntegrationFeedType.CsvFeed,
             },
           },
           CSV_FEED_METADATA,

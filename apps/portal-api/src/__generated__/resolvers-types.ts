@@ -374,6 +374,7 @@ export type Filter = {
 };
 
 export enum FilterKey {
+  IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   Label = 'label',
   OrganizationId = 'organization_id',

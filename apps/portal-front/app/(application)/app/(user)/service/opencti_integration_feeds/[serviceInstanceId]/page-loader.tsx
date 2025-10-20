@@ -22,9 +22,11 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
+    connectorTypes,
     setSearch,
     setLabels,
     setIntegrationTypes,
+    setConnectorTypes,
   } = serviceListLocalStorage('csvFeed');
 
   useEffect(() => {
@@ -38,13 +40,22 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         filters: [
           { key: 'label', value: labels },
           { key: 'integration_type', value: integrationTypes },
+          { key: 'integration_subtype', value: connectorTypes },
         ],
       },
       {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, count, serviceInstance, search, labels, integrationTypes]);
+  }, [
+    loadQuery,
+    count,
+    serviceInstance,
+    search,
+    labels,
+    integrationTypes,
+    connectorTypes,
+  ]);
 
   return (
     <>
@@ -56,6 +67,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
           onSearchChange={setSearch}
           onLabelFilterChange={setLabels}
           onIntegrationFeedTypeChange={setIntegrationTypes}
+          onConnectorTypeChange={setConnectorTypes}
           labels={labels}
         />
       ) : (

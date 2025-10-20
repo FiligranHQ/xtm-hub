@@ -435,6 +435,11 @@
         "Share": "Partager l'intégration Feed"
       },
       "Filter": {
+        "Connector": {
+          "Type": {
+            "Placeholder": "Type de connecteur..."
+          }
+        },
         "Type": {
           "Placeholder": "Type...",
           "csv_feed": "Flux CSV",

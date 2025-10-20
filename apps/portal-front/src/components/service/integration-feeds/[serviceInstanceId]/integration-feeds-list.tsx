@@ -1,3 +1,4 @@
+import { IngestionConnectorType } from '@/components/connectors/connector.utils';
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
@@ -30,6 +31,7 @@ interface IntegrationFeedsListProps {
   onSearchChange: (v: string) => void;
   onLabelFilterChange: (v: string[]) => void;
   onIntegrationFeedTypeChange: (v: IntegrationFeedTypeEnum[]) => void;
+  onConnectorTypeChange: (v: IngestionConnectorType[]) => void;
 }
 
 const IntegrationFeedsList = ({
@@ -39,6 +41,7 @@ const IntegrationFeedsList = ({
   onSearchChange,
   onLabelFilterChange,
   onIntegrationFeedTypeChange,
+  onConnectorTypeChange,
   labels,
 }: IntegrationFeedsListProps) => {
   const queryData = usePreloadedQuery<integrationFeedsQuery>(
@@ -72,6 +75,7 @@ const IntegrationFeedsList = ({
         additionalFilters={
           <IntegrationFeedFilters
             onIntegrationFeedTypeChange={onIntegrationFeedTypeChange}
+            onConnectorTypeChange={onConnectorTypeChange}
           />
         }
       />
