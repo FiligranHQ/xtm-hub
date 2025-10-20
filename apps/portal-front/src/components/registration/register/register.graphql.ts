@@ -84,6 +84,16 @@ export const registerRegisteredPlatformFragment = graphql`
     contract
     identifier
     illustration_document_id
+    deployment_request {
+      activity_sector
+      job_title
+      status
+    }
+    subscription {
+      status
+      end_date
+      start_date
+    }
   }
 `;
 

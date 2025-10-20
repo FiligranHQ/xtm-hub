@@ -1,7 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   SeoServiceInstance,
   ServiceConnection,
@@ -9,6 +9,7 @@ import {
   ServiceDefinitionIdentifier,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
@@ -185,6 +186,29 @@ export const loadServiceInstanceSubscriptions = async (context, id) => {
         })
       ),
     ]);
+
+  return subscription;
+};
+export const loadServiceInstanceSubscription = async (
+  selectedOrganizationId: OrganizationId,
+  id
+) => {
+  const subscription = await dbUnsecure<Subscription>('Subscription')
+    .where('Subscription.service_instance_id', '=', id)
+    .where('Subscription.organization_id', '=', selectedOrganizationId)
+    .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
+
+    .select([
+      'Subscription.*',
+      dbRaw(
+        formatRawObject({
+          columnName: 'Organization',
+          typename: 'Organization',
+          as: 'organization',
+        })
+      ),
+    ])
+    .first();
 
   return subscription;
 };

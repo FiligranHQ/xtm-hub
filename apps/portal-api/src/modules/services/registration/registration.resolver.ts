@@ -1,12 +1,26 @@
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { requestContext } from '../../../requestContext';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { DeploymentRequestDomain } from '../deployments/deployments.domain';
+import { loadServiceInstanceSubscription } from '../service-instance.domain';
 import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {
+  RegisteredPlatform: {
+    subscription: ({ id }, _, context) =>
+      loadServiceInstanceSubscription(
+        context.user.selected_organization_id,
+        id
+      ),
+    deployment_request: ({ id }, _, __) =>
+      DeploymentRequestDomain.loadDeploymentRequestBy({
+        service_instance_id: id as ServiceInstanceId,
+      }),
+  },
   Query: {
     isPlatformRegistered: async (_, { input }, context) => {
       try {

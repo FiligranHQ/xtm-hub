@@ -1,6 +1,10 @@
 import { dbUnsecure, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestConnection,
+  DeploymentRequestStatus,
+  DeploymentType,
+  PlatformIdentifier,
+  PlatformRegion,
   QueryDeploymentRequestsArgs,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
@@ -21,13 +25,19 @@ export const DeploymentRequestDomain = {
     return createdDeploymentRequest;
   },
 
-  loadDeploymentRequestBy: async (
-    conditions: DeploymentRequestMutator
-  ): Promise<DeploymentRequest> => {
-    return dbUnsecure<DeploymentRequest>('DeploymentRequest')
+  loadDeploymentRequestBy: async (conditions: DeploymentRequestMutator) => {
+    const result = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .select('*')
       .first();
+
+    return {
+      ...result,
+      platform_identifier: result.platform_identifier as PlatformIdentifier,
+      region: result.region as PlatformRegion,
+      type: result.type as DeploymentType,
+      status: result.status as DeploymentRequestStatus,
+    };
   },
 
   loadDeploymentRequests: async (opts: QueryDeploymentRequestsArgs) => {
