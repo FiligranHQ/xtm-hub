@@ -11,7 +11,7 @@ const resolvers: Resolvers = {
 
       // Error handling is now done in the app layer
       await IngestManifestApp.refreshOpenCTIManifest();
-      
+
       return true;
     },
   },
