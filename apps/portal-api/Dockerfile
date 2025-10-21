@@ -44,6 +44,7 @@ COPY --from=builder --chown=graphql:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/config ./config
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/package.json .
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/tests/seeds ./tests/seeds
+COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/src/seeds ./src/seeds
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/dist .
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/src/server/mail-template ./src/server/mail-template
 
