@@ -73,7 +73,7 @@ input DeploymentRequestFilter {
 
 type DeploymentRequestEdge {
   cursor: String!
-  node: PlatformDeploymentRequest
+  node: PlatformDeploymentRequest!
 }
 
 type DeploymentRequestConnection {

@@ -81,11 +81,10 @@ export const DeploymentsApp = {
     args: QueryDeploymentRequestsArgs
   ): Promise<DeploymentRequestConnection> => {
     args.filters = args.filters || [];
-    if (
-      !args.filters?.some(
-        (filter) => filter?.key === DeploymentRequestFilterKey.Status
-      )
-    ) {
+    const hasStatusFilter = args.filters?.some(
+      (filter) => filter?.key === DeploymentRequestFilterKey.Status
+    );
+    if (!hasStatusFilter) {
       args.filters.push({
         key: DeploymentRequestFilterKey.Status,
         value: [DeploymentRequestStatus.Pending],

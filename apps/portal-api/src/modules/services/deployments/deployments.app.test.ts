@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
@@ -23,11 +22,17 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
-import { loadServiceInstanceBy } from '../service-instance.domain';
+import {
+  insertServiceInstance,
+  loadServiceInstanceBy,
+} from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 describe('Deployment app', () => {
+  afterEach(async () => {
+    await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+  });
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
       const deployment = await DeploymentsApp.createDeployment({
@@ -67,33 +72,27 @@ describe('Deployment app', () => {
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
-
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({
-        id: deployment?.id as DeploymentRequestId,
-      });
     });
   });
   describe('loadDeploymentRequests', () => {
     async function insertOpenCtiDeploymentRequest(
       deploymentRequest: Partial<DeploymentRequestInitializer>
     ) {
-      const serviceInstanceId = uuidv4();
-      await db('ServiceInstance').insert([
-        {
-          id: serviceInstanceId,
-          name: 'serviceInstance1',
-          description: '',
-          creation_status: ServiceInstanceCreationStatus.Pending,
-          public: false,
-          join_type: 'JOIN_AUTO',
-          tags: [
-            serviceInstanceTagMappedByPlatformIdentifier[
-              PlatformIdentifier.Opencti
-            ],
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      await insertServiceInstance({
+        id: serviceInstanceId,
+        name: 'serviceInstance1',
+        description: '',
+        creation_status: ServiceInstanceCreationStatus.Pending,
+        public: false,
+        join_type: 'JOIN_AUTO',
+        tags: [
+          serviceInstanceTagMappedByPlatformIdentifier[
+            PlatformIdentifier.Opencti
           ],
-          service_definition_id: SERVICE_OPENCTI_REGISTRATION,
-        },
-      ]);
+        ],
+        service_definition_id: SERVICE_OPENCTI_REGISTRATION,
+      });
       const defaultDeploymentRequestValues = {
         activity_sector: 'cybersecurity',
         id: uuidv4() as DeploymentRequestId,
@@ -129,14 +128,10 @@ describe('Deployment app', () => {
         organization_domains: ['filigran.io', 'internal.com'],
         requester_email: DEFAULT_ADMIN_EMAIL,
       });
-
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({
-        id: deploymentRequest?.id,
-      });
     });
 
     it('should return pending deployment requests if nothing specified', async () => {
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({
+      await insertOpenCtiDeploymentRequest({
         status: DeploymentRequestStatus.Expired,
       });
 
@@ -146,19 +141,38 @@ describe('Deployment app', () => {
 
       expect(deployments.totalCount).toBe('0');
       expect(deployments.edges.length).toBe(0);
+    });
 
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({
-        id: deploymentRequest?.id,
+    it('should return pending deployment requests even if other filters are specified', async () => {
+      await insertOpenCtiDeploymentRequest({});
+      await insertOpenCtiDeploymentRequest({
+        status: DeploymentRequestStatus.Expired,
       });
+
+      const deployments = await DeploymentsApp.loadDeploymentRequests({
+        first: 10,
+        filters: [
+          {
+            key: DeploymentRequestFilterKey.Region,
+            value: [PlatformRegion.Us],
+          },
+        ],
+      });
+
+      expect(deployments.totalCount).toBe('1');
+      expect(deployments.edges.length).toBe(1);
+      expect(deployments.edges[0]?.node?.status).toBe(
+        DeploymentRequestStatus.Pending
+      );
     });
 
     it('should return filtered deployment requests only', async () => {
-      const deploymentRequest1 = await insertOpenCtiDeploymentRequest({});
-      const deploymentRequest2 = await insertOpenCtiDeploymentRequest({
+      await insertOpenCtiDeploymentRequest({});
+      await insertOpenCtiDeploymentRequest({
         region: PlatformRegion.Europe,
         status: DeploymentRequestStatus.Active,
       });
-      const deploymentRequest3 = await insertOpenCtiDeploymentRequest({
+      await insertOpenCtiDeploymentRequest({
         platform_identifier: PlatformIdentifier.Openaev,
         status: DeploymentRequestStatus.Active,
       });
@@ -183,16 +197,6 @@ describe('Deployment app', () => {
 
       expect(deployments.totalCount).toBe('0');
       expect(deployments.edges.length).toBe(0);
-
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({
-        id: deploymentRequest1?.id,
-      });
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({
-        id: deploymentRequest2?.id,
-      });
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({
-        id: deploymentRequest3?.id,
-      });
     });
   });
 });
