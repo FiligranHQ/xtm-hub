@@ -3,10 +3,13 @@ import { dbTx } from '../../../../knexfile';
 import {
   CreateDeploymentRequestInput,
   DeploymentRequest,
+  DeploymentRequestConnection,
+  DeploymentRequestFilterKey,
   DeploymentRequestStatus,
   DeploymentType,
   PlatformIdentifier,
   PlatformRegion,
+  QueryDeploymentRequestsArgs,
 } from '../../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import { requestContext } from '../../../requestContext';
@@ -14,7 +17,10 @@ import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
-import { insertDeploymentRequest } from './deployments.domain';
+import {
+  insertDeploymentRequest,
+  loadDeploymentRequests,
+} from './deployments.domain';
 
 export const DeploymentsApp = {
   createDeployment: async (
@@ -71,5 +77,22 @@ export const DeploymentsApp = {
       logApp.error('unable to create deployment request', error);
       await trx.rollback();
     }
+  },
+
+  loadDeploymentRequests: async (
+    args: QueryDeploymentRequestsArgs
+  ): Promise<DeploymentRequestConnection> => {
+    args.filters = args.filters || [];
+    if (
+      !args.filters?.some(
+        (filter) => filter?.key === DeploymentRequestFilterKey.Status
+      )
+    ) {
+      args.filters.push({
+        key: DeploymentRequestFilterKey.Status,
+        value: [DeploymentRequestStatus.Pending],
+      });
+    }
+    return loadDeploymentRequests(args);
   },
 };

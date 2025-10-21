@@ -1,7 +1,11 @@
 import { type PageInfo } from 'graphql-relay/connection/connection';
 import pkg, { type Knex } from 'knex';
 import { baseConfig } from './knexconfig';
-import { Filter, FilterKey } from './src/__generated__/resolvers-types';
+import {
+  DeploymentRequestFilter,
+  Filter,
+  FilterKey,
+} from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
 import { requestContext } from './src/requestContext';
@@ -10,7 +14,14 @@ import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 
 export interface SecuryQueryOpts {
-  [key: string]: string | number | boolean | string[] | MethodType | Filter[];
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | string[]
+    | MethodType
+    | Filter[]
+    | DeploymentRequestFilter[];
 }
 
 export interface KnexQueryBuilder extends Knex.QueryBuilder {
@@ -71,7 +82,7 @@ interface Pagination {
   after?: string;
   orderMode?: string;
   orderBy?: string;
-  filters?: Filter[];
+  filters?: Filter[] | DeploymentRequestFilter[];
   searchTerm?: string;
 }
 
@@ -120,7 +131,7 @@ export interface QueryOpts {
   methodType?: MethodType;
   capabilities?: string[];
   searchTerm?: string;
-  filters?: Filter[];
+  filters?: Filter[] | DeploymentRequestFilter[];
   columns?: string[];
 }
 
