@@ -34,7 +34,16 @@ export const listen = (
   info?: GraphQLResolveInfo,
   filter?: (payload: unknown) => boolean
 ) => {
-  const iteratorFn = () => pubsub.asyncIterator(topics);
+  const iteratorFn = () => {
+    try {
+      return pubsub.asyncIterator(topics);
+    } catch (error) {
+      logApp.error('Error creating async iterator', { error, topics });
+      // Return an empty async iterator on error
+      return (async function* () {})();
+    }
+  };
+
   const getRequestedFields = () => {
     if (!info) return null;
 
@@ -66,8 +75,17 @@ export const listen = (
       const isFiltered = filter ? filter(payload) : true;
       return isAccessible && isFiltered;
     } catch (error) {
-      logApp.error('Error while sending SSE payload', { error });
+      logApp.error('Error while filtering SSE payload', { error });
+      // Return false to skip this event on error
+      return false;
     }
   };
-  return withFilter(iteratorFn, filterFn)();
+
+  try {
+    return withFilter(iteratorFn, filterFn)();
+  } catch (error) {
+    logApp.error('Error setting up subscription listener', { error, topics });
+    // Return an empty async iterator on error
+    return (async function* () {})();
+  }
 };
