@@ -22,7 +22,7 @@ import {
   ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { serviceContractDomain } from '../services/contract/domain';
+import * as serviceInstanceDomain from '../services/service-instance.domain';
 
 // Mock the ES Client
 vi.mock('@elastic/elasticsearch', () => ({
@@ -96,15 +96,16 @@ describe('TelemetryApp', () => {
       const telemetrySpy = vi
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
+      const platform_id = '916121bf-d246-4a43-8522-24be19537b91';
+      const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
-        serviceContractDomain,
-        'loadConfigurationByPlatform'
+        serviceInstanceDomain,
+        'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
-        service_instance_id:
-          '5891d6cf-1737-48bb-8f60-de520a93f2bd' as ServiceInstanceId,
+        service_instance_id: platformServiceInstanceId as ServiceInstanceId,
         config: {
           token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
-          platform_id: '916121bf-d246-4a43-8522-24be19537b91',
+          platform_id: platform_id,
           platform_url: 'https://testing.obas.staging.filigran.io/',
           registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
           platform_title: 'Open AEV Instance',
@@ -115,7 +116,6 @@ describe('TelemetryApp', () => {
       });
 
       const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
-      const fakePlatformId = '11b0fe37-0623-4487-af23-0efa6de157a4';
 
       await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
         userId: ADMIN_UUID,
@@ -127,7 +127,10 @@ describe('TelemetryApp', () => {
           ),
           resource_id: toGlobalId('DocumentId', fakeResourceId),
           resource_title: 'CsvFeed Title',
-          platform_id: toGlobalId('OpenCTIPlatform', fakePlatformId),
+          platform_service_instance_id: toGlobalId(
+            'RegisteredPlatform',
+            platformServiceInstanceId
+          ),
         },
       });
 
@@ -143,7 +146,7 @@ describe('TelemetryApp', () => {
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: fakeResourceId,
         resource_title: 'CsvFeed Title',
-        platform_id: fakePlatformId,
+        platform_id: platform_id,
         platform_version: '1.0.0',
         target_product: TelemetryTargetProduct.OPEN_CTI,
       });
@@ -155,15 +158,16 @@ describe('TelemetryApp', () => {
       const telemetrySpy = vi
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
+      const platformId = '916121bf-d246-4a43-8522-24be19537b91';
+      const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
-        serviceContractDomain,
-        'loadConfigurationByPlatform'
+        serviceInstanceDomain,
+        'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
-        service_instance_id:
-          '5891d6cf-1737-48bb-8f60-de520a93f2bd' as ServiceInstanceId,
+        service_instance_id: platformServiceInstanceId as ServiceInstanceId,
         config: {
           token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
-          platform_id: '916121bf-d246-4a43-8522-24be19537b91',
+          platform_id: platformId,
           platform_url: 'https://testing.obas.staging.filigran.io/',
           registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
           platform_title: 'Open AEV Instance',
@@ -173,7 +177,6 @@ describe('TelemetryApp', () => {
       });
 
       const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
-      const fakePlatformId = '11b0fe37-0623-4487-af23-0efa6de157a4';
 
       await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
         userId: ADMIN_UUID,
@@ -185,7 +188,10 @@ describe('TelemetryApp', () => {
           ),
           resource_id: toGlobalId('DocumentId', fakeResourceId),
           resource_title: 'CsvFeed Title',
-          platform_id: toGlobalId('OpenCTIPlatform', fakePlatformId),
+          platform_service_instance_id: toGlobalId(
+            'RegisteredPlatform',
+            platformServiceInstanceId
+          ),
         },
       });
 
@@ -201,7 +207,7 @@ describe('TelemetryApp', () => {
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: fakeResourceId,
         resource_title: 'CsvFeed Title',
-        platform_id: fakePlatformId,
+        platform_id: platformId,
         target_product: TelemetryTargetProduct.OPEN_CTI,
       });
     });
