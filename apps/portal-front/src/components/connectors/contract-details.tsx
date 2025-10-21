@@ -1,7 +1,4 @@
-import {
-  IngestionConnectorType,
-  ingestionConnectorTypeMetadata,
-} from '@/components/connectors/connector.utils';
+import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { Contract } from '@/utils/connectors/connector.model';
 import { LogoGitIcon, OpenInNewIcon } from 'filigran-icon';
 import { Label } from 'filigran-ui/clients';
@@ -17,7 +14,9 @@ const ContractDetailsInformationPage = ({
   contract,
 }: ContractDetailsInformationPageProps) => {
   const t = useTranslations();
-
+  const connectorMetadata = getIngestionConnectorMetadata(
+    contract.container_type
+  );
   return (
     <div className="space-y-xl">
       <div>
@@ -56,23 +55,12 @@ const ContractDetailsInformationPage = ({
       <div>
         <Label className="block pb-s">{t('Service.Connectors.Type')}</Label>
         <span>
-          {' '}
-          {ingestionConnectorTypeMetadata[
-            contract.container_type as IngestionConnectorType
-          ] && (
+          {connectorMetadata && (
             <Badge
               className="mr-auto"
               variant="outline"
-              color={
-                ingestionConnectorTypeMetadata[
-                  contract.container_type as IngestionConnectorType
-                ]?.color
-              }>
-              {
-                ingestionConnectorTypeMetadata[
-                  contract.container_type as IngestionConnectorType
-                ]?.label
-              }
+              color={connectorMetadata.color}>
+              {connectorMetadata.label}
             </Badge>
           )}
         </span>

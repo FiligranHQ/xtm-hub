@@ -1,8 +1,5 @@
 'use client';
-import {
-  IngestionConnectorType,
-  ingestionConnectorTypeMetadata,
-} from '@/components/connectors/connector.utils';
+import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { connectorsItem } from '@/components/service/integration-feeds/integration-feed.graphql';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -35,10 +32,9 @@ const ShareableResourceConnectorCard: FunctionComponent<
     integrationFeed
   );
 
-  const connectorMetadata =
-    ingestionConnectorTypeMetadata[
-      connector.integration_subtype as IngestionConnectorType
-    ];
+  const connectorMetadata = getIngestionConnectorMetadata(
+    connector.integration_subtype
+  );
 
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">

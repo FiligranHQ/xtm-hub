@@ -1,12 +1,14 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
+import ShareableResourceConnectorSlug from '@/components/service/document/connector/shareable-resource-connector-slug';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import {
   IntegrationFeedQuery,
   integrationFeedsItem,
 } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { APP_PATH } from '@/utils/path/constant';
+import { isConnectorResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { integrationFeedQuery } from '@generated/integrationFeedQuery.graphql';
 import { integrationFeedsItem_fragment$key } from '@generated/integrationFeedsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -53,16 +55,23 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   return (
     documentData && (
       <AppServiceContext {...context}>
-        <ShareableResourceSlug
-          breadcrumbValue={breadcrumbValue}
-          documentData={documentData}
-          updateActions={
-            <ServiceManageSheet
-              document={documentData}
-              variant={'button'}
-            />
-          }
-        />
+        {isConnectorResource(documentData) ? (
+          <ShareableResourceConnectorSlug
+            breadcrumbValue={breadcrumbValue}
+            documentData={documentData}
+          />
+        ) : (
+          <ShareableResourceSlug
+            breadcrumbValue={breadcrumbValue}
+            documentData={documentData}
+            updateActions={
+              <ServiceManageSheet
+                document={documentData}
+                variant={'button'}
+              />
+            }
+          />
+        )}
       </AppServiceContext>
     )
   );

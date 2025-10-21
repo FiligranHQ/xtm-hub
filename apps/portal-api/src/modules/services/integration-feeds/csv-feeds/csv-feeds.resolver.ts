@@ -17,6 +17,7 @@ import {
 import {
   CSV_FEED_METADATA,
   CsvFeed,
+  INTEGRATION_FEED_CSV_FEED_TYPE,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds.model';
 import { csvFeedsApp } from './csv-feeds.app';
@@ -42,7 +43,13 @@ const resolvers: Resolvers = {
         const doc = await updateDocumentWithChildren<CsvFeed>(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
-          input,
+          {
+            ...input,
+            input: {
+              ...input.input,
+              integration_type: INTEGRATION_FEED_CSV_FEED_TYPE,
+            },
+          },
           CSV_FEED_METADATA,
           context,
           trx
