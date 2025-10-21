@@ -173,14 +173,16 @@ export const CustomDashboardForm = ({
                   fieldType: ({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('Service.CustomDashboards.Form.DescriptionLabel')}
+                        {t(
+                          'Service.OpenctiCustomDashboards.Form.DescriptionLabel'
+                        )}
                       </FormLabel>
                       <FormControl>
                         <MarkdownInput
                           value={field.value}
                           onChange={field.onChange}
                           placeholder={
-                            'Service.CustomDashboards.Form.DescriptionPlaceholder'
+                            'Service.OpenctiCustomDashboards.Form.DescriptionPlaceholder'
                           }
                         />
                       </FormControl>
@@ -192,7 +194,7 @@ export const CustomDashboardForm = ({
                   fieldType: ({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('Service.CustomDashboards.Form.LabelsLabel')}
+                        {t('Service.OpenctiCustomDashboards.Form.LabelsLabel')}
                       </FormLabel>
                       <FormControl>
                         <MultiSelectFormField
@@ -204,7 +206,7 @@ export const CustomDashboardForm = ({
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder={t(
-                            'Service.CustomDashboards.Form.LabelsPlaceholder'
+                            'Service.OpenctiCustomDashboards.Form.LabelsPlaceholder'
                           )}
                           variant="inverted"
                         />
@@ -216,7 +218,7 @@ export const CustomDashboardForm = ({
                   fieldType: ({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('Service.CustomDashboards.Form.Author')}
+                        {t('Service.OpenctiCustomDashboards.Form.Author')}
                       </FormLabel>
                       <FormControl>
                         <SelectUsersFormField
@@ -266,7 +268,9 @@ export const CustomDashboardForm = ({
                 },
                 document: isCreation
                   ? {
-                      label: t('Service.CustomDashboards.Form.SelectJSONFile'),
+                      label: t(
+                        'Service.OpenctiCustomDashboards.Form.SelectJSONFile'
+                      ),
                       fieldType: 'file',
                       inputProps: {
                         allowedTypes: 'application/json',
@@ -278,7 +282,7 @@ export const CustomDashboardForm = ({
                         <FormItem>
                           <FormLabel>
                             {t(
-                              'Service.CustomDashboards.Form.ExistingJSONFile',
+                              'Service.OpenctiCustomDashboards.Form.ExistingJSONFile',
                               {
                                 file_name:
                                   field.value?.[0].name ??
@@ -292,13 +296,13 @@ export const CustomDashboardForm = ({
                                 field={field}
                                 texts={{
                                   selectFile: t(
-                                    'Service.CustomDashboards.Form.UpdateJSONFile'
+                                    'Service.OpenctiCustomDashboards.Form.UpdateJSONFile'
                                   ),
                                   dialogTitle: t(
-                                    'Service.CustomDashboards.Form.UpdateJSONFile'
+                                    'Service.OpenctiCustomDashboards.Form.UpdateJSONFile'
                                   ),
                                   dialogDescription: t(
-                                    'Service.CustomDashboards.Form.DescriptionUpdateJSONFile'
+                                    'Service.OpenctiCustomDashboards.Form.DescriptionUpdateJSONFile'
                                   ),
                                 }}
                                 allowedTypes="application/json"
@@ -311,16 +315,20 @@ export const CustomDashboardForm = ({
                     },
                 images: isCreation
                   ? {
-                      label: t('Service.CustomDashboards.Form.ImageLabel'),
+                      label: t(
+                        'Service.OpenctiCustomDashboards.Form.ImageLabel'
+                      ),
                       fieldType: 'file',
                       inputProps: {
                         allowedTypes: 'image/jpeg, image/png',
                         multiple: 'multiple',
                         texts: {
                           selectFile: t(
-                            'Service.CustomDashboards.Form.SelectImage'
+                            'Service.OpenctiCustomDashboards.Form.SelectImage'
                           ),
-                          noFile: t('Service.CustomDashboards.Form.NoImage'),
+                          noFile: t(
+                            'Service.OpenctiCustomDashboards.Form.NoImage'
+                          ),
                           dropFiles: t('Service.Vault.FileForm.DropDocuments'),
                         },
                       },
@@ -332,7 +340,9 @@ export const CustomDashboardForm = ({
                           <>
                             <FormItem>
                               <FormLabel className="flex items-center h-6">
-                                {t('Service.CustomDashboards.Form.ImageLabel')}
+                                {t(
+                                  'Service.OpenctiCustomDashboards.Form.ImageLabel'
+                                )}
                                 <Button
                                   size="icon"
                                   variant="link"
@@ -370,10 +380,10 @@ export const CustomDashboardForm = ({
                                   }}
                                   texts={{
                                     selectFile: t(
-                                      'Service.CustomDashboards.Form.UploadImage'
+                                      'Service.OpenctiCustomDashboards.Form.UploadImage'
                                     ),
                                     noFile: t(
-                                      'Service.CustomDashboards.Form.NoImage'
+                                      'Service.OpenctiCustomDashboards.Form.NoImage'
                                     ),
                                     dropFiles: t(
                                       'Service.Vault.FileForm.DropDocuments'
@@ -427,7 +437,7 @@ export const CustomDashboardForm = ({
                                           </TooltipTrigger>
                                           <TooltipContent className="bg-gray-50">
                                             {t(
-                                              'Service.CustomDashboards.Form.Restore'
+                                              'Service.OpenctiCustomDashboards.Form.Restore'
                                             )}
                                           </TooltipContent>
                                         </Tooltip>
@@ -462,7 +472,7 @@ export const CustomDashboardForm = ({
                                             </TooltipTrigger>
                                             <TooltipContent className="bg-gray-50">
                                               {t(
-                                                'Service.CustomDashboards.Form.DeleteSentence'
+                                                'Service.OpenctiCustomDashboards.Form.DeleteSentence'
                                               )}
                                             </TooltipContent>
                                           </Tooltip>
@@ -479,40 +489,42 @@ export const CustomDashboardForm = ({
                     },
                 active: {
                   label: t(
-                    'Service.CustomDashboards.Form.PublishedPlaceholder'
+                    'Service.OpenctiCustomDashboards.Form.PublishedPlaceholder'
                   ),
                 },
                 short_description: {
                   label: t(
-                    'Service.CustomDashboards.Form.ShortDescriptionLabel'
+                    'Service.OpenctiCustomDashboards.Form.ShortDescriptionLabel'
                   ),
                   inputProps: {
                     placeholder: t(
-                      'Service.CustomDashboards.Form.ShortDescriptionPlaceholder'
+                      'Service.OpenctiCustomDashboards.Form.ShortDescriptionPlaceholder'
                     ),
                   },
                 },
                 slug: {
-                  label: t('Service.CustomDashboards.Form.SlugLabel'),
+                  label: t('Service.OpenctiCustomDashboards.Form.SlugLabel'),
                   inputProps: {
                     placeholder: t(
-                      'Service.CustomDashboards.Form.SlugPlaceholder'
+                      'Service.OpenctiCustomDashboards.Form.SlugPlaceholder'
                     ),
                   },
                 },
                 name: {
-                  label: t('Service.CustomDashboards.Form.NameLabel'),
+                  label: t('Service.OpenctiCustomDashboards.Form.NameLabel'),
                   inputProps: {
                     placeholder: t(
-                      'Service.CustomDashboards.Form.NamePlaceholder'
+                      'Service.OpenctiCustomDashboards.Form.NamePlaceholder'
                     ),
                   },
                 },
                 product_version: {
-                  label: t('Service.CustomDashboards.Form.productVersion'),
+                  label: t(
+                    'Service.OpenctiCustomDashboards.Form.productVersion'
+                  ),
                   inputProps: {
                     placeholder: t(
-                      'Service.CustomDashboards.Form.productVersionPlaceholder'
+                      'Service.OpenctiCustomDashboards.Form.productVersionPlaceholder'
                     ),
                   },
                 },

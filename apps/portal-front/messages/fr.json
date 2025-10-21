@@ -181,7 +181,6 @@
     "Delete": "Supprimer",
     "Details": "Détails",
     "Disable": "Désactiver",
-    "Download": "Télécharger",
     "Remove": "Retirer",
     "Update": "Modifier"
   },
@@ -427,6 +426,11 @@
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact"
     },
     "CreationStatus": "Statut de la création",
+    "OpenctiIntegrationFeeds": {
+      "Actions": {
+        "Share": "Partager l'intégration Feed"
+      }
+    },
     "CsvFeed": {
       "Actions": {
         "Added": "{name} a été ajouté",
@@ -458,21 +462,21 @@
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
       "UpdateService": "Editer le CSV Feed {name}"
     },
-    "CustomDashboards": {
+    "OpenctiCustomDashboards": {
       "Actions": {
-        "Added": "Le custom dashboard {name} a été ajouté avec succès",
-        "Deleted": "Le custom dashboard {name} a été supprimé avec succès",
-        "Share": "Partager le tableau de bord",
-        "Updated": "Le custom dashboard {name} a été modifié avec succès"
+        "Added": "Le tableau de bord personnalisé {name} a été ajouté avec succès",
+        "Deleted": "Le tableau de bord personnalisé {name} a été supprimé avec succès",
+        "Share": "Partager le tableau de bord personnalisé",
+        "Updated": "Le tableau de bord personnalisé {name} a été modifié avec succès"
       },
-      "Active": "Published",
-      "AddService": "Nouveau tableau de bord",
-      "DeleteService": "Supprimer le tableau de bord {name}",
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau tableau de bord",
+      "DeleteService": "Supprimer le tableau de bord personnalisé {name}",
       "Form": {
         "Author": "Auteur",
-        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image",
+        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
         "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "Description du tableau de bord",
+        "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le document.",
         "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
         "ExistingJSONFile": "Fichier JSON existant : {file_name}",
         "ImageLabel": "Images",
@@ -484,22 +488,22 @@
         "NoImage": "Pas d'image sélectionnée",
         "NoJSONFile": "Pas de fichier JSON sélectionné",
         "PublishedLabel": "Publier",
-        "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
-        "Restore": "Restore",
-        "SelectImage": "Selectionnez une/des image(s)",
-        "SelectJSONFile": "Selectionnez un fichier JSON",
-        "ShortDescriptionLabel": "Brève description",
+        "PublishedPlaceholder": "Le tableau de bord est-il publié ?",
+        "Restore": "Restaurer",
+        "SelectImage": "Sélectionner une (des) image(s)",
+        "SelectJSONFile": "Sélectionner le fichier JSON",
+        "ShortDescriptionLabel": "Courte description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
-        "UpdateJSONFile": "Mettre à jour le fichier JSON",
-        "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
-        "productVersion": "OpenCTI version",
+        "UpdateJSONFile": "Mise à jour du fichier JSON",
+        "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
+        "productVersion": "Version OpenCTI",
         "productVersionPlaceholder": "1.0.0"
       },
-      "NonActive": "Draft",
-      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
-      "UpdateService": "Tableau de bord des mises à jour"
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
+      "UpdateService": "Mettre à jour le tableau de bord"
     },
     "Description": "Description",
     "GoTo": "Aller au service",

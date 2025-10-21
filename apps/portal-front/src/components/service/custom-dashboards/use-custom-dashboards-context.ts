@@ -139,7 +139,7 @@ export function useCustomDashboardsContext(
 
   return {
     serviceInstance,
-    translationKey: 'Service.CustomDashboards',
+    translationKey: 'Service.OpenctiCustomDashboards',
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,
