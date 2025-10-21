@@ -1,6 +1,7 @@
 'use client';
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { connectorsItem } from '@/components/service/integration-feeds/integration-feed.graphql';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -16,7 +17,7 @@ import { VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useContext } from 'react';
 import { useFragment } from 'react-relay';
 
 interface ShareableResourceConnectorCard {
@@ -27,6 +28,7 @@ interface ShareableResourceConnectorCard {
 const ShareableResourceConnectorCard: FunctionComponent<
   ShareableResourceConnectorCard
 > = ({ integrationFeed, serviceInstance }) => {
+  const { settings } = useContext(SettingsContext);
   const connector = useFragment<integrationFeedConnectorsItem_fragment$key>(
     connectorsItem,
     integrationFeed
@@ -84,7 +86,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
           )}
           <ShareLinkButton
             documentId={integrationFeed.slug}
-            url={`${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-connectors/${integrationFeed?.slug}`}
+            url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${integrationFeed?.service_instance?.slug}/${integrationFeed?.slug}`}
           />
         </div>
       </Link>
