@@ -23,7 +23,7 @@ import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
-import { updateUserSession } from '../../sessionStoreManager';
+import { updateUserSession } from '../../session-store-manager';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { hashPassword } from '../../utils/hash-password.util';
@@ -65,7 +65,7 @@ export const createUserWithPersonalSpace = async (
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
   // Create user personal space organization
-  const [personalSpaceOrganization] = await insertNewOrganization({
+  const personalSpaceOrganization = await insertNewOrganization({
     id: uuid as unknown as OrganizationId,
     name: data.email,
     personal_space: true,
@@ -108,7 +108,7 @@ export const createUserWithPersonalSpace = async (
 async function createOrganisationWithAdminUser(email: string) {
   const extractedDomain = extractDomain(email);
 
-  const [newOrganization] = await insertNewOrganization({
+  const newOrganization = await insertNewOrganization({
     id: uuidv4() as OrganizationId,
     name: extractedDomain,
     domains: [extractedDomain],
@@ -234,7 +234,7 @@ export const insertUserIntoOrganization = async (
   subscriptionId: SubscriptionId
 ) => {
   const [subscription] =
-    await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+    await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   const [organization] = await loadOrganizationsFromEmail(user.email);

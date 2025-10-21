@@ -1,3 +1,5 @@
+directive @system_token repeatable on OBJECT | FIELD_DEFINITION
+
 directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
@@ -38,10 +40,10 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
-  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
   seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
   seoCsvFeedBySlug(slug: String): CsvFeed
+  integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
+  integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
@@ -66,7 +68,6 @@ type Query {
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   me: User
-  user(id: ID!): User
   usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
@@ -204,8 +205,8 @@ type CustomDashboard implements DocumentBase & Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -270,9 +271,9 @@ type DeploymentRequest implements Node {
   platform_identifier: PlatformIdentifier!
   region: PlatformRegion!
   type: DeploymentType!
-  intention: String
   job_title: String
   activity_sector: String
+  use_case: String
   start_date: Date
   end_date: Date
   status: DeploymentRequestStatus!
@@ -282,9 +283,9 @@ input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
   region: PlatformRegion!
   type: DeploymentType!
-  intention: String
   job_title: String
   activity_sector: String
+  use_case: String
 }
 
 type ShareableResourceImage {
@@ -313,8 +314,8 @@ interface DocumentBase implements Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -338,8 +339,8 @@ type Document implements Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   children_documents: [Document!]
   slug: String
   service_instance: ServiceInstance
@@ -373,7 +374,7 @@ type ServiceLink implements Node {
   name: String
 }
 
-type CsvFeed implements DocumentBase & Node {
+type CsvFeed implements Node & DocumentBase & IntegrationFeed {
   id: ID!
   type: String!
   uploader: User
@@ -387,8 +388,8 @@ type CsvFeed implements DocumentBase & Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -396,6 +397,7 @@ type CsvFeed implements DocumentBase & Node {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
+  integration_type: String!
 }
 
 input CreateCsvFeedInput {
@@ -419,14 +421,74 @@ input UpdateCsvFeedInput {
   uploader_id: String
 }
 
-type CsvFeedEdge {
-  cursor: String!
-  node: CsvFeed!
+interface IntegrationFeed implements Node & DocumentBase {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
+  remover_id: ID
+  integration_type: String!
 }
 
-type CsvFeedConnection {
+type Connector implements Node & DocumentBase & IntegrationFeed {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
+  remover_id: ID
+  integration_type: String!
+  product_version: String!
+  container_image: String
+  verified: String!
+  source_code: String
+  subscription_link: String
+  integration_subtype: String!
+  manager_supported: String!
+  playbook_supported: String!
+}
+
+type IntegrationFeedEdge {
+  cursor: String!
+  node: IntegrationFeed!
+}
+
+type IntegrationFeedConnection {
   totalCount: Int!
-  edges: [CsvFeedEdge!]!
+  edges: [IntegrationFeedEdge!]!
   pageInfo: PageInfo!
 }
 
@@ -467,8 +529,8 @@ type OpenAEVScenario implements DocumentBase & Node {
   created_at: Date!
   updated_at: Date
   updater_id: String
-  download_number: Int!
-  share_number: Int!
+  download_number: Int
+  share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
@@ -697,7 +759,6 @@ type ServiceInstanceSubscription {
 
 type Subscription {
   ServiceInstance: ServiceInstanceSubscription
-  ActionTracking: TrackingSubscription
   User(organizationId: ID): UserSubscription
   MeUser: MeUserSubscription
   UserPending(organizationId: ID!): UserPendingSubscription
@@ -793,31 +854,6 @@ input OneClickDeployInput {
 
 type SendTelemetryMutation {
   oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
-}
-
-type ActionTracking implements Node {
-  id: ID!
-  contextual_id: String!
-  status: String
-  created_at: Date!
-  ended_at: Date
-  type: String!
-  message_tracking: [MessageTracking!]!
-}
-
-type MessageTracking implements Node {
-  id: ID!
-  tracking_id: ID
-  created_at: Date!
-  technical: Boolean
-  type: String!
-  tracking_info: JSON
-}
-
-type TrackingSubscription {
-  add: ActionTracking
-  edit: ActionTracking
-  delete: ActionTracking
 }
 
 type GenericServiceCapability implements Node {
@@ -1018,13 +1054,6 @@ enum Restriction {
   ADMINISTRATE_ORGANIZATION
   MANAGE_ACCESS
   MANAGE_SUBSCRIPTION
-  BCK_MANAGE_SERVICES
-  BCK_MANAGE_COMMUNITIES
-  FRT_SERVICE_SUBSCRIBER
-  FRT_MANAGE_SETTINGS
-  FRT_ACCESS_BILLING
-  FRT_MANAGE_USER
-  FRT_ACCESS_SERVICES
   MANAGE_PLATFORM_REGISTRATION
 }
 

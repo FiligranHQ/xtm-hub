@@ -1,5 +1,6 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { NextRequest } from 'next/server';
+import { redirectToFreeTrial } from './free-trial';
 import { redirectToRegistration } from './registration';
 import { redirectToResource } from './resource';
 import { redirectToTransferPersoSpace } from './transfer-perso-space';
@@ -42,6 +43,8 @@ export async function GET(
       );
     case 'transfer-personal-space':
       return redirectToTransferPersoSpace(request);
+    case 'free-trial':
+      return redirectToFreeTrial(request);
   }
 
   return redirectToResource(awaitedParams, request);

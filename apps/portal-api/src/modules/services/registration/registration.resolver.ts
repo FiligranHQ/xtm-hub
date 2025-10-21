@@ -1,6 +1,7 @@
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../requestContext';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { registrationApp } from './registration.app';
@@ -70,18 +71,13 @@ const resolvers: Resolvers = {
   Mutation: {
     registerPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
+      requestContext.update({ trx });
       try {
         const payload = {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         };
-        const token = await registrationApp.registerPlatform(
-          {
-            ...context,
-            trx,
-          },
-          payload
-        );
+        const token = await registrationApp.registerPlatform(context, payload);
         await trx.commit();
         return { token };
       } catch (error) {
@@ -94,14 +90,9 @@ const resolvers: Resolvers = {
     },
     unregisterPlatform: async (_, { input }, context) => {
       const trx = await dbTx();
+      requestContext.update({ trx });
       try {
-        await registrationApp.unregisterPlatform(
-          {
-            ...context,
-            trx,
-          },
-          input
-        );
+        await registrationApp.unregisterPlatform(context, input);
         await trx.commit();
         return { success: true };
       } catch (error) {

@@ -61,6 +61,8 @@ export enum UnknownErrorCode {
   RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
   EditUserSessionError = 'EDIT_USER_SESSION_ERROR',
   UpdatePlatformServiceMetadataError = 'UPDATE_PLATFORM_SERVICE_METADATA_ERROR',
+  NoAsyncContextAvailableError = 'NO_ASYNC_CONTEXT_AVAILABLE',
+  CreateDeploymentRequestError = 'CREATE_DEPLOYMENT_REQUEST_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {

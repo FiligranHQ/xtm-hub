@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
   BreadcrumbNav,
@@ -13,11 +14,11 @@ import {
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -27,8 +28,11 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { ReactNode, useContext } from 'react';
+import {
+  ShareableResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
+
 // Component interface
 interface ShareableResourceSlugProps {
   documentData: ShareableResource;
@@ -36,18 +40,6 @@ interface ShareableResourceSlugProps {
   children?: ReactNode;
   updateActions?: ReactNode;
 }
-
-export enum ShareableResourceType {
-  OPENAEV_SCENARIO = 'openaev_scenario',
-  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration_feed',
-  OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
-}
-
-export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
-  openaev_scenario: 'Scenario OpenAEV',
-  opencti_integration_feed: 'Feed OpenCTI',
-  opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
-};
 
 // Component
 const ShareableResourceSlug: React.FunctionComponent<
@@ -61,8 +53,12 @@ const ShareableResourceSlug: React.FunctionComponent<
     documentData.download_number
   );
 
+  useEffect(() => {
+    setDocumentDownloadNumber(documentData.download_number ?? 0);
+  }, [documentData.download_number]);
+
   const incrementDownloadNumber = () => {
-    setDocumentDownloadNumber(documentDownloadNumber + 1);
+    setDocumentDownloadNumber((documentDownloadNumber ?? 0) + 1);
   };
   const isOneOpenAEVRegistrationFeatureEnabled = useIsFeatureEnabled(
     FeatureFlag.OPENAEV_REGISTRATION
@@ -138,19 +134,14 @@ const ShareableResourceSlug: React.FunctionComponent<
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
         />
-        <div className="flex-1">
-          <h2 className="py-s txt-container-title truncate text-ellipsis text-muted-foreground">
-            {t('Service.ShareableResources.Details.BasicInformation')}
-          </h2>
-          <section className="border rounded border-border-light bg-page-background flex space-y-xl p-l">
-            {documentData && (
-              <ShareableResourceDetails
-                documentData={documentData}
-                downloadNumber={documentDownloadNumber}
-              />
-            )}
-          </section>
-        </div>
+        <ShareableResourceBasicInformation>
+          {documentData && (
+            <ShareableResourceDetails
+              documentData={documentData}
+              downloadNumber={documentDownloadNumber ?? 0}
+            />
+          )}
+        </ShareableResourceBasicInformation>
       </div>
     </>
   );

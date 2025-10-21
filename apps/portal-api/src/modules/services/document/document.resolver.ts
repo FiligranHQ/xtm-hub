@@ -116,7 +116,7 @@ const resolvers: Resolvers = {
         const [document] = await loadUnsecureDocumentsBy({
           id: extractId<DocumentId>(documentId),
         });
-        await updateDocumentWithCounters(document);
+        const documentWithCounters = await updateDocumentWithCounters(document);
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
@@ -145,7 +145,7 @@ const resolvers: Resolvers = {
             error,
           });
         }
-        return document;
+        return documentWithCounters;
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -171,7 +171,7 @@ const resolvers: Resolvers = {
       return getServiceInstance(context, service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
-      const subscription = await loadSubscriptionBy(context, {
+      const subscription = await loadSubscriptionBy({
         service_instance_id: service_instance_id as ServiceInstanceId,
         organization_id: context.user.selected_organization_id,
       });

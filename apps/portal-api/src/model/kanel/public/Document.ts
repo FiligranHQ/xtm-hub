@@ -24,8 +24,6 @@ export default interface Document {
 
   created_at: Date;
 
-  download_number: number | null;
-
   remover_id: string | null;
 
   mime_type: string | null;
@@ -39,8 +37,6 @@ export default interface Document {
   short_description: string | null;
 
   slug: string | null;
-
-  share_number: number | null;
 
   uploader_organization_id: string | null;
 
@@ -70,9 +66,6 @@ export interface DocumentInitializer {
   /** Default value: CURRENT_TIMESTAMP */
   created_at?: Date;
 
-  /** Default value: 0 */
-  download_number?: number | null;
-
   remover_id?: string | null;
 
   mime_type?: string | null;
@@ -86,9 +79,6 @@ export interface DocumentInitializer {
   short_description?: string | null;
 
   slug?: string | null;
-
-  /** Default value: 0 */
-  share_number?: number | null;
 
   uploader_organization_id?: string | null;
 
@@ -116,8 +106,6 @@ export interface DocumentMutator {
 
   created_at?: Date;
 
-  download_number?: number | null;
-
   remover_id?: string | null;
 
   mime_type?: string | null;
@@ -131,8 +119,6 @@ export interface DocumentMutator {
   short_description?: string | null;
 
   slug?: string | null;
-
-  share_number?: number | null;
 
   uploader_organization_id?: string | null;
 

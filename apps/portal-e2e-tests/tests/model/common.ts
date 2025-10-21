@@ -1,12 +1,7 @@
 import { Locator, Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
-
-export async function forceCloseAllDropdowns(page: Page) {
-  await page.click('body', { position: { x: 1, y: 1 }, force: true });
-}
 
 export async function openAndGetRowActionsDropdown(page: Page, row: Locator) {
-  await forceCloseAllDropdowns(page);
+  await page.waitForTimeout(100);
   const button = row.locator('td:last-child').getByRole('button');
   await button.click();
   const dropdown = page.getByRole('menu');
@@ -18,7 +13,7 @@ export async function clickRowAction(
   page: Page,
   row: Locator,
   actionLabel: string,
-  role = 'button'
+  role: 'menuitem' | 'button' = 'menuitem'
 ) {
   const dropdown = await openAndGetRowActionsDropdown(page, row);
   const button = dropdown.getByRole(role, { name: actionLabel });
@@ -31,7 +26,6 @@ export async function waitForDrawerToClose(page: Page) {
   await page
     .locator('body > div.fixed.inset-0.z-50')
     .waitFor({ state: 'hidden' });
-  await forceCloseAllDropdowns(page);
 }
 
 export async function waitForToasterToHide(page: Page) {

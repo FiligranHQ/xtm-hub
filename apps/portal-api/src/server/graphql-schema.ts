@@ -11,6 +11,7 @@ import ServiceDefinitionResolver from '../modules/services/definition/service-de
 import deploymentResolver from '../modules/services/deployments/deployments.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 import csvFeedsResolver from '../modules/services/integration-feeds/csv-feeds/csv-feeds.resolver';
+import integrationFeedsResolver from '../modules/services/integration-feeds/integration-feeds.resolver';
 import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
@@ -18,12 +19,11 @@ import labelsResolver from '../modules/settings/labels/labels.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
-import trackingResolver from '../modules/tracking/tracking.resolver';
 import serviceCapabilityResolver from '../modules/user_service/service-capability/service-capability.resolver';
 import userServiceResolver from '../modules/user_service/user_service.resolver';
 import usersResolver from '../modules/users/users.resolver';
 import nodesResolver from '../nodes/nodes.resolver';
-import { authDirectiveTransformer } from '../security/directive-auth';
+import { authDirectiveTransformer } from '../security/directive-graphql/directive-auth';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -40,7 +40,6 @@ const resolvers = mergeResolvers([
   organizationsResolver,
   usersResolver,
   settingsResolver,
-  trackingResolver,
   rolePortalResolver,
   vaultResolver,
   subscriptionsResolver,
@@ -55,6 +54,7 @@ const resolvers = mergeResolvers([
   telemetryResolver,
   deploymentResolver,
   ingestManifestResolver,
+  integrationFeedsResolver,
 ]);
 
 const createSchema = () => {

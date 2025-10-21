@@ -1,0 +1,204 @@
+import { SessionData, Store } from 'express-session';
+import { database } from '../../knexfile';
+import { logApp } from '../utils/app-logger.util';
+
+export class PostgreSQLSessionStore extends Store {
+  private tableName = 'sessions';
+
+  /**
+   * Get a session by session ID
+   */
+  override get(
+    sid: string,
+    callback: (err: unknown, session?: SessionData | null) => void
+  ): void {
+    database(this.tableName)
+      .select('sess')
+      .where('sid', sid)
+      .where('expire', '>', new Date())
+      .first()
+      .then((row) => {
+        if (!row) {
+          return callback(null, null);
+        }
+        callback(null, row.sess);
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore get error:', err);
+        callback(err);
+      });
+  }
+
+  /**
+   * Set/update a session
+   */
+  override set(
+    sid: string,
+    session: SessionData,
+    callback?: (err?: unknown) => void
+  ): void {
+    const expire = this.getExpireDate(session);
+    const now = new Date();
+
+    database(this.tableName)
+      .insert({
+        sid,
+        sess: JSON.stringify(session),
+        expire,
+        created_at: now,
+        updated_at: now,
+      })
+      .onConflict('sid')
+      .merge({
+        sess: JSON.stringify(session),
+        expire,
+        updated_at: now,
+      })
+      .then(() => {
+        if (callback) callback();
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore set error:', err);
+        if (callback) callback(err);
+      });
+  }
+
+  /**
+   * Destroy a session
+   */
+  override destroy(sid: string, callback?: (err?: unknown) => void): void {
+    database(this.tableName)
+      .where('sid', sid)
+      .del()
+      .then(() => {
+        if (callback) callback();
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore destroy error:', err);
+        if (callback) callback(err);
+      });
+  }
+
+  /**
+   * Get all sessions (required for updateUserSession function)
+   */
+  override all(
+    callback: (
+      err: unknown,
+      sessions?: { [sid: string]: SessionData } | null
+    ) => void
+  ): void {
+    database(this.tableName)
+      .select('sid', 'sess')
+      .where('expire', '>', new Date())
+      .then((rows) => {
+        const sessions: { [sid: string]: SessionData } = {};
+        rows.forEach((row) => {
+          try {
+            sessions[row.sid] =
+              typeof row.sess === 'string' ? JSON.parse(row.sess) : row.sess;
+          } catch (err) {
+            logApp.error(
+              `PostgreSQLSessionStore parse error for session ${row.sid}:`,
+              err
+            );
+          }
+        });
+        callback(null, sessions);
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore all error:', err);
+        callback(err);
+      });
+  }
+
+  /**
+   * Clear all sessions
+   */
+  override clear(callback?: (err?: unknown) => void): void {
+    database(this.tableName)
+      .del()
+      .then(() => {
+        if (callback) callback();
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore clear error:', err);
+        if (callback) callback(err);
+      });
+  }
+
+  /**
+   * Get session count
+   */
+  override length(callback: (err: unknown, length?: number) => void): void {
+    database(this.tableName)
+      .where('expire', '>', new Date())
+      .count('* as count')
+      .first()
+      .then((result) => {
+        const count = parseInt((result?.count as string) || '0', 10);
+        callback(null, count);
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore length error:', err);
+        callback(err);
+      });
+  }
+
+  /**
+   * Touch a session (update expiration)
+   */
+  override touch(
+    sid: string,
+    session: SessionData,
+    callback?: (err?: unknown) => void
+  ): void {
+    const expire = this.getExpireDate(session);
+
+    database(this.tableName)
+      .where('sid', sid)
+      .update({
+        expire,
+        updated_at: new Date(),
+      })
+      .then(() => {
+        if (callback) callback();
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore touch error:', err);
+        if (callback) callback(err);
+      });
+  }
+
+  /**
+   * Clean up expired sessions
+   */
+  cleanup(callback?: (err?: unknown, count?: number) => void): void {
+    database(this.tableName)
+      .where('expire', '<=', new Date())
+      .del()
+      .then((deletedCount) => {
+        logApp.info(
+          `PostgreSQLSessionStore cleaned up ${deletedCount} expired sessions`
+        );
+        if (callback) callback(null, deletedCount);
+      })
+      .catch((err) => {
+        logApp.error('PostgreSQLSessionStore cleanup error:', err);
+        if (callback) callback(err);
+      });
+  }
+
+  /**
+   * Calculate expiration date for a session
+   */
+  private getExpireDate(session: SessionData): Date {
+    const maxAge = session.cookie?.maxAge;
+    if (maxAge) {
+      return new Date(Date.now() + maxAge);
+    }
+
+    // Default to 24 hours if no maxAge is set
+    return new Date(Date.now() + 24 * 60 * 60 * 1000);
+  }
+}

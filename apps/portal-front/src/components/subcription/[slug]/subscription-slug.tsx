@@ -27,7 +27,7 @@ import {
 } from 'react';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { IconActionContext, IconActions } from '@/components/ui/icon-actions';
+import { IconActionContext, IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import { useMutation } from 'react-relay';
 
@@ -68,6 +68,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
 }) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
+  const [editUserService, setEditUserService] = useState<
+    userServices_fragment$data | undefined
+  >(undefined);
+  const [deleteUserService, setDeleteUserService] = useState<
+    userServices_fragment$data | undefined
+  >(undefined);
 
   const { me } = useContext(PortalContext);
   const { setMenuOpen } = useContext(IconActionContext);
@@ -236,33 +242,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
                       <span className="sr-only">{t('Utils.OpenMenu')}</span>
                     </>
                   }>
-                  <EditUserService
-                    userService={row.original}
-                    connectionId={
-                      userServices.userServiceFromSubscription?.__id ?? ''
-                    }
-                    subscription={queryDataSubscription ?? {}}
-                  />
-                  <AlertDialogComponent
-                    AlertTitle={t('Service.Management.RemoveAccess')}
-                    actionButtonText={t('Service.Management.RemoveAccess')}
-                    variantName={'destructive'}
-                    triggerElement={
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start normal-case"
-                        aria-label={t('Service.Management.RemoveAccess')}>
-                        {t('Utils.Delete')}
-                      </Button>
-                    }
-                    onClickContinue={() =>
-                      deleteCurrentUser(row.original.user?.email ?? '')
-                    }>
-                    {t('Service.Management.AreYouSureRemoveAccess', {
-                      firstname: row.original.user!.first_name!,
-                      lastname: row.original.user!.last_name!,
-                    })}
-                  </AlertDialogComponent>
+                  <IconActionsItem onClick={() => setEditUserService(row.original)}>
+                    {t('Utils.Update')}
+                  </IconActionsItem>
+                  <IconActionsItem onClick={() => setDeleteUserService(row.original)}>
+                    {t('Utils.Delete')}
+                  </IconActionsItem>
                 </IconActions>
               )}
             </div>
@@ -367,6 +352,34 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           columnPinning: { right: ['actions'] },
         }}
       />
+      {editUserService && (
+        <EditUserService
+          key={`edit-${editUserService.id}`}
+          userService={editUserService}
+          connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
+          subscription={queryDataSubscription ?? {}}
+          open={!!editUserService}
+          setOpen={(open) => setEditUserService(open ? editUserService : undefined)}
+        />
+      )}
+      {deleteUserService && (
+        <AlertDialogComponent
+          key={`delete-${deleteUserService.id}`}
+          AlertTitle={t('Service.Management.RemoveAccess')}
+          actionButtonText={t('Service.Management.RemoveAccess')}
+          variantName={'destructive'}
+          isOpen={!!deleteUserService}
+          onOpenChange={(open) => setDeleteUserService(open ? deleteUserService : undefined)}
+          onClickContinue={() => {
+            deleteCurrentUser(deleteUserService.user?.email ?? '');
+            setDeleteUserService(undefined);
+          }}>
+          {t('Service.Management.AreYouSureRemoveAccess', {
+            firstname: deleteUserService.user!.first_name!,
+            lastname: deleteUserService.user!.last_name!,
+          })}
+        </AlertDialogComponent>
+      )}
     </>
   );
 };

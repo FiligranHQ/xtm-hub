@@ -1,4 +1,4 @@
-import { EditUser } from '@/components/admin/user/[slug]/user-edit';
+import { EditUser } from '@/components/admin/user/forms/user-update';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { PortalContext } from '@/components/me/app-portal-context';

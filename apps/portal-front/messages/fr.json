@@ -65,6 +65,7 @@
       "CANT_REMOVE_LAST_ADMINISTRATOR": "Vous ne pouvez pas supprimer le dernier administrateur d'une organisation",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
+      "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
       "CSV_FEED_DELETION_ERROR": "Erreur survenue lors de la suppression d'un flux CSV",
       "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
       "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
@@ -92,6 +93,7 @@
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
+      "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
       "OPENAEV_SCENARIO_DELETE_ERROR": "Une erreur s'est produite lors de la suppression d'un scénario OpenAEV",
       "OPENAEV_SCENARIO_INSERTION_ERROR": "Une erreur s'est produite lors de la création d'un scénario OpenAEV",
       "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "Un scénario OpenAEV avec le même slug existe déjà",
@@ -179,7 +181,6 @@
     "Delete": "Supprimer",
     "Details": "Détails",
     "Disable": "Désactiver",
-    "Download": "Télécharger",
     "Remove": "Retirer",
     "Update": "Modifier"
   },
@@ -425,6 +426,11 @@
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact"
     },
     "CreationStatus": "Statut de la création",
+    "OpenctiIntegrationFeeds": {
+      "Actions": {
+        "Share": "Partager l'intégration Feed"
+      }
+    },
     "CsvFeed": {
       "Actions": {
         "Added": "{name} a été ajouté",
@@ -456,21 +462,21 @@
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
       "UpdateService": "Editer le CSV Feed {name}"
     },
-    "CustomDashboards": {
+    "OpenctiCustomDashboards": {
       "Actions": {
-        "Added": "Le custom dashboard {name} a été ajouté avec succès",
-        "Deleted": "Le custom dashboard {name} a été supprimé avec succès",
-        "Share": "Partager le tableau de bord",
-        "Updated": "Le custom dashboard {name} a été modifié avec succès"
+        "Added": "Le tableau de bord personnalisé {name} a été ajouté avec succès",
+        "Deleted": "Le tableau de bord personnalisé {name} a été supprimé avec succès",
+        "Share": "Partager le tableau de bord personnalisé",
+        "Updated": "Le tableau de bord personnalisé {name} a été modifié avec succès"
       },
-      "Active": "Published",
-      "AddService": "Nouveau tableau de bord",
-      "DeleteService": "Supprimer le tableau de bord {name}",
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau tableau de bord",
+      "DeleteService": "Supprimer le tableau de bord personnalisé {name}",
       "Form": {
         "Author": "Auteur",
-        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image",
+        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
         "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "Description du tableau de bord",
+        "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le document.",
         "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
         "ExistingJSONFile": "Fichier JSON existant : {file_name}",
         "ImageLabel": "Images",
@@ -482,22 +488,22 @@
         "NoImage": "Pas d'image sélectionnée",
         "NoJSONFile": "Pas de fichier JSON sélectionné",
         "PublishedLabel": "Publier",
-        "PublishedPlaceholder": "Est-ce que le tableau de bord sera publié ?",
-        "Restore": "Restore",
-        "SelectImage": "Selectionnez une/des image(s)",
-        "SelectJSONFile": "Selectionnez un fichier JSON",
-        "ShortDescriptionLabel": "Brève description",
+        "PublishedPlaceholder": "Le tableau de bord est-il publié ?",
+        "Restore": "Restaurer",
+        "SelectImage": "Sélectionner une (des) image(s)",
+        "SelectJSONFile": "Sélectionner le fichier JSON",
+        "ShortDescriptionLabel": "Courte description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
         "SlugLabel": "Slug (url)",
         "SlugPlaceholder": "dashboard-slug",
-        "UpdateJSONFile": "Mettre à jour le fichier JSON",
-        "UploadImage": "Télécharger une (des) nouvelle(s) image(s)",
-        "productVersion": "OpenCTI version",
+        "UpdateJSONFile": "Mise à jour du fichier JSON",
+        "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
+        "productVersion": "Version OpenCTI",
         "productVersionPlaceholder": "1.0.0"
       },
-      "NonActive": "Draft",
-      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
-      "UpdateService": "Tableau de bord des mises à jour"
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
+      "UpdateService": "Mettre à jour le tableau de bord"
     },
     "Description": "Description",
     "GoTo": "Aller au service",
@@ -593,6 +599,22 @@
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
     "SureWantSubscriptionDirect": "Voulez-vous souscrire au service {serviceName} ? Ce service est gratuit et vous donne accès aux ressources créées par l'équipe Filigran.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
+    "Trials": {
+      "Explore": "Explorer la plateforme OpenCTI avec 30 jours",
+      "FreeTrial": "D'essai gratuit !",
+      "LearnMore": "En savoir plus",
+      "StartTrial": "Commencer un essai",
+      "Form": {
+        "Region": "Région",
+        "AssociatedEmail": "Email associé",
+        "JobTitle": "Titre du poste",
+        "ActivitySector": "Secteur d'activité",
+        "UseCase": "Cas d'utilisation",
+        "MSSA": "MSSA",
+        "MSSAAgreement": "*Je reconnais avoir lu, compris et accepté les conditions du procès de",
+        "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"
+      }
+    },
     "Vault": {
       "DeleteDocument": "Effacer le document",
       "DropFile": "Lâchez le document ici",
@@ -800,11 +822,11 @@
     "Reset": "Effacer",
     "Success": "Succès",
     "Update": "Editer",
+    "Updating": "Mise à jour...",
     "Validate": "Valider",
     "ValidateForm": "Valider le formulaire",
     "Verified": "Vérifié",
     "Visualize": "Visualiser",
-    "Updating": "Mise à jour...",
     "DangerZone": "Zone de danger"
   },
   "Platform": {

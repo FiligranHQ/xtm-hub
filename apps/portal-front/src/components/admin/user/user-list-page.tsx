@@ -1,5 +1,5 @@
-import { AddUser } from '@/components/admin/user/add-user';
-import { AdminAddUser } from '@/components/admin/user/admin-add-user';
+import { AddUser } from '@/components/admin/user/forms/add-user';
+import { AdminAddUser } from '@/components/admin/user/forms/admin/admin-add-user';
 import PendingUserList from '@/components/admin/user/pending-user-list';
 import UserList from '@/components/admin/user/user-list';
 import {

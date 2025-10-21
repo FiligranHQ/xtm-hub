@@ -123,7 +123,6 @@ export const loadPublicServiceInstances = (context: PortalContext, opts) => {
     .andWhereRaw(`("subscription"."id" IS NULL OR "userService"."id" IS NULL)`);
 
   return paginate<ServiceInstance, ServiceConnection>(
-    context,
     'ServiceInstance',
     {
       first,
@@ -163,16 +162,12 @@ export const loadIsSubscribed = async (context, id) => {
 
 export const loadServiceInstances = async (context: PortalContext, opts) => {
   const { filters, searchTerm, orderBy } = opts;
-  return paginate<ServiceInstance, ServiceConnection>(
-    context,
-    'ServiceInstance',
-    {
-      ...opts,
-      orderBy: `ServiceInstance.${orderBy}`,
-      filters,
-      searchTerm,
-    }
-  );
+  return paginate<ServiceInstance, ServiceConnection>('ServiceInstance', {
+    ...opts,
+    orderBy: `ServiceInstance.${orderBy}`,
+    filters,
+    searchTerm,
+  });
 };
 
 export const loadServiceInstanceSubscriptions = async (context, id) => {
@@ -277,7 +272,7 @@ export const loadServiceInstanceBy = async (
 
 export const loadServiceWithSubscriptions = async (
   context: PortalContext,
-  service_instance_id
+  serviceInstanceId: ServiceInstanceId
 ) => {
   const queryUserServiceCapabilities = db(context, 'UserService_Capability')
     .leftJoin(
@@ -352,7 +347,7 @@ export const loadServiceWithSubscriptions = async (
     );
 
   const querySubscriptions = db<Subscription>(context, 'Subscription')
-    .where('Subscription.service_instance_id', '=', service_instance_id)
+    .where('Subscription.service_instance_id', '=', serviceInstanceId)
     .leftJoin(
       queryUserServiceWithCapa.as('userService'),
       'userService.subscription_id',
@@ -418,7 +413,7 @@ export const loadServiceWithSubscriptions = async (
     context,
     'ServiceInstance'
   )
-    .where('ServiceInstance.id', '=', service_instance_id)
+    .where('ServiceInstance.id', '=', serviceInstanceId)
     .leftJoin(
       'ServiceDefinition',
       'ServiceInstance.service_definition_id',
@@ -477,7 +472,7 @@ export const grantServiceAccess = async (
   )) as [UserService];
 
   const [subscription] =
-    await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+    await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   for (const userId of usersId) {

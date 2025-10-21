@@ -86,7 +86,7 @@ describe('Service Instance app', () => {
         mockServiceInstanceId
       );
 
-      expect(loadSubscriptionBySpy).toHaveBeenCalledWith(contextAdminUser, {
+      expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
       });
       expect(loadUserServiceBySpy).toHaveBeenCalledWith(contextAdminUser, {

@@ -1,6 +1,6 @@
 import { DocumentDeleteMutation } from '@/components/service/document/document.graphql';
 import { IconActionContext } from '@/components/ui/icon-actions';
-import { Button, useToast } from 'filigran-ui';
+import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { useMutation } from 'react-relay';
@@ -12,11 +12,15 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 interface DeleteDocumentProps {
   documentData: documentItem_fragment$data;
   connectionId: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
 export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
   documentData,
   connectionId,
+  open,
+  setOpen,
 }) => {
   const t = useTranslations();
   const { toast } = useToast();
@@ -59,14 +63,8 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
       AlertTitle={t('Utils.Delete')}
       actionButtonText={t('Utils.Delete')}
       variantName={'destructive'}
-      triggerElement={
-        <Button
-          variant="ghost"
-          className="w-full justify-start normal-case"
-          aria-label={t('Service.Vault.DeleteDocument')}>
-          {t('Utils.Delete')}
-        </Button>
-      }
+      isOpen={open}
+      onOpenChange={setOpen}
       onClickContinue={deleteDocument}>
       {t('Service.Vault.FileForm.DeleteDialog')}
     </AlertDialogComponent>

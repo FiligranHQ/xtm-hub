@@ -6,7 +6,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { dispatch } from '../../pub';
-import { updateUserSession } from '../../sessionStoreManager';
+import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';

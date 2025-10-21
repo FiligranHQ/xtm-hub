@@ -1,8 +1,5 @@
 import { dbTx } from '../../../../../knexfile';
-import {
-  CsvFeedConnection,
-  Resolvers,
-} from '../../../../__generated__/resolvers-types';
+import { Resolvers } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import {
@@ -12,21 +9,15 @@ import {
 import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../../../utils/error/error.util';
 import { extractId } from '../../../../utils/utils';
-import { subscriptionApp } from '../../../subcription/subscription.app';
 import {
   deleteDocument,
-  getLabels,
-  getUploader,
-  getUploaderOrganization,
-  loadImagesByDocumentId,
-  loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../../document/document.domain';
-import { getServiceInstance } from '../../service-instance.domain';
 import {
   CSV_FEED_METADATA,
   CsvFeed,
+  INTEGRATION_FEED_CSV_FEED_TYPE,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds.model';
 import { csvFeedsApp } from './csv-feeds.app';
@@ -52,7 +43,13 @@ const resolvers: Resolvers = {
         const doc = await updateDocumentWithChildren<CsvFeed>(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
-          input,
+          {
+            ...input,
+            input: {
+              ...input.input,
+              integration_type: INTEGRATION_FEED_CSV_FEED_TYPE,
+            },
+          },
           CSV_FEED_METADATA,
           context,
           trx
@@ -89,27 +86,7 @@ const resolvers: Resolvers = {
       }
     },
   },
-  CsvFeed: {
-    labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
-    children_documents: ({ id }) => loadImagesByDocumentId(id),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, { unsecured: true }),
-    uploader_organization: ({ id }, _, context) =>
-      getUploaderOrganization(context, id, { unsecured: true }),
-    service_instance: ({ service_instance_id }, _, context) =>
-      getServiceInstance(context, service_instance_id),
-    subscription: ({ service_instance_id }, _, context) =>
-      subscriptionApp.loadSubscriptionModel(context, service_instance_id),
-  },
   Query: {
-    csvFeeds: async (_, input, context) =>
-      loadParentDocumentsByServiceInstance<CsvFeedConnection>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-        context,
-        input
-      ),
-    csvFeed: async (_, { id }, context) =>
-      csvFeedsApp.loadCsvFeed(context, extractId<DocumentId>(id)),
     seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
       loadSeoDocumentsByServiceSlug(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,

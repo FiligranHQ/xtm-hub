@@ -32,8 +32,6 @@ export default interface DeploymentRequest {
 
   platform_identifier: string;
 
-  intention: string | null;
-
   region: string;
 
   activity_sector: string | null;
@@ -43,6 +41,10 @@ export default interface DeploymentRequest {
   product_service_instance_id: string | null;
 
   failure_reason: string | null;
+
+  job_title: string | null;
+
+  use_case: string | null;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
@@ -68,8 +70,6 @@ export interface DeploymentRequestInitializer {
 
   platform_identifier: string;
 
-  intention?: string | null;
-
   region: string;
 
   activity_sector?: string | null;
@@ -79,6 +79,10 @@ export interface DeploymentRequestInitializer {
   product_service_instance_id?: string | null;
 
   failure_reason?: string | null;
+
+  job_title?: string | null;
+
+  use_case?: string | null;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
@@ -103,8 +107,6 @@ export interface DeploymentRequestMutator {
 
   platform_identifier?: string;
 
-  intention?: string | null;
-
   region?: string;
 
   activity_sector?: string | null;
@@ -114,4 +116,8 @@ export interface DeploymentRequestMutator {
   product_service_instance_id?: string | null;
 
   failure_reason?: string | null;
+
+  job_title?: string | null;
+
+  use_case?: string | null;
 }

@@ -14,6 +14,29 @@ import {
   ServiceSlug,
 } from './shareable-resources.types';
 
+export interface ServiceConfig {
+  redirectPath: string;
+  description: string;
+}
+
+export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
+    redirectPath: 'opencti_integration_feeds',
+    description:
+      '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
+  },
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
+    redirectPath: 'opencti_custom_dashboards',
+    description:
+      '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
+  },
+  [ServiceSlug.OPEN_BAS_SCENARIOS]: {
+    redirectPath: 'openaev_scenarios',
+    description:
+      '. Discover more widgets like this in our OpenBAS Scenarios Library, available for download on the XTM Hub.',
+  },
+};
+
 function makeQueryMapEntry<TReturn>({
   query,
   key,

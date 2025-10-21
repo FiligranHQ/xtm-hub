@@ -66,8 +66,8 @@ export default class CsvFeedPage {
     await this.page.getByRole('link', { name: shortDescription }).click();
   }
 
-  async deleteCsvFeed() {
-    await this.page.getByRole('button', { name: 'Update' }).click();
+  async deleteCsvFeed(updateButtonRole: 'menuitem' | 'button') {
+    await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
     await this.page
       .getByRole('button', { name: 'Delete the CSV Feed' })
       .click();

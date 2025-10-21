@@ -54,7 +54,6 @@ input UsersWithCapabilitiesInOrganizationInput {
 
 type Query {
   me: User
-  user(id: ID!): User @auth
   usersWithCapabilitiesInOrganization(
     input: UsersWithCapabilitiesInOrganizationInput!
   ): [User!]!

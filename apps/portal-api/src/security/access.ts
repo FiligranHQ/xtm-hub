@@ -21,6 +21,7 @@ import {
 } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
+import { requestContext } from '../requestContext';
 import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
@@ -34,7 +35,6 @@ import { userServiceCapabilitySecurityLayer } from './layer/user-service-capabil
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (
-    context: PortalContext,
     qb: KnexQueryBuilder,
     opts?: SecuryQueryOpts
   ) => KnexQueryBuilder | Promise<KnexQueryBuilder>;
@@ -173,7 +173,7 @@ export const applyDbSecurityLayer = async (
   opts: SecuryQueryOpts
 ) => {
   const table = qb._queryContext.__typename;
-  const context = qb._queryContext.context;
+  const context = requestContext.require();
   let method = qb.toSQL().method;
 
   // First check if we have a valid table type
@@ -205,7 +205,7 @@ export const applyDbSecurityLayer = async (
       }
       // Check the promise and then if it not throwing error we return qb.
       // QB in promise execute automatically the query but we don't always want to execute the query at this moment
-      await tableSecurityMap[table][method](context, qb, opts);
+      await tableSecurityMap[table][method](qb, opts);
       return qb;
     } else {
       logApp.warn(`No ${method} security handler for ${table}`);

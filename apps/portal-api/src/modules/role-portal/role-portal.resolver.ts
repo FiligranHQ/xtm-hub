@@ -5,10 +5,9 @@ import { loadRolePortalBy } from './role-portal.domain';
 
 const resolvers: Resolvers = {
   Query: {
-    rolePortal: async (_, { id }, context) =>
-      loadRolePortalBy(context, 'RolePortal.id', id),
-    rolesPortal: async (_, __, context) => {
-      return await db<RolePortal[]>(context, 'RolePortal').select('*');
+    rolePortal: async (_, { id }) => loadRolePortalBy('RolePortal.id', id),
+    rolesPortal: async (_, __) => {
+      return await db<RolePortal[]>('RolePortal').select('*');
     },
   },
 };

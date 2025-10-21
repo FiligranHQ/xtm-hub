@@ -1,10 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
 import { OrganizationInput } from '../../__generated__/resolvers-types';
-import Organization, {
-  OrganizationId,
-} from '../../model/kanel/public/Organization';
-import { PortalContext } from '../../model/portal-context';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { dispatch } from '../../pub';
+import { requestContext } from '../../requestContext';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -13,25 +11,25 @@ import {
   buildUpdateOrganizationEvent,
 } from '../telemetry/telemetry.helper';
 import {
+  deleteOrganizationBy,
   insertNewOrganization,
+  organizationDomain,
   updateOrganizationBy,
 } from './organizations.domain';
 import { hasDomainOverlap } from './organizations.helper';
 
 export const organizationsApp = {
-  async updateOrganization(
-    context: PortalContext,
-    id: OrganizationId,
-    input: OrganizationInput
-  ) {
-    const [updatedOrganization] = await updateOrganizationBy(
+  async updateOrganization(id: OrganizationId, input: OrganizationInput) {
+    const updatedOrganization = await updateOrganizationBy(
       { id },
       { ...input }
     );
+
     try {
+      const { user } = requestContext.require();
       const updateOrgaEvent = buildUpdateOrganizationEvent(
         updatedOrganization,
-        context.user.id
+        user.id
       );
       telemetryApp.sendTelemetryEvent(updateOrgaEvent);
     } catch (error) {
@@ -43,11 +41,9 @@ export const organizationsApp = {
     return updatedOrganization;
   },
 
-  async createOrganization(context: PortalContext, input: OrganizationInput) {
-    const existingOrganization: Organization | undefined =
-      await db<Organization>(context, 'Organization')
-        .where('name', 'ILIKE', input.name)
-        .first('id');
+  async createOrganization(input: OrganizationInput) {
+    const existingOrganization =
+      await organizationDomain.loadOrganizationByLikeName(input.name);
     if (existingOrganization?.id) {
       throw new Error(ErrorCode.OrganizationSameNameExists);
     }
@@ -57,15 +53,16 @@ export const organizationsApp = {
       throw new Error(ErrorCode.OrganizationSameDomainExists);
     }
 
-    const [addOrganization] = await insertNewOrganization({
+    const createdOrganization = await insertNewOrganization({
       id: uuidv4() as OrganizationId,
       ...input,
     });
 
     try {
+      const { user } = requestContext.require();
       const createOrgaEvent = buildCreateOrganizationEvent(
-        addOrganization,
-        context.user.id
+        createdOrganization,
+        user.id
       );
       telemetryApp.sendTelemetryEvent(createOrgaEvent);
     } catch (error) {
@@ -74,6 +71,16 @@ export const organizationsApp = {
       });
     }
 
-    return addOrganization;
+    return createdOrganization;
+  },
+
+  async deleteOrganization(id: OrganizationId) {
+    const deletedOrganization = await deleteOrganizationBy({
+      id,
+    });
+
+    await dispatch('Organization', 'delete', deletedOrganization);
+
+    return deletedOrganization;
   },
 };

@@ -71,11 +71,10 @@ test.describe('One Click Deploy', () => {
           name: `You're about to deploy the ${CSV_FEED_TEST.name} Feed OpenCTI`,
         })
       ).toBeVisible();
-      await page.pause();
       await expect(page).toHaveScreenshot();
     });
     await test.step('Click on popup sends telemetry event and opens new tab', async () => {
-      const [graphqlResponse, newTab] = await Promise.all([
+      const [graphqlResponse] = await Promise.all([
         // Wait for the GraphQL network call (response ensures it actually completed)
         page.waitForResponse((res) => {
           if (

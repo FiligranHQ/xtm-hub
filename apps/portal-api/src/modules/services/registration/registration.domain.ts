@@ -6,6 +6,7 @@ import {
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
@@ -13,6 +14,7 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
+import { requestContext } from '../../../requestContext';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
@@ -36,20 +38,18 @@ export type PlatformConfiguration = {
 };
 
 export const registrationDomain = {
-  registerNewPlatform: async (
-    context: PortalContext,
-    {
-      serviceDefinitionId,
-      organizationId,
-      configuration,
-      platformIdentifier,
-    }: {
-      serviceDefinitionId: string;
-      organizationId: OrganizationId;
-      configuration: PlatformConfiguration;
-      platformIdentifier: PlatformIdentifier;
-    }
-  ) => {
+  registerNewPlatform: async ({
+    serviceDefinitionId,
+    organizationId,
+    configuration,
+    platformIdentifier,
+  }: {
+    serviceDefinitionId: string;
+    organizationId: OrganizationId;
+    configuration?: PlatformConfiguration;
+    platformIdentifier: PlatformIdentifier;
+  }): Promise<ServiceInstanceId> => {
+    const context = requestContext.require().portalContext;
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -59,10 +59,13 @@ export const registrationDomain = {
       await serviceInstanceDomain.createPlatformServiceInstance(
         context,
         serviceDefinitionId,
-        platformIdentifier
+        platformIdentifier,
+        configuration
+          ? ServiceInstanceCreationStatus.Ready
+          : ServiceInstanceCreationStatus.Pending
       );
 
-    await createSubscription(context, {
+    await createSubscription({
       id: uuidv4() as SubscriptionId,
       organization_id: organizationId,
       service_instance_id: serviceInstanceId,
@@ -74,11 +77,14 @@ export const registrationDomain = {
       justification: null,
     });
 
-    await serviceContractDomain.createConfiguration(
-      context,
-      serviceInstanceId,
-      configuration
-    );
+    if (configuration) {
+      await serviceContractDomain.createConfiguration(
+        context,
+        serviceInstanceId,
+        configuration
+      );
+    }
+    return serviceInstanceId;
   },
 
   refreshExistingPlatform: async (
@@ -97,7 +103,7 @@ export const registrationDomain = {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
     });
     if (!subscription) {
@@ -105,10 +111,7 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      const userOrganizations = await loadOrganizationsByUser(
-        context,
-        context.user.id
-      );
+      const userOrganizations = await loadOrganizationsByUser(context.user.id);
       if (userOrganizations.length > 2) {
         throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
       }
@@ -118,7 +121,7 @@ export const registrationDomain = {
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
-      await transferSubscriptionToOrganization(context, {
+      await transferSubscriptionToOrganization({
         subscriptionId: subscription.id,
         organizationId: targetOrganizationId,
       });

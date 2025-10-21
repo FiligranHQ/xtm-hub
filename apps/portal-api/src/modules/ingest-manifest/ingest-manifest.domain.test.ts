@@ -4,6 +4,7 @@ import {
   SYSTEM_USER_CONTEXT,
   SYSTEM_USER_UUID,
 } from '../../portal.const';
+import { requestContext } from '../../requestContext';
 import { minioInit } from '../../server/initialize';
 import {
   getLabels,
@@ -25,8 +26,11 @@ describe('upsertConnectors', () => {
     let result: Connector[];
 
     beforeAll(async () => {
+      requestContext.set({
+        user: SYSTEM_USER_CONTEXT.user,
+        portalContext: SYSTEM_USER_CONTEXT,
+      });
       result = await upsertConnectors(
-        SYSTEM_USER_CONTEXT,
         sampleExtractedManifest as ManifestInformation[]
       );
     });
@@ -53,13 +57,6 @@ describe('upsertConnectors', () => {
           expect(doc.type).toBe('opencti_integration_feed');
           expect(doc.source_type).toBe('external');
           expect(doc.active).toBe(true);
-        });
-      });
-
-      it('should initialize counters to zero', () => {
-        result.forEach((doc) => {
-          expect(doc.download_number).toBe(0);
-          expect(doc.share_number).toBe(0);
         });
       });
 
@@ -164,8 +161,11 @@ describe('upsertConnectors', () => {
 
     beforeAll(async () => {
       // First creation
+      requestContext.set({
+        user: SYSTEM_USER_CONTEXT.user,
+        portalContext: SYSTEM_USER_CONTEXT,
+      });
       firstResult = await upsertConnectors(
-        SYSTEM_USER_CONTEXT,
         sampleExtractedManifest as ManifestInformation[]
       );
 
@@ -180,7 +180,6 @@ describe('upsertConnectors', () => {
 
       // Second call - update
       secondResult = await upsertConnectors(
-        SYSTEM_USER_CONTEXT,
         updatedManifest as ManifestInformation[]
       );
     });
@@ -256,7 +255,7 @@ describe('upsertConnectors', () => {
 
   describe('edge cases', () => {
     it('should handle empty manifest array', async () => {
-      const result = await upsertConnectors(SYSTEM_USER_CONTEXT, []);
+      const result = await upsertConnectors([]);
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);

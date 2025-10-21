@@ -1,5 +1,4 @@
 import { dbTx } from '../../../knexfile';
-import { PortalContext } from '../../model/portal-context';
 import { omit } from '../../utils/utils';
 import { upsertDocumentWithChildren } from '../services/document/document.domain';
 import {
@@ -10,10 +9,7 @@ import {
 import { base64ToUpload } from './ingest-manifest.helper';
 import { ManifestInformation } from './ingest-manifest.model';
 
-export const upsertConnectors = async (
-  context: PortalContext,
-  manifestInfo: ManifestInformation[]
-) => {
+export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
   const results: Array<Connector> = [];
 
   for (const connector of manifestInfo) {
@@ -28,7 +24,6 @@ export const upsertConnectors = async (
         { ...omit(connector, ['logo']) } as Connector,
         uploadLogo,
         CSV_FEED_CONNECTOR_METADATA,
-        context,
         trx
       );
       await trx.commit();

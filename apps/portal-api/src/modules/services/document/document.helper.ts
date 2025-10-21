@@ -6,10 +6,10 @@ import {
   default as DocumentModel,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
-import Label from '../../../model/kanel/public/Label';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
+import { WithLabels } from '../../../utils/types';
 import { extractId } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -23,7 +23,7 @@ import {
   sendFileToS3,
 } from './document.domain';
 
-export type Document = DocumentModel & { labels: Label[] };
+export type Document = WithLabels<DocumentModel>;
 export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];
   parent_document_id?: DocumentId;
@@ -186,7 +186,7 @@ export const deleteDocumentBy = async (field: DocumentMutator) => {
 
 export const updateDocumentWithCounters = async <T extends Document>(
   document: T
-): Promise<T> => {
+) => {
   let download_number = 0;
   let share_number = 0;
   try {
@@ -204,19 +204,20 @@ export const updateDocumentWithCounters = async <T extends Document>(
     logApp.error('Unable to fetch counters from elastic search', error);
   }
 
-  document.download_number = download_number;
-  document.share_number = share_number;
-  return document;
+  return {
+    ...document,
+    download_number,
+    share_number,
+  };
 };
 
 export const loadDocumentWithCountersById = async <T extends Document>(
   context: PortalContext,
   id: string,
   include_metadata: string[] = []
-): Promise<T> => {
+) => {
   const document: T = await loadDocumentById(context, id, include_metadata);
-  await updateDocumentWithCounters(document);
-  return document;
+  return updateDocumentWithCounters(document);
 };
 
 export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
@@ -226,8 +227,7 @@ export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
     | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE,
   slug: string,
   include_metadata: string[] = []
-): Promise<T> => {
+) => {
   const document: T = await loadSeoDocumentBySlug(type, slug, include_metadata);
-  await updateDocumentWithCounters(document);
-  return document;
+  return updateDocumentWithCounters(document);
 };

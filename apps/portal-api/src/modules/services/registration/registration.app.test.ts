@@ -14,6 +14,10 @@ import {
   contextAdminOrgaThales,
   contextAdminUser,
   contextSimpleUserThales,
+  FILIGRAN_ORGA_ID,
+  requestContextAdminUser,
+  requestContextSimpleUserThales,
+  requestContextThalesUser,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
 import {
@@ -27,6 +31,7 @@ import {
 import Subscription from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import { requestContext } from '../../../requestContext';
 import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../../utils/error/error.code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
@@ -79,16 +84,17 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not belong to the organization', async () => {
+      requestContext.set(requestContextThalesUser);
       const call = registrationApp.registerPlatform(
         {
-          ...contextAdminUser,
+          ...contextAdminOrgaThales,
           user: {
-            ...contextAdminUser.user,
+            ...contextAdminOrgaThales.user,
             capabilities: [],
           },
         },
         {
-          organizationId: THALES_ORGA_ID,
+          organizationId: FILIGRAN_ORGA_ID,
           platform,
           identifier: PlatformIdentifier.Opencti,
         }
@@ -98,6 +104,7 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not have the required capabilities', async () => {
+      requestContext.set(requestContextSimpleUserThales);
       const call = registrationApp.registerPlatform(contextSimpleUserThales, {
         organizationId: THALES_ORGA_ID,
         platform,
@@ -199,6 +206,7 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
+      requestContext.set(requestContextThalesUser);
       const call = registrationApp.unregisterPlatform(contextAdminOrgaThales, {
         platformId,
         identifier: PlatformIdentifier.Opencti,
@@ -208,12 +216,14 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not have the required capabilities', async () => {
+      requestContext.set(requestContextThalesUser);
       await registrationApp.registerPlatform(contextAdminOrgaThales, {
         organizationId: THALES_ORGA_ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
+      requestContext.set(requestContextSimpleUserThales);
       const call = registrationApp.unregisterPlatform(contextSimpleUserThales, {
         platformId,
         identifier: PlatformIdentifier.Opencti,
@@ -491,6 +501,7 @@ describe('Registration app', () => {
 
   describe('refreshUserPlatformToken', () => {
     it('should generate a token and add it to the user each time it is called', async () => {
+      requestContext.set(requestContextAdminUser);
       const { token } =
         await registrationApp.refreshUserPlatformToken(contextAdminUser);
       const user = await dbUnsecure<UserLoadUserBy>('User')

@@ -4,7 +4,7 @@ kind: Cluster
 metadata:
   name: postgresql
 spec:
-  instances: 2
+  instances: {{ .Values.postgres.replicas }}
   storage:
     size: {{ .Values.postgres.storage.size }}
   resources:

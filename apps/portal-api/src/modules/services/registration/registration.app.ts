@@ -45,7 +45,6 @@ import {
 import {
   platformIdentifierMappedByServiceDefinitionIdentifier,
   registeredMailTemplateMappedByPlatformIdentifier,
-  serviceDefinitionIdentifierMappedByPlatformIdentifier,
   unregisteredMailTemplateMappedByPlatformIdentifier,
 } from './registration.mapping';
 
@@ -63,7 +62,7 @@ export const registrationApp = {
       return null;
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -172,13 +171,10 @@ export const registrationApp = {
       token,
     };
 
-    const serviceDefinitionIdentifier =
-      serviceDefinitionIdentifierMappedByPlatformIdentifier[identifier];
-
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionBy(context, {
-        identifier: serviceDefinitionIdentifier,
-      });
+      await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
+        identifier
+      );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
@@ -206,7 +202,7 @@ export const registrationApp = {
         configuration,
       });
     } else {
-      await registrationDomain.registerNewPlatform(context, {
+      await registrationDomain.registerNewPlatform({
         serviceDefinitionId: serviceDefinition.id,
         organizationId: organizationId as OrganizationId,
         configuration,
@@ -274,7 +270,7 @@ export const registrationApp = {
       return;
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: activeServiceConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -347,7 +343,7 @@ export const registrationApp = {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -385,7 +381,7 @@ export const registrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
-    const subscription = await loadSubscriptionBy(context, {
+    const subscription = await loadSubscriptionBy({
       service_instance_id: serviceConfiguration.service_instance_id,
     });
     if (!subscription) {

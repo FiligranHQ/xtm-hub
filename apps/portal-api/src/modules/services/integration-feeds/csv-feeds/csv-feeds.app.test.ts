@@ -5,7 +5,6 @@ import {
   SERVICE_CSV_FEEDS_ID,
 } from '../../../../../tests/tests.const';
 import { DocumentId } from '../../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import {
   ADMIN_UUID,
   PLATFORM_ORGANIZATION_UUID,
@@ -51,7 +50,7 @@ describe('csv feeds app', () => {
     await csvFeedsApp.createCsvFeed(
       {
         ...contextAdminUser,
-        serviceInstanceId: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        serviceInstanceId: SERVICE_CSV_FEEDS_ID,
       },
       {
         id: documentId as DocumentId,
@@ -60,7 +59,7 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        service_instance_id: SERVICE_CSV_FEEDS_ID,
         type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         active: false,
       },
@@ -107,7 +106,7 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        service_instance_id: SERVICE_CSV_FEEDS_ID,
         active: false,
         integration_type: INTEGRATION_FEED_CSV_FEED_TYPE,
       },
@@ -152,7 +151,7 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        service_instance_id: SERVICE_CSV_FEEDS_ID,
         type: INTEGRATION_FEED_CSV_FEED_TYPE,
         active: true,
       },

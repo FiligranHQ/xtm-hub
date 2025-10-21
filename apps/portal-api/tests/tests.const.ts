@@ -1,6 +1,7 @@
 import { Restriction } from '../src/__generated__/resolvers-types';
 
 import { OrganizationId } from '../src/model/kanel/public/Organization';
+import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
 import { PortalContext } from '../src/model/portal-context';
 import {
   ADMIN_UUID,
@@ -23,7 +24,8 @@ export const THALES_ADMIN_ORGA_ID = '015c0488-848d-4c89-95e3-8a243971f594';
 export const THALES_ADMIN_ORGA_EMAIL = 'admin@thales.com';
 export const SERVICE_MALWARE_ID = '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4';
 export const SERVICE_VAULT_ID = 'e88e8f80-ba9e-480b-ab27-8613a1565eff';
-export const SERVICE_CSV_FEEDS_ID = 'ad003d3f-c406-4be8-a650-880d72f952e9';
+export const SERVICE_CSV_FEEDS_ID =
+  'ad003d3f-c406-4be8-a650-880d72f952e9' as ServiceInstanceId;
 export const SERVICE_OPENAEV_SCENARIOS_ID =
   'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2';
 export const SERVICE_CUSTOM_DASHBOARDS_ID =
@@ -57,6 +59,11 @@ export const contextAdminUser: PortalContext = {
   },
   serviceInstanceId: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
 } as PortalContext;
+
+export const requestContextAdminUser = {
+  user: contextAdminUser.user,
+  portalContext: contextAdminUser,
+};
 
 export const contextAdminOrgaThales: PortalContext = {
   user: {
@@ -99,6 +106,11 @@ export const contextAdminOrgaThales: PortalContext = {
   },
 } as unknown as PortalContext;
 
+export const requestContextThalesUser = {
+  user: contextAdminOrgaThales.user,
+  portalContext: contextAdminOrgaThales,
+};
+
 export const contextSimpleUserThales: PortalContext = {
   user: {
     id: THALES_SIMPLE_USER_ID,
@@ -126,3 +138,8 @@ export const contextSimpleUserThales: PortalContext = {
     roles_portal: [],
   },
 } as PortalContext;
+
+export const requestContextSimpleUserThales = {
+  user: contextSimpleUserThales.user,
+  portalContext: contextSimpleUserThales,
+};

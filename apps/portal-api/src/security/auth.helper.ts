@@ -2,7 +2,6 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { dbRaw, dbUnsecure } from '../../knexfile';
 import { loadUnsecureSubscriptionBy } from '../modules/subcription/subscription.helper';
 import { CAPABILITY_BYPASS } from '../portal.const';
-import { ServiceCapabilityArgs } from './directive-auth';
 
 import {
   OrganizationCapability,
@@ -16,6 +15,7 @@ import { UserLoadUserBy } from '../model/user';
 import { loadUserOrganizationCapabilities } from '../modules/common/user-organization-capability.domain';
 import { loadUserOrganization } from '../modules/common/user-organization.domain';
 import { extractId } from '../utils/utils';
+import { ServiceCapabilityArgs } from './directive-graphql/validators/service-capability.validator';
 
 export const loadCapabilitiesByServiceId = async (
   user: UserLoadUserBy,

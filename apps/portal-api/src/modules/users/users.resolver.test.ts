@@ -17,6 +17,8 @@ import {
   contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
   DEFAULT_ADMIN_PASSWORD,
+  requestContextAdminUser,
+  requestContextThalesUser,
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
   THALES_ADMIN_ORGA_EMAIL,
@@ -35,7 +37,8 @@ import { loginFromProvider } from '../../auth/auth-user';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import { requestContext } from '../../requestContext';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import {
@@ -73,6 +76,11 @@ describe('User query resolver', () => {
             organizations: organizations,
           },
         };
+        requestContext.set({
+          user: currentContext.user,
+          portalContext: currentContext,
+        });
+
         const response =
           // @ts-ignore
           await usersResolver.Query.userHasOrganizationWithSubscription(
@@ -91,15 +99,6 @@ describe('User query resolver', () => {
     });
   });
 
-  it('should fetch User', async () => {
-    // @ts-ignore
-    const response = await usersResolver.Query.user(
-      {},
-      { id: ADMIN_UUID },
-      contextAdminUser
-    );
-    expect(response).toBeTruthy();
-  });
   describe('listPendingUser', () => {
     it('should list pending users from any organization for bypass', async () => {
       const testContext = {
@@ -109,6 +108,10 @@ describe('User query resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       const email = `testPending${uuidv4()}@thales.com`;
       const pendingUser = await loginFromProvider({
         email: email,
@@ -133,6 +136,7 @@ describe('User query resolver', () => {
       expect(response.totalCount).toBe('1');
       expect(response.edges[0].node.id).toBe(pendingUser.id);
 
+      requestContext.set(requestContextAdminUser);
       await removeUser(contextAdminUser, { email: pendingUser.email });
     });
     it('should list pending users from the orga if orga filter exists', async () => {
@@ -167,7 +171,10 @@ describe('User query resolver', () => {
           },
         ],
       };
-
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       const response = await usersResolver.Query.pendingUsers(
         undefined,
         options,
@@ -178,6 +185,7 @@ describe('User query resolver', () => {
       expect(response.totalCount).toBe('1');
       expect(response.edges[0].node.id).toBe(pendingUserThales.id);
 
+      requestContext.set(requestContextAdminUser);
       await removeUser(contextAdminUser, { email: pendingUserThales.email });
       await removeUser(contextAdminUser, { email: pendingUserFiligran.email });
     });
@@ -209,6 +217,10 @@ describe('User query resolver', () => {
         filters: [],
       };
 
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       const response = await usersResolver.Query.pendingUsers(
         undefined,
         options,
@@ -219,6 +231,7 @@ describe('User query resolver', () => {
       expect(response.totalCount).toBe('1');
       expect(response.edges[0].node.id).toBe(pendingUserThales.id);
 
+      requestContext.set(requestContextAdminUser);
       await removeUser(contextAdminUser, { email: pendingUserThales.email });
       await removeUser(contextAdminUser, { email: pendingUserFiligran.email });
     });
@@ -410,6 +423,7 @@ describe('User mutation resolver', () => {
     it('as Admin Organization - should not able to create user with different email domain', async () => {
       const testMail = `testAddUser${uuidv4()}@test.fr`;
       try {
+        requestContext.set(requestContextThalesUser);
         // @ts-ignore
         await usersResolver.Mutation.adminAddUser(
           undefined,
@@ -439,6 +453,7 @@ describe('User mutation resolver', () => {
       let response;
       beforeAll(async () => {
         const testMail = `testAddUser${uuidv4()}@thales.com`;
+        requestContext.set(requestContextThalesUser);
         // @ts-ignore
         response = await usersResolver.Mutation.adminAddUser(
           undefined,
@@ -457,6 +472,8 @@ describe('User mutation resolver', () => {
           contextAdminOrgaThales
         );
         user = await loadUserBy({ 'User.id': response.id });
+
+        requestContext.set(requestContextAdminUser);
         organizations = await usersResolver.User.organizations(
           user,
           undefined,
@@ -636,6 +653,7 @@ describe('User mutation resolver', () => {
     });
 
     afterEach(async () => {
+      requestContext.set(requestContextAdminUser);
       await usersResolver.Mutation.adminEditUser(
         undefined,
         {
@@ -665,6 +683,10 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       const call = usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
@@ -690,6 +712,10 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       await usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
@@ -729,7 +755,10 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
-
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       const pendingUser = await loginFromProvider({
         email: `testPending${uuidv4()}@thales.com`,
         first_name: 'test',
@@ -825,6 +854,7 @@ describe('User mutation resolver', () => {
     });
 
     afterAll(async () => {
+      requestContext.set(requestContextAdminUser);
       // @ts-expect-error editMeUser is not considered as callable
       await usersResolver.Mutation.editMeUser(
         undefined,
@@ -876,6 +906,10 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       const email = `testPending${uuidv4()}@thales.com`;
       const pendingUser = await loginFromProvider({
         email: email,
@@ -914,6 +948,10 @@ describe('User mutation resolver', () => {
           selected_organization_id: THALES_ORGA_ID,
         },
       };
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
       const email = `testPending${uuidv4()}@thales.com`;
       const pendingUser = await loginFromProvider({
         email: email,

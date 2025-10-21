@@ -62,7 +62,7 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
             'Subscription.organization_id':
               context.user.selected_organization_id,
             'Subscription.service_instance_id': extractId<ServiceInstanceId>(
@@ -92,7 +92,7 @@ const resolvers: Resolvers = {
           throw new Error(ErrorCode.CantSubscribeYourself);
         }
         const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
             'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
           } as SubscriptionMutator);
         if (!subscription) {
@@ -135,7 +135,7 @@ const resolvers: Resolvers = {
 
       if (usersServices.length === 0) {
         const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
             'Subscription.id': deletedUserService?.subscription_id,
           } as SubscriptionMutator);
         await db<Subscription>(context, 'Subscription')

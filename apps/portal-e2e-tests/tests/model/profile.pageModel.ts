@@ -59,7 +59,7 @@ export default class ProfilePage {
 
   async navigateTo() {
     await this.page.getByRole('button', { name: 'Open menu user' }).click();
-    await this.page.getByRole('button', { name: 'Profile' }).click();
+    await this.page.getByRole('menuitem', { name: 'Profile' }).click();
   }
 
   async editProfile({

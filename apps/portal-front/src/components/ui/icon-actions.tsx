@@ -4,6 +4,7 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from 'filigran-ui';
 import Link from 'next/link';
@@ -85,12 +86,8 @@ export const IconActionsLink: FunctionComponent<IconActionsLinkProps> = ({
   ...props
 }) => {
   return (
-    <Button
-      asChild
-      variant="ghost"
-      className={cn('w-full justify-start normal-case', className)}
-      onClick={(e) => e.stopPropagation()}>
-      <Link {...props}>{children}</Link>
-    </Button>
+    <DropdownMenuItem asChild>
+      <Link {...props} className={className}>{children}</Link>
+    </DropdownMenuItem>
   );
 };

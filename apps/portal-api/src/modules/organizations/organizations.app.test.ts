@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextAdminUser, THALES_ORGA_ID } from '../../../tests/tests.const';
+import { THALES_ORGA_ID } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ADMIN_UUID } from '../../portal.const';
 import { ErrorCode } from '../../utils/error/error.code';
@@ -8,7 +8,10 @@ import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { organizationsApp } from './organizations.app';
-import { insertNewOrganization } from './organizations.domain';
+import {
+  insertNewOrganization,
+  loadOrganizationBy,
+} from './organizations.domain';
 
 describe('organizationsApp', () => {
   afterEach(async () => {
@@ -23,11 +26,10 @@ describe('organizationsApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationsApp.updateOrganization(
-        contextAdminUser,
-        THALES_ORGA_ID,
-        { domains: ['thales.com', 'thales.fr'], name: 'new Thales' }
-      );
+      await organizationsApp.updateOrganization(THALES_ORGA_ID, {
+        domains: ['thales.com', 'thales.fr'],
+        name: 'new Thales',
+      });
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -51,7 +53,7 @@ describe('organizationsApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationsApp.createOrganization(contextAdminUser, {
+      await organizationsApp.createOrganization({
         domains: ['test.com', 'test.fr'],
         name: 'test.com',
       });
@@ -75,7 +77,7 @@ describe('organizationsApp', () => {
         domains: ['domain1.io', 'domain2.io'],
       });
 
-      const call = organizationsApp.createOrganization(contextAdminUser, {
+      const call = organizationsApp.createOrganization({
         domains: ['domain1.io'],
         name: 'otherDomain.io',
       });
@@ -92,12 +94,33 @@ describe('organizationsApp', () => {
         domains: ['alreadyExistingOrga.io'],
       });
 
-      const call = organizationsApp.createOrganization(contextAdminUser, {
+      const call = organizationsApp.createOrganization({
         domains: ['whatever.io'],
         name: 'alreadyExistingOrga',
       });
 
       await expect(call).rejects.toThrow(ErrorCode.OrganizationSameNameExists);
+    });
+  });
+
+  describe('deleteOrganization', () => {
+    it('should delete the organization', async () => {
+      const organizationId = uuidv4() as OrganizationId;
+      await insertNewOrganization({
+        id: organizationId,
+        name: 'newOrganization',
+        domains: ['orga.com'],
+      });
+
+      const newOrganization = await loadOrganizationBy({ id: organizationId });
+      expect(newOrganization).toBeDefined();
+
+      await organizationsApp.deleteOrganization(organizationId);
+
+      const deletedOrganization = await loadOrganizationBy({
+        id: organizationId,
+      });
+      expect(deletedOrganization).toBeUndefined();
     });
   });
 });

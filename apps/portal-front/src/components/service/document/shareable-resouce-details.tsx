@@ -2,8 +2,9 @@ import { formatDate } from '@/utils/date';
 import { LogoFiligranIcon } from 'filigran-icon';
 import * as React from 'react';
 
-import { Avatar, Label } from 'filigran-ui/clients';
+import { Avatar } from 'filigran-ui/clients';
 
+import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
@@ -21,64 +22,52 @@ const ShareableResourceDetails: React.FunctionComponent<
 > = ({ documentData, downloadNumber }) => {
   const t = useTranslations();
   return (
-    <div className="space-y-xl">
+    <>
       {!documentData.uploader_organization?.personal_space && (
         <div>
-          <div>
-            <Label className="block pb-s">{'Organization'}</Label>
+          <ShareableResourceDetailItem label={'Organization'}>
             <div className="flex items-center gap-s mb-s">
               <LogoFiligranIcon className="size-8" />
               {/*By default, if the organization is undefined, we display Filigran*/}
 
               {`${documentData.uploader_organization?.name ?? 'Filigran'}`}
             </div>
-          </div>
+          </ShareableResourceDetailItem>
         </div>
       )}
-      <div>
-        <Label className="block pb-s">
-          {t('Service.ShareableResources.Details.Author')}
-        </Label>
-
+      <ShareableResourceDetailItem
+        label={t('Service.ShareableResources.Details.Author')}>
         <div className="flex items-center gap-s">
           <div className="size-8">
             <Avatar src={documentData.uploader?.picture ?? ''} />
           </div>
           <span>{formatPersonNames(documentData.uploader)}</span>
         </div>
-      </div>
-      <div>
-        <Label className="block pb-s">
-          {t('Service.ShareableResources.Details.LastUpdatedAt')}
-        </Label>
+      </ShareableResourceDetailItem>
+      <ShareableResourceDetailItem
+        label={t('Service.ShareableResources.Details.LastUpdatedAt')}>
         <span>
           {formatDate(
             documentData.updated_at ?? documentData.created_at,
             'DATE_FULL'
           )}
         </span>
-      </div>
+      </ShareableResourceDetailItem>
       {docHasMetadata(documentData, 'product_version') && (
-        <div>
-          <Label className="block pb-s">
-            {t('Service.ShareableResources.Details.ProductVersion')}
-          </Label>
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.ProductVersion')}>
           <span>{documentData.product_version}</span>
-        </div>
+        </ShareableResourceDetailItem>
       )}
-      <div>
-        <Label className="block pb-s">
-          {t('Service.ShareableResources.Details.Downloads')}
-        </Label>
+      <ShareableResourceDetailItem
+        label={t('Service.ShareableResources.Details.Downloads')}>
         <span>{roundToNearest(downloadNumber)}</span>
-      </div>
-      <div>
-        <Label className="block pb-s">
-          {t('Service.ShareableResources.Details.Shares')}
-        </Label>
-        <span>{roundToNearest(documentData.share_number)}</span>
-      </div>
-    </div>
+      </ShareableResourceDetailItem>
+      <ShareableResourceDetailItem
+        label={t('Service.ShareableResources.Details.Shares')}>
+        <span>{roundToNearest(documentData.share_number ?? 0)}</span>
+      </ShareableResourceDetailItem>
+    </>
   );
 };
 

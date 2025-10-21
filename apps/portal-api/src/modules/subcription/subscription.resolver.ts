@@ -1,6 +1,4 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
-import { Resolvers, Subscription } from '../../__generated__/resolvers-types';
+import { Resolvers } from '../../__generated__/resolvers-types';
 
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
@@ -26,27 +24,22 @@ import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscriptio
 
 const resolvers: Resolvers = {
   SubscriptionModel: {
-    subscription_capability: ({ id }, _, context) =>
-      getSubscriptionCapability(context, id),
+    subscription_capability: ({ id }, _) => getSubscriptionCapability(id),
     service_instance: ({ service_instance_id }, _, context) =>
       loadServiceInstanceBy(context, 'id', service_instance_id),
-    user_service: ({ id }, _, context) => getUserService(context, id),
+    user_service: ({ id }, _) => getUserService(id),
   },
   SubscriptionCapability: {
-    service_capability: ({ id }, _, context) =>
-      getServiceCapability(context, id),
+    service_capability: ({ id }, _) => getServiceCapability(id),
   },
   Mutation: {
-    addSubscription: async (_, { service_instance_id }, context) => {
+    addSubscription: async (_, { service_instance_id }) => {
       const serviceInstanceId =
         extractId<ServiceInstanceId>(service_instance_id);
       try {
-        return await subscriptionApp.subscribeSelectedOrganizationToService(
-          context,
-          {
-            serviceInstanceId,
-          }
-        );
+        return await subscriptionApp.subscribeSelectedOrganizationToService({
+          serviceInstanceId,
+        });
       } catch (error) {
         throw mapToGraphQLError(error);
       }
@@ -72,7 +65,7 @@ const resolvers: Resolvers = {
           extractId<ServiceCapabilityId>(capability_id)
         );
 
-        await subscriptionApp.subscribeOrganizationToService(context, {
+        await subscriptionApp.subscribeOrganizationToService({
           organizationId,
           serviceInstanceId,
           startDate: start_date,
@@ -82,7 +75,7 @@ const resolvers: Resolvers = {
 
         return loadServiceWithSubscriptions(
           context,
-          fromGlobalId(service_instance_id).id
+          extractId<ServiceInstanceId>(service_instance_id)
         );
       } catch (error) {
         throw mapToGraphQLError(
@@ -93,27 +86,12 @@ const resolvers: Resolvers = {
     },
     deleteSubscription: async (_, { subscription_id }, context) => {
       try {
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
-            'Subscription.id': extractId<SubscriptionId>(subscription_id),
-          } as SubscriptionMutator);
+        const { service_instance_id } =
+          await subscriptionApp.deleteSubscription(
+            extractId<SubscriptionId>(subscription_id)
+          );
 
-        // TODO: to be rethought when billing is used in XTM
-        // if (subscription.billing !== 0) {
-        //     logApp.warn(
-        //       'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
-        //     );
-        //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
-        // }
-
-        await db<Subscription>(context, 'Subscription')
-          .where({ id: fromGlobalId(subscription_id).id })
-          .delete('*');
-
-        return loadServiceWithSubscriptions(
-          context,
-          subscription.service_instance_id
-        );
+        return loadServiceWithSubscriptions(context, service_instance_id);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -123,9 +101,9 @@ const resolvers: Resolvers = {
     },
   },
   Query: {
-    subscriptionById: async (_, { subscription_id }, context) => {
+    subscriptionById: async (_, { subscription_id }) => {
       const subscriptions =
-        await loadSubscriptionWithOrganizationAndCapabilitiesBy(context, {
+        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
           'Subscription.id': extractId<SubscriptionId>(subscription_id),
         } as SubscriptionMutator);
 
