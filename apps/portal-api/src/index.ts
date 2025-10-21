@@ -75,14 +75,67 @@ This function, when executed, returns undefined.
 To prevent potential issues, calling the function before unsubscribing
 from the GraphQL SSE stream ensures
 that the correct data is obtained and sent as the event.
+
+Additionally, we need to handle the case where the response stream is already destroyed
+to prevent ERR_STREAM_DESTROYED errors when clients disconnect unexpectedly.
  */
 app.use(function (req, res, next) {
   const originalEnd = res.end;
-  res.end = function (chunk, encoding?) {
-    if (typeof chunk === 'function') {
-      chunk();
+  const originalWrite = res.write;
+
+  // Track if the response has been destroyed
+  let isDestroyed = false;
+
+  // Listen for response close/finish events
+  res.on('close', () => {
+    isDestroyed = true;
+  });
+
+  res.on('finish', () => {
+    isDestroyed = true;
+  });
+
+  // Override write to check if stream is destroyed
+  res.write = function (chunk, encoding?) {
+    if (isDestroyed || res.destroyed || res.writableEnded) {
+      // Silently ignore writes to destroyed streams
+      logApp.debug('Attempted to write to destroyed stream, ignoring');
+      return true;
     }
-    return originalEnd(chunk, encoding);
+    try {
+      return originalWrite.call(this, chunk, encoding);
+    } catch (error) {
+      if (error.code === 'ERR_STREAM_DESTROYED') {
+        logApp.debug('Stream destroyed during write, ignoring');
+        return true;
+      }
+      throw error;
+    }
+  };
+
+  res.end = function (chunk, encoding?) {
+    if (isDestroyed || res.destroyed || res.writableEnded) {
+      // Silently ignore end calls on destroyed streams
+      logApp.debug('Attempted to end destroyed stream, ignoring');
+      return this;
+    }
+    if (typeof chunk === 'function') {
+      try {
+        chunk();
+      } catch (error) {
+        logApp.error('Error executing chunk function', { error });
+      }
+      return this;
+    }
+    try {
+      return originalEnd.call(this, chunk, encoding);
+    } catch (error) {
+      if (error.code === 'ERR_STREAM_DESTROYED') {
+        logApp.debug('Stream destroyed during end, ignoring');
+        return this;
+      }
+      throw error;
+    }
   };
   next();
 });
