@@ -1,4 +1,3 @@
-import { IngestionConnectorType } from '@/components/connectors/connector.utils';
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
@@ -15,6 +14,7 @@ import {
 } from '@generated/integrationFeedsItem_fragment.graphql';
 import { integrationFeedsList$key } from '@generated/integrationFeedsList.graphql';
 import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
+import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
 import { IntegrationFeedTypeEnum } from '@generated/models/IntegrationFeedType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
@@ -31,7 +31,7 @@ interface IntegrationFeedsListProps {
   onSearchChange: (v: string) => void;
   onLabelFilterChange: (v: string[]) => void;
   onIntegrationFeedTypeChange: (v: IntegrationFeedTypeEnum[]) => void;
-  onConnectorTypeChange: (v: IngestionConnectorType[]) => void;
+  onConnectorTypeChange: (v: ConnectorTypeEnum[]) => void;
 }
 
 const IntegrationFeedsList = ({

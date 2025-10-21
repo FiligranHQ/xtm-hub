@@ -1,12 +1,7 @@
-export type IngestionConnectorType =
-  | 'INTERNAL_ENRICHMENT'
-  | 'EXTERNAL_IMPORT'
-  | 'INTERNAL_EXPORT_FILE'
-  | 'INTERNAL_IMPORT_FILE'
-  | 'STREAM';
+import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
 
-const ingestionConnectorTypeMetadata: Record<
-  IngestionConnectorType,
+export const connectorTypeMetadata: Record<
+  ConnectorTypeEnum,
   { label: string; color: string }
 > = {
   EXTERNAL_IMPORT: {
@@ -33,8 +28,6 @@ const ingestionConnectorTypeMetadata: Record<
 
 export const getIngestionConnectorMetadata = (integration_subtype?: string) => {
   return (
-    ingestionConnectorTypeMetadata[
-      integration_subtype as IngestionConnectorType
-    ] ?? undefined
+    connectorTypeMetadata[integration_subtype as ConnectorTypeEnum] ?? undefined
   );
 };

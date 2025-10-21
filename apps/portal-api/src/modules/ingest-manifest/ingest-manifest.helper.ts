@@ -1,7 +1,10 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Readable } from 'stream';
 import z from 'zod';
-import { IntegrationFeedType } from '../../__generated__/resolvers-types';
+import {
+  ConnectorType,
+  IntegrationFeedType,
+} from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
 import { Upload } from '../services/document/document.helper';
@@ -137,7 +140,7 @@ const ContractSchema = z.object({
   use_cases: z.array(z.string()), // At least one use case
   verified: z.boolean(),
   container_image: z.string().min(1),
-  container_type: z.string().min(1),
+  container_type: z.nativeEnum(ConnectorType),
   source_code: z.string().url(),
   subscription_link: z.string().url().or(z.literal('')),
   manager_supported: z.boolean(),

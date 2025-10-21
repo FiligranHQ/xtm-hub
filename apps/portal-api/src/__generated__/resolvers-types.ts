@@ -85,7 +85,7 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: Scalars['String']['output'];
+  integration_subtype: ConnectorType;
   integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
   manager_supported: Scalars['String']['output'];
@@ -109,6 +109,14 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   uploader_organization?: Maybe<Organization>;
   verified: Scalars['String']['output'];
 };
+
+export enum ConnectorType {
+  ExternalImport = 'EXTERNAL_IMPORT',
+  InternalEnrichment = 'INTERNAL_ENRICHMENT',
+  InternalExportFile = 'INTERNAL_EXPORT_FILE',
+  InternalImportFile = 'INTERNAL_IMPORT_FILE',
+  Stream = 'STREAM'
+}
 
 export type CreateCsvFeedInput = {
   active: Scalars['Boolean']['input'];
@@ -1909,6 +1917,7 @@ export type ResolversTypes = ResolversObject<{
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
   Connector: ResolverTypeWrapper<Connector>;
+  ConnectorType: ConnectorType;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
@@ -2201,7 +2210,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integration_subtype?: Resolver<ResolversTypes['ConnectorType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

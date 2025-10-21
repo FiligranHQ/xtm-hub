@@ -485,6 +485,14 @@ enum IntegrationFeedType {
   third_party_integration
 }
 
+enum ConnectorType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
+}
+
 interface IntegrationFeed implements Node & DocumentBase {
   id: ID!
   type: String!
@@ -540,7 +548,7 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   verified: String!
   source_code: String
   subscription_link: String
-  integration_subtype: String!
+  integration_subtype: ConnectorType!
   manager_supported: String!
   playbook_supported: String!
 }

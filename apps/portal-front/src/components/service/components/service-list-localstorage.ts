@@ -1,4 +1,4 @@
-import { IngestionConnectorType } from '@/components/connectors/connector.utils';
+import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
 import { IntegrationFeedTypeEnum } from '@generated/models/IntegrationFeedType.enum';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -21,7 +21,7 @@ export const serviceListLocalStorage = (serviceName: string) => {
     useLocalStorage<IntegrationFeedTypeEnum[]>('integrationType', []);
 
   const [connectorTypes, setConnectorTypes, removeConnectorTypes] =
-    useLocalStorage<IngestionConnectorType[]>('connectorType', []);
+    useLocalStorage<ConnectorTypeEnum[]>('connectorType', []);
 
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     `count${serviceName}List`,

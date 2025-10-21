@@ -1,7 +1,4 @@
-import {
-  getIngestionConnectorMetadata,
-  IngestionConnectorType,
-} from '@/components/connectors/connector.utils';
+import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ServiceListFilterContainer } from '@/components/service/components/service-list-filter-container';
 import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
 import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
@@ -12,7 +9,7 @@ import React, { useMemo } from 'react';
 
 interface Props {
   onIntegrationFeedTypeChange: (v: IntegrationFeedTypeEnum[]) => void;
-  onConnectorTypeChange: (v: IngestionConnectorType[]) => void;
+  onConnectorTypeChange: (v: ConnectorTypeEnum[]) => void;
 }
 
 export const IntegrationFeedFilters: React.FC<Props> = ({
@@ -24,9 +21,9 @@ export const IntegrationFeedFilters: React.FC<Props> = ({
   const t = useTranslations();
   const feedTypeOptions = useMemo(() => {
     return Object.values(IntegrationFeedTypeEnum)
-      .map((opt) => ({
-        label: t(`Service.OpenctiIntegrationFeeds.Filter.Type.${opt}`),
-        value: opt,
+      .map((feedType) => ({
+        label: t(`Service.OpenctiIntegrationFeeds.Filter.Type.${feedType}`),
+        value: feedType,
         disabled: true,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
@@ -34,9 +31,9 @@ export const IntegrationFeedFilters: React.FC<Props> = ({
 
   const connectorTypeOptions = useMemo(() => {
     return Object.keys(ConnectorTypeEnum)
-      .map((optKey) => ({
-        label: getIngestionConnectorMetadata(optKey).label,
-        value: optKey.toString(),
+      .map((connectorType) => ({
+        label: getIngestionConnectorMetadata(connectorType)?.label ?? '',
+        value: connectorType.toString(),
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [ConnectorTypeEnum]);
@@ -71,7 +68,7 @@ export const IntegrationFeedFilters: React.FC<Props> = ({
             )}
             noResultString={t('Utils.NotFound')}
             onValueChange={(values) =>
-              onConnectorTypeChange(values as IngestionConnectorType[])
+              onConnectorTypeChange(values as ConnectorTypeEnum[])
             }
             variant="inverted"
           />
