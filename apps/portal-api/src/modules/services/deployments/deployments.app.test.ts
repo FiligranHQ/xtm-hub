@@ -25,11 +25,7 @@ import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import { loadServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
-import {
-  deleteDeploymentRequestBy,
-  insertDeploymentRequest,
-  loadDeploymentRequestBy,
-} from './deployments.domain';
+import { DeploymentRequestDomain } from './deployments.domain';
 
 describe('Deployment app', () => {
   describe('createDeploymentRequest', () => {
@@ -43,9 +39,10 @@ describe('Deployment app', () => {
         type: DeploymentType.Trial,
       });
 
-      const dbDeploymentRequest = await loadDeploymentRequestBy({
-        id: deployment.id as DeploymentRequestId,
-      });
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
       expect(dbDeploymentRequest).toMatchObject({
         activity_sector: 'cybersecurity',
         id: expect.any(String),
@@ -71,7 +68,7 @@ describe('Deployment app', () => {
         ServiceInstanceCreationStatus.Pending
       );
 
-      await deleteDeploymentRequestBy({
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({
         id: deployment?.id as DeploymentRequestId,
       });
     });
@@ -112,7 +109,7 @@ describe('Deployment app', () => {
         service_instance_id: serviceInstanceId as ServiceInstanceId,
         user_requester_id: ADMIN_UUID,
       };
-      return await insertDeploymentRequest({
+      return await DeploymentRequestDomain.insertDeploymentRequest({
         ...defaultDeploymentRequestValues,
         ...deploymentRequest,
       });
@@ -133,7 +130,9 @@ describe('Deployment app', () => {
         requester_email: DEFAULT_ADMIN_EMAIL,
       });
 
-      await deleteDeploymentRequestBy({ id: deploymentRequest?.id });
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({
+        id: deploymentRequest?.id,
+      });
     });
 
     it('should return pending deployment requests if nothing specified', async () => {
@@ -148,7 +147,9 @@ describe('Deployment app', () => {
       expect(deployments.totalCount).toBe('0');
       expect(deployments.edges.length).toBe(0);
 
-      await deleteDeploymentRequestBy({ id: deploymentRequest?.id });
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({
+        id: deploymentRequest?.id,
+      });
     });
 
     it('should return filtered deployment requests only', async () => {
@@ -183,9 +184,15 @@ describe('Deployment app', () => {
       expect(deployments.totalCount).toBe('0');
       expect(deployments.edges.length).toBe(0);
 
-      await deleteDeploymentRequestBy({ id: deploymentRequest1?.id });
-      await deleteDeploymentRequestBy({ id: deploymentRequest2?.id });
-      await deleteDeploymentRequestBy({ id: deploymentRequest3?.id });
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({
+        id: deploymentRequest1?.id,
+      });
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({
+        id: deploymentRequest2?.id,
+      });
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({
+        id: deploymentRequest3?.id,
+      });
     });
   });
 });

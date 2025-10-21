@@ -17,10 +17,7 @@ import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
-import {
-  insertDeploymentRequest,
-  loadDeploymentRequests,
-} from './deployments.domain';
+import { DeploymentRequestDomain } from './deployments.domain';
 
 export const DeploymentsApp = {
   createDeployment: async (
@@ -44,20 +41,21 @@ export const DeploymentsApp = {
         platformIdentifier: input.platform_identifier,
       });
 
-      const createdDeploymentRequest = await insertDeploymentRequest({
-        id: uuidv4() as DeploymentRequestId,
-        user_requester_id: context.user.id,
-        organization_requester_id: context.user.selected_organization_id,
-        service_instance_id: serviceInstanceId,
-        status: DeploymentRequestStatus.Pending,
-        type: input.type,
-        platform_identifier: input.platform_identifier,
-        region: input.region,
-        job_title: input.job_title,
-        use_case: input.use_case,
-        activity_sector: input.activity_sector,
-        platform_token: uuidv4(),
-      });
+      const createdDeploymentRequest =
+        await DeploymentRequestDomain.insertDeploymentRequest({
+          id: uuidv4() as DeploymentRequestId,
+          user_requester_id: context.user.id,
+          organization_requester_id: context.user.selected_organization_id,
+          service_instance_id: serviceInstanceId,
+          status: DeploymentRequestStatus.Pending,
+          type: input.type,
+          platform_identifier: input.platform_identifier,
+          region: input.region,
+          job_title: input.job_title,
+          use_case: input.use_case,
+          activity_sector: input.activity_sector,
+          platform_token: uuidv4(),
+        });
       await trx.commit();
       return {
         id: createdDeploymentRequest.id,
@@ -93,6 +91,6 @@ export const DeploymentsApp = {
         value: [DeploymentRequestStatus.Pending],
       });
     }
-    return loadDeploymentRequests(args);
+    return DeploymentRequestDomain.loadDeploymentRequests(args);
   },
 };
