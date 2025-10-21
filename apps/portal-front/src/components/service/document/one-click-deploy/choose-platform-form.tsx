@@ -1,5 +1,7 @@
-import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/components/service/document/shareable-resource-slug';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployPlatformFragment$data } from '@generated/oneClickDeployPlatformFragment.graphql';
 import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';

@@ -1,33 +1,36 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
-import {
-  CsvFeedQuery,
-  csvFeedsItem,
-} from '@/components/service/csv-feeds/csv-feed.graphql';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
+import {
+  IntegrationFeedQuery,
+  integrationFeedsItem,
+} from '@/components/service/integration-feeds/integration-feed.graphql';
 import { APP_PATH } from '@/utils/path/constant';
-import { csvFeedQuery } from '@generated/csvFeedQuery.graphql';
-import { csvFeedsItem_fragment$key } from '@generated/csvFeedsItem_fragment.graphql';
+import { integrationFeedQuery } from '@generated/integrationFeedQuery.graphql';
+import { integrationFeedsItem_fragment$key } from '@generated/integrationFeedsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
 interface CsvFeedSlugProps {
-  queryRef: PreloadedQuery<csvFeedQuery>;
+  queryRef: PreloadedQuery<integrationFeedQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
 // Component
-const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
+const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   queryRef,
   serviceInstance,
 }) => {
-  const data = usePreloadedQuery<csvFeedQuery>(CsvFeedQuery, queryRef);
+  const data = usePreloadedQuery<integrationFeedQuery>(
+    IntegrationFeedQuery,
+    queryRef
+  );
 
-  const documentData = readInlineData<csvFeedsItem_fragment$key>(
-    csvFeedsItem,
-    data.csvFeed
+  const documentData = readInlineData<integrationFeedsItem_fragment$key>(
+    integrationFeedsItem,
+    data.integrationFeed
   );
 
   const breadcrumbValue = [
@@ -66,4 +69,4 @@ const CsvFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
 };
 
 // Component export
-export default CsvFeedSlug;
+export default IntegrationFeedSlug;

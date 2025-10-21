@@ -44,3 +44,6 @@ export const CSV_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
   'manager_supported',
   'playbook_supported',
 ];
+export const INTEGRATION_FEED_METADATA = Array.from(
+  new Set([...CSV_FEED_METADATA, ...CSV_FEED_CONNECTOR_METADATA])
+);

@@ -40,10 +40,10 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  csvFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CsvFeedConnection!
-  csvFeed(id: ID, serviceInstanceId: ID): CsvFeed
   seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
   seoCsvFeedBySlug(slug: String): CsvFeed
+  integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
+  integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
@@ -374,7 +374,7 @@ type ServiceLink implements Node {
   name: String
 }
 
-type CsvFeed implements DocumentBase & Node {
+type CsvFeed implements Node & DocumentBase & IntegrationFeed {
   id: ID!
   type: String!
   uploader: User
@@ -397,6 +397,7 @@ type CsvFeed implements DocumentBase & Node {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
+  integration_type: String!
 }
 
 input CreateCsvFeedInput {
@@ -420,14 +421,74 @@ input UpdateCsvFeedInput {
   uploader_id: String
 }
 
-type CsvFeedEdge {
-  cursor: String!
-  node: CsvFeed!
+interface IntegrationFeed implements Node & DocumentBase {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
+  remover_id: ID
+  integration_type: String!
 }
 
-type CsvFeedConnection {
+type Connector implements Node & DocumentBase & IntegrationFeed {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResourceImage!]
+  remover_id: ID
+  integration_type: String!
+  product_version: String!
+  container_image: String
+  verified: String!
+  source_code: String
+  subscription_link: String
+  integration_subtype: String!
+  manager_supported: String!
+  playbook_supported: String!
+}
+
+type IntegrationFeedEdge {
+  cursor: String!
+  node: IntegrationFeed!
+}
+
+type IntegrationFeedConnection {
   totalCount: Int!
-  edges: [CsvFeedEdge!]!
+  edges: [IntegrationFeedEdge!]!
   pageInfo: PageInfo!
 }
 

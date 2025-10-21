@@ -8,10 +8,10 @@ import {
   QueryOpts,
 } from '../../../../knexfile';
 import {
-  CsvFeedConnection,
   CustomDashboardConnection,
   DocumentConnection,
   Document as DocumentResolverType,
+  IntegrationFeedConnection,
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
   Organization,
@@ -609,7 +609,10 @@ export const passDocumentToInactive = async (
 };
 
 export const loadParentDocumentsByServiceInstance = async <
-  T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
+  T =
+    | DocumentConnection
+    | IntegrationFeedConnection
+    | CustomDashboardConnection,
 >(
   type: string,
   context: PortalContext,
@@ -634,7 +637,10 @@ export const loadParentDocumentsByServiceInstance = async <
 };
 
 export const loadDocuments = async <
-  T = DocumentConnection | CsvFeedConnection | CustomDashboardConnection,
+  T =
+    | DocumentConnection
+    | IntegrationFeedConnection
+    | CustomDashboardConnection,
 >(
   context: PortalContext,
   opts: Partial<QueryDocumentsArgs>,
@@ -689,20 +695,7 @@ export const loadDocuments = async <
 
   loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
 
-  if (Array.isArray(include_metadata)) {
-    include_metadata.forEach((metaKey, index) => {
-      const metaAlias = `meta${index}`;
-      loadDocumentQuery
-        .select(`${metaAlias}.value as ${metaKey}`)
-        .leftJoin(
-          { [metaAlias]: 'Document_Metadata' },
-          `${metaAlias}.document_id`,
-          'Document.id'
-        )
-        .andWhere(`${metaAlias}.key`, '=', metaKey)
-        .groupBy([metaKey]);
-    });
-  }
+  addIncludeMetadataQuery(loadDocumentQuery, include_metadata);
 
   return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
 };
@@ -781,20 +774,8 @@ export const loadDocumentById = async <T extends Document>(
     .select('Document.*')
     .groupBy(['Document.id']);
 
-  if (Array.isArray(include_metadata)) {
-    include_metadata.forEach((metaKey, index) => {
-      const metaAlias = `meta${index}`;
-      docQuery
-        .select(`${metaAlias}.value as ${metaKey}`)
-        .leftJoin(
-          { [metaAlias]: 'Document_Metadata' },
-          `${metaAlias}.document_id`,
-          'Document.id'
-        )
-        .andWhere(`${metaAlias}.key`, '=', metaKey)
-        .groupBy([metaKey]);
-    });
-  }
+  addIncludeMetadataQuery(docQuery, include_metadata);
+
   return docQuery.first();
 };
 
@@ -815,20 +796,7 @@ export const loadSeoDocumentBySlug = async (
     })
     .groupBy(['Document.id']);
 
-  if (Array.isArray(include_metadata)) {
-    include_metadata.forEach((metaKey, index) => {
-      const metaAlias = `meta${index}`;
-      docQuery
-        .select(`${metaAlias}.value as ${metaKey}`)
-        .leftJoin(
-          { [metaAlias]: 'Document_Metadata' },
-          `${metaAlias}.document_id`,
-          'Document.id'
-        )
-        .andWhere(`${metaAlias}.key`, '=', metaKey)
-        .groupBy([metaKey]);
-    });
-  }
+  addIncludeMetadataQuery(docQuery, include_metadata);
 
   return await docQuery.first();
 };
@@ -859,20 +827,7 @@ export const loadSeoDocumentsByServiceSlug = async (
     ])
     .groupBy(['Document.id']);
 
-  if (Array.isArray(include_metadata)) {
-    include_metadata.forEach((metaKey, index) => {
-      const metaAlias = `meta${index}`;
-      loadDocumentsQuery
-        .select(`${metaAlias}.value as ${metaKey}`)
-        .leftJoin(
-          { [metaAlias]: 'Document_Metadata' },
-          `${metaAlias}.document_id`,
-          'Document.id'
-        )
-        .andWhere(`${metaAlias}.key`, '=', metaKey)
-        .groupBy([metaKey]);
-    });
-  }
+  addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
 
   return await loadDocumentsQuery;
 };
@@ -893,4 +848,22 @@ export const loadImagesByDocumentId = async (documentId: string) => {
     image.id = toGlobalId('ShareableResourceImage', image.id);
   }
   return images;
+};
+
+const addIncludeMetadataQuery = (
+  qb: Knex.QueryBuilder,
+  include_metadata: string[] = []
+) => {
+  include_metadata.forEach((metaKey, index) => {
+    const metaAlias = `meta${index}`;
+    qb.select(`${metaAlias}.value as ${metaKey}`)
+      .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+          `${metaAlias}.key`,
+          '=',
+          metaKey
+        );
+      })
+      .groupBy([metaKey]);
+  });
 };

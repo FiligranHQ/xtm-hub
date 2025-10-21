@@ -1,20 +1,18 @@
-import {
-  csvFeedsFragment,
-  csvFeedsItem,
-  CsvFeedsListQuery,
-} from '@/components/service/csv-feeds/csv-feed.graphql';
-
-import {
-  csvFeedsItem_fragment$data,
-  csvFeedsItem_fragment$key,
-} from '@generated/csvFeedsItem_fragment.graphql';
-
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
-import { csvFeedsList$key } from '@generated/csvFeedsList.graphql';
-import { csvFeedsQuery } from '@generated/csvFeedsQuery.graphql';
+import {
+  integrationFeedsFragment,
+  integrationFeedsItem,
+  IntegrationFeedsListQuery,
+} from '@/components/service/integration-feeds/integration-feed.graphql';
+import {
+  integrationFeedsItem_fragment$data,
+  integrationFeedsItem_fragment$key,
+} from '@generated/integrationFeedsItem_fragment.graphql';
+import { integrationFeedsList$key } from '@generated/integrationFeedsList.graphql';
+import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
@@ -22,8 +20,8 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 
-interface CsvFeedsListProps {
-  queryRef: PreloadedQuery<csvFeedsQuery>;
+interface IntegrationFeedsListProps {
+  queryRef: PreloadedQuery<integrationFeedsQuery>;
   serviceInstance: serviceInstance_fragment$data;
   labels?: string[];
   search: string;
@@ -31,30 +29,30 @@ interface CsvFeedsListProps {
   onLabelFilterChange: (v: string[]) => void;
 }
 
-const CsvFeedsList = ({
+const IntegrationFeedsList = ({
   queryRef,
   serviceInstance,
   search,
   onSearchChange,
   onLabelFilterChange,
   labels,
-}: CsvFeedsListProps) => {
-  const queryData = usePreloadedQuery<csvFeedsQuery>(
-    CsvFeedsListQuery,
+}: IntegrationFeedsListProps) => {
+  const queryData = usePreloadedQuery<integrationFeedsQuery>(
+    IntegrationFeedsListQuery,
     queryRef
   );
 
-  const [data] = useRefetchableFragment<csvFeedsQuery, csvFeedsList$key>(
-    csvFeedsFragment,
-    queryData
-  );
+  const [data] = useRefetchableFragment<
+    integrationFeedsQuery,
+    integrationFeedsList$key
+  >(integrationFeedsFragment, queryData);
 
   const [active, draft] = useActiveAndDraftSplit<
-    csvFeedsItem_fragment$data,
-    csvFeedsItem_fragment$key
-  >(data?.csvFeeds.edges, csvFeedsItem);
+    integrationFeedsItem_fragment$data,
+    integrationFeedsItem_fragment$key
+  >(data?.integrationFeeds.edges, integrationFeedsItem);
 
-  const connectionId = data?.csvFeeds.__id;
+  const connectionId = data?.integrationFeeds.__id;
 
   const context = useCsvFeedContext(serviceInstance, connectionId);
 
@@ -72,4 +70,4 @@ const CsvFeedsList = ({
   );
 };
 
-export default CsvFeedsList;
+export default IntegrationFeedsList;

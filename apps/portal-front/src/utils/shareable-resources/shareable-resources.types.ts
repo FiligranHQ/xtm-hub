@@ -1,11 +1,13 @@
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
   | customDashboardsItem_fragment$data
   | csvFeedsItem_fragment$data
+  | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
   | SeoCsvFeed
   | SeoCustomDashboard
@@ -13,8 +15,33 @@ export type ShareableResource =
 
 export type SubscribableResource =
   | csvFeedsItem_fragment$data
+  | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
   | customDashboardsItem_fragment$data;
+
+export enum ShareableResourceType {
+  OPENAEV_SCENARIO = 'openaev_scenario',
+  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration_feed',
+  OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
+}
+
+export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
+  openaev_scenario: 'Scenario OpenAEV',
+  opencti_integration_feed: 'Feed OpenCTI',
+  opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
+};
+
+export const isIntegrationFeedItem = (
+  resource: SubscribableResource
+): resource is integrationFeedsItem_fragment$data => {
+  return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
+};
+
+export const isConnectorResource = (
+  resource: SubscribableResource
+): resource is integrationFeedsItem_fragment$data => {
+  return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
+};
 
 export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
 

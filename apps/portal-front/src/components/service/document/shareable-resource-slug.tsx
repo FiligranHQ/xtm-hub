@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
   BreadcrumbNav,
@@ -13,7 +14,6 @@ import {
 } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useEffect, useMemo, useState } from 'react';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
@@ -27,8 +27,11 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { ReactNode, useContext } from 'react';
+import {
+  ShareableResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
+
 // Component interface
 interface ShareableResourceSlugProps {
   documentData: ShareableResource;
@@ -36,18 +39,6 @@ interface ShareableResourceSlugProps {
   children?: ReactNode;
   updateActions?: ReactNode;
 }
-
-export enum ShareableResourceType {
-  OPENAEV_SCENARIO = 'openaev_scenario',
-  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration_feed',
-  OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
-}
-
-export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
-  openaev_scenario: 'Scenario OpenAEV',
-  opencti_integration_feed: 'Feed OpenCTI',
-  opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
-};
 
 // Component
 const ShareableResourceSlug: React.FunctionComponent<

@@ -6,10 +6,10 @@ import {
   default as DocumentModel,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
-import Label from '../../../model/kanel/public/Label';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
+import { WithLabels } from '../../../utils/types';
 import { extractId } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -23,7 +23,7 @@ import {
   sendFileToS3,
 } from './document.domain';
 
-export type Document = DocumentModel & { labels: Label[] };
+export type Document = WithLabels<DocumentModel>;
 export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];
   parent_document_id?: DocumentId;
