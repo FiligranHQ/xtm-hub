@@ -71,9 +71,8 @@ const portalConfig: PortalConfig = {
       process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.database')
         : config.get<string>('database.database'),
-    seeds: process.env.DATA_SEEDING
-      ? 'tests/seeds'
-      : process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
+    seeds:
+      process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.seeds')
         : 'src/seeds',
   },
