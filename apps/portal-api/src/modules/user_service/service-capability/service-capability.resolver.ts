@@ -32,7 +32,7 @@ const resolvers: Resolvers = {
           .transacting(trx);
         const userService = await loadUserServiceById(user_service_id);
 
-        await insertCapabilities(context, trx, input.capabilities, userService);
+        await insertCapabilities(trx, input.capabilities, userService);
         await trx.commit();
         return fillSubscriptionWithOrgaServiceAndUserService(
           userService.subscription_id

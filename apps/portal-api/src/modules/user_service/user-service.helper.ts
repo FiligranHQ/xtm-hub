@@ -176,7 +176,7 @@ export const createUserServiceAccess = async (
     .insert(user_service)
     .returning('*');
 
-  await insertCapabilities(portalContext, trx, capabilities, addedUserService);
+  await insertCapabilities(trx, capabilities, addedUserService);
   const user_service_capa: UserServiceCapabilityInitializer = {
     id: uuidv4() as UserServiceCapabilityId,
     user_service_id: addedUserService.id,
