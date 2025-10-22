@@ -1,4 +1,5 @@
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
+import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -10,30 +11,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
 
-interface ShareableConnector {
-  id: string;
-  integration_subtype: string;
-  children_documents?: { file_name: string; id: string }[];
-  name: string;
-  verified: boolean;
-  labels: {
-    color: string;
-    id: string;
-    name: string;
-  }[];
-  short_description: string;
-  slug: string;
-  service_instance: string;
-}
-
 export interface ShareableServiceInstance {
   id: string;
   service_definition?: {
     identifier: ServiceDefinitionIdentifier;
-  };
+  } | null;
 }
 interface ShareableResourceConnectorCard {
-  shareableConnector: ShareableConnector;
+  shareableConnector: ShareableResourceConnectorType;
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;

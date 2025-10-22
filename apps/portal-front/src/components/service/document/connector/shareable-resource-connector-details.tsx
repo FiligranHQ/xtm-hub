@@ -1,32 +1,32 @@
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
-import { integrationFeedConnectorsItem_fragment$data } from '@generated/integrationFeedConnectorsItem_fragment.graphql';
-import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
 import { LogoGitIcon, OpenInNewIcon } from 'filigran-icon';
-import { Badge } from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
+import { Badge, Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import React from 'react';
+import { FunctionComponent } from 'react';
 
-interface Props {
-  documentData: integrationFeedsItem_fragment$data;
-  connector: integrationFeedConnectorsItem_fragment$data;
+interface ShareableResourceConnectorDetailsProps {
+  connectorDetails: {
+    name: string;
+    source_code?: string | null;
+    subscription_link?: string | null;
+    integration_subtype: string;
+    product_version: string;
+  };
 }
-
-export const ShareableResourceConnectorDetails: React.FC<Props> = ({
-  connector,
-  documentData,
-}) => {
+export const ShareableResourceConnectorDetails: FunctionComponent<
+  ShareableResourceConnectorDetailsProps
+> = ({ connectorDetails }) => {
   const t = useTranslations();
 
   const connectorMetadata = getIngestionConnectorMetadata(
-    connector.integration_subtype
+    connectorDetails.integration_subtype
   );
 
   return (
     <>
-      {connector.source_code && (
+      {connectorDetails.source_code && (
         <ShareableResourceDetailItem
           label={t('Service.Connectors.IntegrationDocumentationAndCode')}>
           <Button
@@ -34,15 +34,15 @@ export const ShareableResourceConnectorDetails: React.FC<Props> = ({
             variant="link"
             asChild>
             <Link
-              href={connector.source_code}
+              href={connectorDetails.source_code}
               target="_blank">
               <LogoGitIcon className="h-4 w-4 mr-s" />
-              {documentData.name}
+              {connectorDetails.name}
             </Link>
           </Button>
         </ShareableResourceDetailItem>
       )}
-      {connector.subscription_link && (
+      {connectorDetails.subscription_link && (
         <ShareableResourceDetailItem
           label={t('Service.Connectors.VisitVendor')}>
           <Button
@@ -50,7 +50,7 @@ export const ShareableResourceConnectorDetails: React.FC<Props> = ({
             variant="link"
             asChild>
             <Link
-              href={connector.subscription_link}
+              href={connectorDetails.subscription_link}
               rel="noopener noreferrer"
               target="_blank">
               <OpenInNewIcon className="h-4 w-4 mr-s" />
@@ -73,7 +73,7 @@ export const ShareableResourceConnectorDetails: React.FC<Props> = ({
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.ProductVersion')}>
-        <span>{connector.product_version}</span>
+        <span>{connectorDetails.product_version}</span>
       </ShareableResourceDetailItem>
     </>
   );

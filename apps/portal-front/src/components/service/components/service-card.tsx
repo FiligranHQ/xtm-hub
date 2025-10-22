@@ -2,6 +2,7 @@
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
+import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import { connectorsItem } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
@@ -16,6 +17,7 @@ import {
   isConnectorResource,
   SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { integrationFeedConnectorsItem_fragment$key } from '@generated/integrationFeedConnectorsItem_fragment.graphql';
 import { MoreVertIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
@@ -52,12 +54,18 @@ const ServiceCard = ({
       connectorsItem,
       document
     );
+    const docResource: SubscribableResource = document;
     return (
       <ShareableResourceConnectorCard
-        shareableConnector={{ ...document, ...connector }}
+        shareableConnector={
+          {
+            ...docResource,
+            ...connector,
+          } as unknown as ShareableResourceConnectorType
+        }
         serviceInstance={serviceInstance}
-        detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
-        shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${document?.service_instance?.slug}/${document?.slug}`}
+        detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${docResource.id}`}
+        shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${docResource?.service_instance?.slug}/${docResource?.slug}`}
       />
     );
   }

@@ -11,30 +11,28 @@ import { ShareableResourceConnectorDetails } from '@/components/service/document
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { connectorsItem } from '@/components/service/integration-feeds/integration-feed.graphql';
-import { SettingsContext } from '@/components/settings/env-portal-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { integrationFeedConnectorsItem_fragment$key } from '@generated/integrationFeedConnectorsItem_fragment.graphql';
 import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
 import { VerifiedIcon } from 'filigran-icon';
-import { useContext } from 'react';
 import { useFragment } from 'react-relay';
 
 // Component interface
-interface ShareableResourceSlugProps {
+interface ShareableResourceConnectorSlugProps {
   documentData: integrationFeedsItem_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
+  shareUrl?: string;
+  downloadUrl?: string;
 }
 
 // Component
 const ShareableResourceConnectorSlug: React.FunctionComponent<
-  ShareableResourceSlugProps
-> = ({ documentData, breadcrumbValue }) => {
+  ShareableResourceConnectorSlugProps
+> = ({ documentData, breadcrumbValue, shareUrl }) => {
   const t = useTranslations();
-  const { settings } = useContext(SettingsContext);
   const connector = useFragment<integrationFeedConnectorsItem_fragment$key>(
     connectorsItem,
     documentData
@@ -52,11 +50,13 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
               {t('Utils.Verified')}
             </div>
           )}
-          <div className="ml-auto">
-            <ShareLinkButton
-              documentId={documentData.slug}
-              url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
-            />
+          <div className="ml-auto flex items-center gap-2">
+            {shareUrl && (
+              <ShareLinkButton
+                documentId={documentData.slug}
+                url={shareUrl}
+              />
+            )}
           </div>
         </div>
         <BadgeOverflowCounter badges={documentData.labels as BadgeOverflow[]} />
@@ -68,8 +68,10 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
         />
         <ShareableResourceBasicInformation>
           <ShareableResourceConnectorDetails
-            connector={connector}
-            documentData={documentData}
+            connectorDetails={{
+              ...connector,
+              name: documentData.name,
+            }}
           />
         </ShareableResourceBasicInformation>
       </div>

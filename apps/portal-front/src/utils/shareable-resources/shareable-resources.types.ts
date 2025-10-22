@@ -1,3 +1,4 @@
+import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
@@ -32,14 +33,20 @@ export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
 };
 
 export const isIntegrationFeedItem = (
-  resource: SubscribableResource
+  resource:
+    | SubscribableResource
+    | ShareableResource
+    | ShareableResourceConnectorType
 ): resource is integrationFeedsItem_fragment$data => {
   return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
 };
 
 export const isConnectorResource = (
-  resource: SubscribableResource | ShareableResource
-): resource is integrationFeedsItem_fragment$data => {
+  resource:
+    | SubscribableResource
+    | ShareableResource
+    | ShareableResourceConnectorType
+): resource is ShareableResourceConnectorType => {
   return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
 };
 
