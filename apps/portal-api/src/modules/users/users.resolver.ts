@@ -337,12 +337,10 @@ const resolvers: Resolvers = {
     },
     removePendingUserFromOrganization: async (
       _,
-      { user_id, organization_id },
-      context
+      { user_id, organization_id }
     ) => {
       try {
         await removeUserFromOrganizationPending(
-          context,
           extractId(user_id),
           extractId(organization_id)
         );

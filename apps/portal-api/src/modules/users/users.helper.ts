@@ -21,7 +21,6 @@ import User, {
 } from '../../model/kanel/public/User';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { dispatch } from '../../pub';
-import { requestContext } from '../../requestContext';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../session-store-manager';
 import { logApp } from '../../utils/app-logger.util';
@@ -232,7 +231,6 @@ export const insertUserIntoOrganization = async (
   user: User,
   subscriptionId: SubscriptionId
 ) => {
-  const { portalContext } = requestContext.require();
   const [subscription] =
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
@@ -252,7 +250,7 @@ export const insertUserIntoOrganization = async (
   }
   if (isEmpty(userOrganization)) {
     const [userOrgRelation] =
-      await createUserOrganizationRelationAndRemovePending(portalContext, {
+      await createUserOrganizationRelationAndRemovePending({
         user_id: user.id,
         organizations_id: [organization.id],
       });
@@ -421,10 +419,9 @@ export const acceptPendingUserWithCapabilities = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
-  const { portalContext } = requestContext.require();
   const trx = await dbTx();
   try {
-    await createUserOrganizationRelationAndRemovePending(portalContext, {
+    await createUserOrganizationRelationAndRemovePending({
       user_id,
       organizations_id: [organization_id],
     });
