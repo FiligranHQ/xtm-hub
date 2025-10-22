@@ -241,7 +241,7 @@ export type DeploymentRequestConnection = {
 export type DeploymentRequestEdge = {
   __typename?: 'DeploymentRequestEdge';
   cursor: Scalars['String']['output'];
-  node?: Maybe<PlatformDeploymentRequest>;
+  node: PlatformDeploymentRequest;
 };
 
 export type DeploymentRequestFilter = {
@@ -2289,7 +2289,7 @@ export type DeploymentRequestConnectionResolvers<ContextType = PortalContext, Pa
 
 export type DeploymentRequestEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequestEdge'] = ResolversParentTypes['DeploymentRequestEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<Maybe<ResolversTypes['PlatformDeploymentRequest']>, ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
