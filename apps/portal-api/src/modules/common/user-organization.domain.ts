@@ -96,7 +96,7 @@ export const createUserOrgCapabilities = async ({
     user_id: user.id,
     organization_id: organization.id,
   });
-  const contextUser = requestContext.require().user;
+  const { user: contextUser } = requestContext.require();
   await updateUserOrganizationCapability({
     user_organization_id: userOrganization.id,
     capabilities_name: orgCapabilities,
