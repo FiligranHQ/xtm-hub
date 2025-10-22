@@ -1,8 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  contextAdminUser,
-  SERVICE_CSV_FEEDS_ID,
-} from '../../../tests/tests.const';
+import { SERVICE_CSV_FEEDS_ID } from '../../../tests/tests.const';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -117,7 +114,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
 
-      await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
+      await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
@@ -178,7 +175,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
 
-      await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
+      await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
