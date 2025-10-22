@@ -623,8 +623,7 @@ type RegisteredPlatform implements Node {
   url: String!
   title: String!
   contract: PlatformContract!
-  platform_id: String
-  platform_identifier: String
+  platform_id: String!
   identifier: ServiceDefinitionIdentifier!
   version: String
   illustration_document_id: String

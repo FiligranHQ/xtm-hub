@@ -1,4 +1,5 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -24,6 +25,25 @@ export const isRegistrationService = (
   ].includes(
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
+
+export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
+  serviceInstance.end_date && new Date(serviceInstance.end_date) < new Date();
+
+export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
+  if (!serviceInstance.end_date) {
+    return serviceInstance.status;
+  }
+  const target = new Date(serviceInstance.end_date);
+  const now = new Date();
+
+  const diffInMs = target.getTime() - now.getTime();
+
+  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+  if (diffInDays <= 0) {
+    return 'Expired';
+  }
+  return `${diffInDays} days remaning`;
+};
 
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]

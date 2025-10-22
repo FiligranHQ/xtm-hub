@@ -1372,8 +1372,7 @@ export type RegisteredPlatform = Node & {
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id?: Maybe<Scalars['String']['output']>;
-  platform_id?: Maybe<Scalars['String']['output']>;
-  platform_identifier?: Maybe<Scalars['String']['output']>;
+  platform_id: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
@@ -2705,8 +2704,7 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  platform_identifier?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

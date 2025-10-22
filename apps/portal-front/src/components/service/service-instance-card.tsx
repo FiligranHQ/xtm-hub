@@ -8,8 +8,17 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { isExternalService, isRegistrationService } from '@/utils/services';
+import {
+  getDisplayDays,
+  isExpired,
+  isExternalService,
+  isRegistrationService,
+} from '@/utils/services';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformRegionEnum } from '@generated/models/PlatformRegion.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -23,6 +32,27 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useContext, useState } from 'react';
+
+export interface DeploymentRequest {
+  id: string;
+  platform_identifier: PlatformIdentifierEnum;
+  region: PlatformRegionEnum;
+  type: DeploymentTypeEnum;
+  job_title?: string;
+  activity_sector?: string;
+  use_case?: string;
+  start_date?: Date;
+  end_date?: Date;
+  status: DeploymentRequestStatusEnum;
+}
+export interface SubscriptionModel {
+  id: string;
+  organization_id: string;
+  service_instance_id: string;
+  start_date: Date;
+  end_date: Date;
+  status: string;
+}
 
 export interface ServiceInstanceCardData {
   id: string;
@@ -38,6 +68,10 @@ export interface ServiceInstanceCardData {
   description?: string;
   url?: string;
   ordering: number;
+  end_date?: Date;
+  status?: string;
+  deployment_request?: DeploymentRequest;
+  subscription?: SubscriptionModel;
 }
 
 interface ServiceInstanceCardProps {
@@ -142,23 +176,32 @@ const ServiceInstanceCard: React.FunctionComponent<
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
+      {isExpired(serviceInstance) && (
+        <div className="absolute inset-0 bg-black/60 z-10 rounded pointer-events-none" />
+      )}
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
         <div
           className={cn(
             'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
             serviceInstance.card_background ?? 'bg-blue-900'
           )}>
-          <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
+          <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
-            <div
-              className="w-full h-12"
-              style={{
-                backgroundImage,
-                backgroundSize: 'contain',
-                backgroundPosition: 'left center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            />
+            {isRegistrationService(serviceInstance) ? (
+              <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
+                {getDisplayDays(serviceInstance)}
+              </span>
+            ) : (
+              <div
+                className="w-full h-12"
+                style={{
+                  backgroundImage,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'left center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            )}
           </div>
           <AspectRatio
             ratio={16 / 9}
@@ -186,9 +229,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                       ? 'absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45'
                       : ''
                   }
-                  unoptimized={
-                    serviceInstance.illustration_document_id ? true : false
-                  }
+                  unoptimized={!!serviceInstance.illustration_document_id}
                 />
                 <h3
                   className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
