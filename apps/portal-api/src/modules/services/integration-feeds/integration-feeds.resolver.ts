@@ -1,9 +1,9 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { extractId } from '../../../utils/utils';
+import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import {
-  getLabels,
   getUploader,
   getUploaderOrganization,
   loadImagesByDocumentId,
@@ -26,7 +26,8 @@ const resolvers: Resolvers = {
 
       return mapping[feed.integration_type];
     },
-    labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
+    labels: ({ id }) =>
+      labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),
     uploader: ({ id }, _, context) =>
       getUploader(context, id, { unsecured: true }),

@@ -1,62 +1,50 @@
-import { db, paginate } from '../../../../knexfile';
+import { db, paginate, QueryOpts } from '../../../../knexfile';
 import { LabelConnection } from '../../../__generated__/resolvers-types';
-import Label, { LabelMutator } from '../../../model/kanel/public/Label';
-import ObjectLabel from '../../../model/kanel/public/ObjectLabel';
-import { PortalContext } from '../../../model/portal-context';
+import Label, {
+  LabelId,
+  LabelInitializer,
+  LabelMutator,
+} from '../../../model/kanel/public/Label';
 
-export const loadLabels = async (context, opts) =>
-  paginate<Label, LabelConnection>('Label', opts);
+export const labelsDomain = {
+  insertLabel: async (input: LabelInitializer): Promise<Label> => {
+    const [label] = await db<Label>('Label').insert(input).returning('*');
+    return label;
+  },
 
-export const loadLabel = (context, id) =>
-  db<Label>(context, 'Label').where({ id }).first();
+  updateLabel: async (id: LabelId, fields: LabelMutator): Promise<Label> => {
+    const [label] = await db<Label>('Label')
+      .where({ id })
+      .update(fields)
+      .returning('*');
+    return label;
+  },
 
-export const addLabel = async (context, input) => {
-  const [label] = await db<Label>(context, 'Label')
-    .insert(input)
-    .returning('*');
-  return label;
-};
+  loadLabels: (opts: Partial<QueryOpts>): Promise<LabelConnection> => {
+    return paginate<Label, LabelConnection>('Label', opts);
+  },
 
-export const editLabel = async (context, { id, input }) => {
-  const [label] = await db<Label>(context, 'Label')
-    .where({ id })
-    .update(input)
-    .returning('*');
-  return label;
-};
+  loadLabelsByDocumentId: (
+    documentId: string,
+    opts: Partial<QueryOpts> = {}
+  ): Promise<Label[]> => {
+    return db<Label>('Label', opts)
+      .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
+      .where('ol.object_id', '=', documentId)
+      .returning('Label.*');
+  },
 
-export const deleteLabelBy = async (context, field: LabelMutator) => {
-  const [label] = await db<Label>(context, 'Label').where(field).returning('*');
-  await db<ObjectLabel>(context, 'Object_Label')
-    .where({ label_id: label.id })
-    .delete('*');
-  await db<Label>(context, 'Label').where(field).delete('*');
-  return label;
-};
+  loadLabelBy: (field: LabelMutator): Promise<Label | null> => {
+    return db<Label>('Label').where(field).first();
+  },
 
-export const getOrCreateLabel = async ({
-  context,
-  name,
-  color = '#0099cc',
-}: {
-  context: PortalContext;
-  name: string;
-  color?: string;
-}): Promise<Label> => {
-  const existing = await db(context, 'Label')
-    .where('name', 'ILIKE', name)
-    .select('*')
-    .first();
+  loadLabelByLikeName: (name: string): Promise<Label | null> => {
+    return db('Label').where('name', 'ILIKE', name).select('*').first();
+  },
 
-  if (existing) {
-    return existing;
-  }
+  deleteLabel: async (field: LabelMutator): Promise<Label> => {
+    const [deletedLabel] = await db<Label>('Label').where(field).delete('*');
 
-  const newLabel = await db<Label>(context, 'Label')
-    .insert({
-      name,
-      color,
-    })
-    .returning('*');
-  return newLabel[0];
+    return deletedLabel;
+  },
 };
