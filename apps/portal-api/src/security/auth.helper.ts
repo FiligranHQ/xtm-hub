@@ -141,10 +141,8 @@ export const isUserAllowedOnOrganization = async (
     requiredCapability: OrganizationCapability;
   }
 ): Promise<{ isAllowed: boolean; isInOrganization: boolean }> => {
-  const organizationCapabilities = await loadUserOrganizationCapabilities(
-    context,
-    organizationId
-  );
+  const organizationCapabilities =
+    await loadUserOrganizationCapabilities(organizationId);
 
   const isAllowed = isUserAllowed({
     requiredCapability: requiredCapability,

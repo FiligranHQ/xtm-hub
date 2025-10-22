@@ -74,8 +74,7 @@ export const updateUserOrgCapabilities = async ({
     user_id,
     organization_id,
   });
-  const { portalContext } = requestContext.require();
-  await updateUserOrganizationCapability(portalContext, {
+  await updateUserOrganizationCapability({
     user_organization_id: userOrganization.id,
     capabilities_name: orgCapabilities,
   });
@@ -97,8 +96,8 @@ export const createUserOrgCapabilities = async ({
     user_id: user.id,
     organization_id: organization.id,
   });
-  const context = requestContext.require();
-  await updateUserOrganizationCapability(context.portalContext, {
+  const contextUser = requestContext.require().user;
+  await updateUserOrganizationCapability({
     user_organization_id: userOrganization.id,
     capabilities_name: orgCapabilities,
   });
@@ -108,7 +107,7 @@ export const createUserOrgCapabilities = async ({
       template: 'new_user_organization',
       params: {
         organizationName: organization.name,
-        userName: `${context.user.first_name ?? ''} ${context.user.last_name ?? ''}`,
+        userName: `${contextUser.first_name ?? ''} ${contextUser.last_name ?? ''}`,
         invitedName: `${user.first_name ?? ''} ${user.last_name ?? ''}`,
       },
     });
