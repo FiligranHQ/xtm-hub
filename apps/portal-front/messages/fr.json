@@ -562,6 +562,16 @@
     "GoToManagement": "Aller à la gestion des services",
     "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "Join": "Rejoindre",
+    "List": {
+      "Filter": {
+        "Add": "Ajouter un filtre",
+        "NoOptions": "Pas d'options",
+        "Key": {
+          "label": "Cas d'utilisation",
+          "integration_feed": "Flux d'intégration"
+        }
+      }
+    },
     "Management": {
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
       "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",

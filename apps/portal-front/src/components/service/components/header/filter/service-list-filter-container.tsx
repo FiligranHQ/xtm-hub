@@ -5,5 +5,5 @@ interface Props {
 }
 
 export const ServiceListFilterContainer: React.FC<Props> = ({ children }) => {
-  return <div className="w-[17rem]">{children}</div>;
+  return <div className="w-[20rem]">{children}</div>;
 };

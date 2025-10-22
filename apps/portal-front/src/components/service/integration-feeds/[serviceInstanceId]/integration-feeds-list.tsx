@@ -1,6 +1,11 @@
+import {
+  ServiceListFilterKey,
+  ServiceListFilterMap,
+} from '@/components/service/components/header/service-list-header';
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
+import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import {
   integrationFeedsFragment,
@@ -14,8 +19,6 @@ import {
 } from '@generated/integrationFeedsItem_fragment.graphql';
 import { integrationFeedsList$key } from '@generated/integrationFeedsList.graphql';
 import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
-import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
-import { IntegrationFeedTypeEnum } from '@generated/models/IntegrationFeedType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
@@ -26,12 +29,8 @@ import {
 interface IntegrationFeedsListProps {
   queryRef: PreloadedQuery<integrationFeedsQuery>;
   serviceInstance: serviceInstance_fragment$data;
-  labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
-  onLabelFilterChange: (v: string[]) => void;
-  onIntegrationFeedTypeChange: (v: IntegrationFeedTypeEnum[]) => void;
-  onConnectorTypeChange: (v: ConnectorTypeEnum[]) => void;
 }
 
 const IntegrationFeedsList = ({
@@ -39,10 +38,6 @@ const IntegrationFeedsList = ({
   serviceInstance,
   search,
   onSearchChange,
-  onLabelFilterChange,
-  onIntegrationFeedTypeChange,
-  onConnectorTypeChange,
-  labels,
 }: IntegrationFeedsListProps) => {
   const queryData = usePreloadedQuery<integrationFeedsQuery>(
     IntegrationFeedsListQuery,
@@ -63,6 +58,19 @@ const IntegrationFeedsList = ({
 
   const context = useCsvFeedContext(serviceInstance, connectionId);
 
+  const { removeConnectorTypes, removeIntegrationTypes } =
+    useServiceListLocalStorage(context.localStorageKey);
+
+  const filters: ServiceListFilterMap = {
+    [ServiceListFilterKey.IntegrationFeed]: {
+      node: <IntegrationFeedFilters />,
+      reset: () => {
+        removeConnectorTypes();
+        removeIntegrationTypes();
+      },
+    },
+  };
+
   return (
     <AppServiceContext {...context}>
       <ServiceList
@@ -70,14 +78,7 @@ const IntegrationFeedsList = ({
         draft={draft}
         search={search}
         onSearchChange={onSearchChange}
-        labels={labels}
-        onLabelFilterChange={onLabelFilterChange}
-        additionalFilters={
-          <IntegrationFeedFilters
-            onIntegrationFeedTypeChange={onIntegrationFeedTypeChange}
-            onConnectorTypeChange={onConnectorTypeChange}
-          />
-        }
+        additionalFilters={filters}
       />
     </AppServiceContext>
   );

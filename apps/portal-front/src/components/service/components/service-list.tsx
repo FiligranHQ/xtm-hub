@@ -1,18 +1,18 @@
-import { getLabels } from '@/components/admin/label/label.utils';
-
-import { SearchInput } from '@/components/ui/search-input';
-import { debounceHandleInput } from '@/utils/debounce';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { MultiSelectFormField } from 'filigran-ui';
 
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
+import { ServiceListFilterLabel } from '@/components/service/components/header/filter/service-list-filter-label';
+import {
+  ServiceListFilterKey,
+  ServiceListFilterMap,
+  ServiceListHeader,
+} from '@/components/service/components/header/service-list-header';
 import ServiceCard from '@/components/service/components/service-card';
 import { useServiceContext } from '@/components/service/components/service-context';
-import ServiceButtons from '@/components/service/components/service-list-buttons';
-import { ServiceListFilterContainer } from '@/components/service/components/service-list-filter-container';
+import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
@@ -24,17 +24,13 @@ export interface ServiceListProps {
   draft: SubscribableResource[];
   search: string;
   onSearchChange: (v: string) => void;
-  labels?: string[];
-  onLabelFilterChange: (v: string[]) => void;
-  additionalFilters?: React.ReactNode;
+  additionalFilters?: ServiceListFilterMap;
 }
 const ServiceList = ({
   active,
   draft,
   search,
   onSearchChange,
-  labels,
-  onLabelFilterChange,
   additionalFilters,
 }: ServiceListProps) => {
   const t = useTranslations();
@@ -46,41 +42,27 @@ const ServiceList = ({
     serviceInstance
   );
 
+  const { localStorageKey } = useServiceContext();
+  const { removeLabels } = useServiceListLocalStorage(localStorageKey);
+
   const firstResource = draft.length > 0 ? draft[0] : active[0];
 
-  const labelOptions = getLabels().map(({ name, id }) => ({
-    label: name.toUpperCase(),
-    value: id,
-  }));
+  const filters = {
+    ...additionalFilters,
+    [ServiceListFilterKey.Label]: {
+      node: <ServiceListFilterLabel />,
+      reset: removeLabels,
+    },
+  };
+
   return (
     <div className="flex flex-col gap-xl">
-      <h1>{serviceInstance.name}</h1>
-      <div className="flex justify-between gap-s flex-wrap">
-        <div className="flex gap-s flex-wrap">
-          <SearchInput
-            containerClass="w-[20rem] flex-1 max-w-[50%]"
-            placeholder={t('GenericActions.Search')}
-            defaultValue={search}
-            onChange={debounceHandleInput(onSearchChange)}
-          />
-          {additionalFilters}
-          <ServiceListFilterContainer>
-            <MultiSelectFormField
-              options={labelOptions}
-              defaultValue={labels}
-              placeholder={t('GenericActions.FilterUseCases')}
-              noResultString={t('Utils.NotFound')}
-              onValueChange={onLabelFilterChange}
-              variant="inverted"
-            />
-          </ServiceListFilterContainer>
-        </div>
-        <div className="flex gap-s">
-          <ServiceButtons
-            firstServiceSubscriptionId={firstResource?.subscription?.id ?? ''}
-          />
-        </div>
-      </div>
+      <ServiceListHeader
+        search={search}
+        onSearchChange={onSearchChange}
+        firstServiceSubscriptionId={firstResource?.subscription?.id}
+        filters={filters}
+      />
       {userCanUpdate && draft.length > 0 && (
         <>
           <div className="txt-category">

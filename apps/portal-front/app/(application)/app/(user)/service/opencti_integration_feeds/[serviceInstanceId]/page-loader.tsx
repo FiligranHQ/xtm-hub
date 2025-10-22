@@ -1,6 +1,9 @@
 'use client';
 
-import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/components/service/components/use-service-list-local-storage';
 import IntegrationFeedsList from '@/components/service/integration-feeds/[serviceInstanceId]/integration-feeds-list';
 import { IntegrationFeedsListQuery } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
@@ -17,17 +20,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<integrationFeedsQuery>(
     IntegrationFeedsListQuery
   );
-  const {
-    count,
-    search,
-    labels,
-    integrationTypes,
-    connectorTypes,
-    setSearch,
-    setLabels,
-    setIntegrationTypes,
-    setConnectorTypes,
-  } = serviceListLocalStorage('csvFeed');
+  const { count, search, labels, integrationTypes, connectorTypes, setSearch } =
+    useServiceListLocalStorage(
+      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+    );
 
   useEffect(() => {
     loadQuery(
@@ -65,10 +61,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
           queryRef={queryRef}
           search={search}
           onSearchChange={setSearch}
-          onLabelFilterChange={setLabels}
-          onIntegrationFeedTypeChange={setIntegrationTypes}
-          onConnectorTypeChange={setConnectorTypes}
-          labels={labels}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

@@ -562,6 +562,16 @@
     "GoToManagement": "Go to service management",
     "HighlightedServices": "To use this feature, please subscribe to one of the highlighted services first",
     "Join": "Join",
+    "List": {
+      "Filter": {
+        "Add": "Add filter",
+        "NoOptions": "No options",
+        "Key": {
+          "label": "Use case",
+          "integration_feed": "Integration feed"
+        }
+      }
+    },
     "Management": {
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
       "Description": "Find below the list of organizations subscribed to this service",

@@ -1,6 +1,9 @@
 'use client';
 
-import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/components/service/components/use-service-list-local-storage';
 import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
 import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
@@ -17,8 +20,9 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<customDashboardsQuery>(
     CustomDashboardsListQuery
   );
-  const { count, search, setSearch, labels, setLabels } =
-    serviceListLocalStorage('CustomDashboards');
+  const { count, search, setSearch, labels } = useServiceListLocalStorage(
+    ServiceListLocalStorageKey.OpenCTICustomDashboards
+  );
 
   useEffect(() => {
     loadQuery(
@@ -44,8 +48,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
           queryRef={queryRef}
           search={search}
           onSearchChange={setSearch}
-          onLabelFilterChange={setLabels}
-          labels={labels}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />
