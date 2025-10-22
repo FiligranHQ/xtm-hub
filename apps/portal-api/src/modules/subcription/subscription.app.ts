@@ -159,9 +159,7 @@ export const subscriptionApp = {
       };
 
       const createdSubscription = await createSubscription(subscriptionData);
-      const { portalContext } = requestContext.require();
       await addCapabilitiesToSubscription(
-        portalContext,
         createdSubscription.id,
         capabilityIds
       );

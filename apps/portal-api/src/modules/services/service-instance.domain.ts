@@ -447,10 +447,7 @@ export const loadServiceWithSubscriptions = async (
 
   const subscriptions = arraySubcriptions.map((subscription) => ({
     ...subscription,
-    subscription_capability: loadSubscriptionCapabilities(
-      context,
-      subscription.id
-    ),
+    subscription_capability: loadSubscriptionCapabilities(subscription.id),
   }));
 
   return { ...serviceInstance, subscriptions };

@@ -5,7 +5,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityMutator } from '../../../model/kanel/public/ServiceCapability';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
-import { PortalContext } from '../../../model/portal-context';
+import { requestContext } from '../../../requestContext';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadUserServiceById } from '../user_service.domain';
 import { getManageAccessLeft } from './service-capability.domain';
@@ -17,17 +17,14 @@ export const loadServiceCapabilityBy = async (
 };
 
 export const willManageAccessBeConserved = async (
-  context: PortalContext,
   userServiceId: UserServiceId,
   capabilities: string[]
 ) => {
-  const manageAccessWillLeft = await getManageAccessLeft(
-    context,
-    userServiceId
-  );
+  const { user } = requestContext.require();
+  const manageAccessWillLeft = await getManageAccessLeft(userServiceId);
   const userService = await loadUserServiceById(userServiceId);
   // Needed if : the currentUser is the only one with manage access and want to update another user, without manage_access (from upload to delete for instance)
-  const isCurrentUserModified = context.user.id === userService.user_id;
+  const isCurrentUserModified = user.id === userService.user_id;
   const isAuthorizedToEditCapabilities =
     capabilities.includes(Restriction.ManageAccess) ||
     manageAccessWillLeft ||

@@ -14,17 +14,16 @@ import { willManageAccessBeConserved } from './service_capability.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
-    editServiceCapability: async (_, { input }, context) => {
+    editServiceCapability: async (_, { input }) => {
       const trx = await dbTx();
       try {
         await willManageAccessBeConserved(
-          context,
           fromGlobalId(input.user_service_id).id as UserServiceId,
           input.capabilities
         );
 
         const user_service_id = fromGlobalId(input.user_service_id).id;
-        await db<UserServiceCapability>(context, 'UserService_Capability', {
+        await db<UserServiceCapability>('UserService_Capability', {
           methodType: 'del',
         })
           .where('user_service_id', '=', user_service_id)
