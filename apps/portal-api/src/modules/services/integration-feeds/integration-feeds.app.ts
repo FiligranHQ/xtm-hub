@@ -5,8 +5,14 @@ import {
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
 import { WithLabels } from '../../../utils/types';
-import { loadParentDocumentsByServiceInstance } from '../document/document.domain';
-import { loadDocumentWithCountersById } from '../document/document.helper';
+import {
+  loadParentDocumentsByServiceInstance,
+  loadSeoDocumentsByServiceSlug,
+} from '../document/document.domain';
+import {
+  loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
+} from '../document/document.helper';
 import {
   INTEGRATION_FEED_METADATA,
   IntegrationFeed,
@@ -32,6 +38,22 @@ export const integrationFeedsApp = {
     return loadDocumentWithCountersById(
       context,
       documentId,
+      INTEGRATION_FEED_METADATA
+    );
+  },
+  loadPublicAccessIntegrationFeeds: async (serviceSlug: string) =>
+    loadSeoDocumentsByServiceSlug(
+      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      serviceSlug,
+      INTEGRATION_FEED_METADATA
+    ),
+
+  loadPublicAccessIntegrationFeed: async (
+    slug: string
+  ): Promise<IntegrationFeed> => {
+    return loadSeoDocumentWithCountersBySlug<WithLabels<IntegrationFeed>>(
+      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      slug,
       INTEGRATION_FEED_METADATA
     );
   },

@@ -68,8 +68,3 @@ type Mutation {
     @auth
     @service_capa(requires: [DELETE])
 }
-
-type Query {
-  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
-  seoCsvFeedBySlug(slug: String): CsvFeed
-}

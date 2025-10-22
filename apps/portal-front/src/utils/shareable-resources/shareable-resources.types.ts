@@ -9,7 +9,7 @@ export type ShareableResource =
   | csvFeedsItem_fragment$data
   | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
-  | SeoCsvFeed
+  | SeoIntegrationFeed
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
@@ -43,7 +43,10 @@ export const isConnectorResource = (
   return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
 };
 
-export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
+export type SeoResource =
+  | SeoIntegrationFeed
+  | SeoCustomDashboard
+  | SeoOpenAEVScenario;
 
 export interface SeoCustomDashboard {
   description: string;
@@ -82,7 +85,7 @@ export interface SeoCustomDashboard {
   };
 }
 
-export interface SeoCsvFeed {
+export interface SeoIntegrationFeed {
   description: string;
   id: string;
   type: 'opencti_integration_feeds';

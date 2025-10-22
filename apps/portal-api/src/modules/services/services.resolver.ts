@@ -26,7 +26,14 @@ import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
+import { CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
+import {
+  INTEGRATION_FEED_CONNECTORS_TYPE,
+  INTEGRATION_FEED_CSV_FEED_TYPE,
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from './integration-feeds/integration-feeds.model';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios/openaev-scenarios.domain';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
 import {
@@ -46,6 +53,25 @@ import {
 
 const resolvers: Resolvers = {
   ServiceInstance: {
+    __resolveType(service_instance) {
+      const integrationFeedMapping = {
+        [INTEGRATION_FEED_CONNECTORS_TYPE]: 'Connector',
+        [INTEGRATION_FEED_CSV_FEED_TYPE]: 'CsvFeed',
+      };
+      const typeMapping = {
+        [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
+        [CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
+        [OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
+      };
+
+      if (service_instance.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+        return (
+          integrationFeedMapping[service_instance.integration_type] ??
+          typeMapping[service_instance.type]
+        );
+      }
+      return typeMapping[service_instance.type] ?? 'SeoServiceInstance';
+    },
     logo_document_id: ({ logo_document_id }) => {
       if (logo_document_id) {
         return toGlobalId('Document', logo_document_id);
@@ -125,7 +151,6 @@ const resolvers: Resolvers = {
         throw NotFoundError(ErrorCode.ServiceNotFound);
       }
       const result: SeoServiceInstance = {
-        __typename: 'SeoServiceInstance',
         ...serviceInstance,
         ...(serviceInstance.illustration_document_id && {
           illustration_document_id: toGlobalId(
