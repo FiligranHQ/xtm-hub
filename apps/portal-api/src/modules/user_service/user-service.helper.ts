@@ -161,7 +161,7 @@ export const createUserServiceAccess = async (
   const [subscription] = await loadUnsecureSubscriptionBy({
     id: subscription_id as SubscriptionId,
   });
-  const userOrganizations = await loadUserOrganization(context, { user_id });
+  const userOrganizations = await loadUserOrganization({ user_id });
   if (
     !userOrganizations.some(
       (userOrganization) =>

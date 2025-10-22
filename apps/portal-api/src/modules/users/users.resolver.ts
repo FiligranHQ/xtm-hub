@@ -156,7 +156,7 @@ const resolvers: Resolvers = {
               selected_organization_id: chosenOrganization.id,
             });
 
-        await createUserOrgCapabilities(context, {
+        await createUserOrgCapabilities({
           user,
           organization: chosenOrganization,
           orgCapabilities: input.capabilities ?? [],
@@ -223,7 +223,6 @@ const resolvers: Resolvers = {
             });
 
         await updateMultipleUserOrgWithCapabilities(
-          context,
           user.id,
           input.organization_capabilities
         );
@@ -322,7 +321,6 @@ const resolvers: Resolvers = {
           throw new Error(ErrorCode.CantRemoveYourselfFromOrgaError);
         }
         await removeUserFromOrganization(
-          context,
           extractId(user_id),
           extractId(organization_id)
         );

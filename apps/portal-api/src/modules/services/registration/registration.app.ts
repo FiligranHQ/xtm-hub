@@ -69,7 +69,7 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const userOrganization = await loadUserOrganization(context, {
+    const userOrganization = await loadUserOrganization({
       organization_id: subscription.organization_id,
       user_id: context.user.id,
     });

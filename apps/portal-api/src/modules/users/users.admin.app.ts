@@ -56,9 +56,7 @@ export const usersAdminApp = {
     } catch (err) {
       logApp.error(err);
     }
-    const { portalContext } = requestContext.require();
     await updateMultipleUserOrgWithCapabilities(
-      portalContext,
       userId,
       organization_capabilities
     );
@@ -87,7 +85,7 @@ export const usersAdminApp = {
     userId: UserId;
     input: EditUserCapabilitiesInput;
   }) => {
-    const { user, portalContext } = requestContext.require();
+    const { user } = requestContext.require();
     const organizationId = user.selected_organization_id;
     await preventAdministratorRemovalOfOneOrganization(
       userId,
@@ -95,7 +93,7 @@ export const usersAdminApp = {
       input.capabilities
     );
 
-    const [userOrganization] = await loadUserOrganization(portalContext, {
+    const [userOrganization] = await loadUserOrganization({
       user_id: userId,
       organization_id: organizationId,
     });

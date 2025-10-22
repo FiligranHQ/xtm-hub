@@ -238,7 +238,7 @@ export const insertUserIntoOrganization = async (
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   const [organization] = await loadOrganizationsFromEmail(user.email);
-  const userOrganization = await loadUserOrganization(portalContext, {
+  const userOrganization = await loadUserOrganization({
     user_id: user.id,
     organization_id: organization.id,
   });
@@ -267,8 +267,7 @@ export const insertUserIntoOrganization = async (
 };
 
 export const isFirstInOrganization = async (organizationId: OrganizationId) => {
-  const { portalContext } = requestContext.require();
-  const userOrganization = await loadUserOrganization(portalContext, {
+  const userOrganization = await loadUserOrganization({
     organization_id: organizationId,
   });
   return userOrganization.length === 1;
@@ -492,9 +491,7 @@ const updateUserCapabilities = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
-  const { portalContext } = requestContext.require();
-
-  await updateUserOrgCapabilities(portalContext, {
+  await updateUserOrgCapabilities({
     user_id,
     organization_id,
     orgCapabilities,

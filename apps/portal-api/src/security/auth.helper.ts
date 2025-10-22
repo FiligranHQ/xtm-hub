@@ -161,7 +161,7 @@ export const isUserAllowedOnOrganization = async (
     };
   }
 
-  const [userOrganization] = await loadUserOrganization(context, {
+  const [userOrganization] = await loadUserOrganization({
     user_id: context.user.id,
     organization_id: organizationId as OrganizationId,
   });
