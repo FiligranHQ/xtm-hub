@@ -36,7 +36,7 @@ export const serviceInstanceApp = {
     const subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
     });
-    const userService = await loadUserServiceBy(context, {
+    const userService = await loadUserServiceBy({
       subscription_id: subscription.id,
       user_id: context.user.id,
     });

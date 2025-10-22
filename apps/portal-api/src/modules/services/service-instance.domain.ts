@@ -467,10 +467,9 @@ export const grantServiceAccess = async (
     user_id: userId,
     subscription_id: subscriptionId,
   }));
-  const insertedUserServices = (await insertUserService(
-    context,
-    dataUserServices
-  )) as [UserService];
+  const insertedUserServices = (await insertUserService(dataUserServices)) as [
+    UserService,
+  ];
 
   const [subscription] =
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({

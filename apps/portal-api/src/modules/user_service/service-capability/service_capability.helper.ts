@@ -25,7 +25,7 @@ export const willManageAccessBeConserved = async (
     context,
     userServiceId
   );
-  const userService = await loadUserServiceById(context, userServiceId);
+  const userService = await loadUserServiceById(userServiceId);
   // Needed if : the currentUser is the only one with manage access and want to update another user, without manage_access (from upload to delete for instance)
   const isCurrentUserModified = context.user.id === userService.user_id;
   const isAuthorizedToEditCapabilities =

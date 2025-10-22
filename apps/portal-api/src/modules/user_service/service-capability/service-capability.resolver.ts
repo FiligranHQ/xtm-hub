@@ -30,7 +30,7 @@ const resolvers: Resolvers = {
           .where('user_service_id', '=', user_service_id)
           .delete('*')
           .transacting(trx);
-        const userService = await loadUserServiceById(context, user_service_id);
+        const userService = await loadUserServiceById(user_service_id);
 
         await insertCapabilities(context, trx, input.capabilities, userService);
         await trx.commit();
