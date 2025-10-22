@@ -52,7 +52,21 @@ export const registeredPlatformToServiceInstanceCardData = (
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
     ordering: -1, // registered platforms are displayed at the first position
+    status: platform.deployment_request?.status,
+    end_date: platform.subscription?.end_date,
   };
+};
+
+export const hasTrialInstance = (
+  registrationList: ServiceInstanceCardData[]
+): boolean => {
+  const activeTrialInstances = registrationList.filter(
+    (platform) =>
+      platform.status === DeploymentRequestStatusEnum.ACTIVE &&
+      platform.end_date &&
+      new Date(platform.end_date) > new Date()
+  );
+  return activeTrialInstances.length >= 1;
 };
 
 export const publicServiceInstanceToInstanceCardData = (
