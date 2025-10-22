@@ -2,17 +2,24 @@
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
+import { connectorsItem } from '@/components/service/integration-feeds/integration-feed.graphql';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import ShareableResourceConnectorCard from '@/components/ui/shareable-resource/shareable-resource-connector-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import {
   isConnectorResource,
   SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { MoreVertIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { useFragment } from 'react-relay';
 
 interface ServiceCardProps {
   document: SubscribableResource;
@@ -25,6 +32,7 @@ const ServiceCard = ({
   detailUrl,
   shareLinkUrl,
 }: ServiceCardProps) => {
+  const { settings } = useContext(SettingsContext);
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
 
@@ -40,10 +48,16 @@ const ServiceCard = ({
   );
 
   if (isConnectorResource(document)) {
+    const connector = useFragment<integrationFeedConnectorsItem_fragment$key>(
+      connectorsItem,
+      document
+    );
     return (
       <ShareableResourceConnectorCard
-        integrationFeed={document}
+        shareableConnector={{ ...document, ...connector }}
         serviceInstance={serviceInstance}
+        detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
+        shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${document?.service_instance?.slug}/${document?.slug}`}
       />
     );
   }

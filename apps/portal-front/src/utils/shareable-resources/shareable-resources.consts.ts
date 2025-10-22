@@ -86,7 +86,7 @@ export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
     makeSingleQueryMapEntry<SeoIntegrationFeed>({
       query: SeoIntegrationFeedBySlugQuery,
-      key: 'publicIntegrationFeedBySlugQuery',
+      key: 'publicIntegrationFeedBySlug',
     }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeSingleQueryMapEntry<SeoCustomDashboard>({

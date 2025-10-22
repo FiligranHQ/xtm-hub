@@ -38,7 +38,7 @@ export const isIntegrationFeedItem = (
 };
 
 export const isConnectorResource = (
-  resource: SubscribableResource
+  resource: SubscribableResource | ShareableResource
 ): resource is integrationFeedsItem_fragment$data => {
   return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
 };

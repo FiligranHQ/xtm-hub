@@ -207,8 +207,10 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                 return (
                   <ShareableResourceConnectorCard
                     key={document.id}
-                    integrationFeed={document}
+                    shareableConnector={document}
                     serviceInstance={serviceInstance}
+                    detailUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
+                    shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
                   />
                 );
               }

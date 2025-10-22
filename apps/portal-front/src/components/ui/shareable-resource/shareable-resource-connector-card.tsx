@@ -1,53 +1,61 @@
-'use client';
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
-import { connectorsItem } from '@/components/service/integration-feeds/integration-feed.graphql';
-import { SettingsContext } from '@/components/settings/env-portal-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import {
-  APP_PATH,
-  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
-} from '@/utils/path/constant';
-import { integrationFeedConnectorsItem_fragment$key } from '@generated/integrationFeedConnectorsItem_fragment.graphql';
-import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
-import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FunctionComponent, useContext } from 'react';
-import { useFragment } from 'react-relay';
+import { FunctionComponent } from 'react';
 
+interface ShareableConnector {
+  id: string;
+  integration_subtype: string;
+  children_documents?: { file_name: string; id: string }[];
+  name: string;
+  verified: boolean;
+  labels: {
+    color: string;
+    id: string;
+    name: string;
+  }[];
+  short_description: string;
+  slug: string;
+  service_instance: string;
+}
+
+export interface ShareableServiceInstance {
+  id: string;
+  service_definition?: {
+    identifier: ServiceDefinitionIdentifier;
+  };
+}
 interface ShareableResourceConnectorCard {
-  integrationFeed: integrationFeedsItem_fragment$data;
-  serviceInstance: serviceInstance_fragment$data;
+  shareableConnector: ShareableConnector;
+  shareLinkUrl: string;
+  serviceInstance: ShareableServiceInstance;
+  detailUrl: string;
 }
 
 const ShareableResourceConnectorCard: FunctionComponent<
   ShareableResourceConnectorCard
-> = ({ integrationFeed, serviceInstance }) => {
-  const { settings } = useContext(SettingsContext);
-  const connector = useFragment<integrationFeedConnectorsItem_fragment$key>(
-    connectorsItem,
-    integrationFeed
-  );
-
+> = ({ shareableConnector, serviceInstance, shareLinkUrl, detailUrl }) => {
   const connectorMetadata = getIngestionConnectorMetadata(
-    connector.integration_subtype
+    shareableConnector.integration_subtype
   );
 
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
       <Link
         className="flex flex-col h-full"
-        href={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${integrationFeed.id}`}>
+        href={detailUrl}>
         <div className="flex items-stretch gap-l p-l relative">
           <div className="w-24 self-stretch flex">
             <Image
-              src={`/document/images/${serviceInstance.id}/${integrationFeed.children_documents?.[0]?.id}`}
-              alt={`${integrationFeed.name} logo`}
+              src={`/document/images/${serviceInstance.id}/${shareableConnector.children_documents?.[0]?.id}`}
+              alt={`${shareableConnector.name} logo`}
               width={96}
               height={96}
               style={{ minHeight: '96px' }}
@@ -58,22 +66,22 @@ const ShareableResourceConnectorCard: FunctionComponent<
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 pr-xxl">
-                {integrationFeed.name}
+                {shareableConnector.name}
               </h2>
-              {connector.verified && (
+              {shareableConnector.verified && (
                 <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
               )}
             </div>
             <div className="mt-s flex flex-wrap gap-s mb-xs">
               <BadgeOverflowCounter
-                badges={integrationFeed.labels as BadgeOverflow[]}
+                badges={shareableConnector.labels as BadgeOverflow[]}
                 className="z-[2]"
               />
             </div>
           </div>
         </div>
         <p className="p-l text-gray-300 text-sm">
-          {integrationFeed.short_description}
+          {shareableConnector.short_description}
         </p>
         <div className="flex items-center justify-end mt-auto p-l">
           {connectorMetadata && (
@@ -85,8 +93,8 @@ const ShareableResourceConnectorCard: FunctionComponent<
             </Badge>
           )}
           <ShareLinkButton
-            documentId={integrationFeed.slug}
-            url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${integrationFeed?.service_instance?.slug}/${integrationFeed?.slug}`}
+            documentId={shareableConnector.slug}
+            url={shareLinkUrl}
           />
         </div>
       </Link>
