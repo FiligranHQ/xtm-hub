@@ -608,6 +608,7 @@
       "FreeTrial": "Free Trial!",
       "LearnMore": "Learn more",
       "StartTrial": "Start a Trial",
+      "GoToMyTrial": "Go to my trial",
       "Form": {
         "Region": "Region",
         "AssociatedEmail": "Associated Email",
@@ -617,6 +618,12 @@
         "MSSA": "MSSA",
         "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
+      },
+      "Display": {
+        "New": "New",
+        "Title": "OpenCTI - Free Trial platform",
+        "DaysRemaning": "{numberOfDays} Days Remaining",
+        "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."
       }
     },
     "Vault": {
