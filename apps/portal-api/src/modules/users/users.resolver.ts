@@ -17,6 +17,7 @@ import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
+import { requestContext } from '../../requestContext';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
@@ -63,9 +64,9 @@ const validPassword = (user: UserLoadUserBy, password: string): boolean => {
 
 const resolvers: Resolvers = {
   User: {
-    organizations: ({ id }, _, context) => getOrganizations(context, id),
-    capabilities: ({ id }, _, context) => getCapabilities(context, id),
-    roles_portal: ({ id }, _, context) => getRolesPortal(context, id),
+    organizations: ({ id }, _) => getOrganizations(id),
+    capabilities: ({ id }, _) => getCapabilities(id),
+    roles_portal: ({ id }, _) => getRolesPortal(id),
   },
   Query: {
     me: async (_, __, context) => {
@@ -75,19 +76,18 @@ const resolvers: Resolvers = {
       }
       return mapUserToGraphqlUser(context.user);
     },
-    usersWithCapabilitiesInOrganization: async (_, { input }, context) => {
+
+    usersWithCapabilitiesInOrganization: async (_, { input }) => {
       return loadUsersByCapabilitiesInOrganization(
-        context,
         fromGlobalId(input.organizationId).id,
         input.capabilities
       );
     },
     users: async (
       _,
-      { first, after, orderMode, orderBy, searchTerm, filters },
-      context
+      { first, after, orderMode, orderBy, searchTerm, filters }
     ) => {
-      return loadUsers(context, {
+      return loadUsers({
         first,
         after,
         orderMode,
@@ -98,10 +98,9 @@ const resolvers: Resolvers = {
     },
     pendingUsers: async (
       _,
-      { first, after, orderMode, orderBy, searchTerm, filters },
-      context
+      { first, after, orderMode, orderBy, searchTerm, filters }
     ) => {
-      return loadPendingUsers(context, {
+      return loadPendingUsers({
         first,
         after,
         orderMode,
@@ -110,8 +109,8 @@ const resolvers: Resolvers = {
         searchTerm,
       });
     },
-    userHasOrganizationWithSubscription: async (_, __, context) => {
-      return userHasOrganizationWithSubscription(context);
+    userHasOrganizationWithSubscription: async (_, __) => {
+      return userHasOrganizationWithSubscription();
     },
   },
   Mutation: {
@@ -247,9 +246,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.AddingUserError);
       }
     },
-    editUserCapabilities: async (_, { id, input }, context) => {
+    editUserCapabilities: async (_, { id, input }) => {
       try {
-        return await usersAdminApp.editUserCapabilities(context, {
+        return await usersAdminApp.editUserCapabilities({
           userId: id as UserId,
           input,
         });
@@ -257,9 +256,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.EditUserError);
       }
     },
-    adminEditUser: async (_, { id, input }, context) => {
+    adminEditUser: async (_, { id, input }) => {
       try {
-        return await usersAdminApp.editUser(context, {
+        return await usersAdminApp.editUser({
           userId: id as UserId,
           input,
         });
@@ -270,18 +269,21 @@ const resolvers: Resolvers = {
 
     editMeUser: async (_, { input }, context) => {
       try {
-        return await usersProfileApp.editMeUser(context, input);
+        return await usersProfileApp.editMeUser(context.user, input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
       }
     },
-    resetPassword: async (_, __, context) => {
-      await resetPassword(context);
+    resetPassword: async (_, __) => {
+      await resetPassword();
       return { success: true };
     },
     requestTransferPersonalSpace: async (_, { new_email }, context) => {
       try {
-        await usersProfileApp.requestTransferPersonalSpace(context, new_email);
+        await usersProfileApp.requestTransferPersonalSpace(
+          context.user,
+          new_email
+        );
 
         return { success: true };
       } catch (error) {
@@ -300,12 +302,14 @@ const resolvers: Resolvers = {
       }
     },
     changeSelectedOrganization: async (_, { organization_id }, context) => {
-      const updatedUser = await updateUser(context, context.user.id, {
+      const updatedUser = await updateUser(context.user.id, {
         selected_organization_id: fromGlobalId(organization_id)
           .id as OrganizationId,
       });
       const newUser = await loadUserBy({ 'User.id': updatedUser.id });
       context.req.session.user = newUser;
+      requestContext.update({ user: newUser });
+
       return mapUserToGraphqlUser(newUser);
     },
     removeUserFromOrganization: async (

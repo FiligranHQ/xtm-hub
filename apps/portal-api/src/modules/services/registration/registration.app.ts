@@ -210,14 +210,10 @@ export const registrationApp = {
       });
     }
 
-    const users = await loadUsersByCapabilitiesInOrganization(
-      context,
-      organizationId,
-      [
-        OrganizationCapability.AdministrateOrganization,
-        OrganizationCapability.ManagePlatformRegistration,
-      ]
-    );
+    const users = await loadUsersByCapabilitiesInOrganization(organizationId, [
+      OrganizationCapability.AdministrateOrganization,
+      OrganizationCapability.ManagePlatformRegistration,
+    ]);
 
     const mailTemplate =
       registeredMailTemplateMappedByPlatformIdentifier[identifier];
@@ -306,7 +302,6 @@ export const registrationApp = {
     );
 
     const users = await loadUsersByCapabilitiesInOrganization(
-      context,
       subscription.organization_id,
       [
         OrganizationCapability.AdministrateOrganization,
@@ -416,7 +411,7 @@ export const registrationApp = {
   ): Promise<RefreshUserPlatformTokenResponse> => {
     const token = uuidv4();
 
-    await updateUser(context, context.user.id, { platform_token: token });
+    await updateUser(context.user.id, { platform_token: token });
 
     return { token };
   },

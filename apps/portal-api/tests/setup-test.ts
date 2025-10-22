@@ -12,17 +12,31 @@ function isUtilOrHelper(filepath?: string) {
 
 const testRequestStorage = new Map<string, RequestContext>();
 
-function getTestKey(): string {
-  // Vitest provides a unique test ID for each test
-  // @ts-ignore
-  const testId = globalThis.__vitest_worker__?.current?.id;
-  return testId || 'default';
+function getTestKey() {
+  const state = expect.getState();
+
+  // For tests: use test name
+  if (state?.currentTestName) {
+    return `${state.testPath}:${state.currentTestName}`;
+  }
+
+  // For beforeAll: use line number from stack
+  const stack = new Error().stack || '';
+  const match = stack.match(/:(\d+):/);
+  const line = match ? match[1] : Date.now();
+
+  return `${state?.testPath}:beforeAll:${line}`;
 }
 
 vi.mock('async_hooks', () => {
   class MockAsyncLocalStorage<T> {
     getStore() {
       const key = getTestKey();
+
+      if (!testRequestStorage.has(key)) {
+        testRequestStorage.set(key, requestContextAdminUser);
+      }
+
       return testRequestStorage.get(key) as T;
     }
 
@@ -50,19 +64,8 @@ vi.mock('async_hooks', () => {
   return { AsyncLocalStorage: MockAsyncLocalStorage };
 });
 
-beforeEach(() => {
-  const key = getTestKey();
-  testRequestStorage.set(key, requestContextAdminUser);
-});
-
-afterEach(() => {
-  const key = getTestKey();
-  testRequestStorage.delete(key);
-});
-
 beforeAll(async (suite) => {
   const currentFile = suite?.file?.name;
-
   if (isUtilOrHelper(currentFile)) {
     console.log('⚠️ Did not clean', currentFile);
     return;

@@ -15,6 +15,7 @@ import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
+import { requestContext } from '../../requestContext';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
@@ -57,12 +58,8 @@ export const loadUnsecureUser = async (
   return dbUnsecure<User>('User').where(field);
 };
 
-export const getOrganizations = (
-  context: PortalContext,
-  id: string,
-  opts?: Partial<QueryOpts>
-) => {
-  return db<Organization>(context, 'Organization', opts)
+export const getOrganizations = (id: string, opts?: Partial<QueryOpts>) => {
+  return db<Organization>('Organization', opts)
     .leftJoin(
       'User_Organization',
       'Organization.id',
@@ -75,12 +72,10 @@ export const getOrganizations = (
 };
 
 export const getCapabilities = async (
-  context: PortalContext,
   id: string,
   opts?: Partial<QueryOpts>
 ) => {
   const capabilities = await db<UserLoadUserBy['capabilities']>(
-    context,
     'CapabilityPortal',
     opts
   )
@@ -109,12 +104,8 @@ export const getCapabilities = async (
   return capabilities;
 };
 
-export const getRolesPortal = (
-  context: PortalContext,
-  id: string,
-  opts?: Partial<QueryOpts>
-) => {
-  return db<UserLoadUserBy['capabilities']>(context, 'RolePortal', opts)
+export const getRolesPortal = (id: string, opts?: Partial<QueryOpts>) => {
+  return db<UserLoadUserBy['capabilities']>('RolePortal', opts)
     .leftJoin(
       'User_RolePortal as user_RolePortal',
       'RolePortal.id',
@@ -255,7 +246,6 @@ export const loadUserBy = async (
 };
 
 export const loadUsersByCapabilitiesInOrganization = async (
-  context: PortalContext,
   organizationId: string,
   capabilities: OrganizationCapability[]
 ): Promise<User[]> => {
@@ -263,7 +253,7 @@ export const loadUsersByCapabilitiesInOrganization = async (
     return [];
   }
 
-  const users: User[] = await db<User>(context, 'User')
+  const users: User[] = await db<User>('User')
     .leftJoin('User_Organization', 'User_Organization.user_id', 'User.id')
     .leftJoin(
       'UserOrganization_Capability',
@@ -283,14 +273,11 @@ export const loadUsersByCapabilitiesInOrganization = async (
   return users;
 };
 
-export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
+export const loadUsers = (opts: QueryUsersArgs) => {
   const { filters } = opts;
-  const loadUserQuery = db<UserGenerated>(context, 'User', opts);
+  const loadUserQuery = db<UserGenerated>('User', opts);
 
-  const userOrganizationCapabilityQuery = db<UserService>(
-    context,
-    'User_Organization'
-  )
+  const userOrganizationCapabilityQuery = db<UserService>('User_Organization')
     .leftJoin(
       'UserOrganization_Capability',
       'User_Organization.id',
@@ -334,9 +321,10 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
     .groupBy(['User.id']);
 
   if (!isAdmin()) {
+    const { user } = requestContext.require();
     loadUserQuery.where(
       'UserOrg.organization_id',
-      context.user.selected_organization_id
+      user.selected_organization_id
     );
   }
   return paginate<UserGenerated, UserConnection>(
@@ -358,11 +346,9 @@ export const loadUsers = (context: PortalContext, opts: QueryUsersArgs) => {
   );
 };
 
-export const loadPendingUsers = (
-  context: PortalContext,
-  opts: QueryUsersArgs
-) => {
-  const loadPendingUserQuery = db<UserGenerated>(context, 'User', opts);
+export const loadPendingUsers = (opts: QueryUsersArgs) => {
+  const { user } = requestContext.require();
+  const loadPendingUserQuery = db<UserGenerated>('User', opts);
   loadPendingUserQuery
     .leftJoin(
       'User_Organization_Pending as UserOrgPendingFilter',
@@ -372,7 +358,7 @@ export const loadPendingUsers = (
     .select('User.*')
     .where(
       'UserOrgPendingFilter.organization_id',
-      context.user.selected_organization_id
+      user.selected_organization_id
     );
 
   return paginate<UserGenerated, UserConnection>(
@@ -387,12 +373,12 @@ export const loadUnsecureUserBy = async (field: UserMutator) => {
   return dbUnsecure<User>('User').where(field);
 };
 
-export const resetPassword = async (context: PortalContext): Promise<void> => {
-  await auth0Client.resetPassword(context.user.email);
+export const resetPassword = async (): Promise<void> => {
+  const { user } = requestContext.require();
+  await auth0Client.resetPassword(user.email);
 };
 
 export const updateUser = async (
-  context: PortalContext,
   id: UserId,
   input: UserMutator
 ): Promise<User> => {
@@ -400,7 +386,7 @@ export const updateUser = async (
     return;
   }
 
-  const [updatedUser] = await db<User>(context, 'User')
+  const [updatedUser] = await db<User>('User')
     .where({ id })
     .update(input)
     .returning('*')
@@ -493,15 +479,13 @@ export const loadUserDetails = async (
     .first();
 };
 
-export const userHasOrganizationWithSubscription = async (
-  context: PortalContext
-) => {
-  const organizationIds = context.user.organizations.map((org) => org.id);
+export const userHasOrganizationWithSubscription = async () => {
+  const { user } = requestContext.require();
+  const organizationIds = user.organizations.map((org) => org.id);
   if (organizationIds.length === 0) {
     return false;
   }
   const subscriptions: Subscription[] = await db<Subscription>(
-    context,
     'Subscription'
   ).whereIn('organization_id', organizationIds);
   return subscriptions.length !== 0;
