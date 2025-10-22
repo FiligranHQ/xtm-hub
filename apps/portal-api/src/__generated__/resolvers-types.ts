@@ -835,8 +835,8 @@ export type Node = {
 };
 
 export type OneClickDeployInput = {
-  platform_id: Scalars['ID']['input'];
   platform_identifier: PlatformIdentifier;
+  platform_service_instance_id: Scalars['ID']['input'];
   resource_id: Scalars['ID']['input'];
   resource_title: Scalars['String']['input'];
   service_instance_id: Scalars['ID']['input'];

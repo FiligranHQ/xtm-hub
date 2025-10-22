@@ -892,7 +892,7 @@ input OneClickDeployInput {
   service_instance_id: ID!
   resource_id: ID!
   resource_title: String!
-  platform_id: ID!
+  platform_service_instance_id: ID!
 }
 
 type SendTelemetryMutation {
