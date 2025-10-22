@@ -231,6 +231,31 @@ export type DeploymentRequest = Node & {
   use_case?: Maybe<Scalars['String']['output']>;
 };
 
+export type DeploymentRequestConnection = {
+  __typename?: 'DeploymentRequestConnection';
+  edges: Array<DeploymentRequestEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type DeploymentRequestEdge = {
+  __typename?: 'DeploymentRequestEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<PlatformDeploymentRequest>;
+};
+
+export type DeploymentRequestFilter = {
+  key?: InputMaybe<DeploymentRequestFilterKey>;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum DeploymentRequestFilterKey {
+  PlatformIdentifier = 'platform_identifier',
+  Region = 'region',
+  Status = 'status',
+  Type = 'type'
+}
+
 export enum DeploymentRequestStatus {
   Active = 'ACTIVE',
   Cancelled = 'CANCELLED',
@@ -934,6 +959,26 @@ export enum PlatformContract {
   Ee = 'EE'
 }
 
+export type PlatformDeploymentRequest = {
+  __typename?: 'PlatformDeploymentRequest';
+  activity_sector?: Maybe<Scalars['String']['output']>;
+  end_date?: Maybe<Scalars['Date']['output']>;
+  failure_reason?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  job_title?: Maybe<Scalars['String']['output']>;
+  organization_domains?: Maybe<Array<Scalars['String']['output']>>;
+  organization_name: Scalars['String']['output'];
+  platform_identifier: PlatformIdentifier;
+  platform_token: Scalars['String']['output'];
+  product_service_instance_id?: Maybe<Scalars['String']['output']>;
+  region: PlatformRegion;
+  requester_email: Scalars['String']['output'];
+  start_date?: Maybe<Scalars['Date']['output']>;
+  status: DeploymentRequestStatus;
+  type: DeploymentType;
+  use_case?: Maybe<Scalars['String']['output']>;
+};
+
 export enum PlatformIdentifier {
   Openaev = 'openaev',
   Opencti = 'opencti'
@@ -976,6 +1021,7 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   customDashboard?: Maybe<CustomDashboard>;
   customDashboards: CustomDashboardConnection;
+  deploymentRequests: DeploymentRequestConnection;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
@@ -1042,6 +1088,13 @@ export type QueryCustomDashboardsArgs = {
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryDeploymentRequestsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<DeploymentRequestFilter>>;
+  first: Scalars['Int']['input'];
 };
 
 
@@ -1838,6 +1891,10 @@ export type ResolversTypes = ResolversObject<{
   CustomDashboardEdge: ResolverTypeWrapper<CustomDashboardEdge>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
+  DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
+  DeploymentRequestEdge: ResolverTypeWrapper<DeploymentRequestEdge>;
+  DeploymentRequestFilter: DeploymentRequestFilter;
+  DeploymentRequestFilterKey: DeploymentRequestFilterKey;
   DeploymentRequestStatus: DeploymentRequestStatus;
   DeploymentType: DeploymentType;
   Document: ResolverTypeWrapper<Document>;
@@ -1887,6 +1944,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PlatformContract: PlatformContract;
+  PlatformDeploymentRequest: ResolverTypeWrapper<PlatformDeploymentRequest>;
   PlatformIdentifier: PlatformIdentifier;
   PlatformInput: PlatformInput;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
@@ -1976,6 +2034,9 @@ export type ResolversParentTypes = ResolversObject<{
   CustomDashboardEdge: CustomDashboardEdge;
   Date: Scalars['Date']['output'];
   DeploymentRequest: DeploymentRequest;
+  DeploymentRequestConnection: DeploymentRequestConnection;
+  DeploymentRequestEdge: DeploymentRequestEdge;
+  DeploymentRequestFilter: DeploymentRequestFilter;
   Document: Document;
   DocumentBase: ResolversInterfaceTypes<ResolversParentTypes>['DocumentBase'];
   DocumentConnection: DocumentConnection;
@@ -2016,6 +2077,7 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationEdge: OrganizationEdge;
   OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
+  PlatformDeploymentRequest: PlatformDeploymentRequest;
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
   Query: {};
@@ -2215,6 +2277,19 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   status?: Resolver<ResolversTypes['DeploymentRequestStatus'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentType'], ParentType, ContextType>;
   use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DeploymentRequestConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequestConnection'] = ResolversParentTypes['DeploymentRequestConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['DeploymentRequestEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DeploymentRequestEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequestEdge'] = ResolversParentTypes['DeploymentRequestEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<Maybe<ResolversTypes['PlatformDeploymentRequest']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2516,6 +2591,26 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformDeploymentRequest'] = ResolversParentTypes['PlatformDeploymentRequest']> = ResolversObject<{
+  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  failure_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  product_service_instance_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
+  requester_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['DeploymentRequestStatus'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['DeploymentType'], ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PlatformProviderResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformProvider'] = ResolversParentTypes['PlatformProvider']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   provider?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2527,6 +2622,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
   customDashboards?: Resolver<ResolversTypes['CustomDashboardConnection'], ParentType, ContextType, RequireFields<QueryCustomDashboardsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  deploymentRequests?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2866,6 +2962,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CustomDashboardEdge?: CustomDashboardEdgeResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DeploymentRequest?: DeploymentRequestResolvers<ContextType>;
+  DeploymentRequestConnection?: DeploymentRequestConnectionResolvers<ContextType>;
+  DeploymentRequestEdge?: DeploymentRequestEdgeResolvers<ContextType>;
   Document?: DocumentResolvers<ContextType>;
   DocumentBase?: DocumentBaseResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
@@ -2893,6 +2991,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
+  PlatformDeploymentRequest?: PlatformDeploymentRequestResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;

@@ -12,6 +12,7 @@ import {
 import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
+  ServiceInstanceInitializer,
   ServiceInstanceMutator,
 } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
@@ -673,6 +674,15 @@ export const loadPlatformServiceInstance = async (
     ])
     .select('ServiceInstance.*')
     .first();
+};
+
+export const insertServiceInstance = async (
+  data: ServiceInstanceInitializer
+) => {
+  const [serviceInstance] = await db<ServiceInstance>('ServiceInstance')
+    .insert(data)
+    .returning('*');
+  return serviceInstance;
 };
 
 export const updateServiceInstance = async (

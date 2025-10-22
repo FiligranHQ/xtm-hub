@@ -181,6 +181,13 @@ export async function seed(knex) {
         public: true,
         identifier: 'opencti_custom_dashboards',
       },
+      {
+        id: '6c837a7d-2821-4c3d-9479-d3e7fa02f0cb',
+        name: 'OpenCTI Registration',
+        description: 'Access and manage your OpenCTI instance',
+        public: false,
+        identifier: 'opencti_registration',
+      },
     ])
     .onConflict('id')
     .ignore();
