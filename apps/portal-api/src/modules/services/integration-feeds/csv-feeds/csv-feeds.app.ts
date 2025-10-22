@@ -11,8 +11,8 @@ import {
   Upload,
 } from '../../document/document.helper';
 import {
-  CSV_FEED_METADATA,
   CsvFeed,
+  INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds.model';
 
@@ -28,7 +28,7 @@ export const csvFeedsApp = {
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         { ...input, integration_type: IntegrationFeedType.CsvFeed },
         document,
-        CSV_FEED_METADATA,
+        INTEGRATION_FEED_CSV_FEED_METADATA,
         context,
         trx
       );

@@ -33,8 +33,10 @@ export type ConnectorMetadataKeys = Array<
   Exclude<keyof Omit<Connector, 'labels'>, keyof DocumentResolverType>
 >;
 
-export const CSV_FEED_METADATA: CsvFeedMetadataKeys = ['integration_type'];
-export const CSV_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
+export const INTEGRATION_FEED_CSV_FEED_METADATA: CsvFeedMetadataKeys = [
+  'integration_type',
+];
+export const INTEGRATION_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
   'product_version',
   'container_image',
   'verified',
@@ -46,5 +48,8 @@ export const CSV_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
   'playbook_supported',
 ];
 export const INTEGRATION_FEED_METADATA = Array.from(
-  new Set([...CSV_FEED_METADATA, ...CSV_FEED_CONNECTOR_METADATA])
+  new Set([
+    ...INTEGRATION_FEED_CSV_FEED_METADATA,
+    ...INTEGRATION_FEED_CONNECTOR_METADATA,
+  ])
 );

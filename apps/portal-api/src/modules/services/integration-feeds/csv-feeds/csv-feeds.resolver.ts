@@ -17,8 +17,8 @@ import {
   updateDocumentWithChildren,
 } from '../../document/document.domain';
 import {
-  CSV_FEED_METADATA,
   CsvFeed,
+  INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds.model';
 import { csvFeedsApp } from './csv-feeds.app';
@@ -51,7 +51,7 @@ const resolvers: Resolvers = {
               integration_type: IntegrationFeedType.CsvFeed,
             },
           },
-          CSV_FEED_METADATA,
+          INTEGRATION_FEED_CSV_FEED_METADATA,
           context,
           trx
         );
