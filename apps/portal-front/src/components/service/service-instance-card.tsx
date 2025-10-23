@@ -13,6 +13,7 @@ import {
   isExpired,
   isExternalService,
   isRegistrationService,
+  isTrialInstance,
 } from '@/utils/services';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
@@ -187,7 +188,8 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}>
           <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
-            {isRegistrationService(serviceInstance) ? (
+            {isRegistrationService(serviceInstance) &&
+            isTrialInstance(serviceInstance) ? (
               <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
                 {getDisplayDays(serviceInstance)}
               </span>

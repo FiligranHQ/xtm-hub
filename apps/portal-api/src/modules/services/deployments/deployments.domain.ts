@@ -31,6 +31,10 @@ export const DeploymentRequestDomain = {
       .select('*')
       .first();
 
+    if (!result) {
+      return null;
+    }
+
     return {
       ...result,
       platform_identifier: result.platform_identifier as PlatformIdentifier,

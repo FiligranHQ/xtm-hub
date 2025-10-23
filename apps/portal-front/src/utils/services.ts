@@ -25,6 +25,9 @@ export const isRegistrationService = (
   ].includes(
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
+export const isTrialInstance = (serviceInstance: ServiceInstanceCardData) => {
+  return serviceInstance.end_date && serviceInstance.status;
+};
 
 export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
   serviceInstance.end_date && new Date(serviceInstance.end_date) < new Date();
