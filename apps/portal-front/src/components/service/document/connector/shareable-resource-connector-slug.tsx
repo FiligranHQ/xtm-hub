@@ -10,22 +10,18 @@ import { useTranslations } from 'next-intl';
 import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/shareable-resource-connector-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
-import { connectorsItem } from '@/components/service/integration-feeds/integration-feed.graphql';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { integrationFeedConnectorsItem_fragment$key } from '@generated/integrationFeedConnectorsItem_fragment.graphql';
 import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
 import { VerifiedIcon } from 'filigran-icon';
-import { useFragment } from 'react-relay';
 
 // Component interface
 interface ShareableResourceConnectorSlugProps {
   documentData: integrationFeedsItem_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
-  shareUrl?: string;
-  downloadUrl?: string;
+  shareUrl: string;
 }
 
 // Component
@@ -33,10 +29,6 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
   ShareableResourceConnectorSlugProps
 > = ({ documentData, breadcrumbValue, shareUrl }) => {
   const t = useTranslations();
-  const connector = useFragment<integrationFeedConnectorsItem_fragment$key>(
-    connectorsItem,
-    documentData
-  );
 
   return (
     <>
@@ -44,19 +36,17 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
       <div className="flex gap-s flex-col">
         <div className="flex gap-s">
           <h1 className="whitespace-nowrap">{documentData.name}</h1>
-          {connector.verified && (
+          {documentData.verified && (
             <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100  text-green-500 dark:bg-turquoise-900 rounded-lg">
               <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />
               {t('Utils.Verified')}
             </div>
           )}
           <div className="ml-auto flex items-center gap-2">
-            {shareUrl && (
-              <ShareLinkButton
-                documentId={documentData.slug}
-                url={shareUrl}
-              />
-            )}
+            <ShareLinkButton
+              documentId={documentData.slug}
+              url={shareUrl}
+            />
           </div>
         </div>
         <BadgeOverflowCounter badges={documentData.labels as BadgeOverflow[]} />
@@ -67,12 +57,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
           longDescription={documentData?.description ?? ''}
         />
         <ShareableResourceBasicInformation>
-          <ShareableResourceConnectorDetails
-            connectorDetails={{
-              ...connector,
-              name: documentData.name,
-            }}
-          />
+          <ShareableResourceConnectorDetails connectorDetails={documentData} />
         </ShareableResourceBasicInformation>
       </div>
     </>

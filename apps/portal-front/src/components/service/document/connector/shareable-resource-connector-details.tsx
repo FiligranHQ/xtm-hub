@@ -11,8 +11,8 @@ interface ShareableResourceConnectorDetailsProps {
     name: string;
     source_code?: string | null;
     subscription_link?: string | null;
-    integration_subtype: string;
-    product_version: string;
+    integration_subtype?: string | null;
+    product_version?: string;
   };
 }
 export const ShareableResourceConnectorDetails: FunctionComponent<
@@ -21,7 +21,7 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
   const t = useTranslations();
 
   const connectorMetadata = getIngestionConnectorMetadata(
-    connectorDetails.integration_subtype
+    connectorDetails?.integration_subtype ?? undefined
   );
 
   return (
@@ -73,7 +73,7 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.ProductVersion')}>
-        <span>{connectorDetails.product_version}</span>
+        <span>{connectorDetails?.product_version}</span>
       </ShareableResourceDetailItem>
     </>
   );

@@ -23,9 +23,9 @@ import {
 import { getServiceInstance } from '../service-instance.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
-  CUSTOM_DASHBOARD_DOCUMENT_TYPE,
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './custom-dashboards.domain';
 
 const resolvers: Resolvers = {
@@ -44,7 +44,7 @@ const resolvers: Resolvers = {
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
       const dashboards = await loadSeoDocumentsByServiceSlug(
-        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         serviceSlug,
         CUSTOM_DASHBOARD_METADATA
       );
@@ -66,7 +66,7 @@ const resolvers: Resolvers = {
     },
     customDashboards: async (_, input, context) => {
       return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
-        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         context,
         input,
         CUSTOM_DASHBOARD_METADATA
@@ -105,7 +105,7 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CustomDashboard>(
-          CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+          OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           CUSTOM_DASHBOARD_METADATA,

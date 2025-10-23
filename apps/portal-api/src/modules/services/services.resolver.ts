@@ -26,7 +26,7 @@ import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
-import { CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
 import {
   INTEGRATION_FEED_CONNECTORS_TYPE,

@@ -29,10 +29,12 @@ const ingestionConnectorTypeMetadata: Record<
   },
 };
 
-export const getIngestionConnectorMetadata = (integration_subtype: string) => {
-  return ingestionConnectorTypeMetadata[
-    integration_subtype as IngestionConnectorType
-  ];
+export const getIngestionConnectorMetadata = (integration_subtype?: string) => {
+  return (
+    ingestionConnectorTypeMetadata[
+      integration_subtype as IngestionConnectorType
+    ] ?? undefined
+  );
 };
 
 export const getBadgesValues = (contract: Contract): BadgeOverflow[] => {
