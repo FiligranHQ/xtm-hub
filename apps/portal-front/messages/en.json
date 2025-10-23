@@ -568,7 +568,7 @@
         "NoOptions": "No options",
         "Key": {
           "label": "Use case",
-          "integration_feed": "Integration feed"
+          "integration_feed_type": "Integration feed type"
         }
       }
     },

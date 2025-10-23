@@ -8,7 +8,7 @@ import React from 'react';
 
 export enum ServiceListFilterKey {
   Label = 'label',
-  IntegrationFeed = 'integration_feed',
+  IntegrationFeedType = 'integration_feed_type',
 }
 
 export interface ServiceListFilter {

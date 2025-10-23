@@ -62,7 +62,7 @@ const IntegrationFeedsList = ({
     useServiceListLocalStorage(context.localStorageKey);
 
   const filters: ServiceListFilterMap = {
-    [ServiceListFilterKey.IntegrationFeed]: {
+    [ServiceListFilterKey.IntegrationFeedType]: {
       node: <IntegrationFeedFilters />,
       reset: () => {
         removeConnectorTypes();
