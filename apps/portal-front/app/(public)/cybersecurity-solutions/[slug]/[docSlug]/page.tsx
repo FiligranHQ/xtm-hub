@@ -234,6 +234,7 @@ const Page = async ({
           />
           <BreadcrumbNav value={breadcrumbValue} />
           <ShareableResourceConnectorSlugPublic
+            logo={`/document/images/${serviceInstance.id}/${document.children_documents?.[0]?.id}`}
             documentData={document}
             pageUrl={pageUrl}
           />
