@@ -60,7 +60,7 @@ const resolvers: Resolvers = {
       };
       const typeMapping = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
-        [CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
+        [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
         [OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
       };
 
