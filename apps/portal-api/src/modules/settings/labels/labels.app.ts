@@ -6,13 +6,16 @@ import { objectLabelDomain } from '../objectLabel/object-label.domain';
 import { labelsDomain } from './labels.domain';
 
 export const labelsApp = {
-  loadOrCreateLabel: async (initializer: LabelInitializer): Promise<Label> => {
-    const existing = await labelsDomain.loadLabelByLikeName(initializer.name);
+  loadOrCreateLabel: async ({
+    name,
+    color = '#0099cc',
+  }: LabelInitializer): Promise<Label> => {
+    const existing = await labelsDomain.loadLabelByLikeName(name);
     if (existing) {
       return existing;
     }
 
-    return labelsDomain.insertLabel(initializer);
+    return labelsDomain.insertLabel({ name, color });
   },
 
   deleteLabelBy: async (field: LabelMutator): Promise<Label> => {
