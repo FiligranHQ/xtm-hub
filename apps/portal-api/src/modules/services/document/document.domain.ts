@@ -22,10 +22,8 @@ import {
   default as DocumentModel,
 } from '../../../model/kanel/public/Document';
 import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
-import Label, { LabelId } from '../../../model/kanel/public/Label';
-import ObjectLabel, {
-  ObjectLabelObjectId,
-} from '../../../model/kanel/public/ObjectLabel';
+import { LabelId } from '../../../model/kanel/public/Label';
+import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
@@ -53,7 +51,8 @@ import DocumentMetadata, {
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { requestContext } from '../../../requestContext';
-import { getOrCreateLabel } from '../../settings/labels/labels.domain';
+import { labelsApp } from '../../settings/labels/labels.app';
+import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
   Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
@@ -230,22 +229,24 @@ export const upsertDocument = async <T extends DocumentModel>(
 
   if (documentData.labels?.length) {
     if (documentWasUpdated) {
-      await db<ObjectLabel>(portalContext, 'Object_Label')
-        .where('object_id', document.id as unknown as ObjectLabelObjectId)
-        .delete()
-        .transacting(trx);
+      await objectLabelDomain.deleteObjectLabelBy(
+        {
+          object_id: document.id as unknown as ObjectLabelObjectId,
+        },
+        trx
+      );
     }
     const insertObjectLabel = [];
     for (const name of documentData.labels) {
-      const label = await getOrCreateLabel({ context: portalContext, name });
+      const label = await labelsApp.loadOrCreateLabel({
+        name,
+      });
       insertObjectLabel.push({
         object_id: document.id as unknown as ObjectLabelObjectId,
         label_id: label.id,
       });
     }
-    await db<ObjectLabel>(portalContext, 'Object_Label')
-      .insert(insertObjectLabel)
-      .transacting(trx);
+    await objectLabelDomain.insertObjectLabel(insertObjectLabel, trx);
   }
 
   if (metadataKeys.length > 0) {
@@ -426,20 +427,19 @@ export const updateDocument = async <T extends DocumentModel>(
 
   // If label is null => that mean we want to update the field to empty
   if (documentData.labels !== undefined) {
-    await db<ObjectLabel>(context, 'Object_Label')
-      .where('object_id', '=', documentId)
-      .delete()
-      .transacting(trx);
+    await objectLabelDomain.deleteObjectLabelBy(
+      { object_id: documentId as unknown as ObjectLabelObjectId },
+      trx
+    );
 
     if (documentData.labels?.length > 0) {
-      await db<ObjectLabel>(context, 'Object_Label')
-        .insert(
-          documentData.labels.map((id) => ({
-            object_id: documentId as unknown as ObjectLabelObjectId,
-            label_id: extractId(id) as LabelId,
-          }))
-        )
-        .transacting(trx);
+      await objectLabelDomain.insertObjectLabel(
+        documentData.labels.map((id) => ({
+          object_id: documentId as unknown as ObjectLabelObjectId,
+          label_id: extractId(id) as LabelId,
+        })),
+        trx
+      );
     }
   }
 
@@ -578,11 +578,12 @@ export const deleteDocument = async <T extends DocumentModel>(
       .transacting(trx);
 
     // Labels
-    await db<ObjectLabel>(context, 'Object_Label')
-      .where('object_id', '=', documentId)
-      .delete('*')
-      .transacting(trx);
-
+    await objectLabelDomain.deleteObjectLabelBy(
+      {
+        object_id: documentId as unknown as ObjectLabelObjectId,
+      },
+      trx
+    );
     // Parent doc
     await db<Document>(context, 'Document')
       .where('Document.id', '=', documentId)
@@ -753,16 +754,6 @@ export const getUploaderOrganization = async (
 
   return organization;
 };
-
-export const getLabels = (
-  context: PortalContext,
-  documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<Label[]> =>
-  db<Label>(context, 'Label', opts)
-    .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
-    .where('ol.object_id', '=', documentId)
-    .returning('Label.*');
 
 export const loadDocumentById = async <T extends Document>(
   context: PortalContext,

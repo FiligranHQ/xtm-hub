@@ -63,6 +63,7 @@ export enum UnknownErrorCode {
   UpdatePlatformServiceMetadataError = 'UPDATE_PLATFORM_SERVICE_METADATA_ERROR',
   NoAsyncContextAvailableError = 'NO_ASYNC_CONTEXT_AVAILABLE',
   CreateDeploymentRequestError = 'CREATE_DEPLOYMENT_REQUEST_ERROR',
+  DeploymentRequestUnknownError = 'DEPLOYMENT_REQUEST_UNKNOWN_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {

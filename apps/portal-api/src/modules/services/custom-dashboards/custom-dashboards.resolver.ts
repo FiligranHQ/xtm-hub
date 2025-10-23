@@ -9,10 +9,10 @@ import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
+import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import {
   deleteDocument,
-  getLabels,
   getUploader,
   getUploaderOrganization,
   loadImagesByDocumentId,
@@ -30,7 +30,8 @@ import {
 
 const resolvers: Resolvers = {
   CustomDashboard: {
-    labels: ({ id }, _, context) => getLabels(context, id, { unsecured: true }),
+    labels: ({ id }) =>
+      labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),
     uploader: ({ id }, _, context) =>
       getUploader(context, id, { unsecured: true }),
@@ -55,9 +56,12 @@ const resolvers: Resolvers = {
         dashboard.uploader = await getUploader(context, dashboard.id, {
           unsecured: true,
         });
-        dashboard.labels = await getLabels(context, dashboard.id, {
-          unsecured: true,
-        });
+        dashboard.labels = await labelsDomain.loadLabelsByDocumentId(
+          dashboard.id,
+          {
+            unsecured: true,
+          }
+        );
       }
       return dashboards;
     },

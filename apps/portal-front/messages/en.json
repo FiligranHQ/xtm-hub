@@ -76,6 +76,7 @@
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION_ERROR": "Error while deleting organization",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
+      "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "An unknown error occurred",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
       "EDIT_ME_USER_ERROR": "Error while editing your profile",

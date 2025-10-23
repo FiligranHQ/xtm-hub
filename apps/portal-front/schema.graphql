@@ -37,6 +37,7 @@ type Query {
   seoCustomDashboardBySlug(slug: String): CustomDashboard
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
+  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): DeploymentRequestConnection!
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
@@ -279,6 +280,25 @@ type DeploymentRequest implements Node {
   status: DeploymentRequestStatus!
 }
 
+type PlatformDeploymentRequest {
+  id: ID!
+  platform_identifier: PlatformIdentifier!
+  region: PlatformRegion!
+  type: DeploymentType!
+  platform_token: String!
+  status: DeploymentRequestStatus!
+  start_date: Date
+  end_date: Date
+  job_title: String
+  activity_sector: String
+  use_case: String
+  organization_name: String!
+  organization_domains: [String!]
+  requester_email: String!
+  product_service_instance_id: String
+  failure_reason: String
+}
+
 input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
   region: PlatformRegion!
@@ -286,6 +306,29 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+}
+
+enum DeploymentRequestFilterKey {
+  region
+  type
+  status
+  platform_identifier
+}
+
+input DeploymentRequestFilter {
+  key: DeploymentRequestFilterKey
+  value: [String!]!
+}
+
+type DeploymentRequestEdge {
+  cursor: String!
+  node: PlatformDeploymentRequest!
+}
+
+type DeploymentRequestConnection {
+  totalCount: Int!
+  edges: [DeploymentRequestEdge!]!
+  pageInfo: PageInfo!
 }
 
 type ShareableResourceImage {
@@ -849,7 +892,7 @@ input OneClickDeployInput {
   service_instance_id: ID!
   resource_id: ID!
   resource_title: String!
-  platform_id: ID!
+  platform_service_instance_id: ID!
 }
 
 type SendTelemetryMutation {

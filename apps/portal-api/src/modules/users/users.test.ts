@@ -48,7 +48,7 @@ describe('User helpers', async () => {
       );
 
       // Delete corresponding in order to avoid issue with other tests
-      await removeUser(contextAdminUser, { email: newUser.email });
+      await removeUser({ email: newUser.email });
     });
     it('should add new user with Role admin organization with an new Organization', async () => {
       const organizationName = 'test-new-organization.fr';
@@ -101,7 +101,7 @@ describe('User helpers', async () => {
       });
 
       // Delete corresponding in order to avoid issue with other tests
-      await removeUser(contextAdminUser, { email: testMail });
+      await removeUser({ email: testMail });
       await deleteOrganizationBy({ name: organizationName });
     });
 
@@ -142,11 +142,11 @@ describe('User helpers', async () => {
 
     afterEach(async () => {
       if (user) {
-        await removeUser(contextAdminUser, { email: user.email });
+        await removeUser({ email: user.email });
         user = null;
       }
       if (anotherUser) {
-        await removeUser(contextAdminUser, { email: anotherUser.email });
+        await removeUser({ email: anotherUser.email });
         anotherUser = null;
       }
       if (organization) {
@@ -201,26 +201,18 @@ describe('User helpers', async () => {
 
     describe('preventAdministratorRemovalOfAllOrganizations', () => {
       it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization} and we specify empty capabilities`, async () => {
-        const call = preventAdministratorRemovalOfAllOrganizations(
-          contextAdminUser,
-          user.id,
-          [
-            {
-              organizationId: organization.id,
-              capabilities: [],
-            },
-          ]
-        );
+        const call = preventAdministratorRemovalOfAllOrganizations(user.id, [
+          {
+            organizationId: organization.id,
+            capabilities: [],
+          },
+        ]);
 
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
 
       it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization} and we don't specify new capabilities`, async () => {
-        const call = preventAdministratorRemovalOfAllOrganizations(
-          contextAdminUser,
-          user.id,
-          []
-        );
+        const call = preventAdministratorRemovalOfAllOrganizations(user.id, []);
 
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });

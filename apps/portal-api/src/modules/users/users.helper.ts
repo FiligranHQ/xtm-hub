@@ -19,9 +19,9 @@ import User, {
   UserInitializer,
   UserMutator,
 } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { dispatch } from '../../pub';
+import { requestContext } from '../../requestContext';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../session-store-manager';
 import { logApp } from '../../utils/app-logger.util';
@@ -229,16 +229,16 @@ export const getOrCreateUser = async (
 };
 
 export const insertUserIntoOrganization = async (
-  context: PortalContext,
   user: User,
   subscriptionId: SubscriptionId
 ) => {
+  const { portalContext } = requestContext.require();
   const [subscription] =
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   const [organization] = await loadOrganizationsFromEmail(user.email);
-  const userOrganization = await loadUserOrganization(context, {
+  const userOrganization = await loadUserOrganization(portalContext, {
     user_id: user.id,
     organization_id: organization.id,
   });
@@ -252,14 +252,11 @@ export const insertUserIntoOrganization = async (
   }
   if (isEmpty(userOrganization)) {
     const [userOrgRelation] =
-      await createUserOrganizationRelationAndRemovePending(context, {
+      await createUserOrganizationRelationAndRemovePending(portalContext, {
         user_id: user.id,
         organizations_id: [organization.id],
       });
-    const shouldBeAdminOrga = await isFirstInOrganization(
-      context,
-      organization.id
-    );
+    const shouldBeAdminOrga = await isFirstInOrganization(organization.id);
     if (shouldBeAdminOrga) {
       await createUserOrganizationCapability({
         user_organization_id: userOrgRelation.id,
@@ -269,11 +266,9 @@ export const insertUserIntoOrganization = async (
   }
 };
 
-export const isFirstInOrganization = async (
-  context: PortalContext,
-  organizationId: OrganizationId
-) => {
-  const userOrganization = await loadUserOrganization(context, {
+export const isFirstInOrganization = async (organizationId: OrganizationId) => {
+  const { portalContext } = requestContext.require();
+  const userOrganization = await loadUserOrganization(portalContext, {
     organization_id: organizationId,
   });
   return userOrganization.length === 1;
@@ -293,11 +288,8 @@ export const mapUserToGraphqlUser = (
   };
 };
 
-export const removeUser = async (
-  context: PortalContext,
-  field: UserMutator
-) => {
-  const [deletedUser] = await db<User>(context, 'User')
+export const removeUser = async (field: UserMutator) => {
+  const [deletedUser] = await db<User>('User')
     .where(field)
     .delete('*')
     .returning('*');
@@ -341,14 +333,13 @@ export const preventAdministratorRemovalOfOneOrganization = async (
 };
 
 export const preventAdministratorRemovalOfAllOrganizations = async (
-  context: PortalContext,
   userId: UserId,
   newOrganizationCapabilities: {
     organizationId: OrganizationId;
     capabilities?: string[];
   }[]
 ) => {
-  const userOrganizations = await db(context, 'Organization')
+  const userOrganizations = await db('Organization')
     .select('Organization.id')
     .leftJoin(
       'User_Organization',
@@ -422,26 +413,24 @@ const countOrganizationAdministrators = async (
   return administratorsCount?.count ?? 0;
 };
 
-export const acceptPendingUserWithCapabilities = async (
-  context: PortalContext,
-  {
-    user_id,
-    organization_id,
-    orgCapabilities,
-  }: {
-    user_id: UserId;
-    organization_id: OrganizationId;
-    orgCapabilities?: string[];
-  }
-) => {
+export const acceptPendingUserWithCapabilities = async ({
+  user_id,
+  organization_id,
+  orgCapabilities,
+}: {
+  user_id: UserId;
+  organization_id: OrganizationId;
+  orgCapabilities?: string[];
+}) => {
+  const { portalContext } = requestContext.require();
   const trx = await dbTx();
   try {
-    await createUserOrganizationRelationAndRemovePending(context, {
+    await createUserOrganizationRelationAndRemovePending(portalContext, {
       user_id,
       organizations_id: [organization_id],
     });
 
-    const { user, userMapped } = await updateUserCapabilities(context, {
+    const { user, userMapped } = await updateUserCapabilities({
       user_id,
       organization_id,
       orgCapabilities,
@@ -465,21 +454,18 @@ export const acceptPendingUserWithCapabilities = async (
   }
 };
 
-export const updateUserOrgCapabilitiesAndDispatch = async (
-  context: PortalContext,
-  {
-    user_id,
-    organization_id,
-    orgCapabilities,
-  }: {
-    user_id: UserId;
-    organization_id: OrganizationId;
-    orgCapabilities?: string[];
-  }
-) => {
+export const updateUserOrgCapabilitiesAndDispatch = async ({
+  user_id,
+  organization_id,
+  orgCapabilities,
+}: {
+  user_id: UserId;
+  organization_id: OrganizationId;
+  orgCapabilities?: string[];
+}) => {
   const trx = await dbTx();
   try {
-    const { user, userMapped } = await updateUserCapabilities(context, {
+    const { user, userMapped } = await updateUserCapabilities({
       user_id,
       organization_id,
       orgCapabilities,
@@ -497,19 +483,18 @@ export const updateUserOrgCapabilitiesAndDispatch = async (
   }
 };
 
-const updateUserCapabilities = async (
-  context: PortalContext,
-  {
-    user_id,
-    organization_id,
-    orgCapabilities,
-  }: {
-    user_id: UserId;
-    organization_id: OrganizationId;
-    orgCapabilities?: string[];
-  }
-) => {
-  await updateUserOrgCapabilities(context, {
+const updateUserCapabilities = async ({
+  user_id,
+  organization_id,
+  orgCapabilities,
+}: {
+  user_id: UserId;
+  organization_id: OrganizationId;
+  orgCapabilities?: string[];
+}) => {
+  const { portalContext } = requestContext.require();
+
+  await updateUserOrgCapabilities(portalContext, {
     user_id,
     organization_id,
     orgCapabilities,

@@ -100,7 +100,7 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
               service_instance_id: documentData.service_instance!.id,
               resource_id: documentData.id,
               resource_title: documentData.name,
-              platform_id: platform!.id,
+              platform_service_instance_id: platform!.id,
             },
           },
         });
