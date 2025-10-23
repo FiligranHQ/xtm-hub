@@ -11,7 +11,6 @@ import { AlreadyExistsError } from '../../../../utils/error/error.util';
 import { extractId } from '../../../../utils/utils';
 import {
   deleteDocument,
-  loadSeoDocumentsByServiceSlug,
   updateDocumentWithChildren,
 } from '../../document/document.domain';
 import {
@@ -85,15 +84,6 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedDeletionError);
       }
     },
-  },
-  Query: {
-    seoCsvFeedsByServiceSlug: async (_, { serviceSlug }) =>
-      loadSeoDocumentsByServiceSlug(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-        serviceSlug,
-        CSV_FEED_METADATA
-      ),
-    seoCsvFeedBySlug: async (_, { slug }) => csvFeedsApp.loadSeoCsvFeed(slug),
   },
 };
 

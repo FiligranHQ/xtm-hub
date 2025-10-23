@@ -45,7 +45,7 @@ export const integrationFeedsItem = graphql`
     }
     integration_type
 
-    ...integrationFeedConnectorsItem_fragment
+    ...integrationFeedConnectorsItem_fragment @relay(mask: false)
   }
 `;
 

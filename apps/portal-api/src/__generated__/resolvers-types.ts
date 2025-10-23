@@ -1040,13 +1040,13 @@ export type Query = {
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
+  publicIntegrationFeedByServiceSlug?: Maybe<Array<Maybe<IntegrationFeed>>>;
+  publicIntegrationFeedBySlug?: Maybe<IntegrationFeed>;
   publicServiceInstances: ServiceConnection;
   refreshOpenCTIManifest?: Maybe<Scalars['Boolean']['output']>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
-  seoCsvFeedBySlug?: Maybe<CsvFeed>;
-  seoCsvFeedsByServiceSlug?: Maybe<Array<Maybe<CsvFeed>>>;
   seoCustomDashboardBySlug?: Maybe<CustomDashboard>;
   seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<CustomDashboard>>>;
   seoOpenAEVScenarioBySlug?: Maybe<OpenAevScenario>;
@@ -1214,6 +1214,16 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
+export type QueryPublicIntegrationFeedByServiceSlugArgs = {
+  serviceSlug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPublicIntegrationFeedBySlugArgs = {
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryPublicServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1229,16 +1239,6 @@ export type QueryRegisteredPlatformsArgs = {
 
 export type QueryRolePortalArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QuerySeoCsvFeedBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoCsvFeedsByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2640,13 +2640,13 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
+  publicIntegrationFeedByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['IntegrationFeed']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedByServiceSlugArgs>>;
+  publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['IntegrationFeed']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   refreshOpenCTIManifest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
-  seoCsvFeedBySlug?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QuerySeoCsvFeedBySlugArgs>>;
-  seoCsvFeedsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CsvFeed']>>>, ParentType, ContextType, Partial<QuerySeoCsvFeedsByServiceSlugArgs>>;
   seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
   seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
   seoOpenAEVScenarioBySlug?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QuerySeoOpenAevScenarioBySlugArgs>>;

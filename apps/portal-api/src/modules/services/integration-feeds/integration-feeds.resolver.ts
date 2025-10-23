@@ -47,6 +47,10 @@ const resolvers: Resolvers = {
         context,
         extractId<DocumentId>(id)
       ),
+    publicIntegrationFeedByServiceSlug: async (_, { serviceSlug }) =>
+      integrationFeedsApp.loadPublicAccessIntegrationFeeds(serviceSlug),
+    publicIntegrationFeedBySlug: async (_, { slug }) =>
+      integrationFeedsApp.loadPublicAccessIntegrationFeed(slug),
   },
 };
 

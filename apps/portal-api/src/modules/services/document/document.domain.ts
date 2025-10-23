@@ -789,7 +789,7 @@ export const loadSeoDocumentBySlug = async (
 
   addIncludeMetadataQuery(docQuery, include_metadata);
 
-  return await docQuery.first();
+  return docQuery.first();
 };
 
 export const loadSeoDocumentsByServiceSlug = async (
@@ -819,8 +819,7 @@ export const loadSeoDocumentsByServiceSlug = async (
     .groupBy(['Document.id']);
 
   addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
-
-  return await loadDocumentsQuery;
+  return loadDocumentsQuery;
 };
 
 export const loadImagesByDocumentId = async (documentId: string) => {

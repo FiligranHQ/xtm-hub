@@ -1,3 +1,4 @@
+import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
@@ -9,7 +10,7 @@ export type ShareableResource =
   | csvFeedsItem_fragment$data
   | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
-  | SeoCsvFeed
+  | SeoIntegrationFeed
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
@@ -32,18 +33,27 @@ export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
 };
 
 export const isIntegrationFeedItem = (
-  resource: SubscribableResource
+  resource:
+    | SubscribableResource
+    | ShareableResource
+    | ShareableResourceConnectorType
 ): resource is integrationFeedsItem_fragment$data => {
   return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
 };
 
 export const isConnectorResource = (
-  resource: SubscribableResource
-): resource is integrationFeedsItem_fragment$data => {
+  resource:
+    | SubscribableResource
+    | ShareableResource
+    | ShareableResourceConnectorType
+): resource is ShareableResourceConnectorType => {
   return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
 };
 
-export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
+export type SeoResource =
+  | SeoIntegrationFeed
+  | SeoCustomDashboard
+  | SeoOpenAEVScenario;
 
 export interface SeoCustomDashboard {
   description: string;
@@ -82,7 +92,7 @@ export interface SeoCustomDashboard {
   };
 }
 
-export interface SeoCsvFeed {
+export interface SeoIntegrationFeed {
   description: string;
   id: string;
   type: 'opencti_integration_feeds';

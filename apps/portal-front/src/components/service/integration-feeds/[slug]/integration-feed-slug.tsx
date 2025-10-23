@@ -7,11 +7,16 @@ import {
   IntegrationFeedQuery,
   integrationFeedsItem,
 } from '@/components/service/integration-feeds/integration-feed.graphql';
-import { APP_PATH } from '@/utils/path/constant';
+import { SettingsContext } from '@/components/settings/env-portal-context';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import { isConnectorResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { integrationFeedQuery } from '@generated/integrationFeedQuery.graphql';
 import { integrationFeedsItem_fragment$key } from '@generated/integrationFeedsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { useContext } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
@@ -29,6 +34,7 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
     IntegrationFeedQuery,
     queryRef
   );
+  const { settings } = useContext(SettingsContext);
 
   const documentData = readInlineData<integrationFeedsItem_fragment$key>(
     integrationFeedsItem,
@@ -52,6 +58,8 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
   ];
 
   const context = useCsvFeedContext(serviceInstance);
+  const shareUrl = `${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`;
+
   return (
     documentData && (
       <AppServiceContext {...context}>
@@ -59,6 +67,7 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
           <ShareableResourceConnectorSlug
             breadcrumbValue={breadcrumbValue}
             documentData={documentData}
+            shareUrl={shareUrl}
           />
         ) : (
           <ShareableResourceSlug

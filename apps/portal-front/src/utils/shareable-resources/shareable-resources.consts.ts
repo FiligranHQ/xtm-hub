@@ -1,14 +1,14 @@
-import SeoCsvFeedBySlugQuery from '@generated/seoCsvFeedBySlugQuery.graphql';
-import SeoCsvFeedsByServiceSlugQuery from '@generated/seoCsvFeedsByServiceSlugQuery.graphql';
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
+import SeoIntegrationFeedByServiceSlugQuery from '@generated/seoIntegrationFeedByServiceSlugQuery.graphql';
+import SeoIntegrationFeedBySlugQuery from '@generated/seoIntegrationFeedBySlugQuery.graphql';
 import SeoOpenaevScenarioBySlugQuery from '@generated/seoOpenaevScenarioBySlugQuery.graphql';
 import SeoOpenaevScenariosByServiceSlugQuery from '@generated/seoOpenaevScenariosByServiceSlugQuery.graphql';
 import {
   MakeQueryMapParams,
   QueryMapEntry,
-  SeoCsvFeed,
   SeoCustomDashboard,
+  SeoIntegrationFeed,
   SeoOpenAEVScenario,
   SeoResource,
   ServiceSlug,
@@ -66,10 +66,11 @@ export const localeMap: Record<ServiceSlug, string> = {
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeQueryMapEntry<SeoCsvFeed>({
-    query: SeoCsvFeedsByServiceSlugQuery,
-    key: 'seoCsvFeedsByServiceSlug',
-  }),
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
+    makeQueryMapEntry<SeoIntegrationFeed>({
+      query: SeoIntegrationFeedByServiceSlugQuery,
+      key: 'publicIntegrationFeedByServiceSlug',
+    }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeQueryMapEntry<SeoCustomDashboard>({
       query: SeoCustomDashboardsByServiceSlugQuery,
@@ -82,12 +83,11 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
 };
 
 export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeSingleQueryMapEntry<SeoCsvFeed>(
-    {
-      query: SeoCsvFeedBySlugQuery,
-      key: 'seoCsvFeedBySlug',
-    }
-  ),
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
+    makeSingleQueryMapEntry<SeoIntegrationFeed>({
+      query: SeoIntegrationFeedBySlugQuery,
+      key: 'publicIntegrationFeedBySlug',
+    }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeSingleQueryMapEntry<SeoCustomDashboard>({
       query: SeoCustomDashboardBySlugQuery,
