@@ -48,9 +48,7 @@ export const integrationFeedsApp = {
       INTEGRATION_FEED_METADATA
     ),
 
-  loadPublicAccessIntegrationFeed: async (
-    slug: string
-  ): Promise<IntegrationFeed> => {
+  loadPublicAccessIntegrationFeed: async (slug: string) => {
     return loadSeoDocumentWithCountersBySlug<WithLabels<IntegrationFeed>>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       slug,
