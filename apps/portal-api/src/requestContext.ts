@@ -31,11 +31,14 @@ export const requestContext = {
 
   // Update context
   update(updates: Partial<RequestContext>): void {
-    const store = requestContextStorage.getStore();
-    Object.assign(store, updates);
+    const context = requestContextStorage.getStore();
+    if (!context) {
+      throw UnknownErrorCode.NoAsyncContextAvailableError;
+    }
+    Object.assign(context, updates);
   },
 
-  set(context: RequestContext): void {
+  set(context: RequestContext | undefined): void {
     requestContextStorage.enterWith(context);
   },
 
