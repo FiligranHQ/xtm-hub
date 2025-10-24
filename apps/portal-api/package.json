@@ -83,7 +83,7 @@
     "prom-client": "15.1.3",
     "uuid": "10.0.0",
     "winston": "3.17.0",
-    "zod": "3.25.76"
+    "zod": "4.1.12"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.3.10",

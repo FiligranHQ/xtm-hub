@@ -30,7 +30,7 @@ export const tryOpenCTIFormSchema = z.object({
   activity_sector: z.enum(ACTIVITIES_SECTOR),
   use_case: z.enum(USE_CASES),
   acceptTerms: z.boolean().refine((value) => value === true, {
-    message: 'You must accept the MSSA',
+    error: 'You must accept the MSSA',
   }),
 });
 
