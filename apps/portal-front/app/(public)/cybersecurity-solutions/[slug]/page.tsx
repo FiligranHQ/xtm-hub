@@ -1,3 +1,6 @@
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
+import { RelayProvider } from '@/relay/RelayProvider';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -11,7 +14,7 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { PageLoader } from './page-loader';
+import { IntegrationFeedListPageLoader } from './integration-feed-list-page-loader';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -170,13 +173,46 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
       ];
     }
 
+    const breadcrumbValue = [
+      {
+        label: 'MenuLinks.Home',
+        href: '/',
+      },
+      {
+        label: serviceInstance.name,
+        original: true,
+      },
+    ];
+
     return (
-      <PageLoader
-        serviceInstance={serviceInstance}
-        documents={documents}
-        baseUrl={baseUrl}
-        jsonLd={jsonLd}
-      />
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd),
+          }}
+        />
+        <BreadcrumbNav value={breadcrumbValue} />
+
+        <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
+          {serviceInstance.name}
+        </h1>
+
+        {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS ? (
+          <RelayProvider>
+            <IntegrationFeedListPageLoader
+              baseUrl={baseUrl}
+              serviceInstance={serviceInstance}
+            />
+          </RelayProvider>
+        ) : (
+          <PublicShareableResourceList
+            documents={documents}
+            serviceInstance={serviceInstance}
+            baseUrl={baseUrl}
+          />
+        )}
+      </>
     );
   } catch (error) {
     console.error(error);

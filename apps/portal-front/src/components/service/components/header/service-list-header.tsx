@@ -1,6 +1,7 @@
 import { ServiceListAddFilterCombobox } from '@/components/service/components/header/filter/service-list-add-filter-combobox';
 import { ServiceListFilterSection } from '@/components/service/components/header/filter/service-list-filter-section';
 import { SearchInput } from '@/components/ui/search-input';
+import { cn } from '@/lib/utils';
 import { debounceHandleInput } from '@/utils/debounce';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -24,6 +25,7 @@ interface Props {
   onSearchChange: (v: string) => void;
   filters: ServiceListFilterMap;
   actions?: React.ReactNode;
+  className?: string;
 }
 
 export const ServiceListHeader: React.FC<Props> = ({
@@ -31,12 +33,13 @@ export const ServiceListHeader: React.FC<Props> = ({
   onSearchChange,
   filters,
   actions,
+  className,
 }) => {
   const t = useTranslations();
   const hasMoreThanOneFilter = Object.values(filters).length > 1;
 
   return (
-    <div className="flex flex-col justify-between gap-m">
+    <div className={cn('flex flex-col justify-between gap-m', className)}>
       <div className="flex justify-between gap-s flex-wrap">
         <div className="flex gap-s flex-wrap">
           <SearchInput

@@ -1,7 +1,10 @@
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
 import { formatPersonNames } from '@/utils/format/name';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  PublicShareableResource,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from 'filigran-icon';
 import { Avatar } from 'filigran-ui/clients';
 
@@ -10,7 +13,7 @@ const ShareableResourceBento = ({
   serviceInstanceId,
   className,
 }: {
-  document: ShareableResource;
+  document: ShareableResource | PublicShareableResource;
   serviceInstanceId: string;
   className?: string;
 }) => {
