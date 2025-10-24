@@ -1,6 +1,8 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
+import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import { useCustomDashboardsContext } from '@/components/service/custom-dashboards/use-custom-dashboards-context';
 import {
   customDashboardsItem_fragment$data,
@@ -54,12 +56,15 @@ const CustomDashboardsList = ({
 
   return (
     <AppServiceContext {...context}>
-      <ServiceList
-        active={active}
-        draft={draft}
-        search={search}
-        onSearchChange={onSearchChange}
-      />
+      <AppServiceListLocalStorageKeyContext
+        localStorageKey={ServiceListLocalStorageKey.OpenCTICustomDashboards}>
+        <ServiceList
+          active={active}
+          draft={draft}
+          search={search}
+          onSearchChange={onSearchChange}
+        />
+      </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>
   );
 };

@@ -1,6 +1,5 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
-import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import {
   OpenaevScenarioForm,
   OpenAEVScenarioFormValues,
@@ -146,6 +145,5 @@ export function useOpenaevScenarioContext(
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: OpenaevScenarioForm,
-    localStorageKey: ServiceListLocalStorageKey.OpenAEVScenarios,
   };
 }

@@ -1,6 +1,5 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
-import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import {
   CustomDashboardForm,
   CustomDashboardFormValues,
@@ -145,6 +144,5 @@ export function useCustomDashboardsContext(
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: CustomDashboardForm,
-    localStorageKey: ServiceListLocalStorageKey.OpenCTICustomDashboards,
   };
 }

@@ -1,4 +1,4 @@
-import { useServiceContext } from '@/components/service/components/service-context';
+import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { IntegrationFeedConnectorTypeFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-connector-type-filter';
 import { IntegrationFeedTypeFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-type-filter';
@@ -6,7 +6,7 @@ import { IntegrationFeedTypeEnum } from '@generated/models/IntegrationFeedType.e
 import React from 'react';
 
 export const IntegrationFeedFilters: React.FC = () => {
-  const { localStorageKey } = useServiceContext();
+  const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { integrationTypes } = useServiceListLocalStorage(localStorageKey);
   const shouldDisplayConnectorFilter = integrationTypes.includes(
     IntegrationFeedTypeEnum.CONNECTOR

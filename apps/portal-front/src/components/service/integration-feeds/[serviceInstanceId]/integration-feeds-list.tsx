@@ -4,8 +4,12 @@ import {
 } from '@/components/service/components/header/service-list-header';
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
-import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/components/service/components/use-service-list-local-storage';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import {
   integrationFeedsFragment,
@@ -58,8 +62,12 @@ const IntegrationFeedsList = ({
 
   const context = useCsvFeedContext(serviceInstance, connectionId);
 
+  const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
+
   const { removeConnectorTypes, removeIntegrationTypes } =
-    useServiceListLocalStorage(context.localStorageKey);
+    useServiceListLocalStorage(
+      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+    );
 
   const filters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationFeedType]: {
@@ -73,13 +81,15 @@ const IntegrationFeedsList = ({
 
   return (
     <AppServiceContext {...context}>
-      <ServiceList
-        active={active}
-        draft={draft}
-        search={search}
-        onSearchChange={onSearchChange}
-        additionalFilters={filters}
-      />
+      <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
+        <ServiceList
+          active={active}
+          draft={draft}
+          search={search}
+          onSearchChange={onSearchChange}
+          additionalFilters={filters}
+        />
+      </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>
   );
 };
