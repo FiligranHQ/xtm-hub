@@ -792,6 +792,43 @@ export const loadSeoDocumentBySlug = async (
   return docQuery.first();
 };
 
+export const loadSeoDocuments = async <
+  T =
+    | DocumentConnection
+    | IntegrationFeedConnection
+    | CustomDashboardConnection,
+>(
+  type: string,
+  serviceSlug: string,
+  opts: Partial<QueryDocumentsArgs>,
+  include_metadata?: string[]
+) => {
+  const loadDocumentsQuery = db<Document>('Document', opts)
+    .select('Document.*')
+    .leftJoin(
+      'ServiceInstance',
+      'Document.service_instance_id',
+      'ServiceInstance.id'
+    )
+    .whereNotExists(function () {
+      this.select('*')
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
+    })
+    .where('ServiceInstance.slug', '=', serviceSlug)
+    .where('Document.active', '=', true)
+    .where('Document.type', '=', type)
+    .orderBy([
+      { column: 'Document.updated_at', order: 'desc' },
+      { column: 'Document.created_at', order: 'desc' },
+    ])
+    .groupBy(['Document.id']);
+
+  addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
+
+  return paginate<Document, T>('Document', opts, undefined, loadDocumentsQuery);
+};
+
 export const loadSeoDocumentsByServiceSlug = async (
   type: string,
   serviceSlug: string,

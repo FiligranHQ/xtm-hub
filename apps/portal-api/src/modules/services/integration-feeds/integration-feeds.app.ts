@@ -1,12 +1,14 @@
 import {
   IntegrationFeedConnection,
   QueryIntegrationFeedsArgs,
+  QueryPublicIntegrationFeedsArgs,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { PortalContext } from '../../../model/portal-context';
 import { WithLabels } from '../../../utils/types';
 import {
   loadParentDocumentsByServiceInstance,
+  loadSeoDocuments,
   loadSeoDocumentsByServiceSlug,
 } from '../document/document.domain';
 import {
@@ -47,6 +49,18 @@ export const integrationFeedsApp = {
       serviceSlug,
       INTEGRATION_FEED_METADATA
     ),
+
+  loadPaginatedPublicAccessIntegrationFeeds: async (
+    input: QueryPublicIntegrationFeedsArgs
+  ) => {
+    const { slug, ...opts } = input;
+    return loadSeoDocuments<IntegrationFeedConnection>(
+      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      slug,
+      opts,
+      INTEGRATION_FEED_METADATA
+    );
+  },
 
   loadPublicAccessIntegrationFeed: async (slug: string) => {
     return loadSeoDocumentWithCountersBySlug<WithLabels<IntegrationFeed>>(

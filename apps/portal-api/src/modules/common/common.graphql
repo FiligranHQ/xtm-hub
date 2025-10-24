@@ -9,6 +9,7 @@ enum FilterKey {
   serviceDefinition_identifier
   integration_type
   integration_subtype
+  slug
 }
 
 input Filter {
