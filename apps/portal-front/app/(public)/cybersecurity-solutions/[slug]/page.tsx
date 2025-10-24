@@ -1,13 +1,7 @@
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
-import ShareableResourceConnectorCard from '@/components/ui/shareable-resource/shareable-resource-connector-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import {
-  isConnectorResource,
-  ServiceSlug,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -17,6 +11,7 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { PageLoader } from './page-loader';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -174,59 +169,14 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
       ];
     }
-    const breadcrumbValue = [
-      {
-        label: 'MenuLinks.Home',
-        href: '/',
-      },
-      {
-        label: serviceInstance.name,
-        original: true,
-      },
-    ];
+
     return (
-      <>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd),
-          }}
-        />
-        <BreadcrumbNav value={breadcrumbValue} />
-
-        <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
-          {serviceInstance.name}
-        </h1>
-
-        {(documents.length === 0 && (
-          <div className="my-4 text-center">No document found</div>
-        )) || (
-          <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
-            {documents.map((document) => {
-              if (isConnectorResource(document)) {
-                return (
-                  <ShareableResourceConnectorCard
-                    key={document.id}
-                    shareableConnector={document}
-                    serviceInstance={serviceInstance}
-                    detailUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
-                    shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
-                  />
-                );
-              }
-              return (
-                <ShareableResourceCard
-                  key={document.id}
-                  document={document}
-                  detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                  shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                  serviceInstance={serviceInstance}
-                />
-              );
-            })}
-          </ul>
-        )}
-      </>
+      <PageLoader
+        serviceInstance={serviceInstance}
+        documents={documents}
+        baseUrl={baseUrl}
+        jsonLd={jsonLd}
+      />
     );
   } catch (error) {
     console.error(error);
