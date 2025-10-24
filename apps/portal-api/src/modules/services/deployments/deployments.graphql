@@ -59,6 +59,15 @@ input CreateDeploymentRequestInput {
   use_case: String
 }
 
+input UpdateDeploymentRequestInput {
+  id: ID!
+  status: DeploymentRequestStatus
+  start_date: Date
+  end_date: Date
+  product_service_instance_id: String
+  failure_reason: String
+}
+
 enum DeploymentRequestFilterKey {
   region
   type
@@ -95,4 +104,7 @@ extend type Mutation {
     input: CreateDeploymentRequestInput
   ): DeploymentRequest!
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+  updateDeploymentRequest(
+    input: UpdateDeploymentRequestInput!
+  ): PlatformDeploymentRequest! @system_token
 }

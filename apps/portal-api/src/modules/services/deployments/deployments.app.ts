@@ -7,9 +7,11 @@ import {
   DeploymentRequestFilterKey,
   DeploymentRequestStatus,
   DeploymentType,
+  PlatformDeploymentRequest,
   PlatformIdentifier,
   PlatformRegion,
   QueryDeploymentRequestsArgs,
+  UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import { requestContext } from '../../../requestContext';
@@ -75,6 +77,27 @@ export const DeploymentsApp = {
       logApp.error('unable to create deployment request', error);
       await trx.rollback();
     }
+  },
+
+  updateDeployment: async (
+    input: UpdateDeploymentRequestInput
+  ): Promise<PlatformDeploymentRequest> => {
+    const deploymentRequestId = input.id as DeploymentRequestId;
+
+    await DeploymentRequestDomain.updateDeploymentRequestById(
+      deploymentRequestId,
+      {
+        status: input.status,
+        start_date: input.start_date,
+        end_date: input.end_date,
+        product_service_instance_id: input.product_service_instance_id,
+        failure_reason: input.failure_reason,
+      }
+    );
+
+    return await DeploymentRequestDomain.loadFullDeploymentRequestById(
+      deploymentRequestId
+    );
   },
 
   loadDeploymentRequests: async (

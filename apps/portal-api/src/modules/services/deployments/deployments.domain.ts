@@ -4,6 +4,7 @@ import {
   QueryDeploymentRequestsArgs,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
+  DeploymentRequestId,
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -31,23 +32,6 @@ export const DeploymentRequestDomain = {
 
   loadDeploymentRequests: async (opts: QueryDeploymentRequestsArgs) => {
     const { first, after, filters } = opts;
-    const loadDeploymentRequestQuery = dbUnsecure<DeploymentRequest>(
-      'DeploymentRequest'
-    )
-      .leftJoin(
-        'Organization',
-        'DeploymentRequest.organization_requester_id',
-        '=',
-        'Organization.id'
-      )
-      .leftJoin('User', 'DeploymentRequest.user_requester_id', '=', 'User.id')
-      .select([
-        'DeploymentRequest.*',
-        'Organization.name as organization_name',
-        'Organization.domains as organization_domains',
-        'User.email as requester_email',
-      ]);
-
     return paginate<DeploymentRequest, DeploymentRequestConnection>(
       'DeploymentRequest',
       {
@@ -58,8 +42,14 @@ export const DeploymentRequestDomain = {
         filters,
       },
       undefined,
-      loadDeploymentRequestQuery
+      getDeploymentRequestWithUserDataQuery()
     );
+  },
+
+  loadFullDeploymentRequestById: async (id: DeploymentRequestId) => {
+    const query = getDeploymentRequestWithUserDataQuery();
+    query.where('DeploymentRequest.id', '=', id);
+    return query.first();
   },
 
   deleteDeploymentRequestBy: async (
@@ -69,4 +59,34 @@ export const DeploymentRequestDomain = {
       .where(conditions)
       .delete();
   },
+
+  updateDeploymentRequestById: async (
+    id: DeploymentRequestId,
+    data: DeploymentRequestMutator
+  ): Promise<DeploymentRequest> => {
+    const [deploymentRequest] = await dbUnsecure<DeploymentRequest>(
+      'DeploymentRequest'
+    )
+      .where('id', '=', id)
+      .update(data)
+      .returning('*');
+    return deploymentRequest;
+  },
+};
+
+const getDeploymentRequestWithUserDataQuery = () => {
+  return dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    .leftJoin(
+      'Organization',
+      'DeploymentRequest.organization_requester_id',
+      '=',
+      'Organization.id'
+    )
+    .leftJoin('User', 'DeploymentRequest.user_requester_id', '=', 'User.id')
+    .select([
+      'DeploymentRequest.*',
+      'Organization.name as organization_name',
+      'Organization.domains as organization_domains',
+      'User.email as requester_email',
+    ]);
 };

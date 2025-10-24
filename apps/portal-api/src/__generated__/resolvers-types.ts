@@ -531,6 +531,7 @@ export type Mutation = {
   unregisterPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
+  updateDeploymentRequest: PlatformDeploymentRequest;
   updateOpenAEVScenario: OpenAevScenario;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
 };
@@ -812,6 +813,11 @@ export type MutationUpdateCustomDashboardArgs = {
   input: UpdateCustomDashboardInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
+};
+
+
+export type MutationUpdateDeploymentRequestArgs = {
+  input: UpdateDeploymentRequestInput;
 };
 
 
@@ -1653,6 +1659,15 @@ export type UpdateCustomDashboardInput = {
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateDeploymentRequestInput = {
+  end_date?: InputMaybe<Scalars['Date']['input']>;
+  failure_reason?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  product_service_instance_id?: InputMaybe<Scalars['String']['input']>;
+  start_date?: InputMaybe<Scalars['Date']['input']>;
+  status?: InputMaybe<DeploymentRequestStatus>;
+};
+
 export type UpdateOpenAevScenarioInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -1991,6 +2006,7 @@ export type ResolversTypes = ResolversObject<{
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
+  UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
@@ -2112,6 +2128,7 @@ export type ResolversParentTypes = ResolversObject<{
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
+  UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   Upload: Scalars['Upload']['output'];
@@ -2501,6 +2518,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
+  updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
 }>;

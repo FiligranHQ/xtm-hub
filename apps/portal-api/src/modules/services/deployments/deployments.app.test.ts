@@ -29,6 +29,43 @@ import {
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
 
+async function insertOpenCtiDeploymentRequest(
+  deploymentRequest: Partial<DeploymentRequestInitializer>
+) {
+  const serviceInstanceId = uuidv4() as ServiceInstanceId;
+  await insertServiceInstance({
+    id: serviceInstanceId,
+    name: 'serviceInstance1',
+    description: '',
+    creation_status: ServiceInstanceCreationStatus.Pending,
+    public: false,
+    join_type: 'JOIN_AUTO',
+    tags: [
+      serviceInstanceTagMappedByPlatformIdentifier[PlatformIdentifier.Opencti],
+    ],
+    service_definition_id: SERVICE_OPENCTI_REGISTRATION,
+  });
+  const defaultDeploymentRequestValues = {
+    activity_sector: 'cybersecurity',
+    id: uuidv4() as DeploymentRequestId,
+    job_title: 'myJob',
+    organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+    platform_identifier: PlatformIdentifier.Opencti,
+    platform_token: uuidv4(),
+    region: PlatformRegion.Us,
+    request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
+    status: DeploymentRequestStatus.Pending,
+    type: DeploymentType.Trial,
+    use_case: 'use_case',
+    service_instance_id: serviceInstanceId as ServiceInstanceId,
+    user_requester_id: ADMIN_UUID,
+  };
+  return await DeploymentRequestDomain.insertDeploymentRequest({
+    ...defaultDeploymentRequestValues,
+    ...deploymentRequest,
+  });
+}
+
 describe('Deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
@@ -75,45 +112,6 @@ describe('Deployment app', () => {
     });
   });
   describe('loadDeploymentRequests', () => {
-    async function insertOpenCtiDeploymentRequest(
-      deploymentRequest: Partial<DeploymentRequestInitializer>
-    ) {
-      const serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await insertServiceInstance({
-        id: serviceInstanceId,
-        name: 'serviceInstance1',
-        description: '',
-        creation_status: ServiceInstanceCreationStatus.Pending,
-        public: false,
-        join_type: 'JOIN_AUTO',
-        tags: [
-          serviceInstanceTagMappedByPlatformIdentifier[
-            PlatformIdentifier.Opencti
-          ],
-        ],
-        service_definition_id: SERVICE_OPENCTI_REGISTRATION,
-      });
-      const defaultDeploymentRequestValues = {
-        activity_sector: 'cybersecurity',
-        id: uuidv4() as DeploymentRequestId,
-        job_title: 'myJob',
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
-        platform_identifier: PlatformIdentifier.Opencti,
-        platform_token: uuidv4(),
-        region: PlatformRegion.Us,
-        request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-        status: DeploymentRequestStatus.Pending,
-        type: DeploymentType.Trial,
-        use_case: 'use_case',
-        service_instance_id: serviceInstanceId as ServiceInstanceId,
-        user_requester_id: ADMIN_UUID,
-      };
-      return await DeploymentRequestDomain.insertDeploymentRequest({
-        ...defaultDeploymentRequestValues,
-        ...deploymentRequest,
-      });
-    }
-
     it('should return created deployment requests', async () => {
       const deploymentRequest = await insertOpenCtiDeploymentRequest({});
 
@@ -197,6 +195,53 @@ describe('Deployment app', () => {
 
       expect(deployments.totalCount).toBe('0');
       expect(deployments.edges.length).toBe(0);
+    });
+  });
+  describe('updateDeploymentRequest', () => {
+    it('should update a deployment request', async () => {
+      const initialDeployment = await insertOpenCtiDeploymentRequest({});
+
+      const deployment = await DeploymentsApp.updateDeployment({
+        id: initialDeployment?.id as string,
+        status: DeploymentRequestStatus.Provisioning,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        product_service_instance_id: 'fake product instance id',
+        failure_reason: 'not failed',
+      });
+
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      expect(dbDeploymentRequest).toMatchObject({
+        activity_sector: 'cybersecurity',
+        id: expect.any(String),
+        job_title: 'myJob',
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        platform_identifier: PlatformIdentifier.Opencti,
+        platform_token: expect.any(String),
+        region: PlatformRegion.Us,
+        request_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+        status: DeploymentRequestStatus.Provisioning,
+        type: DeploymentType.Trial,
+        use_case: 'use_case',
+        user_requester_id: ADMIN_UUID,
+        failure_reason: 'not failed',
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        product_service_instance_id: 'fake product instance id',
+      });
+
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        contextAdminUser,
+        'id',
+        dbDeploymentRequest.service_instance_id
+      );
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Pending
+      );
     });
   });
 });

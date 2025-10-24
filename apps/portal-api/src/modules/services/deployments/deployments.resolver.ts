@@ -31,6 +31,16 @@ const resolvers: Resolvers = {
         );
       }
     },
+    updateDeploymentRequest: async (_, { input }) => {
+      try {
+        return await DeploymentsApp.updateDeployment(input);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
   },
 };
 
