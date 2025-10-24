@@ -11,6 +11,7 @@ import {
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
+import { requestContext } from '../../requestContext';
 import * as securityGuard from '../../security/guard';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
@@ -89,7 +90,7 @@ describe('Service Instance app', () => {
       expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
       });
-      expect(loadUserServiceBySpy).toHaveBeenCalledWith(contextAdminUser, {
+      expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
         user_id: mockUserId,
       });
@@ -210,7 +211,7 @@ describe('Service Instance app', () => {
           id: differentUserId,
         },
       };
-
+      requestContext.set(differentContext);
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
       loadUserServiceBySpy.mockResolvedValue([]);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
@@ -220,7 +221,7 @@ describe('Service Instance app', () => {
         mockServiceInstanceId
       );
 
-      expect(loadUserServiceBySpy).toHaveBeenCalledWith(differentContext, {
+      expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
         user_id: differentUserId,
       });

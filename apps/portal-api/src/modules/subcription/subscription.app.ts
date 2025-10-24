@@ -159,9 +159,7 @@ export const subscriptionApp = {
       };
 
       const createdSubscription = await createSubscription(subscriptionData);
-      const { portalContext } = requestContext.require();
       await addCapabilitiesToSubscription(
-        portalContext,
         createdSubscription.id,
         capabilityIds
       );
@@ -218,7 +216,7 @@ const createSubscriptionWithAdminAccess = async ({
   serviceInstanceId: ServiceInstanceId;
   organization: Organization;
 }): Promise<{ createdSubscription: Subscription }> => {
-  const { user, portalContext } = requestContext.require();
+  const { user } = requestContext.require();
   const subscriptionInitializerData = {
     id: uuidv4() as SubscriptionId,
     service_instance_id: serviceInstanceId,
@@ -234,7 +232,6 @@ const createSubscriptionWithAdminAccess = async ({
   );
 
   await addAdminAccess(
-    portalContext,
     user.id as UserId,
     createdSubscription.id,
     organization.personal_space

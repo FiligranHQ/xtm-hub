@@ -3,7 +3,7 @@ import { UserOrganizationId } from '../../model/kanel/public/UserOrganization';
 import UserOrganizationCapability, {
   UserOrganizationCapabilityInitializer,
 } from '../../model/kanel/public/UserOrganizationCapability';
-import { PortalContext } from '../../model/portal-context';
+import { requestContext } from '../../requestContext';
 
 export const createUserOrganizationCapability = async ({
   user_organization_id,
@@ -25,17 +25,14 @@ export const createUserOrganizationCapability = async ({
     .returning('*');
 };
 
-export const updateUserOrganizationCapability = async (
-  context: PortalContext,
-  {
-    user_organization_id,
-    capabilities_name = [],
-  }: {
-    user_organization_id: UserOrganizationId;
-    capabilities_name: string[];
-  }
-): Promise<UserOrganizationCapability[]> => {
-  await db(context, 'UserOrganization_Capability')
+export const updateUserOrganizationCapability = async ({
+  user_organization_id,
+  capabilities_name = [],
+}: {
+  user_organization_id: UserOrganizationId;
+  capabilities_name: string[];
+}): Promise<UserOrganizationCapability[]> => {
+  await db('UserOrganization_Capability')
     .where({ user_organization_id })
     .delete()
     .secureQuery();
@@ -48,18 +45,17 @@ export const updateUserOrganizationCapability = async (
       user_organization_id,
       name,
     }));
-  return db(context, 'UserOrganization_Capability')
+  return db('UserOrganization_Capability')
     .insert(usersOrgCapa)
     .returning('*')
     .secureQuery();
 };
 
 export const loadUserOrganizationCapabilities = async (
-  context: PortalContext,
   organizationId: string
 ): Promise<UserOrganizationCapability[]> => {
+  const { user } = requestContext.require();
   const capabilities = await db<UserOrganizationCapability>(
-    context,
     'UserOrganization_Capability'
   )
     .leftJoin(
@@ -68,7 +64,7 @@ export const loadUserOrganizationCapabilities = async (
       'User_Organization.id'
     )
     .where('User_Organization.organization_id', '=', organizationId)
-    .where('User_Organization.user_id', '=', context.user.id)
+    .where('User_Organization.user_id', '=', user.id)
     .select('UserOrganization_Capability.*');
 
   return capabilities;

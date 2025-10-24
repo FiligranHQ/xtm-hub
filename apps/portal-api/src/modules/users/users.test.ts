@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { contextAdminUser } from '../../../tests/tests.const';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import Organization from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
@@ -35,10 +34,9 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: newUser.id }
-      );
+      const newUserPendingOrg = await loadUserOrganizationPending({
+        user_id: newUser.id,
+      });
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities.length).toBe(1);
       expect(newUser.organizations[0].personal_space).toBe(true);
@@ -65,10 +63,9 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: newUser.id }
-      );
+      const newUserPendingOrg = await loadUserOrganizationPending({
+        user_id: newUser.id,
+      });
 
       expect(newUser).toBeTruthy();
       expect(newUserPendingOrg.length).toBe(0);
@@ -111,10 +108,9 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: newUser.id }
-      );
+      const newUserPendingOrg = await loadUserOrganizationPending({
+        user_id: newUser.id,
+      });
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities.length).toBe(1);
 
@@ -176,13 +172,10 @@ describe('User helpers', async () => {
         });
 
         const [anotherUserOrgRelation] =
-          await createUserOrganizationRelationAndRemovePending(
-            contextAdminUser,
-            {
-              user_id: anotherUser.id,
-              organizations_id: [organization.id],
-            }
-          );
+          await createUserOrganizationRelationAndRemovePending({
+            user_id: anotherUser.id,
+            organizations_id: [organization.id],
+          });
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({
@@ -228,13 +221,10 @@ describe('User helpers', async () => {
         });
 
         const [anotherUserOrgRelation] =
-          await createUserOrganizationRelationAndRemovePending(
-            contextAdminUser,
-            {
-              user_id: anotherUser.id,
-              organizations_id: [organization.id],
-            }
-          );
+          await createUserOrganizationRelationAndRemovePending({
+            user_id: anotherUser.id,
+            organizations_id: [organization.id],
+          });
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({

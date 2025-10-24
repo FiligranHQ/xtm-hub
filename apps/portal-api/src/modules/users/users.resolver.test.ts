@@ -785,10 +785,9 @@ describe('User mutation resolver', () => {
       expect(updatedUser.selected_org_capabilities).to.includes(
         'ADMINISTRATE_ORGANIZATION'
       );
-      const usersPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: updatedUser.id }
-      );
+      const usersPendingOrg = await loadUserOrganizationPending({
+        user_id: updatedUser.id,
+      });
       expect(usersPendingOrg.length).toBe(0);
 
       await removeUser({ email: pendingUser.email });
@@ -931,10 +930,9 @@ describe('User mutation resolver', () => {
         undefined
       );
 
-      const usersPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: pendingUser.id }
-      );
+      const usersPendingOrg = await loadUserOrganizationPending({
+        user_id: pendingUser.id,
+      });
 
       expect(usersPendingOrg.length).toBe(0);
       await removeUser({ email: pendingUser.email });

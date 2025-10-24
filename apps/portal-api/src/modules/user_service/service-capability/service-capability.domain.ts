@@ -3,13 +3,9 @@ import { Restriction } from '../../../__generated__/resolvers-types';
 import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
-import { PortalContext } from '../../../model/portal-context';
 
-export const getManageAccessLeft = async (
-  context: PortalContext,
-  userServiceId: UserServiceId
-) => {
-  const userService = await db<UserService>(context, 'User_Service')
+export const getManageAccessLeft = async (userServiceId: UserServiceId) => {
+  const userService = await db<UserService>('User_Service')
     .select('subscription_id')
     .where('id', userServiceId)
     .first();
@@ -17,7 +13,7 @@ export const getManageAccessLeft = async (
   if (!userService) {
     return false;
   }
-  const result = await db<UserService>(context, 'User_Service')
+  const result = await db<UserService>('User_Service')
     .leftJoin(
       'UserService_Capability',
       'User_Service.id',

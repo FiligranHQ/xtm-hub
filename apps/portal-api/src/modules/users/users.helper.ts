@@ -21,7 +21,6 @@ import User, {
 } from '../../model/kanel/public/User';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { dispatch } from '../../pub';
-import { requestContext } from '../../requestContext';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../session-store-manager';
 import { logApp } from '../../utils/app-logger.util';
@@ -232,13 +231,12 @@ export const insertUserIntoOrganization = async (
   user: User,
   subscriptionId: SubscriptionId
 ) => {
-  const { portalContext } = requestContext.require();
   const [subscription] =
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   const [organization] = await loadOrganizationsFromEmail(user.email);
-  const userOrganization = await loadUserOrganization(portalContext, {
+  const userOrganization = await loadUserOrganization({
     user_id: user.id,
     organization_id: organization.id,
   });
@@ -252,7 +250,7 @@ export const insertUserIntoOrganization = async (
   }
   if (isEmpty(userOrganization)) {
     const [userOrgRelation] =
-      await createUserOrganizationRelationAndRemovePending(portalContext, {
+      await createUserOrganizationRelationAndRemovePending({
         user_id: user.id,
         organizations_id: [organization.id],
       });
@@ -267,8 +265,7 @@ export const insertUserIntoOrganization = async (
 };
 
 export const isFirstInOrganization = async (organizationId: OrganizationId) => {
-  const { portalContext } = requestContext.require();
-  const userOrganization = await loadUserOrganization(portalContext, {
+  const userOrganization = await loadUserOrganization({
     organization_id: organizationId,
   });
   return userOrganization.length === 1;
@@ -422,10 +419,9 @@ export const acceptPendingUserWithCapabilities = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
-  const { portalContext } = requestContext.require();
   const trx = await dbTx();
   try {
-    await createUserOrganizationRelationAndRemovePending(portalContext, {
+    await createUserOrganizationRelationAndRemovePending({
       user_id,
       organizations_id: [organization_id],
     });
@@ -492,9 +488,7 @@ const updateUserCapabilities = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
-  const { portalContext } = requestContext.require();
-
-  await updateUserOrgCapabilities(portalContext, {
+  await updateUserOrgCapabilities({
     user_id,
     organization_id,
     orgCapabilities,

@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { PortalContext } from '../../../model/portal-context';
+import { UserLoadUserBy } from '../../../model/user';
+import { requestContext } from '../../../requestContext';
 import * as UserServiceDomain from '../../user_service/user_service.domain';
 import { GenericServiceCapabilityName } from './generic_service_capability.const';
 import * as ServiceCapaDomain from './service-capability.domain';
@@ -30,12 +32,16 @@ describe('willManageAccessBeConserved', () => {
         user_id: userId,
       });
 
-      const result = () =>
-        willManageAccessBeConserved(
-          { user: { id: 'theSame' } } as PortalContext,
+      const result = async () => {
+        requestContext.set({
+          user: { id: 'theSame' } as UserLoadUserBy,
+          portalContext: { user: { id: 'theSame' } } as PortalContext,
+        });
+        await willManageAccessBeConserved(
           'userServiceId' as UserServiceId,
           capabilities
         );
+      };
 
       if (shouldThrowError) {
         await expect(result()).rejects.toThrow(

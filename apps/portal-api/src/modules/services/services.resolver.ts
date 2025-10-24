@@ -89,7 +89,6 @@ const resolvers: Resolvers = {
       loadIsSubscribed(context, id),
     capabilities: ({ id }, _, context) =>
       loadCapabilities(
-        context,
         id,
         context.user.id,
         context.user.selected_organization_id
