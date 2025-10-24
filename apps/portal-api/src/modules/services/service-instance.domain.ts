@@ -735,3 +735,12 @@ export const updatePlatformConfigurationByServiceInstanceId = async (
   const [result] = await qb;
   return result;
 };
+
+export const deleteServiceInstanceBy = async (
+  filter: ServiceInstanceMutator
+) => {
+  const [deletedServiceInstance] = await db<ServiceInstance>('ServiceInstance')
+    .where(filter)
+    .delete('*');
+  return deletedServiceInstance;
+};

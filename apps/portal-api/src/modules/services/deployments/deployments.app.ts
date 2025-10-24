@@ -16,7 +16,12 @@ import {
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import { requestContext } from '../../../requestContext';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  NotFoundErrorCode,
+} from '../../../utils/error/error.code';
+import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -84,17 +89,50 @@ export const DeploymentsApp = {
   ): Promise<PlatformDeploymentRequest> => {
     const deploymentRequestId = input.id as DeploymentRequestId;
 
-    await DeploymentRequestDomain.updateDeploymentRequestById(
-      deploymentRequestId,
-      {
-        status: input.status,
-        start_date: input.start_date,
-        end_date: input.end_date,
-        product_service_instance_id: input.product_service_instance_id,
-        failure_reason: input.failure_reason,
-      }
-    );
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        id: deploymentRequestId,
+      });
 
+    if (!deploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
+    if (
+      input.status == DeploymentRequestStatus.Active &&
+      (!input.start_date || !input.end_date)
+    ) {
+      throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
+    }
+
+    const trx = await dbTx();
+    requestContext.update({ trx });
+    try {
+      if (input.start_date || input.end_date) {
+        await updateSubscriptionBy(
+          { service_instance_id: deploymentRequest.service_instance_id },
+          {
+            start_date: input.start_date,
+            end_date: input.end_date,
+          }
+        );
+      }
+
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequestId,
+        {
+          status: input.status,
+          start_date: input.start_date,
+          end_date: input.end_date,
+          product_service_instance_id: input.product_service_instance_id,
+          failure_reason: input.failure_reason,
+        }
+      );
+    } catch (error) {
+      trx.rollback();
+      throw error;
+    }
+    trx.commit();
     return await DeploymentRequestDomain.loadFullDeploymentRequestById(
       deploymentRequestId
     );

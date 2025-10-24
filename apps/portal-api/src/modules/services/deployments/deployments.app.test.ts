@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
@@ -13,7 +13,7 @@ import {
   PlatformRegion,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
-import {
+import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -21,8 +21,18 @@ import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import {
+  BadRequestErrorCode,
+  NotFoundErrorCode,
+} from '../../../utils/error/error.code';
+import { loadSubscriptionBy } from '../../subcription/subscription.domain';
+import {
+  deleteSubscriptionUnsecure,
+  insertUnsecureSubscription,
+} from '../../subcription/subscription.helper';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import {
+  deleteServiceInstanceBy,
   insertServiceInstance,
   loadServiceInstanceBy,
 } from '../service-instance.domain';
@@ -44,6 +54,11 @@ async function insertOpenCtiDeploymentRequest(
       serviceInstanceTagMappedByPlatformIdentifier[PlatformIdentifier.Opencti],
     ],
     service_definition_id: SERVICE_OPENCTI_REGISTRATION,
+  });
+  await insertUnsecureSubscription({
+    id: uuidv4(),
+    organization_id: PLATFORM_ORGANIZATION_UUID,
+    service_instance_id: serviceInstanceId,
   });
   const defaultDeploymentRequestValues = {
     activity_sector: 'cybersecurity',
@@ -69,6 +84,8 @@ async function insertOpenCtiDeploymentRequest(
 describe('Deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+    await deleteServiceInstanceBy({});
+    await deleteSubscriptionUnsecure({});
   });
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
@@ -198,9 +215,14 @@ describe('Deployment app', () => {
     });
   });
   describe('updateDeploymentRequest', () => {
-    it('should update a deployment request', async () => {
-      const initialDeployment = await insertOpenCtiDeploymentRequest({});
+    let initialDeployment: DeploymentRequest;
+    beforeEach(async () => {
+      initialDeployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+    });
 
+    it('should update a deployment request', async () => {
       const deployment = await DeploymentsApp.updateDeployment({
         id: initialDeployment?.id as string,
         status: DeploymentRequestStatus.Provisioning,
@@ -214,6 +236,14 @@ describe('Deployment app', () => {
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        contextAdminUser,
+        'id',
+        dbDeploymentRequest.service_instance_id
+      );
+      const subscription = await loadSubscriptionBy({
+        service_instance_id: dbDeploymentRequest.service_instance_id,
+      });
       expect(dbDeploymentRequest).toMatchObject({
         activity_sector: 'cybersecurity',
         id: expect.any(String),
@@ -233,15 +263,55 @@ describe('Deployment app', () => {
         end_date: new Date(2025, 2, 3),
         product_service_instance_id: 'fake product instance id',
       });
-
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        contextAdminUser,
-        'id',
-        dbDeploymentRequest.service_instance_id
-      );
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
+      expect(subscription?.start_date).toStrictEqual(
+        dbDeploymentRequest.start_date
+      );
+      expect(subscription?.end_date).toStrictEqual(
+        dbDeploymentRequest.end_date
+      );
     });
+    it('should should throw if deployment request does not exist', async () => {
+      const call = DeploymentsApp.updateDeployment({
+        id: uuidv4(),
+        status: DeploymentRequestStatus.Provisioning,
+      });
+      await expect(call).rejects.toThrow(
+        NotFoundErrorCode.DeploymentRequestNotFound
+      );
+    });
+    it.each([
+      {
+        start_date: undefined,
+        end_date: undefined,
+        description: 'both dates missing',
+      },
+      {
+        start_date: undefined,
+        end_date: new Date(),
+        description: 'start date missing',
+      },
+      {
+        start_date: new Date(),
+        end_date: undefined,
+        description: 'end date missing',
+      },
+    ])(
+      'should throw if status active and $description',
+      async ({ start_date, end_date }) => {
+        const call = DeploymentsApp.updateDeployment({
+          id: initialDeployment.id,
+          status: DeploymentRequestStatus.Active,
+          start_date,
+          end_date,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.MissingStartOrEndDate
+        );
+      }
+    );
   });
 });

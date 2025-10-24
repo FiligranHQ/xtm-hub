@@ -25,6 +25,7 @@ export enum BadRequestErrorCode {
   InvalidPlatformIdentifier = 'INVALID_PLATFORM_IDENTIFIER',
   InvalidActionSize = 'INVALID_ACTION_SIZE',
   InvalidEmail = 'INVALID_EMAIL',
+  MissingStartOrEndDate = 'MISSING_START_OR_END_DATE',
 }
 
 export enum UnknownErrorCode {
@@ -81,6 +82,7 @@ export enum NotFoundErrorCode {
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   ServiceNotFound = 'SERVICE_NOT_FOUND',
   ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
+  DeploymentRequestNotFound = 'DEPLOYMENT_REQUEST_NOT_FOUND',
 }
 
 export const ErrorCode = {
