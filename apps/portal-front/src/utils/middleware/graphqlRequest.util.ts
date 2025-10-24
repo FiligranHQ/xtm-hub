@@ -1,5 +1,3 @@
-import { FeatureFlag } from '@/utils/constant';
-import { isFeatureEnabled } from '@/utils/settings.service';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GRAPHQL_API = '/graphql-api';
@@ -30,15 +28,6 @@ export const manageRequest = async (request: NextRequest) => {
     return NextResponse.rewrite(
       new URL(SERVER_HTTP_API + pathname + search, request.url)
     );
-  }
-
-  const connectorsEnabled = await isFeatureEnabled(FeatureFlag.CONNECTORS_PAGE);
-
-  if (
-    pathname.startsWith('/cybersecurity-solutions/opencti-connectors') &&
-    !connectorsEnabled
-  ) {
-    return NextResponse.rewrite(new URL('/404', request.url));
   }
 
   return undefined;
