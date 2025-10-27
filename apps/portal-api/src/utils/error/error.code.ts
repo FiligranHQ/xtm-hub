@@ -26,6 +26,7 @@ export enum BadRequestErrorCode {
   InvalidActionSize = 'INVALID_ACTION_SIZE',
   InvalidEmail = 'INVALID_EMAIL',
   MissingStartOrEndDate = 'MISSING_START_OR_END_DATE',
+  DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
 }
 
 export enum UnknownErrorCode {

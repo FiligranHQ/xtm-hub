@@ -217,15 +217,15 @@ describe('Deployment app', () => {
   describe('updateDeploymentRequest', () => {
     let initialDeployment: DeploymentRequest;
     beforeEach(async () => {
-      initialDeployment = (await insertOpenCtiDeploymentRequest(
-        {}
-      )) as DeploymentRequest;
+      initialDeployment = (await insertOpenCtiDeploymentRequest({
+        status: DeploymentRequestStatus.Provisioning,
+      })) as DeploymentRequest;
     });
 
     it('should update a deployment request', async () => {
       const deployment = await DeploymentsApp.updateDeployment({
         id: initialDeployment?.id as string,
-        status: DeploymentRequestStatus.Provisioning,
+        status: DeploymentRequestStatus.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         product_service_instance_id: 'fake product instance id',
@@ -254,7 +254,7 @@ describe('Deployment app', () => {
         region: PlatformRegion.Us,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        status: DeploymentRequestStatus.Provisioning,
+        status: DeploymentRequestStatus.Active,
         type: DeploymentType.Trial,
         use_case: 'use_case',
         user_requester_id: ADMIN_UUID,
@@ -276,7 +276,7 @@ describe('Deployment app', () => {
     it('should should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeployment({
         id: uuidv4(),
-        status: DeploymentRequestStatus.Provisioning,
+        status: DeploymentRequestStatus.Active,
       });
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
@@ -313,5 +313,14 @@ describe('Deployment app', () => {
         );
       }
     );
+    it('should should throw if status requested is not allowed', async () => {
+      const call = DeploymentsApp.updateDeployment({
+        id: initialDeployment?.id as string,
+        status: DeploymentRequestStatus.Queued,
+      });
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
+      );
+    });
   });
 });

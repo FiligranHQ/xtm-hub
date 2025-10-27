@@ -25,6 +25,7 @@ import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
+import { isValidTransition } from './deployments.helper';
 
 export const DeploymentsApp = {
   createDeployment: async (
@@ -96,6 +97,17 @@ export const DeploymentsApp = {
 
     if (!deploymentRequest) {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
+    if (
+      !isValidTransition(
+        deploymentRequest.status as DeploymentRequestStatus,
+        input.status
+      )
+    ) {
+      throw new Error(
+        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
+      );
     }
 
     if (
