@@ -81,7 +81,7 @@ minio:
     count: 3
     affinity:
       podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
+        requiredDuringSchedulingIgnoredDuringExecution:
           - podAffinityTerm:
               labelSelector:
                 matchLabels:
