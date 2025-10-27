@@ -21,12 +21,13 @@ import {
   ErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
-import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
+import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
-import { isTransitionValid } from './deployments.helper';
+
+import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
@@ -41,6 +42,9 @@ export const DeploymentsApp = {
       logApp.warn('You cannot request Free Trial in your personal space');
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
+
+    await assertFreeTrialsLimit(context.user.selected_organization_id);
+
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
         input.platform_identifier

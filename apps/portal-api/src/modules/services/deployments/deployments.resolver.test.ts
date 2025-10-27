@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   DeploymentRequestStatus,
   DeploymentType,
@@ -6,10 +6,18 @@ import {
   PlatformRegion,
 } from '../../../__generated__/resolvers-types';
 import { ErrorCode } from '../../../utils/error/error.code';
+import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
+import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
+import { DeploymentRequestDomain } from './deployments.domain';
 import resolver from './deployments.resolver';
 
 describe('Deployment app', () => {
+  afterEach(async () => {
+    await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+    await deleteServiceInstanceBy({});
+    await deleteSubscriptionUnsecure({});
+  });
   describe('createDeploymentRequest', () => {
     it('should return the deployment request created', async () => {
       const deployment = await resolver.Mutation.createDeploymentRequest(

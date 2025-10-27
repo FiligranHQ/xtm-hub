@@ -75,6 +75,7 @@ export enum AlreadyExistsErrorCode {
   CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
   CustomDashboardUniqueSlugError = 'CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR',
   OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
+  FreeTrialAlreadyExists = 'FREE_TRIAL_ALREADY_EXISTS',
 }
 
 export enum NotFoundErrorCode {

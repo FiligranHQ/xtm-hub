@@ -87,6 +87,7 @@
       "EDIT_USER_ERROR": "Error while editing user",
       "EDIT_USER_SESSION_ERROR": "An unknown error occurred",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
+      "FREE_TRIAL_ALREADY_EXISTS": "A free trial already exists for your organization",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "You must grant capabilities on organization first",
       "INCREMENT_SHARE_NUMBER": "Error occurred while incrementing share number",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",

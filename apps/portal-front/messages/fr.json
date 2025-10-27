@@ -87,6 +87,7 @@
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EDIT_USER_SESSION_ERROR": "Une erreur inconnue s'est produite",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
+      "FREE_TRIAL_ALREADY_EXISTS": "Une instance de test existe déjà pour votre organisation",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "Vous devez d'abord accorder des capacités à l'organisation",
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du numéro de part",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
