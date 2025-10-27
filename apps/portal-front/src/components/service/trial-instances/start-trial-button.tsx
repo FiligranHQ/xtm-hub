@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import GuardCapacityComponent from '@/components/admin-guard';
+import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 import { CreateDeploymentRequestMutation } from '@/components/service/trial-instances/create-deployment.graphql';
 import {
   TryOpenCTIForm,
@@ -17,12 +18,14 @@ import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { toast } from 'filigran-ui/clients';
-import { useMutation } from 'react-relay';
+import { fetchQuery, useMutation, useRelayEnvironment } from 'react-relay';
 import { z } from 'zod';
 
 // Component
 export const StartTrialButton = ({}) => {
   const t = useTranslations();
+  const environment = useRelayEnvironment();
+
   const [openSheet, setOpenSheet] = useState(false);
   const [commitCreateDeploymentRequestMutationMutation] =
     useMutation<createDeploymentRequestMutation>(
@@ -39,39 +42,12 @@ export const StartTrialButton = ({}) => {
           type: DeploymentTypeEnum.TRIAL,
         },
       },
-      // updater: (store) => {
-      //   const newDeploymentRequest = store.getRootField(
-      //     'createDeploymentRequest'
-      //   );
-      //   console.log('newDeploymentRequest', newDeploymentRequest);
-      //   const root = store.getRoot();
-      //   console.log('root', root);
-      //   const registeredPlatforms = root.getLinkedRecords(
-      //     'registeredPlatforms',
-      //     { input: { identifier: PlatformIdentifierEnum.OPENCTI } } // Les mêmes variables que votre query
-      //   );
-      //   console.log('registeredPlatforms', registeredPlatforms);
-      //
-      //   // Ajouter le nouveau à la liste
-      //   if (registeredPlatforms) {
-      //     root.setLinkedRecords(
-      //       [...registeredPlatforms, newDeploymentRequest],
-      //       'registeredPlatforms',
-      //       { input: { identifier: PlatformIdentifierEnum.OPENCTI } }
-      //     );
-      //   }
-      // },
       updater: (store) => {
-        const root = store.getRoot();
-        root.invalidateRecord();
-        // const registeredPlatforms = root.getLinkedRecords(
-        //   'registeredPlatforms'
-        // );
-        // if (registeredPlatforms) {
-        //   registeredPlatforms.forEach((record) => {
-        //     if (record) store.delete(record.getDataID());
-        //   });
-        // }
+        store.invalidateStore();
+        window.dispatchEvent(new Event('refresh-registered-platforms'));
+        fetchQuery(environment, RegisterRegisteredPlatformsQuery, {
+          input: { identifier: PlatformIdentifierEnum.OPENCTI },
+        }).subscribe({});
       },
 
       onCompleted: () => {
