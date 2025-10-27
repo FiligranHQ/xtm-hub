@@ -37,7 +37,7 @@ export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
 export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
   if (
     serviceInstance.subscription?.service_instance?.creation_status ===
-    'PENDING'
+    ServiceInstanceCreationStatusEnum.PENDING
   ) {
     return 'Provisionning';
   }
@@ -100,7 +100,7 @@ export const registeredPlatformToServiceInstanceCardData = (
           service_instance: {
             creation_status:
               platform.subscription?.service_instance?.creation_status ??
-              'PENDING',
+              ServiceInstanceCreationStatusEnum.PENDING,
             name: platform.subscription?.service_instance?.name ?? '',
           },
         }
