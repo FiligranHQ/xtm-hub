@@ -74,6 +74,7 @@ export const StartTrialButton = ({}) => {
       open={openSheet}
       trigger={
         <GuardCapacityComponent
+          shouldNotBePersonalSpace
           capacityRestriction={[
             OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
             OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,

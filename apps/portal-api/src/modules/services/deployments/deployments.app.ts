@@ -22,6 +22,7 @@ import {
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { updateSubscriptionBy } from '../../subcription/subscription.domain';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -32,6 +33,14 @@ export const DeploymentsApp = {
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
     const context = requestContext.require();
+    const chosenOrganization = await loadOrganizationBy({
+      id: context.user.selected_organization_id,
+    });
+
+    if (chosenOrganization.personal_space) {
+      logApp.warn('You cannot request Free Trial in your personal space');
+      throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
+    }
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
         input.platform_identifier
