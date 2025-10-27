@@ -8,6 +8,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/shareable-resource-connector-details';
+import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import BadgeOverflowCounter, {
@@ -62,6 +63,8 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
                 documentId={documentData.slug}
                 url={shareUrl}
               />
+
+              <OneClickDeploy documentData={documentData} />
             </div>
           </div>
           <div className="w-full mt-s mb-xs">
