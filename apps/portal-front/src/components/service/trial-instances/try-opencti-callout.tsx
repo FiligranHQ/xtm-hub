@@ -10,7 +10,6 @@ import { StartTrialButton } from '@/components/service/trial-instances/start-tri
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
@@ -45,7 +44,9 @@ export const TryOpenCTICallout = ({}) => {
 
   const freeTrial = data.registeredPlatforms.filter(
     (platform) =>
-      platform.deployment_request?.status === DeploymentRequestStatusEnum.ACTIVE
+      (platform.subscription?.service_instance?.creation_status === 'PENDING' ||
+        platform.subscription?.service_instance?.creation_status === 'READY') &&
+      platform.deployment_request?.id
   );
   const target = new Date(freeTrial[0]?.subscription?.end_date);
   const now = new Date();
@@ -54,15 +55,33 @@ export const TryOpenCTICallout = ({}) => {
 
   const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
-  const GRADIENT_CLASSES = [
-    { maxDays: 8, class: 'from-yellow-300 to-orange bg-gradient-to-r' },
-    { maxDays: 22, class: 'from-turquoise to-yellow-300 bg-gradient-to-r' },
-    { maxDays: Infinity, class: 'from-blue to-turquoise-300 bg-gradient-to-r' },
+  const GRADIENT_CLASSES = {
+    default: 'from-blue to-turquoise-300 bg-gradient-to-r',
+    warning: 'from-yellow-300 to-orange bg-gradient-to-r',
+    info: 'from-turquoise to-yellow-300 bg-gradient-to-r',
+  };
+
+  const GRADIENT_THRESHOLDS = [
+    { maxDays: 0, gradient: GRADIENT_CLASSES.warning },
+    { maxDays: 8, gradient: GRADIENT_CLASSES.info },
+    { maxDays: 22, gradient: GRADIENT_CLASSES.default },
+    { maxDays: Infinity, gradient: GRADIENT_CLASSES.default },
   ];
 
-  const getGradientClass = (days: number) =>
-    GRADIENT_CLASSES.find((g) => days < g.maxDays)?.class ??
-    GRADIENT_CLASSES[2]!.class;
+  const getGradientClass = (days: number): string => {
+    if (
+      freeTrial.length === 0 ||
+      freeTrial[0]?.subscription?.end_date < new Date()
+    ) {
+      return GRADIENT_CLASSES.default;
+    }
+    if (days < 0) {
+      return GRADIENT_CLASSES.warning;
+    }
+
+    const threshold = GRADIENT_THRESHOLDS.find(({ maxDays }) => days < maxDays);
+    return threshold?.gradient ?? GRADIENT_CLASSES.default;
+  };
 
   if (!settings || !isOpenCTIFreeTrialActivated) return null;
 
@@ -108,6 +127,15 @@ export const TryOpenCTICallout = ({}) => {
       ),
       button: () => <StartTrialButton />,
     },
+    provisionning: {
+      text: () => (
+        <>
+          {t('Service.Trials.Provisionning')}{' '}
+          <b>{t('Service.Trials.ProvisionningBold')}</b>
+        </>
+      ),
+      button: () => <></>,
+    },
     expired: {
       text: () => t('Service.Trials.Expired'),
       button: () => reachSalesButton(),
@@ -124,7 +152,12 @@ export const TryOpenCTICallout = ({}) => {
   };
 
   const getContentKey = () => {
-    if (freeTrial.length !== 1) return 'noTrial';
+    if (freeTrial.length < 1) return 'noTrial';
+    if (
+      freeTrial[0]?.subscription?.service_instance?.creation_status ===
+      'PENDING'
+    )
+      return 'provisionning';
     if (diffInDays <= 0) return 'expired';
     return 'active';
   };

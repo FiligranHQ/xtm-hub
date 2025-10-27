@@ -96,6 +96,10 @@ export const registerRegisteredPlatformFragment = graphql`
       status
       end_date
       start_date
+      service_instance {
+        creation_status
+        name
+      }
     }
   }
 `;

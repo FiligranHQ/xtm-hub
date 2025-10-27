@@ -39,9 +39,44 @@ export const StartTrialButton = ({}) => {
           type: DeploymentTypeEnum.TRIAL,
         },
       },
+      // updater: (store) => {
+      //   const newDeploymentRequest = store.getRootField(
+      //     'createDeploymentRequest'
+      //   );
+      //   console.log('newDeploymentRequest', newDeploymentRequest);
+      //   const root = store.getRoot();
+      //   console.log('root', root);
+      //   const registeredPlatforms = root.getLinkedRecords(
+      //     'registeredPlatforms',
+      //     { input: { identifier: PlatformIdentifierEnum.OPENCTI } } // Les mêmes variables que votre query
+      //   );
+      //   console.log('registeredPlatforms', registeredPlatforms);
+      //
+      //   // Ajouter le nouveau à la liste
+      //   if (registeredPlatforms) {
+      //     root.setLinkedRecords(
+      //       [...registeredPlatforms, newDeploymentRequest],
+      //       'registeredPlatforms',
+      //       { input: { identifier: PlatformIdentifierEnum.OPENCTI } }
+      //     );
+      //   }
+      // },
+      updater: (store) => {
+        const root = store.getRoot();
+        root.invalidateRecord();
+        // const registeredPlatforms = root.getLinkedRecords(
+        //   'registeredPlatforms'
+        // );
+        // if (registeredPlatforms) {
+        //   registeredPlatforms.forEach((record) => {
+        //     if (record) store.delete(record.getDataID());
+        //   });
+        // }
+      },
 
       onCompleted: () => {
         setOpenSheet(false);
+
         toast({
           title: t('Utils.Success'),
           description: t('Service.Trials.Form.FormRequested'),

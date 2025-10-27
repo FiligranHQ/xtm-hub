@@ -35,6 +35,12 @@ export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
   new Date(serviceInstance.subscription?.end_date) < new Date();
 
 export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
+  if (
+    serviceInstance.subscription?.service_instance?.creation_status ===
+    'PENDING'
+  ) {
+    return 'Provisionning';
+  }
   if (!serviceInstance.subscription?.end_date) {
     return serviceInstance.status;
   }
@@ -77,18 +83,28 @@ export const registeredPlatformToServiceInstanceCardData = (
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
     ordering: -1, // registered platforms are displayed at the first position
-    deployment_request: {
-      id: platform.deployment_request?.id ?? '',
-      type: (platform.deployment_request?.type ??
-        DeploymentTypeEnum.TRIAL) as DeploymentTypeEnum,
-      status: (platform.deployment_request?.status ??
-        DeploymentRequestStatusEnum.PROVISIONING) as DeploymentRequestStatusEnum,
-    },
-    subscription: {
-      id: platform.subscription?.id ?? '',
-      start_date: platform.subscription?.start_date,
-      end_date: platform.subscription?.end_date,
-    },
+    deployment_request: platform.deployment_request?.id
+      ? {
+          id: platform.deployment_request.id,
+          type: (platform.deployment_request?.type ??
+            undefined) as DeploymentTypeEnum,
+          status: (platform.deployment_request?.status ??
+            DeploymentRequestStatusEnum.PROVISIONING) as DeploymentRequestStatusEnum,
+        }
+      : undefined,
+    subscription: platform.subscription?.id
+      ? {
+          id: platform.subscription?.id,
+          start_date: platform.subscription?.start_date,
+          end_date: platform.subscription?.end_date,
+          service_instance: {
+            creation_status:
+              platform.subscription?.service_instance?.creation_status ??
+              'PENDING',
+            name: platform.subscription?.service_instance?.name ?? '',
+          },
+        }
+      : undefined,
   };
 };
 

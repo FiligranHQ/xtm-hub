@@ -606,6 +606,8 @@
     "Trials": {
       "Explore": "Explore OpenCTI platform with 30 days",
       "Active": "Your trial platform activated",
+      "Provisionning": "Your OpenCTI platform Free Trial platform is",
+      "ProvisionningBold": "currently getting provisionned!",
       "Expired": "Your trial platform has expired",
       "DaysRemaning": "{days} Days remaining",
       "FreeTrial": "Free Trial!",

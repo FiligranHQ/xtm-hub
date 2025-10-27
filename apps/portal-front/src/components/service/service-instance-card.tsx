@@ -53,6 +53,10 @@ export interface SubscriptionModel {
   start_date: Date;
   end_date: Date;
   status?: string;
+  service_instance: {
+    creation_status: string;
+    name: string;
+  };
 }
 
 export interface ServiceInstanceCardData {
@@ -147,7 +151,10 @@ const ServiceInstanceCard: React.FunctionComponent<
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
 
   const canUpdatePlatform = () => {
-    if (!isRegistrationService(serviceInstance)) {
+    if (
+      !isRegistrationService(serviceInstance) ||
+      isTrialInstance(serviceInstance)
+    ) {
       return false;
     }
 
