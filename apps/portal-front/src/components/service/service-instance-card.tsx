@@ -36,8 +36,8 @@ import { ReactNode, useContext, useState } from 'react';
 
 export interface DeploymentRequest {
   id: string;
-  platform_identifier: PlatformIdentifierEnum;
-  region: PlatformRegionEnum;
+  platform_identifier?: PlatformIdentifierEnum;
+  region?: PlatformRegionEnum;
   type: DeploymentTypeEnum;
   job_title?: string;
   activity_sector?: string;
@@ -48,11 +48,11 @@ export interface DeploymentRequest {
 }
 export interface SubscriptionModel {
   id: string;
-  organization_id: string;
-  service_instance_id: string;
+  organization_id?: string;
+  service_instance_id?: string;
   start_date: Date;
   end_date: Date;
-  status: string;
+  status?: string;
 }
 
 export interface ServiceInstanceCardData {
@@ -273,11 +273,12 @@ const ServiceInstanceCard: React.FunctionComponent<
             <div className="flex pl-s ml-auto gap-m items-start">
               {isExternalService(
                 serviceInstance.service_definition_identifier
-              ) && (
-                <div className="pt-2">
-                  <ArrowOutwardIcon className="size-3 shrink-0" />
-                </div>
-              )}
+              ) &&
+                !isTrialInstance(serviceInstance) && (
+                  <div className="pt-2">
+                    <ArrowOutwardIcon className="size-3 shrink-0" />
+                  </div>
+                )}
               {canUpdatePlatform() && (
                 <div className="relative">
                   <IconActions

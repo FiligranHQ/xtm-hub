@@ -605,10 +605,14 @@
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
       "Explore": "Explorer la plateforme OpenCTI avec 30 jours",
+      "Active": "Votre plateforme d'essai activée",
+      "Expired": "Votre plateforme d'essai a expiré",
+      "DaysRemaning": "{days} Jours restants",
       "FreeTrial": "D'essai gratuit !",
       "LearnMore": "En savoir plus",
       "StartTrial": "Commencer un essai",
       "GoToMyTrial": "Aller à mon procès",
+      "ReachSales": "Contacter le service commercial",
       "Form": {
         "Region": "Région",
         "AssociatedEmail": "Email associé",

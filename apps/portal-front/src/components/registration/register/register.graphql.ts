@@ -85,11 +85,14 @@ export const registerRegisteredPlatformFragment = graphql`
     identifier
     illustration_document_id
     deployment_request {
+      id
+      type
       activity_sector
       job_title
       status
     }
     subscription {
+      id
       status
       end_date
       start_date

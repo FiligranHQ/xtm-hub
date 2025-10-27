@@ -1,5 +1,6 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -26,17 +27,18 @@ export const isRegistrationService = (
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
 export const isTrialInstance = (serviceInstance: ServiceInstanceCardData) => {
-  return serviceInstance.end_date && serviceInstance.status;
+  return serviceInstance.deployment_request?.type === DeploymentTypeEnum.TRIAL;
 };
 
 export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
-  serviceInstance.end_date && new Date(serviceInstance.end_date) < new Date();
+  serviceInstance.subscription?.end_date &&
+  new Date(serviceInstance.subscription?.end_date) < new Date();
 
 export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
-  if (!serviceInstance.end_date) {
+  if (!serviceInstance.subscription?.end_date) {
     return serviceInstance.status;
   }
-  const target = new Date(serviceInstance.end_date);
+  const target = new Date(serviceInstance.subscription?.end_date);
   const now = new Date();
 
   const diffInMs = target.getTime() - now.getTime();
@@ -75,8 +77,18 @@ export const registeredPlatformToServiceInstanceCardData = (
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
     ordering: -1, // registered platforms are displayed at the first position
-    status: platform.deployment_request?.status,
-    end_date: platform.subscription?.end_date,
+    deployment_request: {
+      id: platform.deployment_request?.id ?? '',
+      type: (platform.deployment_request?.type ??
+        DeploymentTypeEnum.TRIAL) as DeploymentTypeEnum,
+      status: (platform.deployment_request?.status ??
+        DeploymentRequestStatusEnum.PROVISIONING) as DeploymentRequestStatusEnum,
+    },
+    subscription: {
+      id: platform.subscription?.id ?? '',
+      start_date: platform.subscription?.start_date,
+      end_date: platform.subscription?.end_date,
+    },
   };
 };
 
@@ -84,10 +96,7 @@ export const hasTrialInstance = (
   registrationList: ServiceInstanceCardData[]
 ): boolean => {
   const activeTrialInstances = registrationList.filter(
-    (platform) =>
-      platform.status === DeploymentRequestStatusEnum.ACTIVE &&
-      platform.end_date &&
-      new Date(platform.end_date) > new Date()
+    (platform) => platform.deployment_request?.type === DeploymentTypeEnum.TRIAL
   );
   return activeTrialInstances.length >= 1;
 };

@@ -45,40 +45,100 @@ export const TryOpenCTICallout = ({}) => {
 
   const freeTrial = data.registeredPlatforms.filter(
     (platform) =>
-      platform.deployment_request?.status ===
-        DeploymentRequestStatusEnum.ACTIVE &&
-      new Date(platform.subscription?.end_date) > new Date()
+      platform.deployment_request?.status === DeploymentRequestStatusEnum.ACTIVE
+  );
+  const target = new Date(freeTrial[0]?.subscription?.end_date);
+  const now = new Date();
+
+  const diffInMs = target.getTime() - now.getTime();
+
+  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  const GRADIENT_CLASSES = [
+    { maxDays: 8, class: 'from-yellow-300 to-orange bg-gradient-to-r' },
+    { maxDays: 22, class: 'from-turquoise to-yellow-300 bg-gradient-to-r' },
+    { maxDays: Infinity, class: 'from-blue to-turquoise-300 bg-gradient-to-r' },
+  ];
+
+  const getGradientClass = (days: number) =>
+    GRADIENT_CLASSES.find((g) => days < g.maxDays)?.class ??
+    GRADIENT_CLASSES[2]!.class;
+
+  if (!settings || !isOpenCTIFreeTrialActivated) return null;
+
+  const trialUrl = freeTrial[0]?.url ?? '/app';
+
+  const goToTrialButton = () => (
+    <Button
+      className="ml-xl bg-white text-black hover:bg-white"
+      asChild>
+      <Link
+        href={trialUrl}
+        target="_blank">
+        {t('Service.Trials.GoToMyTrial')}
+        <ArrowRightAltIcon className="ml-s size-4" />
+      </Link>
+    </Button>
   );
 
-  return (
-    settings &&
-    isOpenCTIFreeTrialActivated && (
-      <Callout
-        variant="destructive"
-        className="rounded-none from-blue to-turquoise-300 bg-gradient-to-r text-black justify-center uppercase">
-        <div>
+  const reachSalesButton = () => (
+    <Button
+      className="ml-xl bg-white text-black hover:bg-white"
+      asChild>
+      <Link
+        href={trialUrl}
+        target="_blank">
+        {t('Service.Trials.ReachSales')}
+        <ArrowRightAltIcon className="ml-s size-4" />
+      </Link>
+    </Button>
+  );
+
+  const CONTENT_CONFIG = {
+    noTrial: {
+      text: () => (
+        <>
           {t('Service.Trials.Explore')} <b>{t('Service.Trials.FreeTrial')}</b>
           <Link
             href={`${settings.base_url_front}/app/service/free-trial`}
             className="ml-xs underline">
             {t('Service.Trials.LearnMore')}
           </Link>
-          {freeTrial.length === 1 ? (
-            <Button
-              className="ml-xl bg-white text-black hover:bg-white"
-              asChild>
-              <Link
-                href={freeTrial[0]?.url ?? '/app'}
-                target="_blank">
-                {t('Service.Trials.GoToMyTrial')}
-                <ArrowRightAltIcon className="ml-s size-4" />
-              </Link>
-            </Button>
-          ) : (
-            <StartTrialButton />
-          )}
-        </div>
-      </Callout>
-    )
+        </>
+      ),
+      button: () => <StartTrialButton />,
+    },
+    expired: {
+      text: () => t('Service.Trials.Expired'),
+      button: () => reachSalesButton(),
+    },
+    active: {
+      text: () => (
+        <>
+          {t('Service.Trials.Active')}:{' '}
+          <b>{t('Service.Trials.DaysRemaning', { days: diffInDays })}</b>
+        </>
+      ),
+      button: () => goToTrialButton(),
+    },
+  };
+
+  const getContentKey = () => {
+    if (freeTrial.length !== 1) return 'noTrial';
+    if (diffInDays <= 0) return 'expired';
+    return 'active';
+  };
+
+  const content = CONTENT_CONFIG[getContentKey()];
+
+  return (
+    <Callout
+      variant="destructive"
+      className={`rounded-none ${getGradientClass(diffInDays)} text-black justify-center uppercase`}>
+      <div>
+        {content.text()}
+        {content.button()}
+      </div>
+    </Callout>
   );
 };
