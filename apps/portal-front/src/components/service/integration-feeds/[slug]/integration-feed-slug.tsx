@@ -14,7 +14,10 @@ import {
 } from '@/utils/path/constant';
 import { isConnectorResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { integrationFeedQuery } from '@generated/integrationFeedQuery.graphql';
-import { integrationFeedsItem_fragment$key } from '@generated/integrationFeedsItem_fragment.graphql';
+import {
+  integrationFeedsItem_fragment$data,
+  integrationFeedsItem_fragment$key,
+} from '@generated/integrationFeedsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useContext } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
@@ -68,6 +71,7 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
             breadcrumbValue={breadcrumbValue}
             documentData={documentData}
             shareUrl={shareUrl}
+            logo={`/document/images/${serviceInstance.id}/${(documentData as integrationFeedsItem_fragment$data).children_documents?.[0]?.id}`}
           />
         ) : (
           <ShareableResourceSlug
