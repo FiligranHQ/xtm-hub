@@ -89,7 +89,7 @@ describe('Deployment app', () => {
   });
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
-      const deployment = await DeploymentsApp.createDeployment({
+      const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
         use_case: 'use_case',
@@ -223,7 +223,7 @@ describe('Deployment app', () => {
     });
 
     it('should update a deployment request', async () => {
-      const deployment = await DeploymentsApp.updateDeployment({
+      const deployment = await DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
         status: DeploymentRequestStatus.Active,
         start_date: new Date(2025, 1, 3),
@@ -274,7 +274,7 @@ describe('Deployment app', () => {
       );
     });
     it('should should throw if deployment request does not exist', async () => {
-      const call = DeploymentsApp.updateDeployment({
+      const call = DeploymentsApp.updateDeploymentRequest({
         id: uuidv4(),
         status: DeploymentRequestStatus.Active,
       });
@@ -301,7 +301,7 @@ describe('Deployment app', () => {
     ])(
       'should throw if status active and $description',
       async ({ start_date, end_date }) => {
-        const call = DeploymentsApp.updateDeployment({
+        const call = DeploymentsApp.updateDeploymentRequest({
           id: initialDeployment.id,
           status: DeploymentRequestStatus.Active,
           start_date,
@@ -313,8 +313,8 @@ describe('Deployment app', () => {
         );
       }
     );
-    it('should should throw if status requested is not allowed', async () => {
-      const call = DeploymentsApp.updateDeployment({
+    it('should should throw when status requested is not allowed', async () => {
+      const call = DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
         status: DeploymentRequestStatus.Queued,
       });

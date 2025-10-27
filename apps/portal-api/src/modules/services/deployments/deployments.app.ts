@@ -25,10 +25,10 @@ import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
-import { isValidTransition } from './deployments.helper';
+import { isTransitionValid } from './deployments.helper';
 
 export const DeploymentsApp = {
-  createDeployment: async (
+  createDeploymentRequest: async (
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
     const context = requestContext.require();
@@ -85,7 +85,7 @@ export const DeploymentsApp = {
     }
   },
 
-  updateDeployment: async (
+  updateDeploymentRequest: async (
     input: UpdateDeploymentRequestInput
   ): Promise<PlatformDeploymentRequest> => {
     const deploymentRequestId = input.id as DeploymentRequestId;
@@ -100,7 +100,7 @@ export const DeploymentsApp = {
     }
 
     if (
-      !isValidTransition(
+      !isTransitionValid(
         deploymentRequest.status as DeploymentRequestStatus,
         input.status
       )
@@ -109,18 +109,18 @@ export const DeploymentsApp = {
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
     }
-
-    if (
+    const isActiveInputDataInvalid =
       input.status == DeploymentRequestStatus.Active &&
-      (!input.start_date || !input.end_date)
-    ) {
+      (!input.start_date || !input.end_date);
+    if (isActiveInputDataInvalid) {
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
     }
 
     const trx = await dbTx();
     requestContext.update({ trx });
     try {
-      if (input.start_date || input.end_date) {
+      const shouldUpdateSubscriptionDates = input.start_date || input.end_date;
+      if (shouldUpdateSubscriptionDates) {
         await updateSubscriptionBy(
           { service_instance_id: deploymentRequest.service_instance_id },
           {
@@ -145,7 +145,7 @@ export const DeploymentsApp = {
       throw error;
     }
     trx.commit();
-    return await DeploymentRequestDomain.loadFullDeploymentRequestById(
+    return DeploymentRequestDomain.loadFullDeploymentRequestById(
       deploymentRequestId
     );
   },

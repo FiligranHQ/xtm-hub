@@ -23,7 +23,7 @@ const resolvers: Resolvers = {
   Mutation: {
     createDeploymentRequest: async (_, { input }) => {
       try {
-        return await DeploymentsApp.createDeployment(input);
+        return await DeploymentsApp.createDeploymentRequest(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -33,7 +33,7 @@ const resolvers: Resolvers = {
     },
     updateDeploymentRequest: async (_, { input }) => {
       try {
-        return await DeploymentsApp.updateDeployment(input);
+        return await DeploymentsApp.updateDeploymentRequest(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,

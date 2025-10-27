@@ -47,7 +47,7 @@ describe('Deployment app', () => {
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
       };
-      const initialDeployment = await DeploymentsApp.createDeployment(
+      const initialDeployment = await DeploymentsApp.createDeploymentRequest(
         initialDeploymentData
       );
       const updates = {
@@ -68,7 +68,7 @@ describe('Deployment app', () => {
         ...updates,
       });
     });
-    it('should return an error is status transition is not allowed', async () => {
+    it('should return an error when status transition is not allowed', async () => {
       const initialDeploymentData = {
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -77,7 +77,7 @@ describe('Deployment app', () => {
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
       };
-      const initialDeployment = await DeploymentsApp.createDeployment(
+      const initialDeployment = await DeploymentsApp.createDeploymentRequest(
         initialDeploymentData
       );
       const updates = {
