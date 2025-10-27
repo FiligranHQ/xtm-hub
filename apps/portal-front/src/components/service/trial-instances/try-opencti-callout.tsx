@@ -61,13 +61,6 @@ export const TryOpenCTICallout = ({}) => {
     info: 'from-turquoise to-yellow-300 bg-gradient-to-r',
   };
 
-  const GRADIENT_THRESHOLDS = [
-    { maxDays: 0, gradient: GRADIENT_CLASSES.warning },
-    { maxDays: 8, gradient: GRADIENT_CLASSES.info },
-    { maxDays: 22, gradient: GRADIENT_CLASSES.default },
-    { maxDays: Infinity, gradient: GRADIENT_CLASSES.default },
-  ];
-
   const getGradientClass = (days: number): string => {
     if (
       freeTrial.length === 0 ||
@@ -75,12 +68,10 @@ export const TryOpenCTICallout = ({}) => {
     ) {
       return GRADIENT_CLASSES.default;
     }
-    if (days < 0) {
-      return GRADIENT_CLASSES.warning;
-    }
 
-    const threshold = GRADIENT_THRESHOLDS.find(({ maxDays }) => days < maxDays);
-    return threshold?.gradient ?? GRADIENT_CLASSES.default;
+    if (days <= 8) return GRADIENT_CLASSES.warning;
+    if (days <= 22) return GRADIENT_CLASSES.info;
+    return GRADIENT_CLASSES.default;
   };
 
   if (!settings || !isOpenCTIFreeTrialActivated) return null;
