@@ -105,9 +105,6 @@
       "PLATFORM_NOT_REGISTERED": "La plateforme n'est pas enregistrée",
       "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plate-forme de l'utilisateur",
-      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation n'est pas abonnée à ce service",
-      "REGISTER_OPENCTI_PLATFORM_INVALID_DATA": "Les données envoyées pour l'inscription de la plateforme OpenCTI ne sont pas valides",
-      "REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'inscription de la plateforme",
       "REGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
@@ -125,9 +122,7 @@
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
       "USER_DISABLED": "L'utilisateur est désactivé",
-      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
-      "YOU_CAN_NOT_LOGIN": "Vous n'êtes pas autorisé à vous connecter",
-      "USER_STILL_IN_ORGANIZATION": "L'organisation n'a pas pu être supprimée car au moins un utilisateur y est toujours affilié. Supprimez le/les utilisateur(s) d'abord."
+      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes"
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."

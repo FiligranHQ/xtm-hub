@@ -105,9 +105,6 @@
       "PLATFORM_NOT_REGISTERED": "The platform is not registered",
       "PLATFORM_TYPE_NOT_SUPPORTED": "The platform type is not supported",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "An unknown error occurred while refreshing user platform token",
-      "NOT_SUBSCRIBED_ORGANIZATION_ERROR": "The organization is not subscribed to the service",
-      "REGISTER_OPENCTI_PLATFORM_INVALID_DATA": "Data sent for OpenCTI platform registration is invalid",
-      "REGISTER_OPENCTI_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "REGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "Registration on another organization is forbidden",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
@@ -125,9 +122,7 @@
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "An error occurred while updating platform service metadata",
       "USER_DISABLED": "User is disabled",
-      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
-      "YOU_CAN_NOT_LOGIN": "You are not authorized to log in",
-      "USER_STILL_IN_ORGANIZATION": "The organization could not be deleted because at least one user is still affiliated with it. Remove the user(s) first."
+      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions"
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
