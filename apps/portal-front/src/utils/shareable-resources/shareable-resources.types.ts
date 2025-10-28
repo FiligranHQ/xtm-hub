@@ -179,5 +179,5 @@ export type ServiceInfo = { link: string; description: string };
 export enum ServiceSlug {
   OPEN_CTI_INTEGRATION_FEEDS = 'open-cti-integration-feeds',
   OPEN_CTI_CUSTOM_DASHBOARDS = 'open-cti-custom-dashboards',
-  OPEN_BAS_SCENARIOS = 'open-bas-scenarios',
+  OPEN_AEV_SCENARIOS = 'open-aev-scenarios',
 }

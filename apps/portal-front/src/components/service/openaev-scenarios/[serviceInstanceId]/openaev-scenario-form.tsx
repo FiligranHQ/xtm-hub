@@ -112,14 +112,14 @@ export const OpenaevScenarioForm = ({
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.ObasScenario.Form.DescriptionLabel')}
+                  {t('Service.OpenAEVScenario.Form.DescriptionLabel')}
                 </FormLabel>
                 <FormControl>
                   <MarkdownInput
                     value={field.value}
                     onChange={field.onChange}
                     placeholder={
-                      'Service.ObasScenario.Form.DescriptionPlaceholder'
+                      'Service.OpenAEVScenario.Form.DescriptionPlaceholder'
                     }
                   />
                 </FormControl>
@@ -131,7 +131,7 @@ export const OpenaevScenarioForm = ({
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.ObasScenario.Form.LabelsLabel')}
+                  {t('Service.OpenAEVScenario.Form.LabelsLabel')}
                 </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
@@ -143,7 +143,7 @@ export const OpenaevScenarioForm = ({
                     value={field.value}
                     onValueChange={field.onChange}
                     placeholder={t(
-                      'Service.ObasScenario.Form.LabelsPlaceholder'
+                      'Service.OpenAEVScenario.Form.LabelsPlaceholder'
                     )}
                     variant="inverted"
                   />
@@ -154,7 +154,9 @@ export const OpenaevScenarioForm = ({
           uploader_id: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t('Service.ObasScenario.Form.Author')}</FormLabel>
+                <FormLabel>
+                  {t('Service.OpenAEVScenario.Form.Author')}
+                </FormLabel>
                 <FormControl>
                   <SelectUsersFormField
                     defaultValue={openAEVScenario?.uploader?.email ?? me!.email}
@@ -167,10 +169,10 @@ export const OpenaevScenarioForm = ({
           },
           document: {
             label: openAEVScenario
-              ? t('Service.ObasScenario.Form.ExistingObasScenarioFile', {
+              ? t('Service.OpenAEVScenario.Form.ExistingOpenAEVScenarioFile', {
                   file_name: openAEVScenario.file_name ?? '',
                 })
-              : t('Service.ObasScenario.Form.ObasScenarioFile'),
+              : t('Service.OpenAEVScenario.Form.OpenAEVScenarioFile'),
             fieldType: 'file',
             inputProps: {
               allowedTypes: 'application/zip',
@@ -178,26 +180,28 @@ export const OpenaevScenarioForm = ({
             },
           },
           illustration: {
-            label: t('Service.ObasScenario.Form.ObasScenarioIllustration'),
+            label: t(
+              'Service.OpenAEVScenario.Form.OpenAEVScenarioIllustration'
+            ),
             fieldType: 'file',
             inputProps: {
               allowedTypes: 'image/jpeg, image/png',
             },
           },
           active: {
-            label: t('Service.ObasScenario.Form.PublishedPlaceholder'),
+            label: t('Service.OpenAEVScenario.Form.PublishedPlaceholder'),
           },
           short_description: {
-            label: t('Service.ObasScenario.Form.ShortDescriptionLabel'),
+            label: t('Service.OpenAEVScenario.Form.ShortDescriptionLabel'),
           },
           slug: {
-            label: t('Service.ObasScenario.Form.SlugLabel'),
+            label: t('Service.OpenAEVScenario.Form.SlugLabel'),
           },
           name: {
-            label: t('Service.ObasScenario.Form.NameLabel'),
+            label: t('Service.OpenAEVScenario.Form.NameLabel'),
           },
           product_version: {
-            label: t('Service.ObasScenario.Form.ProductVersionLabel'),
+            label: t('Service.OpenAEVScenario.Form.ProductVersionLabel'),
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">

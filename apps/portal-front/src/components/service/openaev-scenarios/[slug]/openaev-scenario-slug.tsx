@@ -39,8 +39,7 @@ const OpenaevScenarioSlug = ({
     },
     {
       label: serviceInstance.name,
-      // Temp fix, add service definition identifier when obas new name will be released
-      href: `/${APP_PATH}/service/obas_scenarios/${serviceInstance.id}`,
+      href: `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`,
       original: true,
     },
     {

@@ -126,8 +126,7 @@
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
       "USER_DISABLED": "L'utilisateur est désactivé",
-      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
-      "YOU_CAN_NOT_LOGIN": "Vous n'êtes pas autorisé à vous connecter"
+      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes"
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -267,7 +266,7 @@
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {
-      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenBAS."
+      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
     },
     "Title": "Profile",
     "UpdateProfile": "Mise à jour du profil",
@@ -510,6 +509,36 @@
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
       "UpdateService": "Mettre à jour le tableau de bord"
     },
+    "OpenAEVScenario": {
+      "Actions": {
+        "Added": "Le scénario {name} a été ajouté avec succès",
+        "Deleted": "Le scénario {name} a été supprimé avec succès",
+        "Updated": "Le scénario {name} a été modifié avec succès",
+        "Share": "Partager le scénario"
+      },
+      "Form": {
+        "NameLabel": "Nom",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Slug",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le scénario",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "OpenAEVScenarioFile": "Fichier de scénario",
+        "ExistingOpenAEVScenarioFile": "Fichier de scénario existant : {file_name}",
+        "OpenAEVScenarioIllustration": "Illustration",
+        "ExistingOpenAEVScenarioIllustration": "Illustration de scénario existante : {file_name}",
+        "PublishedPlaceholder": "Le scénario est-il publié?",
+        "Author": "Auteur",
+        "ProductVersionLabel": "Version OpenAEV"
+      },
+      "AddService": "Ajouter un nouveau scénario",
+      "UpdateService": "Mettre à jour le scénario {name}",
+      "DeleteService": "Supprimer le scénario {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
+    },
     "Description": "Description",
     "GoTo": "Aller au service",
     "GoToAdminLabel": "Administrer",
@@ -540,36 +569,6 @@
     "Name": "Nom",
     "NoOwnedService": "Vous n'avez pas encore de service.",
     "NoService": "Il n'y a pas encore de service...",
-    "ObasScenario": {
-      "Actions": {
-        "Added": "Le scénario {name} a été ajouté avec succès",
-        "Deleted": "Le scénario {name} a été supprimé avec succès",
-        "Share": "Partager le scénario",
-        "Updated": "Le scénario {name} a été modifié avec succès"
-      },
-      "Active": "Publié",
-      "AddService": "Ajouter un nouveau scénario",
-      "DeleteService": "Supprimer le scénario {name}",
-      "Form": {
-        "Author": "Auteur",
-        "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le scénario.",
-        "ExistingObasScenarioFile": "Fichier de scénario existant : {file_name}",
-        "ExistingObasScenarioIllustration": "Illustration de scénario existante : {file_name}",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
-        "NameLabel": "Nom",
-        "ObasScenarioFile": "Fichier de scénario",
-        "ObasScenarioIllustration": "Illustration",
-        "ProductVersionLabel": "Version OpenBAS",
-        "PublishedPlaceholder": "Le scénario est-il publié?",
-        "ShortDescriptionLabel": "Description courte",
-        "SlugLabel": "Slug"
-      },
-      "NonActive": "Brouillon",
-      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
-      "UpdateService": "Mettre à jour le scénario {name}"
-    },
     "Organizations": "Organisations",
     "SearchServices": "Service de recherche...",
     "ServiceName": "Nom du service",
