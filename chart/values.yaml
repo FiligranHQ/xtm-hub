@@ -82,18 +82,14 @@ minio:
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app: minio
-              topologyKey: kubernetes.io/hostname
-            weight: 100
-          - podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app: minio
-              topologyKey: rack
-            weight: 100
+          - labelSelector:
+              matchLabels:
+                v1.min.io/tenant: xtmhub-minio
+            topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchLabels:
+                v1.min.io/tenant: xtmhub-minio
+            topologyKey: rack
 elasticsearch:
   enabled: true
   affinity:
