@@ -444,10 +444,11 @@
           "Placeholder": "Type...",
           "csv_feed": "CSV Feeds",
           "connector": "Connectors",
-          "rss_feed": "RSS Feeds",
-          "json_feed": "JSON Feeds",
-          "opencti_stream_feed": "OpenCTI Stream feeds",
-          "third_party_integration": "Third party integrations"
+          "rss_feed": "RSS Feeds (coming soon)",
+          "json_feed": "JSON Feeds (coming soon)",
+          "taxii_feed": "TAXII Feeds (coming soon)",
+          "opencti_stream_feed": "OpenCTI Stream feeds (coming soon)",
+          "third_party_integration": "Third party integrations (coming soon)"
         }
       }
     },

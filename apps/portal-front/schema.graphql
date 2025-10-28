@@ -481,6 +481,7 @@ enum IntegrationFeedType {
   connector
   rss_feed
   json_feed
+  taxii_feed
   opencti_stream_feed
   third_party_integration
 }

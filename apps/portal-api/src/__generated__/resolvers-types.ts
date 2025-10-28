@@ -441,6 +441,7 @@ export enum IntegrationFeedType {
   JsonFeed = 'json_feed',
   OpenctiStreamFeed = 'opencti_stream_feed',
   RssFeed = 'rss_feed',
+  TaxiiFeed = 'taxii_feed',
   ThirdPartyIntegration = 'third_party_integration'
 }
 
