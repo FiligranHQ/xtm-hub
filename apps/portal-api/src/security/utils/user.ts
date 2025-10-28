@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { dbUnsecure } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../requestContext';
@@ -24,4 +25,11 @@ export const checkUserCapabilities = async (
   if (!getUserCapability) {
     throw ForbiddenAccess('Not authorized');
   }
+};
+
+export const validatePassword = (salt, tentativePassword, realPassword) => {
+  const hash = crypto
+    .pbkdf2Sync(tentativePassword, salt, 1000, 64, `sha512`)
+    .toString(`hex`);
+  return realPassword === hash;
 };

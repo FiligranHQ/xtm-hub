@@ -1,5 +1,4 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import crypto from 'node:crypto';
 import { dbTx } from '../../../knexfile';
 import {
   MergeEvent,
@@ -18,6 +17,7 @@ import { logApp } from '../../utils/app-logger.util';
 
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { requestContext } from '../../requestContext';
+import { validatePassword } from '../../security/utils/user';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
@@ -56,10 +56,7 @@ import {
 import { usersProfileApp } from './users.profile.app';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
-  const hash = crypto
-    .pbkdf2Sync(password, user.salt, 1000, 64, `sha512`)
-    .toString(`hex`);
-  return user.password === hash;
+  return validatePassword(user.salt, password, user.password);
 };
 
 const resolvers: Resolvers = {
