@@ -99,7 +99,14 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
                     <span className="sr-only">{t('Utils.OpenMenu')}</span>
                   </>
                 }>
-                {row.original.service_definition?.identifier !== 'link' && (
+                {![
+                  ServiceDefinitionIdentifierEnum.LINK,
+                  ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+                  ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+                ].includes(
+                  row.original.service_definition
+                    ?.identifier as ServiceDefinitionIdentifierEnum
+                ) && (
                   <IconActionsLink
                     href={`/${APP_PATH}/admin/service/${row.id}`}>
                     {t('Service.GoToAdminLabel')}
