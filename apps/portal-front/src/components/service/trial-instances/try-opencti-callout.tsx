@@ -11,6 +11,7 @@ import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { ArrowRightAltIcon } from 'filigran-icon';
@@ -27,6 +28,7 @@ export const TryOpenCTICallout = ({}) => {
   const isOpenCTIFreeTrialActivated = useIsFeatureEnabled(
     FeatureFlag.OPEN_CTI_FREE_TRIAL
   );
+  if (!settings || !isOpenCTIFreeTrialActivated) return null;
 
   const queryData = useLazyLoadQuery<registerRegisteredPlatformsQuery>(
     RegisterRegisteredPlatformsQuery,
@@ -44,9 +46,11 @@ export const TryOpenCTICallout = ({}) => {
 
   const freeTrial = data.registeredPlatforms.filter(
     (platform) =>
-      (platform.subscription?.service_instance?.creation_status === 'PENDING' ||
-        platform.subscription?.service_instance?.creation_status === 'READY') &&
-      platform.deployment_request?.id
+      (platform.subscription?.service_instance?.creation_status ===
+        ServiceInstanceCreationStatusEnum.PENDING ||
+        platform.subscription?.service_instance?.creation_status ===
+          ServiceInstanceCreationStatusEnum.READY) &&
+      platform.deployment_request?.status
   );
   const target = new Date(freeTrial[0]?.subscription?.end_date);
   const now = new Date();
@@ -73,8 +77,6 @@ export const TryOpenCTICallout = ({}) => {
     if (days <= 22) return GRADIENT_CLASSES.info;
     return GRADIENT_CLASSES.default;
   };
-
-  if (!settings || !isOpenCTIFreeTrialActivated) return null;
 
   const trialUrl = freeTrial[0]?.url ?? '/app';
 
