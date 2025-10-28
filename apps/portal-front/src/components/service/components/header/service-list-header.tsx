@@ -1,4 +1,4 @@
-import { ServiceListAddFilterDropdown } from '@/components/service/components/header/filter/service-list-add-filter-dropdown';
+import { ServiceListAddFilterCombobox } from '@/components/service/components/header/filter/service-list-add-filter-combobox';
 import { ServiceListFilterSection } from '@/components/service/components/header/filter/service-list-filter-section';
 import ServiceListHeaderButtons from '@/components/service/components/header/service-list-header-buttons';
 import { SearchInput } from '@/components/ui/search-input';
@@ -48,7 +48,7 @@ export const ServiceListHeader: React.FC<Props> = ({
           />
 
           {hasMoreThanOneFilter ? (
-            <ServiceListAddFilterDropdown
+            <ServiceListAddFilterCombobox
               filterKeys={Object.keys(filters) as ServiceListFilterKey[]}
             />
           ) : (
