@@ -15,11 +15,8 @@ import {
   isRegistrationService,
   isTrialInstance,
 } from '@/utils/services';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PlatformRegionEnum } from '@generated/models/PlatformRegion.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -33,31 +30,6 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useContext, useState } from 'react';
-
-export interface DeploymentRequest {
-  id: string;
-  platform_identifier?: PlatformIdentifierEnum;
-  region?: PlatformRegionEnum;
-  type: DeploymentTypeEnum;
-  job_title?: string;
-  activity_sector?: string;
-  use_case?: string;
-  start_date?: Date;
-  end_date?: Date;
-  status: DeploymentRequestStatusEnum;
-}
-export interface SubscriptionModel {
-  id: string;
-  organization_id?: string;
-  service_instance_id?: string;
-  start_date: Date;
-  end_date: Date;
-  status?: string;
-  service_instance: {
-    creation_status: string;
-    name: string;
-  };
-}
 
 export interface ServiceInstanceCardData {
   id: string;
@@ -73,10 +45,11 @@ export interface ServiceInstanceCardData {
   description?: string;
   url?: string;
   ordering: number;
-  end_date?: Date;
   status?: string;
-  deployment_request?: DeploymentRequest;
-  subscription?: SubscriptionModel;
+  deployment_request_type?: DeploymentTypeEnum;
+  service_instance_status?: string;
+  start_date?: Date;
+  end_date?: Date;
 }
 
 interface ServiceInstanceCardProps {
