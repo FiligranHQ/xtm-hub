@@ -3,22 +3,36 @@
 import { ArrowRightAltIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import GuardCapacityComponent from '@/components/admin-guard';
+
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
-import { CreateDeploymentRequestMutation } from '@/components/service/trial-instances/create-deployment.graphql';
+
+import {
+  CreateDeploymentRequestMutation,
+  DeploymentRequestsAvailableQuery,
+} from '@/components/service/trial-instances/trial-instances.graphql';
+
 import {
   TryOpenCTIForm,
   tryOpenCTIFormSchema,
 } from '@/components/service/trial-instances/try-opencti-form';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import { createDeploymentRequestMutation } from '@generated/createDeploymentRequestMutation.graphql';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
 import { toast } from 'filigran-ui/clients';
-import { fetchQuery, useMutation, useRelayEnvironment } from 'react-relay';
+
+import {
+  fetchQuery,
+  loadQuery,
+  useMutation,
+  useRelayEnvironment,
+} from 'react-relay';
+
+import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
 // Component
@@ -28,9 +42,22 @@ export const StartTrialButton = ({}) => {
 
   const [openSheet, setOpenSheet] = useState(false);
   const [commitCreateDeploymentRequestMutationMutation] =
-    useMutation<createDeploymentRequestMutation>(
+    useMutation<trialInstancesCreateDeploymentRequestMutation>(
       CreateDeploymentRequestMutation
     );
+
+  const deploymentRequestsAvailabilityQueryRef = useMemo(
+    () =>
+      loadQuery<trialInstancesDeploymentRequestsAvailableQuery>(
+        environment,
+        DeploymentRequestsAvailableQuery,
+        {
+          platformIdentifier: PlatformIdentifierEnum.OPENCTI,
+        }
+      ),
+    [environment]
+  );
+
   const handleSubmit = (values: z.infer<typeof tryOpenCTIFormSchema>) => {
     setOpenSheet(false);
     const { acceptTerms: _, ...valuesWithoutAcceptTerms } = values;
@@ -90,6 +117,9 @@ export const StartTrialButton = ({}) => {
       <TryOpenCTIForm
         handleSubmit={handleSubmit}
         handleCloseSheet={() => setOpenSheet(false)}
+        deploymentRequestsAvailabilityQueryRef={
+          deploymentRequestsAvailabilityQueryRef
+        }
       />
     </SheetWithPreventingDialog>
   );

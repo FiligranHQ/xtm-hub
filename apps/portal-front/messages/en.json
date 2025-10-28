@@ -631,6 +631,11 @@
         "Title": "OpenCTI - Free Trial platform",
         "DaysRemaning": "{numberOfDays} Days Remaining",
         "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."
+      },
+      "CapacityWarning": {
+        "Title": "No platform available",
+        "Content": "No platform available in this region at this moment. Do you want to be notified when we have one available?",
+        "Continue": "Notify me"
       }
     },
     "Vault": {
