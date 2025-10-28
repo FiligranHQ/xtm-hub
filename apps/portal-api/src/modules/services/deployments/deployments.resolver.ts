@@ -1,4 +1,5 @@
 import {
+  DeploymentAvailability,
   QueryDeploymentRequestsArgs,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
@@ -11,6 +12,21 @@ const resolvers: Resolvers = {
     deploymentRequests: async (_, args: QueryDeploymentRequestsArgs) => {
       try {
         return await DeploymentsApp.loadDeploymentRequests(args);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
+    deploymentRequestsAvailable: async (
+      _,
+      { platformIdentifier }
+    ): Promise<DeploymentAvailability[]> => {
+      try {
+        return await DeploymentsApp.loadAvailableDeploymentRequests(
+          platformIdentifier
+        );
       } catch (error) {
         throw mapToGraphQLError(
           error,

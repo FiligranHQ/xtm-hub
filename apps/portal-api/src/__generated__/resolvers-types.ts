@@ -217,6 +217,12 @@ export type CustomDashboardEdge = {
   node: CustomDashboard;
 };
 
+export type DeploymentAvailability = {
+  __typename?: 'DeploymentAvailability';
+  availableCount: Scalars['Int']['output'];
+  region: PlatformRegion;
+};
+
 export type DeploymentRequest = Node & {
   __typename?: 'DeploymentRequest';
   activity_sector?: Maybe<Scalars['String']['output']>;
@@ -1028,6 +1034,7 @@ export type Query = {
   customDashboard?: Maybe<CustomDashboard>;
   customDashboards: CustomDashboardConnection;
   deploymentRequests: DeploymentRequestConnection;
+  deploymentRequestsAvailable: Array<DeploymentAvailability>;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
@@ -1101,6 +1108,11 @@ export type QueryDeploymentRequestsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<DeploymentRequestFilter>>;
   first: Scalars['Int']['input'];
+};
+
+
+export type QueryDeploymentRequestsAvailableArgs = {
+  platformIdentifier?: InputMaybe<PlatformIdentifier>;
 };
 
 
@@ -1907,6 +1919,7 @@ export type ResolversTypes = ResolversObject<{
   CustomDashboardConnection: ResolverTypeWrapper<CustomDashboardConnection>;
   CustomDashboardEdge: ResolverTypeWrapper<CustomDashboardEdge>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
+  DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
   DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
   DeploymentRequestEdge: ResolverTypeWrapper<DeploymentRequestEdge>;
@@ -2051,6 +2064,7 @@ export type ResolversParentTypes = ResolversObject<{
   CustomDashboardConnection: CustomDashboardConnection;
   CustomDashboardEdge: CustomDashboardEdge;
   Date: Scalars['Date']['output'];
+  DeploymentAvailability: DeploymentAvailability;
   DeploymentRequest: DeploymentRequest;
   DeploymentRequestConnection: DeploymentRequestConnection;
   DeploymentRequestEdge: DeploymentRequestEdge;
@@ -2284,6 +2298,12 @@ export type CustomDashboardEdgeResolvers<ContextType = PortalContext, ParentType
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
+
+export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentAvailability'] = ResolversParentTypes['DeploymentAvailability']> = ResolversObject<{
+  availableCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
   activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2643,6 +2663,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
   customDashboards?: Resolver<ResolversTypes['CustomDashboardConnection'], ParentType, ContextType, RequireFields<QueryCustomDashboardsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   deploymentRequests?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
+  deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2983,6 +3004,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CustomDashboardConnection?: CustomDashboardConnectionResolvers<ContextType>;
   CustomDashboardEdge?: CustomDashboardEdgeResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  DeploymentAvailability?: DeploymentAvailabilityResolvers<ContextType>;
   DeploymentRequest?: DeploymentRequestResolvers<ContextType>;
   DeploymentRequestConnection?: DeploymentRequestConnectionResolvers<ContextType>;
   DeploymentRequestEdge?: DeploymentRequestEdgeResolvers<ContextType>;

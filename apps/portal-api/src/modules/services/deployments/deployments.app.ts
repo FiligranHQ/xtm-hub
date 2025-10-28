@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { dbTx } from '../../../../knexfile';
 import {
   CreateDeploymentRequestInput,
+  DeploymentAvailability,
   DeploymentRequest,
   DeploymentRequestConnection,
   DeploymentRequestFilterKey,
@@ -27,6 +28,7 @@ import { serviceDefinitionDomain } from '../definition/service-definition.domain
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
+import config from 'config';
 import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
 
 export const DeploymentsApp = {
@@ -177,5 +179,23 @@ export const DeploymentsApp = {
       });
     }
     return DeploymentRequestDomain.loadDeploymentRequests(args);
+  },
+  loadAvailableDeploymentRequests: async (
+    platformIdentifier: PlatformIdentifier
+  ): Promise<DeploymentAvailability[]> => {
+    const max_deployments =
+      config.get<Record<string, number>>('max_deployments');
+    const deploymentsByRegion =
+      await DeploymentRequestDomain.loadDeploymentRequestCountByRegion({
+        platform_identifier: platformIdentifier,
+      });
+
+    const allRegions = Object.values(PlatformRegion); // Assuming you have a Region enum
+
+    return allRegions.map((region) => ({
+      region,
+      availableCount:
+        (max_deployments[region] || 0) - (deploymentsByRegion[region] || 0),
+    }));
   },
 };

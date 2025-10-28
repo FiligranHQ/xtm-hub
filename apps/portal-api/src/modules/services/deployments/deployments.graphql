@@ -91,12 +91,21 @@ type DeploymentRequestConnection {
   pageInfo: PageInfo!
 }
 
+type DeploymentAvailability {
+  region: PlatformRegion!
+  availableCount: Int!
+}
+
 extend type Query {
   deploymentRequests(
     first: Int!
     after: ID
     filters: [DeploymentRequestFilter!]
   ): DeploymentRequestConnection! @system_token
+  deploymentRequestsAvailable(
+    platformIdentifier: PlatformIdentifier
+  ): [DeploymentAvailability!]!
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
 
 extend type Mutation {

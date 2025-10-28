@@ -101,4 +101,18 @@ describe('Deployment app', () => {
       );
     });
   });
+  describe('deploymentRequestsAvailable', () => {
+    it('should return the available deployment request', async () => {
+      const availableDeployments =
+        await resolver.Query.deploymentRequestsAvailable(undefined, {
+          platformIdentifier: PlatformIdentifier.Opencti,
+        });
+
+      expect(availableDeployments).toStrictEqual([
+        { region: PlatformRegion.Apac, availableCount: 10 },
+        { region: PlatformRegion.Europe, availableCount: 10 },
+        { region: PlatformRegion.Us, availableCount: 10 },
+      ]);
+    });
+  });
 });

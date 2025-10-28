@@ -1,5 +1,6 @@
+import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
@@ -322,5 +323,54 @@ describe('Deployment app', () => {
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
     });
+  });
+  describe('loadAvailableDeploymentRequests', () => {
+    it.each([
+      {
+        description: 'normal case with available slots',
+        maxDeployments: { us: 10, europe: 5 },
+        currentDeployments: {
+          [PlatformRegion.Us]: 3,
+          [PlatformRegion.Europe]: 1,
+        } as Record<string, number>,
+        expected: [
+          { region: PlatformRegion.Us, availableCount: 7 },
+          { region: PlatformRegion.Europe, availableCount: 4 },
+          { region: PlatformRegion.Apac, availableCount: 0 },
+        ],
+      },
+      {
+        description: 'over capacity scenario',
+        maxDeployments: { us: 5 },
+        currentDeployments: { [PlatformRegion.Us]: 8 } as Record<
+          string,
+          number
+        >,
+        expected: [
+          { region: PlatformRegion.Us, availableCount: -3 },
+          { region: PlatformRegion.Europe, availableCount: 0 },
+          { region: PlatformRegion.Apac, availableCount: 0 },
+        ],
+      },
+    ])(
+      'should handle $description',
+      async ({ maxDeployments, currentDeployments, expected }) => {
+        // Arrange
+        vi.spyOn(config, 'get').mockReturnValue(maxDeployments);
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'loadDeploymentRequestCountByRegion'
+        ).mockResolvedValue(currentDeployments);
+
+        // Act
+        const result = await DeploymentsApp.loadAvailableDeploymentRequests(
+          PlatformIdentifier.Opencti
+        );
+
+        // Assert
+        expect(result).toEqual(expect.arrayContaining(expected));
+        expect(result).toHaveLength(expected.length);
+      }
+    );
   });
 });
