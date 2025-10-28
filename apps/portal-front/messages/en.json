@@ -64,6 +64,7 @@
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
+      "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "You cannot request a free trial in your personal space",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
       "CSV_FEED_DELETION_ERROR": "Error occurred while deleting CSV Feed",
@@ -605,9 +606,16 @@
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
       "Explore": "Explore OpenCTI platform with 30 days",
+      "Active": "Your trial platform activated",
+      "Provisionning": "Your OpenCTI platform Free Trial platform is",
+      "ProvisionningBold": "currently getting provisionned!",
+      "Expired": "Your trial platform has expired",
+      "DaysRemaning": "{days} Days remaining",
       "FreeTrial": "Free Trial!",
       "LearnMore": "Learn more",
       "StartTrial": "Start a Trial",
+      "GoToMyTrial": "Go to my trial",
+      "ReachSales": "Reach out to sales",
       "Form": {
         "Region": "Region",
         "AssociatedEmail": "Associated Email",
@@ -617,6 +625,12 @@
         "MSSA": "MSSA",
         "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
+      },
+      "Display": {
+        "New": "New",
+        "Title": "OpenCTI - Free Trial platform",
+        "DaysRemaning": "{numberOfDays} Days Remaining",
+        "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."
       }
     },
     "Vault": {

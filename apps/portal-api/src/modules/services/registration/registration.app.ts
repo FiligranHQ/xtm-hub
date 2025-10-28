@@ -6,6 +6,7 @@ import {
   IsPlatformRegisteredResponse,
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
+  PlatformContract,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
@@ -14,6 +15,7 @@ import {
   RegisteredPlatformsInput,
   RegisterPlatformInput,
   ServiceConfigurationStatus,
+  ServiceDefinitionIdentifier,
   UnregisterPlatformInput,
 } from '../../../__generated__/resolvers-types';
 import Organization, {
@@ -93,12 +95,13 @@ export const registrationApp = {
     return platforms.map((platform) => ({
       __typename: 'RegisteredPlatform',
       id: platform.id,
-      platform_id: platform.config.platform_id,
-      title: platform.config.platform_title,
-      url: platform.config.platform_url,
-      contract: platform.config.platform_contract,
-      identifier: platform.identifier,
-      version: platform.config.platform_version,
+      platform_id: platform.config?.platform_id ?? platform.id,
+      title: platform.config?.platform_title ?? 'OpenCTI - Free Trial Platform',
+      url: platform.config?.platform_url ?? '',
+      contract: platform.config?.platform_contract ?? PlatformContract.Ee,
+      identifier:
+        platform.identifier ?? ServiceDefinitionIdentifier.OpenctiRegistration,
+      version: platform.config?.platform_version ?? '',
       illustration_document_id: platform.illustration_document_id
         ? toGlobalId('Document', platform.illustration_document_id)
         : null,

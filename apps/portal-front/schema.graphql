@@ -627,6 +627,8 @@ type RegisteredPlatform implements Node {
   identifier: ServiceDefinitionIdentifier!
   version: String
   illustration_document_id: String
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
 }
 
 input PlatformInput {
