@@ -16,6 +16,7 @@ import {
   integrationFeedsItem,
   IntegrationFeedsListQuery,
 } from '@/components/service/integration-feeds/integration-feed.graphql';
+import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
 import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
@@ -24,8 +25,13 @@ import {
   integrationFeedsItem_fragment$key,
 } from '@generated/integrationFeedsItem_fragment.graphql';
 import { integrationFeedsList$key } from '@generated/integrationFeedsList.graphql';
-import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
+import {
+  integrationFeedsQuery,
+  integrationFeedsQuery$variables,
+} from '@generated/integrationFeedsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { PaginationState } from '@tanstack/react-table';
+import { useState } from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -50,7 +56,7 @@ const IntegrationFeedsList = ({
     queryRef
   );
 
-  const [data] = useRefetchableFragment<
+  const [data, refetch] = useRefetchableFragment<
     integrationFeedsQuery,
     integrationFeedsList$key
   >(integrationFeedsFragment, queryData);
@@ -66,8 +72,12 @@ const IntegrationFeedsList = ({
 
   const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
-  const { removeConnectorTypes, removeIntegrationTypes } =
-    useServiceListLocalStorage(localStorageKey);
+  const {
+    removeConnectorTypes,
+    removeIntegrationTypes,
+    pageSize,
+    setPageSize,
+  } = useServiceListLocalStorage(localStorageKey);
 
   const isConnectorsFeatureFlagEnabled = useIsFeatureEnabled(
     FeatureFlag.CONNECTORS
@@ -85,6 +95,35 @@ const IntegrationFeedsList = ({
       }
     : {};
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize,
+  });
+
+  const handleRefetchData = (
+    args?: Partial<integrationFeedsQuery$variables>
+  ) => {
+    refetch({
+      count: pagination.pageSize,
+      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      ...args,
+    });
+  };
+
+  const onPaginationChange = (newPaginationValue: PaginationState) => {
+    handleRefetchData({
+      count: newPaginationValue.pageSize,
+      cursor: btoa(
+        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
+      ),
+    });
+
+    setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
+  };
+
   return (
     <AppServiceContext {...context}>
       <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
@@ -94,6 +133,15 @@ const IntegrationFeedsList = ({
           search={search}
           onSearchChange={onSearchChange}
           additionalFilters={filters}
+          paginationControls={
+            <PaginationControls
+              totalCount={data.integrationFeeds.totalCount}
+              pageSize={pageSize}
+              pageIndex={pagination.pageIndex}
+              onPaginationChange={onPaginationChange}
+              onSetPageSize={setPageSize}
+            />
+          }
         />
       </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>

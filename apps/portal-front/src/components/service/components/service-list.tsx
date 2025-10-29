@@ -27,6 +27,7 @@ export interface ServiceListProps {
   search: string;
   onSearchChange: (v: string) => void;
   additionalFilters?: ServiceListFilterMap;
+  paginationControls?: React.ReactNode;
 }
 const ServiceList = ({
   active,
@@ -34,6 +35,7 @@ const ServiceList = ({
   search,
   onSearchChange,
   additionalFilters,
+  paginationControls,
 }: ServiceListProps) => {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
@@ -59,6 +61,7 @@ const ServiceList = ({
 
   return (
     <div className="flex flex-col gap-xl">
+      <h1>{serviceInstance.name}</h1>
       <ServiceListHeader
         search={search}
         onSearchChange={onSearchChange}
@@ -68,6 +71,7 @@ const ServiceList = ({
             firstServiceSubscriptionId={firstResource?.subscription?.id ?? ''}
           />
         }
+        paginationControls={paginationControls}
       />
       {userCanUpdate && draft.length > 0 && (
         <>
