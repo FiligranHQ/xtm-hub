@@ -10,8 +10,10 @@ import {
   ServiceListFilterMap,
   ServiceListHeader,
 } from '@/components/service/components/header/service-list-header';
+import ServiceListHeaderButtons from '@/components/service/components/header/service-list-header-buttons';
 import ServiceCard from '@/components/service/components/service-card';
 import { useServiceContext } from '@/components/service/components/service-context';
+import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
@@ -42,7 +44,7 @@ const ServiceList = ({
     serviceInstance
   );
 
-  const { localStorageKey } = useServiceContext();
+  const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { removeLabels } = useServiceListLocalStorage(localStorageKey);
 
   const firstResource = draft.length > 0 ? draft[0] : active[0];
@@ -60,8 +62,12 @@ const ServiceList = ({
       <ServiceListHeader
         search={search}
         onSearchChange={onSearchChange}
-        firstServiceSubscriptionId={firstResource?.subscription?.id}
         filters={filters}
+        actions={
+          <ServiceListHeaderButtons
+            firstServiceSubscriptionId={firstResource?.subscription?.id ?? ''}
+          />
+        }
       />
       {userCanUpdate && draft.length > 0 && (
         <>

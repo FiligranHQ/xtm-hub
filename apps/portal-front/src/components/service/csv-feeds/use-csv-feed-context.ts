@@ -1,6 +1,5 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
-import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import {
   CsvFeedForm,
   CsvFeedFormValues,
@@ -149,6 +148,5 @@ export function useCsvFeedContext(
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: CsvFeedForm,
-    localStorageKey: ServiceListLocalStorageKey.OpenCTIIntegrationFeeds,
   };
 }

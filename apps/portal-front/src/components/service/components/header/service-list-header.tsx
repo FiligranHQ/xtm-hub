@@ -1,7 +1,7 @@
 import { ServiceListAddFilterCombobox } from '@/components/service/components/header/filter/service-list-add-filter-combobox';
 import { ServiceListFilterSection } from '@/components/service/components/header/filter/service-list-filter-section';
-import ServiceListHeaderButtons from '@/components/service/components/header/service-list-header-buttons';
 import { SearchInput } from '@/components/ui/search-input';
+import { cn } from '@/lib/utils';
 import { debounceHandleInput } from '@/utils/debounce';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -23,21 +23,23 @@ export type ServiceListFilterMap = Partial<
 interface Props {
   search: string;
   onSearchChange: (v: string) => void;
-  firstServiceSubscriptionId?: string;
   filters: ServiceListFilterMap;
+  actions?: React.ReactNode;
+  className?: string;
 }
 
 export const ServiceListHeader: React.FC<Props> = ({
   search,
   onSearchChange,
-  firstServiceSubscriptionId,
   filters,
+  actions,
+  className,
 }) => {
   const t = useTranslations();
   const hasMoreThanOneFilter = Object.values(filters).length > 1;
 
   return (
-    <div className="flex flex-col justify-between gap-m">
+    <div className={cn('flex flex-col justify-between gap-m', className)}>
       <div className="flex justify-between gap-s flex-wrap">
         <div className="flex gap-s flex-wrap">
           <SearchInput
@@ -56,9 +58,7 @@ export const ServiceListHeader: React.FC<Props> = ({
           )}
         </div>
 
-        <ServiceListHeaderButtons
-          firstServiceSubscriptionId={firstServiceSubscriptionId ?? ''}
-        />
+        {actions}
       </div>
       {hasMoreThanOneFilter && <ServiceListFilterSection filters={filters} />}
     </div>

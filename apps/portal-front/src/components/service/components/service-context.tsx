@@ -2,7 +2,6 @@ import {
   ServiceForm,
   ServiceFormValues,
 } from '@/components/service/components/subscribable-services.types';
-import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import React, { createContext, FunctionComponent, useContext } from 'react';
@@ -26,7 +25,6 @@ export interface ServiceContextProps {
     onCompleted: () => void
   ) => Promise<void>;
   ServiceForm: ServiceForm;
-  localStorageKey: ServiceListLocalStorageKey;
 }
 
 const ServiceContext = createContext<ServiceContextProps | undefined>(

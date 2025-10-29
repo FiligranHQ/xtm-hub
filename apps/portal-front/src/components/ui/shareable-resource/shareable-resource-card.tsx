@@ -4,6 +4,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
+  PublicShareableResource,
   ServiceSlug,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
@@ -17,7 +18,7 @@ import { ReactNode } from 'react';
 import ShareableResourceCardIllustration from './shareable-resource-illustration';
 
 interface ShareableResourceCardProps {
-  document: ShareableResource;
+  document: ShareableResource | PublicShareableResource;
   detailUrl: string;
   shareLinkUrl: string;
   extraContent?: ReactNode;

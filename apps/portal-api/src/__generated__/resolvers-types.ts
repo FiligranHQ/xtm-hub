@@ -387,7 +387,8 @@ export enum FilterKey {
   Label = 'label',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
-  ServiceDefinitionIdentifier = 'serviceDefinition_identifier'
+  ServiceDefinitionIdentifier = 'serviceDefinition_identifier',
+  Slug = 'slug'
 }
 
 export type GenericServiceCapability = Node & {
@@ -1068,6 +1069,7 @@ export type Query = {
   platformAssociatedOrganization?: Maybe<Organization>;
   publicIntegrationFeedByServiceSlug?: Maybe<Array<Maybe<IntegrationFeed>>>;
   publicIntegrationFeedBySlug?: Maybe<IntegrationFeed>;
+  publicIntegrationFeeds: IntegrationFeedConnection;
   publicServiceInstances: ServiceConnection;
   refreshOpenCTIManifest?: Maybe<Scalars['Boolean']['output']>;
   registeredPlatforms: Array<RegisteredPlatform>;
@@ -1247,6 +1249,18 @@ export type QueryPublicIntegrationFeedByServiceSlugArgs = {
 
 export type QueryPublicIntegrationFeedBySlugArgs = {
   slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPublicIntegrationFeedsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<Filter>>;
+  first: Scalars['Int']['input'];
+  orderBy: DocumentOrdering;
+  orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
 };
 
 
@@ -2684,6 +2698,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
   publicIntegrationFeedByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['IntegrationFeed']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedByServiceSlugArgs>>;
   publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['IntegrationFeed']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
+  publicIntegrationFeeds?: Resolver<ResolversTypes['IntegrationFeedConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   refreshOpenCTIManifest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;

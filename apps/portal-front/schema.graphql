@@ -17,6 +17,7 @@ enum FilterKey {
   serviceDefinition_identifier
   integration_type
   integration_subtype
+  slug
 }
 
 input Filter {
@@ -45,6 +46,7 @@ type Query {
   document(documentId: ID, serviceInstanceId: ID): Document
   integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
   integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
+  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
   publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
   publicIntegrationFeedBySlug(slug: String): IntegrationFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]

@@ -3,6 +3,7 @@ import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.gra
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
+import { seoIntegrationFeedsItemFragment$data } from '@generated/seoIntegrationFeedsItemFragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
@@ -10,6 +11,12 @@ export type ShareableResource =
   | csvFeedsItem_fragment$data
   | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
+  | SeoIntegrationFeed
+  | SeoCustomDashboard
+  | SeoOpenAEVScenario;
+
+export type PublicShareableResource =
+  | seoIntegrationFeedsItemFragment$data
   | SeoIntegrationFeed
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
@@ -37,6 +44,7 @@ export const isIntegrationFeedItem = (
     | SubscribableResource
     | ShareableResource
     | ShareableResourceConnectorType
+    | PublicShareableResource
 ): resource is integrationFeedsItem_fragment$data => {
   return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
 };
@@ -46,6 +54,7 @@ export const isConnectorResource = (
     | SubscribableResource
     | ShareableResource
     | ShareableResourceConnectorType
+    | PublicShareableResource
 ): resource is ShareableResourceConnectorType => {
   return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
 };
