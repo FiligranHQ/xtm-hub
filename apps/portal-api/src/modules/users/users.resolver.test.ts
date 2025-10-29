@@ -34,11 +34,11 @@ import {
   UserOrdering,
 } from '../../__generated__/resolvers-types';
 import { loginFromProvider } from '../../auth/auth-user';
+import { requestContext } from '../../context/request.context';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { requestContext } from '../../requestContext';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import * as UserOrganizationDomain from '../common/user-organization.domain';

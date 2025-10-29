@@ -1,10 +1,10 @@
 // lib/context.test.ts
 import { Knex } from 'knex';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PortalContext } from './model/portal-context';
-import { UserLoadUserBy } from './model/user';
-import { requestContext, RequestContext } from './requestContext';
-import { UnknownErrorCode } from './utils/error/error.code';
+import { PortalContext } from '../model/portal-context';
+import { UserLoadUserBy } from '../model/user';
+import { UnknownErrorCode } from '../utils/error/error.code';
+import { requestContext, RequestContext } from './request.context';
 
 describe('requestContext', () => {
   const mockUser = {

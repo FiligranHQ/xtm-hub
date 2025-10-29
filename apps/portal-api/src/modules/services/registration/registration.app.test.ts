@@ -28,10 +28,10 @@ import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import Subscription from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
-import { requestContext } from '../../../requestContext';
 import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../../utils/error/error.code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';

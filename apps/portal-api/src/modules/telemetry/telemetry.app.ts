@@ -1,8 +1,8 @@
 import { OneClickDeployInput } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
-import { requestContext } from '../../requestContext';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';

@@ -1,9 +1,9 @@
 import { db, dbUnsecure } from '../../../knexfile';
+import { requestContext } from '../../context/request.context';
 import { UserOrganizationId } from '../../model/kanel/public/UserOrganization';
 import UserOrganizationCapability, {
   UserOrganizationCapabilityInitializer,
 } from '../../model/kanel/public/UserOrganizationCapability';
-import { requestContext } from '../../requestContext';
 
 export const createUserOrganizationCapability = async ({
   user_organization_id,

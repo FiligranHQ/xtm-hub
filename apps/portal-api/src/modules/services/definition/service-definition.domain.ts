@@ -1,9 +1,9 @@
 import { db } from '../../../../knexfile';
 import { PlatformIdentifier } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import ServiceDefinition, {
   ServiceDefinitionMutator,
 } from '../../../model/kanel/public/ServiceDefinition';
-import { requestContext } from '../../../requestContext';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from '../registration/registration.mapping';
 
 export const serviceDefinitionDomain = {

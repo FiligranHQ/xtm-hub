@@ -15,9 +15,9 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { databaseContext } from '../../databaseContext';
+import { databaseContext } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
-import { requestContext } from '../../requestContext';
 import { validatePassword } from '../../security/utils/user';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';

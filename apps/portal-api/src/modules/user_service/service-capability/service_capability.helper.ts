@@ -3,9 +3,9 @@ import {
   Restriction,
   ServiceCapability,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { ServiceCapabilityMutator } from '../../../model/kanel/public/ServiceCapability';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
-import { requestContext } from '../../../requestContext';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadUserServiceById } from '../user_service.domain';
 import { getManageAccessLeft } from './service-capability.domain';

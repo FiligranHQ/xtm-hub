@@ -7,10 +7,10 @@ import {
   FilterKey,
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
-import { databaseContext } from './src/databaseContext';
+import { databaseContext } from './src/context/database.context';
+import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
 import { INTEGRATION_FEED_METADATA } from './src/modules/services/integration-feeds/integration-feeds.model';
-import { requestContext } from './src/requestContext';
 import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';

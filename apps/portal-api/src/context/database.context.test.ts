@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { database, db } from '../knexfile';
-import { databaseContext } from './databaseContext';
+import { database, db } from '../../knexfile';
+import { databaseContext } from './database.context';
 
 interface TestTable {
   id: number;

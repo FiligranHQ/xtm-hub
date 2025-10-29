@@ -1,5 +1,5 @@
 import { beforeAll } from 'vitest';
-import { requestContext, RequestContext } from '../src/requestContext';
+import { requestContext, RequestContext } from '../src/context/request.context';
 import { closeDbTestConnection, getDbTestConnection } from './config-test';
 import { requestContextAdminUser } from './tests.const';
 

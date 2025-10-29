@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { Knex } from 'knex';
-import { database } from '../knexfile';
+import { database } from '../../knexfile';
 
 interface DatabaseContext {
   transaction?: Knex.Transaction;

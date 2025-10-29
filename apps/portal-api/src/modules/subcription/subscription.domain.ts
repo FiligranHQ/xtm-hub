@@ -4,6 +4,7 @@ import {
   ServiceCapability,
   UserService,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import Subscription, {
   SubscriptionId,
@@ -11,7 +12,6 @@ import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
-import { requestContext } from '../../requestContext';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
