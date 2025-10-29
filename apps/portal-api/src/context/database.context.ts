@@ -42,3 +42,5 @@ export const databaseContext = {
     return !!dbAsyncLocalStorage.getStore()?.transaction;
   },
 };
+
+export const { withTransaction } = databaseContext;

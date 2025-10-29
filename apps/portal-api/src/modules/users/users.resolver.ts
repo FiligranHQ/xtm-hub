@@ -15,7 +15,7 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { databaseContext } from '../../context/database.context';
+import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { validatePassword } from '../../security/utils/user';
@@ -209,28 +209,26 @@ const resolvers: Resolvers = {
 
         const [existingUser] = await loadUnsecureUser({ email: input.email });
 
-        const loadUserFinalUser = await databaseContext.withTransaction(
-          async () => {
-            const user = existingUser
-              ? existingUser
-              : await createUserWithPersonalSpace({
-                  email: input.email,
-                  password: input.password,
-                  first_name: input.first_name,
-                  last_name: input.last_name,
-                  selected_organization_id: chosenOrganization,
-                });
+        const loadUserFinalUser = await withTransaction(async () => {
+          const user = existingUser
+            ? existingUser
+            : await createUserWithPersonalSpace({
+                email: input.email,
+                password: input.password,
+                first_name: input.first_name,
+                last_name: input.last_name,
+                selected_organization_id: chosenOrganization,
+              });
 
-            await updateMultipleUserOrgWithCapabilities(
-              user.id,
-              input.organization_capabilities
-            );
+          await updateMultipleUserOrgWithCapabilities(
+            user.id,
+            input.organization_capabilities
+          );
 
-            return await loadUserBy({
-              'User.id': user.id,
-            });
-          }
-        );
+          return await loadUserBy({
+            'User.id': user.id,
+          });
+        });
 
         await dispatch('User', 'add', loadUserFinalUser);
 
