@@ -1,22 +1,34 @@
 import {
+  AdminAddUserInput,
   AdminEditUserInput,
   EditUserCapabilitiesInput,
 } from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../model/user';
+import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
 import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
 import {
   loadUserOrganization,
   updateMultipleUserOrgWithCapabilities,
 } from '../common/user-organization.domain';
-import { loadUserDetails, updateUser } from './users.domain';
+import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
+import {
+  loadUnsecureUser,
+  loadUserBy,
+  loadUserDetails,
+  updateUser,
+} from './users.domain';
 import {
   acceptPendingUserWithCapabilities,
+  createUserWithPersonalSpace,
   mapUserToGraphqlUser,
   preventAdministratorRemovalOfAllOrganizations,
   preventAdministratorRemovalOfOneOrganization,
@@ -24,6 +36,61 @@ import {
 } from './users.helper';
 
 export const usersAdminApp = {
+  addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
+    const { user: contextUser } = requestContext.require();
+    const [organizationFromEmail] = await loadOrganizationsFromEmail(
+      input.email
+    );
+    // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
+    const chosenOrganizationId: OrganizationId | undefined = input
+      .organization_capabilities?.[0]
+      ? extractId<OrganizationId>(
+          input.organization_capabilities?.[0].organization_id
+        )
+      : undefined;
+
+    // The admin orga should only allow to add users in the same organization and with the same domain.
+    // Only the admin PLTFM can by pass this check
+    const isEmailOutsideOrganization =
+      chosenOrganizationId !== organizationFromEmail?.id;
+    const hasUserBypassCapability = contextUser.capabilities.some(
+      (c) => c.id === CAPABILITY_BYPASS.id
+    );
+
+    if (isEmailOutsideOrganization && !hasUserBypassCapability) {
+      logApp.warn(
+        'You cannot add a user whose email domain is outside your organization'
+      );
+      throw new Error(ErrorCode.EmailOutsideOrganizationError);
+    }
+
+    const [existingUser] = await loadUnsecureUser({ email: input.email });
+
+    const finalUser = await withTransaction(async () => {
+      const user = existingUser
+        ? existingUser
+        : await createUserWithPersonalSpace({
+            email: input.email,
+            password: input.password,
+            first_name: input.first_name,
+            last_name: input.last_name,
+            selected_organization_id: chosenOrganizationId,
+          });
+
+      await updateMultipleUserOrgWithCapabilities(
+        user.id,
+        input.organization_capabilities
+      );
+
+      return await loadUserBy({
+        'User.id': user.id,
+      });
+    });
+
+    await dispatch('User', 'add', finalUser);
+
+    return finalUser;
+  },
   editUser: async ({
     userId,
     input,

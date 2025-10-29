@@ -27,31 +27,6 @@ import { isAdmin } from '../role-portal/role-portal.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildLoginEvent } from '../telemetry/telemetry.helper';
 
-export const loadUsersByOrganization = async (
-  organizationId: string,
-  excludedUserId: string,
-  role: string
-) => {
-  return dbUnsecure<User>('User')
-    .select('User.*')
-    .rightJoin('User_RolePortal', function () {
-      this.on('User_RolePortal.user_id', '=', 'User.id').andOnVal(
-        'User_RolePortal.role_portal_id',
-        '=',
-        role
-      );
-    })
-    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
-    .leftJoin(
-      'Organization as org',
-      'User_Organization.organization_id',
-      '=',
-      'org.id'
-    )
-    .where('org.id', organizationId)
-    .where('User.id', '!=', excludedUserId);
-};
-
 export const loadUnsecureUser = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ) => {
