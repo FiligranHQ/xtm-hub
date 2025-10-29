@@ -147,8 +147,13 @@ export const registrationDomain = {
     }[]
   > => {
     const userSelectedOrganization = context.user.selected_organization_id;
-    const serviceDefinitionIdentifier =
-      serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
+    const serviceDefinitionIdentifiers = platformIdentifier
+      ? [
+          serviceDefinitionIdentifierMappedByPlatformIdentifier[
+            platformIdentifier
+          ],
+        ]
+      : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
     return await db<ServiceInstance>(context, 'ServiceInstance', opts)
       .leftJoin(
@@ -169,15 +174,7 @@ export const registrationDomain = {
         '=',
         'ServiceInstance.id'
       )
-      .modify((queryBuilder) => {
-        if (platformIdentifier) {
-          queryBuilder.where(
-            'ServiceDefinition.identifier',
-            '=',
-            serviceDefinitionIdentifier
-          );
-        }
-      })
+      .whereIn('ServiceDefinition.identifier', serviceDefinitionIdentifiers)
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
