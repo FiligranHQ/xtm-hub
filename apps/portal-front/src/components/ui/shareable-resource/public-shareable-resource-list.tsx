@@ -22,6 +22,7 @@ export const PublicShareableResourceList: React.FC<Props> = ({
   if (documents.length === 0) {
     return <div className="my-4 text-center">No document found</div>;
   }
+
   return (
     <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
       {documents.map((document) => {

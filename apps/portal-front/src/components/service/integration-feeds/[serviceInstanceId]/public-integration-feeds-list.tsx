@@ -61,14 +61,12 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
 
   return (
     <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
-      {integrationFeeds.length > 0 && (
-        <ServiceListHeader
-          search={search}
-          onSearchChange={setSearch}
-          filters={filters}
-          className="mb-3"
-        />
-      )}
+      <ServiceListHeader
+        search={search}
+        onSearchChange={setSearch}
+        filters={filters}
+        className="mb-3"
+      />
       <PublicShareableResourceList
         documents={integrationFeeds}
         serviceInstance={serviceInstance}
