@@ -133,7 +133,13 @@
   },
   "GenericActions": {
     "FilterUseCases": "Cas d'utilisation...",
-    "Search": "Recherche..."
+    "Search": "Recherche...",
+    "Paginate": {
+      "PreviousPage": "Page précédente",
+      "NextPage": "Page suivante",
+      "Manage": "Gérer la pagination",
+      "RowsPerPage": "Lignes par page"
+    }
   },
   "GoToProd": "Allez sur la production",
   "HomePage": {
@@ -446,6 +452,7 @@
           "connector": "Connecteurs",
           "rss_feed": "Flux RSS",
           "json_feed": "Flux JSON",
+          "taxii_feed": "Flux TAXII (bientôt disponible)",
           "opencti_stream_feed": "Flux OpenCTI",
           "third_party_integration": "Intégrations tierces"
         }

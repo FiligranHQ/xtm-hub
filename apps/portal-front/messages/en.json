@@ -133,7 +133,13 @@
   },
   "GenericActions": {
     "FilterUseCases": "Use case...",
-    "Search": "Search..."
+    "Search": "Search...",
+    "Paginate": {
+      "PreviousPage": "Go to previous page",
+      "NextPage": "Go to next page",
+      "Manage": "Manage pagination",
+      "RowsPerPage": "Rows per page"
+    }
   },
   "GoToProd": "Go to production",
   "HomePage": {
