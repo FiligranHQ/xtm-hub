@@ -30,7 +30,9 @@ export const insertNewUserOrganizationUnsecure = (
     .returning('*');
 };
 
-export const loadUserOrganization = (field: UserOrganizationMutator) => {
+export const loadUserOrganization = (
+  field: UserOrganizationMutator
+): Promise<UserOrganization[]> => {
   return db<UserOrganization>('User_Organization').where(field);
 };
 
