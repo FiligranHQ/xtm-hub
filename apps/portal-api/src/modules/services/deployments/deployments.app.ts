@@ -13,8 +13,8 @@ import {
   QueryDeploymentRequestsArgs,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
-import { requestContext } from '../../../requestContext';
 import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,

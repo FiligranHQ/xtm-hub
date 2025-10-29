@@ -15,8 +15,9 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
+import { withTransaction } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
-import { requestContext } from '../../requestContext';
 import { validatePassword } from '../../security/utils/user';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
@@ -182,7 +183,6 @@ const resolvers: Resolvers = {
       }
     },
     adminAddUser: async (_, { input }, context) => {
-      const trx = await dbTx();
       try {
         const [organizationFromEmail] = await loadOrganizationsFromEmail(
           input.email
@@ -209,31 +209,31 @@ const resolvers: Resolvers = {
 
         const [existingUser] = await loadUnsecureUser({ email: input.email });
 
-        const user = existingUser
-          ? existingUser
-          : await createUserWithPersonalSpace({
-              email: input.email,
-              password: input.password,
-              first_name: input.first_name,
-              last_name: input.last_name,
-              selected_organization_id: chosenOrganization,
-            });
+        const loadUserFinalUser = await withTransaction(async () => {
+          const user = existingUser
+            ? existingUser
+            : await createUserWithPersonalSpace({
+                email: input.email,
+                password: input.password,
+                first_name: input.first_name,
+                last_name: input.last_name,
+                selected_organization_id: chosenOrganization,
+              });
 
-        await updateMultipleUserOrgWithCapabilities(
-          user.id,
-          input.organization_capabilities
-        );
+          await updateMultipleUserOrgWithCapabilities(
+            user.id,
+            input.organization_capabilities
+          );
 
-        const loadUserFinalUser = await loadUserBy({
-          'User.id': user.id,
+          return await loadUserBy({
+            'User.id': user.id,
+          });
         });
 
         await dispatch('User', 'add', loadUserFinalUser);
-        await trx.commit();
 
         return mapUserToGraphqlUser(loadUserFinalUser);
       } catch (error) {
-        await trx.rollback();
         if (error.message.includes(ErrorCode.UserDisabled)) {
           logApp.warn('You cannot add a user who is disabled in the plaform');
           throw ForbiddenAccess(ErrorCode.CantAddDisabledUser);

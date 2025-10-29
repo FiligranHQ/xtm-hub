@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { requestContext } from '../../context/request.context';
 import {
   PLATFORM_ORGANIZATION_UUID,
   SYSTEM_USER_CONTEXT,
   SYSTEM_USER_UUID,
 } from '../../portal.const';
-import { requestContext } from '../../requestContext';
 import { minioInit } from '../../server/initialize';
 import { loadImagesByDocumentId } from '../services/document/document.domain';
 import {

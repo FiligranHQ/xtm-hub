@@ -46,11 +46,11 @@ import {
 } from './document.helper';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { requestContext } from '../../../context/request.context';
 import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { requestContext } from '../../../requestContext';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 

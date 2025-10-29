@@ -7,9 +7,10 @@ import {
   FilterKey,
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
+import { databaseContext } from './src/context/database.context';
+import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
 import { INTEGRATION_FEED_METADATA } from './src/modules/services/integration-feeds/integration-feeds.model';
-import { requestContext } from './src/requestContext';
 import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
@@ -43,7 +44,7 @@ declare module 'knex' {
   }
 }
 
-export type DatabaseType =
+type BaseDatabaseType =
   | 'User'
   | 'Organization'
   | 'ServiceInstance'
@@ -74,6 +75,10 @@ export type DatabaseType =
   | 'Service_Contract'
   | 'Service_Configuration'
   | 'DeploymentRequest';
+
+export type DatabaseType =
+  | BaseDatabaseType
+  | (typeof process.env.NODE_ENV extends 'test' ? 'TestTable' : never);
 
 export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
 export type MethodType = 'select' | 'insert' | 'update' | 'del';
@@ -191,6 +196,8 @@ export function db<T>(
   const reqContext = requestContext.get();
   if (reqContext?.trx && !reqContext.trx.isCompleted()) {
     queryContext.transacting(reqContext.trx);
+  } else if (databaseContext.isInTransaction()) {
+    queryContext.transacting(databaseContext.getTransaction());
   }
 
   return securedQueryContext;

@@ -1,7 +1,7 @@
 import config from 'config';
+import { requestContext } from '../../../context/request.context';
 import { PortalContext } from '../../../model/portal-context';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
-import { requestContext } from '../../../requestContext';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { validatePassword } from '../../utils/user';
 

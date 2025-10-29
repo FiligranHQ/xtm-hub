@@ -9,13 +9,13 @@ import {
   UserConnection,
   User as UserGenerated,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
-import { requestContext } from '../../requestContext';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';

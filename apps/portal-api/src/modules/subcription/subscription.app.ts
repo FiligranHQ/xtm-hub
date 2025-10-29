@@ -7,6 +7,7 @@ import {
   ServiceInstanceJoinType,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
@@ -17,7 +18,6 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
-import { requestContext } from '../../requestContext';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';

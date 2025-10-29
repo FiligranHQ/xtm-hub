@@ -2,13 +2,13 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw } from '../../../../knexfile';
 import { Subscription } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionCapabilityId } from '../../../model/kanel/public/SubscriptionCapability';
 import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability, {
   UserServiceCapabilityId,
 } from '../../../model/kanel/public/UserServiceCapability';
-import { requestContext } from '../../../requestContext';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadSubscriptionCapabilitiesBy } from '../../services/instances/service-capabilities/service_capabilities.helper';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic_service_capability.helper';

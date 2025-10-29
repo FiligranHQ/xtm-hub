@@ -8,10 +8,10 @@ import {
   PlatformContract,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import { requestContext } from '../../requestContext';
 import * as securityGuard from '../../security/guard';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';

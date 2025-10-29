@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import { UserServiceCapability } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -13,7 +14,6 @@ import {
   UserServiceCapabilityId,
   UserServiceCapabilityInitializer,
 } from '../../model/kanel/public/UserServiceCapability';
-import { requestContext } from '../../requestContext';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { ErrorCode } from '../../utils/error/error.code';

@@ -5,6 +5,7 @@ import {
   UserServiceCapability,
   UserServiceConnection,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService, {
@@ -13,7 +14,6 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { UserLoadUserBy } from '../../model/user';
-import { requestContext } from '../../requestContext';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
