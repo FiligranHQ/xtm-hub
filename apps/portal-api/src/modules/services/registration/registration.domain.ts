@@ -79,7 +79,6 @@ export const registrationDomain = {
 
     if (configuration) {
       await serviceContractDomain.createConfiguration(
-        context,
         serviceInstanceId,
         configuration
       );

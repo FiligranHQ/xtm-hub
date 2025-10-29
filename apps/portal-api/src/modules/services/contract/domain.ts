@@ -76,11 +76,10 @@ export const serviceContractDomain = {
   },
 
   createConfiguration: async (
-    context: PortalContext,
     serviceInstanceId: string,
     config: Record<string, unknown>
   ) => {
-    await db(context, 'Service_Configuration').insert({
+    await db('Service_Configuration').insert({
       service_instance_id: serviceInstanceId,
       config,
     });
