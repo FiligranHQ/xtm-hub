@@ -1,4 +1,7 @@
-import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
+import {
+  Document as DocumentResolverType,
+  IntegrationFeedType,
+} from '../../../__generated__/resolvers-types';
 import Document from '../../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 
@@ -7,10 +10,9 @@ export const INTEGRATION_FEEDS_SERVICE_INSTANCE_ID: ServiceInstanceId =
 export const OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE =
   'opencti_integration_feed';
 
-export const INTEGRATION_FEED_CONNECTORS_TYPE = 'connector';
-export const INTEGRATION_FEED_CSV_FEED_TYPE = 'csv_feed';
-
-export type IntegrationFeed = Document & { integration_type: string };
+export type IntegrationFeed = Document & {
+  integration_type: IntegrationFeedType;
+};
 export type CsvFeed = IntegrationFeed;
 export type Connector = IntegrationFeed & {
   product_version: string;
@@ -19,7 +21,6 @@ export type Connector = IntegrationFeed & {
   source_code?: string | null; // URL to repository
   subscription_link?: string | null; // URL to subscription page
   integration_subtype: string;
-  integration_type: string;
   manager_supported: boolean;
   playbook_supported: boolean;
 };
@@ -32,8 +33,10 @@ export type ConnectorMetadataKeys = Array<
   Exclude<keyof Omit<Connector, 'labels'>, keyof DocumentResolverType>
 >;
 
-export const CSV_FEED_METADATA: CsvFeedMetadataKeys = ['integration_type'];
-export const CSV_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
+export const INTEGRATION_FEED_CSV_FEED_METADATA: CsvFeedMetadataKeys = [
+  'integration_type',
+];
+export const INTEGRATION_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
   'product_version',
   'container_image',
   'verified',
@@ -45,5 +48,8 @@ export const CSV_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
   'playbook_supported',
 ];
 export const INTEGRATION_FEED_METADATA = Array.from(
-  new Set([...CSV_FEED_METADATA, ...CSV_FEED_CONNECTOR_METADATA])
+  new Set([
+    ...INTEGRATION_FEED_CSV_FEED_METADATA,
+    ...INTEGRATION_FEED_CONNECTOR_METADATA,
+  ])
 );

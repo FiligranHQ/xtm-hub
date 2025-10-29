@@ -25,10 +25,8 @@ import {
 interface OpenAEVScenariosListProps {
   queryRef: PreloadedQuery<openaevScenariosQuery>;
   serviceInstance: serviceInstance_fragment$data;
-  labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
-  onLabelFilterChange: (v: string[]) => void;
 }
 
 const OpenaevScenariosList = ({
@@ -36,8 +34,6 @@ const OpenaevScenariosList = ({
   serviceInstance,
   search,
   onSearchChange,
-  onLabelFilterChange,
-  labels,
 }: OpenAEVScenariosListProps) => {
   const queryData = usePreloadedQuery<openaevScenariosQuery>(
     OpenaevScenariosListQuery,
@@ -65,8 +61,6 @@ const OpenaevScenariosList = ({
         draft={draft}
         search={search}
         onSearchChange={onSearchChange}
-        labels={labels}
-        onLabelFilterChange={onLabelFilterChange}
       />
     </AppServiceContext>
   );

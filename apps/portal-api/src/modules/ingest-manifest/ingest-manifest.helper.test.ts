@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  INTEGRATION_FEED_CONNECTORS_TYPE,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../services/integration-feeds/integration-feeds.model';
+  ConnectorType,
+  IntegrationFeedType,
+} from '../../__generated__/resolvers-types';
+import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../services/integration-feeds/integration-feeds.model';
 import {
   extractManifestInformation,
   ManifestExtractionResult,
@@ -26,11 +27,11 @@ describe('Ingest manifest helper', () => {
           labels: ['automation', 'integration'],
           verified: true,
           container_image: 'docker.io/example/image:latest',
-          integration_subtype: 'docker',
+          integration_subtype: ConnectorType.InternalEnrichment,
           source_code: 'https://github.com/example/repo',
           subscription_link: 'https://example.com/subscribe',
           type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-          integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
+          integration_type: IntegrationFeedType.Connector,
           manager_supported: true,
           playbook_supported: false,
           source_type: 'external',
@@ -46,11 +47,11 @@ describe('Ingest manifest helper', () => {
           labels: ['monitoring'],
           verified: false,
           container_image: 'docker.io/example/image2:latest',
-          integration_subtype: 'kubernetes',
+          integration_subtype: ConnectorType.ExternalImport,
           source_code: 'https://github.com/example/repo2',
           subscription_link: 'https://example.com/subscribe2',
           type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-          integration_type: INTEGRATION_FEED_CONNECTORS_TYPE,
+          integration_type: IntegrationFeedType.Connector,
           manager_supported: false,
           playbook_supported: true,
           source_type: 'external',
@@ -182,7 +183,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['security', 'monitoring'],
               verified: true,
               container_image: 'docker.io/example/valid:latest',
-              container_type: 'docker',
+              container_type: ConnectorType.InternalExportFile,
               source_code: 'https://github.com/example/valid',
               subscription_link: 'https://example.com/subscribe',
               manager_supported: true,
@@ -205,7 +206,7 @@ describe('Ingest manifest helper', () => {
               use_cases: 'should-be-array', // Wrong type
               verified: 'yes', // Wrong type
               container_image: 'docker.io/example/invalid:latest',
-              container_type: 'kubernetes',
+              container_type: ConnectorType.ExternalImport,
               source_code: 'not-a-url', // Invalid URL
               subscription_link: '',
               manager_supported: true,
@@ -221,7 +222,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['automation'],
               verified: false,
               container_image: 'docker.io/example/valid2:latest',
-              container_type: 'docker',
+              container_type: ConnectorType.Stream,
               source_code: 'https://github.com/example/valid2',
               subscription_link: '',
               manager_supported: false,
@@ -316,7 +317,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['test'],
               verified: true,
               container_image: 'docker.io/first:latest',
-              container_type: 'docker',
+              container_type: ConnectorType.InternalEnrichment,
               source_code: 'https://github.com/example/first',
               subscription_link: '',
               manager_supported: true,
@@ -337,7 +338,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['test'],
               verified: false,
               container_image: 'docker.io/last:latest',
-              container_type: 'docker',
+              container_type: ConnectorType.Stream,
               source_code: 'https://github.com/example/last',
               subscription_link: '',
               manager_supported: false,

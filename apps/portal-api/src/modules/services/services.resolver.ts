@@ -2,6 +2,7 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
+  IntegrationFeedType,
   RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
@@ -28,11 +29,7 @@ import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
-import {
-  INTEGRATION_FEED_CONNECTORS_TYPE,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from './integration-feeds/integration-feeds.model';
+import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from './integration-feeds/integration-feeds.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios/openaev-scenarios.domain';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
@@ -55,8 +52,8 @@ const resolvers: Resolvers = {
   ServiceInstance: {
     __resolveType(service_instance) {
       const integrationFeedMapping = {
-        [INTEGRATION_FEED_CONNECTORS_TYPE]: 'Connector',
-        [INTEGRATION_FEED_CSV_FEED_TYPE]: 'CsvFeed',
+        [IntegrationFeedType.Connector]: 'Connector',
+        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
       };
       const typeMapping = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',

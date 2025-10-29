@@ -8,6 +8,7 @@ import {
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { PortalContext } from './src/model/portal-context';
+import { INTEGRATION_FEED_METADATA } from './src/modules/services/integration-feeds/integration-feeds.model';
 import { requestContext } from './src/requestContext';
 import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
@@ -269,6 +270,19 @@ export const paginate = async <T, U>(
               `${type}.service_definition_id`
             )
             .whereIn('ServiceDefinition.identifier', value);
+        }
+      } else if ((INTEGRATION_FEED_METADATA as string[]).includes(key)) {
+        if (value.length > 0) {
+          const metaAlias = `metaFilter${key}`;
+          queryContext
+            .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+              this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+                `${metaAlias}.key`,
+                '=',
+                key
+              );
+            })
+            .whereIn(`${metaAlias}.value`, value);
         }
       } else if (key.includes('id')) {
         queryContext.whereIn(

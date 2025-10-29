@@ -10,7 +10,8 @@ import { useState } from 'react';
 interface ServiceButtonsProps {
   firstServiceSubscriptionId: string;
 }
-const ServiceButtons = ({
+
+const ServiceListHeaderButtons = ({
   firstServiceSubscriptionId,
 }: ServiceButtonsProps) => {
   const t = useTranslations();
@@ -20,8 +21,9 @@ const ServiceButtons = ({
   const canManageService = serviceInstance.capabilities.includes(
     GenericCapabilityName.MANAGE_ACCESS
   );
+
   return (
-    <>
+    <div className="flex gap-s">
       {canManageService && (
         <Button
           asChild
@@ -39,8 +41,8 @@ const ServiceButtons = ({
         open={openSheet}
         setOpen={setOpenSheet}
       />
-    </>
+    </div>
   );
 };
 
-export default ServiceButtons;
+export default ServiceListHeaderButtons;

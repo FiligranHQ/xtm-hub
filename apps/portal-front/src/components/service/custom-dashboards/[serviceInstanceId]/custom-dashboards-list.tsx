@@ -23,10 +23,8 @@ import {
 interface CustomDashboardsListProps {
   queryRef: PreloadedQuery<customDashboardsQuery>;
   serviceInstance: serviceInstance_fragment$data;
-  labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
-  onLabelFilterChange: (v: string[]) => void;
 }
 
 const CustomDashboardsList = ({
@@ -34,8 +32,6 @@ const CustomDashboardsList = ({
   serviceInstance,
   search,
   onSearchChange,
-  onLabelFilterChange,
-  labels,
 }: CustomDashboardsListProps) => {
   const queryData = usePreloadedQuery<customDashboardsQuery>(
     CustomDashboardsListQuery,
@@ -63,8 +59,6 @@ const CustomDashboardsList = ({
         draft={draft}
         search={search}
         onSearchChange={onSearchChange}
-        labels={labels}
-        onLabelFilterChange={onLabelFilterChange}
       />
     </AppServiceContext>
   );
