@@ -8,7 +8,7 @@ import { seoIntegrationFeedsItemFragment$key } from '@generated/seoIntegrationFe
 import { seoIntegrationFeedsList$key } from '@generated/seoIntegrationFeedsList.graphql';
 import { seoIntegrationFeedsQuery } from '@generated/seoIntegrationFeedsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
@@ -44,14 +44,16 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
     seoIntegrationFeedsList$key
   >(seoIntegrationFeedsFragment, queryData);
 
-  const integrationFeeds = (data.publicIntegrationFeeds?.edges ?? [])
-    .map(({ node }) =>
-      readInlineData<seoIntegrationFeedsItemFragment$key>(
-        seoIntegrationFeedsItem,
-        node
+  const integrationFeeds = useMemo(() => {
+    return (data.publicIntegrationFeeds?.edges ?? [])
+      .map(({ node }) =>
+        readInlineData<seoIntegrationFeedsItemFragment$key>(
+          seoIntegrationFeedsItem,
+          node
+        )
       )
-    )
-    .filter((l) => !!l);
+      .filter((l) => !!l);
+  }, [data.publicIntegrationFeeds?.edges]);
 
   const { filters, localStorageKey } = useShareableResourceMapping(
     serviceInstance.slug as ServiceSlug

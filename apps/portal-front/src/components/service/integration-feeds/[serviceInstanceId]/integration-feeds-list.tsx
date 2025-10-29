@@ -65,9 +65,7 @@ const IntegrationFeedsList = ({
   const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
   const { removeConnectorTypes, removeIntegrationTypes } =
-    useServiceListLocalStorage(
-      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
-    );
+    useServiceListLocalStorage(localStorageKey);
 
   const filters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationFeedType]: {

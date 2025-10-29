@@ -6,7 +6,7 @@ import {
   PublicShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface Props {
   documents: PublicShareableResource[];
@@ -23,31 +23,35 @@ export const PublicShareableResourceList: React.FC<Props> = ({
     return <div className="my-4 text-center">No document found</div>;
   }
 
-  return (
-    <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
-      {documents.map((document) => {
-        if (isConnectorResource(document)) {
-          return (
-            <ShareableResourceConnectorCard
-              key={document.id}
-              shareableConnector={document}
-              serviceInstance={serviceInstance}
-              detailUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
-              shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
-            />
-          );
-        }
-
+  const resourceCardList = useMemo(() => {
+    return documents.map((document) => {
+      if (isConnectorResource(document)) {
         return (
-          <ShareableResourceCard
+          <ShareableResourceConnectorCard
             key={document.id}
-            document={document}
-            detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-            shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+            shareableConnector={document}
             serviceInstance={serviceInstance}
+            detailUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
+            shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
           />
         );
-      })}
+      }
+
+      return (
+        <ShareableResourceCard
+          key={document.id}
+          document={document}
+          detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+          shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+          serviceInstance={serviceInstance}
+        />
+      );
+    });
+  }, [documents]);
+
+  return (
+    <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
+      {resourceCardList}
     </ul>
   );
 };
