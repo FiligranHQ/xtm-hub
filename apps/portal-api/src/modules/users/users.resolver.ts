@@ -1,5 +1,4 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import crypto from 'node:crypto';
 import { dbTx } from '../../../knexfile';
 import {
   MergeEvent,
@@ -18,6 +17,7 @@ import { logApp } from '../../utils/app-logger.util';
 
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { requestContext } from '../../requestContext';
+import { validatePassword } from '../../security/utils/user';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
@@ -56,10 +56,7 @@ import {
 import { usersProfileApp } from './users.profile.app';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
-  const hash = crypto
-    .pbkdf2Sync(password, user.salt, 1000, 64, `sha512`)
-    .toString(`hex`);
-  return user.password === hash;
+  return validatePassword(user.salt, password, user.password);
 };
 
 const resolvers: Resolvers = {
@@ -156,7 +153,7 @@ const resolvers: Resolvers = {
               selected_organization_id: chosenOrganization.id,
             });
 
-        await createUserOrgCapabilities(context, {
+        await createUserOrgCapabilities({
           user,
           organization: chosenOrganization,
           orgCapabilities: input.capabilities ?? [],
@@ -223,7 +220,6 @@ const resolvers: Resolvers = {
             });
 
         await updateMultipleUserOrgWithCapabilities(
-          context,
           user.id,
           input.organization_capabilities
         );
@@ -322,7 +318,6 @@ const resolvers: Resolvers = {
           throw new Error(ErrorCode.CantRemoveYourselfFromOrgaError);
         }
         await removeUserFromOrganization(
-          context,
           extractId(user_id),
           extractId(organization_id)
         );
@@ -339,12 +334,10 @@ const resolvers: Resolvers = {
     },
     removePendingUserFromOrganization: async (
       _,
-      { user_id, organization_id },
-      context
+      { user_id, organization_id }
     ) => {
       try {
         await removeUserFromOrganizationPending(
-          context,
           extractId(user_id),
           extractId(organization_id)
         );

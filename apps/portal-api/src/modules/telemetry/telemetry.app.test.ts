@@ -1,8 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  contextAdminUser,
-  SERVICE_CSV_FEEDS_ID,
-} from '../../../tests/tests.const';
+import { SERVICE_CSV_FEEDS_ID } from '../../../tests/tests.const';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -106,7 +103,7 @@ describe('TelemetryApp', () => {
         config: {
           token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
           platform_id: platform_id,
-          platform_url: 'https://testing.obas.staging.filigran.io/',
+          platform_url: 'https://testing.oaev.staging.filigran.io/',
           registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
           platform_title: 'Open AEV Instance',
           platform_version: '1.0.0',
@@ -117,7 +114,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
 
-      await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
+      await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
@@ -168,7 +165,7 @@ describe('TelemetryApp', () => {
         config: {
           token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
           platform_id: platformId,
-          platform_url: 'https://testing.obas.staging.filigran.io/',
+          platform_url: 'https://testing.oaev.staging.filigran.io/',
           registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
           platform_title: 'Open AEV Instance',
           platform_contract: 'EE',
@@ -178,7 +175,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
 
-      await telemetryApp.sendOneClickDeployEvent(contextAdminUser, {
+      await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,

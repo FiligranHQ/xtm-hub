@@ -140,7 +140,7 @@ export function useOpenaevScenarioContext(
 
   return {
     serviceInstance,
-    translationKey: 'Service.ObasScenario',
+    translationKey: 'Service.OpenAEVScenario',
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,

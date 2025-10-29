@@ -1,3 +1,4 @@
+import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import BadgeOverflowCounter, {
@@ -12,6 +13,7 @@ import { localeMap } from '@/utils/shareable-resources/shareable-resources.const
 import {
   SeoResource,
   ServiceSlug,
+  isConnectorResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
@@ -220,6 +222,25 @@ const Page = async ({
         original: true,
       },
     ];
+
+    if (isConnectorResource(document)) {
+      return (
+        <>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(jsonLd),
+            }}
+          />
+          <BreadcrumbNav value={breadcrumbValue} />
+          <ShareableResourceConnectorSlugPublic
+            logo={`/document/images/${serviceInstance.id}/${document.children_documents?.[0]?.id}`}
+            documentData={document}
+            pageUrl={pageUrl}
+          />
+        </>
+      );
+    }
 
     return (
       <>

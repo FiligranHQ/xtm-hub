@@ -41,10 +41,10 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
-  seoCsvFeedBySlug(slug: String): CsvFeed
   integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
   integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
+  publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
+  publicIntegrationFeedBySlug(slug: String): IntegrationFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
@@ -85,6 +85,7 @@ type Mutation {
   updateCustomDashboard(documentId: ID!, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
+  updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -306,6 +307,15 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+}
+
+input UpdateDeploymentRequestInput {
+  id: ID!
+  status: DeploymentRequestStatus
+  start_date: Date
+  end_date: Date
+  product_service_instance_id: String
+  failure_reason: String
 }
 
 enum DeploymentRequestFilterKey {
@@ -617,6 +627,8 @@ type RegisteredPlatform implements Node {
   identifier: ServiceDefinitionIdentifier!
   version: String
   illustration_document_id: String
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
 }
 
 input PlatformInput {

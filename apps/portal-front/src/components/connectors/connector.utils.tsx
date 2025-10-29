@@ -1,6 +1,3 @@
-import { BadgeOverflow } from '@/components/ui/badge-overflow-counter';
-import { Contract } from '@/utils/connectors/connector.model';
-
 export type IngestionConnectorType =
   | 'INTERNAL_ENRICHMENT'
   | 'EXTERNAL_IMPORT'
@@ -29,16 +26,10 @@ const ingestionConnectorTypeMetadata: Record<
   },
 };
 
-export const getIngestionConnectorMetadata = (integration_subtype: string) => {
-  return ingestionConnectorTypeMetadata[
-    integration_subtype as IngestionConnectorType
-  ];
-};
-
-export const getBadgesValues = (contract: Contract): BadgeOverflow[] => {
-  return contract.use_cases.map((use_case) => ({
-    id: use_case,
-    name: use_case,
-    color: '#0099cc',
-  }));
+export const getIngestionConnectorMetadata = (integration_subtype?: string) => {
+  return (
+    ingestionConnectorTypeMetadata[
+      integration_subtype as IngestionConnectorType
+    ] ?? undefined
+  );
 };

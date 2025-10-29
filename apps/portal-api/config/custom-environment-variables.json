@@ -46,5 +46,6 @@
   },
   "base_url_front": "BASE_URL_FRONT",
   "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL",
-  "system_token": "SYSTEM_TOKEN"
+  "system_token_hash": "SYSTEM_TOKEN_HASH",
+  "system_token_salt": "SYSTEM_TOKEN_SALT"
 }

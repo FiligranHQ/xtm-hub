@@ -18,9 +18,9 @@ import * as DocumentHelper from '../document/document.helper';
 import { deleteDocuments } from '../document/document.helper';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
-  CUSTOM_DASHBOARD_DOCUMENT_TYPE,
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './custom-dashboards.domain';
 
 describe('custom dashboards app', () => {
@@ -57,7 +57,7 @@ describe('custom dashboards app', () => {
         minio_name: 'minioName',
         file_name: 'customDashboardsFilename',
         service_instance_id: SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
-        type: CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         active: true,
       },
       []
@@ -94,7 +94,7 @@ describe('custom dashboards app', () => {
 
     const trx = await dbTx();
     await createDocumentWithChildren<CustomDashboard>(
-      CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+      OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -103,7 +103,7 @@ describe('custom dashboards app', () => {
         minio_name: 'minioName',
         file_name: 'customDashboardsFilename',
         service_instance_id: SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
-        type: CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         active: true,
       },
       [],
@@ -139,7 +139,7 @@ describe('custom dashboards app', () => {
 
     const trx = await dbTx();
     await createDocumentWithChildren<CustomDashboard>(
-      CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+      OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -149,7 +149,7 @@ describe('custom dashboards app', () => {
         minio_name: 'minioName',
         file_name: 'customDashboardsFilename',
         service_instance_id: SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
-        type: CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         active: true,
       },
       [],

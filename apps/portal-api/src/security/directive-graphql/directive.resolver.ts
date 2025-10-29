@@ -1,6 +1,6 @@
 import { PortalContext } from '../../model/portal-context';
 import { getCapabilities } from '../../modules/users/users.domain';
-import { logApp } from '../../utils/app-logger.util';
+import { ForbiddenAccess } from '../../utils/error/error.util';
 import { AuthFn, RoleFn, ServiceFn } from './directive.model';
 
 /**
@@ -40,15 +40,14 @@ export const createSecureFieldResolver = (
 
     // Authentication check
     if (authDirective && !isAuthenticatedFn(user)) {
-      logApp.warn('User not authenticated');
-      return undefined;
+      throw ForbiddenAccess('Not authorized: You are not authenticated');
     }
 
     // Authorization check
     if (authDirective) {
       const capabilitiesRequired = authDirective.requires || [];
       if (!hasCapabilityFn(user, capabilitiesRequired)) {
-        throw new Error(
+        throw ForbiddenAccess(
           'Not authorized: The provided role does not meet schema requirements'
         );
       }
@@ -64,7 +63,7 @@ export const createSecureFieldResolver = (
       );
 
       if (!hasCapability) {
-        throw new Error(
+        throw ForbiddenAccess(
           "Not authorized: You don't have access to this service"
         );
       }

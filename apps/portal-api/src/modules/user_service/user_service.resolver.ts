@@ -27,13 +27,13 @@ import {
 const resolvers: Resolvers = {
   UserService: {
     user: ({ user_id }) => loadUserDetails({ 'User.id': user_id as UserId }),
-    subscription: ({ id }, _, context) => getSubscription(context, id),
-    user_service_capability: ({ id }, _, context) =>
-      getUserServiceCapabilities(context, id as UserServiceId),
+    subscription: ({ id }, _) => getSubscription(id),
+    user_service_capability: ({ id }, _) =>
+      getUserServiceCapabilities(id as UserServiceId),
   },
   Query: {
     userServiceOwned: (_, { first, after, orderMode, orderBy }, context) => {
-      return loadUserServiceByUser(context, {
+      return loadUserServiceByUser(context.user, {
         first,
         after,
         orderMode,
@@ -42,11 +42,9 @@ const resolvers: Resolvers = {
     },
     userServiceFromSubscription: async (
       _,
-      { first, after, orderMode, orderBy, subscription_id },
-      context
+      { first, after, orderMode, orderBy, subscription_id }
     ) => {
       return loadUserServiceBySubscription(
-        context,
         {
           first,
           after,
@@ -74,7 +72,6 @@ const resolvers: Resolvers = {
           throw new Error(ErrorCode.SubscriptionNotFound);
         }
         return userServiceApp.addUserService(
-          context,
           trx,
           subscription,
           input.email,
@@ -99,7 +96,6 @@ const resolvers: Resolvers = {
           throw new Error(ErrorCode.SubscriptionNotFound);
         }
         return userServiceApp.addUserService(
-          context,
           trx,
           subscription,
           input.email,
@@ -110,12 +106,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
-    deleteUserService: async (_, { input }, context) => {
+    deleteUserService: async (_, { input }) => {
       const userToDelete = await loadUserBy({ email: input.email });
-      const [deletedUserService] = await db<UserService>(
-        context,
-        'User_Service'
-      )
+      const [deletedUserService] = await db<UserService>('User_Service')
         .where('user_id', '=', userToDelete.id)
         .where(
           'subscription_id',
@@ -138,7 +131,7 @@ const resolvers: Resolvers = {
           await loadSubscriptionWithOrganizationAndCapabilitiesBy({
             'Subscription.id': deletedUserService?.subscription_id,
           } as SubscriptionMutator);
-        await db<Subscription>(context, 'Subscription')
+        await db<Subscription>('Subscription')
           .where('Subscription.id', '=', subscription.id)
           .delete('*')
           .returning('*');

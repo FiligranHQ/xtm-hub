@@ -2,7 +2,6 @@ import { Knex } from 'knex';
 import Subscription from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
-import { PortalContext } from '../../model/portal-context';
 import {
   getOrCreateUser,
   insertUserIntoOrganization,
@@ -14,7 +13,6 @@ import {
 
 export const userServiceApp = {
   addUserService: async (
-    context: PortalContext,
     trx: Knex.Transaction,
     subscription: Subscription,
     emails: string[],
@@ -34,15 +32,11 @@ export const userServiceApp = {
         );
 
         if (!userServiceAlreadyExist) {
-          const createdUserService = await createUserServiceAccess(
-            context,
-            trx,
-            {
-              subscription_id: subscription.id,
-              user_id: user.id as UserId,
-              capabilities: capabilities,
-            }
-          );
+          const createdUserService = await createUserServiceAccess(trx, {
+            subscription_id: subscription.id,
+            user_id: user.id as UserId,
+            capabilities: capabilities,
+          });
           userServices.push(createdUserService);
         }
       }

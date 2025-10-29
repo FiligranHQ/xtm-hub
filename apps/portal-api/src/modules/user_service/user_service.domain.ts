@@ -12,23 +12,19 @@ import UserService, {
   UserServiceMutator,
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
-import { PortalContext } from '../../model/portal-context';
+import { UserLoadUserBy } from '../../model/user';
+import { requestContext } from '../../requestContext';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
 import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
 
-export const insertUserService = async (context, userServiceData) => {
-  return db<UserService>(context, 'User_Service')
-    .insert(userServiceData)
-    .returning('*');
+export const insertUserService = async (userServiceData) => {
+  return db<UserService>('User_Service').insert(userServiceData).returning('*');
 };
 
-export const loadUserServiceById = async (
-  context: PortalContext,
-  userServiceId
-) => {
-  return db<UserService>(context, 'User_Service')
+export const loadUserServiceById = async (userServiceId) => {
+  return db<UserService>('User_Service')
     .where('User_Service.id', '=', userServiceId)
     .leftJoin(
       'Subscription as sub',
@@ -71,8 +67,8 @@ export const loadUserServiceById = async (
     .first();
 };
 
-export const getSubscription = (context, id) => {
-  return db<Subscription>(context, 'User_Service')
+export const getSubscription = (id) => {
+  return db<Subscription>('User_Service')
     .where('User_Service.id', id)
     .leftJoin(
       'Subscription as sub',
@@ -85,10 +81,9 @@ export const getSubscription = (context, id) => {
 };
 
 export const getUserServiceCapabilities = async (
-  context: PortalContext,
   userServiceId: UserServiceId
 ) => {
-  const initialQuery = db<UserServiceCapability>(context, 'User_Service').where(
+  const initialQuery = db<UserServiceCapability>('User_Service').where(
     'User_Service.id',
     userServiceId
   );
@@ -164,12 +159,8 @@ export const getUserServiceCapabilities = async (
   ];
   return userServiceCapability.length > 0 ? userServiceCapability : undefined;
 };
-export const loadUserServiceBySubscription = (
-  context: PortalContext,
-  opts,
-  subscriptionId
-) => {
-  const userServiceQuery = db<UserService>(context, 'User_Service', opts)
+export const loadUserServiceBySubscription = (opts, subscriptionId) => {
+  const userServiceQuery = db<UserService>('User_Service', opts)
     .where('subscription_id', '=', subscriptionId)
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
     .select([
@@ -189,11 +180,11 @@ export const loadUserServiceBySubscription = (
     userServiceQuery
   );
 };
-export const loadUserServiceByUser = (context: PortalContext, opts) => {
-  const userSelectedOrganization = context.user.selected_organization_id;
-  const userId = context.user.id;
+export const loadUserServiceByUser = (user: UserLoadUserBy, opts) => {
+  const userSelectedOrganization = user.selected_organization_id;
+  const userId = user.id;
 
-  const userServiceQuery = db<UserService>(context, 'User_Service', opts)
+  const userServiceQuery = db<UserService>('User_Service', opts)
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
     .leftJoin(
       'Subscription as sub',
@@ -238,7 +229,6 @@ export const loadUserServiceByUser = (context: PortalContext, opts) => {
 };
 
 export const addAdminAccess = async (
-  context: PortalContext,
   adminId: UserId,
   subscriptionId: SubscriptionId,
   isPersonalSpace: boolean = false
@@ -248,7 +238,7 @@ export const addAdminAccess = async (
     user_id: adminId,
     subscription_id: subscriptionId,
   };
-  const [userService] = await insertUserService(context, dataUserService);
+  const [userService] = await insertUserService(dataUserService);
   const capabilitiesId = isPersonalSpace
     ? [GenericServiceCapabilityIds.AccessId]
     : [
@@ -260,15 +250,14 @@ export const addAdminAccess = async (
     user_service_id: userService.id,
     generic_service_capability_id: capabilityId,
   }));
-
-  await insertServiceCapability(context, dataCapabilities);
+  const { portalContext } = requestContext.require();
+  await insertServiceCapability(portalContext, dataCapabilities);
 };
 
 export const loadUserServiceBy = async (
-  context: PortalContext,
   field:
     | addPrefixToObject<UserServiceMutator, 'User_Service.'>
     | UserServiceMutator
 ): Promise<UserService[]> => {
-  return db<UserService>(context, 'User_Service').where(field);
+  return db<UserService>('User_Service').where(field);
 };

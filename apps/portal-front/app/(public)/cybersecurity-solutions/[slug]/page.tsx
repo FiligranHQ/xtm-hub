@@ -1,9 +1,13 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
+import ShareableResourceConnectorCard from '@/components/ui/shareable-resource/shareable-resource-connector-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isConnectorResource,
+  ServiceSlug,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -199,6 +203,17 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         )) || (
           <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
             {documents.map((document) => {
+              if (isConnectorResource(document)) {
+                return (
+                  <ShareableResourceConnectorCard
+                    key={document.id}
+                    shareableConnector={document}
+                    serviceInstance={serviceInstance}
+                    detailUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
+                    shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
+                  />
+                );
+              }
               return (
                 <ShareableResourceCard
                   key={document.id}

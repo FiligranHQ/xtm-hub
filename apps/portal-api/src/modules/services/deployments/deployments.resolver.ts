@@ -23,11 +23,21 @@ const resolvers: Resolvers = {
   Mutation: {
     createDeploymentRequest: async (_, { input }) => {
       try {
-        return await DeploymentsApp.createDeployment(input);
+        return await DeploymentsApp.createDeploymentRequest(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.CreateDeploymentRequestError
+        );
+      }
+    },
+    updateDeploymentRequest: async (_, { input }) => {
+      try {
+        return await DeploymentsApp.updateDeploymentRequest(input);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
         );
       }
     },

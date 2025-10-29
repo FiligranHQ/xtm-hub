@@ -64,6 +64,7 @@
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
+      "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "You cannot request a free trial in your personal space",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
       "CSV_FEED_DELETION_ERROR": "Error occurred while deleting CSV Feed",
@@ -76,6 +77,8 @@
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION_ERROR": "Error while deleting organization",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
+      "DEPLOYMENT_REQUEST_NOT_FOUND": "An unknown error occurred",
+      "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "An unknown error occurred",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "An unknown error occurred",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
@@ -94,6 +97,7 @@
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
+      "MISSING_START_OR_END_DATE": "An unknown error occurred",
       "NO_ASYNC_CONTEXT_AVAILABLE": "An unknown error occurred",
       "OPENAEV_SCENARIO_DELETE_ERROR": "An error occurred while deleting an OpenAEV Scenario",
       "OPENAEV_SCENARIO_INSERTION_ERROR": "An error occurred while creating an OpenAEV Scenario",
@@ -122,8 +126,7 @@
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "An error occurred while updating platform service metadata",
       "USER_DISABLED": "User is disabled",
-      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
-      "YOU_CAN_NOT_LOGIN": "You are not authorized to log in"
+      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions"
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -263,7 +266,7 @@
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {
-      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenBAS platforms."
+      "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
     },
     "Title": "Profile",
     "UpdateProfile": "Update profile",
@@ -506,6 +509,36 @@
       "SureDeleteService": "Are you sure you want to delete the {name} dashboard?",
       "UpdateService": "Update dashboard"
     },
+    "OpenAEVScenario": {
+      "Actions": {
+        "Added": "The scenario {name} has been added successfully",
+        "Deleted": "The scenario {name} has been deleted successfully",
+        "Updated": "The scenario {name} has been modified successfully",
+        "Share": "Share Scenario"
+      },
+      "Form": {
+        "NameLabel": "Name",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
+        "LabelsLabel": "Labels",
+        "LabelsPlaceholder": "Add labels",
+        "OpenAEVScenarioFile": "Scenario file",
+        "ExistingOpenAEVScenarioFile": "Existing scenario file: {file_name}",
+        "OpenAEVScenarioIllustration": "Illustration",
+        "ExistingOpenAEVScenarioIllustration": "Existing scenario illustration: {file_name}",
+        "PublishedPlaceholder": "Is the scenario published?",
+        "Author": "Author",
+        "ProductVersionLabel": "OpenAEV Version"
+      },
+      "AddService": "Add new scenario",
+      "UpdateService": "Update the scenario {name}",
+      "DeleteService": "Delete the scenario {name}",
+      "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
+      "NonActive": "Draft",
+      "Active": "Published"
+    },
     "Description": "Description",
     "GoTo": "Go to service page",
     "GoToAdminLabel": "Manage",
@@ -536,36 +569,6 @@
     "Name": "Name",
     "NoOwnedService": "You don't have any services yet.",
     "NoService": "There is no service... Yet!",
-    "ObasScenario": {
-      "Actions": {
-        "Added": "The scenario {name} has been added successfully",
-        "Deleted": "The scenario {name} has been deleted successfully",
-        "Share": "Share Scenario",
-        "Updated": "The scenario {name} has been modified successfully"
-      },
-      "Active": "Published",
-      "AddService": "Add new scenario",
-      "DeleteService": "Delete the scenario {name}",
-      "Form": {
-        "Author": "Author",
-        "DescriptionLabel": "Description",
-        "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
-        "ExistingObasScenarioFile": "Existing scenario file: {file_name}",
-        "ExistingObasScenarioIllustration": "Existing scenario illustration: {file_name}",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
-        "NameLabel": "Name",
-        "ObasScenarioFile": "Scenario file",
-        "ObasScenarioIllustration": "Illustration",
-        "ProductVersionLabel": "OpenBAS Version",
-        "PublishedPlaceholder": "Is the scenario published?",
-        "ShortDescriptionLabel": "Short Description",
-        "SlugLabel": "Slug"
-      },
-      "NonActive": "Draft",
-      "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
-      "UpdateService": "Update the scenario {name}"
-    },
     "Organizations": "Organizations",
     "SearchServices": "Search service...",
     "ServiceName": "Service name",
@@ -602,9 +605,16 @@
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
       "Explore": "Explore OpenCTI platform with 30 days",
+      "Active": "Your trial platform activated",
+      "Provisionning": "Your OpenCTI platform Free Trial platform is",
+      "ProvisionningBold": "currently getting provisionned!",
+      "Expired": "Your trial platform has expired",
+      "DaysRemaning": "{days} Days remaining",
       "FreeTrial": "Free Trial!",
       "LearnMore": "Learn more",
       "StartTrial": "Start a Trial",
+      "GoToMyTrial": "Go to my trial",
+      "ReachSales": "Reach out to sales",
       "Form": {
         "Region": "Region",
         "AssociatedEmail": "Associated Email",
@@ -614,6 +624,12 @@
         "MSSA": "MSSA",
         "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
+      },
+      "Display": {
+        "New": "New",
+        "Title": "OpenCTI - Free Trial platform",
+        "DaysRemaning": "{numberOfDays} Days Remaining",
+        "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."
       }
     },
     "Vault": {
