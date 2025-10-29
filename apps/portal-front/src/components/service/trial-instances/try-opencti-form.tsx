@@ -9,6 +9,7 @@ import {
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import {
   AutoForm,
@@ -37,6 +38,12 @@ export const tryOpenCTIFormSchema = z.object({
   acceptTerms: z.boolean().refine((value) => value === true, {
     message: 'You must accept the MSSA',
   }),
+  status: z
+    .enum([
+      DeploymentRequestStatusEnum.QUEUED,
+      DeploymentRequestStatusEnum.PENDING,
+    ])
+    .default(DeploymentRequestStatusEnum.PENDING),
 });
 
 interface TryOpenCTIFormProps {
@@ -76,7 +83,10 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
       handleSubmit({ ...values });
     } else {
       setIsDialogOpen(true);
-      setPendingValues(values);
+      setPendingValues({
+        ...values,
+        status: DeploymentRequestStatusEnum.QUEUED,
+      });
     }
   };
 
@@ -158,6 +168,9 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                   <FormMessage className="text-sm text-destructive" />
                 </FormItem>
               ),
+            },
+            status: {
+              fieldType: () => <FormItem hidden />,
             },
           }}>
           <div className="flex justify-end gap-s">

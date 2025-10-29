@@ -128,6 +128,57 @@ describe('Deployment app', () => {
         ServiceInstanceCreationStatus.Pending
       );
     });
+    it('should create a deployment request with queued status if specified', async () => {
+      const deployment = await DeploymentsApp.createDeploymentRequest({
+        activity_sector: 'cybersecurity',
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: PlatformRegion.Us,
+        type: DeploymentType.Trial,
+        status: DeploymentRequestStatus.Queued,
+      });
+
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      expect(dbDeploymentRequest).toMatchObject({
+        activity_sector: 'cybersecurity',
+        id: expect.any(String),
+        job_title: 'myJob',
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        platform_identifier: PlatformIdentifier.Opencti,
+        platform_token: expect.any(String),
+        region: PlatformRegion.Us,
+        request_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+        status: DeploymentRequestStatus.Queued,
+        type: DeploymentType.Trial,
+        use_case: 'use_case',
+        user_requester_id: ADMIN_UUID,
+      });
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        contextAdminUser,
+        'id',
+        dbDeploymentRequest.service_instance_id
+      );
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Disabled
+      );
+    });
+    it('should throw if an invalid status is specified', async () => {
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector: 'cybersecurity',
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: PlatformRegion.Us,
+        type: DeploymentType.Trial,
+        status: DeploymentRequestStatus.Active,
+      });
+      await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
+    });
   });
   describe('loadDeploymentRequests', () => {
     it('should return created deployment requests', async () => {

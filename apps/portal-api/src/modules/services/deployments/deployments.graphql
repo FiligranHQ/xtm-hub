@@ -57,6 +57,7 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+  status: DeploymentRequestStatus
 }
 
 input UpdateDeploymentRequestInput {

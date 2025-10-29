@@ -104,6 +104,7 @@ describe('Registration domain', () => {
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         platformIdentifier: PlatformIdentifier.Opencti,
+        serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
       });
 
       const serviceInstance = await dbUnsecure<ServiceInstance>(

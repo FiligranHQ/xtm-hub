@@ -308,6 +308,7 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+  status: DeploymentRequestStatus
 }
 
 input UpdateDeploymentRequestInput {
@@ -726,6 +727,7 @@ enum ServiceInstanceOrdering {
 }
 
 enum ServiceInstanceCreationStatus {
+  DISABLED
   PENDING
   CREATED
   READY

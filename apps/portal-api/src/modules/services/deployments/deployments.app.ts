@@ -12,6 +12,7 @@ import {
   PlatformIdentifier,
   PlatformRegion,
   QueryDeploymentRequestsArgs,
+  ServiceInstanceCreationStatus,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
@@ -45,6 +46,15 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
 
+    if (
+      input.status &&
+      ![
+        DeploymentRequestStatus.Pending,
+        DeploymentRequestStatus.Queued,
+      ].includes(input.status)
+    ) {
+      throw new Error(BadRequestErrorCode.InvalidStatus);
+    }
     await assertFreeTrialsLimit(context.user.selected_organization_id);
 
     const serviceDefinition =
@@ -62,6 +72,10 @@ export const DeploymentsApp = {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: context.user.selected_organization_id,
         platformIdentifier: input.platform_identifier,
+        serviceInstanceCreationStatus:
+          input.status === DeploymentRequestStatus.Queued
+            ? ServiceInstanceCreationStatus.Disabled
+            : ServiceInstanceCreationStatus.Pending,
       });
 
       const createdDeploymentRequest =
@@ -70,7 +84,7 @@ export const DeploymentsApp = {
           user_requester_id: context.user.id,
           organization_requester_id: context.user.selected_organization_id,
           service_instance_id: serviceInstanceId,
-          status: DeploymentRequestStatus.Pending,
+          status: input.status ?? DeploymentRequestStatus.Pending,
           type: input.type,
           platform_identifier: input.platform_identifier,
           region: input.region,
@@ -79,6 +93,7 @@ export const DeploymentsApp = {
           activity_sector: input.activity_sector,
           platform_token: uuidv4(),
         });
+
       await trx.commit();
       return {
         id: createdDeploymentRequest.id,

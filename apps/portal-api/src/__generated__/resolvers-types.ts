@@ -136,6 +136,7 @@ export type CreateDeploymentRequestInput = {
   job_title?: InputMaybe<Scalars['String']['input']>;
   platform_identifier: PlatformIdentifier;
   region: PlatformRegion;
+  status?: InputMaybe<DeploymentRequestStatus>;
   type: DeploymentType;
   use_case?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1501,6 +1502,7 @@ export type ServiceInstance = Node & {
 
 export enum ServiceInstanceCreationStatus {
   Created = 'CREATED',
+  Disabled = 'DISABLED',
   Pending = 'PENDING',
   Ready = 'READY'
 }
