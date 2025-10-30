@@ -1,6 +1,7 @@
 enum PlatformContract {
   CE
   EE
+  Trial
 }
 
 type RegisteredPlatform implements Node {
@@ -118,4 +119,5 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatus(
     input: RefreshPlatformRegistrationConnectivityStatusInput!
   ): RefreshPlatformRegistrationConnectivityStatusResponse!
+  autoRegisterPlatform(platform: PlatformInput!): Success!
 }

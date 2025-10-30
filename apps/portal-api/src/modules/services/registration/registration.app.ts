@@ -2,11 +2,13 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterPlatformInput,
+  DeploymentRequestStatus,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
+  PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
@@ -16,8 +18,10 @@ import {
   RegisterPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
   UnregisterPlatformInput,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
@@ -26,7 +30,12 @@ import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  ForbiddenErrorCode,
+  NotFoundErrorCode,
+} from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
@@ -39,7 +48,11 @@ import {
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
-import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
+import { DeploymentRequestDomain } from '../deployments/deployments.domain';
+import {
+  loadServiceDefinitionByServiceInstance,
+  updateServiceInstance,
+} from '../service-instance.domain';
 import {
   PlatformConfiguration,
   registrationDomain,
@@ -417,5 +430,51 @@ export const registrationApp = {
     await updateUser(context.user.id, { platform_token: token });
 
     return { token };
+  },
+
+  autoRegisterPlatform: async (token: string, platform: PlatformInput) => {
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        platform_token: token,
+      });
+    if (!deploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+    if (
+      deploymentRequest.product_service_instance_id &&
+      deploymentRequest.product_service_instance_id !== platform.id
+    ) {
+      throw new Error(BadRequestErrorCode.InvalidPlatformId);
+    }
+    if (
+      ![
+        DeploymentRequestStatus.Provisioning,
+        DeploymentRequestStatus.Active,
+      ].includes(deploymentRequest.status)
+    ) {
+      throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
+    }
+
+    const configuration: PlatformConfiguration = {
+      registerer_id: deploymentRequest.user_requester_id,
+      platform_id: platform.id,
+      platform_url: platform.url,
+      platform_title: platform.title,
+      platform_contract: platform.contract,
+      platform_version: platform.version,
+      token: deploymentRequest.platform_token,
+    };
+
+    await withTransaction(async () => {
+      await Promise.all([
+        serviceContractDomain.createConfiguration(
+          deploymentRequest.service_instance_id,
+          configuration
+        ),
+        updateServiceInstance(deploymentRequest.service_instance_id, {
+          creation_status: ServiceInstanceCreationStatus.Ready,
+        }),
+      ]);
+    });
   },
 };

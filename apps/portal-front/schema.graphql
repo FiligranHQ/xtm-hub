@@ -105,6 +105,7 @@ type Mutation {
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  autoRegisterPlatform(platform: PlatformInput!): Success!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -645,6 +646,7 @@ type OpenCTIPlatformRegistrationStatusResponse {
 enum PlatformContract {
   CE
   EE
+  Trial
 }
 
 type RegisteredPlatform implements Node {

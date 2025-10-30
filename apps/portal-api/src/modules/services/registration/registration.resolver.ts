@@ -3,6 +3,7 @@ import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
@@ -136,6 +137,11 @@ const resolvers: Resolvers = {
         context,
         input
       ),
+    autoRegisterPlatform: async (_, { platform }, context: PortalContext) => {
+      const token = context.req.header('XTM-Hub-Platform-Token');
+      await registrationApp.autoRegisterPlatform(token, platform);
+      return { success: true };
+    },
   },
 };
 
