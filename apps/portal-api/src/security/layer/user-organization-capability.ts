@@ -1,6 +1,6 @@
 import { KnexQueryBuilder } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../requestContext';
+import { requestContext } from '../../context/request.context';
 import { SecuryQueryHandlers } from '../access';
 import { checkUserCapabilities } from '../utils/user';
 

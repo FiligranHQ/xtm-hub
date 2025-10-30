@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+import { requestContext } from '../../../context/request.context';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
-import { requestContext } from '../../../requestContext';
 import * as UserServiceDomain from '../../user_service/user_service.domain';
 import { GenericServiceCapabilityName } from './generic_service_capability.const';
 import * as ServiceCapaDomain from './service-capability.domain';

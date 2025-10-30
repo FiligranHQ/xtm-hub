@@ -1,5 +1,6 @@
 import { db, dbUnsecure } from '../../../knexfile';
 import { OrganizationCapabilitiesInput } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
@@ -8,7 +9,6 @@ import UserOrganization, {
   UserOrganizationInitializer,
   UserOrganizationMutator,
 } from '../../model/kanel/public/UserOrganization';
-import { requestContext } from '../../requestContext';
 import { sendMail } from '../../server/mail-service';
 import { extractId, isEmpty } from '../../utils/utils';
 import {
@@ -30,7 +30,9 @@ export const insertNewUserOrganizationUnsecure = (
     .returning('*');
 };
 
-export const loadUserOrganization = (field: UserOrganizationMutator) => {
+export const loadUserOrganization = (
+  field: UserOrganizationMutator
+): Promise<UserOrganization[]> => {
   return db<UserOrganization>('User_Organization').where(field);
 };
 

@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { OrganizationInput } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { dispatch } from '../../pub';
-import { requestContext } from '../../requestContext';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';

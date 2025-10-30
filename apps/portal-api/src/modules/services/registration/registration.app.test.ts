@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { dbUnsecure } from '../../../../knexfile';
+import { db, dbUnsecure } from '../../../../knexfile';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
@@ -25,13 +25,20 @@ import {
   PlatformIdentifier,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
+  PlatformRegistrationStatus,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
-import Subscription from '../../../model/kanel/public/Subscription';
+import { requestContext } from '../../../context/request.context';
+import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../../model/kanel/public/ServiceInstance';
+import Subscription, {
+  SubscriptionId,
+} from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
-import { requestContext } from '../../../requestContext';
 import * as authHelper from '../../../security/auth.helper';
 import { ErrorCode } from '../../../utils/error/error.code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
@@ -46,6 +53,201 @@ import * as serviceInstanceDomain from '../service-instance.domain';
 import { registrationApp } from './registration.app';
 
 describe('Registration app', () => {
+  afterAll(async () => {
+    vi.useRealTimers();
+  });
+
+  describe('loadPlatformAssociatedOrganization', () => {
+    it('should return null when platform is not found', async () => {
+      const result = await registrationApp.loadPlatformAssociatedOrganization(
+        contextAdminUser,
+        'unknown-id'
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it('should throw an error when subscription is not found', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+
+      const call = registrationApp.loadPlatformAssociatedOrganization(
+        contextAdminUser,
+        platformId
+      );
+
+      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
+    });
+
+    it('should throw an error when user is not in the organization', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+
+      const call = registrationApp.loadPlatformAssociatedOrganization(
+        contextSimpleUserThales,
+        platformId
+      );
+
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+
+    it('should return an organization when platform is found and user is allowed', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+
+      const result = await registrationApp.loadPlatformAssociatedOrganization(
+        contextAdminUser,
+        platformId
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(PLATFORM_ORGANIZATION_UUID);
+    });
+  });
+
+  describe('isPlatformRegistered', () => {
+    it(`should return never registered when platform is not registered`, async () => {
+      const platformId = uuidv4();
+      const result = await registrationApp.isPlatformRegistered(
+        contextAdminUser,
+        {
+          platformId,
+        }
+      );
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe(PlatformRegistrationStatus.NeverRegistered);
+      expect(result.organization).toBeUndefined();
+      expect(result.platformTitle).toBeUndefined();
+    });
+
+    it('should throw subscription not found error when associated subscription is not found', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+
+      const call = registrationApp.isPlatformRegistered(contextAdminUser, {
+        platformId,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
+    });
+
+    it('should return registered when platform registration is active', async () => {
+      const platformId = uuidv4();
+      const platformTitle = 'Platform title';
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId, platform_title: platformTitle },
+        status: ServiceConfigurationStatus.Active,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+
+      const result = await registrationApp.isPlatformRegistered(
+        contextAdminUser,
+        {
+          platformId,
+        }
+      );
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe(PlatformRegistrationStatus.Registered);
+      expect(result.organization?.id).toBe(PLATFORM_ORGANIZATION_UUID);
+      expect(result.platformTitle).toBe(platformTitle);
+    });
+    it('should return unregistered when platform registration is inactive', async () => {
+      const platformId = uuidv4();
+      const platformTitle = 'Platform title';
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId, platform_title: platformTitle },
+        status: ServiceConfigurationStatus.Inactive,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+
+      const result = await registrationApp.isPlatformRegistered(
+        contextAdminUser,
+        {
+          platformId,
+        }
+      );
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe(PlatformRegistrationStatus.Unregistered);
+      expect(result.organization?.id).toBe(PLATFORM_ORGANIZATION_UUID);
+      expect(result.platformTitle).toBe(platformTitle);
+    });
+  });
+
   describe('registerPlatform', () => {
     const platform: PlatformInput = {
       id: uuidv4(),
@@ -519,9 +721,5 @@ describe('Registration app', () => {
       expect(anotherToken).toBe(updatedUser.platform_token);
       expect(anotherToken === token).toBeFalsy();
     });
-  });
-
-  afterAll(async () => {
-    vi.useRealTimers();
   });
 });

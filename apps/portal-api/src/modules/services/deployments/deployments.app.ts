@@ -13,16 +13,16 @@ import {
   QueryDeploymentRequestsArgs,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
-import { requestContext } from '../../../requestContext';
 import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
-import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
+import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';

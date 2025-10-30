@@ -1,12 +1,22 @@
+import {
+  ServiceListFilterKey,
+  ServiceListFilterMap,
+} from '@/components/service/components/header/service-list-header';
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/components/service/components/use-service-list-local-storage';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import {
   integrationFeedsFragment,
   integrationFeedsItem,
   IntegrationFeedsListQuery,
 } from '@/components/service/integration-feeds/integration-feed.graphql';
+import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
 import {
   integrationFeedsItem_fragment$data,
   integrationFeedsItem_fragment$key,
@@ -23,10 +33,8 @@ import {
 interface IntegrationFeedsListProps {
   queryRef: PreloadedQuery<integrationFeedsQuery>;
   serviceInstance: serviceInstance_fragment$data;
-  labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
-  onLabelFilterChange: (v: string[]) => void;
 }
 
 const IntegrationFeedsList = ({
@@ -34,8 +42,6 @@ const IntegrationFeedsList = ({
   serviceInstance,
   search,
   onSearchChange,
-  onLabelFilterChange,
-  labels,
 }: IntegrationFeedsListProps) => {
   const queryData = usePreloadedQuery<integrationFeedsQuery>(
     IntegrationFeedsListQuery,
@@ -56,16 +62,32 @@ const IntegrationFeedsList = ({
 
   const context = useCsvFeedContext(serviceInstance, connectionId);
 
+  const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
+
+  const { removeConnectorTypes, removeIntegrationTypes } =
+    useServiceListLocalStorage(localStorageKey);
+
+  const filters: ServiceListFilterMap = {
+    [ServiceListFilterKey.IntegrationFeedType]: {
+      node: <IntegrationFeedFilters />,
+      reset: () => {
+        removeConnectorTypes();
+        removeIntegrationTypes();
+      },
+    },
+  };
+
   return (
     <AppServiceContext {...context}>
-      <ServiceList
-        active={active}
-        draft={draft}
-        search={search}
-        onSearchChange={onSearchChange}
-        labels={labels}
-        onLabelFilterChange={onLabelFilterChange}
-      />
+      <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
+        <ServiceList
+          active={active}
+          draft={draft}
+          search={search}
+          onSearchChange={onSearchChange}
+          additionalFilters={filters}
+        />
+      </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>
   );
 };

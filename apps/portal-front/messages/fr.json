@@ -132,7 +132,7 @@
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
   },
   "GenericActions": {
-    "FilterLabels": "Filtrer par étiquettes...",
+    "FilterUseCases": "Cas d'utilisation...",
     "Search": "Recherche..."
   },
   "GoToProd": "Allez sur la production",
@@ -433,6 +433,22 @@
     "OpenctiIntegrationFeeds": {
       "Actions": {
         "Share": "Partager l'intégration Feed"
+      },
+      "Filter": {
+        "Connector": {
+          "Type": {
+            "Placeholder": "Type de connecteur..."
+          }
+        },
+        "Type": {
+          "Placeholder": "Type...",
+          "csv_feed": "Flux CSV",
+          "connector": "Connecteurs",
+          "rss_feed": "Flux RSS",
+          "json_feed": "Flux JSON",
+          "opencti_stream_feed": "Flux OpenCTI",
+          "third_party_integration": "Intégrations tierces"
+        }
       }
     },
     "CsvFeed": {
@@ -546,6 +562,16 @@
     "GoToManagement": "Aller à la gestion des services",
     "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "Join": "Rejoindre",
+    "List": {
+      "Filter": {
+        "Add": "Ajouter un filtre",
+        "NoOptions": "Pas d'options",
+        "Key": {
+          "label": "Cas d'utilisation",
+          "integration_feed_type": "Type de flux d'intégration"
+        }
+      }
+    },
     "Management": {
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
       "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",

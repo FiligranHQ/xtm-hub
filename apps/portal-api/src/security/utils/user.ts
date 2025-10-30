@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { dbUnsecure } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../requestContext';
+import { requestContext } from '../../context/request.context';
 import { ForbiddenAccess } from '../../utils/error/error.util';
 
 export const checkUserCapabilities = async (

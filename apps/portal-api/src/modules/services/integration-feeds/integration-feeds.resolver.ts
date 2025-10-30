@@ -1,4 +1,7 @@
-import { Resolvers } from '../../../__generated__/resolvers-types';
+import {
+  IntegrationFeedType,
+  Resolvers,
+} from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
@@ -10,18 +13,14 @@ import {
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { integrationFeedsApp } from './integration-feeds.app';
-import {
-  INTEGRATION_FEED_CONNECTORS_TYPE,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
-  IntegrationFeed,
-} from './integration-feeds.model';
+import { IntegrationFeed } from './integration-feeds.model';
 
 const resolvers: Resolvers = {
   IntegrationFeed: {
     __resolveType(feed: IntegrationFeed) {
       const mapping = {
-        [INTEGRATION_FEED_CONNECTORS_TYPE]: 'Connector',
-        [INTEGRATION_FEED_CSV_FEED_TYPE]: 'CsvFeed',
+        [IntegrationFeedType.Connector]: 'Connector',
+        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
       };
 
       return mapping[feed.integration_type];
@@ -47,6 +46,8 @@ const resolvers: Resolvers = {
         context,
         extractId<DocumentId>(id)
       ),
+    publicIntegrationFeeds: async (_, input) =>
+      integrationFeedsApp.loadPaginatedPublicAccessIntegrationFeeds(input),
     publicIntegrationFeedByServiceSlug: async (_, { serviceSlug }) =>
       integrationFeedsApp.loadPublicAccessIntegrationFeeds(serviceSlug),
     publicIntegrationFeedBySlug: async (_, { slug }) =>

@@ -1,5 +1,8 @@
 'use client';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  PublicShareableResource,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Carousel, CarouselItem } from 'filigran-ui/clients';
@@ -9,7 +12,7 @@ import Link from 'next/link';
 import ShareableResourceBento from './shareable-resource-bento';
 
 interface ShareableResourceCardIllustrationProps {
-  document: ShareableResource;
+  document: ShareableResource | PublicShareableResource;
   detailUrl: string;
   serviceInstance:
     | serviceInstance_fragment$data

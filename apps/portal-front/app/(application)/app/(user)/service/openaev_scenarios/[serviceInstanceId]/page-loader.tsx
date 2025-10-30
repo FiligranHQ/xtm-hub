@@ -1,6 +1,9 @@
 'use client';
 
-import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/components/service/components/use-service-list-local-storage';
 import OpenaevScenariosList from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenarios-list';
 import { OpenaevScenariosListQuery } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 import { openaevScenariosQuery } from '@generated/openaevScenariosQuery.graphql';
@@ -17,8 +20,9 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<openaevScenariosQuery>(
     OpenaevScenariosListQuery
   );
-  const { count, search, labels, setSearch, setLabels } =
-    serviceListLocalStorage('OpenAEVScenario');
+  const { count, search, labels, setSearch } = useServiceListLocalStorage(
+    ServiceListLocalStorageKey.OpenAEVScenarios
+  );
 
   useEffect(() => {
     loadQuery(
@@ -44,8 +48,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
           queryRef={queryRef}
           search={search}
           onSearchChange={setSearch}
-          onLabelFilterChange={setLabels}
-          labels={labels}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

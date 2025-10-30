@@ -2,10 +2,10 @@ import {
   AdminEditUserInput,
   EditUserCapabilitiesInput,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { dispatch } from '../../pub';
-import { requestContext } from '../../requestContext';
 import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';

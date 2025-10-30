@@ -8,13 +8,13 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
-import { requestContext } from '../../../requestContext';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';

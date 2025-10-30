@@ -1,4 +1,5 @@
 import { dbTx } from '../../../../../knexfile';
+import { IntegrationFeedType } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import { PortalContext } from '../../../../model/portal-context';
 import { logApp } from '../../../../utils/app-logger.util';
@@ -10,9 +11,8 @@ import {
   Upload,
 } from '../../document/document.helper';
 import {
-  CSV_FEED_METADATA,
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
+  INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds.model';
 
@@ -26,9 +26,9 @@ export const csvFeedsApp = {
     try {
       const doc = await createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-        { ...input, integration_type: INTEGRATION_FEED_CSV_FEED_TYPE },
+        { ...input, integration_type: IntegrationFeedType.CsvFeed },
         document,
-        CSV_FEED_METADATA,
+        INTEGRATION_FEED_CSV_FEED_METADATA,
         context,
         trx
       );

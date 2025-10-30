@@ -1,6 +1,9 @@
 'use client';
 
-import { serviceListLocalStorage } from '@/components/service/components/service-list-localstorage';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/components/service/components/use-service-list-local-storage';
 import IntegrationFeedsList from '@/components/service/integration-feeds/[serviceInstanceId]/integration-feeds-list';
 import { IntegrationFeedsListQuery } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
@@ -17,8 +20,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<integrationFeedsQuery>(
     IntegrationFeedsListQuery
   );
-  const { count, search, labels, setSearch, setLabels } =
-    serviceListLocalStorage('csvFeed');
+  const { count, search, labels, integrationTypes, connectorTypes, setSearch } =
+    useServiceListLocalStorage(
+      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+    );
 
   useEffect(() => {
     loadQuery(
@@ -28,13 +33,25 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
-        filters: [{ key: 'label', value: labels }],
+        filters: [
+          { key: 'label', value: labels },
+          { key: 'integration_type', value: integrationTypes },
+          { key: 'integration_subtype', value: connectorTypes },
+        ],
       },
       {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, count, serviceInstance, search, labels]);
+  }, [
+    loadQuery,
+    count,
+    serviceInstance,
+    search,
+    labels,
+    integrationTypes,
+    connectorTypes,
+  ]);
 
   return (
     <>
@@ -44,8 +61,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
           queryRef={queryRef}
           search={search}
           onSearchChange={setSearch}
-          onLabelFilterChange={setLabels}
-          labels={labels}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

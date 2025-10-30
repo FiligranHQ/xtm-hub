@@ -21,7 +21,7 @@ import {
 } from './user-security-access';
 import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
-import { requestContext } from '../requestContext';
+import { requestContext } from '../context/request.context';
 import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';

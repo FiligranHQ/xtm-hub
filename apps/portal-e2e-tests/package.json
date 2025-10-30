@@ -15,8 +15,8 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.55.1",
-    "@types/node": "24.7.0",
+    "@playwright/test": "1.56.1",
+    "@types/node": "24.9.1",
     "graphql": "16.11.0",
     "graphql-tag": "2.12.6",
     "monocart-reporter": "2.9.23",

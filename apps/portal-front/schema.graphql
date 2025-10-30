@@ -15,6 +15,9 @@ enum FilterKey {
   organization_id
   personal_space
   serviceDefinition_identifier
+  integration_type
+  integration_subtype
+  slug
 }
 
 input Filter {
@@ -43,6 +46,7 @@ type Query {
   document(documentId: ID, serviceInstanceId: ID): Document
   integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
   integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
+  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
   publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
   publicIntegrationFeedBySlug(slug: String): IntegrationFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
@@ -450,7 +454,7 @@ type CsvFeed implements Node & DocumentBase & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
 }
 
 input CreateCsvFeedInput {
@@ -472,6 +476,24 @@ input UpdateCsvFeedInput {
   labels: [String!]
   uploader_organization_id: String
   uploader_id: String
+}
+
+enum IntegrationFeedType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  taxii_feed
+  opencti_stream_feed
+  third_party_integration
+}
+
+enum ConnectorType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
 }
 
 interface IntegrationFeed implements Node & DocumentBase {
@@ -497,7 +519,7 @@ interface IntegrationFeed implements Node & DocumentBase {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
 }
 
 type Connector implements Node & DocumentBase & IntegrationFeed {
@@ -523,13 +545,13 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
   product_version: String!
   container_image: String
   verified: String!
   source_code: String
   subscription_link: String
-  integration_subtype: String!
+  integration_subtype: ConnectorType!
   manager_supported: String!
   playbook_supported: String!
 }

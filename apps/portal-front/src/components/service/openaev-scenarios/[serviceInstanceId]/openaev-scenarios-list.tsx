@@ -9,6 +9,8 @@ import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { useOpenaevScenarioContext } from '@/components/service/openaev-scenarios/use-openaev-scenario-context';
 
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
+import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import {
   openaevScenariosItem_fragment$data,
   openaevScenariosItem_fragment$key,
@@ -25,10 +27,8 @@ import {
 interface OpenAEVScenariosListProps {
   queryRef: PreloadedQuery<openaevScenariosQuery>;
   serviceInstance: serviceInstance_fragment$data;
-  labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
-  onLabelFilterChange: (v: string[]) => void;
 }
 
 const OpenaevScenariosList = ({
@@ -36,8 +36,6 @@ const OpenaevScenariosList = ({
   serviceInstance,
   search,
   onSearchChange,
-  onLabelFilterChange,
-  labels,
 }: OpenAEVScenariosListProps) => {
   const queryData = usePreloadedQuery<openaevScenariosQuery>(
     OpenaevScenariosListQuery,
@@ -60,14 +58,15 @@ const OpenaevScenariosList = ({
 
   return (
     <AppServiceContext {...context}>
-      <ServiceList
-        active={active}
-        draft={draft}
-        search={search}
-        onSearchChange={onSearchChange}
-        labels={labels}
-        onLabelFilterChange={onLabelFilterChange}
-      />
+      <AppServiceListLocalStorageKeyContext
+        localStorageKey={ServiceListLocalStorageKey.OpenAEVScenarios}>
+        <ServiceList
+          active={active}
+          draft={draft}
+          search={search}
+          onSearchChange={onSearchChange}
+        />
+      </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>
   );
 };
