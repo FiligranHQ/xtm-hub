@@ -1,6 +1,7 @@
 import { Restriction } from '../src/__generated__/resolvers-types';
 
 import { OrganizationId } from '../src/model/kanel/public/Organization';
+import { ServiceCapabilityId } from '../src/model/kanel/public/ServiceCapability';
 import { ServiceDefinitionId } from '../src/model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
 import { PortalContext } from '../src/model/portal-context';
@@ -36,6 +37,11 @@ export const SERVICE_OPENCTI_REGISTRATION =
 export const THALES_SIMPLE_USER_ID = '154006e2-f24b-42da-b39c-e0fb17bead00';
 export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
 export const FILIGRAN_USER_ID = '77b4b845-4ab4-4df8-8e12-0651da813ebb';
+export const INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD =
+  '26611d56-e443-45fb-9f6c-cc6b9b8a5de9' as ServiceCapabilityId;
+export const INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE =
+  '283e06b2-2d64-42c7-b432-890e69ac8b8f' as ServiceCapabilityId;
+
 export const contextAdminUser: PortalContext = {
   user: {
     id: ADMIN_UUID,
