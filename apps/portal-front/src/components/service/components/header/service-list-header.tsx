@@ -24,6 +24,7 @@ interface Props {
   search: string;
   onSearchChange: (v: string) => void;
   filters: ServiceListFilterMap;
+  paginationControls?: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
 }
@@ -32,6 +33,7 @@ export const ServiceListHeader: React.FC<Props> = ({
   search,
   onSearchChange,
   filters,
+  paginationControls,
   actions,
   className,
 }) => {
@@ -58,7 +60,10 @@ export const ServiceListHeader: React.FC<Props> = ({
           )}
         </div>
 
-        {actions}
+        <div className="flex gap-s">
+          {paginationControls}
+          {actions}
+        </div>
       </div>
       {hasMoreThanOneFilter && <ServiceListFilterSection filters={filters} />}
     </div>

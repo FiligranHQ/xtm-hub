@@ -29,14 +29,20 @@ export const IntegrationFeedListPageLoader: React.FC<Props> = ({
     serviceInstance.slug as ServiceSlug
   );
 
-  const { count, search, labels, integrationTypes, connectorTypes, setSearch } =
-    useServiceListLocalStorage(localStorageKey);
+  const {
+    pageSize,
+    search,
+    labels,
+    integrationTypes,
+    connectorTypes,
+    setSearch,
+  } = useServiceListLocalStorage(localStorageKey);
 
   useEffect(() => {
     loadQuery(
       {
         slug: serviceInstance.slug ?? '',
-        count,
+        count: pageSize,
         orderBy: 'created_at',
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
@@ -53,7 +59,7 @@ export const IntegrationFeedListPageLoader: React.FC<Props> = ({
     );
   }, [
     loadQuery,
-    count,
+    pageSize,
     serviceInstance,
     search,
     labels,
