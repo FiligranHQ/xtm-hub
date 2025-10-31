@@ -2,8 +2,10 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { FeatureFlag } from '@/utils/constant';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -184,6 +186,10 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
       },
     ];
 
+    const isConnectorsFeatureEnabled = await isFeatureEnabled(
+      FeatureFlag.CONNECTORS
+    );
+
     return (
       <>
         <script
@@ -203,6 +209,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
             <IntegrationFeedListPageLoader
               baseUrl={baseUrl}
               serviceInstance={serviceInstance}
+              isConnectorsFeatureEnabled={isConnectorsFeatureEnabled}
             />
           </RelayProvider>
         ) : (
