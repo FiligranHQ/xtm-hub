@@ -13,11 +13,13 @@ import { SeoIntegrationFeedListQuery } from './seo-integration-feed.graphql';
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
+  isConnectorsFeatureEnabled: boolean;
 }
 
 export const IntegrationFeedListPageLoader: React.FC<Props> = ({
   serviceInstance,
   baseUrl,
+  isConnectorsFeatureEnabled,
 }) => {
   const [queryRef, loadQuery] = useQueryLoader<seoIntegrationFeedsQuery>(
     SeoIntegrationFeedListQuery
@@ -68,6 +70,7 @@ export const IntegrationFeedListPageLoader: React.FC<Props> = ({
           onSearchChange={setSearch}
           queryRef={queryRef}
           baseUrl={baseUrl}
+          isConnectorsFeatureEnabled={isConnectorsFeatureEnabled}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

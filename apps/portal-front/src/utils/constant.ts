@@ -5,4 +5,5 @@ export enum FeatureFlag {
   // dummy feature flag used for testing purposes
   DUMMY = 'DUMMY',
   OPEN_CTI_FREE_TRIAL = 'OPEN_CTI_FREE_TRIAL',
+  CONNECTORS = 'CONNECTORS',
 }
