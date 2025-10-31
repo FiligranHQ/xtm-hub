@@ -609,6 +609,7 @@
       "Active": "Your trial platform activated",
       "Provisionning": "Your OpenCTI platform Free Trial platform is",
       "ProvisionningBold": "currently getting provisionned!",
+      "Requested": "requested",
       "Expired": "Your trial platform has expired",
       "DaysRemaning": "{days} Days remaining",
       "FreeTrial": "Free Trial!",
@@ -628,6 +629,7 @@
       },
       "Display": {
         "New": "New",
+        "Requested": "Requested",
         "Title": "OpenCTI - Free Trial platform",
         "DaysRemaning": "{numberOfDays} Days Remaining",
         "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."

@@ -609,6 +609,7 @@
       "Active": "Votre plateforme d'essai activée",
       "Provisionning": "Votre plateforme OpenCTI Free Trial est",
       "ProvisionningBold": "en cours de provisionnement !",
+      "Requested": "demandée",
       "Expired": "Votre plateforme d'essai a expiré",
       "DaysRemaning": "{days} Jours restants",
       "FreeTrial": "D'essai gratuit !",
@@ -628,6 +629,7 @@
       },
       "Display": {
         "New": "Nouveau",
+        "Requested": "Demandée",
         "Title": "OpenCTI - Plate-forme d'essai gratuite",
         "DaysRemaning": "{numberOfDays} Jours restants",
         "FreeTrialDescription": "Vache tout le monde aime le cheeseburger. Bavarois bergkase emmental bocconcini emmental fromage ficelles qui a déplacé mon fromage qui a déplacé mon fromage paneer."
