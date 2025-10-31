@@ -134,13 +134,15 @@ const IntegrationFeedsList = ({
           onSearchChange={onSearchChange}
           additionalFilters={filters}
           paginationControls={
-            <PaginationControls
-              totalCount={data.integrationFeeds.totalCount}
-              pageSize={pageSize}
-              pageIndex={pagination.pageIndex}
-              onPaginationChange={onPaginationChange}
-              onSetPageSize={setPageSize}
-            />
+            isConnectorsFeatureFlagEnabled && (
+              <PaginationControls
+                totalCount={data.integrationFeeds.totalCount}
+                pageSize={pageSize}
+                pageIndex={pagination.pageIndex}
+                onPaginationChange={onPaginationChange}
+                onSetPageSize={setPageSize}
+              />
+            )
           }
         />
       </AppServiceListLocalStorageKeyContext>
