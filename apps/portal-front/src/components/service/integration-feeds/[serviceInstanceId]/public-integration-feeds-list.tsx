@@ -27,12 +27,14 @@ interface Props {
   onSearchChange: (v: string) => void;
   queryRef: PreloadedQuery<seoIntegrationFeedsQuery>;
   baseUrl: string;
+  isConnectorsFeatureEnabled: boolean;
 }
 
 const PublicIntegrationFeedsList: React.FC<Props> = ({
   queryRef,
   serviceInstance,
   baseUrl,
+  isConnectorsFeatureEnabled,
 }) => {
   const queryData = usePreloadedQuery<seoIntegrationFeedsQuery>(
     SeoIntegrationFeedListQuery,
@@ -63,12 +65,14 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
 
   return (
     <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
-      <ServiceListHeader
-        search={search}
-        onSearchChange={setSearch}
-        filters={filters}
-        className="mb-3"
-      />
+      {isConnectorsFeatureEnabled && (
+        <ServiceListHeader
+          search={search}
+          onSearchChange={setSearch}
+          filters={filters}
+          className="mb-3"
+        />
+      )}
       <PublicShareableResourceList
         documents={integrationFeeds}
         serviceInstance={serviceInstance}

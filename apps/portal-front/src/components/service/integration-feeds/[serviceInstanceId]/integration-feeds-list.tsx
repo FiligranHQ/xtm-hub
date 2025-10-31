@@ -17,6 +17,8 @@ import {
   IntegrationFeedsListQuery,
 } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
+import { FeatureFlag } from '@/utils/constant';
 import {
   integrationFeedsItem_fragment$data,
   integrationFeedsItem_fragment$key,
@@ -67,15 +69,21 @@ const IntegrationFeedsList = ({
   const { removeConnectorTypes, removeIntegrationTypes } =
     useServiceListLocalStorage(localStorageKey);
 
-  const filters: ServiceListFilterMap = {
-    [ServiceListFilterKey.IntegrationFeedType]: {
-      node: <IntegrationFeedFilters />,
-      reset: () => {
-        removeConnectorTypes();
-        removeIntegrationTypes();
-      },
-    },
-  };
+  const isConnectorsFeatureFlagEnabled = useIsFeatureEnabled(
+    FeatureFlag.CONNECTORS
+  );
+
+  const filters: ServiceListFilterMap = isConnectorsFeatureFlagEnabled
+    ? {
+        [ServiceListFilterKey.IntegrationFeedType]: {
+          node: <IntegrationFeedFilters />,
+          reset: () => {
+            removeConnectorTypes();
+            removeIntegrationTypes();
+          },
+        },
+      }
+    : {};
 
   return (
     <AppServiceContext {...context}>
