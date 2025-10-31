@@ -1,5 +1,6 @@
+import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
@@ -126,6 +127,57 @@ describe('Deployment app', () => {
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
+    });
+    it('should create a deployment request with queued status if specified', async () => {
+      const deployment = await DeploymentsApp.createDeploymentRequest({
+        activity_sector: 'cybersecurity',
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: PlatformRegion.Us,
+        type: DeploymentType.Trial,
+        status: DeploymentRequestStatus.Queued,
+      });
+
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      expect(dbDeploymentRequest).toMatchObject({
+        activity_sector: 'cybersecurity',
+        id: expect.any(String),
+        job_title: 'myJob',
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        platform_identifier: PlatformIdentifier.Opencti,
+        platform_token: expect.any(String),
+        region: PlatformRegion.Us,
+        request_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+        status: DeploymentRequestStatus.Queued,
+        type: DeploymentType.Trial,
+        use_case: 'use_case',
+        user_requester_id: ADMIN_UUID,
+      });
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        contextAdminUser,
+        'id',
+        dbDeploymentRequest.service_instance_id
+      );
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Disabled
+      );
+    });
+    it('should throw if an invalid status is specified', async () => {
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector: 'cybersecurity',
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: PlatformRegion.Us,
+        type: DeploymentType.Trial,
+        status: DeploymentRequestStatus.Active,
+      });
+      await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
     });
   });
   describe('loadDeploymentRequests', () => {
@@ -322,5 +374,54 @@ describe('Deployment app', () => {
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
     });
+  });
+  describe('loadAvailableDeploymentRequests', () => {
+    it.each([
+      {
+        description: 'normal case with available slots',
+        maxDeployments: { us: 10, europe: 5 },
+        currentDeployments: {
+          [PlatformRegion.Us]: 3,
+          [PlatformRegion.Europe]: 1,
+        } as Record<string, number>,
+        expected: [
+          { region: PlatformRegion.Us, availableCount: 7 },
+          { region: PlatformRegion.Europe, availableCount: 4 },
+          { region: PlatformRegion.Apac, availableCount: 0 },
+        ],
+      },
+      {
+        description: 'over capacity scenario',
+        maxDeployments: { us: 5 },
+        currentDeployments: { [PlatformRegion.Us]: 8 } as Record<
+          string,
+          number
+        >,
+        expected: [
+          { region: PlatformRegion.Us, availableCount: -3 },
+          { region: PlatformRegion.Europe, availableCount: 0 },
+          { region: PlatformRegion.Apac, availableCount: 0 },
+        ],
+      },
+    ])(
+      'should handle $description',
+      async ({ maxDeployments, currentDeployments, expected }) => {
+        // Arrange
+        vi.spyOn(config, 'get').mockReturnValue(maxDeployments);
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'loadDeploymentRequestCountByRegion'
+        ).mockResolvedValue(currentDeployments);
+
+        // Act
+        const result = await DeploymentsApp.loadAvailableDeploymentRequests(
+          PlatformIdentifier.Opencti
+        );
+
+        // Assert
+        expect(result).toEqual(expect.arrayContaining(expected));
+        expect(result).toHaveLength(expected.length);
+      }
+    );
   });
 });

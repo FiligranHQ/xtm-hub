@@ -87,6 +87,7 @@
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EDIT_USER_SESSION_ERROR": "Une erreur inconnue s'est produite",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
+      "FREE_TRIAL_ALREADY_EXISTS": "Une instance de test existe déjà pour votre organisation",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "Vous devez d'abord accorder des capacités à l'organisation",
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du numéro de part",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
@@ -641,6 +642,7 @@
       "Active": "Votre plateforme d'essai activée",
       "Provisionning": "Votre plateforme OpenCTI Free Trial est",
       "ProvisionningBold": "en cours de provisionnement !",
+      "Requested": "demandée",
       "Expired": "Votre plateforme d'essai a expiré",
       "DaysRemaning": "{days} Jours restants",
       "FreeTrial": "D'essai gratuit !",
@@ -660,9 +662,15 @@
       },
       "Display": {
         "New": "Nouveau",
+        "Requested": "Demandée",
         "Title": "OpenCTI - Plate-forme d'essai gratuite",
         "DaysRemaning": "{numberOfDays} Jours restants",
         "FreeTrialDescription": "Vache tout le monde aime le cheeseburger. Bavarois bergkase emmental bocconcini emmental fromage ficelles qui a déplacé mon fromage qui a déplacé mon fromage paneer."
+      },
+      "CapacityWarning": {
+        "Title": "Aucune plateforme disponible",
+        "Content": "Aucune plateforme n'est disponible dans cette région pour le moment. Souhaitez-vous être averti lorsque nous en aurons une de disponible ?",
+        "Continue": "Me prévenir"
       }
     },
     "Vault": {

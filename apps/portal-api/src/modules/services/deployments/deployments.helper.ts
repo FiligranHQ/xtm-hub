@@ -1,4 +1,10 @@
-import { DeploymentRequestStatus } from '../../../__generated__/resolvers-types';
+import {
+  DeploymentRequestStatus,
+  DeploymentType,
+} from '../../../__generated__/resolvers-types';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
+import { DeploymentRequestDomain } from './deployments.domain';
 
 type StatusTransition = {
   from: DeploymentRequestStatus;
@@ -38,4 +44,15 @@ export const isTransitionValid = (
   return (
     from === to || VALID_TRANSITIONS.some((t) => t.from === from && t.to === to)
   );
+};
+
+export const assertFreeTrialsLimit = async (organizationId: OrganizationId) => {
+  const freeTrialsRequests =
+    await DeploymentRequestDomain.loadDeploymentRequestBy({
+      organization_requester_id: organizationId,
+      type: DeploymentType.Trial,
+    });
+  if (freeTrialsRequests) {
+    throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
+  }
 };

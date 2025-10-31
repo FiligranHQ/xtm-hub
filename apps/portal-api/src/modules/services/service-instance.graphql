@@ -5,6 +5,7 @@ enum ServiceInstanceOrdering {
 }
 
 enum ServiceInstanceCreationStatus {
+  DISABLED
   PENDING
   CREATED
   READY

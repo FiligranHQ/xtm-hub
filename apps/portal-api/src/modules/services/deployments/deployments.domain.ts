@@ -44,6 +44,20 @@ export const DeploymentRequestDomain = {
     };
   },
 
+  loadDeploymentRequestCountByRegion: async (
+    conditions: DeploymentRequestMutator
+  ): Promise<Record<string, number>> => {
+    const results = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
+      .where(conditions)
+      .select('region')
+      .count('* as count')
+      .groupBy('region');
+
+    return Object.fromEntries(
+      results.map((row) => [row.region, parseInt(row.count as string, 10)])
+    );
+  },
+
   loadDeploymentRequests: async (opts: QueryDeploymentRequestsArgs) => {
     const { first, after, filters } = opts;
     return paginate<DeploymentRequest, DeploymentRequestConnection>(
