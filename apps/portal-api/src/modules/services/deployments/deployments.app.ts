@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { dbTx } from '../../../../knexfile';
 import {
   CreateDeploymentRequestInput,
+  DeploymentAvailability,
   DeploymentRequest,
   DeploymentRequestConnection,
   DeploymentRequestFilterKey,
@@ -11,6 +12,7 @@ import {
   PlatformIdentifier,
   PlatformRegion,
   QueryDeploymentRequestsArgs,
+  ServiceInstanceCreationStatus,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -26,7 +28,9 @@ import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
-import { isTransitionValid } from './deployments.helper';
+
+import config from 'config';
+import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
@@ -41,6 +45,18 @@ export const DeploymentsApp = {
       logApp.warn('You cannot request Free Trial in your personal space');
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
+
+    if (
+      input.status &&
+      ![
+        DeploymentRequestStatus.Pending,
+        DeploymentRequestStatus.Queued,
+      ].includes(input.status)
+    ) {
+      throw new Error(BadRequestErrorCode.InvalidStatus);
+    }
+    await assertFreeTrialsLimit(context.user.selected_organization_id);
+
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
         input.platform_identifier
@@ -56,6 +72,10 @@ export const DeploymentsApp = {
         serviceDefinitionId: serviceDefinition.id,
         organizationId: context.user.selected_organization_id,
         platformIdentifier: input.platform_identifier,
+        serviceInstanceCreationStatus:
+          input.status === DeploymentRequestStatus.Queued
+            ? ServiceInstanceCreationStatus.Disabled
+            : ServiceInstanceCreationStatus.Pending,
       });
 
       const createdDeploymentRequest =
@@ -64,7 +84,7 @@ export const DeploymentsApp = {
           user_requester_id: context.user.id,
           organization_requester_id: context.user.selected_organization_id,
           service_instance_id: serviceInstanceId,
-          status: DeploymentRequestStatus.Pending,
+          status: input.status ?? DeploymentRequestStatus.Pending,
           type: input.type,
           platform_identifier: input.platform_identifier,
           region: input.region,
@@ -73,6 +93,7 @@ export const DeploymentsApp = {
           activity_sector: input.activity_sector,
           platform_token: uuidv4(),
         });
+
       await trx.commit();
       return {
         id: createdDeploymentRequest.id,
@@ -173,5 +194,23 @@ export const DeploymentsApp = {
       });
     }
     return DeploymentRequestDomain.loadDeploymentRequests(args);
+  },
+  loadAvailableDeploymentRequests: async (
+    platformIdentifier: PlatformIdentifier
+  ): Promise<DeploymentAvailability[]> => {
+    const max_deployments =
+      config.get<Record<string, number>>('max_deployments');
+    const deploymentsByRegion =
+      await DeploymentRequestDomain.loadDeploymentRequestCountByRegion({
+        platform_identifier: platformIdentifier,
+      });
+
+    const allRegions = Object.values(PlatformRegion); // Assuming you have a Region enum
+
+    return allRegions.map((region) => ({
+      region,
+      availableCount:
+        (max_deployments[region] || 0) - (deploymentsByRegion[region] || 0),
+    }));
   },
 };

@@ -4,12 +4,14 @@ import SkeletonServiceCard from '@/components/service/home/skeleton-service-card
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import {
-  hasTrialInstance,
   publicServiceInstanceToInstanceCardData,
   registeredPlatformToServiceInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -41,19 +43,34 @@ const OwnedServices = ({
       )
       .map(userServicesOwnedServiceToInstanceCardData),
     ...publicServices.map(publicServiceInstanceToInstanceCardData),
-    ...registeredPlatforms.map(registeredPlatformToServiceInstanceCardData),
+    ...registeredPlatforms
+      .filter(
+        (service) =>
+          service.subscription?.service_instance?.creation_status !==
+          ServiceInstanceCreationStatusEnum.DISABLED
+      )
+      .map(registeredPlatformToServiceInstanceCardData),
   ].sort((a, b) => a!.ordering - b!.ordering);
+
+  const trialInstances = registeredPlatforms.filter(
+    (service) => service.deployment_request?.type === DeploymentTypeEnum.TRIAL
+  );
+
+  const isTrialInstanceQueued = trialInstances.some(
+    (service) =>
+      service.deployment_request?.status === DeploymentRequestStatusEnum.QUEUED
+  );
+  const shouldDisplayFreeTrialSkeletton =
+    isFreeTrialFeatureEnabled &&
+    (trialInstances.length === 0 || isTrialInstanceQueued);
 
   if (sortedServices.length > 0) {
     return (
       <Suspense>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l">
-          {isFreeTrialFeatureEnabled &&
-            !hasTrialInstance(
-              registeredPlatforms.map(
-                registeredPlatformToServiceInstanceCardData
-              )
-            ) && <SkeletonServiceCard />}
+          {shouldDisplayFreeTrialSkeletton && (
+            <SkeletonServiceCard isTrialRequested={isTrialInstanceQueued} />
+          )}
           {sortedServices.map((service) => (
             <ServiceInstanceCard
               key={service.id}

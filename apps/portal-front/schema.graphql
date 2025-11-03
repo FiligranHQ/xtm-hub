@@ -41,6 +41,7 @@ type Query {
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): DeploymentRequestConnection!
+  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
@@ -120,15 +121,15 @@ type Mutation {
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
-  editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  editMeUser(input: EditMeUserInput!): User!
   resetPassword: Success!
   requestTransferPersonalSpace(new_email: String): Success!
   transferPersonalSpace(requestId: ID!): Success!
@@ -311,6 +312,7 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+  status: DeploymentRequestStatus
 }
 
 input UpdateDeploymentRequestInput {
@@ -343,6 +345,11 @@ type DeploymentRequestConnection {
   totalCount: Int!
   edges: [DeploymentRequestEdge!]!
   pageInfo: PageInfo!
+}
+
+type DeploymentAvailability {
+  region: PlatformRegion!
+  availableCount: Int!
 }
 
 type ShareableResourceImage {
@@ -742,6 +749,7 @@ enum ServiceInstanceOrdering {
 }
 
 enum ServiceInstanceCreationStatus {
+  DISABLED
   PENDING
   CREATED
   READY

@@ -15,6 +15,7 @@ import {
   isRegistrationService,
   isTrialInstance,
 } from '@/utils/services';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
@@ -47,6 +48,7 @@ export interface ServiceInstanceCardData {
   ordering: number;
   status?: string;
   deployment_request_type?: DeploymentTypeEnum;
+  deployment_status?: DeploymentRequestStatusEnum;
   service_instance_status?: string;
   start_date?: Date;
   end_date?: Date;

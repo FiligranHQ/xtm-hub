@@ -57,6 +57,7 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+  status: DeploymentRequestStatus
 }
 
 input UpdateDeploymentRequestInput {
@@ -91,12 +92,21 @@ type DeploymentRequestConnection {
   pageInfo: PageInfo!
 }
 
+type DeploymentAvailability {
+  region: PlatformRegion!
+  availableCount: Int!
+}
+
 extend type Query {
   deploymentRequests(
     first: Int!
     after: ID
     filters: [DeploymentRequestFilter!]
   ): DeploymentRequestConnection! @system_token
+  deploymentRequestsAvailable(
+    platformIdentifier: PlatformIdentifier
+  ): [DeploymentAvailability!]!
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
 
 extend type Mutation {

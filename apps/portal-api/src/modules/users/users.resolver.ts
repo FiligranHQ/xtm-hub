@@ -15,7 +15,6 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { validatePassword } from '../../security/utils/user';
@@ -31,7 +30,6 @@ import { removeUserFromOrganizationPending } from '../common/user-organization-p
 import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
-  updateMultipleUserOrgWithCapabilities,
 } from '../common/user-organization.domain';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
@@ -182,57 +180,12 @@ const resolvers: Resolvers = {
         });
       }
     },
-    adminAddUser: async (_, { input }, context) => {
+
+    // Admin
+    adminAddUser: async (_, { input }) => {
       try {
-        const [organizationFromEmail] = await loadOrganizationsFromEmail(
-          input.email
-        );
-        // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
-        const chosenOrganization: OrganizationId | undefined = input
-          .organization_capabilities?.[0]
-          ? extractId<OrganizationId>(
-              input.organization_capabilities?.[0].organization_id
-            )
-          : undefined;
-
-        // The admin orga should only allow to add users in the same organization and with the same domain.
-        // Only the admin PLTFM can by pass this check
-        if (
-          chosenOrganization !== organizationFromEmail?.id &&
-          !context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)
-        ) {
-          logApp.warn(
-            'You cannot add a user whose email domain is outside your organization'
-          );
-          throw new Error(ErrorCode.EmailOutsideOrganizationError);
-        }
-
-        const [existingUser] = await loadUnsecureUser({ email: input.email });
-
-        const loadUserFinalUser = await withTransaction(async () => {
-          const user = existingUser
-            ? existingUser
-            : await createUserWithPersonalSpace({
-                email: input.email,
-                password: input.password,
-                first_name: input.first_name,
-                last_name: input.last_name,
-                selected_organization_id: chosenOrganization,
-              });
-
-          await updateMultipleUserOrgWithCapabilities(
-            user.id,
-            input.organization_capabilities
-          );
-
-          return await loadUserBy({
-            'User.id': user.id,
-          });
-        });
-
-        await dispatch('User', 'add', loadUserFinalUser);
-
-        return mapUserToGraphqlUser(loadUserFinalUser);
+        const user = await usersAdminApp.addUser(input);
+        return mapUserToGraphqlUser(user);
       } catch (error) {
         if (error.message.includes(ErrorCode.UserDisabled)) {
           logApp.warn('You cannot add a user who is disabled in the plaform');

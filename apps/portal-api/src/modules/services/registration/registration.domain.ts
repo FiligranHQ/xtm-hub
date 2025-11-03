@@ -43,11 +43,13 @@ export const registrationDomain = {
     organizationId,
     configuration,
     platformIdentifier,
+    serviceInstanceCreationStatus = ServiceInstanceCreationStatus.Ready,
   }: {
     serviceDefinitionId: string;
     organizationId: OrganizationId;
     configuration?: PlatformConfiguration;
     platformIdentifier: PlatformIdentifier;
+    serviceInstanceCreationStatus?: ServiceInstanceCreationStatus;
   }): Promise<ServiceInstanceId> => {
     const context = requestContext.require().portalContext;
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
@@ -60,9 +62,7 @@ export const registrationDomain = {
         context,
         serviceDefinitionId,
         platformIdentifier,
-        configuration
-          ? ServiceInstanceCreationStatus.Ready
-          : ServiceInstanceCreationStatus.Pending
+        serviceInstanceCreationStatus
       );
 
     await createSubscription({

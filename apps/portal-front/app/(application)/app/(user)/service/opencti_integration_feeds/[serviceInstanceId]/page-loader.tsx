@@ -20,15 +20,21 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<integrationFeedsQuery>(
     IntegrationFeedsListQuery
   );
-  const { count, search, labels, integrationTypes, connectorTypes, setSearch } =
-    useServiceListLocalStorage(
-      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
-    );
+  const {
+    pageSize,
+    search,
+    labels,
+    integrationTypes,
+    connectorTypes,
+    setSearch,
+  } = useServiceListLocalStorage(
+    ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+  );
 
   useEffect(() => {
     loadQuery(
       {
-        count,
+        count: pageSize,
         orderBy: 'created_at',
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
@@ -45,7 +51,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     );
   }, [
     loadQuery,
-    count,
+    pageSize,
     serviceInstance,
     search,
     labels,

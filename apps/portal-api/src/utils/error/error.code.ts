@@ -28,6 +28,7 @@ export enum BadRequestErrorCode {
   InvalidEmail = 'INVALID_EMAIL',
   MissingStartOrEndDate = 'MISSING_START_OR_END_DATE',
   DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
+  InvalidStatus = 'INVALID_STATUS',
 }
 
 export enum UnknownErrorCode {
@@ -75,6 +76,7 @@ export enum AlreadyExistsErrorCode {
   CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
   CustomDashboardUniqueSlugError = 'CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR',
   OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
+  FreeTrialAlreadyExists = 'FREE_TRIAL_ALREADY_EXISTS',
 }
 
 export enum NotFoundErrorCode {

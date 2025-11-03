@@ -10,8 +10,9 @@ import { StartTrialButton } from '@/components/service/trial-instances/start-tri
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { ArrowRightAltIcon } from 'filigran-icon';
@@ -45,12 +46,7 @@ export const TryOpenCTICallout = ({}) => {
   >(registerRegisteredPlatformListFragment, queryData);
 
   const freeTrial = data.registeredPlatforms.filter(
-    (platform) =>
-      (platform.subscription?.service_instance?.creation_status ===
-        ServiceInstanceCreationStatusEnum.PENDING ||
-        platform.subscription?.service_instance?.creation_status ===
-          ServiceInstanceCreationStatusEnum.READY) &&
-      platform.deployment_request?.status
+    (platform) => platform.deployment_request?.type === DeploymentTypeEnum.TRIAL
   );
   const target = new Date(freeTrial[0]?.subscription?.end_date);
   const now = new Date();
@@ -120,6 +116,20 @@ export const TryOpenCTICallout = ({}) => {
       ),
       button: () => <StartTrialButton />,
     },
+    queued: {
+      text: () => (
+        <>
+          {t('Service.Trials.Provisionning')}{' '}
+          <b>{t('Service.Trials.Requested')}</b>
+          <Link
+            href={`${settings.base_url_front}/app/service/free-trial`}
+            className="ml-xs underline">
+            {t('Service.Trials.LearnMore')}
+          </Link>
+        </>
+      ),
+      button: () => <></>,
+    },
     provisionning: {
       text: () => (
         <>
@@ -146,6 +156,13 @@ export const TryOpenCTICallout = ({}) => {
 
   const getContentKey = () => {
     if (freeTrial.length < 1) return 'noTrial';
+    if (
+      freeTrial[0]?.deployment_request?.status ===
+      DeploymentRequestStatusEnum.QUEUED
+    ) {
+      return 'queued';
+    }
+
     if (
       freeTrial[0]?.subscription?.service_instance?.creation_status ===
       'PENDING'

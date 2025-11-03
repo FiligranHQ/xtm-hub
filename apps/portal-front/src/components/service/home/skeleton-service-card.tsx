@@ -5,8 +5,15 @@ import { AspectRatio } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
+import * as React from 'react';
 
-const SkeletonServiceCard = ({}) => {
+interface SkeletonServiceCardProps {
+  isTrialRequested: boolean;
+}
+
+const SkeletonServiceCard: React.FunctionComponent<
+  SkeletonServiceCardProps
+> = ({ isTrialRequested }) => {
   const t = useTranslations();
   return (
     <li className="relative border border-light rounded flex cursor-pointer">
@@ -15,7 +22,9 @@ const SkeletonServiceCard = ({}) => {
           <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
             <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
-              {t('Service.Trials.Display.New')}
+              {isTrialRequested
+                ? t('Service.Trials.Display.Requested')
+                : t('Service.Trials.Display.New')}
             </span>
           </div>
           <AspectRatio

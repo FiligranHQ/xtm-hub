@@ -1,6 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { v4 as uuidv4 } from 'uuid';
+import { describe, expect, it, vi } from 'vitest';
 import { DeploymentRequestStatus } from '../../../__generated__/resolvers-types';
-import { isTransitionValid } from './deployments.helper';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
+import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
+import { DeploymentRequestDomain } from './deployments.domain';
+import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
 
 describe('isTransitionValid', () => {
   const validTransitions = [
@@ -41,5 +46,28 @@ describe('isTransitionValid', () => {
     allStatuses.forEach((status) => {
       expect(isTransitionValid(status, status)).toBe(true);
     });
+  });
+});
+describe('assertFreeTrialsLimit', () => {
+  it('should not throw if there is no trial for the organization', async () => {
+    vi.spyOn(
+      DeploymentRequestDomain,
+      'loadDeploymentRequestBy'
+    ).mockResolvedValue(undefined);
+
+    await expect(
+      assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
+    ).resolves.not.toThrow();
+  });
+  it('should throw if there is more than one trial for an organization', async () => {
+    vi.spyOn(
+      DeploymentRequestDomain,
+      'loadDeploymentRequestBy'
+    ).mockResolvedValue({
+      id: uuidv4,
+    } as unknown as DeploymentRequest);
+    await expect(
+      assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
+    ).rejects.toThrow(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
   });
 });

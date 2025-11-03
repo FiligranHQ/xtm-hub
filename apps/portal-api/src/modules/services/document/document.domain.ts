@@ -803,7 +803,7 @@ export const loadSeoDocuments = async <
   opts: Partial<QueryDocumentsArgs>,
   include_metadata?: string[]
 ) => {
-  const loadDocumentsQuery = db<Document>('Document', opts)
+  const loadDocumentsQuery = dbUnsecure<Document>('Document')
     .select('Document.*')
     .leftJoin(
       'ServiceInstance',
