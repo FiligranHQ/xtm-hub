@@ -33,6 +33,9 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
 > = ({ documentData, breadcrumbValue, shareUrl, logo }) => {
   const t = useTranslations();
 
+  const shouldDisplayOneClickDeployButton =
+    documentData.manager_supported === 'true';
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -64,7 +67,9 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
                 url={shareUrl}
               />
 
-              <OneClickDeploy documentData={documentData} />
+              {shouldDisplayOneClickDeployButton && (
+                <OneClickDeploy documentData={documentData} />
+              )}
             </div>
           </div>
           <div className="w-full mt-s mb-xs">
