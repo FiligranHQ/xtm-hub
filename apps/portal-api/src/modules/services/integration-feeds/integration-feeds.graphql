@@ -66,8 +66,8 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   share_number: Int
   slug: String!
   labels: [Label!]
-  service_instance_id: String! @auth
-  service_instance: ServiceInstance @auth
+  service_instance_id: String!
+  service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResourceImage!]
   # Integration Feed
