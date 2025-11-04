@@ -29,7 +29,7 @@ import { buildLoginEvent } from '../telemetry/telemetry.helper';
 
 export const loadUnsecureUser = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
-) => {
+): Promise<User[]> => {
   return dbUnsecure<User>('User').where(field);
 };
 

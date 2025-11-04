@@ -1,5 +1,4 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { dbTx } from '../../../knexfile';
 import {
   MergeEvent,
   Resolvers,
@@ -9,27 +8,14 @@ import {
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
-import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
-import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
-import {
-  FORBIDDEN_ACCESS,
-  ForbiddenAccess,
-  UnknownError,
-} from '../../utils/error/error.util';
+import { ForbiddenAccess } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { removeUserFromOrganizationPending } from '../common/user-organization-pending.domain';
-import {
-  createUserOrgCapabilities,
-  removeUserFromOrganization,
-} from '../common/user-organization.domain';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { usersAdminApp } from './users.admin.app';
 import { UsersAuthApp } from './users.auth.app';
 import {
@@ -37,18 +23,13 @@ import {
   getOrganizations,
   getRolesPortal,
   loadPendingUsers,
-  loadUnsecureUser,
-  loadUserBy,
   loadUsers,
   loadUsersByCapabilitiesInOrganization,
   resetPassword,
-  updateUser,
   userHasOrganizationWithSubscription,
 } from './users.domain';
-import {
-  createUserWithPersonalSpace,
-  mapUserToGraphqlUser,
-} from './users.helper';
+import { mapUserToGraphqlUser } from './users.helper';
+import { UsersOrganizationApp } from './users.organization.app';
 import { usersProfileApp } from './users.profile.app';
 
 const resolvers: Resolvers = {
@@ -110,67 +91,15 @@ const resolvers: Resolvers = {
       return from;
     },
     // Management
-    addUser: async (_, { input }, context) => {
-      const trx = await dbTx();
+    addUser: async (_, { input }) => {
       try {
-        const [organizationFromEmail] = await loadOrganizationsFromEmail(
-          input.email
-        );
+        const user = await UsersOrganizationApp.addUserToOrganization(input);
 
-        const chosenOrganization = await loadOrganizationBy({
-          id: context.user.selected_organization_id,
-        });
+        await dispatch('User', 'add', user);
 
-        if (chosenOrganization.personal_space) {
-          logApp.warn('You cannot add a user in your personal space');
-          throw new Error(ErrorCode.CantAddUserToPersonalSpace);
-        }
-
-        // The admin orga should only allow to add users in the same organization and with the same domain.
-        // Only the admin PLTFM can by pass this check
-        if (
-          chosenOrganization.id !== organizationFromEmail?.id &&
-          !context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)
-        ) {
-          throw ForbiddenAccess('EMAIL_OUTSIDE_ORGANIZATION_ERROR');
-        }
-
-        const [existingUser] = await loadUnsecureUser({ email: input.email });
-
-        const user = existingUser
-          ? existingUser
-          : await createUserWithPersonalSpace({
-              email: input.email,
-              password: input.password,
-              selected_organization_id: chosenOrganization.id,
-            });
-
-        await createUserOrgCapabilities({
-          user,
-          organization: chosenOrganization,
-          orgCapabilities: input.capabilities ?? [],
-          userExists: !!existingUser,
-        });
-
-        const loadUserFinalUser = await loadUserBy({
-          'User.id': user.id,
-        });
-
-        await dispatch('User', 'add', loadUserFinalUser);
-        await trx.commit();
-
-        return mapUserToGraphqlUser(loadUserFinalUser);
+        return mapUserToGraphqlUser(user);
       } catch (error) {
-        await trx.rollback();
-        if (error.name.includes(FORBIDDEN_ACCESS)) {
-          logApp.warn(
-            'You cannot add a user whose email domain is outside your organization'
-          );
-          throw ForbiddenAccess('EMAIL_OUTSIDE_ORGANIZATION_ERROR');
-        }
-        throw UnknownError('ADDING_USER_ERROR', {
-          detail: error,
-        });
+        throw mapToGraphQLError(error, UnknownErrorCode.AddingUserError);
       }
     },
 
@@ -243,32 +172,22 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
       }
     },
-    changeSelectedOrganization: async (_, { organization_id }, context) => {
-      const updatedUser = await updateUser(context.user.id, {
-        selected_organization_id: fromGlobalId(organization_id)
-          .id as OrganizationId,
-      });
-      const newUser = await loadUserBy({ 'User.id': updatedUser.id });
-      context.req.session.user = newUser;
-      requestContext.update({ user: newUser });
-
-      return mapUserToGraphqlUser(newUser);
-    },
-    removeUserFromOrganization: async (
-      _,
-      { user_id, organization_id },
-      context
-    ) => {
+    changeSelectedOrganization: async (_, { organization_id }) => {
       try {
-        if (extractId(user_id) === context.user.id) {
-          throw new Error(ErrorCode.CantRemoveYourselfFromOrgaError);
-        }
-        await removeUserFromOrganization(
-          extractId(user_id),
-          extractId(organization_id)
+        const user = await UsersOrganizationApp.changeSelectedOrganization(
+          extractId<OrganizationId>(organization_id)
         );
-        const user = await loadUserBy({
-          'User.id': extractId(user_id),
+
+        return mapUserToGraphqlUser(user);
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
+    removeUserFromOrganization: async (_, { user_id, organization_id }) => {
+      try {
+        const user = await UsersOrganizationApp.removeUserFromOrganization({
+          userId: extractId<UserId>(user_id),
+          organizationId: extractId<OrganizationId>(organization_id),
         });
         return mapUserToGraphqlUser(user);
       } catch (error) {
@@ -283,23 +202,24 @@ const resolvers: Resolvers = {
       { user_id, organization_id }
     ) => {
       try {
-        await removeUserFromOrganizationPending(
-          extractId(user_id),
-          extractId(organization_id)
-        );
-        const user = await loadUserBy({
-          'User.id': extractId(user_id),
-        });
+        const organizationId = extractId<OrganizationId>(organization_id);
+        const user =
+          await UsersOrganizationApp.removePendingUserFromOrganization({
+            userId: extractId<UserId>(user_id),
+            organizationId,
+          });
+
         const graphQLUser = mapUserToGraphqlUser(user);
         await dispatch(
           'UserPending',
           'delete',
           {
             ...graphQLUser,
-            pending_organization_id: extractId(organization_id),
+            pending_organization_id: organizationId,
           } as User,
           'User'
         );
+
         return graphQLUser;
       } catch (error) {
         throw mapToGraphQLError(
