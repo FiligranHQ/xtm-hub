@@ -2215,6 +2215,10 @@ export type AuthDirectiveArgs = {
 
 export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type Platform_TokenDirectiveArgs = { };
+
+export type Platform_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = Platform_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type Service_CapaDirectiveArgs = {
   requires?: Maybe<Array<Maybe<ServiceRestriction>>>;
 };
@@ -3124,6 +3128,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
   auth?: AuthDirectiveResolver<any, any, ContextType>;
+  platform_token?: Platform_TokenDirectiveResolver<any, any, ContextType>;
   service_capa?: Service_CapaDirectiveResolver<any, any, ContextType>;
   system_token?: System_TokenDirectiveResolver<any, any, ContextType>;
 }>;

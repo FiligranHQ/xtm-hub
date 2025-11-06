@@ -119,5 +119,5 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatus(
     input: RefreshPlatformRegistrationConnectivityStatusInput!
   ): RefreshPlatformRegistrationConnectivityStatusResponse!
-  autoRegisterPlatform(platform: PlatformInput!): Success!
+  autoRegisterPlatform(platform: PlatformInput!): Success! @platform_token
 }

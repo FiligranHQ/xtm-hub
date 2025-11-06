@@ -131,7 +131,6 @@ export const registrationApp = {
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
-        context,
         input
       );
     return {
@@ -147,7 +146,6 @@ export const registrationApp = {
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
-        context,
         input
       );
     if (
