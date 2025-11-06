@@ -30,7 +30,7 @@ type Success {
 }
 
 type Query {
-  refreshOpenCTIManifest: Boolean
+  updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!

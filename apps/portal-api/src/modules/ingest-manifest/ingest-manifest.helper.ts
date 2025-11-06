@@ -142,7 +142,7 @@ const ContractSchema = z.object({
   container_image: z.string().min(1),
   container_type: z.nativeEnum(ConnectorType),
   source_code: z.string().url(),
-  subscription_link: z.string().url().or(z.literal('')),
+  subscription_link: z.string().url().or(z.literal('')).nullish(),
   manager_supported: z.boolean(),
   playbook_supported: z.boolean(),
 });
