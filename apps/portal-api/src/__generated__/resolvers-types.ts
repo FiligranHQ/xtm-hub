@@ -1079,7 +1079,6 @@ export type Query = {
   publicIntegrationFeedBySlug?: Maybe<IntegrationFeed>;
   publicIntegrationFeeds: IntegrationFeedConnection;
   publicServiceInstances: ServiceConnection;
-  refreshOpenCTIManifest?: Maybe<Scalars['Boolean']['output']>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
@@ -1096,6 +1095,7 @@ export type Query = {
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
+  updateOpenCTIManifest: Success;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
@@ -1356,6 +1356,11 @@ export type QuerySubscribedServiceInstancesByIdentifierArgs = {
 
 export type QuerySubscriptionByIdArgs = {
   subscription_id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryUpdateOpenCtiManifestArgs = {
+  tag?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2723,7 +2728,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['IntegrationFeed']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
   publicIntegrationFeeds?: Resolver<ResolversTypes['IntegrationFeedConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  refreshOpenCTIManifest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
@@ -2740,6 +2744,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
+  updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
