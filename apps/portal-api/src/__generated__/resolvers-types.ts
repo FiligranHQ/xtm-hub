@@ -521,6 +521,7 @@ export type Mutation = {
   addYourselfInUserService?: Maybe<Array<Maybe<UserService>>>;
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
+  autoRegisterPlatform: Success;
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
@@ -637,6 +638,11 @@ export type MutationAdminAddUserArgs = {
 export type MutationAdminEditUserArgs = {
   id: Scalars['ID']['input'];
   input: AdminEditUserInput;
+};
+
+
+export type MutationAutoRegisterPlatformArgs = {
+  platform: PlatformInput;
 };
 
 
@@ -990,7 +996,8 @@ export type PageInfo = {
 
 export enum PlatformContract {
   Ce = 'CE',
-  Ee = 'EE'
+  Ee = 'EE',
+  Trial = 'Trial'
 }
 
 export type PlatformDeploymentRequest = {
@@ -1079,7 +1086,6 @@ export type Query = {
   publicIntegrationFeedBySlug?: Maybe<IntegrationFeed>;
   publicIntegrationFeeds: IntegrationFeedConnection;
   publicServiceInstances: ServiceConnection;
-  refreshOpenCTIManifest?: Maybe<Scalars['Boolean']['output']>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
@@ -1096,6 +1102,7 @@ export type Query = {
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
+  updateOpenCTIManifest: Success;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
@@ -1356,6 +1363,11 @@ export type QuerySubscribedServiceInstancesByIdentifierArgs = {
 
 export type QuerySubscriptionByIdArgs = {
   subscription_id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryUpdateOpenCtiManifestArgs = {
+  tag?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2208,6 +2220,10 @@ export type AuthDirectiveArgs = {
 
 export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type Platform_TokenDirectiveArgs = { };
+
+export type Platform_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = Platform_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type Service_CapaDirectiveArgs = {
   requires?: Maybe<Array<Maybe<ServiceRestriction>>>;
 };
@@ -2540,6 +2556,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addYourselfInUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddYourselfInUserServiceArgs, 'input'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
+  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
@@ -2723,7 +2740,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['IntegrationFeed']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
   publicIntegrationFeeds?: Resolver<ResolversTypes['IntegrationFeedConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  refreshOpenCTIManifest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
@@ -2740,6 +2756,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
+  updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
@@ -3116,6 +3133,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
   auth?: AuthDirectiveResolver<any, any, ContextType>;
+  platform_token?: Platform_TokenDirectiveResolver<any, any, ContextType>;
   service_capa?: Service_CapaDirectiveResolver<any, any, ContextType>;
   system_token?: System_TokenDirectiveResolver<any, any, ContextType>;
 }>;

@@ -148,7 +148,6 @@ describe('Service instance domain', () => {
       };
 
       const result = await updateServiceInstance(
-        contextAdminUser,
         mockServiceInstanceId,
         updateData
       );
@@ -168,7 +167,6 @@ describe('Service instance domain', () => {
         };
 
         const result = await updateServiceInstance(
-          contextAdminUser,
           mockServiceInstanceId,
           updateData,
           trx
@@ -190,7 +188,6 @@ describe('Service instance domain', () => {
       };
 
       const result = await updateServiceInstance(
-        contextAdminUser,
         mockServiceInstanceId,
         updateData
       );
@@ -204,7 +201,6 @@ describe('Service instance domain', () => {
       const updateData = { name: 'New Name' };
 
       const result = await updateServiceInstance(
-        contextAdminUser,
         nonExistentId as ServiceInstanceId,
         updateData
       );

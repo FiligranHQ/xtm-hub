@@ -4,15 +4,19 @@ import { IngestManifestApp } from './ingest-manifest.app';
 
 const resolvers: Resolvers = {
   Query: {
-    refreshOpenCTIManifest: async () => {
+    updateOpenCTIManifest: async (_, { tag }) => {
       if (!isFeatureEnabled('CONNECTORS_INTEGRATION_FEEDS')) {
-        return false;
+        return {
+          success: false,
+        };
       }
 
       // Error handling is now done in the app layer
-      await IngestManifestApp.refreshOpenCTIManifest();
+      await IngestManifestApp.updateOpenCTIManifest(tag);
 
-      return true;
+      return {
+        success: true,
+      };
     },
   },
 };

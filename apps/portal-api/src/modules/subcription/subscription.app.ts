@@ -146,29 +146,18 @@ export const subscriptionApp = {
       organizationId,
     });
 
-    const trx = await dbTx();
-    try {
-      const subscriptionData = {
-        id: uuidv4() as SubscriptionId,
-        service_instance_id: serviceInstanceId,
-        organization_id: organizationId,
-        start_date: startDate,
-        end_date: endDate,
-        billing: 0,
-        status: SubscriptionStatus.ACCEPTED,
-      };
+    const subscriptionData = {
+      id: uuidv4() as SubscriptionId,
+      service_instance_id: serviceInstanceId,
+      organization_id: organizationId,
+      start_date: startDate,
+      end_date: endDate,
+      billing: 0,
+      status: SubscriptionStatus.ACCEPTED,
+    };
 
-      const createdSubscription = await createSubscription(subscriptionData);
-      await addCapabilitiesToSubscription(
-        createdSubscription.id,
-        capabilityIds
-      );
-
-      await trx.commit();
-    } catch (error) {
-      await trx.rollback();
-      throw error;
-    }
+    const createdSubscription = await createSubscription(subscriptionData);
+    await addCapabilitiesToSubscription(createdSubscription.id, capabilityIds);
   },
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {

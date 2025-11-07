@@ -369,7 +369,6 @@ describe('Service Instance app', () => {
           mockServiceDefinition
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { name: mockInput.name },
           expect.any(Function)
@@ -423,7 +422,6 @@ describe('Service Instance app', () => {
           expect.any(Function)
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           {
             name: mockInput.name,
@@ -464,7 +462,6 @@ describe('Service Instance app', () => {
         );
 
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { illustration_document_id: mockDocumentId },
           expect.any(Function)
@@ -609,7 +606,6 @@ describe('Service Instance app', () => {
 
         // Only name should be updated, no illustration_document_id
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { name: mockInput.name },
           expect.any(Function)

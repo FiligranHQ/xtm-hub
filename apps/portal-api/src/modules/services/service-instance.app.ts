@@ -106,7 +106,6 @@ export const serviceInstanceApp = {
       let updatedServiceInstance = serviceInstance;
       if (Object.keys(updateData).length > 0) {
         updatedServiceInstance = await updateServiceInstance(
-          context,
           serviceInstance.id,
           updateData,
           trx
