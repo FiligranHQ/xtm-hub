@@ -7,17 +7,14 @@ import {
   UserPendingSubscription,
   UserSubscription,
 } from '../../__generated__/resolvers-types';
-import { PORTAL_COOKIE_NAME } from '../../index';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch, listen } from '../../pub';
 import { logApp } from '../../utils/app-logger.util';
 
 import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
-import { validatePassword } from '../../security/utils/user';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
@@ -34,6 +31,7 @@ import {
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { usersAdminApp } from './users.admin.app';
+import { UsersAuthApp } from './users.auth.app';
 import {
   getCapabilities,
   getOrganizations,
@@ -45,7 +43,6 @@ import {
   loadUsersByCapabilitiesInOrganization,
   resetPassword,
   updateUser,
-  updateUserAtLogin,
   userHasOrganizationWithSubscription,
 } from './users.domain';
 import {
@@ -53,10 +50,6 @@ import {
   mapUserToGraphqlUser,
 } from './users.helper';
 import { usersProfileApp } from './users.profile.app';
-
-const validPassword = (user: UserLoadUserBy, password: string): boolean => {
-  return validatePassword(user.salt, password, user.password);
-};
 
 const resolvers: Resolvers = {
   User: {
@@ -315,20 +308,13 @@ const resolvers: Resolvers = {
         );
       }
     },
-    login: async (_, { email, password }, context) => {
-      const { req } = context;
+    login: async (_, args, context) => {
       try {
-        const logged = await loadUserBy({ email });
-        if (logged && validPassword(logged, password)) {
-          req.session.user = await updateUserAtLogin(
-            {
-              ...context,
-              user: logged,
-            },
-            logged
-          );
-          return mapUserToGraphqlUser(logged);
+        const loggedUser = await UsersAuthApp.login(context, args);
+        if (loggedUser) {
+          return mapUserToGraphqlUser(loggedUser);
         }
+
         return undefined;
       } catch (error) {
         if (error.message.includes(ErrorCode.UserDisabled)) {
@@ -338,13 +324,8 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    logout: async (_, __, { user, req, res }) => {
-      return new Promise((resolve) => {
-        res.clearCookie(PORTAL_COOKIE_NAME);
-        req.session.destroy(() => {
-          resolve(user ? user.id : 'anonymous');
-        });
-      });
+    logout: async (_, __, context) => {
+      return UsersAuthApp.logout(context);
     },
   },
   Subscription: {
