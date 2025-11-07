@@ -22,6 +22,7 @@ import {
   UnregisterPlatformInput,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
@@ -435,23 +436,8 @@ export const registrationApp = {
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         platform_token: token,
       });
-    if (!deploymentRequest) {
-      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-    }
-    if (
-      deploymentRequest.product_service_instance_id &&
-      deploymentRequest.product_service_instance_id !== platform.id
-    ) {
-      throw new Error(BadRequestErrorCode.InvalidPlatformId);
-    }
-    if (
-      ![
-        DeploymentRequestStatus.Provisioning,
-        DeploymentRequestStatus.Active,
-      ].includes(deploymentRequest.status)
-    ) {
-      throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
-    }
+
+    assertValidDeploymentRequest(deploymentRequest, platform.id);
 
     const configuration: PlatformConfiguration = {
       registerer_id: deploymentRequest.user_requester_id,
@@ -475,4 +461,27 @@ export const registrationApp = {
       ]);
     });
   },
+};
+
+const assertValidDeploymentRequest = (
+  deploymentRequest: DeploymentRequest,
+  platformId: string
+) => {
+  if (!deploymentRequest) {
+    throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+  }
+  if (
+    deploymentRequest.product_service_instance_id &&
+    deploymentRequest.product_service_instance_id !== platformId
+  ) {
+    throw new Error(BadRequestErrorCode.InvalidPlatformId);
+  }
+  if (
+    ![
+      DeploymentRequestStatus.Provisioning,
+      DeploymentRequestStatus.Active,
+    ].includes(deploymentRequest.status as DeploymentRequestStatus)
+  ) {
+    throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
+  }
 };

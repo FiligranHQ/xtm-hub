@@ -34,7 +34,25 @@ describe('Platform Token Validation', () => {
 
       expect(result).toBe(false);
     });
+    it('should return false when headers are valid but no matching platform found', async () => {
+      const platformId = uuidv4();
+      const platformToken = uuidv4();
+      vi.spyOn(
+        serviceContractDomain,
+        'loadActiveConfigurationByPlatformAndToken'
+      ).mockResolvedValue(null);
 
+      const req: express.Request = {
+        headers: {
+          [PLATFORM_TOKEN_HEADER]: platformToken,
+          [PLATFORM_ID_HEADER]: platformId,
+        },
+      } as unknown as express.Request;
+
+      const result = await validateActivePlatformToken(req);
+
+      expect(result).toBe(false);
+    });
     it('should return true when valid header for registered platform are provided', async () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
@@ -58,7 +76,7 @@ describe('Platform Token Validation', () => {
     });
   });
   describe('validateAndGetRequestedPlatformToken', () => {
-    it('should return null when platform token header is missing', async () => {
+    it('should return null when headers are missing', async () => {
       const req: express.Request = {
         headers: {},
       } as unknown as express.Request;
@@ -72,6 +90,18 @@ describe('Platform Token Validation', () => {
       const req: express.Request = {
         headers: {
           [PLATFORM_TOKEN_HEADER]: 'anything',
+        },
+      } as unknown as express.Request;
+
+      const result = await validateAndGetRequestedPlatformToken(req);
+
+      expect(result).toBe(null);
+    });
+
+    it('should return null when platform token header is missing', async () => {
+      const req: express.Request = {
+        headers: {
+          [PLATFORM_ID_HEADER]: 'anything',
         },
       } as unknown as express.Request;
 
@@ -104,7 +134,28 @@ describe('Platform Token Validation', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should return null when platform id header provided is unknown or not matching token', async () => {
+    it('should return null when platform id header provided is unknown', async () => {
+      const platformId = uuidv4();
+      const platformToken = uuidv4();
+
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(null);
+
+      const req: express.Request = {
+        headers: {
+          [PLATFORM_TOKEN_HEADER]: platformToken,
+          [PLATFORM_ID_HEADER]: platformId,
+        },
+      } as unknown as express.Request;
+
+      const result = await validateAndGetRequestedPlatformToken(req);
+
+      expect(result).toBe(null);
+    });
+
+    it('should return null when platform id header provided is not matching token', async () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
 

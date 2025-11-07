@@ -8,11 +8,7 @@ import { UserLoadUserBy } from '../../../model/user';
 import { loadOrganizationBy } from '../../../modules/organizations/organizations.domain';
 import { serviceContractDomain } from '../../../modules/services/contract/domain';
 import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
-import {
-  PLATFORM_ORGANIZATION_UUID,
-  PLATFORM_USER_EMAIL,
-  PLATFORM_USER_UUID,
-} from '../../../portal.const';
+import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
 import { logApp } from '../../../utils/app-logger.util';
 export const PLATFORM_TOKEN_HEADER = 'xtm-hub-platform-token';
 export const PLATFORM_ID_HEADER = 'xtm-hub-platform-id';
@@ -48,8 +44,8 @@ export const validateActivePlatformToken = async (
 
   const serviceConfiguration: ServiceConfiguration | null =
     await serviceContractDomain.loadActiveConfigurationByPlatformAndToken({
-      platformId: extractPlatformToken(req),
-      token: extractPlatformId(req),
+      platformId: extractPlatformId(req),
+      token: extractPlatformToken(req),
     });
   return serviceConfiguration !== null;
 };
@@ -92,7 +88,7 @@ export const createPlatformTokenResolver = (originalResolve) => {
       portalContext.req
     );
 
-    if (!isActivePlatformToken && !deploymentRequest) {
+    if (!isActivePlatformToken || !deploymentRequest) {
       throw new Error('Invalid token provided');
     }
 
@@ -103,7 +99,7 @@ export const createPlatformTokenResolver = (originalResolve) => {
     const platformUser = {
       id: PLATFORM_USER_UUID,
       email: PLATFORM_USER_EMAIL,
-      selected_organization_id: PLATFORM_ORGANIZATION_UUID,
+      selected_organization_id: deploymentRequest.organization_requester_id,
       organizations: [organization],
       capabilities: [],
       roles_portal: [],

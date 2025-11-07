@@ -747,7 +747,7 @@ describe('Registration app', () => {
       id: uuidv4(),
       title: 'My OpenCTI platform',
       url: 'http://example.com',
-      contract: PlatformContract.Ee,
+      contract: PlatformContract.Trial,
       version: 'X.Y.Z',
     };
 
@@ -756,6 +756,7 @@ describe('Registration app', () => {
         serviceDefinitionId: SERVICE_OPENCTI_REGISTRATION,
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platformIdentifier: PlatformIdentifier.Opencti,
+        serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
       });
 
       deploymentRequest =
