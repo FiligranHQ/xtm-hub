@@ -706,12 +706,11 @@ export const insertServiceInstance = async (
 };
 
 export const updateServiceInstance = async (
-  context: PortalContext,
   id: ServiceInstanceId,
   data: ServiceInstanceMutator,
   trx?: Knex.Transaction
 ) => {
-  const query = db<ServiceInstance>(context, 'ServiceInstance')
+  const query = db<ServiceInstance>('ServiceInstance')
     .where({ id })
     .update(data)
     .returning('*');

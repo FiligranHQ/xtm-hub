@@ -521,6 +521,7 @@ export type Mutation = {
   addYourselfInUserService?: Maybe<Array<Maybe<UserService>>>;
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
+  autoRegisterPlatform: Success;
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
@@ -637,6 +638,11 @@ export type MutationAdminAddUserArgs = {
 export type MutationAdminEditUserArgs = {
   id: Scalars['ID']['input'];
   input: AdminEditUserInput;
+};
+
+
+export type MutationAutoRegisterPlatformArgs = {
+  platform: PlatformInput;
 };
 
 
@@ -990,7 +996,8 @@ export type PageInfo = {
 
 export enum PlatformContract {
   Ce = 'CE',
-  Ee = 'EE'
+  Ee = 'EE',
+  Trial = 'Trial'
 }
 
 export type PlatformDeploymentRequest = {
@@ -2213,6 +2220,10 @@ export type AuthDirectiveArgs = {
 
 export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type Platform_TokenDirectiveArgs = { };
+
+export type Platform_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = Platform_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type Service_CapaDirectiveArgs = {
   requires?: Maybe<Array<Maybe<ServiceRestriction>>>;
 };
@@ -2545,6 +2556,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addYourselfInUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddYourselfInUserServiceArgs, 'input'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
+  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
@@ -3121,6 +3133,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
   auth?: AuthDirectiveResolver<any, any, ContextType>;
+  platform_token?: Platform_TokenDirectiveResolver<any, any, ContextType>;
   service_capa?: Service_CapaDirectiveResolver<any, any, ContextType>;
   system_token?: System_TokenDirectiveResolver<any, any, ContextType>;
 }>;
