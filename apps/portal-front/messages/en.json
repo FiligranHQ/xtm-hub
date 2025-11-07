@@ -578,7 +578,8 @@
         "NoOptions": "No options",
         "Key": {
           "label": "Use case",
-          "integration_feed_type": "Integration feed type"
+          "integration_feed_type": "Integration feed type",
+          "product_version": "Platform"
         }
       }
     },

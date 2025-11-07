@@ -394,6 +394,7 @@ export enum FilterKey {
   Label = 'label',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
+  ProductVersion = 'product_version',
   ServiceDefinitionIdentifier = 'serviceDefinition_identifier',
   Slug = 'slug'
 }

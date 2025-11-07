@@ -578,7 +578,8 @@
         "NoOptions": "Pas d'options",
         "Key": {
           "label": "Cas d'utilisation",
-          "integration_feed_type": "Type de flux d'intégration"
+          "integration_feed_type": "Type de flux d'intégration",
+          "product_version": "Plateforme"
         }
       }
     },

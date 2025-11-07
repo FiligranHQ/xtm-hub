@@ -20,6 +20,7 @@ enum FilterKey {
   integration_type
   integration_subtype
   slug
+  product_version
 }
 
 input Filter {

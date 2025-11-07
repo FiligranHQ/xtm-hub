@@ -205,5 +205,78 @@ describe('Document domain', () => {
         IntegrationFeedType.Connector
       );
     });
+
+    describe('product version filtering', () => {
+      it('should filter an integration feed with a product version', async () => {
+        // Create data
+        const connectors = await upsertConnectors(
+          sampleExtractedManifest as ManifestInformation[]
+        );
+
+        expect(connectors).toBeDefined();
+        expect(connectors.length).toBe(2);
+
+        const secondContractConnection: IntegrationFeedConnection =
+          await loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+            contextAdminUser,
+            {
+              orderBy: DocumentOrdering.CreatedAt,
+              orderMode: OrderingMode.Desc,
+              first: 10,
+              serviceInstanceId: toGlobalId(
+                'ServiceInstance',
+                INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+              ),
+              filters: [
+                {
+                  key: FilterKey.ProductVersion,
+                  value: ['1.0.1'],
+                },
+              ],
+            },
+            INTEGRATION_FEED_METADATA
+          );
+
+        expect(secondContractConnection.edges.length).toBe(1);
+        expect(secondContractConnection.edges[0]?.node.id).toBe(
+          connectors[1]?.id
+        );
+      });
+
+      it('should handle multiple product version filters', async () => {
+        // Create data
+        const connectors = await upsertConnectors(
+          sampleExtractedManifest as ManifestInformation[]
+        );
+
+        expect(connectors).toBeDefined();
+        expect(connectors.length).toBe(2);
+
+        const allContractsConnection: IntegrationFeedConnection =
+          await loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+            contextAdminUser,
+            {
+              orderBy: DocumentOrdering.CreatedAt,
+              orderMode: OrderingMode.Desc,
+              first: 10,
+              serviceInstanceId: toGlobalId(
+                'ServiceInstance',
+                INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+              ),
+              filters: [
+                {
+                  key: FilterKey.ProductVersion,
+                  value: ['0.9.9', '1.0.1'],
+                },
+              ],
+            },
+            INTEGRATION_FEED_METADATA
+          );
+
+        expect(allContractsConnection.edges.length).toBe(2);
+      });
+    });
   });
 });

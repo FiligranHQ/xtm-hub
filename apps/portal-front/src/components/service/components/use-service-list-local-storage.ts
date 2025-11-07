@@ -42,6 +42,9 @@ export const useServiceListLocalStorage = (
   const [connectorTypes, setConnectorTypes, removeConnectorTypes] =
     useLocalStorage<ConnectorTypeEnum[]>(`connectorType${serviceName}List`, []);
 
+  const [productVersions, setProductVersions, removeProductVersions] =
+    useLocalStorage<string[]>(`productVersion${serviceName}List`, []);
+
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     `count${serviceName}List`,
     50
@@ -78,5 +81,8 @@ export const useServiceListLocalStorage = (
     selectedFilters,
     setSelectedFilters,
     removeSelectedFilters,
+    productVersions,
+    setProductVersions,
+    removeProductVersions,
   };
 };
