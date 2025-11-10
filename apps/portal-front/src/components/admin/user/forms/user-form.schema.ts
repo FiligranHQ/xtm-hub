@@ -7,13 +7,13 @@ export const userFormSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
   password: z.string().optional(),
-  capabilities: z.array(z.string()).prefault([]),
+  capabilities: z.array(z.string()),
 });
 
 export const userEditFormSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  capabilities: z.array(z.string()).prefault([]),
+  capabilities: z.array(z.string()),
 });
 
 export const userAdminFormSchema = z.object({
@@ -23,24 +23,20 @@ export const userAdminFormSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
   password: z.string().optional(),
-  organization_capabilities: z
-    .array(
-      z.object({
-        organization_id: z.string(),
-        capabilities: z.array(z.string()),
-      })
-    )
-    .prefault([]),
+  organization_capabilities: z.array(
+    z.object({
+      organization_id: z.string(),
+      capabilities: z.array(z.string()),
+    })
+  ),
 });
 export const userEditAdminFormSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  organization_capabilities: z
-    .array(
-      z.object({
-        organization_id: z.string(),
-        capabilities: z.array(z.string()),
-      })
-    )
-    .prefault([]),
+  organization_capabilities: z.array(
+    z.object({
+      organization_id: z.string(),
+      capabilities: z.array(z.string()),
+    })
+  ),
 });

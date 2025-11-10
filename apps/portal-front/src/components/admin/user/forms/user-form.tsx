@@ -18,11 +18,11 @@ import {
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
-import { z, ZodSchema } from 'zod';
+import { z } from 'zod';
 
 interface UserFormProps {
   handleSubmit: (values: z.infer<typeof userFormSchema>) => void;
-  validationSchema: ZodSchema;
+  validationSchema: typeof userFormSchema;
 }
 export const UserForm: FunctionComponent<UserFormProps> = ({
   handleSubmit,
@@ -36,8 +36,6 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
     resolver: zodResolver(validationSchema),
     defaultValues: {
       password: '',
-      roles_id: [],
-      organizations: [],
     },
   });
 
