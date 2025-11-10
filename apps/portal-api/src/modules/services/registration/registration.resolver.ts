@@ -15,7 +15,7 @@ const resolvers: Resolvers = {
     subscription: ({ id }, _, context) =>
       loadServiceInstanceSubscription(
         context.user.selected_organization_id,
-        id
+        id as ServiceInstanceId
       ),
     deployment_request: ({ id }, _, __) =>
       DeploymentRequestDomain.loadDeploymentRequestBy({

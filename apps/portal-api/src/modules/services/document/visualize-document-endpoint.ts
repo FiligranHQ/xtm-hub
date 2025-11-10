@@ -62,7 +62,6 @@ export const documentVisualizeEndpoint = (app) => {
       try {
         // Check if the user is authorized to access the document
         const serviceDefinition = (await loadServiceDefinitionByServiceInstance(
-          { req, res } as PortalContext,
           fromGlobalId(req.params.serviceInstanceId).id
         )) as ServiceDefinition;
         if (!serviceDefinition) {

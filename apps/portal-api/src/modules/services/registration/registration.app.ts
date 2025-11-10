@@ -289,7 +289,6 @@ export const registrationApp = {
     }
 
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      context,
       activeServiceConfiguration.service_instance_id
     );
 
@@ -399,7 +398,6 @@ export const registrationApp = {
     }
 
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      context,
       subscription.service_instance_id
     );
     if (!serviceDefinition) {

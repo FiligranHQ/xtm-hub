@@ -821,7 +821,6 @@ describe('Registration app', () => {
       );
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        contextAdminUser,
         'id',
         deploymentRequest.service_instance_id
       );

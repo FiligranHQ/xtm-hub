@@ -44,14 +44,13 @@ export const serviceInstanceApp = {
       console.warn('USER_MUST_JOIN_SERVICE_BEFORE_ACCESSING_IT');
       if (subscription.joining === 'AUTO_JOIN') {
         await grantServiceAccess(
-          context,
           [GenericServiceCapabilityIds.AccessId],
           [context.user.id],
           subscription.id
         );
       }
     }
-    return loadServiceInstanceBy(context, 'id', serviceInstanceId);
+    return loadServiceInstanceBy('id', serviceInstanceId);
   },
 
   updatePlatformServiceMetadata: async (
@@ -65,7 +64,10 @@ export const serviceInstanceApp = {
       const { id } = fromGlobalId(input.serviceInstanceId);
       context.serviceInstanceId = input.serviceInstanceId;
 
-      const serviceInstance = await loadPlatformServiceInstance(context, id);
+      const serviceInstance = await loadPlatformServiceInstance(
+        context.user.selected_organization_id,
+        id
+      );
 
       if (!serviceInstance) {
         throw NotFoundError(ErrorCode.ServiceInstanceNotFound);
@@ -73,7 +75,6 @@ export const serviceInstanceApp = {
 
       // Get service definition
       const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-        context,
         serviceInstance.id
       );
 
@@ -117,7 +118,6 @@ export const serviceInstanceApp = {
         // Get current configuration
         const currentConfig =
           await loadPlatformConfigurationByServiceInstanceId(
-            context,
             serviceInstance.id
           );
 
@@ -126,7 +126,6 @@ export const serviceInstanceApp = {
           config.platform_title = input.name;
 
           await updatePlatformConfigurationByServiceInstanceId(
-            context,
             serviceInstance.id,
             config,
             trx
