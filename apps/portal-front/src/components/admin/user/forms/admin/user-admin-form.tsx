@@ -4,9 +4,10 @@ import {
 } from '@/components/admin/user/autocomplete-organization';
 import { CapabilityDescription } from '@/components/admin/user/capability-description';
 import { userAdminFormSchema } from '@/components/admin/user/forms/user-form.schema';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { cn, isDevelopment, isEmpty } from '@/lib/utils';
+import { cn, isEmpty } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteIcon } from 'filigran-icon';
 import {
@@ -21,7 +22,7 @@ import {
 } from 'filigran-ui/clients';
 import { Button, Input } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -33,6 +34,7 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
 }) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
   const [userOrganization, setUserOrganization] = useState<
     UserOrganizationFormProps[]
   >([]);
@@ -40,6 +42,9 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
   const addUserOrganization = (value: UserOrganizationFormProps) => {
     setUserOrganization([...userOrganization, value]);
   };
+
+  const isDevelopmentEnvSetting =
+    settings?.environment && settings.environment !== 'production';
 
   const form = useForm<z.infer<typeof userAdminFormSchema>>({
     resolver: zodResolver(userAdminFormSchema),
@@ -124,7 +129,7 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
             </FormItem>
           )}
         />
-        {isDevelopment() && (
+        {isDevelopmentEnvSetting && (
           <FormField
             control={form.control}
             name="password"

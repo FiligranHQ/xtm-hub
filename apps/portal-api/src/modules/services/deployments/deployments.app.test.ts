@@ -194,6 +194,8 @@ describe('Deployment app', () => {
         organization_name: 'Filigran',
         organization_domains: ['filigran.io', 'internal.com'],
         requester_email: DEFAULT_ADMIN_EMAIL,
+        requester_first_name: 'firstname',
+        requester_last_name: 'lastname',
       });
     });
 

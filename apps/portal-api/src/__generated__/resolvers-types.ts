@@ -1014,6 +1014,8 @@ export type PlatformDeploymentRequest = {
   product_service_instance_id?: Maybe<Scalars['String']['output']>;
   region: PlatformRegion;
   requester_email: Scalars['String']['output'];
+  requester_first_name?: Maybe<Scalars['String']['output']>;
+  requester_last_name?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
   status: DeploymentRequestStatus;
   type: DeploymentType;
@@ -2699,6 +2701,8 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   product_service_instance_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
   requester_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requester_first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  requester_last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DeploymentRequestStatus'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentType'], ParentType, ContextType>;
