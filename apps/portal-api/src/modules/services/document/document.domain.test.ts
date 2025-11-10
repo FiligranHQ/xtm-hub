@@ -231,7 +231,7 @@ describe('Document domain', () => {
               filters: [
                 {
                   key: FilterKey.ProductVersion,
-                  value: ['1.0.1'],
+                  value: ['1.0.0'],
                 },
               ],
             },
@@ -240,7 +240,7 @@ describe('Document domain', () => {
 
         expect(secondContractConnection.edges.length).toBe(1);
         expect(secondContractConnection.edges[0]?.node.id).toBe(
-          connectors[1]?.id
+          connectors[0]?.id
         );
       });
 
@@ -268,7 +268,7 @@ describe('Document domain', () => {
               filters: [
                 {
                   key: FilterKey.ProductVersion,
-                  value: ['0.9.9', '1.0.1'],
+                  value: ['1.0.54', '1.0.1'],
                 },
               ],
             },
