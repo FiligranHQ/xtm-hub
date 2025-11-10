@@ -473,7 +473,6 @@ export const grantServiceAccess = async (
   usersId: string[],
   subscriptionId: string
 ) => {
-  const { portalContext: context } = requestContext.require();
   const dataUserServices = usersId.map((userId) => ({
     id: uuidv4() as UserServiceId,
     user_id: userId,
@@ -523,7 +522,7 @@ export const grantServiceAccess = async (
         generic_service_capability_id: capabilityId,
       })
     );
-    await insertServiceCapability(context, dataServiceCapabilities);
+    await insertServiceCapability(dataServiceCapabilities);
   }
   return insertedUserServices;
 };

@@ -59,7 +59,6 @@ export const registrationDomain = {
 
     const serviceInstanceId =
       await serviceInstanceDomain.createPlatformServiceInstance(
-        context,
         serviceDefinitionId,
         platformIdentifier,
         serviceInstanceCreationStatus
