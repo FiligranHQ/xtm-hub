@@ -68,7 +68,10 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
               />
 
               {shouldDisplayOneClickDeployButton && (
-                <OneClickDeploy documentData={documentData} />
+                <OneClickDeploy
+                  documentData={documentData}
+                  requiredProductVersion={documentData.product_version}
+                />
               )}
             </div>
           </div>

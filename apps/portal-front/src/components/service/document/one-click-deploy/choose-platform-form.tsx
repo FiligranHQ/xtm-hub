@@ -1,9 +1,16 @@
+import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployPlatformFragment$data } from '@generated/oneClickDeployPlatformFragment.graphql';
 import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
@@ -14,6 +21,7 @@ interface ChoosePlatformFormProps {
   translatedPlatformIdentifier: string;
   oneClickDeploy: (platformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;
+  requiredProductVersion?: string;
 }
 
 export const selectPlatformFormSchema = z.object({
@@ -26,6 +34,7 @@ const ChoosePlatformForm = ({
   translatedPlatformIdentifier,
   oneClickDeploy,
   setIsOpen,
+  requiredProductVersion,
 }: ChoosePlatformFormProps) => {
   const t = useTranslations();
   return (
@@ -55,25 +64,54 @@ const ChoosePlatformForm = ({
           platformUrl: {
             fieldType: ({ field }) => (
               <FormItem>
-                <div className="flex flex-col gap-2">
-                  {platforms.map((platform) => (
-                    <div
-                      key={platform.url}
-                      className="flex items-center gap-2">
-                      <Input
-                        id={platform.url}
-                        type="radio"
-                        onChange={() => field.onChange(platform.url)}
-                        checked={field.value === platform.url}
-                        value={platform.url}
-                        className="h-4 w-4 accent-primary"
-                      />
-                      <FormLabel htmlFor={platform.url}>
-                        {platform.title}
-                      </FormLabel>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  {platforms.map((platform) => {
+                    const isPlatformCompatible =
+                      isCompatibleWithSemanticVersion(
+                        platform.version ?? '0.0.0',
+                        requiredProductVersion ?? '0.0.0'
+                      );
+
+                    const input = (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id={platform.id}
+                          type="radio"
+                          disabled={!isPlatformCompatible}
+                          onChange={() => field.onChange(platform.url)}
+                          checked={field.value === platform.url}
+                          value={platform.url}
+                          className="h-4 w-4 accent-primary"
+                        />
+                        <FormLabel htmlFor={platform.id}>
+                          {platform.title}
+                        </FormLabel>
+                      </div>
+                    );
+
+                    return isPlatformCompatible ? (
+                      <div key={platform.id}>{input}</div>
+                    ) : (
+                      <TooltipProvider key={platform.id}>
+                        <Tooltip>
+                          <TooltipTrigger
+                            className="flex"
+                            onClick={(e) => e.preventDefault()}>
+                            {input}
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xl">
+                            <p>
+                              {t(
+                                'Service.ShareableResources.Deploy.DeployIncompatibleVersion',
+                                { platformTitle: platform.title }
+                              )}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    );
+                  })}
+                </>
                 <FormMessage className="mt-2 text-sm text-destructive" />
               </FormItem>
             ),

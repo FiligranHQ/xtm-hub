@@ -31,6 +31,7 @@ export const OneClickDeployPlatformFragment = graphql`
     id
     title
     url
+    version
   }
 `;
 
@@ -44,9 +45,13 @@ export const OneClickDeployPlatformsQuery = graphql`
 
 interface OneClickDeployProps {
   documentData: ShareableResource;
+  requiredProductVersion?: string;
 }
 
-const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
+const OneClickDeploy = ({
+  documentData,
+  requiredProductVersion,
+}: OneClickDeployProps) => {
   const t = useTranslations();
   const platformIdentifier =
     documentData.type === ShareableResourceType.OPENAEV_SCENARIO
@@ -156,10 +161,17 @@ const OneClickDeploy = ({ documentData }: OneClickDeployProps) => {
           translatedPlatformIdentifier={
             PlatformTranslationMapping[platformIdentifier] ?? 'OpenCTI'
           }
+          requiredProductVersion={requiredProductVersion}
         />
       );
     }
-  }, [platforms, documentData, onOneClickDeploy, platformIdentifier]);
+  }, [
+    platforms,
+    documentData,
+    onOneClickDeploy,
+    platformIdentifier,
+    requiredProductVersion,
+  ]);
 
   return (
     <AlertDialog open={isOpen}>
