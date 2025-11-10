@@ -12,6 +12,7 @@ import {
   DocumentConnection,
   Document as DocumentResolverType,
   IntegrationFeedConnection,
+  IntegrationFeedType,
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
   Organization,
@@ -893,4 +894,17 @@ const addIncludeMetadataQuery = (
       })
       .groupBy([metaKey]);
   });
+};
+
+export const loadIntegrationType = async (
+  document_id: string
+): Promise<IntegrationFeedType> => {
+  const doc = await db('Document_Metadata')
+    .select('value')
+    .where({
+      key: 'integration_type',
+      document_id,
+    })
+    .first();
+  return doc?.value as IntegrationFeedType;
 };

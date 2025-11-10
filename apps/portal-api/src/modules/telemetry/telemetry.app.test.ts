@@ -1,5 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { SERVICE_CSV_FEEDS_ID } from '../../../tests/tests.const';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  contextAdminUser,
+  SERVICE_CSV_FEEDS_ID,
+} from '../../../tests/tests.const';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -14,11 +17,21 @@ import {
 import { LoginEvent, TelemetryEventType } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { dbTx } from '../../../knexfile';
 import {
+  IntegrationFeedType,
   PlatformIdentifier,
   ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
+import { DocumentId } from '../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { createDocumentWithChildren } from '../services/document/document.domain';
+import * as DocumentHelper from '../services/document/document.helper';
+import {
+  CsvFeed,
+  INTEGRATION_FEED_CSV_FEED_METADATA,
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from '../services/integration-feeds/integration-feeds.model';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
 
 // Mock the ES Client
@@ -37,6 +50,17 @@ const mockWriteResponse = {
 };
 
 describe('TelemetryApp', () => {
+  const minioFileMock = {
+    minioName: 'minioFile',
+    mimeType: 'mimeType',
+    fileName: 'csvfilename',
+  };
+  beforeEach(() => {
+    vi.spyOn(DocumentHelper, 'processUploads').mockResolvedValue([
+      minioFileMock,
+    ]);
+  });
+
   describe('sendTelemetryEvent', () => {
     it('should index the document in elastic search', async () => {
       const indexSpy = vi
@@ -112,7 +136,29 @@ describe('TelemetryApp', () => {
         status: ServiceConfigurationStatus.Active,
       });
 
-      const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
+      const fakeResourceId =
+        'c07f6909-f8c5-4f61-b17d-b5b2da9b2799' as DocumentId;
+      const trx = await dbTx();
+      await createDocumentWithChildren<CsvFeed>(
+        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        {
+          id: fakeResourceId,
+          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          name: 'myCsvFeed',
+          slug: 'myCsvFeed',
+          description: 'description',
+          minio_name: 'minioName',
+          file_name: 'csvfilename',
+          service_instance_id: SERVICE_CSV_FEEDS_ID,
+          integration_type: IntegrationFeedType.CsvFeed,
+          active: true,
+        },
+        [],
+        INTEGRATION_FEED_CSV_FEED_METADATA,
+        contextAdminUser,
+        trx
+      );
+      trx.commit();
 
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,

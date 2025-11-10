@@ -1,4 +1,5 @@
 import {
+  IntegrationFeedType,
   Organization,
   PlatformContract,
   PlatformIdentifier,
@@ -6,10 +7,10 @@ import {
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { UserId } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 
-import { OrganizationId } from '../../model/kanel/public/Organization';
+import { requestContext } from '../../context/request.context';
+import { loadIntegrationType } from '../services/document/document.domain';
 import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import {
   TELEMETRY_SOURCE,
@@ -84,15 +85,20 @@ export function shouldSendEventForService(
   return ServiceIdentifierToEventService.has(service);
 }
 
-const ServiceIdentifierToEventServiceType = new Map<
-  ServiceDefinitionIdentifier,
+const IntegrationFeedTypeToEventServiceType = new Map<
+  IntegrationFeedType,
   TelemetryEventServiceType
 >([
-  [
-    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
-    TelemetryEventServiceType.CSV_FEEDS,
-  ],
+  [IntegrationFeedType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
+  [IntegrationFeedType.Connector, TelemetryEventServiceType.CONNECTOR],
 ]);
+
+const buildServiceTypeEvent = async (resource_id: string) => {
+  const integration_type: IntegrationFeedType =
+    await loadIntegrationType(resource_id);
+
+  return IntegrationFeedTypeToEventServiceType.get(integration_type);
+};
 
 export function buildLoginEvent(
   organization: Organization,
@@ -118,65 +124,62 @@ export function buildSubscribeEvent(
     event_type: TelemetryEventType.SUBSCRIBE,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(service),
-    service_type: ServiceIdentifierToEventServiceType.get(service),
   };
 }
 
-export function buildDownloadEvent(
+export async function buildDownloadEvent(
   organization: Organization,
   user_id: UserId,
   service: ServiceDefinitionIdentifier,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
-): DownloadEvent {
+): Promise<DownloadEvent> {
   const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
     event_type: TelemetryEventType.DOWNLOAD,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(service),
-    service_type: ServiceIdentifierToEventServiceType.get(service),
+    service_type: await buildServiceTypeEvent(resource_id),
     resource_id: resource_id,
     resource_title: resource_title,
   };
 }
 
-export function buildShareEvent(
+export async function buildShareEvent(
   organization: Organization | undefined,
   user_id: UserId | undefined,
   service: ServiceDefinitionIdentifier,
   resource_id: string,
   resource_title: string,
   timestamp?: Date
-): ShareEvent {
+): Promise<ShareEvent> {
   const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
     event_type: TelemetryEventType.SHARE,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(service),
-    service_type: ServiceIdentifierToEventServiceType.get(service),
+    service_type: await buildServiceTypeEvent(resource_id),
     resource_id: resource_id,
     resource_title: resource_title,
   };
 }
 
 export async function buildCreateEvent(
-  context: PortalContext,
-  organization_id: OrganizationId,
-  user_id: UserId,
   document: Document,
   timestamp?: Date
 ): Promise<CreateEvent> {
+  const { portalContext, user } = requestContext.require();
   const selectedOrga = await loadOrganizationBy({
-    id: organization_id,
+    id: user.selected_organization_id,
   });
 
-  const baseEvent = buildBaseEvent(selectedOrga, user_id, timestamp);
+  const baseEvent = buildBaseEvent(selectedOrga, user.id, timestamp);
 
   const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-    context,
+    portalContext,
     document.service_instance_id
   );
 
@@ -184,9 +187,7 @@ export async function buildCreateEvent(
     event_type: TelemetryEventType.CREATE,
     ...baseEvent,
     service: ServiceIdentifierToEventService.get(serviceDefinition.identifier),
-    service_type: ServiceIdentifierToEventServiceType.get(
-      serviceDefinition.identifier
-    ),
+    service_type: await buildServiceTypeEvent(document.id),
     resource_id: document.id,
     resource_title: document.name,
     status: document.active ? 'published' : 'draft',
@@ -215,7 +216,7 @@ export function buildRegisterEvent(
   };
 }
 
-export function buildOneClickDeployEvent(
+export async function buildOneClickDeployEvent(
   organization: Organization,
   user_id: UserId,
   service: ServiceDefinitionIdentifier,
@@ -225,7 +226,7 @@ export function buildOneClickDeployEvent(
   resource_id: string,
   resource_title: string,
   timestamp?: Date
-): OneClickDeployEvent {
+): Promise<OneClickDeployEvent> {
   const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
   return {
@@ -234,7 +235,7 @@ export function buildOneClickDeployEvent(
     target_product:
       TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
     service: ServiceIdentifierToEventService.get(service),
-    service_type: ServiceIdentifierToEventServiceType.get(service),
+    service_type: await buildServiceTypeEvent(resource_id),
     resource_id,
     resource_title,
     platform_id,
