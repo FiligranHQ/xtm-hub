@@ -6,6 +6,7 @@ import {
   contextAdminUser,
   SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../tests/tests.const';
+import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
   DocumentMutator,
@@ -21,6 +22,11 @@ import {
   TelemetryEventServiceType,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import {
+  CsvFeed,
+  INTEGRATION_FEED_CSV_FEED_METADATA,
+  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+} from '../integration-feeds/integration-feeds.model';
 import * as FileStorage from './document-storage';
 import {
   createDocument,
@@ -352,7 +358,7 @@ describe('increment shared counter', () => {
   const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
   beforeAll(async () => {
     const trx = await dbTx();
-    await createDocument(
+    await createDocument<CsvFeed>(
       {
         ...contextAdminUser,
         serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID as ServiceInstanceId,
@@ -365,9 +371,10 @@ describe('increment shared counter', () => {
         minio_name: 'xminioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID as ServiceInstanceId,
-        type: 'opencti_integration_feeds',
+        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        integration_type: IntegrationFeedType.CsvFeed,
       },
-      [],
+      INTEGRATION_FEED_CSV_FEED_METADATA,
       trx
     );
     await trx.commit();

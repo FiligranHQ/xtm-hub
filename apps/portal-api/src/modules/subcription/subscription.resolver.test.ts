@@ -11,7 +11,6 @@ import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
-  TelemetryEventServiceType,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { deleteSubscriptionUnsecure } from './subscription.helper';
@@ -34,7 +33,7 @@ describe('Subscription mutation resolver', () => {
       expect(response).toBeTruthy();
       expect(response?.name).toEqual('Malware analysis');
     });
-    it('should send a telemetry event for csv feeds service', async () => {
+    it('should send a telemetry event for subscrition integration feeds service', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -62,7 +61,6 @@ describe('Subscription mutation resolver', () => {
         source: TELEMETRY_SOURCE,
         user_id: ADMIN_UUID,
         service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
-        service_type: TelemetryEventServiceType.CSV_FEEDS,
       });
     });
     it('should not send a telemetry event for vault service', async () => {
