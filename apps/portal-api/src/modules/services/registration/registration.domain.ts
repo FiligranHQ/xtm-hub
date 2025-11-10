@@ -126,11 +126,10 @@ export const registrationDomain = {
       });
     }
 
-    await serviceContractDomain.updateConfiguration(
-      context,
-      serviceInstanceId,
-      { config: configuration, status: ServiceConfigurationStatus.Active }
-    );
+    await serviceContractDomain.updateConfiguration(serviceInstanceId, {
+      config: configuration,
+      status: ServiceConfigurationStatus.Active,
+    });
   },
 
   loadRegisteredPlatforms: async (

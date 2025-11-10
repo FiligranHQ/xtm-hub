@@ -237,11 +237,10 @@ describe('Registration domain', () => {
           targetOrganizationId,
         });
 
-        expect(updateConfigurationSpy).toHaveBeenCalledWith(
-          contextAdminUser,
-          serviceInstanceId,
-          { config: configuration, status: ServiceConfigurationStatus.Active }
-        );
+        expect(updateConfigurationSpy).toHaveBeenCalledWith(serviceInstanceId, {
+          config: configuration,
+          status: ServiceConfigurationStatus.Active,
+        });
       });
     });
 
@@ -315,11 +314,10 @@ describe('Registration domain', () => {
           organizationId: targetOrganizationId,
         });
 
-        expect(updateConfigurationSpy).toHaveBeenCalledWith(
-          contextAdminUser,
-          serviceInstanceId,
-          { config: configuration, status: ServiceConfigurationStatus.Active }
-        );
+        expect(updateConfigurationSpy).toHaveBeenCalledWith(serviceInstanceId, {
+          config: configuration,
+          status: ServiceConfigurationStatus.Active,
+        });
       });
     });
   });

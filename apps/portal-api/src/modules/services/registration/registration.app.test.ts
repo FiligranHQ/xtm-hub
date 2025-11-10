@@ -482,10 +482,7 @@ describe('Registration app', () => {
       });
 
       const serviceConfiguration =
-        await serviceContractDomain.loadConfigurationByPlatform(
-          contextAdminUser,
-          platformId
-        );
+        await serviceContractDomain.loadConfigurationByPlatform(platformId);
 
       expect(serviceConfiguration).toBeDefined();
       expect(serviceConfiguration?.status).toBe(
@@ -826,7 +823,6 @@ describe('Registration app', () => {
       );
       const configuration =
         await serviceContractDomain.loadConfigurationByPlatform(
-          contextAdminUser,
           platformConfiguration.id
         );
       expect(serviceInstance.creation_status).toBe(
