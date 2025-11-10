@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
-  SERVICE_CSV_FEEDS_ID,
+  SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../tests/tests.const';
 import {
   DocumentId,
@@ -355,7 +355,7 @@ describe('increment shared counter', () => {
     await createDocument(
       {
         ...contextAdminUser,
-        serviceInstanceId: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID as ServiceInstanceId,
       },
       {
         id: documentId as DocumentId,
@@ -364,7 +364,7 @@ describe('increment shared counter', () => {
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID as ServiceInstanceId,
         type: 'opencti_integration_feeds',
       },
       [],

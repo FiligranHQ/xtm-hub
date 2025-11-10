@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
-  SERVICE_CSV_FEEDS_ID,
+  SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../tests/tests.const';
 import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -55,7 +55,7 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_CSV_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
         integration_type: IntegrationFeedType.CsvFeed,
         active: true,
       },
