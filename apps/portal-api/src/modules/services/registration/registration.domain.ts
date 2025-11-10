@@ -14,7 +14,6 @@ import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
-import { PortalContext } from '../../../model/portal-context';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
@@ -85,18 +84,16 @@ export const registrationDomain = {
     return serviceInstanceId;
   },
 
-  refreshExistingPlatform: async (
-    context: PortalContext,
-    {
-      configuration,
-      serviceInstanceId,
-      targetOrganizationId,
-    }: {
-      configuration: PlatformConfiguration;
-      serviceInstanceId: ServiceInstanceId;
-      targetOrganizationId: OrganizationId;
-    }
-  ) => {
+  refreshExistingPlatform: async ({
+    configuration,
+    serviceInstanceId,
+    targetOrganizationId,
+  }: {
+    configuration: PlatformConfiguration;
+    serviceInstanceId: ServiceInstanceId;
+    targetOrganizationId: OrganizationId;
+  }) => {
+    const { portalContext: context } = requestContext.require();
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -132,7 +129,6 @@ export const registrationDomain = {
   },
 
   loadRegisteredPlatforms: async (
-    context: PortalContext,
     platformIdentifier?: PlatformIdentifier,
     opts: QueryOpts = {}
   ): Promise<
@@ -143,7 +139,8 @@ export const registrationDomain = {
       id: string;
     }[]
   > => {
-    const userSelectedOrganization = context.user.selected_organization_id;
+    const { user } = requestContext.require();
+    const userSelectedOrganization = user.selected_organization_id;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
           serviceDefinitionIdentifierMappedByPlatformIdentifier[
@@ -152,7 +149,7 @@ export const registrationDomain = {
         ]
       : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
-    return await db<ServiceInstance>(context, 'ServiceInstance', opts)
+    return await db<ServiceInstance>('ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',

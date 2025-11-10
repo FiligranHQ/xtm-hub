@@ -22,6 +22,7 @@ import {
   UnregisterPlatformInput,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
+import { requestContext } from '../../../context/request.context';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import Organization, {
   OrganizationId,
@@ -66,9 +67,9 @@ import {
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
-    context: PortalContext,
     platformId: string
   ): Promise<Organization | null> => {
+    const { user } = requestContext.require();
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(platformId);
     if (!serviceConfiguration) {
@@ -84,7 +85,7 @@ export const registrationApp = {
 
     const [userOrganization] = await loadUserOrganization({
       organization_id: subscription.organization_id,
-      user_id: context.user.id,
+      user_id: user.id,
     });
 
     if (!userOrganization) {
@@ -95,11 +96,9 @@ export const registrationApp = {
   },
 
   loadRegisteredPlatforms: async (
-    context: PortalContext,
     input: RegisteredPlatformsInput
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms(
-      context,
       input?.identifier
     );
 
@@ -124,7 +123,6 @@ export const registrationApp = {
    * Be careful when using it.
    */
   loadPlatformRegistrationStatus: async (
-    context: PortalContext,
     input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
@@ -139,7 +137,6 @@ export const registrationApp = {
   },
 
   refreshPlatformRegistrationConnectivityStatus: async (
-    context: PortalContext,
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
@@ -203,7 +200,7 @@ export const registrationApp = {
       await serviceContractDomain.loadConfigurationByPlatform(platform.id);
 
     if (serviceConfiguration) {
-      await registrationDomain.refreshExistingPlatform(context, {
+      await registrationDomain.refreshExistingPlatform({
         serviceInstanceId: serviceConfiguration.service_instance_id,
         targetOrganizationId: organizationId as OrganizationId,
         configuration,
@@ -330,7 +327,6 @@ export const registrationApp = {
   },
 
   isPlatformRegistered: async (
-    context: PortalContext,
     input: IsPlatformRegisteredInput
   ): Promise<IsPlatformRegisteredResponse> => {
     const serviceConfiguration =
