@@ -148,6 +148,7 @@ const OneClickDeploy = ({
           platforms={platforms}
           oneClickDeploy={onOneClickDeploy}
           setIsOpen={setIsOpen}
+          requiredProductVersion={requiredProductVersion}
         />
       );
     }

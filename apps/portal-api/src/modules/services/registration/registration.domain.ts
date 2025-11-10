@@ -177,6 +177,7 @@ export const registrationDomain = {
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
+      .where('Service_Configuration.status', '=', 'active')
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',

@@ -1,3 +1,4 @@
+import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
   ShareableResource,
@@ -12,6 +13,7 @@ interface OnePlatformDisplayProps {
   platforms: oneClickDeployPlatformFragment$data[];
   setIsOpen: (isOpen: boolean) => void;
   oneClickDeploy: (url: string) => void;
+  requiredProductVersion?: string;
 }
 
 const OnePlatformDisplay = ({
@@ -19,8 +21,46 @@ const OnePlatformDisplay = ({
   platforms,
   setIsOpen,
   oneClickDeploy,
+  requiredProductVersion,
 }: OnePlatformDisplayProps) => {
   const t = useTranslations();
+
+  const isCompatible =
+    !requiredProductVersion ||
+    !platforms[0]?.version ||
+    isCompatibleWithSemanticVersion(
+      platforms[0].version,
+      requiredProductVersion
+    );
+
+  if (!isCompatible) {
+    return (
+      <>
+        <div className="space-y-m">
+          <AlertDialogTitle>
+            {t(
+              'Service.ShareableResources.Deploy.DeployIncompatibleVersionTitle'
+            )}
+          </AlertDialogTitle>
+          <p>
+            {t('Service.ShareableResources.Deploy.DeployIncompatibleVersion', {
+              platformTitle: platforms[0]?.title ?? 'OpenCTI',
+            })}
+          </p>
+        </div>
+        <div className="flex justify-end gap-s">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => {
+              setIsOpen(false);
+            }}>
+            {t('Utils.Cancel')}
+          </Button>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

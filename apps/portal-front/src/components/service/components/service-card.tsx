@@ -24,6 +24,7 @@ interface ServiceCardProps {
   document: SubscribableResource;
   detailUrl: string;
   shareLinkUrl: string;
+  requiredProductVersion?: string;
 }
 
 const ServiceCard = ({
@@ -47,14 +48,12 @@ const ServiceCard = ({
   );
 
   if (isConnectorResource(document)) {
-    const docResource: SubscribableResource = document;
+    const docResource: SubscribableResource =
+      document as ShareableResourceConnectorType;
     return (
       <ShareableResourceConnectorCard
-        shareableConnector={
-          {
-            ...docResource,
-          } as unknown as ShareableResourceConnectorType
-        }
+        shareableConnector={docResource}
+        requiredProductVersion={document.product_version}
         serviceInstance={serviceInstance}
         detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${docResource.id}`}
         shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${docResource?.service_instance?.slug}/${docResource?.slug}`}

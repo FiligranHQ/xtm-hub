@@ -4,12 +4,16 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
+import { shareableResourceConnectorCardRegisteredPlatformFragment$key } from '@generated/shareableResourceConnectorCardRegisteredPlatformFragment.graphql';
+import { shareableResourceConnectorCardRegisteredPlatformsQuery } from '@generated/shareableResourceConnectorCardRegisteredPlatformsQuery.graphql';
 import { VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
+import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
 
 export interface ShareableServiceInstance {
   id: string;
@@ -22,19 +26,71 @@ interface ShareableResourceConnectorCard {
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
+  requiredProductVersion?: string;
 }
+
+export const ShareableResourceConnectorCardRegisteredPlatformFragment = graphql`
+  fragment shareableResourceConnectorCardRegisteredPlatformFragment on RegisteredPlatform {
+    id
+    version
+    title
+  }
+`;
+
+export const ShareableResourceConnectorCardRegisteredPlatformsQuery = graphql`
+  query shareableResourceConnectorCardRegisteredPlatformsQuery(
+    $input: RegisteredPlatformsInput!
+  ) {
+    registeredPlatforms(input: $input) {
+      ...shareableResourceConnectorCardRegisteredPlatformFragment
+    }
+  }
+`;
 
 const ShareableResourceConnectorCard: FunctionComponent<
   ShareableResourceConnectorCard
-> = ({ shareableConnector, serviceInstance, shareLinkUrl, detailUrl }) => {
+> = ({
+  shareableConnector,
+  serviceInstance,
+  shareLinkUrl,
+  detailUrl,
+  requiredProductVersion,
+}) => {
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
   );
+  const queryData =
+    useLazyLoadQuery<shareableResourceConnectorCardRegisteredPlatformsQuery>(
+      ShareableResourceConnectorCardRegisteredPlatformsQuery,
+      {
+        input: {
+          identifier: 'opencti',
+        },
+      }
+    );
+  const platforms = queryData.registeredPlatforms.map((instanceRef) =>
+    useFragment<shareableResourceConnectorCardRegisteredPlatformFragment$key>(
+      ShareableResourceConnectorCardRegisteredPlatformFragment,
+      instanceRef
+    )
+  );
+
+  const isConnectorCompatible = useMemo(() => {
+    if (platforms.length !== 1 || !requiredProductVersion) {
+      return true;
+    }
+
+    return isCompatibleWithSemanticVersion(
+      platforms[0].version,
+      requiredProductVersion
+    );
+  }, [platforms, requiredProductVersion]);
 
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
       <Link
-        className="flex flex-col h-full"
+        aria-disabled={!isConnectorCompatible}
+        className="flex flex-col h-full aria-disabled:opacity-60 aria-disabled:after:hidden"
         href={detailUrl}>
         <div className="flex items-stretch gap-l p-l relative">
           <div className="w-24 self-stretch flex">
