@@ -28,12 +28,13 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         INTEGRATION_FEED_CONNECTOR_METADATA,
         trx
       );
+      await trx.commit();
       const newDocIsCreated = !doc.updated_at;
       if (newDocIsCreated) {
         const createEvent = await buildCreateEvent(doc);
         telemetryApp.sendTelemetryEvent(createEvent);
       }
-      await trx.commit();
+
       results.push(doc);
     } catch (error) {
       await trx.rollback();
