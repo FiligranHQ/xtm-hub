@@ -1,6 +1,7 @@
 import { RefreshUserPlatformTokenMutation } from '@/components/registration/register/register.graphql';
 import useExternalTab from '@/hooks/useExternalTab';
 import {
+  isConnectorResource,
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
@@ -34,6 +35,10 @@ function computeDeployUrl(
 
   if (type === ShareableResourceType.OPENAEV_SCENARIO) {
     return `${platformBasePath}/admin/deploy-scenario/${service_instance?.id}/${id}`;
+  }
+
+  if (isConnectorResource(documentData)) {
+    return `${platformBasePath}/dashboard/xtm-hub/deploy-connector/${documentData.slug}?openConfig=true`;
   }
 
   const urlKey = OPENCTI_URL_CONFIGS[type as keyof typeof OPENCTI_URL_CONFIGS];

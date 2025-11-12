@@ -11,6 +11,7 @@ import {
 } from 'vitest';
 import { db, dbUnsecure } from '../../../../knexfile';
 import {
+  ADMIN_USER_ID,
   contextAdminOrgaThales,
   contextAdminUser,
   contextSimpleUserThales,
@@ -18,18 +19,26 @@ import {
   requestContextAdminUser,
   requestContextSimpleUserThales,
   requestContextThalesUser,
+  SERVICE_OPENCTI_REGISTRATION,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestStatus,
+  DeploymentType,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
+  PlatformRegion,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
+import DeploymentRequest, {
+  DeploymentRequestId,
+} from '../../../model/kanel/public/DeploymentRequest';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
@@ -37,10 +46,16 @@ import ServiceInstance, {
 import Subscription, {
   SubscriptionId,
 } from '../../../model/kanel/public/Subscription';
+
 import { UserLoadUserBy } from '../../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
-import { ErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  ForbiddenErrorCode,
+  NotFoundErrorCode,
+} from '../../../utils/error/error.code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
@@ -49,8 +64,11 @@ import {
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { serviceContractDomain } from '../contract/domain';
+import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import * as serviceInstanceDomain from '../service-instance.domain';
+import { loadServiceInstanceBy } from '../service-instance.domain';
 import { registrationApp } from './registration.app';
+import { registrationDomain } from './registration.domain';
 
 describe('Registration app', () => {
   afterAll(async () => {
@@ -721,5 +739,117 @@ describe('Registration app', () => {
       expect(anotherToken).toBe(updatedUser.platform_token);
       expect(anotherToken === token).toBeFalsy();
     });
+  });
+
+  describe('autoRegisterPlatform', () => {
+    let deploymentRequest: DeploymentRequest;
+    const platformConfiguration = {
+      id: uuidv4(),
+      title: 'My OpenCTI platform',
+      url: 'http://example.com',
+      contract: PlatformContract.Trial,
+      version: 'X.Y.Z',
+    };
+
+    beforeEach(async () => {
+      const serviceInstanceId = await registrationDomain.registerNewPlatform({
+        serviceDefinitionId: SERVICE_OPENCTI_REGISTRATION,
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platformIdentifier: PlatformIdentifier.Opencti,
+        serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
+      });
+
+      deploymentRequest =
+        (await DeploymentRequestDomain.insertDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          id: uuidv4() as DeploymentRequestId,
+          job_title: 'myJob',
+          organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+          platform_identifier: PlatformIdentifier.Opencti,
+          platform_token: uuidv4(),
+          region: PlatformRegion.Us,
+          request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
+          status: DeploymentRequestStatus.Provisioning,
+          type: DeploymentType.Trial,
+          use_case: 'use_case',
+          service_instance_id: serviceInstanceId as ServiceInstanceId,
+          user_requester_id: ADMIN_UUID,
+        })) as DeploymentRequest;
+    });
+    it('should throw if deployment request is not found', async () => {
+      const call = registrationApp.autoRegisterPlatform(
+        uuidv4(),
+        platformConfiguration
+      );
+      await expect(call).rejects.toThrow(
+        NotFoundErrorCode.DeploymentRequestNotFound
+      );
+    });
+    it('should throw if wrong platform id is provided', async () => {
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequest.id,
+        { product_service_instance_id: uuidv4() }
+      );
+
+      const call = registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        {
+          ...platformConfiguration,
+          id: uuidv4(),
+        }
+      );
+      await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidPlatformId);
+    });
+    it('should throw if deployment status is not authorized', async () => {
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequest.id,
+        { status: DeploymentRequestStatus.Pending }
+      );
+
+      const call = registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        platformConfiguration
+      );
+      await expect(call).rejects.toThrow(
+        ForbiddenErrorCode.NotAllowedByDeploymentStatus
+      );
+    });
+    it('should register the provided platform', async () => {
+      await registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        platformConfiguration
+      );
+
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        contextAdminUser,
+        'id',
+        deploymentRequest.service_instance_id
+      );
+      const configuration =
+        await serviceContractDomain.loadConfigurationByPlatform(
+          contextAdminUser,
+          platformConfiguration.id
+        );
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Ready
+      );
+      expect(configuration).toMatchObject({
+        config: {
+          platform_contract: platformConfiguration.contract,
+          platform_id: platformConfiguration.id,
+          platform_title: platformConfiguration.title,
+          platform_url: platformConfiguration.url,
+          platform_version: platformConfiguration.version,
+          registerer_id: ADMIN_USER_ID,
+          token: deploymentRequest.platform_token,
+        },
+        service_instance_id: deploymentRequest.service_instance_id,
+        status: ServiceConfigurationStatus.Active,
+      });
+    });
+  });
+
+  afterAll(async () => {
+    vi.useRealTimers();
   });
 });

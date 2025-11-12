@@ -7,6 +7,9 @@ import RolePortal, { RolePortalId } from './model/kanel/public/RolePortal';
 import { UserId } from './model/kanel/public/User';
 import { PortalContext } from './model/portal-context';
 
+export const PLATFORM_USER_UUID =
+  '89efc660-a732-4d71-abe2-455188be1505' as UserId;
+export const PLATFORM_USER_EMAIL = 'platform_user@filigran.io';
 export const SYSTEM_USER_EMAIL = 'system_user@filigran.io';
 export const SYSTEM_USER_UUID: UserId =
   'f0587688-ef35-466a-9f71-a8807ba460b8' as UserId;

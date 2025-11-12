@@ -80,7 +80,7 @@ const IntegrationFeedsList = ({
   } = useServiceListLocalStorage(localStorageKey);
 
   const isConnectorsFeatureFlagEnabled = useIsFeatureEnabled(
-    FeatureFlag.CONNECTORS
+    FeatureFlag.CONNECTORS_INTEGRATION_FEEDS
   );
 
   const filters: ServiceListFilterMap = isConnectorsFeatureFlagEnabled

@@ -8,6 +8,10 @@ import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
+import {
+  extractPlatformToken,
+  validateActivePlatformToken,
+} from '../../../security/directive-graphql/validators/platform-token-validator';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
@@ -18,7 +22,6 @@ import {
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
 import { loadUserBy } from '../../users/users.domain';
-import { serviceContractDomain } from '../contract/domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { downloadFile } from './document-storage';
 import { loadDocumentBy } from './document.domain';
@@ -78,22 +81,11 @@ export const documentDownloadEndpoint = (app) => {
           req,
           res,
         };
-
-        const token = req.header('XTM-Hub-Platform-Token');
+        const token = extractPlatformToken(req);
         // check only if token is present to keep old OpenCTI versions compatibility
         if (isLoadedFromUserPlatformToken && token) {
-          const platformId = req.header('XTM-Hub-Platform-Id');
-          if (!token) {
-            return res
-              .status(403)
-              .json({ message: 'missing platform id in headers' });
-          }
+          const isPlatformTokenValid = await validateActivePlatformToken(req);
 
-          const isPlatformTokenValid =
-            await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
-              context,
-              { platformId, token }
-            );
           if (!isPlatformTokenValid) {
             return res
               .status(403)

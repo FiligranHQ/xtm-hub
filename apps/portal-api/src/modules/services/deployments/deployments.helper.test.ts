@@ -17,6 +17,8 @@ describe('isTransitionValid', () => {
     [DeploymentRequestStatus.Provisioning, DeploymentRequestStatus.Active],
     [DeploymentRequestStatus.Provisioning, DeploymentRequestStatus.Failed],
     [DeploymentRequestStatus.Active, DeploymentRequestStatus.Expired],
+    [DeploymentRequestStatus.Failed, DeploymentRequestStatus.Pending],
+    [DeploymentRequestStatus.Failed, DeploymentRequestStatus.Provisioning],
   ] as const;
 
   it.each(validTransitions)(

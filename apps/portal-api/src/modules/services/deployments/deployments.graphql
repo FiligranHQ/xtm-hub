@@ -46,6 +46,8 @@ type PlatformDeploymentRequest {
   organization_name: String!
   organization_domains: [String!]
   requester_email: String!
+  requester_first_name: String
+  requester_last_name: String
   product_service_instance_id: String
   failure_reason: String
 }

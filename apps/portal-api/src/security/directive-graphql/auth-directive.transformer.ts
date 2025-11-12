@@ -3,6 +3,10 @@ import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { AuthFn, RoleFn, ServiceFn } from './directive.model';
 import { createSecureFieldResolver } from './directive.resolver';
 import { AUTH_DIRECTIVE_NAME } from './validators/auth.validator';
+import {
+  createPlatformTokenResolver,
+  PLATFORM_TOKEN_DIRECTIVE_NAME,
+} from './validators/platform-token-validator';
 import { SERVICE_CAPABILITY_DIRECTIVE_NAME } from './validators/service-capability.validator';
 import {
   createSystemTokenResolver,
@@ -54,8 +58,20 @@ export const createAuthDirectiveTransformer = (
           getDirective(schema, fieldConfig, SYSTEM_TOKEN_DIRECTIVE_NAME)?.[0] ??
           typeDirectiveArgumentMaps[typeName];
 
+        const platformTokenDirective =
+          getDirective(
+            schema,
+            fieldConfig,
+            PLATFORM_TOKEN_DIRECTIVE_NAME
+          )?.[0] ?? typeDirectiveArgumentMaps[typeName];
+
         // Skip if no directives
-        if (!authDirective && !serviceCapaDirective && !systemTokenDirective) {
+        if (
+          !authDirective &&
+          !serviceCapaDirective &&
+          !systemTokenDirective &&
+          !platformTokenDirective
+        ) {
           return fieldConfig;
         }
 
@@ -63,6 +79,8 @@ export const createAuthDirectiveTransformer = (
         const { resolve = defaultFieldResolver } = fieldConfig;
         if (systemTokenDirective) {
           fieldConfig.resolve = createSystemTokenResolver(resolve);
+        } else if (platformTokenDirective) {
+          fieldConfig.resolve = createPlatformTokenResolver(resolve);
         } else {
           fieldConfig.resolve = createSecureFieldResolver(resolve, {
             isAuthenticatedFn,
