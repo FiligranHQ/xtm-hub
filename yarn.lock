@@ -4744,6 +4744,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hookform/resolvers@npm:5.2.2":
+  version: 5.2.2
+  resolution: "@hookform/resolvers@npm:5.2.2"
+  dependencies:
+    "@standard-schema/utils": "npm:^0.3.0"
+  peerDependencies:
+    react-hook-form: ^7.55.0
+  checksum: 10c0/0692cd61dcc2a70cbb27b88a37f733c39e97f555c036ba04a81bd42b0467461cfb6bafacb46c16f173672f9c8a216bd7928a2330d4e49c700d130622bf1defaf
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -8960,6 +8971,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@standard-schema/utils@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@standard-schema/utils@npm:0.3.0"
+  checksum: 10c0/6eb74cd13e52d5fc74054df51e37d947ef53f3ab9e02c085665dcca3c38c60ece8d735cebbdf18fbb13c775fbcb9becb3f53109b0e092a63f0f7389ce0993fd0
+  languageName: node
+  linkType: hard
+
 "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0":
   version: 8.0.0
   resolution: "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0"
@@ -10930,7 +10948,7 @@ __metadata:
     eslint-config-prettier: "npm:10.1.8"
     extract-files: "npm:13.0.0"
     filigran-icon: "npm:0.18.8"
-    filigran-ui: "npm:0.39.11"
+    filigran-ui: "npm:0.39.17"
     graphql: "npm:16.11.0"
     graphql-sse: "npm:2.5.4"
     husky: "npm:9.1.7"
@@ -15528,14 +15546,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.39.11":
-  version: 0.39.11
-  resolution: "filigran-ui@npm:0.39.11"
+"filigran-ui@npm:0.39.17":
+  version: 0.39.17
+  resolution: "filigran-ui@npm:0.39.17"
   dependencies:
     "@dnd-kit/core": "npm:6.1.0"
     "@dnd-kit/modifiers": "npm:7.0.0"
     "@dnd-kit/sortable": "npm:8.0.0"
-    "@hookform/resolvers": "npm:3.10.0"
+    "@hookform/resolvers": "npm:5.2.2"
     "@mui/styles": "npm:5.16.13"
     "@radix-ui/react-accordion": "npm:1.2.11"
     "@radix-ui/react-alert-dialog": "npm:1.1.14"
@@ -15566,16 +15584,16 @@ __metadata:
     react-color: "npm:2.19.3"
     react-day-picker: "npm:8.10.1"
     react-easy-sort: "npm:1.6.0"
-    react-hook-form: "npm:7.52.0"
+    react-hook-form: "npm:7.55.0"
     react-router-dom: "npm:7.1.5"
     tailwind-merge: "npm:2.3.0"
     tailwindcss-animate: "npm:1.0.7"
     usehooks-ts: "npm:3.1.1"
-    zod: "npm:3.25.71"
+    zod: "npm:4.1.12"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
-  checksum: 10c0/86751780ac2c396bea882ee0e12e332d51abe53ce6fff42157959f1c9d4d13e2e9b0b908c72cd1784bb2068cb729e791296e3bb2b8654711f0d6c0d2a2f9f89b
+  checksum: 10c0/8e2e2860cb0563e6924c76c27c2cf7d1bc382f024a3e3e9b8255ea2363fb873172d6c140ea5a074c2a662cc812834796e420e41e2560b88f6ad8e580e8928781
   languageName: node
   linkType: hard
 
@@ -23019,6 +23037,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-hook-form@npm:7.55.0":
+  version: 7.55.0
+  resolution: "react-hook-form@npm:7.55.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10c0/9cff0da58d8223dd14e01ac83688e3546edc42cfa557974b6f2f09922ee051e4713fd53abb69c7a815bf3600142a14186b977d69d438da32f63475a8ecf6b452
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -27915,6 +27942,13 @@ __metadata:
   version: 3.25.75
   resolution: "zod@npm:3.25.75"
   checksum: 10c0/e11c83dcd1437401c1edf4f0448bd13b9133e83196385d0ee5407662bef6c08099cb511b5e65f11f2feba244b6709bcd34077c9450c9f3064f75df51b362b5f2
+  languageName: node
+  linkType: hard
+
+"zod@npm:4.1.12":
+  version: 4.1.12
+  resolution: "zod@npm:4.1.12"
+  checksum: 10c0/b64c1feb19e99d77075261eaf613e0b2be4dfcd3551eff65ad8b4f2a079b61e379854d066f7d447491fcf193f45babd8095551a9d47973d30b46b6d8e2c46774
   languageName: node
   linkType: hard
 
