@@ -4,8 +4,8 @@ import { loadServiceCapabilitiesBy } from './service-capability/service-capabili
 
 const resolvers: Resolvers = {
   ServiceDefinition: {
-    service_capability: ({ id }, _, context) =>
-      loadServiceCapabilitiesBy(context, {
+    service_capability: ({ id }, _) =>
+      loadServiceCapabilitiesBy({
         service_definition_id: id,
       } as ServiceCapabilityMutator),
   },

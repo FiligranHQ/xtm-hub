@@ -171,7 +171,7 @@ export async function buildCreateEvent(
   document: Document,
   timestamp?: Date
 ): Promise<CreateEvent> {
-  const { portalContext, user } = requestContext.require();
+  const { user } = requestContext.require();
   const selectedOrga = await loadOrganizationBy({
     id: user.selected_organization_id,
   });
@@ -179,7 +179,6 @@ export async function buildCreateEvent(
   const baseEvent = buildBaseEvent(selectedOrga, user.id, timestamp);
 
   const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-    portalContext,
     document.service_instance_id
   );
 

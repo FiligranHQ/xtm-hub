@@ -118,7 +118,6 @@ export const documentDownloadEndpoint = (app) => {
 
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
-              context,
               document.service_instance_id
             );
 

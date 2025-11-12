@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import { UserServiceCapability } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
 import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -151,8 +150,6 @@ export const createUserServiceAccess = async (
     capabilities: string[];
   }
 ) => {
-  const { portalContext } = requestContext.require();
-
   const user_service: UserServiceInitializer = {
     id: uuidv4() as UserServiceId,
     subscription_id,
@@ -189,12 +186,10 @@ export const createUserServiceAccess = async (
 
   const user = await loadUserBy({ 'User.id': user_id });
   const serviceInstance = await loadServiceInstanceBy(
-    portalContext,
     'ServiceInstance.id',
     subscription.service_instance_id
   );
   const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-    portalContext,
     serviceInstance.id
   );
   await sendMail({

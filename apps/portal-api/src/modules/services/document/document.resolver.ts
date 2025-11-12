@@ -120,7 +120,6 @@ const resolvers: Resolvers = {
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
-              context,
               document.service_instance_id
             );
 
@@ -167,8 +166,8 @@ const resolvers: Resolvers = {
       getUploaderOrganization(context, id, {
         unsecured: true,
       }),
-    service_instance: ({ service_instance_id }, _, context) => {
-      return getServiceInstance(context, service_instance_id);
+    service_instance: ({ service_instance_id }, _) => {
+      return getServiceInstance(service_instance_id as ServiceInstanceId);
     },
     subscription: async ({ service_instance_id }, _, context) => {
       const subscription = await loadSubscriptionBy({

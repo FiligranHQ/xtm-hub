@@ -25,8 +25,8 @@ import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscriptio
 const resolvers: Resolvers = {
   SubscriptionModel: {
     subscription_capability: ({ id }, _) => getSubscriptionCapability(id),
-    service_instance: ({ service_instance_id }, _, context) =>
-      loadServiceInstanceBy(context, 'id', service_instance_id),
+    service_instance: ({ service_instance_id }, _) =>
+      loadServiceInstanceBy('id', service_instance_id),
     user_service: ({ id }, _) => getUserService(id),
   },
   SubscriptionCapability: {
@@ -74,7 +74,6 @@ const resolvers: Resolvers = {
         });
 
         return loadServiceWithSubscriptions(
-          context,
           extractId<ServiceInstanceId>(service_instance_id)
         );
       } catch (error) {
@@ -84,14 +83,14 @@ const resolvers: Resolvers = {
         );
       }
     },
-    deleteSubscription: async (_, { subscription_id }, context) => {
+    deleteSubscription: async (_, { subscription_id }) => {
       try {
         const { service_instance_id } =
           await subscriptionApp.deleteSubscription(
             extractId<SubscriptionId>(subscription_id)
           );
 
-        return loadServiceWithSubscriptions(context, service_instance_id);
+        return loadServiceWithSubscriptions(service_instance_id);
       } catch (error) {
         throw mapToGraphQLError(
           error,

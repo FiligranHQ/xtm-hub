@@ -96,7 +96,6 @@ describe('Service Instance app', () => {
       });
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
       expect(loadServiceInstanceBySpy).toHaveBeenCalledWith(
-        contextAdminUser,
         'id',
         mockServiceInstanceId
       );
@@ -119,7 +118,6 @@ describe('Service Instance app', () => {
       );
 
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
-        contextAdminUser,
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
         mockSubscriptionId
@@ -357,11 +355,10 @@ describe('Service Instance app', () => {
         );
 
         expect(loadPlatformServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
+          contextAdminUser.user.selected_organization_id,
           mockServiceInstanceId
         );
         expect(loadServiceDefinitionByServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId
         );
         expect(assertUserCanModifyPlatformServiceSpy).toHaveBeenCalledWith(
@@ -376,7 +373,6 @@ describe('Service Instance app', () => {
         expect(
           updatePlatformConfigurationByServiceInstanceIdSpy
         ).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { ...mockPlatformConfig, platform_title: mockInput.name },
           expect.any(Function)
