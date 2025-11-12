@@ -90,7 +90,7 @@ const IntegrationFeedTypeToEventServiceType = new Map<
   TelemetryEventServiceType
 >([
   [IntegrationFeedType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
-  [IntegrationFeedType.Connector, TelemetryEventServiceType.CONNECTOR],
+  [IntegrationFeedType.Connector, TelemetryEventServiceType.CONNECTORS],
 ]);
 
 const buildServiceTypeEvent = async (resource_id: string) => {
