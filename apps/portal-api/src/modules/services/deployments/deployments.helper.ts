@@ -35,6 +35,11 @@ const VALID_TRANSITIONS: StatusTransition[] = [
     to: DeploymentRequestStatus.Failed,
   },
   { from: DeploymentRequestStatus.Active, to: DeploymentRequestStatus.Expired },
+  { from: DeploymentRequestStatus.Failed, to: DeploymentRequestStatus.Pending },
+  {
+    from: DeploymentRequestStatus.Failed,
+    to: DeploymentRequestStatus.Provisioning,
+  },
 ];
 
 export const isTransitionValid = (

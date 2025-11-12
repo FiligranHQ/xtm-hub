@@ -116,5 +116,7 @@ const getDeploymentRequestWithUserDataQuery = () => {
       'Organization.name as organization_name',
       'Organization.domains as organization_domains',
       'User.email as requester_email',
+      'User.first_name as requester_first_name',
+      'User.last_name as requester_last_name',
     ]);
 };
