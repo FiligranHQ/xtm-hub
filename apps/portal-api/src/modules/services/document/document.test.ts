@@ -370,7 +370,7 @@ describe('increment shared counter', () => {
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID as ServiceInstanceId,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
         type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         integration_type: IntegrationFeedType.CsvFeed,
       },
