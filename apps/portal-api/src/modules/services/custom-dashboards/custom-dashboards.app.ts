@@ -35,12 +35,7 @@ export const CustomDashboardsApp = {
       await trx.commit();
 
       try {
-        const createEvent = await buildCreateEvent(
-          context,
-          context.user.selected_organization_id,
-          context.user.id,
-          doc
-        );
+        const createEvent = await buildCreateEvent(doc);
         telemetryApp.sendTelemetryEvent(createEvent);
       } catch (error) {
         logApp.error(

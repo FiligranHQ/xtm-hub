@@ -131,7 +131,7 @@ const resolvers: Resolvers = {
                 })
               : undefined;
 
-            const shareEvent = buildShareEvent(
+            const shareEvent = await buildShareEvent(
               selectedOrga,
               context.user?.id,
               serviceDefinition.identifier,

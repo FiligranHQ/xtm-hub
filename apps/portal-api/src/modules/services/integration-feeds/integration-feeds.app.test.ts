@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
-  SERVICE_CSV_FEEDS_ID,
+  SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../tests/tests.const';
+import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -11,9 +12,8 @@ import { createDocumentWithChildren } from '../document/document.domain';
 import * as DocumentHelper from '../document/document.helper';
 import { integrationFeedsApp } from './integration-feeds.app';
 import {
-  CSV_FEED_METADATA,
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
+  INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from './integration-feeds.model';
 
@@ -55,12 +55,12 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_CSV_FEEDS_ID,
-        type: INTEGRATION_FEED_CSV_FEED_TYPE,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        integration_type: IntegrationFeedType.CsvFeed,
         active: true,
       },
       [],
-      CSV_FEED_METADATA,
+      INTEGRATION_FEED_CSV_FEED_METADATA,
       contextAdminUser,
       trx
     );

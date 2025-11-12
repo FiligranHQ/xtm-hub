@@ -63,7 +63,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
             )}
             <div className="ml-auto">
               <ShareLinkButton
-                documentId={documentData.slug}
+                documentId={documentData.id}
                 url={shareUrl}
               />
 

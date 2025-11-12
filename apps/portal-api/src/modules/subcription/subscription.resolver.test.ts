@@ -2,7 +2,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
-  SERVICE_CSV_FEEDS_ID,
+  SERVICE_INTEGRATIONS_FEEDS_ID,
   SERVICE_MALWARE_ID,
 } from '../../../tests/tests.const';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -11,7 +11,6 @@ import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
-  TelemetryEventServiceType,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { deleteSubscriptionUnsecure } from './subscription.helper';
@@ -34,7 +33,7 @@ describe('Subscription mutation resolver', () => {
       expect(response).toBeTruthy();
       expect(response?.name).toEqual('Malware analysis');
     });
-    it('should send a telemetry event for csv feeds service', async () => {
+    it('should send a telemetry event for subscription integration feeds service', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -48,7 +47,7 @@ describe('Subscription mutation resolver', () => {
         {
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_CSV_FEEDS_ID
+            SERVICE_INTEGRATIONS_FEEDS_ID
           ),
         },
         contextAdminUser
@@ -62,7 +61,6 @@ describe('Subscription mutation resolver', () => {
         source: TELEMETRY_SOURCE,
         user_id: ADMIN_UUID,
         service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
-        service_type: TelemetryEventServiceType.CSV_FEEDS,
       });
     });
     it('should not send a telemetry event for vault service', async () => {
@@ -88,7 +86,7 @@ describe('Subscription mutation resolver', () => {
         service_instance_id: SERVICE_MALWARE_ID as ServiceInstanceId,
       });
       await deleteSubscriptionUnsecure({
-        service_instance_id: SERVICE_CSV_FEEDS_ID as ServiceInstanceId,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
       });
     });
   });
