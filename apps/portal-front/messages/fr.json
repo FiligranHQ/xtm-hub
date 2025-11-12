@@ -458,6 +458,9 @@
           "taxii_feed": "Flux TAXII (bientôt disponible)",
           "opencti_stream_feed": "Flux OpenCTI",
           "third_party_integration": "Intégrations tierces"
+        },
+        "ProductVersion": {
+          "Placeholder": "Plateforme..."
         }
       }
     },

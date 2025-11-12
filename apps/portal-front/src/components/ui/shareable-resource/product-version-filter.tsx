@@ -70,7 +70,7 @@ export const ProductVersionFilter: React.FC<Props> = ({
         options={options}
         defaultValue={productVersions}
         placeholder={t(
-          'Service.OpenctiIntegrationFeeds.Filter.Type.Placeholder'
+          'Service.OpenctiIntegrationFeeds.Filter.ProductVersion.Placeholder'
         )}
         noResultString={t('Utils.NotFound')}
         onValueChange={setProductVersions}

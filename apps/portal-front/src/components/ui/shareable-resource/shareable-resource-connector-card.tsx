@@ -1,19 +1,17 @@
+'use client';
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
-import { shareableResourceConnectorCardRegisteredPlatformFragment$key } from '@generated/shareableResourceConnectorCardRegisteredPlatformFragment.graphql';
-import { shareableResourceConnectorCardRegisteredPlatformsQuery } from '@generated/shareableResourceConnectorCardRegisteredPlatformsQuery.graphql';
 import { VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FunctionComponent, useMemo } from 'react';
-import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
+import { FunctionComponent } from 'react';
+import { graphql } from 'react-relay';
 
 export interface ShareableServiceInstance {
   id: string;
@@ -21,12 +19,14 @@ export interface ShareableServiceInstance {
     identifier: ServiceDefinitionIdentifier;
   } | null;
 }
-interface ShareableResourceConnectorCard {
+
+export interface ShareableResourceConnectorCardProps {
   shareableConnector: ShareableResourceConnectorType;
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
   requiredProductVersion?: string;
+  isConnectorCompatible?: boolean;
 }
 
 export const ShareableResourceConnectorCardRegisteredPlatformFragment = graphql`
@@ -48,43 +48,17 @@ export const ShareableResourceConnectorCardRegisteredPlatformsQuery = graphql`
 `;
 
 const ShareableResourceConnectorCard: FunctionComponent<
-  ShareableResourceConnectorCard
+  ShareableResourceConnectorCardProps
 > = ({
   shareableConnector,
   serviceInstance,
   shareLinkUrl,
   detailUrl,
-  requiredProductVersion,
+  isConnectorCompatible = true,
 }) => {
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
   );
-  const queryData =
-    useLazyLoadQuery<shareableResourceConnectorCardRegisteredPlatformsQuery>(
-      ShareableResourceConnectorCardRegisteredPlatformsQuery,
-      {
-        input: {
-          identifier: 'opencti',
-        },
-      }
-    );
-  const platforms = queryData.registeredPlatforms.map((instanceRef) =>
-    useFragment<shareableResourceConnectorCardRegisteredPlatformFragment$key>(
-      ShareableResourceConnectorCardRegisteredPlatformFragment,
-      instanceRef
-    )
-  );
-
-  const isConnectorCompatible = useMemo(() => {
-    if (platforms.length !== 1 || !requiredProductVersion) {
-      return true;
-    }
-
-    return isCompatibleWithSemanticVersion(
-      platforms[0].version,
-      requiredProductVersion
-    );
-  }, [platforms, requiredProductVersion]);
 
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
