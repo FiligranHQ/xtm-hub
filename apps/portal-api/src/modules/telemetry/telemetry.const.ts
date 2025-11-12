@@ -8,7 +8,7 @@ export enum TelemetryEventService {
 
 export enum TelemetryEventServiceType {
   CSV_FEEDS = 'csv-feeds',
-  CONNECTOR = 'connectors',
+  CONNECTORS = 'connectors',
 }
 
 export enum TelemetryTargetProduct {
