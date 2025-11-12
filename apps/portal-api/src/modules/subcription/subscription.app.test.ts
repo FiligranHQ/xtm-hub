@@ -5,7 +5,7 @@ import {
   FILIGRAN_ORGA_ID,
   INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE,
   INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD,
-  SERVICE_CSV_FEEDS_ID,
+  SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../tests/tests.const';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import ServiceInstance, {
@@ -132,7 +132,7 @@ describe('Subscription app', () => {
       const subscription = await createSubscription({
         id,
         organization_id: FILIGRAN_ORGA_ID,
-        service_instance_id: SERVICE_CSV_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
         start_date: new Date(),
         end_date: null,
         status: 'ACCEPTED',
