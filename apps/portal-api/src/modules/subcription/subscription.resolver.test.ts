@@ -86,7 +86,7 @@ describe('Subscription mutation resolver', () => {
         service_instance_id: SERVICE_MALWARE_ID as ServiceInstanceId,
       });
       await deleteSubscriptionUnsecure({
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID as ServiceInstanceId,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
       });
     });
   });
