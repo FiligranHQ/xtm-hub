@@ -36,6 +36,7 @@ import {
   UploadedFile,
 } from './document-storage';
 import {
+  BOOLEAN_METADATA,
   Document,
   FullDocumentMutator,
   getDocumentName,
@@ -884,15 +885,28 @@ const addIncludeMetadataQuery = (
 ) => {
   include_metadata.forEach((metaKey, index) => {
     const metaAlias = `meta${index}`;
-    qb.select(`${metaAlias}.value as ${metaKey}`)
-      .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-          `${metaAlias}.key`,
-          '=',
-          metaKey
-        );
-      })
-      .groupBy([metaKey]);
+
+    if (BOOLEAN_METADATA.includes(metaKey)) {
+      qb.select(
+        dbRaw(`
+          CASE 
+            WHEN "${metaAlias}"."value" = 'true' THEN true 
+            WHEN "${metaAlias}"."value" = 'false' THEN false 
+            ELSE "${metaAlias}"."value"::boolean 
+          END as ${metaKey}
+        `)
+      );
+    } else {
+      qb.select(`${metaAlias}.value as ${metaKey}`);
+    }
+
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+        `${metaAlias}.key`,
+        '=',
+        metaKey
+      );
+    }).groupBy([metaKey]);
   });
 };
 
