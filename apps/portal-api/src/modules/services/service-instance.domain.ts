@@ -25,7 +25,7 @@ import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
-import { CAPABILITY_BYPASS } from '../../portal.const';
+import { isUserAdminPlatform } from '../../security/access';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
@@ -450,7 +450,7 @@ export const loadServiceWithSubscriptions = async (
     ])
     .groupBy(['ServiceInstance.id', 'ServiceDefinition.id']);
 
-  if (!user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)) {
+  if (!isUserAdminPlatform(user)) {
     querySubscriptions.where(
       'Subscription.organization_id',
       '=',

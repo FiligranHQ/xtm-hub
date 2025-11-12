@@ -8,7 +8,7 @@ import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from '../regist
 export const serviceDefinitionDomain = {
   loadServiceDefinitionBy(
     field: ServiceDefinitionMutator
-  ): Promise<ServiceDefinition> {
+  ): Promise<ServiceDefinition | null> {
     return db('ServiceDefinition').where(field).select('id').first();
   },
 
