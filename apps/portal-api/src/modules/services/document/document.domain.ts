@@ -898,7 +898,7 @@ const addIncludeMetadataQuery = (
 
 export const loadIntegrationType = async (
   document_id: string
-): Promise<IntegrationFeedType> => {
+): Promise<IntegrationFeedType | undefined> => {
   const doc = await db('Document_Metadata')
     .select('value')
     .where({
