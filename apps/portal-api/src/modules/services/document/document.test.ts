@@ -361,7 +361,7 @@ describe('increment shared counter', () => {
     await createDocument<CsvFeed>(
       {
         ...contextAdminUser,
-        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID as ServiceInstanceId,
+        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
       },
       {
         id: documentId as DocumentId,
