@@ -436,7 +436,11 @@
       "Search": "Search a connector with name...",
       "Type": "Type",
       "VendorContact": "Vendor Contact",
-      "VisitVendor": "Visit the vendor's page to learn more and get in touch"
+      "VisitVendor": "Visit the vendor's page to learn more and get in touch",
+      "Incompatible": {
+        "Required": "Updating your platform is necessary to deploy this connector",
+        "Optional": "Some platforms needs to be updated to deploy this connector"
+      }
     },
     "CreationStatus": "Creation status",
     "OpenctiIntegrationFeeds": {

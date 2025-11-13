@@ -44,5 +44,13 @@ describe('Semantic versioning', () => {
     it('should return true when required version is not formatted as a semantic version', () => {
       expect(isCompatibleWithSemanticVersion('1.0.0', 'hello')).toBe(true);
     });
+
+    it('should return true when given version is undefined', () => {
+      expect(isCompatibleWithSemanticVersion(undefined, '1.1.1')).toBe(true);
+    });
+
+    it('should return true when required version is undefined', () => {
+      expect(isCompatibleWithSemanticVersion('1.1.1', undefined)).toBe(true);
+    });
   });
 });

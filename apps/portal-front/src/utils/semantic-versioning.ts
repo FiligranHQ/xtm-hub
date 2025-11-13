@@ -4,9 +4,14 @@ const isSemanticVersionString = (version: string): boolean => {
 };
 
 export const isCompatibleWithSemanticVersion = (
-  givenVersion: string,
-  requiredVersion: string
+  givenVersion?: string | null,
+  requiredVersion?: string | null
 ) => {
+  const areVersionsDefined = !!givenVersion && !!requiredVersion;
+  if (!areVersionsDefined) {
+    return true;
+  }
+
   const isAVersionNotFormattedAsSemanticVersion =
     !isSemanticVersionString(givenVersion) ||
     !isSemanticVersionString(requiredVersion);

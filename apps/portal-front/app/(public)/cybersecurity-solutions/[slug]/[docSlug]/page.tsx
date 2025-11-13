@@ -1,6 +1,5 @@
 import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
-import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -292,14 +291,12 @@ const Page = async ({
               </div>
             </section>
           </div>
-          <ShareableResourceBasicInformation>
-            {document && (
-              <ShareableResourceDetails
-                documentData={document}
-                downloadNumber={document.download_number}
-              />
-            )}
-          </ShareableResourceBasicInformation>
+          {document && (
+            <ShareableResourceDetails
+              documentData={document}
+              downloadNumber={document.download_number}
+            />
+          )}
         </div>
       </>
     );
