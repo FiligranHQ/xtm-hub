@@ -33,8 +33,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
 > = ({ documentData, breadcrumbValue, shareUrl, logo }) => {
   const t = useTranslations();
 
-  const shouldDisplayOneClickDeployButton =
-    documentData.manager_supported === 'true';
+  const shouldDisplayOneClickDeployButton = documentData.manager_supported;
 
   return (
     <>

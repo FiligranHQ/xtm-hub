@@ -560,12 +560,12 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   integration_type: IntegrationFeedType!
   product_version: String!
   container_image: String
-  verified: String!
+  verified: Boolean!
   source_code: String
   subscription_link: String
   integration_subtype: ConnectorType!
-  manager_supported: String!
-  playbook_supported: String!
+  manager_supported: Boolean!
+  playbook_supported: Boolean!
 }
 
 type IntegrationFeedEdge {
