@@ -81,7 +81,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
       )}>
       {firstBadge && (
         <Badge
-          className="uppercase min-w-0 max-w-full"
+          className="min-w-0 max-w-full"
           key={firstBadge.id}
           color={firstBadge.color}
           title={firstBadge.name}>
@@ -91,7 +91,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
 
       {badges.slice(1, visibleTags).map(({ id, name, color }, index) => (
         <Badge
-          className="whitespace-nowrap uppercase aria-hidden:invisible aria-hidden:absolute"
+          className="whitespace-nowrap aria-hidden:invisible aria-hidden:absolute"
           aria-hidden={index >= visibleTags}
           key={id}
           color={color}>
@@ -101,7 +101,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
 
       {badges.slice(visibleTags).map(({ id, name, color }) => (
         <Badge
-          className="whitespace-nowrap uppercase invisible absolute"
+          className="whitespace-nowrap invisible absolute"
           aria-hidden={true}
           key={id}
           color={color}>
@@ -121,7 +121,6 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
               <div className="flex flex-wrap gap-s max-w-sm">
                 {badges.slice(visibleTags).map(({ id, name, color }) => (
                   <Badge
-                    className="uppercase"
                     key={id}
                     color={color}>
                     {name}
