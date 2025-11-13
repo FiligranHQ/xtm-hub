@@ -11,7 +11,6 @@ import { Badge } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
-import { graphql } from 'react-relay';
 
 export interface ShareableServiceInstance {
   id: string;
@@ -28,24 +27,6 @@ export interface ShareableResourceConnectorCardProps {
   requiredProductVersion?: string;
   isConnectorCompatible?: boolean;
 }
-
-export const ShareableResourceConnectorCardRegisteredPlatformFragment = graphql`
-  fragment shareableResourceConnectorCardRegisteredPlatformFragment on RegisteredPlatform {
-    id
-    version
-    title
-  }
-`;
-
-export const ShareableResourceConnectorCardRegisteredPlatformsQuery = graphql`
-  query shareableResourceConnectorCardRegisteredPlatformsQuery(
-    $input: RegisteredPlatformsInput!
-  ) {
-    registeredPlatforms(input: $input) {
-      ...shareableResourceConnectorCardRegisteredPlatformFragment
-    }
-  }
-`;
 
 const ShareableResourceConnectorCard: FunctionComponent<
   ShareableResourceConnectorCardProps

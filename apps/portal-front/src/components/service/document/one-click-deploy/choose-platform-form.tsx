@@ -3,7 +3,7 @@ import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { oneClickDeployPlatformFragment$data } from '@generated/oneClickDeployPlatformFragment.graphql';
+import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
 import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
 import {
   Tooltip,
@@ -17,7 +17,7 @@ import { z } from 'zod';
 
 interface ChoosePlatformFormProps {
   documentData: ShareableResource;
-  platforms: oneClickDeployPlatformFragment$data[];
+  platforms: useRegisteredPlatformsFragment$data[];
   translatedPlatformIdentifier: string;
   oneClickDeploy: (platformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;

@@ -3,14 +3,13 @@ import ChoosePlatformForm from '@/components/service/document/one-click-deploy/c
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
+import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
 import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
-import { oneClickDeployPlatformFragment$key } from '@generated/oneClickDeployPlatformFragment.graphql';
-import { oneClickDeployPlatformsQuery } from '@generated/oneClickDeployPlatformsQuery.graphql';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -19,29 +18,7 @@ import {
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
-import {
-  graphql,
-  useFragment,
-  useLazyLoadQuery,
-  useMutation,
-} from 'react-relay';
-
-export const OneClickDeployPlatformFragment = graphql`
-  fragment oneClickDeployPlatformFragment on RegisteredPlatform {
-    id
-    title
-    url
-    version
-  }
-`;
-
-export const OneClickDeployPlatformsQuery = graphql`
-  query oneClickDeployPlatformsQuery($input: RegisteredPlatformsInput!) {
-    registeredPlatforms(input: $input) {
-      ...oneClickDeployPlatformFragment
-    }
-  }
-`;
+import { graphql, useMutation } from 'react-relay';
 
 interface OneClickDeployProps {
   documentData: ShareableResource;
@@ -57,20 +34,7 @@ const OneClickDeploy = ({
     documentData.type === ShareableResourceType.OPENAEV_SCENARIO
       ? PlatformIdentifierEnum.OPENAEV
       : PlatformIdentifierEnum.OPENCTI;
-  const queryData = useLazyLoadQuery<oneClickDeployPlatformsQuery>(
-    OneClickDeployPlatformsQuery,
-    {
-      input: {
-        identifier: platformIdentifier,
-      },
-    }
-  );
-  const platforms = queryData.registeredPlatforms.map((instanceRef) =>
-    useFragment<oneClickDeployPlatformFragment$key>(
-      OneClickDeployPlatformFragment,
-      instanceRef
-    )
-  );
+  const { platforms } = useRegisteredPlatforms(platformIdentifier);
 
   const SendOneClickDeployTelemetryMutation = graphql`
     mutation oneClickDeployMutation($input: OneClickDeployInput!) {
