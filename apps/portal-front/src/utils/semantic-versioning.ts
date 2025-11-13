@@ -1,7 +1,20 @@
+const isSemanticVersionString = (version: string): boolean => {
+  const regex = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+  return regex.test(version);
+};
+
 export const isCompatibleWithSemanticVersion = (
   givenVersion: string,
   requiredVersion: string
 ) => {
+  const isAVersionNotFormattedAsSemanticVersion =
+    !isSemanticVersionString(givenVersion) ||
+    !isSemanticVersionString(requiredVersion);
+
+  if (isAVersionNotFormattedAsSemanticVersion) {
+    return true;
+  }
+
   return compareSemanticVersions(givenVersion, requiredVersion) >= 0;
 };
 

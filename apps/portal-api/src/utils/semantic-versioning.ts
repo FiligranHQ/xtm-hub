@@ -1,3 +1,4 @@
+export const semanticVersionRegex = /^[0-9]+\.[0-9]+\.[0-9]+$/;
 export const compareSemanticVersions = (a: string, b: string) => {
   const a1 = a.split('.');
   const b1 = b.split('.');

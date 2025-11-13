@@ -286,7 +286,9 @@ describe('Registration app', () => {
           identifier: PlatformIdentifier.Opencti,
         });
 
-        await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
+        await expect(call).rejects.toThrow(
+          ErrorCode.InvalidServiceConfiguration
+        );
       });
 
       it('should throw when platformUrl is not valid', async () => {
@@ -299,7 +301,9 @@ describe('Registration app', () => {
           identifier: PlatformIdentifier.Opencti,
         });
 
-        await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
+        await expect(call).rejects.toThrow(
+          ErrorCode.InvalidServiceConfiguration
+        );
       });
     });
 

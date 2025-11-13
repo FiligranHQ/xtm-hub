@@ -6,18 +6,18 @@ import {
 
 describe('Semantic versioning', () => {
   describe('compareSemanticVersions', () => {
-    it('returns 0 when versions are identical', () => {
+    it('should return 0 when versions are identical', () => {
       expect(compareSemanticVersions('1.2.3', '1.2.3')).toBe(0);
       expect(compareSemanticVersions('0.0.0', '0.0.0')).toBe(0);
     });
 
-    it('returns 1 when a > b', () => {
+    it('should return 1 when a > b', () => {
       expect(compareSemanticVersions('1.2.4', '1.2.3')).toBe(1);
       expect(compareSemanticVersions('2.0.0', '1.9.9')).toBe(1);
       expect(compareSemanticVersions('1.10.0', '1.2.9')).toBe(1);
     });
 
-    it('returns -1 when a < b', () => {
+    it('should return -1 when a < b', () => {
       expect(compareSemanticVersions('1.2.3', '1.2.4')).toBe(-1);
       expect(compareSemanticVersions('1.9.9', '2.0.0')).toBe(-1);
       expect(compareSemanticVersions('1.2.9', '1.10.0')).toBe(-1);
@@ -35,6 +35,14 @@ describe('Semantic versioning', () => {
 
     it('should return true when given version is younger than required one', () => {
       expect(isCompatibleWithSemanticVersion('1.0.0', '0.9.9')).toBe(true);
+    });
+
+    it('should return true when given version is not formatted as a semantic version', () => {
+      expect(isCompatibleWithSemanticVersion('hello', '0.9.9')).toBe(true);
+    });
+
+    it('should return true when required version is not formatted as a semantic version', () => {
+      expect(isCompatibleWithSemanticVersion('1.0.0', 'hello')).toBe(true);
     });
   });
 });
