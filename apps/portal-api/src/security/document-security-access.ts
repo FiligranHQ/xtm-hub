@@ -14,7 +14,6 @@ export const setQueryForDocument = <T>(
     context.user.selected_organization_id
   ).then((capabilities) => {
     return loadServiceDefinitionByServiceInstance(
-      context,
       context.serviceInstanceId
     ).then((serviceDef) => {
       if (

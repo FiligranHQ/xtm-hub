@@ -118,7 +118,6 @@ export const documentDownloadEndpoint = (app) => {
 
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
-              context,
               document.service_instance_id
             );
 
@@ -128,7 +127,7 @@ export const documentDownloadEndpoint = (app) => {
                 id: context.user.selected_organization_id,
               });
 
-              const downloadEvent = buildDownloadEvent(
+              const downloadEvent = await buildDownloadEvent(
                 selectedOrga,
                 context.user.id,
                 serviceDefinition.identifier,

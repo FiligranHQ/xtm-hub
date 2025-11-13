@@ -2,7 +2,6 @@ import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
   SERVICE_OPENCTI_REGISTRATION,
 } from '../../../../tests/tests.const';
@@ -120,7 +119,6 @@ describe('Deployment app', () => {
       });
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        contextAdminUser,
         'id',
         dbDeploymentRequest.service_instance_id
       );
@@ -159,7 +157,6 @@ describe('Deployment app', () => {
         user_requester_id: ADMIN_UUID,
       });
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        contextAdminUser,
         'id',
         dbDeploymentRequest.service_instance_id
       );
@@ -291,7 +288,6 @@ describe('Deployment app', () => {
           id: deployment.id as DeploymentRequestId,
         });
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        contextAdminUser,
         'id',
         dbDeploymentRequest.service_instance_id
       );

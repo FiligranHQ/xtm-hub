@@ -52,14 +52,13 @@ export const telemetryApp = {
     userId: UserId;
     input: OneClickDeployInput;
   }) {
-    const { user, portalContext } = requestContext.require();
+    const { user } = requestContext.require();
     const selected_organization_id = user.selected_organization_id;
 
     const selectedOrga = await loadOrganizationBy({
       id: selected_organization_id,
     });
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      portalContext,
       extractId<ServiceInstanceId>(input.service_instance_id)
     );
 
@@ -68,13 +67,12 @@ export const telemetryApp = {
     );
     const serviceConfiguration =
       await loadPlatformConfigurationByServiceInstanceId(
-        portalContext,
         platformServiceInstanceId
       );
 
     const config = serviceConfiguration.config as object;
 
-    const event = buildOneClickDeployEvent(
+    const event = await buildOneClickDeployEvent(
       selectedOrga,
       userId,
       serviceDefinition.identifier,

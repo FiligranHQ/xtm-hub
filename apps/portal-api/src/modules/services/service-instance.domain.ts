@@ -9,6 +9,7 @@ import {
   ServiceDefinitionIdentifier,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
@@ -19,13 +20,12 @@ import ServiceInstance, {
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import { UserMutator } from '../../model/kanel/public/User';
+import { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
-import { PortalContext } from '../../model/portal-context';
-import { CAPABILITY_BYPASS } from '../../portal.const';
+import { isUserAdminPlatform } from '../../security/access';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
@@ -37,10 +37,10 @@ import { insertServiceCapability } from './instances/service-capabilities/servic
 import { PlatformConfiguration } from './registration/registration.domain';
 
 export const loadSubscribedServiceInstancesByIdentifier = async (
-  context: PortalContext,
+  user_id: UserId,
   identifier: string
 ) => {
-  const subServiceInstance = await db<UserService>(context, 'ServiceInstance')
+  const subServiceInstance = await db<UserService>('ServiceInstance')
     .leftJoin(
       'ServiceDefinition',
       'ServiceDefinition.id',
@@ -77,7 +77,7 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
       '=',
       'Organization_Subscriptions.service_instance_id'
     )
-    .where('User_Organization.user_id', context.user.id)
+    .where('User_Organization.user_id', user_id)
     .where('ServiceDefinition.identifier', identifier)
     .groupBy(['ServiceInstance.id', 'Organization.id'])
     .select([
@@ -102,12 +102,14 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
   });
 };
 
-export const loadPublicServiceInstances = (context: PortalContext, opts) => {
+export const loadPublicServiceInstances = (
+  userId: UserId,
+  organizationId: OrganizationId,
+  opts
+) => {
   const { first, after, orderMode, orderBy } = opts;
-  const organizationId = context.user.selected_organization_id;
-  const userId = context.user.id;
 
-  const publicServiceQuery = db<ServiceInstance>(context, 'ServiceInstance')
+  const publicServiceQuery = db<ServiceInstance>('ServiceInstance')
     .leftJoin('Subscription as subscription', function () {
       this.on('subscription.service_instance_id', '=', 'ServiceInstance.id')
 
@@ -137,11 +139,13 @@ export const loadPublicServiceInstances = (context: PortalContext, opts) => {
   );
 };
 
-export const loadIsSubscribed = async (context, id) => {
-  const organizationId = context.user.selected_organization_id;
+export const loadIsSubscribed = async (
+  organizationId: OrganizationId,
+  id: ServiceInstanceId
+) => {
   const serviceInstance = await db<{
     organization_subscribed: boolean;
-  }>(context, 'ServiceInstance')
+  }>('ServiceInstance')
     .where('ServiceInstance.id', '=', id)
     .leftJoin('Subscription as subscription', function () {
       this.on(
@@ -162,7 +166,7 @@ export const loadIsSubscribed = async (context, id) => {
   return serviceInstance?.organization_subscribed ?? false;
 };
 
-export const loadServiceInstances = async (context: PortalContext, opts) => {
+export const loadServiceInstances = async (opts) => {
   const { filters, searchTerm, orderBy } = opts;
   return paginate<ServiceInstance, ServiceConnection>('ServiceInstance', {
     ...opts,
@@ -172,8 +176,10 @@ export const loadServiceInstances = async (context: PortalContext, opts) => {
   });
 };
 
-export const loadServiceInstanceSubscriptions = async (context, id) => {
-  const subscription = await db<Subscription>(context, 'Subscription')
+export const loadServiceInstanceSubscriptions = async (
+  id: ServiceInstanceId
+) => {
+  return db<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', id)
     .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
     .select([
@@ -186,14 +192,12 @@ export const loadServiceInstanceSubscriptions = async (context, id) => {
         })
       ),
     ]);
-
-  return subscription;
 };
 export const loadServiceInstanceSubscription = async (
   selectedOrganizationId: OrganizationId,
-  id
+  id: ServiceInstanceId
 ) => {
-  const subscription = await dbUnsecure<Subscription>('Subscription')
+  return dbUnsecure<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', id)
     .where('Subscription.organization_id', '=', selectedOrganizationId)
     .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
@@ -209,12 +213,14 @@ export const loadServiceInstanceSubscription = async (
       ),
     ])
     .first();
-
-  return subscription;
 };
 
-export const getUserJoined = async (context, id) => {
-  const result = await db<{ user_joined: boolean }>(context, 'ServiceInstance')
+export const getUserJoined = async (
+  userId: UserId,
+  organizationId: OrganizationId,
+  id: ServiceInstanceId
+) => {
+  const result = await db<{ user_joined: boolean }>('ServiceInstance')
     .where('ServiceInstance.id', '=', id)
     .leftJoin(
       'Subscription',
@@ -225,28 +231,21 @@ export const getUserJoined = async (context, id) => {
       this.on('Subscription.id', 'User_Service.subscription_id').andOnVal(
         'User_Service.user_id',
         '=',
-        context.user.id
+        userId
       );
     })
     .select(dbRaw(`"User_Service".id IS NOT NULL AS user_joined`))
-    .where(
-      'Subscription.organization_id',
-      '=',
-      context.user.selected_organization_id
-    )
+    .where('Subscription.organization_id', '=', organizationId)
     .first();
 
   return result?.user_joined === true;
 };
 
 export const loadServiceInstanceById = async (
-  context: PortalContext,
-  service_instance_id: string
+  userId: UserId,
+  serviceInstanceId: string
 ): Promise<ServiceInstance> => {
-  const serviceInstanceQuery = await db<ServiceInstance>(
-    context,
-    'ServiceInstance'
-  )
+  return db<ServiceInstance>('ServiceInstance')
     .leftJoin(
       'Subscription',
       'ServiceInstance.id',
@@ -254,7 +253,7 @@ export const loadServiceInstanceById = async (
     )
     .leftJoin('User_Service', function () {
       this.on('Subscription.id', 'User_Service.subscription_id').andOn(
-        dbRaw(`"User_Service"."user_id" = '${context.user.id}'`)
+        dbRaw(`"User_Service"."user_id" = '${userId}'`)
       );
     })
 
@@ -276,30 +275,25 @@ export const loadServiceInstanceById = async (
       )
     )
     .where({
-      'ServiceInstance.id': service_instance_id,
+      'ServiceInstance.id': serviceInstanceId,
     })
     .groupBy(['ServiceInstance.id', 'Subscription.id', 'service_def.id'])
     .first();
-
-  return serviceInstanceQuery;
 };
 
-export const loadServiceInstanceBy = async (
-  context: PortalContext,
-  field: string,
-  value: string
-) => {
-  return db<ServiceInstance>(context, 'ServiceInstance')
+export const loadServiceInstanceBy = async (field: string, value: string) => {
+  return db<ServiceInstance>('ServiceInstance')
     .where({ [field]: value })
     .select('ServiceInstance.*')
     .first();
 };
 
 export const loadServiceWithSubscriptions = async (
-  context: PortalContext,
   serviceInstanceId: ServiceInstanceId
 ) => {
-  const queryUserServiceCapabilities = db(context, 'UserService_Capability')
+  const { user } = requestContext.require();
+
+  const queryUserServiceCapabilities = db('UserService_Capability')
     .leftJoin(
       'Generic_Service_Capability',
       'UserService_Capability.generic_service_capability_id',
@@ -357,7 +351,7 @@ export const loadServiceWithSubscriptions = async (
     .groupBy('UserService_Capability.user_service_id')
     .as('userServiceCapabilities');
 
-  const queryUserServiceWithCapa = db<UserService>(context, 'User_Service')
+  const queryUserServiceWithCapa = db<UserService>('User_Service')
     .select(
       'User_Service.*',
       dbRaw(
@@ -371,7 +365,7 @@ export const loadServiceWithSubscriptions = async (
       'userServiceCapabilities.user_service_id'
     );
 
-  const querySubscriptions = db<Subscription>(context, 'Subscription')
+  const querySubscriptions = db<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', serviceInstanceId)
     .leftJoin(
       queryUserServiceWithCapa.as('userService'),
@@ -431,13 +425,10 @@ export const loadServiceWithSubscriptions = async (
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
     .orderByRaw(
-      `CASE WHEN org.id = '${context.user.selected_organization_id}' THEN 0 ELSE 1 END, "Subscription".id`
+      `CASE WHEN org.id = '${user.selected_organization_id}' THEN 0 ELSE 1 END, "Subscription".id`
     );
 
-  const [serviceInstance] = await db<ServiceInstance>(
-    context,
-    'ServiceInstance'
-  )
+  const [serviceInstance] = await db<ServiceInstance>('ServiceInstance')
     .where('ServiceInstance.id', '=', serviceInstanceId)
     .leftJoin(
       'ServiceDefinition',
@@ -459,11 +450,11 @@ export const loadServiceWithSubscriptions = async (
     ])
     .groupBy(['ServiceInstance.id', 'ServiceDefinition.id']);
 
-  if (!context.user.capabilities.some((c) => c.id === CAPABILITY_BYPASS.id)) {
+  if (!isUserAdminPlatform(user)) {
     querySubscriptions.where(
       'Subscription.organization_id',
       '=',
-      context.user.selected_organization_id
+      user.selected_organization_id
     );
   }
 
@@ -478,7 +469,6 @@ export const loadServiceWithSubscriptions = async (
 };
 
 export const grantServiceAccess = async (
-  context: PortalContext,
   capabilitiesIds: string[],
   usersId: string[],
   subscriptionId: string
@@ -500,13 +490,11 @@ export const grantServiceAccess = async (
     const user = await loadUserBy({ 'User.id': userId } as UserMutator);
 
     const serviceInstance = await loadServiceInstanceBy(
-      context,
       'ServiceInstance.id',
       subscription.service_instance_id
     );
 
     const service_definition = await loadServiceDefinitionByServiceInstance(
-      context,
       serviceInstance.id
     );
 
@@ -534,25 +522,21 @@ export const grantServiceAccess = async (
         generic_service_capability_id: capabilityId,
       })
     );
-    await insertServiceCapability(context, dataServiceCapabilities);
+    await insertServiceCapability(dataServiceCapabilities);
   }
   return insertedUserServices;
 };
 
-export const loadLinks = (context, id) => {
-  return db<ServiceLink[]>(context, 'Service_Link')
+export const loadLinks = (id) => {
+  return db<ServiceLink[]>('Service_Link')
     .where('Service_Link.service_instance_id', '=', id)
     .select('*');
 };
 
 export const loadServiceDefinitionByServiceInstance = async (
-  context: PortalContext,
   service_instance_id: string
 ): Promise<ServiceDefinition> => {
-  const serviceDefinition = await db<ServiceDefinition>(
-    context,
-    'ServiceInstance'
-  )
+  return db<ServiceDefinition>('ServiceInstance')
     .where('ServiceInstance.id', '=', service_instance_id)
     .leftJoin(
       'ServiceDefinition as service_def',
@@ -563,13 +547,12 @@ export const loadServiceDefinitionByServiceInstance = async (
     .select('service_def.*')
     .first()
     .secureQuery();
-  return serviceDefinition;
 };
 
-export const loadSeoServiceInstances = async (
-  context: PortalContext
-): Promise<SeoServiceInstance[]> => {
-  const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
+export const loadSeoServiceInstances = async (): Promise<
+  SeoServiceInstance[]
+> => {
+  return db<ServiceInstance>('ServiceInstance')
     .leftJoin(
       'Service_Link',
       'Service_Link.service_instance_id',
@@ -604,11 +587,9 @@ export const loadSeoServiceInstances = async (
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
     .orderBy('ServiceInstance.ordering', 'asc')
     .secureQuery();
-  return serviceInstance;
 };
 
 export const loadSeoServiceInstanceBySlug = async (
-  context: PortalContext,
   slug: string
 ): Promise<
   ServiceInstance & {
@@ -616,7 +597,7 @@ export const loadSeoServiceInstanceBySlug = async (
     links: ServiceLink[];
   }
 > => {
-  const serviceInstance = await db<ServiceInstance>(context, 'ServiceInstance')
+  return db<ServiceInstance>('ServiceInstance')
     .leftJoin(
       'Service_Link',
       'Service_Link.service_instance_id',
@@ -650,20 +631,19 @@ export const loadSeoServiceInstanceBySlug = async (
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
     .first()
     .secureQuery();
-  return serviceInstance;
 };
 
-export const getServiceInstance = async (context, id) => {
-  return await db<ServiceInstance>(context, 'ServiceInstance')
+export const getServiceInstance = async (id: ServiceInstanceId) => {
+  return db<ServiceInstance>('ServiceInstance')
     .where('ServiceInstance.id', '=', id)
     .first();
 };
 
 export const loadPlatformServiceInstance = async (
-  context: PortalContext,
+  organizationId: OrganizationId,
   serviceInstanceId: string
 ) => {
-  return await db<ServiceInstance>(context, 'ServiceInstance')
+  return db<ServiceInstance>('ServiceInstance')
     .leftJoin(
       'Service_Configuration',
       'Service_Configuration.service_instance_id',
@@ -683,11 +663,7 @@ export const loadPlatformServiceInstance = async (
       'ServiceInstance.id'
     )
     .where('ServiceInstance.id', '=', serviceInstanceId)
-    .where(
-      'Subscription.organization_id',
-      '=',
-      context.user.selected_organization_id
-    )
+    .where('Subscription.organization_id', '=', organizationId)
     .whereIn('ServiceDefinition.identifier', [
       ServiceDefinitionIdentifier.OpenaevRegistration,
       ServiceDefinitionIdentifier.OpenctiRegistration,
@@ -724,11 +700,10 @@ export const updateServiceInstance = async (
 };
 
 export const loadPlatformConfigurationByServiceInstanceId = async (
-  context: PortalContext,
   serviceInstanceId: string,
   trx?: Knex.Transaction
 ): Promise<ServiceConfiguration | null> => {
-  const qb = db(context, 'Service_Configuration')
+  const qb = db('Service_Configuration')
     .where('service_instance_id', '=', serviceInstanceId)
     .first()
     .select('*');
@@ -737,16 +712,15 @@ export const loadPlatformConfigurationByServiceInstanceId = async (
     qb.forUpdate().transacting(trx);
   }
 
-  return await qb;
+  return qb;
 };
 
 export const updatePlatformConfigurationByServiceInstanceId = async (
-  context: PortalContext,
   serviceInstanceId: string,
   config: PlatformConfiguration,
   trx?: Knex.Transaction
 ): Promise<ServiceConfiguration | null> => {
-  const qb = db(context, 'Service_Configuration')
+  const qb = db('Service_Configuration')
     .where('service_instance_id', '=', serviceInstanceId)
     .update({ config })
     .returning('*');

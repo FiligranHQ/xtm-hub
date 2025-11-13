@@ -108,7 +108,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
             </Badge>
           )}
           <ShareLinkButton
-            documentId={shareableConnector.slug}
+            documentId={shareableConnector.id}
             url={shareLinkUrl}
           />
         </div>

@@ -33,8 +33,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
 > = ({ documentData, breadcrumbValue, shareUrl, logo }) => {
   const t = useTranslations();
 
-  const shouldDisplayOneClickDeployButton =
-    documentData.manager_supported === 'true';
+  const shouldDisplayOneClickDeployButton = documentData.manager_supported;
 
   return (
     <>
@@ -63,7 +62,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
             )}
             <div className="ml-auto">
               <ShareLinkButton
-                documentId={documentData.slug}
+                documentId={documentData.id}
                 url={shareUrl}
               />
 

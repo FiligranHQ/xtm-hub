@@ -77,11 +77,8 @@ export const subscriptionApp = {
       });
 
       const [serviceDefinition, serviceInstance] = await Promise.all([
-        loadServiceDefinitionByServiceInstance(
-          portalContext,
-          serviceInstanceId
-        ),
-        loadServiceInstanceById(portalContext, serviceInstanceId),
+        loadServiceDefinitionByServiceInstance(serviceInstanceId),
+        loadServiceInstanceById(user.id, serviceInstanceId),
       ]);
 
       await sendMail({

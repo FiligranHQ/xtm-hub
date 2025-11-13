@@ -9,23 +9,20 @@ import ServiceContract, {
 } from '../../../model/kanel/public/ServiceContract';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode } from '../../../utils/error/error.code';
 
 const loadServiceContractBy = async (
-  context: PortalContext,
   field: ServiceContractMutator
 ): Promise<ServiceContract> => {
-  return db(context, 'Service_Contract').where(field).select('*').first();
+  return db('Service_Contract').where(field).select('*').first();
 };
 
 export const serviceContractDomain = {
   isServiceConfigurationValid: async (
-    context: PortalContext,
     serviceDefinitionId: ServiceDefinitionId,
     config: Record<string, unknown>
   ): Promise<boolean> => {
-    const serviceContract = await loadServiceContractBy(context, {
+    const serviceContract = await loadServiceContractBy({
       service_definition_id: serviceDefinitionId,
     });
     if (!serviceContract) {
@@ -52,11 +49,10 @@ export const serviceContractDomain = {
   },
 
   loadConfigurationByPlatform: async (
-    context: PortalContext,
     platformId: string,
     status?: ServiceConfigurationStatus
   ): Promise<ServiceConfiguration | null> => {
-    const qb = db(context, 'Service_Configuration')
+    const qb = db('Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platformId)
       .first()
       .select('*');
@@ -69,11 +65,10 @@ export const serviceContractDomain = {
   },
 
   updateConfiguration: async (
-    context: PortalContext,
     serviceInstanceId: ServiceInstanceId,
     mutator: ServiceConfigurationMutator
   ) => {
-    await db(context, 'Service_Configuration')
+    await db('Service_Configuration')
       .update(mutator)
       .where('service_instance_id', '=', serviceInstanceId);
   },

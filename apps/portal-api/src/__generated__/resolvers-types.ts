@@ -88,10 +88,10 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   integration_subtype: ConnectorType;
   integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
-  manager_supported: Scalars['String']['output'];
+  manager_supported: Scalars['Boolean']['output'];
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  playbook_supported: Scalars['String']['output'];
+  playbook_supported: Scalars['Boolean']['output'];
   product_version: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
@@ -107,7 +107,7 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
   uploader_organization?: Maybe<Organization>;
-  verified: Scalars['String']['output'];
+  verified: Scalars['Boolean']['output'];
 };
 
 export enum ConnectorType {
@@ -2263,10 +2263,10 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   integration_subtype?: Resolver<ResolversTypes['ConnectorType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
-  manager_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  playbook_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  playbook_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   product_version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
@@ -2282,7 +2282,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
-  verified?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

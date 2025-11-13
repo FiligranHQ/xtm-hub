@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { dbUnsecure } from '../../../../../knexfile';
-import { contextAdminUser } from '../../../../../tests/tests.const';
 import ServiceCapability, {
   ServiceCapabilityId,
 } from '../../../../model/kanel/public/ServiceCapability';
@@ -84,7 +83,7 @@ describe('Service Capability domain', () => {
 
   describe('loadServiceCapabilitiesBy', () => {
     it('should load service capabilities by service_definition_id', async () => {
-      const capabilities = await loadServiceCapabilitiesBy(contextAdminUser, {
+      const capabilities = await loadServiceCapabilitiesBy({
         service_definition_id: testServiceDefinitionId,
       });
 
@@ -101,7 +100,7 @@ describe('Service Capability domain', () => {
     });
 
     it('should load service capabilities by id', async () => {
-      const capabilities = await loadServiceCapabilitiesBy(contextAdminUser, {
+      const capabilities = await loadServiceCapabilitiesBy({
         id: testCapabilityIds[0],
       });
 
@@ -111,7 +110,7 @@ describe('Service Capability domain', () => {
     });
 
     it('should load service capabilities by name', async () => {
-      const capabilities = await loadServiceCapabilitiesBy(contextAdminUser, {
+      const capabilities = await loadServiceCapabilitiesBy({
         name: 'Test Capability 2',
       });
 
@@ -121,7 +120,7 @@ describe('Service Capability domain', () => {
     });
 
     it('should return empty array when no capabilities match', async () => {
-      const capabilities = await loadServiceCapabilitiesBy(contextAdminUser, {
+      const capabilities = await loadServiceCapabilitiesBy({
         name: 'Non-existent Capability',
       });
 
@@ -130,7 +129,7 @@ describe('Service Capability domain', () => {
     });
 
     it('should handle multiple criteria', async () => {
-      const capabilities = await loadServiceCapabilitiesBy(contextAdminUser, {
+      const capabilities = await loadServiceCapabilitiesBy({
         service_definition_id: testServiceDefinitionId,
         name: 'Test Capability 1',
       });
