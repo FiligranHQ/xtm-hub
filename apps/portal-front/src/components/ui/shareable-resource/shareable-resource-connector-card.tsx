@@ -88,7 +88,9 @@ const ShareableResourceConnectorCard: FunctionComponent<
               </Badge>
             )}
             {productVersionItem ?? (
-              <span>{shareableConnector.product_version}</span>
+              <span className="text-sm">
+                {shareableConnector.product_version}
+              </span>
             )}
           </div>
           <ShareLinkButton

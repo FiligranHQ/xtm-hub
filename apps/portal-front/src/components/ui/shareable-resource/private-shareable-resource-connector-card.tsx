@@ -31,7 +31,7 @@ export const PrivateShareableResourceConnectorCard: React.FC<Props> = ({
     });
 
   const productVersionItem = !incompatibilityTranslationKey ? (
-    <span className="text-green">
+    <span className="text-green text-sm">
       {props.shareableConnector.product_version}
     </span>
   ) : (
