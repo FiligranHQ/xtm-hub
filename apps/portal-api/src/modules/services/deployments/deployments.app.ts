@@ -30,15 +30,17 @@ import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 import config from 'config';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { buildCreateDeploymentEvent } from '../../telemetry/telemetry.helper';
 import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
-    const context = requestContext.require();
+    const { user } = requestContext.require();
     const chosenOrganization = await loadOrganizationBy({
-      id: context.user.selected_organization_id,
+      id: user.selected_organization_id,
     });
 
     if (chosenOrganization.personal_space) {
@@ -55,7 +57,7 @@ export const DeploymentsApp = {
     ) {
       throw new Error(BadRequestErrorCode.InvalidStatus);
     }
-    await assertFreeTrialsLimit(context.user.selected_organization_id);
+    await assertFreeTrialsLimit(user.selected_organization_id);
 
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
@@ -70,7 +72,7 @@ export const DeploymentsApp = {
     try {
       const serviceInstanceId = await registrationDomain.registerNewPlatform({
         serviceDefinitionId: serviceDefinition.id,
-        organizationId: context.user.selected_organization_id,
+        organizationId: user.selected_organization_id,
         platformIdentifier: input.platform_identifier,
         serviceInstanceCreationStatus:
           input.status === DeploymentRequestStatus.Queued
@@ -81,8 +83,8 @@ export const DeploymentsApp = {
       const createdDeploymentRequest =
         await DeploymentRequestDomain.insertDeploymentRequest({
           id: uuidv4() as DeploymentRequestId,
-          user_requester_id: context.user.id,
-          organization_requester_id: context.user.selected_organization_id,
+          user_requester_id: user.id,
+          organization_requester_id: user.selected_organization_id,
           service_instance_id: serviceInstanceId,
           status: input.status ?? DeploymentRequestStatus.Pending,
           type: input.type,
@@ -95,6 +97,24 @@ export const DeploymentsApp = {
         });
 
       await trx.commit();
+
+      const createDeploymentEvent = buildCreateDeploymentEvent(
+        chosenOrganization,
+        user.id,
+        input.platform_identifier,
+        {
+          region: createdDeploymentRequest.region as PlatformRegion,
+          status: createdDeploymentRequest.status as DeploymentRequestStatus,
+          activity_sector: createdDeploymentRequest.activity_sector,
+          job_title: createdDeploymentRequest.job_title,
+          use_case: createdDeploymentRequest.use_case,
+          email: user.email,
+          deployment_id: createdDeploymentRequest.id,
+          deployment_type: createdDeploymentRequest.type as DeploymentType,
+        }
+      );
+      telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+
       return {
         id: createdDeploymentRequest.id,
         platform_identifier:
