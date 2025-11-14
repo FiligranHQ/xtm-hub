@@ -4,6 +4,14 @@ import ShareableResourceConnectorCard, {
 import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibilityTranslationKey';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { CheckIndeterminateIcon } from 'filigran-icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui/clients';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 type Props = ShareableResourceConnectorCardProps & {
@@ -14,6 +22,7 @@ export const PrivateShareableResourceConnectorCard: React.FC<Props> = ({
   requiredProductVersion,
   ...props
 }) => {
+  const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI);
   const { translationKey: incompatibilityTranslationKey } =
     useBuildCompatibilityTranslationKey({
@@ -21,9 +30,31 @@ export const PrivateShareableResourceConnectorCard: React.FC<Props> = ({
       requiredProductVersion,
     });
 
+  const productVersionItem = !incompatibilityTranslationKey ? (
+    <span className="text-green">
+      {props.shareableConnector.product_version}
+    </span>
+  ) : (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="opacity-60 flex items-center gap-s text-sm">
+            {props.shareableConnector.product_version}
+            <CheckIndeterminateIcon className="h-4 w-4" />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          {t(
+            `Service.Connectors.Incompatible.${incompatibilityTranslationKey}`
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
   return (
     <ShareableResourceConnectorCard
-      incompatibilityTranslationKey={incompatibilityTranslationKey}
+      productVersionItem={productVersionItem}
       {...props}
     />
   );

@@ -6,15 +6,8 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
-import { CheckIndeterminateIcon, VerifiedIcon } from 'filigran-icon';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from 'filigran-ui';
+import { VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
@@ -31,8 +24,7 @@ export interface ShareableResourceConnectorCardProps {
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
-  requiredProductVersion?: string;
-  incompatibilityTranslationKey?: string;
+  productVersionItem?: React.ReactNode;
 }
 
 const ShareableResourceConnectorCard: FunctionComponent<
@@ -42,31 +34,10 @@ const ShareableResourceConnectorCard: FunctionComponent<
   serviceInstance,
   shareLinkUrl,
   detailUrl,
-  incompatibilityTranslationKey,
+  productVersionItem,
 }) => {
-  const t = useTranslations();
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
-  );
-
-  const productVersion = !incompatibilityTranslationKey ? (
-    <span className="text-green">{shareableConnector.product_version}</span>
-  ) : (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="opacity-60 flex items-center gap-s text-sm">
-            {shareableConnector.product_version}
-            <CheckIndeterminateIcon className="h-4 w-4" />
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          {t(
-            `Service.Connectors.Incompatible.${incompatibilityTranslationKey}`
-          )}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
   );
 
   return (
@@ -116,7 +87,9 @@ const ShareableResourceConnectorCard: FunctionComponent<
                 {connectorMetadata.label}
               </Badge>
             )}
-            {productVersion}
+            {productVersionItem ?? (
+              <span>{shareableConnector.product_version}</span>
+            )}
           </div>
           <ShareLinkButton
             documentId={shareableConnector.id}
