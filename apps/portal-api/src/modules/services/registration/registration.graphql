@@ -1,7 +1,7 @@
 enum PlatformContract {
   CE
   EE
-  Trial
+  trial
 }
 
 type RegisteredPlatform implements Node {
