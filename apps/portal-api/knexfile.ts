@@ -295,7 +295,7 @@ export const paginate = async <T, U>(
             })
             .whereRaw(
               dbRaw(
-                `string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[]`
+                `("${metaAlias}"."value" IS NULL OR string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
               )
             );
         }
