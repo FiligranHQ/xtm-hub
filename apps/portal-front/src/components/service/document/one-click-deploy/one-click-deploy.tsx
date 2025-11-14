@@ -4,6 +4,7 @@ import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
+import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import {
   ShareableResource,
   ShareableResourceType,
@@ -14,6 +15,7 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogTrigger,
+  SimpleTooltip,
 } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
@@ -112,7 +114,6 @@ const OneClickDeploy = ({
           platforms={platforms}
           oneClickDeploy={onOneClickDeploy}
           setIsOpen={setIsOpen}
-          requiredProductVersion={requiredProductVersion}
         />
       );
     }
@@ -138,16 +139,39 @@ const OneClickDeploy = ({
     requiredProductVersion,
   ]);
 
+  const isDeploymentDisabled = useMemo(() => {
+    if (platforms.length !== 1) {
+      return false;
+    }
+
+    return !isCompatibleWithSemanticVersion(
+      platforms[0]!.version,
+      requiredProductVersion
+    );
+  }, [platforms, requiredProductVersion]);
+
+  const button = (
+    <Button
+      disabled={isDeploymentDisabled}
+      onClick={() => setIsOpen(true)}>
+      {t('Service.ShareableResources.Deploy.DeployPlatform', {
+        platformName:
+          PlatformTranslationMapping[platformIdentifier] ?? 'OpenCTI',
+      })}
+    </Button>
+  );
+
+  const container = isDeploymentDisabled ? (
+    <SimpleTooltip title={t('Service.Connectors.Incompatible.Required')}>
+      {button}
+    </SimpleTooltip>
+  ) : (
+    button
+  );
+
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogTrigger>
-        <Button onClick={() => setIsOpen(true)}>
-          {t('Service.ShareableResources.Deploy.DeployPlatform', {
-            platformName:
-              PlatformTranslationMapping[platformIdentifier] ?? 'OpenCTI',
-          })}
-        </Button>
-      </AlertDialogTrigger>
+      <AlertDialogTrigger>{container}</AlertDialogTrigger>
       <AlertDialogContent className="max-w-3xl w-full">
         {alertContent}
       </AlertDialogContent>
