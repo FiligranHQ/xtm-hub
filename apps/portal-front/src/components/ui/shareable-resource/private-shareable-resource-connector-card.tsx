@@ -30,11 +30,7 @@ export const PrivateShareableResourceConnectorCard: React.FC<Props> = ({
       requiredProductVersion,
     });
 
-  const productVersionItem = !incompatibilityTranslationKey ? (
-    <span className="text-green text-sm">
-      {props.shareableConnector.product_version}
-    </span>
-  ) : (
+  const productVersionItem = incompatibilityTranslationKey && (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>

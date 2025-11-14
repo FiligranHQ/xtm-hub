@@ -8,7 +8,7 @@ import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { CheckIndeterminateIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 interface Props {
   connectorDetails: ShareableResourceConnectorDetailsProps['connectorDetails'];
@@ -25,20 +25,12 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
       requiredProductVersion: connectorDetails?.product_version,
     });
 
-  const compatibilityItem = useMemo(() => {
-    if (incompatibilityTranslationKey) {
-      return (
-        <span className="opacity-60 flex gap-xs items-center">
-          {connectorDetails?.product_version}
-          <CheckIndeterminateIcon className="h-4 w-4" />
-        </span>
-      );
-    }
-
-    return (
-      <span className="text-green">{connectorDetails?.product_version}</span>
-    );
-  }, [incompatibilityTranslationKey]);
+  const compatibilityItem = incompatibilityTranslationKey && (
+    <span className="opacity-60 flex gap-xs items-center">
+      {connectorDetails?.product_version}
+      <CheckIndeterminateIcon className="h-4 w-4" />
+    </span>
+  );
 
   return (
     <div className="flex flex-col justify-start gap-s flex-1">
