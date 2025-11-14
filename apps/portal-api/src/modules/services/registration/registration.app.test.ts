@@ -657,10 +657,9 @@ describe('Registration app', () => {
             platformVersion: '6.7.18',
           });
 
-        const getPlatforms = await registrationApp.loadRegisteredPlatforms(
-          contextAdminUser,
-          { identifier: PlatformIdentifier.Opencti }
-        );
+        const getPlatforms = await registrationApp.loadRegisteredPlatforms({
+          identifier: PlatformIdentifier.Opencti,
+        });
         const currentPlatform = getPlatforms.find(
           (registeredPlatform) => platformId === registeredPlatform.platform_id
         );
