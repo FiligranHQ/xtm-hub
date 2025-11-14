@@ -3,8 +3,8 @@ import {
   ShareableResourceConnectorDetailsProps,
 } from '@/components/service/document/connector/shareable-resource-connector-details';
 import { ShareableResourceIncompatibleWarning } from '@/components/service/document/shareable-resource-incompatible-warning';
+import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibilityTranslationKey';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
-import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { CheckIndeterminateIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
@@ -19,25 +19,11 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI);
-  const incompatibilityTranslationKey: 'Required' | 'Optional' | null =
-    useMemo(() => {
-      const compatiblePlatformsCount = platforms.reduce(
-        (acc, platform) =>
-          isCompatibleWithSemanticVersion(
-            platform.version,
-            connectorDetails?.product_version
-          )
-            ? acc + 1
-            : acc,
-        0
-      );
-
-      if (compatiblePlatformsCount === platforms.length) {
-        return null;
-      }
-
-      return platforms.length === 1 ? 'Required' : 'Optional';
-    }, [platforms, connectorDetails]);
+  const { translationKey: incompatibilityTranslationKey } =
+    useBuildCompatibilityTranslationKey({
+      platforms,
+      requiredProductVersion: connectorDetails?.product_version,
+    });
 
   const compatibilityItem = useMemo(() => {
     if (incompatibilityTranslationKey) {
@@ -55,7 +41,7 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
   }, [incompatibilityTranslationKey]);
 
   return (
-    <div className="flex flex-col gap-s">
+    <div className="flex flex-col justify-start gap-s flex-1">
       <ShareableResourceConnectorDetails
         connectorDetails={connectorDetails}
         compatibilityItem={compatibilityItem}

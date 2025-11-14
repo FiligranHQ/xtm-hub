@@ -9,8 +9,8 @@ export const ShareableResourceIncompatibleWarning: React.FC<Props> = ({
   message,
 }) => {
   return (
-    <div className="border border-solid border-orange rounded text-orange flex items-start gap-xs p-s max-w-xs">
-      <CheckIndeterminateIcon className="h-8 w-8" />
+    <div className="border border-solid border-orange rounded text-orange flex gap-xs p-s">
+      <CheckIndeterminateIcon className="h-6 w-6" />
       {message}
     </div>
   );

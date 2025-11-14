@@ -6,8 +6,15 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
-import { VerifiedIcon } from 'filigran-icon';
+import { CheckIndeterminateIcon, VerifiedIcon } from 'filigran-icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui';
 import { Badge } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
@@ -25,7 +32,7 @@ export interface ShareableResourceConnectorCardProps {
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
   requiredProductVersion?: string;
-  isConnectorCompatible?: boolean;
+  incompatibilityTranslationKey?: string;
 }
 
 const ShareableResourceConnectorCard: FunctionComponent<
@@ -35,17 +42,37 @@ const ShareableResourceConnectorCard: FunctionComponent<
   serviceInstance,
   shareLinkUrl,
   detailUrl,
-  isConnectorCompatible = true,
+  incompatibilityTranslationKey,
 }) => {
+  const t = useTranslations();
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
+  );
+
+  const productVersion = !incompatibilityTranslationKey ? (
+    <span className="text-green">{shareableConnector.product_version}</span>
+  ) : (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="opacity-60 flex items-center gap-s text-sm">
+            {shareableConnector.product_version}
+            <CheckIndeterminateIcon className="h-4 w-4" />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          {t(
+            `Service.Connectors.Incompatible.${incompatibilityTranslationKey}`
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background hover:bg-hover">
       <Link
-        aria-disabled={!isConnectorCompatible}
-        className="flex flex-col h-full aria-disabled:opacity-60 aria-disabled:after:hidden"
+        className="flex flex-col h-full"
         href={detailUrl}>
         <div className="flex items-stretch gap-l p-l relative">
           <div className="w-24 self-stretch flex">
@@ -79,15 +106,18 @@ const ShareableResourceConnectorCard: FunctionComponent<
         <p className="p-l text-gray-300 text-sm">
           {shareableConnector.short_description}
         </p>
-        <div className="flex items-center justify-end mt-auto p-l">
-          {connectorMetadata && (
-            <Badge
-              className="mr-auto"
-              variant="outline"
-              color={connectorMetadata.color}>
-              {connectorMetadata.label}
-            </Badge>
-          )}
+        <div className="flex items-center justify-between mt-auto p-l">
+          <div className="flex gap-l">
+            {connectorMetadata && (
+              <Badge
+                className="mr-auto"
+                variant="outline"
+                color={connectorMetadata.color}>
+                {connectorMetadata.label}
+              </Badge>
+            )}
+            {productVersion}
+          </div>
           <ShareLinkButton
             documentId={shareableConnector.id}
             url={shareLinkUrl}
