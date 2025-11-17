@@ -34,7 +34,7 @@ export const PrivateShareableResourceConnectorCard: React.FC<Props> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="opacity-60 flex items-center gap-s text-sm">
+          <span className="text-gray/60 flex items-center gap-s text-sm">
             {props.shareableConnector.product_version}
             <CheckIndeterminateIcon className="h-4 w-4" />
           </span>

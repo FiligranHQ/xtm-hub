@@ -26,7 +26,7 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
     });
 
   const compatibilityItem = incompatibilityTranslationKey && (
-    <span className="opacity-60 flex gap-xs items-center">
+    <span className="text-gray/60 flex gap-xs items-center">
       {connectorDetails?.product_version}
       <CheckIndeterminateIcon className="h-4 w-4" />
     </span>
