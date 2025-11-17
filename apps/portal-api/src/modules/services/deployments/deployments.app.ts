@@ -101,22 +101,28 @@ export const DeploymentsApp = {
 
       await trx.commit();
 
-      const createDeploymentEvent = buildCreateDeploymentEvent(
-        chosenOrganization,
-        user.id,
-        input.platform_identifier,
-        {
-          region: createdDeploymentRequest.region as PlatformRegion,
-          status: createdDeploymentRequest.status as DeploymentRequestStatus,
-          activity_sector: createdDeploymentRequest.activity_sector,
-          job_title: createdDeploymentRequest.job_title,
-          use_case: createdDeploymentRequest.use_case,
-          email: user.email,
-          deployment_id: createdDeploymentRequest.id,
-          deployment_type: createdDeploymentRequest.type as DeploymentType,
-        }
-      );
-      telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+      try {
+        const createDeploymentEvent = buildCreateDeploymentEvent(
+          chosenOrganization,
+          user.id,
+          input.platform_identifier,
+          {
+            region: createdDeploymentRequest.region as PlatformRegion,
+            status: createdDeploymentRequest.status as DeploymentRequestStatus,
+            activity_sector: createdDeploymentRequest.activity_sector,
+            job_title: createdDeploymentRequest.job_title,
+            use_case: createdDeploymentRequest.use_case,
+            email: user.email,
+            deployment_id: createdDeploymentRequest.id,
+            deployment_type: createdDeploymentRequest.type as DeploymentType,
+          }
+        );
+        telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+      } catch (error) {
+        logApp.error('Unable to send telemetry event', {
+          error,
+        });
+      }
 
       return {
         id: createdDeploymentRequest.id,
@@ -198,24 +204,29 @@ export const DeploymentsApp = {
       throw error;
     }
 
-    const organization = await loadOrganizationBy({
-      id: deploymentRequest.organization_requester_id,
-    });
-    const updateDeploymentEvent = buildUpdateDeploymentEvent(
-      organization,
-      deploymentRequest.user_requester_id,
-      {
-        status: input.status,
-        start_date: input.start_date,
-        end_date: input.end_date,
-        deployment_id: deploymentRequest.id,
-        deployment_type: deploymentRequest.type,
-        platform_id: input.product_service_instance_id,
-      }
-    );
+    try {
+      const organization = await loadOrganizationBy({
+        id: deploymentRequest.organization_requester_id,
+      });
+      const updateDeploymentEvent = buildUpdateDeploymentEvent(
+        organization,
+        deploymentRequest.user_requester_id,
+        {
+          status: input.status,
+          start_date: input.start_date,
+          end_date: input.end_date,
+          deployment_id: deploymentRequest.id,
+          deployment_type: deploymentRequest.type,
+          platform_id: input.product_service_instance_id,
+        }
+      );
 
-    telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-
+      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event', {
+        error,
+      });
+    }
     trx.commit();
     return DeploymentRequestDomain.loadFullDeploymentRequestById(
       deploymentRequestId
