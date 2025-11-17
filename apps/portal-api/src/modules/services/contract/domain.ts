@@ -82,4 +82,21 @@ export const serviceContractDomain = {
       config,
     });
   },
+
+  upsertConfiguration: async (
+    serviceInstanceId: string,
+    config: Record<string, unknown>
+  ) => {
+    await db('Service_Configuration')
+      .insert({
+        service_instance_id: serviceInstanceId,
+        config,
+      })
+      .onConflict('service_instance_id')
+      .merge();
+  },
+
+  deleteConfigurationBy: async (conditions: ServiceConfigurationMutator) => {
+    await db('Service_Configuration').where(conditions).delete();
+  },
 };

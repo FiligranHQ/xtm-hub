@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { Avatar } from 'filigran-ui/clients';
 
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
@@ -22,7 +23,7 @@ const ShareableResourceDetails: React.FunctionComponent<
 > = ({ documentData, downloadNumber }) => {
   const t = useTranslations();
   return (
-    <>
+    <ShareableResourceBasicInformation>
       {!documentData.uploader_organization?.personal_space && (
         <div>
           <ShareableResourceDetailItem label={'Organization'}>
@@ -67,7 +68,7 @@ const ShareableResourceDetails: React.FunctionComponent<
         label={t('Service.ShareableResources.Details.Shares')}>
         <span>{roundToNearest(documentData.share_number ?? 0)}</span>
       </ShareableResourceDetailItem>
-    </>
+    </ShareableResourceBasicInformation>
   );
 };
 

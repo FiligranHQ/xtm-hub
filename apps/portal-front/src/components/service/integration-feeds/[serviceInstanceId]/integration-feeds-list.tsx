@@ -18,6 +18,7 @@ import {
 } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
 import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
+import { ProductVersionFilter } from '@/components/ui/shareable-resource/product-version-filter';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import {
@@ -29,6 +30,7 @@ import {
   integrationFeedsQuery,
   integrationFeedsQuery$variables,
 } from '@generated/integrationFeedsQuery.graphql';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -75,6 +77,7 @@ const IntegrationFeedsList = ({
   const {
     removeConnectorTypes,
     removeIntegrationTypes,
+    removeProductVersions,
     pageSize,
     setPageSize,
   } = useServiceListLocalStorage(localStorageKey);
@@ -90,6 +93,16 @@ const IntegrationFeedsList = ({
           reset: () => {
             removeConnectorTypes();
             removeIntegrationTypes();
+          },
+        },
+        [ServiceListFilterKey.ProductVersion]: {
+          node: (
+            <ProductVersionFilter
+              platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+            />
+          ),
+          reset: () => {
+            removeProductVersions();
           },
         },
       }

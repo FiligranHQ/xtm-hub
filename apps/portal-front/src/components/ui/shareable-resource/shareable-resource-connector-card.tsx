@@ -1,3 +1,4 @@
+'use client';
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import BadgeOverflowCounter, {
@@ -17,16 +18,24 @@ export interface ShareableServiceInstance {
     identifier: ServiceDefinitionIdentifier;
   } | null;
 }
-interface ShareableResourceConnectorCard {
+
+export interface ShareableResourceConnectorCardProps {
   shareableConnector: ShareableResourceConnectorType;
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
+  productVersionItem?: React.ReactNode;
 }
 
 const ShareableResourceConnectorCard: FunctionComponent<
-  ShareableResourceConnectorCard
-> = ({ shareableConnector, serviceInstance, shareLinkUrl, detailUrl }) => {
+  ShareableResourceConnectorCardProps
+> = ({
+  shareableConnector,
+  serviceInstance,
+  shareLinkUrl,
+  detailUrl,
+  productVersionItem,
+}) => {
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
   );
@@ -68,15 +77,22 @@ const ShareableResourceConnectorCard: FunctionComponent<
         <p className="p-l text-gray-300 text-sm">
           {shareableConnector.short_description}
         </p>
-        <div className="flex items-center justify-end mt-auto p-l">
-          {connectorMetadata && (
-            <Badge
-              className="mr-auto"
-              variant="outline"
-              color={connectorMetadata.color}>
-              {connectorMetadata.label}
-            </Badge>
-          )}
+        <div className="flex items-center justify-between mt-auto p-l">
+          <div className="flex gap-l">
+            {connectorMetadata && (
+              <Badge
+                className="mr-auto"
+                variant="outline"
+                color={connectorMetadata.color}>
+                {connectorMetadata.label}
+              </Badge>
+            )}
+            {productVersionItem ?? (
+              <span className="text-sm">
+                {shareableConnector.product_version}
+              </span>
+            )}
+          </div>
           <ShareLinkButton
             documentId={shareableConnector.id}
             url={shareLinkUrl}
