@@ -74,7 +74,7 @@ export const up = async function (next) {
             type: 'keyword',
           },
           job_title: {
-            type: 'text',
+            type: 'keyword',
           },
           region: {
             type: 'keyword',

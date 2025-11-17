@@ -412,7 +412,6 @@ export const registrationApp = {
   },
 
   autoRegisterPlatform: async (token: string, platform: PlatformInput) => {
-    const { user } = requestContext.require();
     const deploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         platform_token: token,
@@ -449,7 +448,7 @@ export const registrationApp = {
 
       const registerEvent = buildRegisterEvent(
         selectedOrga,
-        user.id,
+        deploymentRequest.user_requester_id,
         deploymentRequest.platform_identifier,
         platform.id,
         platform.contract,

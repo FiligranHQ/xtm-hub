@@ -11,7 +11,6 @@ import {
 } from 'vitest';
 import { db, dbUnsecure } from '../../../../knexfile';
 import {
-  ADMIN_USER_ID,
   contextAdminOrgaThales,
   contextAdminUser,
   contextSimpleUserThales,
@@ -21,6 +20,7 @@ import {
   requestContextThalesUser,
   SERVICE_OPENCTI_REGISTRATION,
   THALES_ORGA_ID,
+  THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestStatus,
@@ -759,7 +759,7 @@ describe('Registration app', () => {
           type: DeploymentType.Trial,
           use_case: 'use_case',
           service_instance_id: serviceInstanceId as ServiceInstanceId,
-          user_requester_id: ADMIN_UUID,
+          user_requester_id: THALES_SIMPLE_USER_ID,
         })) as DeploymentRequest;
     });
     it('should throw if deployment request is not found', async () => {
@@ -824,7 +824,7 @@ describe('Registration app', () => {
           platform_title: platformConfiguration.title,
           platform_url: platformConfiguration.url,
           platform_version: platformConfiguration.version,
-          registerer_id: ADMIN_USER_ID,
+          registerer_id: THALES_SIMPLE_USER_ID,
           token: deploymentRequest.platform_token,
         },
         service_instance_id: deploymentRequest.service_instance_id,
@@ -858,7 +858,7 @@ describe('Registration app', () => {
           platform_version: platformConfiguration.version,
           source: TELEMETRY_SOURCE,
           target_product: 'open-cti',
-          user_id: ADMIN_UUID,
+          user_id: THALES_SIMPLE_USER_ID,
         });
       });
     });
