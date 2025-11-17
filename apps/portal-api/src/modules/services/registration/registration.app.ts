@@ -431,7 +431,7 @@ export const registrationApp = {
 
     await withTransaction(async () => {
       await Promise.all([
-        serviceContractDomain.createConfiguration(
+        serviceContractDomain.upsertConfiguration(
           deploymentRequest.service_instance_id,
           configuration
         ),
