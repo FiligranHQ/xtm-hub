@@ -48,7 +48,11 @@ import Subscription, {
 } from '../../../model/kanel/public/Subscription';
 
 import { UserLoadUserBy } from '../../../model/user';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import {
+  ADMIN_UUID,
+  PLATFORM_NAME,
+  PLATFORM_ORGANIZATION_UUID,
+} from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
 import {
   BadRequestErrorCode,
@@ -60,6 +64,7 @@ import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
+  TelemetryOrganizationType,
   TelemetryTargetProduct,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -824,6 +829,37 @@ describe('Registration app', () => {
         },
         service_instance_id: deploymentRequest.service_instance_id,
         status: ServiceConfigurationStatus.Active,
+      });
+    });
+
+    describe('telemetry', () => {
+      it('should send register event when platform is autoregistered', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const telemetrySpy = vi
+          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        await registrationApp.autoRegisterPlatform(
+          deploymentRequest.platform_token as string,
+          platformConfiguration
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.REGISTER,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          platform_contract: PlatformContract.Trial,
+          platform_id: platformConfiguration.id,
+          platform_version: platformConfiguration.version,
+          source: TELEMETRY_SOURCE,
+          target_product: 'open-cti',
+          user_id: ADMIN_UUID,
+        });
       });
     });
   });

@@ -412,6 +412,7 @@ export const registrationApp = {
   },
 
   autoRegisterPlatform: async (token: string, platform: PlatformInput) => {
+    const { user } = requestContext.require();
     const deploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         platform_token: token,
@@ -440,6 +441,26 @@ export const registrationApp = {
         }),
       ]);
     });
+
+    try {
+      const selectedOrga = await loadOrganizationBy({
+        id: deploymentRequest.organization_requester_id,
+      });
+
+      const registerEvent = buildRegisterEvent(
+        selectedOrga,
+        user.id,
+        deploymentRequest.platform_identifier,
+        platform.id,
+        platform.contract,
+        platform.version
+      );
+      telemetryApp.sendTelemetryEvent(registerEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for registration', {
+        error,
+      });
+    }
   },
 };
 
