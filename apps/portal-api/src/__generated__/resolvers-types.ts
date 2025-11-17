@@ -998,7 +998,7 @@ export type PageInfo = {
 export enum PlatformContract {
   Ce = 'CE',
   Ee = 'EE',
-  Trial = 'Trial'
+  Trial = 'trial'
 }
 
 export type PlatformDeploymentRequest = {

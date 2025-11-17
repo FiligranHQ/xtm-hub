@@ -65,7 +65,7 @@ export const DeploymentRequestDomain = {
       {
         first,
         after,
-        orderBy: 'id',
+        orderBy: 'request_date',
         orderMode: 'asc',
         filters,
       },
