@@ -90,6 +90,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
 
   const capabilitiesFormSchema = z.object({
     capabilities: z.array(z.string()),
+    organizationId: z.string(),
   });
 
   const extendedSchema = capabilitiesFormSchema.extend({
@@ -118,16 +119,25 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
     return currentCapabilities ?? [];
   };
 
-  const form = useForm({
-    resolver: zodResolver(
-      userService?.id ? capabilitiesFormSchema : extendedSchema
-    ),
+  const capabilitiesForm = useForm<z.infer<typeof capabilitiesFormSchema>>({
+    resolver: zodResolver(capabilitiesFormSchema),
+    defaultValues: {
+      capabilities: getCurrentCapabilities(),
+      organizationId: organizationId,
+    },
+  });
+
+  const extendedForm = useForm<z.infer<typeof extendedSchema>>({
+    resolver: zodResolver(extendedSchema),
     defaultValues: {
       email: [{ id: '', text: '' }],
       capabilities: getCurrentCapabilities(),
       organizationId: organizationId,
     },
   });
+
+  const form = userService?.id ? capabilitiesForm : extendedForm;
+
   useEffect(() => {
     setIsDirty(form.formState.isDirty);
   }, [form.formState.isDirty]);
@@ -206,10 +216,6 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
     });
   };
 
-  const onSubmit = userService?.id
-    ? onSubmitCapabilitiesSchema
-    : onSubmitExtendSchema;
-
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
 
   const [filter, setFilter] = useState<{
@@ -282,23 +288,26 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
         text: user.email,
       };
     });
-  const { setValue } = form;
 
+  const { setValue } = extendedForm;
   const [tags, setTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   return (
-    <Form {...form}>
+    <Form {...capabilitiesForm}>
       <form
         className="space-y-xl"
         onSubmit={(e) => {
           e.preventDefault();
-          form.handleSubmit(onSubmit)(e);
+
+          !userService?.id
+            ? extendedForm.handleSubmit(onSubmitExtendSchema)(e)
+            : capabilitiesForm.handleSubmit(onSubmitCapabilitiesSchema)(e);
         }}>
         {!userService?.id && (
           <>
             <FormField
-              control={form.control}
+              control={extendedForm.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
@@ -335,7 +344,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
           {capabilitiesData.map((capability) => (
             <FormField
               key={capability!.id}
-              control={form.control}
+              control={capabilitiesForm.control}
               name="capabilities"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2">

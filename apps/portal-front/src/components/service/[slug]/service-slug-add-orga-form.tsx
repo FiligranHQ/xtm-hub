@@ -28,7 +28,7 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
-import { z, ZodSchema } from 'zod';
+import { z } from 'zod';
 
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceId: string;
@@ -36,6 +36,15 @@ interface ServiceSlugAddOrgaFormSheetProps {
   subscriptions: subscriptionWithUserService_fragment$data[];
   capabilities: serviceCapability_fragment$data[];
 }
+
+const formSchema = z.object({
+  organization_id: z.string().min(2, {
+    error: 'You must choose an organization.',
+  }),
+  capability_ids: z.array(z.string()),
+  start_date: z.coerce.date<Date>(),
+  end_date: z.coerce.date<Date>().optional(),
+});
 
 export const ServiceSlugAddOrgaForm: FunctionComponent<
   ServiceSlugAddOrgaFormSheetProps
@@ -58,17 +67,8 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
       AddSubscriptionInServiceMutation
     );
 
-  const form = useForm<z.infer<ZodSchema>>({
-    resolver: zodResolver(
-      z.object({
-        organization_id: z.string().min(2, {
-          error: 'You must choose an organization.',
-        }),
-        capability_ids: z.array(z.string()),
-        start_date: z.coerce.date(),
-        end_date: z.coerce.date().optional(),
-      })
-    ),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       organization_id: '',
       capability_ids: [],
@@ -77,7 +77,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
   });
 
   setIsDirty(form.formState.isDirty);
-  const onSubmit = (inputValue: z.infer<ZodSchema>) => {
+  const onSubmit = (inputValue: z.infer<typeof formSchema>) => {
     commitSubscriptionCreateMutation({
       variables: {
         service_instance_id: serviceId,

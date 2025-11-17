@@ -5,6 +5,7 @@ import { ServiceDelete } from '@/components/service/components/service-delete';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { fileListCheck } from '@/utils/documents';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AutoForm,
@@ -20,8 +21,6 @@ import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-
-const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
 
 const openAEVScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),
