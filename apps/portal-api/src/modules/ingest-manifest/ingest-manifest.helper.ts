@@ -7,6 +7,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
+import { semanticVersionRegex } from '../../utils/semantic-versioning';
 import { Upload } from '../services/document/document.helper';
 import {
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
@@ -151,7 +152,7 @@ const ManifestSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   description: z.string(),
-  version: z.string().min(1),
+  version: z.string().min(1).regex(semanticVersionRegex),
   contracts: z.array(z.unknown()),
 });
 

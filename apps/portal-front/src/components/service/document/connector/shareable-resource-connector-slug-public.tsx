@@ -1,5 +1,4 @@
 import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/shareable-resource-connector-details';
-import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -77,9 +76,7 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
             </div>
           </section>
         </div>
-        <ShareableResourceBasicInformation>
-          <ShareableResourceConnectorDetails connectorDetails={documentData} />
-        </ShareableResourceBasicInformation>
+        <ShareableResourceConnectorDetails connectorDetails={documentData} />
       </div>
     </>
   );

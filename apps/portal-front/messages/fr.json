@@ -436,7 +436,11 @@
       "Search": "Rechercher un connecteur par nom...",
       "Type": "Type",
       "VendorContact": "Contact vendeur",
-      "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact"
+      "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
+      "Incompatible": {
+        "Required": "La mise à jour de votre plateforme est nécessaire pour déployer ce connecteur",
+        "Optional": "Certaines de vos plateformes doivent être mises à jour pour déployer ce connecteur"
+      }
     },
     "CreationStatus": "Statut de la création",
     "OpenctiIntegrationFeeds": {
@@ -458,6 +462,9 @@
           "taxii_feed": "Flux TAXII (bientôt disponible)",
           "opencti_stream_feed": "Flux OpenCTI",
           "third_party_integration": "Intégrations tierces"
+        },
+        "ProductVersion": {
+          "Placeholder": "Plateforme..."
         }
       }
     },
@@ -578,7 +585,8 @@
         "NoOptions": "Pas d'options",
         "Key": {
           "label": "Cas d'utilisation",
-          "integration_feed_type": "Type de flux d'intégration"
+          "integration_feed_type": "Type de flux d'intégration",
+          "product_version": "Plateforme"
         }
       }
     },
@@ -617,7 +625,8 @@
         "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
-        "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}."
+        "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
+        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer."
       },
       "Details": {
         "Author": "Auteur",

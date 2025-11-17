@@ -71,7 +71,10 @@ import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { serviceContractDomain } from '../contract/domain';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import * as serviceInstanceDomain from '../service-instance.domain';
-import { loadServiceInstanceBy } from '../service-instance.domain';
+import {
+  deleteServiceInstanceBy,
+  loadServiceInstanceBy,
+} from '../service-instance.domain';
 import { registrationApp } from './registration.app';
 import { registrationDomain } from './registration.domain';
 
@@ -274,7 +277,9 @@ describe('Registration app', () => {
           identifier: PlatformIdentifier.Opencti,
         });
 
-        await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
+        await expect(call).rejects.toThrow(
+          ErrorCode.InvalidServiceConfiguration
+        );
       });
 
       it('should throw when platformUrl is not valid', async () => {
@@ -287,7 +292,9 @@ describe('Registration app', () => {
           identifier: PlatformIdentifier.Opencti,
         });
 
-        await expect(call).rejects.toThrow('INVALID_SERVICE_CONFIGURATION');
+        await expect(call).rejects.toThrow(
+          ErrorCode.InvalidServiceConfiguration
+        );
       });
     });
 
@@ -762,6 +769,11 @@ describe('Registration app', () => {
           user_requester_id: THALES_SIMPLE_USER_ID,
         })) as DeploymentRequest;
     });
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await serviceContractDomain.deleteConfigurationBy({});
+      await deleteServiceInstanceBy({});
+    });
     it('should throw if deployment request is not found', async () => {
       const call = registrationApp.autoRegisterPlatform(
         uuidv4(),
@@ -824,6 +836,47 @@ describe('Registration app', () => {
           platform_title: platformConfiguration.title,
           platform_url: platformConfiguration.url,
           platform_version: platformConfiguration.version,
+          registerer_id: THALES_SIMPLE_USER_ID,
+          token: deploymentRequest.platform_token,
+        },
+        service_instance_id: deploymentRequest.service_instance_id,
+        status: ServiceConfigurationStatus.Active,
+      });
+    });
+    it("should successfully register the provided platform if it's already registered", async () => {
+      const newPlatformConfiguration = {
+        id: uuidv4(),
+        title: 'My New OpenCTI platform',
+        url: 'http://example2.com',
+        contract: PlatformContract.Trial,
+        version: 'A.B.C',
+      };
+      await registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        platformConfiguration
+      );
+
+      await registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        newPlatformConfiguration
+      );
+
+      const oldConfiguration =
+        await serviceContractDomain.loadConfigurationByPlatform(
+          platformConfiguration.id
+        );
+      const newConfiguration =
+        await serviceContractDomain.loadConfigurationByPlatform(
+          newPlatformConfiguration.id
+        );
+      expect(oldConfiguration).toBeNull();
+      expect(newConfiguration).toMatchObject({
+        config: {
+          platform_contract: newPlatformConfiguration.contract,
+          platform_id: newPlatformConfiguration.id,
+          platform_title: newPlatformConfiguration.title,
+          platform_url: newPlatformConfiguration.url,
+          platform_version: newPlatformConfiguration.version,
           registerer_id: THALES_SIMPLE_USER_ID,
           token: deploymentRequest.platform_token,
         },

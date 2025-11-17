@@ -18,7 +18,6 @@ import { useTranslations } from 'next-intl';
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
-import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -123,14 +122,12 @@ const ShareableResourceSlug: React.FunctionComponent<
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
         />
-        <ShareableResourceBasicInformation>
-          {documentData && (
-            <ShareableResourceDetails
-              documentData={documentData}
-              downloadNumber={documentDownloadNumber ?? 0}
-            />
-          )}
-        </ShareableResourceBasicInformation>
+        {documentData && (
+          <ShareableResourceDetails
+            documentData={documentData}
+            downloadNumber={documentDownloadNumber ?? 0}
+          />
+        )}
       </div>
     </>
   );

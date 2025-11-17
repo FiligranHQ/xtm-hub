@@ -12,7 +12,7 @@ export const ServiceListFilterLabel: React.FC = () => {
   const { labels, setLabels } = useServiceListLocalStorage(localStorageKey);
 
   const labelOptions = getLabels().map(({ name, id }) => ({
-    label: name.toUpperCase(),
+    label: name,
     value: id,
   }));
 
