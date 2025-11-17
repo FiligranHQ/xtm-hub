@@ -61,9 +61,8 @@ export const ServiceManageSheet = ({
     revalidatePathActions([
       `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
     ]).then(() => {
-      // Temporary fix until OBAS name is fully changed
       router.push(
-        `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier !== 'openaev_scenarios' ? serviceInstance.service_definition!.identifier : 'obas_scenarios'}/${serviceInstance.id}`
+        `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
       );
     });
     setOpenSheet(false);

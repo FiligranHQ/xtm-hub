@@ -6,6 +6,11 @@ import {
   REGIONS_VALUES,
   USE_CASES,
 } from '@/components/service/trial-instances/form-constants';
+
+import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import {
   AutoForm,
   Button,
@@ -21,7 +26,8 @@ import {
 } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import React, { FunctionComponent, useContext } from 'react';
+import React, { FunctionComponent, useContext, useState } from 'react';
+import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 
 export const tryOpenCTIFormSchema = z.object({
@@ -32,113 +38,164 @@ export const tryOpenCTIFormSchema = z.object({
   acceptTerms: z.boolean().refine((value) => value === true, {
     error: 'You must accept the MSSA',
   }),
+  status: z
+    .enum([
+      DeploymentRequestStatusEnum.QUEUED,
+      DeploymentRequestStatusEnum.PENDING,
+    ])
+    .default(DeploymentRequestStatusEnum.PENDING),
 });
 
 interface TryOpenCTIFormProps {
   handleSubmit: (values: z.infer<typeof tryOpenCTIFormSchema>) => void;
   handleCloseSheet: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  deploymentRequestsAvailabilityQueryRef: PreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>;
 }
 export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
   handleSubmit,
   handleCloseSheet,
+  deploymentRequestsAvailabilityQueryRef,
 }) => {
   const { me } = useContext(PortalContext);
-
   const t = useTranslations();
 
+  const deploymentRequestsAvailability =
+    usePreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>(
+      DeploymentRequestsAvailableQuery,
+      deploymentRequestsAvailabilityQueryRef
+    );
+
+  const [pendingValues, setPendingValues] =
+    useState<z.infer<typeof tryOpenCTIFormSchema>>();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const onSubmit = (values: z.infer<typeof tryOpenCTIFormSchema>) => {
-    handleSubmit({
-      ...values,
-    });
+    const availabilityForRegion =
+      deploymentRequestsAvailability.deploymentRequestsAvailable.filter(
+        (avl) => avl.region === values.region
+      );
+
+    const isRegionAvailable =
+      availabilityForRegion[0]?.availableCount &&
+      availabilityForRegion[0]?.availableCount > 0;
+    if (isRegionAvailable) {
+      handleSubmit({ ...values });
+    } else {
+      setIsDialogOpen(true);
+      setPendingValues({
+        ...values,
+        status: DeploymentRequestStatusEnum.QUEUED,
+      });
+    }
+  };
+
+  const confirmSubmit = () => {
+    setIsDialogOpen(false);
+    handleSubmit(pendingValues!);
   };
   return (
-    <div>
-      {t('Service.Trials.Form.AssociatedEmail')}: {me?.email}
-      <AutoForm
-        className="mt-l"
-        formSchema={tryOpenCTIFormSchema}
-        onSubmit={(values) => {
-          onSubmit(values);
-        }}
-        fieldConfig={{
-          region: {
-            label: t('Service.Trials.Form.Region'),
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t('Service.Trials.Form.Region')}{' '}
-                  <span className="text-sm text-destructive">*</span>
-                </FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {REGIONS.map((region) => (
-                      <SelectItem
-                        key={region.value}
-                        value={region.value}>
-                        {region.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage className="text-sm text-destructive" />
-              </FormItem>
-            ),
-          },
-          job_title: {
-            label: t('Service.Trials.Form.JobTitle'),
-          },
-          activity_sector: {
-            label: t('Service.Trials.Form.ActivitySector'),
-          },
-          use_case: {
-            label: t('Service.Trials.Form.UseCase'),
-          },
-          acceptTerms: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="displayPersonalSpaces"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                  <label
-                    htmlFor="displayPersonalSpaces"
-                    className="txt-sub-content cursor-pointer">
-                    {t('Service.Trials.Form.MSSAAgreement')}{' '}
-                    <Link
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-blue"
-                      href={'/app/service/free-trial/mssa'}>
-                      {t('Service.Trials.Form.MSSA')}
-                    </Link>
-                    <span className="text-destructive">*</span>
-                  </label>
-                </div>
-                <FormMessage className="text-sm text-destructive" />
-              </FormItem>
-            ),
-          },
-        }}>
-        <div className="flex justify-end gap-s">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={(values) => {
-              handleCloseSheet(values);
-            }}>
-            {t('Utils.Cancel')}
-          </Button>
+    <>
+      <div>
+        {t('Service.Trials.Form.AssociatedEmail')}: {me?.email}
+        <AutoForm
+          className="mt-l"
+          formSchema={tryOpenCTIFormSchema}
+          onSubmit={(values) => {
+            onSubmit(values);
+          }}
+          fieldConfig={{
+            region: {
+              label: t('Service.Trials.Form.Region'),
+              fieldType: ({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('Service.Trials.Form.Region')}{' '}
+                    <span className="text-sm text-destructive">*</span>
+                  </FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REGIONS.map((region) => (
+                        <SelectItem
+                          key={region.value}
+                          value={region.value}>
+                          {region.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-sm text-destructive" />
+                </FormItem>
+              ),
+            },
+            job_title: {
+              label: t('Service.Trials.Form.JobTitle'),
+            },
+            activity_sector: {
+              label: t('Service.Trials.Form.ActivitySector'),
+            },
+            use_case: {
+              label: t('Service.Trials.Form.UseCase'),
+            },
+            acceptTerms: {
+              fieldType: ({ field }) => (
+                <FormItem>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="displayPersonalSpaces"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <label
+                      htmlFor="displayPersonalSpaces"
+                      className="txt-sub-content cursor-pointer">
+                      {t('Service.Trials.Form.MSSAAgreement')}{' '}
+                      <Link
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline text-blue"
+                        href={'/app/service/free-trial/mssa'}>
+                        {t('Service.Trials.Form.MSSA')}
+                      </Link>
+                      <span className="text-destructive">*</span>
+                    </label>
+                  </div>
+                  <FormMessage className="text-sm text-destructive" />
+                </FormItem>
+              ),
+            },
+            status: {
+              fieldType: () => <FormItem hidden />,
+            },
+          }}>
+          <div className="flex justify-end gap-s">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={(values) => {
+                handleCloseSheet(values);
+              }}>
+              {t('Utils.Cancel')}
+            </Button>
 
-          <Button type="submit">{t('Register.Confirm')}</Button>
-        </div>
-      </AutoForm>
-    </div>
+            <Button type="submit">{t('Register.Confirm')}</Button>
+          </div>
+        </AutoForm>
+      </div>
+      <AlertDialogComponent
+        isOpen={isDialogOpen}
+        AlertTitle={t('Service.Trials.CapacityWarning.Title')}
+        actionButtonText={t('Service.Trials.CapacityWarning.Continue')}
+        variantName={'destructive'}
+        onOpenChange={setIsDialogOpen}
+        onClickContinue={confirmSubmit}>
+        {t('Service.Trials.CapacityWarning.Content')}
+      </AlertDialogComponent>
+    </>
   );
 };

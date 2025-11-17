@@ -11,9 +11,9 @@ import {
   Upload,
 } from '../document/document.helper';
 import {
-  CUSTOM_DASHBOARD_DOCUMENT_TYPE,
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './custom-dashboards.domain';
 
 export const CustomDashboardsApp = {
@@ -25,7 +25,7 @@ export const CustomDashboardsApp = {
     const trx = await dbTx();
     try {
       const doc = await createDocumentWithChildren<CustomDashboard>(
-        CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         input,
         document,
         CUSTOM_DASHBOARD_METADATA,
@@ -35,12 +35,7 @@ export const CustomDashboardsApp = {
       await trx.commit();
 
       try {
-        const createEvent = await buildCreateEvent(
-          context,
-          context.user.selected_organization_id,
-          context.user.id,
-          doc
-        );
+        const createEvent = await buildCreateEvent(doc);
         telemetryApp.sendTelemetryEvent(createEvent);
       } catch (error) {
         logApp.error(
@@ -71,7 +66,7 @@ export const CustomDashboardsApp = {
 
   loadSeoCustomDashboard: async (slug: string) => {
     return loadSeoDocumentWithCountersBySlug(
-      CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+      OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       slug,
       CUSTOM_DASHBOARD_METADATA
     );

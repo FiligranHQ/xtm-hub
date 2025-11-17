@@ -6,7 +6,7 @@ import ServiceList from '@/components/service/service-list';
 import { UserServiceOwnedQuery } from '@/components/service/user_service.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -56,7 +56,21 @@ const Page: React.FunctionComponent = () => {
     useQueryLoader<registerRegisteredPlatformsQuery>(
       RegisterRegisteredPlatformsQueryGraphql
     );
-  useMountingLoader(loadQueryRegisteredPlatforms, {});
+  useMountingLoader(loadQueryRegisteredPlatforms, {
+    fetchPolicy: 'network-only',
+  });
+
+  useEffect(() => {
+    const handleRefresh = () => {
+      loadQueryRegisteredPlatforms({}, { fetchPolicy: 'network-only' });
+    };
+
+    window.addEventListener('refresh-registered-platforms', handleRefresh);
+
+    return () => {
+      window.removeEventListener('refresh-registered-platforms', handleRefresh);
+    };
+  }, [loadQueryRegisteredPlatforms]);
 
   const handleUpdate = useCallback(() => {
     loadQueryUserServiceOwned(

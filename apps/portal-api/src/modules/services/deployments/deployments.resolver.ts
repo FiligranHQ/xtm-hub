@@ -1,4 +1,5 @@
 import {
+  DeploymentAvailability,
   QueryDeploymentRequestsArgs,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
@@ -18,16 +19,41 @@ const resolvers: Resolvers = {
         );
       }
     },
+    deploymentRequestsAvailable: async (
+      _,
+      { platformIdentifier }
+    ): Promise<DeploymentAvailability[]> => {
+      try {
+        return await DeploymentsApp.loadAvailableDeploymentRequests(
+          platformIdentifier
+        );
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
   },
 
   Mutation: {
     createDeploymentRequest: async (_, { input }) => {
       try {
-        return await DeploymentsApp.createDeployment(input);
+        return await DeploymentsApp.createDeploymentRequest(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.CreateDeploymentRequestError
+        );
+      }
+    },
+    updateDeploymentRequest: async (_, { input }) => {
+      try {
+        return await DeploymentsApp.updateDeploymentRequest(input);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
         );
       }
     },

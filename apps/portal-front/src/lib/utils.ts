@@ -57,8 +57,7 @@ export const getServiceInstanceUrl = (
   global_secondary_item_id?: string | null
 ) =>
   new URL(
-    // Temp fix, add service definition identifier when obas new name will be released
-    `/${APP_PATH}/service/${identifier !== 'openaev_scenarios' ? identifier : 'obas_scenarios'}/${global_service_instance_id}${global_secondary_item_id ? `/${global_secondary_item_id}` : ''}`,
+    `/${APP_PATH}/service/${identifier}/${global_service_instance_id}${global_secondary_item_id ? `/${global_secondary_item_id}` : ''}`,
     base_url
   );
 

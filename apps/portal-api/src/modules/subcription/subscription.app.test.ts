@@ -1,21 +1,138 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { db } from '../../../knexfile';
 import {
   FILIGRAN_ORGA_ID,
-  SERVICE_CSV_FEEDS_ID,
+  INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE,
+  INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD,
+  SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../tests/tests.const';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
+import Subscription, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
+import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import { ErrorCode } from '../../utils/error/error.code';
+import { SubscriptionStatus } from '../subscription.const';
+import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
 import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
 
 describe('Subscription app', () => {
+  describe('subscribeOrganizationToService', async () => {
+    let serviceInstanceId: ServiceInstanceId;
+    beforeEach(async () => {
+      serviceInstanceId = uuidv4() as ServiceInstanceId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+    });
+
+    it('should throw an error when organization is already subscribed to the service instance', async () => {
+      const subscriptionId = uuidv4() as SubscriptionId;
+      const subscriptionData = {
+        id: subscriptionId,
+        service_instance_id: serviceInstanceId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        start_date: new Date(),
+        end_date: new Date(),
+        billing: 0,
+        status: SubscriptionStatus.ACCEPTED,
+      };
+      await createSubscription(subscriptionData);
+
+      const call = subscriptionApp.subscribeOrganizationToService({
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        serviceInstanceId,
+        startDate: new Date(),
+        endDate: new Date(),
+        capabilityIds: [],
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.AlreadySubscribed);
+    });
+
+    it('should subscribe the organization to the service instance (without capabilities)', async () => {
+      await subscriptionApp.subscribeOrganizationToService({
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        serviceInstanceId,
+        startDate: new Date(),
+        endDate: new Date(),
+        capabilityIds: [],
+      });
+
+      const createdSubscription = await db<Subscription>('Subscription')
+        .where({
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          service_instance_id: serviceInstanceId,
+        })
+        .select('*')
+        .first();
+
+      expect(createdSubscription).toBeDefined();
+
+      const capabilities: { service_capability_id: ServiceCapabilityId }[] =
+        await loadSubscriptionCapabilities(
+          createdSubscription?.id ?? ('' as SubscriptionId)
+        );
+      expect(capabilities.length).toBe(0);
+    });
+
+    it('should subscribe the organization to the service instance (with capabilities)', async () => {
+      await subscriptionApp.subscribeOrganizationToService({
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        serviceInstanceId,
+        startDate: new Date(),
+        endDate: new Date(),
+        capabilityIds: [
+          INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD,
+          INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE,
+        ],
+      });
+
+      const createdSubscription = await db<Subscription>('Subscription')
+        .where({
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          service_instance_id: serviceInstanceId,
+        })
+        .select('*')
+        .first();
+
+      expect(createdSubscription).toBeDefined();
+
+      const capabilities: { service_capability_id: ServiceCapabilityId }[] =
+        await loadSubscriptionCapabilities(
+          createdSubscription?.id ?? ('' as SubscriptionId)
+        );
+      expect(capabilities.length).toBe(2);
+      expect(
+        capabilities.some(
+          (capa) =>
+            capa.service_capability_id ===
+            INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD
+        )
+      ).toBeTruthy();
+      expect(
+        capabilities.some(
+          (capa) =>
+            capa.service_capability_id ===
+            INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE
+        )
+      ).toBeTruthy();
+    });
+  });
+
   describe(`${subscriptionApp.deleteSubscription.name}`, () => {
     it('should delete the subscription', async () => {
       const id = uuidv4() as SubscriptionId;
       const subscription = await createSubscription({
         id,
         organization_id: FILIGRAN_ORGA_ID,
-        service_instance_id: SERVICE_CSV_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
         start_date: new Date(),
         end_date: null,
         status: 'ACCEPTED',

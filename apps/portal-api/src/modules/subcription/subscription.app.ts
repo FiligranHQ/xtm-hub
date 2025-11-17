@@ -7,6 +7,7 @@ import {
   ServiceInstanceJoinType,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
@@ -17,7 +18,6 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
-import { requestContext } from '../../requestContext';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
@@ -77,11 +77,8 @@ export const subscriptionApp = {
       });
 
       const [serviceDefinition, serviceInstance] = await Promise.all([
-        loadServiceDefinitionByServiceInstance(
-          portalContext,
-          serviceInstanceId
-        ),
-        loadServiceInstanceById(portalContext, serviceInstanceId),
+        loadServiceDefinitionByServiceInstance(serviceInstanceId),
+        loadServiceInstanceById(user.id, serviceInstanceId),
       ]);
 
       await sendMail({
@@ -146,31 +143,18 @@ export const subscriptionApp = {
       organizationId,
     });
 
-    const trx = await dbTx();
-    try {
-      const subscriptionData = {
-        id: uuidv4() as SubscriptionId,
-        service_instance_id: serviceInstanceId,
-        organization_id: organizationId,
-        start_date: startDate,
-        end_date: endDate,
-        billing: 0,
-        status: SubscriptionStatus.ACCEPTED,
-      };
+    const subscriptionData = {
+      id: uuidv4() as SubscriptionId,
+      service_instance_id: serviceInstanceId,
+      organization_id: organizationId,
+      start_date: startDate,
+      end_date: endDate,
+      billing: 0,
+      status: SubscriptionStatus.ACCEPTED,
+    };
 
-      const createdSubscription = await createSubscription(subscriptionData);
-      const { portalContext } = requestContext.require();
-      await addCapabilitiesToSubscription(
-        portalContext,
-        createdSubscription.id,
-        capabilityIds
-      );
-
-      await trx.commit();
-    } catch (error) {
-      await trx.rollback();
-      throw error;
-    }
+    const createdSubscription = await createSubscription(subscriptionData);
+    await addCapabilitiesToSubscription(createdSubscription.id, capabilityIds);
   },
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
@@ -218,7 +202,7 @@ const createSubscriptionWithAdminAccess = async ({
   serviceInstanceId: ServiceInstanceId;
   organization: Organization;
 }): Promise<{ createdSubscription: Subscription }> => {
-  const { user, portalContext } = requestContext.require();
+  const { user } = requestContext.require();
   const subscriptionInitializerData = {
     id: uuidv4() as SubscriptionId,
     service_instance_id: serviceInstanceId,
@@ -234,7 +218,6 @@ const createSubscriptionWithAdminAccess = async ({
   );
 
   await addAdminAccess(
-    portalContext,
     user.id as UserId,
     createdSubscription.id,
     organization.personal_space

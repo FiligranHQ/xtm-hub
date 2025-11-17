@@ -12,6 +12,7 @@ import {
   DocumentConnection,
   Document as DocumentResolverType,
   IntegrationFeedConnection,
+  IntegrationFeedType,
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
   Organization,
@@ -35,6 +36,7 @@ import {
   UploadedFile,
 } from './document-storage';
 import {
+  BOOLEAN_METADATA,
   Document,
   FullDocumentMutator,
   getDocumentName,
@@ -46,11 +48,11 @@ import {
 } from './document.helper';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { requestContext } from '../../../context/request.context';
 import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../model/kanel/public/DocumentMetadata';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { requestContext } from '../../../requestContext';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 
@@ -789,7 +791,44 @@ export const loadSeoDocumentBySlug = async (
 
   addIncludeMetadataQuery(docQuery, include_metadata);
 
-  return await docQuery.first();
+  return docQuery.first();
+};
+
+export const loadSeoDocuments = async <
+  T =
+    | DocumentConnection
+    | IntegrationFeedConnection
+    | CustomDashboardConnection,
+>(
+  type: string,
+  serviceSlug: string,
+  opts: Partial<QueryDocumentsArgs>,
+  include_metadata?: string[]
+) => {
+  const loadDocumentsQuery = dbUnsecure<Document>('Document')
+    .select('Document.*')
+    .leftJoin(
+      'ServiceInstance',
+      'Document.service_instance_id',
+      'ServiceInstance.id'
+    )
+    .whereNotExists(function () {
+      this.select('*')
+        .from('Document_Children')
+        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
+    })
+    .where('ServiceInstance.slug', '=', serviceSlug)
+    .where('Document.active', '=', true)
+    .where('Document.type', '=', type)
+    .orderBy([
+      { column: 'Document.updated_at', order: 'desc' },
+      { column: 'Document.created_at', order: 'desc' },
+    ])
+    .groupBy(['Document.id']);
+
+  addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
+
+  return paginate<Document, T>('Document', opts, undefined, loadDocumentsQuery);
 };
 
 export const loadSeoDocumentsByServiceSlug = async (
@@ -819,8 +858,7 @@ export const loadSeoDocumentsByServiceSlug = async (
     .groupBy(['Document.id']);
 
   addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
-
-  return await loadDocumentsQuery;
+  return loadDocumentsQuery;
 };
 
 export const loadImagesByDocumentId = async (documentId: string) => {
@@ -847,14 +885,40 @@ const addIncludeMetadataQuery = (
 ) => {
   include_metadata.forEach((metaKey, index) => {
     const metaAlias = `meta${index}`;
-    qb.select(`${metaAlias}.value as ${metaKey}`)
-      .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-          `${metaAlias}.key`,
-          '=',
-          metaKey
-        );
-      })
-      .groupBy([metaKey]);
+
+    if (BOOLEAN_METADATA.includes(metaKey)) {
+      qb.select(
+        dbRaw(`
+          CASE 
+            WHEN "${metaAlias}"."value" = 'true' THEN true 
+            WHEN "${metaAlias}"."value" = 'false' THEN false 
+            ELSE "${metaAlias}"."value"::boolean 
+          END as ${metaKey}
+        `)
+      );
+    } else {
+      qb.select(`${metaAlias}.value as ${metaKey}`);
+    }
+
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+        `${metaAlias}.key`,
+        '=',
+        metaKey
+      );
+    }).groupBy([metaKey]);
   });
+};
+
+export const loadIntegrationType = async (
+  document_id: string
+): Promise<IntegrationFeedType | undefined> => {
+  const doc = await db('Document_Metadata')
+    .select('value')
+    .where({
+      key: 'integration_type',
+      document_id,
+    })
+    .first();
+  return doc?.value as IntegrationFeedType;
 };

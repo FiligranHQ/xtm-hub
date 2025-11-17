@@ -1,5 +1,9 @@
-import { Resolvers } from '../../../__generated__/resolvers-types';
+import {
+  IntegrationFeedType,
+  Resolvers,
+} from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
@@ -10,18 +14,14 @@ import {
 } from '../document/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { integrationFeedsApp } from './integration-feeds.app';
-import {
-  INTEGRATION_FEED_CONNECTORS_TYPE,
-  INTEGRATION_FEED_CSV_FEED_TYPE,
-  IntegrationFeed,
-} from './integration-feeds.model';
+import { IntegrationFeed } from './integration-feeds.model';
 
 const resolvers: Resolvers = {
   IntegrationFeed: {
     __resolveType(feed: IntegrationFeed) {
       const mapping = {
-        [INTEGRATION_FEED_CONNECTORS_TYPE]: 'Connector',
-        [INTEGRATION_FEED_CSV_FEED_TYPE]: 'CsvFeed',
+        [IntegrationFeedType.Connector]: 'Connector',
+        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
       };
 
       return mapping[feed.integration_type];
@@ -33,8 +33,8 @@ const resolvers: Resolvers = {
       getUploader(context, id, { unsecured: true }),
     uploader_organization: ({ id }, _, context) =>
       getUploaderOrganization(context, id, { unsecured: true }),
-    service_instance: ({ service_instance_id }, _, context) =>
-      getServiceInstance(context, service_instance_id),
+    service_instance: ({ service_instance_id }, _) =>
+      getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
@@ -47,6 +47,12 @@ const resolvers: Resolvers = {
         context,
         extractId<DocumentId>(id)
       ),
+    publicIntegrationFeeds: async (_, input) =>
+      integrationFeedsApp.loadPaginatedPublicAccessIntegrationFeeds(input),
+    publicIntegrationFeedByServiceSlug: async (_, { serviceSlug }) =>
+      integrationFeedsApp.loadPublicAccessIntegrationFeeds(serviceSlug),
+    publicIntegrationFeedBySlug: async (_, { slug }) =>
+      integrationFeedsApp.loadPublicAccessIntegrationFeed(slug),
   },
 };
 

@@ -1,3 +1,21 @@
+enum IntegrationFeedType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  taxii_feed
+  opencti_stream_feed
+  third_party_integration
+}
+
+enum ConnectorType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
+}
+
 interface IntegrationFeed implements Node & DocumentBase {
   # Node
   id: ID!
@@ -25,47 +43,44 @@ interface IntegrationFeed implements Node & DocumentBase {
   children_documents: [ShareableResourceImage!]
 
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
 }
 
 type Connector implements Node & DocumentBase & IntegrationFeed {
   # Node
   id: ID!
-
   # DocumentBase
   type: String!
   uploader: User
-  uploader_organization: Organization
+  uploader_organization: Organization @auth
   name: String!
   short_description: String
   description: String
-  file_name: String
-  minio_name: String!
+  file_name: String @auth
+  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
-  updater_id: String
+  updater_id: String @auth
   download_number: Int
   share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
   service_instance: ServiceInstance
-  subscription: SubscriptionModel
+  subscription: SubscriptionModel @auth
   children_documents: [ShareableResourceImage!]
-
   # Integration Feed
-  remover_id: ID
-  integration_type: String!
-
+  remover_id: ID @auth
+  integration_type: IntegrationFeedType!
   product_version: String!
   container_image: String
-  verified: String!
+  verified: Boolean!
   source_code: String
   subscription_link: String
-  integration_subtype: String!
-  manager_supported: String!
-  playbook_supported: String!
+  integration_subtype: ConnectorType!
+  manager_supported: Boolean!
+  playbook_supported: Boolean!
 }
 
 type IntegrationFeedEdge {
@@ -90,4 +105,16 @@ type Query {
     serviceInstanceId: String
   ): IntegrationFeedConnection! @auth
   integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed @auth
+  publicIntegrationFeeds(
+    slug: String!
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): IntegrationFeedConnection!
+  publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
+  publicIntegrationFeedBySlug(slug: String): IntegrationFeed
 }

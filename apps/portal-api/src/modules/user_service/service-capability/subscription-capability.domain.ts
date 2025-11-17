@@ -2,32 +2,29 @@ import { db, dbRaw } from '../../../../knexfile';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import SubscriptionCapability from '../../../model/kanel/public/SubscriptionCapability';
-import { PortalContext } from '../../../model/portal-context';
 
 export const addCapabilitiesToSubscription = async (
-  context: PortalContext,
   subscriptionId: SubscriptionId,
   capabilityIds: ServiceCapabilityId[]
-) => {
-  const promises = capabilityIds.map((capabilityId) => {
-    const data = {
-      service_capability_id: capabilityId,
-      subscription_id: subscriptionId,
-    };
+): Promise<SubscriptionCapability[]> => {
+  if (!capabilityIds.length) {
+    return [];
+  }
 
-    return db<SubscriptionCapability>(context, 'Subscription_Capability')
-      .insert(data)
-      .returning('*');
-  });
+  const data = capabilityIds.map((capabilityId) => ({
+    service_capability_id: capabilityId,
+    subscription_id: subscriptionId,
+  }));
 
-  await Promise.all(promises);
+  return db<SubscriptionCapability>('Subscription_Capability')
+    .insert(data)
+    .returning('*');
 };
 
 export const loadSubscriptionCapabilities = async (
-  context: PortalContext,
   subscriptionId: SubscriptionId
 ) => {
-  return db<SubscriptionCapability>(context, 'Subscription_Capability')
+  return db<SubscriptionCapability>('Subscription_Capability')
     .where('Subscription_Capability.subscription_id', '=', subscriptionId)
     .leftJoin(
       'Service_Capability',

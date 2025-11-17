@@ -139,7 +139,6 @@ export const isUserServiceExist = async (
 };
 
 export const createUserServiceAccess = async (
-  context,
   trx,
   {
     subscription_id,
@@ -161,7 +160,7 @@ export const createUserServiceAccess = async (
   const [subscription] = await loadUnsecureSubscriptionBy({
     id: subscription_id as SubscriptionId,
   });
-  const userOrganizations = await loadUserOrganization(context, { user_id });
+  const userOrganizations = await loadUserOrganization({ user_id });
   if (
     !userOrganizations.some(
       (userOrganization) =>
@@ -170,29 +169,27 @@ export const createUserServiceAccess = async (
   ) {
     throw new Error(ErrorCode.UserIsNotInOrganization);
   }
-  const [addedUserService] = await db<UserService>(context, 'User_Service')
+  const [addedUserService] = await db<UserService>('User_Service')
     .insert(user_service)
     .returning('*');
 
-  await insertCapabilities(context, trx, capabilities, addedUserService);
+  await insertCapabilities(trx, capabilities, addedUserService);
   const user_service_capa: UserServiceCapabilityInitializer = {
     id: uuidv4() as UserServiceCapabilityId,
     user_service_id: addedUserService.id,
     generic_service_capability_id:
       GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
   };
-  await db<UserServiceCapability>(context, 'UserService_Capability')
+  await db<UserServiceCapability>('UserService_Capability')
     .insert(user_service_capa)
     .returning('*');
 
   const user = await loadUserBy({ 'User.id': user_id });
   const serviceInstance = await loadServiceInstanceBy(
-    context,
     'ServiceInstance.id',
     subscription.service_instance_id
   );
   const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-    context,
     serviceInstance.id
   );
   await sendMail({

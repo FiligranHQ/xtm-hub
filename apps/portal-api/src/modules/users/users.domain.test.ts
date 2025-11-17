@@ -8,9 +8,9 @@ import {
   THALES_ORGA_ID,
   THALES_SIMPLE_USER_ID,
 } from '../../../tests/tests.const';
+import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { requestContext } from '../../requestContext';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { loadUserBy, updateUser, updateUserAtLogin } from './users.domain';

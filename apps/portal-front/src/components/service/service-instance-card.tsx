@@ -8,7 +8,15 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { isExternalService, isRegistrationService } from '@/utils/services';
+import {
+  getDisplayDays,
+  isExpired,
+  isExternalService,
+  isRegistrationService,
+  isTrialInstance,
+} from '@/utils/services';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
@@ -38,6 +46,12 @@ export interface ServiceInstanceCardData {
   description?: string;
   url?: string;
   ordering: number;
+  status?: string;
+  deployment_request_type?: DeploymentTypeEnum;
+  deployment_status?: DeploymentRequestStatusEnum;
+  service_instance_status?: string;
+  start_date?: Date;
+  end_date?: Date;
 }
 
 interface ServiceInstanceCardProps {
@@ -92,12 +106,11 @@ const ServiceInstanceCard: React.FunctionComponent<
     serviceInstance.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING;
 
-  // The condition on service_definition_identifier is temporary, will be removed when we will rename OBAS in the UI as well
   const serviceHref =
     isExternalService(serviceInstance.service_definition_identifier) &&
     serviceInstance.url
       ? serviceInstance.url
-      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier !== 'openaev_scenarios' ? serviceInstance.service_definition_identifier : 'obas_scenarios'}/${serviceInstance.id}`}`;
+      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
 
   let backgroundImage =
     serviceInstance.logo_document_id !== null
@@ -112,7 +125,10 @@ const ServiceInstanceCard: React.FunctionComponent<
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
 
   const canUpdatePlatform = () => {
-    if (!isRegistrationService(serviceInstance)) {
+    if (
+      !isRegistrationService(serviceInstance) ||
+      isTrialInstance(serviceInstance)
+    ) {
       return false;
     }
 
@@ -142,23 +158,33 @@ const ServiceInstanceCard: React.FunctionComponent<
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
+      {isExpired(serviceInstance) && (
+        <div className="absolute inset-0 bg-black/60 z-10 rounded pointer-events-none" />
+      )}
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
         <div
           className={cn(
             'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
             serviceInstance.card_background ?? 'bg-blue-900'
           )}>
-          <LogoFiligranIcon className="absolute text-white opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
+          <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
-            <div
-              className="w-full h-12"
-              style={{
-                backgroundImage,
-                backgroundSize: 'contain',
-                backgroundPosition: 'left center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            />
+            {isRegistrationService(serviceInstance) &&
+            isTrialInstance(serviceInstance) ? (
+              <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
+                {getDisplayDays(serviceInstance)}
+              </span>
+            ) : (
+              <div
+                className="w-full h-12"
+                style={{
+                  backgroundImage,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'left center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            )}
           </div>
           <AspectRatio
             ratio={16 / 9}
@@ -186,9 +212,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                       ? 'absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45'
                       : ''
                   }
-                  unoptimized={
-                    serviceInstance.illustration_document_id ? true : false
-                  }
+                  unoptimized={!!serviceInstance.illustration_document_id}
                 />
                 <h3
                   className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
@@ -230,11 +254,12 @@ const ServiceInstanceCard: React.FunctionComponent<
             <div className="flex pl-s ml-auto gap-m items-start">
               {isExternalService(
                 serviceInstance.service_definition_identifier
-              ) && (
-                <div className="pt-2">
-                  <ArrowOutwardIcon className="size-3 shrink-0" />
-                </div>
-              )}
+              ) &&
+                !isTrialInstance(serviceInstance) && (
+                  <div className="pt-2">
+                    <ArrowOutwardIcon className="size-3 shrink-0" />
+                  </div>
+                )}
               {canUpdatePlatform() && (
                 <div className="relative">
                   <IconActions

@@ -1,4 +1,3 @@
-import { ServiceInstanceConnectorCard } from '@/components/connectors/service-instance-connector-card';
 import ServiceInstanceCard from '@/components/service/service-instance-card';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
@@ -25,8 +24,6 @@ const Page = async () => {
         className={
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l'
         }>
-        <ServiceInstanceConnectorCard />
-
         {services.map((service) => (
           <ServiceInstanceCard
             key={service.id}

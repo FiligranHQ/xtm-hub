@@ -1,7 +1,7 @@
 import { db, dbUnsecure } from '../../../knexfile';
+import { requestContext } from '../../context/request.context';
 import RolePortal from '../../model/kanel/public/RolePortal';
 import { ROLE_ADMIN } from '../../portal.const';
-import { requestContext } from '../../requestContext';
 
 export const loadRolePortalBy = async (
   field: string,

@@ -8,6 +8,7 @@ import {
   PlatformContract,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -89,13 +90,12 @@ describe('Service Instance app', () => {
       expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
       });
-      expect(loadUserServiceBySpy).toHaveBeenCalledWith(contextAdminUser, {
+      expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
         user_id: mockUserId,
       });
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
       expect(loadServiceInstanceBySpy).toHaveBeenCalledWith(
-        contextAdminUser,
         'id',
         mockServiceInstanceId
       );
@@ -118,7 +118,6 @@ describe('Service Instance app', () => {
       );
 
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
-        contextAdminUser,
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
         mockSubscriptionId
@@ -210,7 +209,7 @@ describe('Service Instance app', () => {
           id: differentUserId,
         },
       };
-
+      requestContext.set(differentContext);
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
       loadUserServiceBySpy.mockResolvedValue([]);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
@@ -220,7 +219,7 @@ describe('Service Instance app', () => {
         mockServiceInstanceId
       );
 
-      expect(loadUserServiceBySpy).toHaveBeenCalledWith(differentContext, {
+      expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
         user_id: differentUserId,
       });
@@ -356,11 +355,10 @@ describe('Service Instance app', () => {
         );
 
         expect(loadPlatformServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
+          contextAdminUser.user.selected_organization_id,
           mockServiceInstanceId
         );
         expect(loadServiceDefinitionByServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId
         );
         expect(assertUserCanModifyPlatformServiceSpy).toHaveBeenCalledWith(
@@ -368,7 +366,6 @@ describe('Service Instance app', () => {
           mockServiceDefinition
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { name: mockInput.name },
           expect.any(Function)
@@ -376,7 +373,6 @@ describe('Service Instance app', () => {
         expect(
           updatePlatformConfigurationByServiceInstanceIdSpy
         ).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { ...mockPlatformConfig, platform_title: mockInput.name },
           expect.any(Function)
@@ -422,7 +418,6 @@ describe('Service Instance app', () => {
           expect.any(Function)
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           {
             name: mockInput.name,
@@ -463,7 +458,6 @@ describe('Service Instance app', () => {
         );
 
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { illustration_document_id: mockDocumentId },
           expect.any(Function)
@@ -608,7 +602,6 @@ describe('Service Instance app', () => {
 
         // Only name should be updated, no illustration_document_id
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
           mockServiceInstanceId,
           { name: mockInput.name },
           expect.any(Function)

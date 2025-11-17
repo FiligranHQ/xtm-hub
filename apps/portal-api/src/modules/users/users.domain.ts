@@ -9,13 +9,13 @@ import {
   UserConnection,
   User as UserGenerated,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
-import { requestContext } from '../../requestContext';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
@@ -27,34 +27,9 @@ import { isAdmin } from '../role-portal/role-portal.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildLoginEvent } from '../telemetry/telemetry.helper';
 
-export const loadUsersByOrganization = async (
-  organizationId: string,
-  excludedUserId: string,
-  role: string
-) => {
-  return dbUnsecure<User>('User')
-    .select('User.*')
-    .rightJoin('User_RolePortal', function () {
-      this.on('User_RolePortal.user_id', '=', 'User.id').andOnVal(
-        'User_RolePortal.role_portal_id',
-        '=',
-        role
-      );
-    })
-    .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
-    .leftJoin(
-      'Organization as org',
-      'User_Organization.organization_id',
-      '=',
-      'org.id'
-    )
-    .where('org.id', organizationId)
-    .where('User.id', '!=', excludedUserId);
-};
-
 export const loadUnsecureUser = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
-) => {
+): Promise<User[]> => {
   return dbUnsecure<User>('User').where(field);
 };
 

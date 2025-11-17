@@ -15,7 +15,7 @@ const resolvers: Resolvers = {
       try {
         const { input } = args;
         const userId = context.user.id as UserId;
-        await telemetryApp.sendOneClickDeployEvent(context, { userId, input });
+        await telemetryApp.sendOneClickDeployEvent({ userId, input });
         return { result: true };
       } catch (error) {
         logApp.error('Error in sendTelemetryEvent resolver', {

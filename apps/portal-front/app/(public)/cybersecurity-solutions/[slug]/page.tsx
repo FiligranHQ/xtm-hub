@@ -1,8 +1,11 @@
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
+import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
+import { RelayProvider } from '@/relay/RelayProvider';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { FeatureFlag } from '@/utils/constant';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -13,6 +16,7 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { IntegrationFeedListPageLoader } from './integration-feed-list-page-loader';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -170,6 +174,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
       ];
     }
+
     const breadcrumbValue = [
       {
         label: 'MenuLinks.Home',
@@ -180,6 +185,11 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
         original: true,
       },
     ];
+
+    const isConnectorsFeatureEnabled = await isFeatureEnabled(
+      FeatureFlag.CONNECTORS_INTEGRATION_FEEDS
+    );
+
     return (
       <>
         <script
@@ -194,22 +204,20 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           {serviceInstance.name}
         </h1>
 
-        {(documents.length === 0 && (
-          <div className="my-4 text-center">No document found</div>
-        )) || (
-          <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-l">
-            {documents.map((document) => {
-              return (
-                <ShareableResourceCard
-                  key={document.id}
-                  document={document}
-                  detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                  shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                  serviceInstance={serviceInstance}
-                />
-              );
-            })}
-          </ul>
+        {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS ? (
+          <RelayProvider>
+            <IntegrationFeedListPageLoader
+              baseUrl={baseUrl}
+              serviceInstance={serviceInstance}
+              isConnectorsFeatureEnabled={isConnectorsFeatureEnabled}
+            />
+          </RelayProvider>
+        ) : (
+          <PublicShareableResourceList
+            documents={documents}
+            serviceInstance={serviceInstance}
+            baseUrl={baseUrl}
+          />
         )}
       </>
     );

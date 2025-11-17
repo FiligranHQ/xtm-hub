@@ -1,8 +1,8 @@
 import { OneClickDeployInput } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
@@ -45,17 +45,20 @@ export const telemetryApp = {
     });
   },
 
-  async sendOneClickDeployEvent(
-    context: PortalContext,
-    { userId, input }: { userId: UserId; input: OneClickDeployInput }
-  ) {
-    const selected_organization_id = context.user.selected_organization_id;
+  async sendOneClickDeployEvent({
+    userId,
+    input,
+  }: {
+    userId: UserId;
+    input: OneClickDeployInput;
+  }) {
+    const { user } = requestContext.require();
+    const selected_organization_id = user.selected_organization_id;
 
     const selectedOrga = await loadOrganizationBy({
       id: selected_organization_id,
     });
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      context,
       extractId<ServiceInstanceId>(input.service_instance_id)
     );
 
@@ -64,13 +67,12 @@ export const telemetryApp = {
     );
     const serviceConfiguration =
       await loadPlatformConfigurationByServiceInstanceId(
-        context,
         platformServiceInstanceId
       );
 
     const config = serviceConfiguration.config as object;
 
-    const event = buildOneClickDeployEvent(
+    const event = await buildOneClickDeployEvent(
       selectedOrga,
       userId,
       serviceDefinition.identifier,

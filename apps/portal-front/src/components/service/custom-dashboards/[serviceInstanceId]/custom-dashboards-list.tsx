@@ -1,6 +1,8 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
+import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import { useCustomDashboardsContext } from '@/components/service/custom-dashboards/use-custom-dashboards-context';
 import {
   customDashboardsItem_fragment$data,
@@ -23,10 +25,8 @@ import {
 interface CustomDashboardsListProps {
   queryRef: PreloadedQuery<customDashboardsQuery>;
   serviceInstance: serviceInstance_fragment$data;
-  labels?: string[];
   search: string;
   onSearchChange: (v: string) => void;
-  onLabelFilterChange: (v: string[]) => void;
 }
 
 const CustomDashboardsList = ({
@@ -34,8 +34,6 @@ const CustomDashboardsList = ({
   serviceInstance,
   search,
   onSearchChange,
-  onLabelFilterChange,
-  labels,
 }: CustomDashboardsListProps) => {
   const queryData = usePreloadedQuery<customDashboardsQuery>(
     CustomDashboardsListQuery,
@@ -58,14 +56,15 @@ const CustomDashboardsList = ({
 
   return (
     <AppServiceContext {...context}>
-      <ServiceList
-        active={active}
-        draft={draft}
-        search={search}
-        onSearchChange={onSearchChange}
-        labels={labels}
-        onLabelFilterChange={onLabelFilterChange}
-      />
+      <AppServiceListLocalStorageKeyContext
+        localStorageKey={ServiceListLocalStorageKey.OpenCTICustomDashboards}>
+        <ServiceList
+          active={active}
+          draft={draft}
+          search={search}
+          onSearchChange={onSearchChange}
+        />
+      </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>
   );
 };

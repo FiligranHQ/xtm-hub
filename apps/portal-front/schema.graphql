@@ -1,5 +1,7 @@
 directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 
+directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
+
 directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
@@ -15,6 +17,9 @@ enum FilterKey {
   organization_id
   personal_space
   serviceDefinition_identifier
+  integration_type
+  integration_subtype
+  slug
 }
 
 input Filter {
@@ -27,7 +32,7 @@ type Success {
 }
 
 type Query {
-  refreshOpenCTIManifest: Boolean
+  updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -38,13 +43,15 @@ type Query {
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): DeploymentRequestConnection!
+  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
-  seoCsvFeedBySlug(slug: String): CsvFeed
   integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
   integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
+  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
+  publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
+  publicIntegrationFeedBySlug(slug: String): IntegrationFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
@@ -85,6 +92,7 @@ type Mutation {
   updateCustomDashboard(documentId: ID!, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
+  updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -99,6 +107,7 @@ type Mutation {
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  autoRegisterPlatform(platform: PlatformInput!): Success!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -115,15 +124,15 @@ type Mutation {
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
-  mergeTest(from: ID!, target: ID!): ID!
-  addUser(input: AddUserInput!): User
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
+  mergeTest(from: ID!, target: ID!): ID!
+  addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
-  editMeUser(input: EditMeUserInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  editMeUser(input: EditMeUserInput!): User!
   resetPassword: Success!
   requestTransferPersonalSpace(new_email: String): Success!
   transferPersonalSpace(requestId: ID!): Success!
@@ -295,6 +304,8 @@ type PlatformDeploymentRequest {
   organization_name: String!
   organization_domains: [String!]
   requester_email: String!
+  requester_first_name: String
+  requester_last_name: String
   product_service_instance_id: String
   failure_reason: String
 }
@@ -306,6 +317,16 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+  status: DeploymentRequestStatus
+}
+
+input UpdateDeploymentRequestInput {
+  id: ID!
+  status: DeploymentRequestStatus
+  start_date: Date
+  end_date: Date
+  product_service_instance_id: String
+  failure_reason: String
 }
 
 enum DeploymentRequestFilterKey {
@@ -329,6 +350,11 @@ type DeploymentRequestConnection {
   totalCount: Int!
   edges: [DeploymentRequestEdge!]!
   pageInfo: PageInfo!
+}
+
+type DeploymentAvailability {
+  region: PlatformRegion!
+  availableCount: Int!
 }
 
 type ShareableResourceImage {
@@ -440,7 +466,7 @@ type CsvFeed implements Node & DocumentBase & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
 }
 
 input CreateCsvFeedInput {
@@ -462,6 +488,24 @@ input UpdateCsvFeedInput {
   labels: [String!]
   uploader_organization_id: String
   uploader_id: String
+}
+
+enum IntegrationFeedType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  taxii_feed
+  opencti_stream_feed
+  third_party_integration
+}
+
+enum ConnectorType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
 }
 
 interface IntegrationFeed implements Node & DocumentBase {
@@ -487,7 +531,7 @@ interface IntegrationFeed implements Node & DocumentBase {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
 }
 
 type Connector implements Node & DocumentBase & IntegrationFeed {
@@ -513,15 +557,15 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResourceImage!]
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
   product_version: String!
   container_image: String
-  verified: String!
+  verified: Boolean!
   source_code: String
   subscription_link: String
-  integration_subtype: String!
-  manager_supported: String!
-  playbook_supported: String!
+  integration_subtype: ConnectorType!
+  manager_supported: Boolean!
+  playbook_supported: Boolean!
 }
 
 type IntegrationFeedEdge {
@@ -606,6 +650,7 @@ type OpenCTIPlatformRegistrationStatusResponse {
 enum PlatformContract {
   CE
   EE
+  trial
 }
 
 type RegisteredPlatform implements Node {
@@ -617,6 +662,8 @@ type RegisteredPlatform implements Node {
   identifier: ServiceDefinitionIdentifier!
   version: String
   illustration_document_id: String
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
 }
 
 input PlatformInput {
@@ -708,6 +755,7 @@ enum ServiceInstanceOrdering {
 }
 
 enum ServiceInstanceCreationStatus {
+  DISABLED
   PENDING
   CREATED
   READY

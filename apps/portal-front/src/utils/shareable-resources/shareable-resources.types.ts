@@ -1,7 +1,9 @@
+import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
+import { seoIntegrationFeedsItemFragment$data } from '@generated/seoIntegrationFeedsItemFragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
@@ -9,7 +11,13 @@ export type ShareableResource =
   | csvFeedsItem_fragment$data
   | integrationFeedsItem_fragment$data
   | openaevScenariosItem_fragment$data
-  | SeoCsvFeed
+  | SeoIntegrationFeed
+  | SeoCustomDashboard
+  | SeoOpenAEVScenario;
+
+export type PublicShareableResource =
+  | seoIntegrationFeedsItemFragment$data
+  | SeoIntegrationFeed
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
@@ -32,18 +40,29 @@ export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
 };
 
 export const isIntegrationFeedItem = (
-  resource: SubscribableResource
+  resource:
+    | SubscribableResource
+    | ShareableResource
+    | ShareableResourceConnectorType
+    | PublicShareableResource
 ): resource is integrationFeedsItem_fragment$data => {
   return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
 };
 
 export const isConnectorResource = (
-  resource: SubscribableResource
-): resource is integrationFeedsItem_fragment$data => {
+  resource:
+    | SubscribableResource
+    | ShareableResource
+    | ShareableResourceConnectorType
+    | PublicShareableResource
+): resource is ShareableResourceConnectorType => {
   return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
 };
 
-export type SeoResource = SeoCsvFeed | SeoCustomDashboard | SeoOpenAEVScenario;
+export type SeoResource =
+  | SeoIntegrationFeed
+  | SeoCustomDashboard
+  | SeoOpenAEVScenario;
 
 export interface SeoCustomDashboard {
   description: string;
@@ -82,7 +101,7 @@ export interface SeoCustomDashboard {
   };
 }
 
-export interface SeoCsvFeed {
+export interface SeoIntegrationFeed {
   description: string;
   id: string;
   type: 'opencti_integration_feeds';
@@ -169,5 +188,5 @@ export type ServiceInfo = { link: string; description: string };
 export enum ServiceSlug {
   OPEN_CTI_INTEGRATION_FEEDS = 'open-cti-integration-feeds',
   OPEN_CTI_CUSTOM_DASHBOARDS = 'open-cti-custom-dashboards',
-  OPEN_BAS_SCENARIOS = 'open-bas-scenarios',
+  OPEN_AEV_SCENARIOS = 'open-aev-scenarios',
 }

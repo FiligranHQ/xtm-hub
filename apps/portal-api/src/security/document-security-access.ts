@@ -9,13 +9,11 @@ export const setQueryForDocument = <T>(
   queryContext: Knex.QueryBuilder<T>
 ): Knex.QueryBuilder<T> => {
   loadCapabilities(
-    context,
     context.serviceInstanceId,
     context.user.id,
     context.user.selected_organization_id
   ).then((capabilities) => {
     return loadServiceDefinitionByServiceInstance(
-      context,
       context.serviceInstanceId
     ).then((serviceDef) => {
       if (

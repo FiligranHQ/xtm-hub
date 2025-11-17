@@ -1,6 +1,7 @@
 enum PlatformContract {
   CE
   EE
+  trial
 }
 
 type RegisteredPlatform implements Node {
@@ -12,6 +13,8 @@ type RegisteredPlatform implements Node {
   identifier: ServiceDefinitionIdentifier!
   version: String
   illustration_document_id: String
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
 }
 
 input PlatformInput {
@@ -116,4 +119,5 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatus(
     input: RefreshPlatformRegistrationConnectivityStatusInput!
   ): RefreshPlatformRegistrationConnectivityStatusResponse!
+  autoRegisterPlatform(platform: PlatformInput!): Success! @platform_token
 }

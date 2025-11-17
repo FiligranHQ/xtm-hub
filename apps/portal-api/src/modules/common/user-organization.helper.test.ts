@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import { contextAdminUser } from '../../../tests/tests.const';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { createNewUserFromInvitation } from '../users/users.helper';
 import { loadUserOrganizationPending } from './user-organization-pending.domain';
@@ -13,22 +12,20 @@ describe('UserOrganizationHelper', () => {
       const user = await createNewUserFromInvitation({
         email: testMail,
       });
-      const initialPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: user.id }
-      );
+      const initialPendingOrg = await loadUserOrganizationPending({
+        user_id: user.id,
+      });
       expect(initialPendingOrg.length).toBe(1);
 
-      const user_orgs = await createUserOrganizationRelationAndRemovePending(
-        contextAdminUser,
-        { user_id: user.id, organizations_id: [PLATFORM_ORGANIZATION_UUID] }
-      );
+      const user_orgs = await createUserOrganizationRelationAndRemovePending({
+        user_id: user.id,
+        organizations_id: [PLATFORM_ORGANIZATION_UUID],
+      });
 
       expect(user_orgs.length).toBe(1);
-      const finalPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: user.id }
-      );
+      const finalPendingOrg = await loadUserOrganizationPending({
+        user_id: user.id,
+      });
       expect(finalPendingOrg.length).toBe(0);
     });
 
@@ -37,16 +34,15 @@ describe('UserOrganizationHelper', () => {
       const user = await createNewUserFromInvitation({
         email: testMail,
       });
-      const initialPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: user.id }
-      );
+      const initialPendingOrg = await loadUserOrganizationPending({
+        user_id: user.id,
+      });
       expect(initialPendingOrg.length).toBe(0);
 
-      const user_orgs = await createUserOrganizationRelationAndRemovePending(
-        contextAdminUser,
-        { user_id: user.id, organizations_id: [PLATFORM_ORGANIZATION_UUID] }
-      );
+      const user_orgs = await createUserOrganizationRelationAndRemovePending({
+        user_id: user.id,
+        organizations_id: [PLATFORM_ORGANIZATION_UUID],
+      });
 
       expect(user_orgs.length).toBe(1);
     });

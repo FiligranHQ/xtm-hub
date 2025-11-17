@@ -85,13 +85,13 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: Scalars['String']['output'];
-  integration_type: Scalars['String']['output'];
+  integration_subtype: ConnectorType;
+  integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
-  manager_supported: Scalars['String']['output'];
+  manager_supported: Scalars['Boolean']['output'];
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  playbook_supported: Scalars['String']['output'];
+  playbook_supported: Scalars['Boolean']['output'];
   product_version: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
@@ -107,8 +107,16 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
   uploader_organization?: Maybe<Organization>;
-  verified: Scalars['String']['output'];
+  verified: Scalars['Boolean']['output'];
 };
+
+export enum ConnectorType {
+  ExternalImport = 'EXTERNAL_IMPORT',
+  InternalEnrichment = 'INTERNAL_ENRICHMENT',
+  InternalExportFile = 'INTERNAL_EXPORT_FILE',
+  InternalImportFile = 'INTERNAL_IMPORT_FILE',
+  Stream = 'STREAM'
+}
 
 export type CreateCsvFeedInput = {
   active: Scalars['Boolean']['input'];
@@ -136,6 +144,7 @@ export type CreateDeploymentRequestInput = {
   job_title?: InputMaybe<Scalars['String']['input']>;
   platform_identifier: PlatformIdentifier;
   region: PlatformRegion;
+  status?: InputMaybe<DeploymentRequestStatus>;
   type: DeploymentType;
   use_case?: InputMaybe<Scalars['String']['input']>;
 };
@@ -160,7 +169,7 @@ export type CsvFeed = DocumentBase & IntegrationFeed & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_type: Scalars['String']['output'];
+  integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -215,6 +224,12 @@ export type CustomDashboardEdge = {
   __typename?: 'CustomDashboardEdge';
   cursor: Scalars['String']['output'];
   node: CustomDashboard;
+};
+
+export type DeploymentAvailability = {
+  __typename?: 'DeploymentAvailability';
+  availableCount: Scalars['Int']['output'];
+  region: PlatformRegion;
 };
 
 export type DeploymentRequest = Node & {
@@ -374,10 +389,13 @@ export type Filter = {
 };
 
 export enum FilterKey {
+  IntegrationSubtype = 'integration_subtype',
+  IntegrationType = 'integration_type',
   Label = 'label',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
-  ServiceDefinitionIdentifier = 'serviceDefinition_identifier'
+  ServiceDefinitionIdentifier = 'serviceDefinition_identifier',
+  Slug = 'slug'
 }
 
 export type GenericServiceCapability = Node & {
@@ -394,7 +412,7 @@ export type IntegrationFeed = {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_type: Scalars['String']['output'];
+  integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -424,6 +442,16 @@ export type IntegrationFeedEdge = {
   cursor: Scalars['String']['output'];
   node: IntegrationFeed;
 };
+
+export enum IntegrationFeedType {
+  Connector = 'connector',
+  CsvFeed = 'csv_feed',
+  JsonFeed = 'json_feed',
+  OpenctiStreamFeed = 'opencti_stream_feed',
+  RssFeed = 'rss_feed',
+  TaxiiFeed = 'taxii_feed',
+  ThirdPartyIntegration = 'third_party_integration'
+}
 
 export type IsPlatformRegisteredInput = {
   platformId: Scalars['String']['input'];
@@ -493,6 +521,7 @@ export type Mutation = {
   addYourselfInUserService?: Maybe<Array<Maybe<UserService>>>;
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
+  autoRegisterPlatform: Success;
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
@@ -531,6 +560,7 @@ export type Mutation = {
   unregisterPlatform: Success;
   updateCsvFeed: CsvFeed;
   updateCustomDashboard: CustomDashboard;
+  updateDeploymentRequest: PlatformDeploymentRequest;
   updateOpenAEVScenario: OpenAevScenario;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
 };
@@ -608,6 +638,11 @@ export type MutationAdminAddUserArgs = {
 export type MutationAdminEditUserArgs = {
   id: Scalars['ID']['input'];
   input: AdminEditUserInput;
+};
+
+
+export type MutationAutoRegisterPlatformArgs = {
+  platform: PlatformInput;
 };
 
 
@@ -815,6 +850,11 @@ export type MutationUpdateCustomDashboardArgs = {
 };
 
 
+export type MutationUpdateDeploymentRequestArgs = {
+  input: UpdateDeploymentRequestInput;
+};
+
+
 export type MutationUpdateOpenAevScenarioArgs = {
   document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   documentId: Scalars['ID']['input'];
@@ -956,7 +996,8 @@ export type PageInfo = {
 
 export enum PlatformContract {
   Ce = 'CE',
-  Ee = 'EE'
+  Ee = 'EE',
+  Trial = 'trial'
 }
 
 export type PlatformDeploymentRequest = {
@@ -973,6 +1014,8 @@ export type PlatformDeploymentRequest = {
   product_service_instance_id?: Maybe<Scalars['String']['output']>;
   region: PlatformRegion;
   requester_email: Scalars['String']['output'];
+  requester_first_name?: Maybe<Scalars['String']['output']>;
+  requester_last_name?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
   status: DeploymentRequestStatus;
   type: DeploymentType;
@@ -1022,6 +1065,7 @@ export type Query = {
   customDashboard?: Maybe<CustomDashboard>;
   customDashboards: CustomDashboardConnection;
   deploymentRequests: DeploymentRequestConnection;
+  deploymentRequestsAvailable: Array<DeploymentAvailability>;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
@@ -1040,13 +1084,13 @@ export type Query = {
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
+  publicIntegrationFeedByServiceSlug?: Maybe<Array<Maybe<IntegrationFeed>>>;
+  publicIntegrationFeedBySlug?: Maybe<IntegrationFeed>;
+  publicIntegrationFeeds: IntegrationFeedConnection;
   publicServiceInstances: ServiceConnection;
-  refreshOpenCTIManifest?: Maybe<Scalars['Boolean']['output']>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
-  seoCsvFeedBySlug?: Maybe<CsvFeed>;
-  seoCsvFeedsByServiceSlug?: Maybe<Array<Maybe<CsvFeed>>>;
   seoCustomDashboardBySlug?: Maybe<CustomDashboard>;
   seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<CustomDashboard>>>;
   seoOpenAEVScenarioBySlug?: Maybe<OpenAevScenario>;
@@ -1060,6 +1104,7 @@ export type Query = {
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
+  updateOpenCTIManifest: Success;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
@@ -1095,6 +1140,11 @@ export type QueryDeploymentRequestsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<DeploymentRequestFilter>>;
   first: Scalars['Int']['input'];
+};
+
+
+export type QueryDeploymentRequestsAvailableArgs = {
+  platformIdentifier?: InputMaybe<PlatformIdentifier>;
 };
 
 
@@ -1214,6 +1264,28 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
+export type QueryPublicIntegrationFeedByServiceSlugArgs = {
+  serviceSlug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPublicIntegrationFeedBySlugArgs = {
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPublicIntegrationFeedsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<Filter>>;
+  first: Scalars['Int']['input'];
+  orderBy: DocumentOrdering;
+  orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
+};
+
+
 export type QueryPublicServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1229,16 +1301,6 @@ export type QueryRegisteredPlatformsArgs = {
 
 export type QueryRolePortalArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QuerySeoCsvFeedBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoCsvFeedsByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1306,6 +1368,11 @@ export type QuerySubscriptionByIdArgs = {
 };
 
 
+export type QueryUpdateOpenCtiManifestArgs = {
+  tag?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryUserServiceFromSubscriptionArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1362,10 +1429,12 @@ export type RegisterPlatformInput = {
 export type RegisteredPlatform = Node & {
   __typename?: 'RegisteredPlatform';
   contract: PlatformContract;
+  deployment_request?: Maybe<DeploymentRequest>;
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id?: Maybe<Scalars['String']['output']>;
   platform_id: Scalars['String']['output'];
+  subscription?: Maybe<SubscriptionModel>;
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
   version?: Maybe<Scalars['String']['output']>;
@@ -1481,6 +1550,7 @@ export type ServiceInstance = Node & {
 
 export enum ServiceInstanceCreationStatus {
   Created = 'CREATED',
+  Disabled = 'DISABLED',
   Pending = 'PENDING',
   Ready = 'READY'
 }
@@ -1651,6 +1721,15 @@ export type UpdateCustomDashboardInput = {
   slug?: InputMaybe<Scalars['String']['input']>;
   uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateDeploymentRequestInput = {
+  end_date?: InputMaybe<Scalars['Date']['input']>;
+  failure_reason?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  product_service_instance_id?: InputMaybe<Scalars['String']['input']>;
+  start_date?: InputMaybe<Scalars['Date']['input']>;
+  status?: InputMaybe<DeploymentRequestStatus>;
 };
 
 export type UpdateOpenAevScenarioInput = {
@@ -1881,6 +1960,7 @@ export type ResolversTypes = ResolversObject<{
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
   Connector: ResolverTypeWrapper<Connector>;
+  ConnectorType: ConnectorType;
   CreateCsvFeedInput: CreateCsvFeedInput;
   CreateCustomDashboardInput: CreateCustomDashboardInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
@@ -1890,6 +1970,7 @@ export type ResolversTypes = ResolversObject<{
   CustomDashboardConnection: ResolverTypeWrapper<CustomDashboardConnection>;
   CustomDashboardEdge: ResolverTypeWrapper<CustomDashboardEdge>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
+  DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
   DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
   DeploymentRequestEdge: ResolverTypeWrapper<DeploymentRequestEdge>;
@@ -1915,6 +1996,7 @@ export type ResolversTypes = ResolversObject<{
   IntegrationFeed: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['IntegrationFeed']>;
   IntegrationFeedConnection: ResolverTypeWrapper<Omit<IntegrationFeedConnection, 'edges'> & { edges: Array<ResolversTypes['IntegrationFeedEdge']> }>;
   IntegrationFeedEdge: ResolverTypeWrapper<Omit<IntegrationFeedEdge, 'node'> & { node: ResolversTypes['IntegrationFeed'] }>;
+  IntegrationFeedType: IntegrationFeedType;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
   IsPlatformRegisteredResponse: ResolverTypeWrapper<IsPlatformRegisteredResponse>;
@@ -1991,6 +2073,7 @@ export type ResolversTypes = ResolversObject<{
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
+  UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
@@ -2033,6 +2116,7 @@ export type ResolversParentTypes = ResolversObject<{
   CustomDashboardConnection: CustomDashboardConnection;
   CustomDashboardEdge: CustomDashboardEdge;
   Date: Scalars['Date']['output'];
+  DeploymentAvailability: DeploymentAvailability;
   DeploymentRequest: DeploymentRequest;
   DeploymentRequestConnection: DeploymentRequestConnection;
   DeploymentRequestEdge: DeploymentRequestEdge;
@@ -2112,6 +2196,7 @@ export type ResolversParentTypes = ResolversObject<{
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
+  UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   Upload: Scalars['Upload']['output'];
@@ -2136,6 +2221,10 @@ export type AuthDirectiveArgs = {
 };
 
 export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type Platform_TokenDirectiveArgs = { };
+
+export type Platform_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = Platform_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type Service_CapaDirectiveArgs = {
   requires?: Maybe<Array<Maybe<ServiceRestriction>>>;
@@ -2170,13 +2259,13 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integration_subtype?: Resolver<ResolversTypes['ConnectorType'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
-  manager_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  playbook_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  playbook_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   product_version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
@@ -2192,7 +2281,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
-  verified?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2204,7 +2293,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2265,6 +2354,12 @@ export type CustomDashboardEdgeResolvers<ContextType = PortalContext, ParentType
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
+
+export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentAvailability'] = ResolversParentTypes['DeploymentAvailability']> = ResolversObject<{
+  availableCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
   activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2370,7 +2465,7 @@ export type IntegrationFeedResolvers<ContextType = PortalContext, ParentType ext
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2463,6 +2558,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addYourselfInUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddYourselfInUserServiceArgs, 'input'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
+  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
@@ -2501,6 +2597,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
+  updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
 }>;
@@ -2604,6 +2701,8 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   product_service_instance_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
   requester_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requester_first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  requester_last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DeploymentRequestStatus'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentType'], ParentType, ContextType>;
@@ -2623,6 +2722,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
   customDashboards?: Resolver<ResolversTypes['CustomDashboardConnection'], ParentType, ContextType, RequireFields<QueryCustomDashboardsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   deploymentRequests?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
+  deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2640,13 +2740,13 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
+  publicIntegrationFeedByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['IntegrationFeed']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedByServiceSlugArgs>>;
+  publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['IntegrationFeed']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
+  publicIntegrationFeeds?: Resolver<ResolversTypes['IntegrationFeedConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  refreshOpenCTIManifest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
-  seoCsvFeedBySlug?: Resolver<Maybe<ResolversTypes['CsvFeed']>, ParentType, ContextType, Partial<QuerySeoCsvFeedBySlugArgs>>;
-  seoCsvFeedsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CsvFeed']>>>, ParentType, ContextType, Partial<QuerySeoCsvFeedsByServiceSlugArgs>>;
   seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
   seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
   seoOpenAEVScenarioBySlug?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QuerySeoOpenAevScenarioBySlugArgs>>;
@@ -2660,6 +2760,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
+  updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
@@ -2680,10 +2781,12 @@ export type RefreshUserPlatformTokenResponseResolvers<ContextType = PortalContex
 
 export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegisteredPlatform'] = ResolversParentTypes['RegisteredPlatform']> = ResolversObject<{
   contract?: Resolver<ResolversTypes['PlatformContract'], ParentType, ContextType>;
+  deployment_request?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2961,6 +3064,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CustomDashboardConnection?: CustomDashboardConnectionResolvers<ContextType>;
   CustomDashboardEdge?: CustomDashboardEdgeResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  DeploymentAvailability?: DeploymentAvailabilityResolvers<ContextType>;
   DeploymentRequest?: DeploymentRequestResolvers<ContextType>;
   DeploymentRequestConnection?: DeploymentRequestConnectionResolvers<ContextType>;
   DeploymentRequestEdge?: DeploymentRequestEdgeResolvers<ContextType>;
@@ -3033,6 +3137,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
   auth?: AuthDirectiveResolver<any, any, ContextType>;
+  platform_token?: Platform_TokenDirectiveResolver<any, any, ContextType>;
   service_capa?: Service_CapaDirectiveResolver<any, any, ContextType>;
   system_token?: System_TokenDirectiveResolver<any, any, ContextType>;
 }>;

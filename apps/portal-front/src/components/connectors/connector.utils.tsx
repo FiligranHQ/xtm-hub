@@ -1,14 +1,7 @@
-import { BadgeOverflow } from '@/components/ui/badge-overflow-counter';
-import { Contract } from '@/utils/connectors/connector.model';
+import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
 
-export type IngestionConnectorType =
-  | 'INTERNAL_ENRICHMENT'
-  | 'EXTERNAL_IMPORT'
-  | 'INTERNAL_EXPORT_FILE'
-  | 'INTERNAL_IMPORT_FILE';
-
-const ingestionConnectorTypeMetadata: Record<
-  IngestionConnectorType,
+export const connectorTypeMetadata: Record<
+  ConnectorTypeEnum,
   { label: string; color: string }
 > = {
   EXTERNAL_IMPORT: {
@@ -27,18 +20,14 @@ const ingestionConnectorTypeMetadata: Record<
     label: 'Internal import file',
     color: '#20cb28',
   },
+  STREAM: {
+    label: 'Stream',
+    color: '#e6700f',
+  },
 };
 
-export const getIngestionConnectorMetadata = (integration_subtype: string) => {
-  return ingestionConnectorTypeMetadata[
-    integration_subtype as IngestionConnectorType
-  ];
-};
-
-export const getBadgesValues = (contract: Contract): BadgeOverflow[] => {
-  return contract.use_cases.map((use_case) => ({
-    id: use_case,
-    name: use_case,
-    color: '#0099cc',
-  }));
+export const getIngestionConnectorMetadata = (integration_subtype?: string) => {
+  return (
+    connectorTypeMetadata[integration_subtype as ConnectorTypeEnum] ?? undefined
+  );
 };

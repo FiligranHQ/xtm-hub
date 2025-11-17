@@ -15,7 +15,6 @@ import { loadServiceCapabilityBy } from '../service-capability/service_capabilit
 import { loadSubscriptionCapabilityBy } from '../service-capability/subscription_capability.helper';
 
 export const insertCapabilities = async (
-  context,
   trx,
   capabilities: string[],
   userService: UserService
@@ -26,7 +25,7 @@ export const insertCapabilities = async (
     });
 
     if (genericCapability) {
-      await insertUserServiceCapability(context, {
+      await insertUserServiceCapability({
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: userService.id,
         generic_service_capability_id: genericCapability.id,
@@ -40,13 +39,9 @@ export const insertCapabilities = async (
         service_capability_id: serviceCapability.id,
         subscription_id: userService.subscription_id,
       });
-
-      const subscriptionCapabilities = await loadSubscriptionCapabilitiesBy(
-        context,
-        {
-          subscription_id: userService.subscription_id,
-        }
-      );
+      const subscriptionCapabilities = await loadSubscriptionCapabilitiesBy({
+        subscription_id: userService.subscription_id,
+      });
       const isCapabilityGrantedForOrganization = subscriptionCapabilities.some(
         (subscriptionCapability) => {
           return (
@@ -56,7 +51,7 @@ export const insertCapabilities = async (
         }
       );
       if (isCapabilityGrantedForOrganization) {
-        await db<UserServiceCapability>(context, 'UserService_Capability')
+        await db<UserServiceCapability>('UserService_Capability')
           .insert({
             id: uuidv4() as UserServiceCapabilityId,
             user_service_id: userService.id,
@@ -71,22 +66,14 @@ export const insertCapabilities = async (
   }
 };
 
-export const insertUserServiceCapability = async (context, data) => {
-  await db<UserServiceCapability>(context, 'UserService_Capability')
+export const insertUserServiceCapability = async (data) => {
+  await db<UserServiceCapability>('UserService_Capability')
     .insert(data)
     .returning('*');
 };
 
-export const loadCapabilities = async (
-  context,
-  serviceInstanceId,
-  userId,
-  orgaId
-) => {
-  const [subscriptionWithCapabilities] = await db<Subscription>(
-    context,
-    'Subscription'
-  )
+export const loadCapabilities = async (serviceInstanceId, userId, orgaId) => {
+  const [subscriptionWithCapabilities] = await db<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', serviceInstanceId)
     .where('Subscription.organization_id', '=', orgaId)
     .leftJoin('User_Service', function () {

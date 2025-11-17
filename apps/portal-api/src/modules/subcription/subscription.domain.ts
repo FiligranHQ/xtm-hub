@@ -11,7 +11,6 @@ import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
-import { requestContext } from '../../requestContext';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
@@ -63,9 +62,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
 
   const organization = await loadOrganizationBy({ id: sub.organization_id });
 
-  const { portalContext } = requestContext.require();
   const serviceInstance = await loadServiceInstanceBy(
-    portalContext,
     'ServiceInstance.id',
     sub.service_instance_id
   );

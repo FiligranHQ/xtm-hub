@@ -1,5 +1,5 @@
 import { KnexQueryBuilder } from '../../../knexfile';
-import { requestContext } from '../../requestContext';
+import { requestContext } from '../../context/request.context';
 import { SecuryQueryHandlers } from '../access';
 
 /**

@@ -16,6 +16,8 @@ export enum ForbiddenErrorCode {
   YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
   PersonalSpaceMustAlreadyExist = 'PERSONAL_SPACE_MUST_ALREADY_EXIST',
+  CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
+  NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
 }
 
 export enum BadRequestErrorCode {
@@ -25,6 +27,10 @@ export enum BadRequestErrorCode {
   InvalidPlatformIdentifier = 'INVALID_PLATFORM_IDENTIFIER',
   InvalidActionSize = 'INVALID_ACTION_SIZE',
   InvalidEmail = 'INVALID_EMAIL',
+  MissingStartOrEndDate = 'MISSING_START_OR_END_DATE',
+  DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
+  InvalidStatus = 'INVALID_STATUS',
+  InvalidPlatformId = 'INVALID_PLATFORM_ID',
 }
 
 export enum UnknownErrorCode {
@@ -72,6 +78,7 @@ export enum AlreadyExistsErrorCode {
   CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
   CustomDashboardUniqueSlugError = 'CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR',
   OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
+  FreeTrialAlreadyExists = 'FREE_TRIAL_ALREADY_EXISTS',
 }
 
 export enum NotFoundErrorCode {
@@ -81,6 +88,7 @@ export enum NotFoundErrorCode {
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   ServiceNotFound = 'SERVICE_NOT_FOUND',
   ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
+  DeploymentRequestNotFound = 'DEPLOYMENT_REQUEST_NOT_FOUND',
 }
 
 export const ErrorCode = {

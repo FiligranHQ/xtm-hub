@@ -48,8 +48,8 @@ const resolvers: Resolvers = {
       getUploader(context, id, { unsecured: true }),
     uploader_organization: ({ id }, _, context) =>
       getUploaderOrganization(context, id, { unsecured: true }),
-    service_instance: ({ service_instance_id }, _, context) =>
-      getServiceInstance(context, service_instance_id),
+    service_instance: ({ service_instance_id }, _) =>
+      getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },

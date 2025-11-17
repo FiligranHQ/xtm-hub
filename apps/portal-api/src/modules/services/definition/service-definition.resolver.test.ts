@@ -49,12 +49,9 @@ describe('ServiceDefinition resolver fields', () => {
         {} as GraphQLResolveInfo
       );
 
-      expect(mockLoadServiceCapabilitiesBy).toHaveBeenCalledWith(
-        contextAdminUser,
-        {
-          service_definition_id: mockServiceDefinitionId,
-        }
-      );
+      expect(mockLoadServiceCapabilitiesBy).toHaveBeenCalledWith({
+        service_definition_id: mockServiceDefinitionId,
+      });
       expect(response).toEqual(mockServiceCapabilities);
     });
 

@@ -34,13 +34,14 @@ import {
   UserOrdering,
 } from '../../__generated__/resolvers-types';
 import { loginFromProvider } from '../../auth/auth-user';
+import { requestContext } from '../../context/request.context';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { requestContext } from '../../requestContext';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
+import * as UserOrganizationDomain from '../common/user-organization.domain';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
@@ -256,6 +257,9 @@ describe('User mutation resolver', () => {
   });
 
   describe('adminAddUser', () => {
+    afterEach(async () => {
+      vi.restoreAllMocks();
+    });
     it('should not create an existing user', async () => {
       try {
         // @ts-ignore
@@ -276,6 +280,37 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
+    it('should not partially create a user if an error occurs', async () => {
+      const testEmail = 'testRollback@company.com';
+      try {
+        vi.spyOn(
+          UserOrganizationDomain,
+          'updateMultipleUserOrgWithCapabilities'
+        ).mockImplementation(() => {
+          throw new Error('Test error');
+        });
+        const testEmail = 'testRollback@company.com';
+        // @ts-ignore
+        await usersResolver.Mutation.adminAddUser(
+          undefined,
+          {
+            input: {
+              email: testEmail,
+              password: 'fake password',
+            } as AddUserInput,
+          },
+          contextAdminUser
+        );
+      } catch (error) {
+        // Should throw an error and catch it.
+        // As we do not use a running server we need to catch the error
+        // otherwise it would be send in the graphql response as an error.
+        expect(error).toBeTruthy();
+      }
+      const user = await loadUserBy({ 'User.email': testEmail });
+      expect(user).toBeUndefined();
+    });
+
     it('should should send a add event in sse', async () => {
       const filigranSpy = new SubscriptionSpy();
       const thalesSpy = new SubscriptionSpy();
@@ -785,10 +820,9 @@ describe('User mutation resolver', () => {
       expect(updatedUser.selected_org_capabilities).to.includes(
         'ADMINISTRATE_ORGANIZATION'
       );
-      const usersPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: updatedUser.id }
-      );
+      const usersPendingOrg = await loadUserOrganizationPending({
+        user_id: updatedUser.id,
+      });
       expect(usersPendingOrg.length).toBe(0);
 
       await removeUser({ email: pendingUser.email });
@@ -931,10 +965,9 @@ describe('User mutation resolver', () => {
         undefined
       );
 
-      const usersPendingOrg = await loadUserOrganizationPending(
-        contextAdminUser,
-        { user_id: pendingUser.id }
-      );
+      const usersPendingOrg = await loadUserOrganizationPending({
+        user_id: pendingUser.id,
+      });
 
       expect(usersPendingOrg.length).toBe(0);
       await removeUser({ email: pendingUser.email });

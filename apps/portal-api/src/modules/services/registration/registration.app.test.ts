@@ -9,8 +9,9 @@ import {
   it,
   vi,
 } from 'vitest';
-import { dbUnsecure } from '../../../../knexfile';
+import { db, dbUnsecure } from '../../../../knexfile';
 import {
+  ADMIN_USER_ID,
   contextAdminOrgaThales,
   contextAdminUser,
   contextSimpleUserThales,
@@ -18,22 +19,43 @@ import {
   requestContextAdminUser,
   requestContextSimpleUserThales,
   requestContextThalesUser,
+  SERVICE_OPENCTI_REGISTRATION,
   THALES_ORGA_ID,
 } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestStatus,
+  DeploymentType,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
+  PlatformRegion,
   PlatformRegistrationConnectivityStatus,
+  PlatformRegistrationStatus,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
-import Subscription from '../../../model/kanel/public/Subscription';
+import { requestContext } from '../../../context/request.context';
+import DeploymentRequest, {
+  DeploymentRequestId,
+} from '../../../model/kanel/public/DeploymentRequest';
+import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../../model/kanel/public/ServiceInstance';
+import Subscription, {
+  SubscriptionId,
+} from '../../../model/kanel/public/Subscription';
+
 import { UserLoadUserBy } from '../../../model/user';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
-import { requestContext } from '../../../requestContext';
 import * as authHelper from '../../../security/auth.helper';
-import { ErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  ForbiddenErrorCode,
+  NotFoundErrorCode,
+} from '../../../utils/error/error.code';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
@@ -42,10 +64,191 @@ import {
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { serviceContractDomain } from '../contract/domain';
+import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import * as serviceInstanceDomain from '../service-instance.domain';
+import { loadServiceInstanceBy } from '../service-instance.domain';
 import { registrationApp } from './registration.app';
+import { registrationDomain } from './registration.domain';
 
 describe('Registration app', () => {
+  afterAll(async () => {
+    vi.useRealTimers();
+  });
+
+  describe('loadPlatformAssociatedOrganization', () => {
+    it('should return null when platform is not found', async () => {
+      const result =
+        await registrationApp.loadPlatformAssociatedOrganization('unknown-id');
+
+      expect(result).toBeNull();
+    });
+
+    it('should throw an error when subscription is not found', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+
+      const call =
+        registrationApp.loadPlatformAssociatedOrganization(platformId);
+
+      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
+    });
+
+    it('should throw an error when user is not in the organization', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+      requestContext.set(requestContextSimpleUserThales);
+      const call =
+        registrationApp.loadPlatformAssociatedOrganization(platformId);
+
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+
+    it('should return an organization when platform is found and user is allowed', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+
+      const result =
+        await registrationApp.loadPlatformAssociatedOrganization(platformId);
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(PLATFORM_ORGANIZATION_UUID);
+    });
+  });
+
+  describe('isPlatformRegistered', () => {
+    it(`should return never registered when platform is not registered`, async () => {
+      const platformId = uuidv4();
+      const result = await registrationApp.isPlatformRegistered({
+        platformId,
+      });
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe(PlatformRegistrationStatus.NeverRegistered);
+      expect(result.organization).toBeUndefined();
+      expect(result.platformTitle).toBeUndefined();
+    });
+
+    it('should throw subscription not found error when associated subscription is not found', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
+      });
+
+      const call = registrationApp.isPlatformRegistered({
+        platformId,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
+    });
+
+    it('should return registered when platform registration is active', async () => {
+      const platformId = uuidv4();
+      const platformTitle = 'Platform title';
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId, platform_title: platformTitle },
+        status: ServiceConfigurationStatus.Active,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+
+      const result = await registrationApp.isPlatformRegistered({
+        platformId,
+      });
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe(PlatformRegistrationStatus.Registered);
+      expect(result.organization?.id).toBe(PLATFORM_ORGANIZATION_UUID);
+      expect(result.platformTitle).toBe(platformTitle);
+    });
+    it('should return unregistered when platform registration is inactive', async () => {
+      const platformId = uuidv4();
+      const platformTitle = 'Platform title';
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+
+      await db<ServiceInstance>('ServiceInstance').insert({
+        id: serviceInstanceId,
+        name: 'test',
+      });
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId, platform_title: platformTitle },
+        status: ServiceConfigurationStatus.Inactive,
+      });
+      await db<Subscription>('Subscription').insert({
+        id: subscriptionId,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        service_instance_id: serviceInstanceId,
+      });
+
+      const result = await registrationApp.isPlatformRegistered({
+        platformId,
+      });
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe(PlatformRegistrationStatus.Unregistered);
+      expect(result.organization?.id).toBe(PLATFORM_ORGANIZATION_UUID);
+      expect(result.platformTitle).toBe(platformTitle);
+    });
+  });
+
   describe('registerPlatform', () => {
     const platform: PlatformInput = {
       id: uuidv4(),
@@ -262,10 +465,7 @@ describe('Registration app', () => {
       });
 
       const serviceConfiguration =
-        await serviceContractDomain.loadConfigurationByPlatform(
-          contextAdminUser,
-          platformId
-        );
+        await serviceContractDomain.loadConfigurationByPlatform(platformId);
 
       expect(serviceConfiguration).toBeDefined();
       expect(serviceConfiguration?.status).toBe(
@@ -390,10 +590,10 @@ describe('Registration app', () => {
 
   describe('loadPlatformRegistrationStatus', () => {
     it('should return inactive when platform is not registered', async () => {
-      const result = await registrationApp.loadPlatformRegistrationStatus(
-        contextAdminUser,
-        { platformId: uuidv4(), token: uuidv4() }
-      );
+      const result = await registrationApp.loadPlatformRegistrationStatus({
+        platformId: uuidv4(),
+        token: uuidv4(),
+      });
 
       expect(result.status).toBe(
         PlatformRegistrationConnectivityStatus.Inactive
@@ -414,10 +614,10 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const result = await registrationApp.loadPlatformRegistrationStatus(
-        contextAdminUser,
-        { platformId, token }
-      );
+      const result = await registrationApp.loadPlatformRegistrationStatus({
+        platformId,
+        token,
+      });
 
       expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
     });
@@ -425,10 +625,11 @@ describe('Registration app', () => {
     describe('refreshPlatformRegistrationConnectivityStatus', () => {
       it('should return inactive when platform is not registered', async () => {
         const result =
-          await registrationApp.refreshPlatformRegistrationConnectivityStatus(
-            contextAdminUser,
-            { platformId: uuidv4(), token: uuidv4(), platformVersion: 'X.Y.Z' }
-          );
+          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
+            platformId: uuidv4(),
+            token: uuidv4(),
+            platformVersion: 'X.Y.Z',
+          });
 
         expect(result.status).toBe(
           PlatformRegistrationConnectivityStatus.Inactive
@@ -450,15 +651,15 @@ describe('Registration app', () => {
         });
 
         const result =
-          await registrationApp.refreshPlatformRegistrationConnectivityStatus(
-            contextAdminUser,
-            { platformId, token, platformVersion: '6.7.18' }
-          );
+          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
+            platformId,
+            token,
+            platformVersion: '6.7.18',
+          });
 
-        const getPlatforms = await registrationApp.loadRegisteredPlatforms(
-          contextAdminUser,
-          { identifier: PlatformIdentifier.Opencti }
-        );
+        const getPlatforms = await registrationApp.loadRegisteredPlatforms({
+          identifier: PlatformIdentifier.Opencti,
+        });
         const currentPlatform = getPlatforms.find(
           (registeredPlatform) => platformId === registeredPlatform.platform_id
         );
@@ -488,10 +689,10 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const result = await registrationApp.loadPlatformRegistrationStatus(
-        contextAdminUser,
-        { platformId: platformId, token }
-      );
+      const result = await registrationApp.loadPlatformRegistrationStatus({
+        platformId: platformId,
+        token,
+      });
 
       expect(result.status).toBe(
         PlatformRegistrationConnectivityStatus.Inactive
@@ -518,6 +719,112 @@ describe('Registration app', () => {
 
       expect(anotherToken).toBe(updatedUser.platform_token);
       expect(anotherToken === token).toBeFalsy();
+    });
+  });
+
+  describe('autoRegisterPlatform', () => {
+    let deploymentRequest: DeploymentRequest;
+    const platformConfiguration = {
+      id: uuidv4(),
+      title: 'My OpenCTI platform',
+      url: 'http://example.com',
+      contract: PlatformContract.Trial,
+      version: 'X.Y.Z',
+    };
+
+    beforeEach(async () => {
+      const serviceInstanceId = await registrationDomain.registerNewPlatform({
+        serviceDefinitionId: SERVICE_OPENCTI_REGISTRATION,
+        organizationId: PLATFORM_ORGANIZATION_UUID,
+        platformIdentifier: PlatformIdentifier.Opencti,
+        serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
+      });
+
+      deploymentRequest =
+        (await DeploymentRequestDomain.insertDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          id: uuidv4() as DeploymentRequestId,
+          job_title: 'myJob',
+          organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+          platform_identifier: PlatformIdentifier.Opencti,
+          platform_token: uuidv4(),
+          region: PlatformRegion.Us,
+          request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
+          status: DeploymentRequestStatus.Provisioning,
+          type: DeploymentType.Trial,
+          use_case: 'use_case',
+          service_instance_id: serviceInstanceId as ServiceInstanceId,
+          user_requester_id: ADMIN_UUID,
+        })) as DeploymentRequest;
+    });
+    it('should throw if deployment request is not found', async () => {
+      const call = registrationApp.autoRegisterPlatform(
+        uuidv4(),
+        platformConfiguration
+      );
+      await expect(call).rejects.toThrow(
+        NotFoundErrorCode.DeploymentRequestNotFound
+      );
+    });
+    it('should throw if wrong platform id is provided', async () => {
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequest.id,
+        { product_service_instance_id: uuidv4() }
+      );
+
+      const call = registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        {
+          ...platformConfiguration,
+          id: uuidv4(),
+        }
+      );
+      await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidPlatformId);
+    });
+    it('should throw if deployment status is not authorized', async () => {
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequest.id,
+        { status: DeploymentRequestStatus.Pending }
+      );
+
+      const call = registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        platformConfiguration
+      );
+      await expect(call).rejects.toThrow(
+        ForbiddenErrorCode.NotAllowedByDeploymentStatus
+      );
+    });
+    it('should register the provided platform', async () => {
+      await registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        platformConfiguration
+      );
+
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        'id',
+        deploymentRequest.service_instance_id
+      );
+      const configuration =
+        await serviceContractDomain.loadConfigurationByPlatform(
+          platformConfiguration.id
+        );
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Ready
+      );
+      expect(configuration).toMatchObject({
+        config: {
+          platform_contract: platformConfiguration.contract,
+          platform_id: platformConfiguration.id,
+          platform_title: platformConfiguration.title,
+          platform_url: platformConfiguration.url,
+          platform_version: platformConfiguration.version,
+          registerer_id: ADMIN_USER_ID,
+          token: deploymentRequest.platform_token,
+        },
+        service_instance_id: deploymentRequest.service_instance_id,
+        status: ServiceConfigurationStatus.Active,
+      });
     });
   });
 

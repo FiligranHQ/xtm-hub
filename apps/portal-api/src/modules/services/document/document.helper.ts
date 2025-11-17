@@ -13,7 +13,7 @@ import { WithLabels } from '../../../utils/types';
 import { extractId } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
 import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import {
@@ -22,6 +22,12 @@ import {
   loadSeoDocumentBySlug,
   sendFileToS3,
 } from './document.domain';
+
+export const BOOLEAN_METADATA = [
+  'verified',
+  'manager_supported',
+  'playbook_supported',
+];
 
 export type Document = WithLabels<DocumentModel>;
 export type FullDocumentMutator = Partial<DocumentModel> & {
@@ -223,7 +229,7 @@ export const loadDocumentWithCountersById = async <T extends Document>(
 export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
   type:
     | typeof OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE
-    | typeof CUSTOM_DASHBOARD_DOCUMENT_TYPE
+    | typeof OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE
     | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE,
   slug: string,
   include_metadata: string[] = []

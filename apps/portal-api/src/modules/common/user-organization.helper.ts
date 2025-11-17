@@ -3,22 +3,18 @@ import { UserId } from '../../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationInitializer,
 } from '../../model/kanel/public/UserOrganization';
-import { PortalContext } from '../../model/portal-context';
 import { removeUserFromOrganizationPending } from './user-organization-pending.domain';
 import { insertNewUserOrganizationUnsecure } from './user-organization.domain';
 
-export const createUserOrganizationRelationAndRemovePending = async (
-  context: PortalContext,
-  {
-    user_id,
-    organizations_id = [],
-  }: {
-    user_id: UserId;
-    organizations_id: OrganizationId[];
-  }
-): Promise<UserOrganization[]> => {
+export const createUserOrganizationRelationAndRemovePending = async ({
+  user_id,
+  organizations_id = [],
+}: {
+  user_id: UserId;
+  organizations_id: OrganizationId[];
+}): Promise<UserOrganization[]> => {
   organizations_id.map((org) =>
-    removeUserFromOrganizationPending(context, user_id, org)
+    removeUserFromOrganizationPending(user_id, org)
   );
 
   return createUserOrganizationRelation({ user_id, organizations_id });

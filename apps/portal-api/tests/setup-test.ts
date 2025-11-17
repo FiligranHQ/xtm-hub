@@ -1,5 +1,5 @@
 import { beforeAll } from 'vitest';
-import { RequestContext } from '../src/requestContext';
+import { requestContext, RequestContext } from '../src/context/request.context';
 import { closeDbTestConnection, getDbTestConnection } from './config-test';
 import { requestContextAdminUser } from './tests.const';
 
@@ -12,7 +12,7 @@ function isUtilOrHelper(filepath?: string) {
 
 const testRequestStorage = new Map<string, RequestContext>();
 
-function getTestKey() {
+function getCurrentTestKey() {
   const state = expect.getState();
 
   // For tests: use test name
@@ -28,43 +28,68 @@ function getTestKey() {
   return `${state?.testPath}:beforeAll:${line}`;
 }
 
-vi.mock('async_hooks', () => {
-  class MockAsyncLocalStorage<T> {
-    getStore() {
-      const key = getTestKey();
+function mockRequestContext() {
+  const originalRequestContext = {
+    get: requestContext.get,
+    require: requestContext.require,
+    update: requestContext.update,
+    set: requestContext.set,
+    run: requestContext.run,
+  };
 
-      if (!testRequestStorage.has(key)) {
-        testRequestStorage.set(key, requestContextAdminUser);
+  requestContext.get = vi.fn(() => {
+    const testKey = getCurrentTestKey();
+    return testRequestStorage.get(testKey) || { ...requestContextAdminUser };
+  });
+
+  requestContext.require = vi.fn(() => {
+    const context = requestContext.get();
+    if (!context) {
+      throw new Error('No async context available');
+    }
+    return context;
+  });
+
+  requestContext.update = vi.fn((updates) => {
+    const testKey = getCurrentTestKey();
+    const current = testRequestStorage.get(testKey) || {
+      ...requestContextAdminUser,
+    };
+    testRequestStorage.set(testKey, { ...current, ...updates });
+  });
+
+  requestContext.set = vi.fn((context) => {
+    const testKey = getCurrentTestKey();
+    testRequestStorage.set(testKey, context);
+  });
+
+  requestContext.run = vi.fn((context, callback) => {
+    const testKey = getCurrentTestKey();
+    const previousContext = testRequestStorage.get(testKey);
+    testRequestStorage.set(testKey, context);
+    try {
+      return callback();
+    } finally {
+      if (previousContext) {
+        testRequestStorage.set(testKey, previousContext);
+      } else {
+        testRequestStorage.delete(testKey);
       }
-
-      return testRequestStorage.get(key) as T;
     }
+  });
 
-    run(store: T, callback: () => any) {
-      const key = getTestKey();
-      const prev = testRequestStorage.get(key);
-      testRequestStorage.set(key, store as any);
-      try {
-        return callback();
-      } finally {
-        if (prev) {
-          testRequestStorage.set(key, prev);
-        } else {
-          testRequestStorage.delete(key);
-        }
-      }
-    }
+  (globalThis as any).__originalRequestContext = originalRequestContext;
+}
 
-    enterWith(store: T) {
-      const key = getTestKey();
-      testRequestStorage.set(key, store as any);
-    }
-  }
-
-  return { AsyncLocalStorage: MockAsyncLocalStorage };
+beforeEach(() => {
+  // Set fresh context for each test
+  const testKey = getCurrentTestKey();
+  testRequestStorage.set(testKey, { ...requestContextAdminUser });
 });
 
 beforeAll(async (suite) => {
+  mockRequestContext();
+
   const currentFile = suite?.file?.name;
   if (isUtilOrHelper(currentFile)) {
     console.log('⚠️ Did not clean', currentFile);

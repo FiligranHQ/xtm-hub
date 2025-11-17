@@ -2,11 +2,15 @@ import { dbTx, dbUnsecure } from '../../knexfile';
 import { User } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
 import { OrganizationId } from '../model/kanel/public/Organization';
+import { RolePortalId } from '../model/kanel/public/RolePortal';
+import { UserId } from '../model/kanel/public/User';
 import { isStorageAlive } from '../modules/services/document/document-storage';
 import {
   ADMIN_UUID,
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
+  PLATFORM_USER_EMAIL,
+  PLATFORM_USER_UUID,
   ROLE_ADMIN,
   ROLE_ADMIN_ORGA,
   ROLE_USER,
@@ -32,7 +36,17 @@ import {
   updateUserPassword,
 } from './initialize.helper';
 
-const initializeUser = async ({ userId, email, password, roleId }) => {
+const initializeUser = async ({
+  userId,
+  email,
+  password,
+  roleId,
+}: {
+  userId: UserId;
+  email: string;
+  password: string;
+  roleId?: RolePortalId;
+}) => {
   const existingUser = await dbUnsecure<User>('User')
     .where({ id: userId })
     .first();
@@ -45,8 +59,10 @@ const initializeUser = async ({ userId, email, password, roleId }) => {
   } else {
     await completeUserInitialization(userId, email, passwordData);
   }
+  if (roleId) {
+    await ensureUserRoleExist(userId, roleId);
+  }
 
-  await ensureUserRoleExist(userId, roleId);
   await ensurePersonalSpaceExist(userId, email);
 };
 
@@ -64,6 +80,13 @@ const initSystemUser = () =>
     email: SYSTEM_USER_EMAIL,
     password: portalConfig.admin.password,
     roleId: ROLE_ADMIN.id,
+  });
+
+const initPlatformUser = () =>
+  initializeUser({
+    userId: PLATFORM_USER_UUID,
+    email: PLATFORM_USER_EMAIL,
+    password: portalConfig.admin.password,
   });
 
 const completeUserInitialization = async (user_id, email, data) => {
@@ -114,6 +137,8 @@ const initializeBuiltInAdministrator = async () => {
   await initAdminUser();
   // Initialize system user
   await initSystemUser();
+  // Initialize platform user
+  await initPlatformUser();
 };
 
 const logEnabledFeatureFlags = () => {

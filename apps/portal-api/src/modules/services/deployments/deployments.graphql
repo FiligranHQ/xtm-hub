@@ -46,6 +46,8 @@ type PlatformDeploymentRequest {
   organization_name: String!
   organization_domains: [String!]
   requester_email: String!
+  requester_first_name: String
+  requester_last_name: String
   product_service_instance_id: String
   failure_reason: String
 }
@@ -57,6 +59,16 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
+  status: DeploymentRequestStatus
+}
+
+input UpdateDeploymentRequestInput {
+  id: ID!
+  status: DeploymentRequestStatus
+  start_date: Date
+  end_date: Date
+  product_service_instance_id: String
+  failure_reason: String
 }
 
 enum DeploymentRequestFilterKey {
@@ -82,12 +94,21 @@ type DeploymentRequestConnection {
   pageInfo: PageInfo!
 }
 
+type DeploymentAvailability {
+  region: PlatformRegion!
+  availableCount: Int!
+}
+
 extend type Query {
   deploymentRequests(
     first: Int!
     after: ID
     filters: [DeploymentRequestFilter!]
   ): DeploymentRequestConnection! @system_token
+  deploymentRequestsAvailable(
+    platformIdentifier: PlatformIdentifier
+  ): [DeploymentAvailability!]!
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
 
 extend type Mutation {
@@ -95,4 +116,7 @@ extend type Mutation {
     input: CreateDeploymentRequestInput
   ): DeploymentRequest!
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+  updateDeploymentRequest(
+    input: UpdateDeploymentRequestInput!
+  ): PlatformDeploymentRequest! @system_token
 }

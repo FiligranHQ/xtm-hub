@@ -26,7 +26,7 @@ type CsvFeed implements Node & DocumentBase & IntegrationFeed {
 
   # IntegrationFeed
   remover_id: ID
-  integration_type: String!
+  integration_type: IntegrationFeedType!
 }
 
 input CreateCsvFeedInput {
@@ -67,9 +67,4 @@ type Mutation {
   deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
     @auth
     @service_capa(requires: [DELETE])
-}
-
-type Query {
-  seoCsvFeedsByServiceSlug(serviceSlug: String): [CsvFeed]
-  seoCsvFeedBySlug(slug: String): CsvFeed
 }

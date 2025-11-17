@@ -8,13 +8,12 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
-import { PortalContext } from '../../../model/portal-context';
-import { requestContext } from '../../../requestContext';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
@@ -43,11 +42,13 @@ export const registrationDomain = {
     organizationId,
     configuration,
     platformIdentifier,
+    serviceInstanceCreationStatus = ServiceInstanceCreationStatus.Ready,
   }: {
     serviceDefinitionId: string;
     organizationId: OrganizationId;
     configuration?: PlatformConfiguration;
     platformIdentifier: PlatformIdentifier;
+    serviceInstanceCreationStatus?: ServiceInstanceCreationStatus;
   }): Promise<ServiceInstanceId> => {
     const context = requestContext.require().portalContext;
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
@@ -57,12 +58,9 @@ export const registrationDomain = {
 
     const serviceInstanceId =
       await serviceInstanceDomain.createPlatformServiceInstance(
-        context,
         serviceDefinitionId,
         platformIdentifier,
-        configuration
-          ? ServiceInstanceCreationStatus.Ready
-          : ServiceInstanceCreationStatus.Pending
+        serviceInstanceCreationStatus
       );
 
     await createSubscription({
@@ -79,7 +77,6 @@ export const registrationDomain = {
 
     if (configuration) {
       await serviceContractDomain.createConfiguration(
-        context,
         serviceInstanceId,
         configuration
       );
@@ -87,18 +84,16 @@ export const registrationDomain = {
     return serviceInstanceId;
   },
 
-  refreshExistingPlatform: async (
-    context: PortalContext,
-    {
-      configuration,
-      serviceInstanceId,
-      targetOrganizationId,
-    }: {
-      configuration: PlatformConfiguration;
-      serviceInstanceId: ServiceInstanceId;
-      targetOrganizationId: OrganizationId;
-    }
-  ) => {
+  refreshExistingPlatform: async ({
+    configuration,
+    serviceInstanceId,
+    targetOrganizationId,
+  }: {
+    configuration: PlatformConfiguration;
+    serviceInstanceId: ServiceInstanceId;
+    targetOrganizationId: OrganizationId;
+  }) => {
+    const { portalContext: context } = requestContext.require();
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -127,15 +122,13 @@ export const registrationDomain = {
       });
     }
 
-    await serviceContractDomain.updateConfiguration(
-      context,
-      serviceInstanceId,
-      { config: configuration, status: ServiceConfigurationStatus.Active }
-    );
+    await serviceContractDomain.updateConfiguration(serviceInstanceId, {
+      config: configuration,
+      status: ServiceConfigurationStatus.Active,
+    });
   },
 
   loadRegisteredPlatforms: async (
-    context: PortalContext,
     platformIdentifier?: PlatformIdentifier,
     opts: QueryOpts = {}
   ): Promise<
@@ -146,11 +139,17 @@ export const registrationDomain = {
       id: string;
     }[]
   > => {
-    const userSelectedOrganization = context.user.selected_organization_id;
-    const serviceDefinitionIdentifier =
-      serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
+    const { user } = requestContext.require();
+    const userSelectedOrganization = user.selected_organization_id;
+    const serviceDefinitionIdentifiers = platformIdentifier
+      ? [
+          serviceDefinitionIdentifierMappedByPlatformIdentifier[
+            platformIdentifier
+          ],
+        ]
+      : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
-    return await db<ServiceInstance>(context, 'ServiceInstance', opts)
+    return await db<ServiceInstance>('ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',
@@ -169,30 +168,14 @@ export const registrationDomain = {
         '=',
         'ServiceInstance.id'
       )
-      .modify((queryBuilder) => {
-        if (platformIdentifier) {
-          queryBuilder.where(
-            'ServiceDefinition.identifier',
-            '=',
-            serviceDefinitionIdentifier
-          );
-        }
-      })
+      .whereIn('ServiceDefinition.identifier', serviceDefinitionIdentifiers)
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
-      .whereNot((qb) => {
-        qb.whereNotNull('Subscription.end_date').orWhere(
-          'Service_Configuration.status',
-          '=',
-          ServiceConfigurationStatus.Inactive
-        );
-      })
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',
-        'ServiceInstance.illustration_document_id',
-        'ServiceInstance.id',
+        'ServiceInstance.*',
       ])
       .secureQuery();
   },

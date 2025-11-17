@@ -2,6 +2,7 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db, dbTx } from '../../../knexfile';
 import {
+  IntegrationFeedType,
   RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
@@ -26,7 +27,10 @@ import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
+import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from './integration-feeds/integration-feeds.model';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios/openaev-scenarios.domain';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
 import {
@@ -46,6 +50,25 @@ import {
 
 const resolvers: Resolvers = {
   ServiceInstance: {
+    __resolveType(service_instance) {
+      const integrationFeedMapping = {
+        [IntegrationFeedType.Connector]: 'Connector',
+        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+      };
+      const typeMapping = {
+        [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
+        [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
+        [OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
+      };
+
+      if (service_instance.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+        return (
+          integrationFeedMapping[service_instance.integration_type] ??
+          typeMapping[service_instance.type]
+        );
+      }
+      return typeMapping[service_instance.type] ?? 'SeoServiceInstance';
+    },
     logo_document_id: ({ logo_document_id }) => {
       if (logo_document_id) {
         return toGlobalId('Document', logo_document_id);
@@ -56,28 +79,39 @@ const resolvers: Resolvers = {
         return toGlobalId('Document', illustration_document_id);
       }
     },
-    links: ({ id }, _, context) => loadLinks(context, id),
-    service_definition: ({ id }, _, context) =>
-      loadServiceDefinitionByServiceInstance(context, id),
+    links: ({ id }, _) => loadLinks(id),
+    service_definition: ({ id }, _) =>
+      loadServiceDefinitionByServiceInstance(id),
     organization_subscribed: ({ id }, _, context) =>
-      loadIsSubscribed(context, id),
+      loadIsSubscribed(
+        context.user.selected_organization_id,
+        id as ServiceInstanceId
+      ),
     capabilities: ({ id }, _, context) =>
       loadCapabilities(
-        context,
         id,
         context.user.id,
         context.user.selected_organization_id
       ),
-    user_joined: ({ id }, _, context) => getUserJoined(context, id),
-    subscriptions: ({ id }, _, context) =>
-      loadServiceInstanceSubscriptions(context, id),
+    user_joined: ({ id }, _, context) =>
+      getUserJoined(
+        context.user.id,
+        context.user.selected_organization_id,
+        id as ServiceInstanceId
+      ),
+    subscriptions: ({ id }, _) =>
+      loadServiceInstanceSubscriptions(id as ServiceInstanceId),
   },
   Query: {
-    serviceInstances: async (_, opt, context) => {
-      return loadServiceInstances(context, opt);
+    serviceInstances: async (_, opt) => {
+      return loadServiceInstances(opt);
     },
     publicServiceInstances: async (_, opt, context) => {
-      return loadPublicServiceInstances(context, opt);
+      return loadPublicServiceInstances(
+        context.user.id,
+        context.user.selected_organization_id,
+        opt
+      );
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
       const serviceInstance = await serviceInstanceApp.loadServiceInstance(
@@ -89,23 +123,22 @@ const resolvers: Resolvers = {
     },
     serviceInstanceByIdWithSubscriptions: async (
       _,
-      { service_instance_id },
-      context
+      { service_instance_id }
     ) => {
-      return loadServiceWithSubscriptions(
-        context,
-        extractId(service_instance_id)
-      );
+      return loadServiceWithSubscriptions(extractId(service_instance_id));
     },
     subscribedServiceInstancesByIdentifier: async (
       _,
       { identifier },
       context
     ) => {
-      return loadSubscribedServiceInstancesByIdentifier(context, identifier);
+      return loadSubscribedServiceInstancesByIdentifier(
+        context.user.id,
+        identifier
+      );
     },
-    seoServiceInstances: async (_, _opt, context) => {
-      const services = await loadSeoServiceInstances(context);
+    seoServiceInstances: async (_, _opt) => {
+      const services = await loadSeoServiceInstances();
       return services.map((service: SeoServiceInstance) => ({
         ...service,
         ...(service.illustration_document_id && {
@@ -119,13 +152,12 @@ const resolvers: Resolvers = {
         }),
       }));
     },
-    seoServiceInstance: async (_, { slug }, context) => {
-      const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);
+    seoServiceInstance: async (_, { slug }) => {
+      const serviceInstance = await loadSeoServiceInstanceBySlug(slug);
       if (!serviceInstance) {
         throw NotFoundError(ErrorCode.ServiceNotFound);
       }
       const result: SeoServiceInstance = {
-        __typename: 'SeoServiceInstance',
         ...serviceInstance,
         ...(serviceInstance.illustration_document_id && {
           illustration_document_id: toGlobalId(
@@ -285,7 +317,6 @@ const resolvers: Resolvers = {
 
         // Get platform configuration to return RegisteredPlatform
         const config = await loadPlatformConfigurationByServiceInstanceId(
-          context,
           updatedServiceInstance.id
         );
 

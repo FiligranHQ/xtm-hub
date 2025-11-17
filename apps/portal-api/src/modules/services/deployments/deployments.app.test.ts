@@ -1,7 +1,7 @@
+import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextAdminUser,
   DEFAULT_ADMIN_EMAIL,
   SERVICE_OPENCTI_REGISTRATION,
 } from '../../../../tests/tests.const';
@@ -13,7 +13,7 @@ import {
   PlatformRegion,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
-import {
+import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -21,21 +21,75 @@ import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import {
+  BadRequestErrorCode,
+  NotFoundErrorCode,
+} from '../../../utils/error/error.code';
+import { loadSubscriptionBy } from '../../subcription/subscription.domain';
+import {
+  deleteSubscriptionUnsecure,
+  insertUnsecureSubscription,
+} from '../../subcription/subscription.helper';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import {
+  deleteServiceInstanceBy,
   insertServiceInstance,
   loadServiceInstanceBy,
 } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
 
+async function insertOpenCtiDeploymentRequest(
+  deploymentRequest: Partial<DeploymentRequestInitializer>
+) {
+  const serviceInstanceId = uuidv4() as ServiceInstanceId;
+  await insertServiceInstance({
+    id: serviceInstanceId,
+    name: 'serviceInstance1',
+    description: '',
+    creation_status: ServiceInstanceCreationStatus.Pending,
+    public: false,
+    join_type: 'JOIN_AUTO',
+    tags: [
+      serviceInstanceTagMappedByPlatformIdentifier[PlatformIdentifier.Opencti],
+    ],
+    service_definition_id: SERVICE_OPENCTI_REGISTRATION,
+  });
+  await insertUnsecureSubscription({
+    id: uuidv4(),
+    organization_id: PLATFORM_ORGANIZATION_UUID,
+    service_instance_id: serviceInstanceId,
+  });
+  const defaultDeploymentRequestValues = {
+    activity_sector: 'cybersecurity',
+    id: uuidv4() as DeploymentRequestId,
+    job_title: 'myJob',
+    organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+    platform_identifier: PlatformIdentifier.Opencti,
+    platform_token: uuidv4(),
+    region: PlatformRegion.Us,
+    request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
+    status: DeploymentRequestStatus.Pending,
+    type: DeploymentType.Trial,
+    use_case: 'use_case',
+    service_instance_id: serviceInstanceId as ServiceInstanceId,
+    user_requester_id: ADMIN_UUID,
+  };
+  return await DeploymentRequestDomain.insertDeploymentRequest({
+    ...defaultDeploymentRequestValues,
+    ...deploymentRequest,
+  });
+}
+
 describe('Deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+    await deleteServiceInstanceBy({});
+    await deleteSubscriptionUnsecure({});
   });
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
-      const deployment = await DeploymentsApp.createDeployment({
+      const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
         use_case: 'use_case',
@@ -65,7 +119,6 @@ describe('Deployment app', () => {
       });
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        contextAdminUser,
         'id',
         dbDeploymentRequest.service_instance_id
       );
@@ -73,47 +126,58 @@ describe('Deployment app', () => {
         ServiceInstanceCreationStatus.Pending
       );
     });
-  });
-  describe('loadDeploymentRequests', () => {
-    async function insertOpenCtiDeploymentRequest(
-      deploymentRequest: Partial<DeploymentRequestInitializer>
-    ) {
-      const serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await insertServiceInstance({
-        id: serviceInstanceId,
-        name: 'serviceInstance1',
-        description: '',
-        creation_status: ServiceInstanceCreationStatus.Pending,
-        public: false,
-        join_type: 'JOIN_AUTO',
-        tags: [
-          serviceInstanceTagMappedByPlatformIdentifier[
-            PlatformIdentifier.Opencti
-          ],
-        ],
-        service_definition_id: SERVICE_OPENCTI_REGISTRATION,
-      });
-      const defaultDeploymentRequestValues = {
+    it('should create a deployment request with queued status if specified', async () => {
+      const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
-        id: uuidv4() as DeploymentRequestId,
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: PlatformRegion.Us,
+        type: DeploymentType.Trial,
+        status: DeploymentRequestStatus.Queued,
+      });
+
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      expect(dbDeploymentRequest).toMatchObject({
+        activity_sector: 'cybersecurity',
+        id: expect.any(String),
         job_title: 'myJob',
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
         platform_identifier: PlatformIdentifier.Opencti,
-        platform_token: uuidv4(),
+        platform_token: expect.any(String),
         region: PlatformRegion.Us,
-        request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-        status: DeploymentRequestStatus.Pending,
+        request_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+        status: DeploymentRequestStatus.Queued,
         type: DeploymentType.Trial,
         use_case: 'use_case',
-        service_instance_id: serviceInstanceId as ServiceInstanceId,
         user_requester_id: ADMIN_UUID,
-      };
-      return await DeploymentRequestDomain.insertDeploymentRequest({
-        ...defaultDeploymentRequestValues,
-        ...deploymentRequest,
       });
-    }
-
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        'id',
+        dbDeploymentRequest.service_instance_id
+      );
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Disabled
+      );
+    });
+    it('should throw if an invalid status is specified', async () => {
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector: 'cybersecurity',
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: PlatformRegion.Us,
+        type: DeploymentType.Trial,
+        status: DeploymentRequestStatus.Active,
+      });
+      await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
+    });
+  });
+  describe('loadDeploymentRequests', () => {
     it('should return created deployment requests', async () => {
       const deploymentRequest = await insertOpenCtiDeploymentRequest({});
 
@@ -127,6 +191,8 @@ describe('Deployment app', () => {
         organization_name: 'Filigran',
         organization_domains: ['filigran.io', 'internal.com'],
         requester_email: DEFAULT_ADMIN_EMAIL,
+        requester_first_name: 'firstname',
+        requester_last_name: 'lastname',
       });
     });
 
@@ -198,5 +264,162 @@ describe('Deployment app', () => {
       expect(deployments.totalCount).toBe('0');
       expect(deployments.edges.length).toBe(0);
     });
+  });
+  describe('updateDeploymentRequest', () => {
+    let initialDeployment: DeploymentRequest;
+    beforeEach(async () => {
+      initialDeployment = (await insertOpenCtiDeploymentRequest({
+        status: DeploymentRequestStatus.Provisioning,
+      })) as DeploymentRequest;
+    });
+
+    it('should update a deployment request', async () => {
+      const deployment = await DeploymentsApp.updateDeploymentRequest({
+        id: initialDeployment?.id as string,
+        status: DeploymentRequestStatus.Active,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        product_service_instance_id: 'fake product instance id',
+        failure_reason: 'not failed',
+      });
+
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        'id',
+        dbDeploymentRequest.service_instance_id
+      );
+      const subscription = await loadSubscriptionBy({
+        service_instance_id: dbDeploymentRequest.service_instance_id,
+      });
+      expect(dbDeploymentRequest).toMatchObject({
+        activity_sector: 'cybersecurity',
+        id: expect.any(String),
+        job_title: 'myJob',
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        platform_identifier: PlatformIdentifier.Opencti,
+        platform_token: expect.any(String),
+        region: PlatformRegion.Us,
+        request_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+        status: DeploymentRequestStatus.Active,
+        type: DeploymentType.Trial,
+        use_case: 'use_case',
+        user_requester_id: ADMIN_UUID,
+        failure_reason: 'not failed',
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        product_service_instance_id: 'fake product instance id',
+      });
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Pending
+      );
+      expect(subscription?.start_date).toStrictEqual(
+        dbDeploymentRequest.start_date
+      );
+      expect(subscription?.end_date).toStrictEqual(
+        dbDeploymentRequest.end_date
+      );
+    });
+    it('should should throw if deployment request does not exist', async () => {
+      const call = DeploymentsApp.updateDeploymentRequest({
+        id: uuidv4(),
+        status: DeploymentRequestStatus.Active,
+      });
+      await expect(call).rejects.toThrow(
+        NotFoundErrorCode.DeploymentRequestNotFound
+      );
+    });
+    it.each([
+      {
+        start_date: undefined,
+        end_date: undefined,
+        description: 'both dates missing',
+      },
+      {
+        start_date: undefined,
+        end_date: new Date(),
+        description: 'start date missing',
+      },
+      {
+        start_date: new Date(),
+        end_date: undefined,
+        description: 'end date missing',
+      },
+    ])(
+      'should throw if status active and $description',
+      async ({ start_date, end_date }) => {
+        const call = DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment.id,
+          status: DeploymentRequestStatus.Active,
+          start_date,
+          end_date,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.MissingStartOrEndDate
+        );
+      }
+    );
+    it('should should throw when status requested is not allowed', async () => {
+      const call = DeploymentsApp.updateDeploymentRequest({
+        id: initialDeployment?.id as string,
+        status: DeploymentRequestStatus.Queued,
+      });
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
+      );
+    });
+  });
+  describe('loadAvailableDeploymentRequests', () => {
+    it.each([
+      {
+        description: 'normal case with available slots',
+        maxDeployments: { us: 10, europe: 5 },
+        currentDeployments: {
+          [PlatformRegion.Us]: 3,
+          [PlatformRegion.Europe]: 1,
+        } as Record<string, number>,
+        expected: [
+          { region: PlatformRegion.Us, availableCount: 7 },
+          { region: PlatformRegion.Europe, availableCount: 4 },
+          { region: PlatformRegion.Apac, availableCount: 0 },
+        ],
+      },
+      {
+        description: 'over capacity scenario',
+        maxDeployments: { us: 5 },
+        currentDeployments: { [PlatformRegion.Us]: 8 } as Record<
+          string,
+          number
+        >,
+        expected: [
+          { region: PlatformRegion.Us, availableCount: -3 },
+          { region: PlatformRegion.Europe, availableCount: 0 },
+          { region: PlatformRegion.Apac, availableCount: 0 },
+        ],
+      },
+    ])(
+      'should handle $description',
+      async ({ maxDeployments, currentDeployments, expected }) => {
+        // Arrange
+        vi.spyOn(config, 'get').mockReturnValue(maxDeployments);
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'loadDeploymentRequestCountByRegion'
+        ).mockResolvedValue(currentDeployments);
+
+        // Act
+        const result = await DeploymentsApp.loadAvailableDeploymentRequests(
+          PlatformIdentifier.Opencti
+        );
+
+        // Assert
+        expect(result).toEqual(expect.arrayContaining(expected));
+        expect(result).toHaveLength(expected.length);
+      }
+    );
   });
 });

@@ -20,7 +20,7 @@ import {
 describe('Service instance domain', () => {
   describe('loadLinks', () => {
     it('should return the service link when the service instance exists and has links', async () => {
-      const links = await loadLinks(contextAdminUser, SERVICE_VAULT_ID);
+      const links = await loadLinks(SERVICE_VAULT_ID);
       expect(links.length).toBe(1);
     });
 
@@ -41,13 +41,13 @@ describe('Service instance domain', () => {
         ])
         .returning('id');
       expect(test).toBeTruthy();
-      const links = await loadLinks(contextAdminUser, generateId);
+      const links = await loadLinks(generateId);
       expect(links.length).toBe(0);
     });
 
     it('should return an empty array when the service instance does not exist', async () => {
       const generateId = uuidv4();
-      const links = await loadLinks(contextAdminUser, generateId);
+      const links = await loadLinks(generateId);
       expect(links.length).toBe(0);
     });
   });
@@ -82,7 +82,7 @@ describe('Service instance domain', () => {
       });
 
       const result = await loadPlatformServiceInstance(
-        contextAdminUser,
+        contextAdminUser.user.selected_organization_id,
         serviceInstanceId
       );
 
@@ -94,7 +94,7 @@ describe('Service instance domain', () => {
     it('should return null when service instance does not exist', async () => {
       const nonExistentId = uuidv4();
       const result = await loadPlatformServiceInstance(
-        contextAdminUser,
+        contextAdminUser.user.selected_organization_id,
         nonExistentId
       );
       expect(result).toBeUndefined();
@@ -119,7 +119,7 @@ describe('Service instance domain', () => {
       });
 
       const result = await loadPlatformServiceInstance(
-        contextAdminUser,
+        contextAdminUser.user.selected_organization_id,
         serviceInstanceId
       );
       expect(result).toBeUndefined();
@@ -148,7 +148,6 @@ describe('Service instance domain', () => {
       };
 
       const result = await updateServiceInstance(
-        contextAdminUser,
         mockServiceInstanceId,
         updateData
       );
@@ -168,7 +167,6 @@ describe('Service instance domain', () => {
         };
 
         const result = await updateServiceInstance(
-          contextAdminUser,
           mockServiceInstanceId,
           updateData,
           trx
@@ -190,7 +188,6 @@ describe('Service instance domain', () => {
       };
 
       const result = await updateServiceInstance(
-        contextAdminUser,
         mockServiceInstanceId,
         updateData
       );
@@ -204,7 +201,6 @@ describe('Service instance domain', () => {
       const updateData = { name: 'New Name' };
 
       const result = await updateServiceInstance(
-        contextAdminUser,
         nonExistentId as ServiceInstanceId,
         updateData
       );
@@ -247,7 +243,6 @@ describe('Service instance domain', () => {
 
     it('should load platform configuration when it exists', async () => {
       const result = await loadPlatformConfigurationByServiceInstanceId(
-        contextAdminUser,
         mockServiceInstanceId
       );
 
@@ -264,7 +259,6 @@ describe('Service instance domain', () => {
 
       try {
         const result = await loadPlatformConfigurationByServiceInstanceId(
-          contextAdminUser,
           mockServiceInstanceId,
           trx
         );
@@ -281,10 +275,10 @@ describe('Service instance domain', () => {
 
     it('should return null when configuration does not exist', async () => {
       const nonExistentServiceId = uuidv4();
-      const result = await loadPlatformConfigurationByServiceInstanceId(
-        contextAdminUser,
-        nonExistentServiceId
-      );
+      const result =
+        await loadPlatformConfigurationByServiceInstanceId(
+          nonExistentServiceId
+        );
 
       expect(result).toBeUndefined();
     });
@@ -333,7 +327,6 @@ describe('Service instance domain', () => {
       };
 
       const result = await updatePlatformConfigurationByServiceInstanceId(
-        contextAdminUser,
         mockServiceInstanceId,
         updatedConfig
       );
@@ -358,7 +351,6 @@ describe('Service instance domain', () => {
         };
 
         const result = await updatePlatformConfigurationByServiceInstanceId(
-          contextAdminUser,
           mockServiceInstanceId,
           updatedConfig,
           trx
@@ -383,7 +375,6 @@ describe('Service instance domain', () => {
       };
 
       const result = await updatePlatformConfigurationByServiceInstanceId(
-        contextAdminUser,
         nonExistentServiceId,
         updatedConfig
       );
@@ -403,7 +394,6 @@ describe('Service instance domain', () => {
       };
 
       const result = await updatePlatformConfigurationByServiceInstanceId(
-        contextAdminUser,
         mockServiceInstanceId,
         newConfig
       );
