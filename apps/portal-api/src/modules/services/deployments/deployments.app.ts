@@ -31,7 +31,10 @@ import { DeploymentRequestDomain } from './deployments.domain';
 
 import config from 'config';
 import { telemetryApp } from '../../telemetry/telemetry.app';
-import { buildCreateDeploymentEvent } from '../../telemetry/telemetry.helper';
+import {
+  buildCreateDeploymentEvent,
+  buildUpdateDeploymentEvent,
+} from '../../telemetry/telemetry.helper';
 import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
 
 export const DeploymentsApp = {
@@ -194,6 +197,25 @@ export const DeploymentsApp = {
       trx.rollback();
       throw error;
     }
+
+    const organization = await loadOrganizationBy({
+      id: deploymentRequest.organization_requester_id,
+    });
+    const updateDeploymentEvent = buildUpdateDeploymentEvent(
+      organization,
+      deploymentRequest.user_requester_id,
+      {
+        status: input.status,
+        start_date: input.start_date,
+        end_date: input.end_date,
+        deployment_id: deploymentRequest.id,
+        deployment_type: deploymentRequest.type,
+        platform_id: input.product_service_instance_id,
+      }
+    );
+
+    telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+
     trx.commit();
     return DeploymentRequestDomain.loadFullDeploymentRequestById(
       deploymentRequestId

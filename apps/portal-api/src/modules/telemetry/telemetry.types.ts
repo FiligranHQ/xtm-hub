@@ -22,6 +22,7 @@ export enum TelemetryEventType {
   UPDATE_ORGANIZATION = 'update_organization',
   CREATE_ORGANIZATION = 'create_organization',
   CREATE_DEPLOYMENT = 'create_deployment',
+  UPDATE_DEPLOYMENT = 'update_deployment',
 }
 
 export interface BaseTelemetryEvent {
@@ -111,6 +112,15 @@ export interface CreateDeploymentEvent extends BaseTelemetryEvent {
   target_product: TelemetryTargetProduct;
 }
 
+export interface UpdateDeploymentEvent extends BaseTelemetryEvent {
+  deployment_id: string;
+  deployment_type: DeploymentType;
+  start_date: Date;
+  end_date: Date;
+  platform_id: string;
+  status: DeploymentRequestStatus;
+}
+
 export type TelemetryEvent =
   | LoginEvent
   | SubscribeEvent
@@ -121,4 +131,5 @@ export type TelemetryEvent =
   | OneClickDeployEvent
   | UpdateOrganizationEvent
   | CreateOrganizationEvent
-  | CreateDeploymentEvent;
+  | CreateDeploymentEvent
+  | UpdateDeploymentEvent;

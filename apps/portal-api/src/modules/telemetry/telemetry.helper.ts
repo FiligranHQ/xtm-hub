@@ -31,6 +31,7 @@ import {
   ShareEvent,
   SubscribeEvent,
   TelemetryEventType,
+  UpdateDeploymentEvent,
   UpdateOrganizationEvent,
 } from './telemetry.types';
 
@@ -290,5 +291,23 @@ export function buildCreateDeploymentEvent(
     event_type: TelemetryEventType.CREATE_DEPLOYMENT,
     target_product:
       TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
+  };
+}
+
+export function buildUpdateDeploymentEvent(
+  organization: Organization,
+  user_id: UserId,
+  additional_data: Omit<
+    UpdateDeploymentEvent,
+    'event_type' | keyof BaseTelemetryEvent
+  >,
+  timestamp?: Date
+): UpdateDeploymentEvent {
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+  return {
+    ...baseEvent,
+    ...additional_data,
+    event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
   };
 }
