@@ -1,28 +1,14 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-
+import type { createFreeTrialRegisteredPlatformsStatusAndTypeQuery } from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
+import CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { NextRequest, NextResponse } from 'next/server';
-import { graphql } from 'react-relay';
 import { loadBaseUrlFront, loadMeUser } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
-
-const CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery = graphql`
-  query createFreeTrialRegisteredPlatformsStatusAndTypeQuery(
-    $input: RegisteredPlatformsInput
-  ) {
-    registeredPlatforms(input: $input) {
-      id
-      deployment_request {
-        type
-        status
-      }
-    }
-  }
-`;
 
 export const redirectToCreateFreeTrial = async (request: NextRequest) => {
   const baseUrlFront = await loadBaseUrlFront();
@@ -64,15 +50,12 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
         platform.deployment_request?.type === DeploymentTypeEnum.TRIAL
     );
 
-    const isTrialStarted =
-      freeTrials.length > 0 &&
-      freeTrials[0]?.deployment_request?.status &&
-      [
-        DeploymentRequestStatusEnum.QUEUED,
-        DeploymentRequestStatusEnum.PENDING,
-      ].includes(
-        freeTrials[0].deployment_request?.status as DeploymentRequestStatusEnum
-      );
+    const isTrialStarted = [
+      DeploymentRequestStatusEnum.QUEUED,
+      DeploymentRequestStatusEnum.PENDING,
+    ].includes(
+      freeTrials[0]?.deployment_request?.status as DeploymentRequestStatusEnum
+    );
 
     if (isTrialStarted) {
       const instanceUrl = new URL(
