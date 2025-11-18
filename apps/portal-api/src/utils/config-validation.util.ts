@@ -39,9 +39,9 @@ export const validateDevUser = (user: unknown): DevUserValidationResult => {
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map((err) => {
-        const path = err.path.length > 0 ? `${err.path.join('.')}: ` : '';
-        return `${path}${err.message}`;
+      const errors = error.issues.map((issue) => {
+        const path = issue.path.length > 0 ? `${issue.path.join('.')}: ` : '';
+        return `${path}${issue.message}`;
       });
       return {
         isValid: false,
@@ -170,9 +170,9 @@ export const validateDevUserPartial = (
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map((err) => {
-        const path = err.path.length > 0 ? `${err.path.join('.')}: ` : '';
-        return `${path}${err.message}`;
+      const errors = error.issues.map((issue) => {
+        const path = issue.path.length > 0 ? `${issue.path.join('.')}: ` : '';
+        return `${path}${issue.message}`;
       });
       return {
         isValid: false,

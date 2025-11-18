@@ -49,7 +49,7 @@ const customDashboardSchema = z.object({
   short_description: z.string().max(255).min(1, 'Required'),
   description: z.string().min(1, 'Required'),
   product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
-    message: 'Product version must be X.Y.Z',
+    error: 'Product version must be X.Y.Z',
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
@@ -120,19 +120,19 @@ export const CustomDashboardForm = ({
         labels: customDashboard?.labels?.map((label) => label.id),
         uploader_id: customDashboard?.uploader?.id ?? me?.id,
         uploader_organization_id:
-          customDashboard?.uploader_organization?.id ?? '',
+          (isCreation
+            ? me?.selected_organization_id
+            : customDashboard?.uploader_organization?.id) ?? '',
       }) as CustomDashboardFormValues,
-    [me, customDashboard]
+    [me, customDashboard, isCreation]
   );
   const formSchema = useMemo(
     () =>
       customDashboard
-        ? customDashboardSchema.merge(
-            z.object({
-              document: z.custom<FileList>(fileListCheck).optional(),
-              images: z.custom<FileList>(fileListCheck).optional(),
-            })
-          )
+        ? customDashboardSchema.extend({
+            document: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(fileListCheck).optional(),
+          })
         : customDashboardSchema,
     [customDashboard]
   );
@@ -153,15 +153,6 @@ export const CustomDashboardForm = ({
             if (currentSlug !== generatedSlug) {
               form.setValue('slug', generatedSlug, { shouldDirty: false });
             }
-          }
-          if (!isCreation && values.images) {
-            form.setValue('images', images as unknown as FileList);
-          }
-          if (isCreation) {
-            form.setValue(
-              'uploader_organization_id',
-              me!.selected_organization_id
-            );
           }
         }}
         values={values}
