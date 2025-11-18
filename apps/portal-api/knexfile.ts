@@ -350,7 +350,7 @@ export const paginate = async <T, U>(
     .secureQuery({ ...opts });
 
   queryContext
-    .orderBy([{ column: orderBy, order: orderMode }])
+    .orderBy([{ column: orderBy, order: orderMode, nulls: 'last' }])
     .offset(currentOffset)
     .limit(first)
     .select(`${type}.*`)

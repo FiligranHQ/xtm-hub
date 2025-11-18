@@ -12,8 +12,8 @@ export const docIsExistingFile = (value: unknown): value is ExistingFile => {
   return typeof value === 'object' && value !== null && 'file_name' in value;
 };
 
-export const fileListCheck = (file: FileList | undefined) =>
-  file && file.length > 0;
+export const fileListCheck = (file: unknown) =>
+  file && (file as FileList).length > 0;
 
 export const isFile = (file: unknown): file is File => file instanceof File;
 

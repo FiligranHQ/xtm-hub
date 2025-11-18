@@ -5,6 +5,7 @@ import { ServiceDelete } from '@/components/service/components/service-delete';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { fileListCheck } from '@/utils/documents';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AutoForm,
@@ -21,15 +22,13 @@ import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
 
-const fileListCheck = (file: FileList | undefined) => file && file.length > 0;
-
 const openAEVScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
   uploader_id: z.string().optional(),
   short_description: z.string().min(1, 'Required').max(250),
   product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
-    message: 'Product version must be X.Y.Z',
+    error: 'Product version must be X.Y.Z',
   }),
   description: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
@@ -77,12 +76,10 @@ export const OpenaevScenarioForm = ({
   const formSchema = useMemo(
     () =>
       openAEVScenario
-        ? openAEVScenarioFormSchema.merge(
-            z.object({
-              document: z.custom<FileList>(fileListCheck).optional(),
-              illustration: z.custom<FileList>(fileListCheck).optional(),
-            })
-          )
+        ? openAEVScenarioFormSchema.extend({
+            document: z.custom<FileList>(fileListCheck).optional(),
+            illustration: z.custom<FileList>(fileListCheck).optional(),
+          })
         : openAEVScenarioFormSchema,
     [openAEVScenario]
   );

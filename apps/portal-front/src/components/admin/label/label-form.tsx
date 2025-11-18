@@ -17,7 +17,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export const labelFormSchema = z.object({
-  name: z.string().min(2, { message: 'OrganizationForm.Error.Name' }),
+  name: z.string().min(2, {
+    error: 'OrganizationForm.Error.Name',
+  }),
   color: z
     .string()
     .refine((value) => /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value ?? '')),
