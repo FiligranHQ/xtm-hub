@@ -16,11 +16,11 @@ enum ConnectorType {
   STREAM
 }
 
-interface IntegrationFeed implements Node & DocumentBase {
+interface IntegrationFeed implements Node & Document {
   # Node
   id: ID!
 
-  # DocumentBase
+  # Document
   type: String!
   uploader: User
   uploader_organization: Organization
@@ -40,16 +40,16 @@ interface IntegrationFeed implements Node & DocumentBase {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
 
   remover_id: ID
   integration_type: IntegrationFeedType!
 }
 
-type Connector implements Node & DocumentBase & IntegrationFeed {
+type Connector implements Node & Document & IntegrationFeed {
   # Node
   id: ID!
-  # DocumentBase
+  # Document
   type: String!
   uploader: User
   uploader_organization: Organization @auth
@@ -69,7 +69,7 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   # Integration Feed
   remover_id: ID @auth
   integration_type: IntegrationFeedType!

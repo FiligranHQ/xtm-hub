@@ -52,7 +52,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
         toast({
           title: t('Utils.Success'),
           description: t('VaultActions.DocumentUpdated', {
-            file_name: response.editDocument.file_name,
+            file_name: response.editDocument.file_name ?? '',
           }),
         });
       },

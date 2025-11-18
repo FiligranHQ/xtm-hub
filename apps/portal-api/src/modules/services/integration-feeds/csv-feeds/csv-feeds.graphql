@@ -1,4 +1,4 @@
-type CsvFeed implements Node & DocumentBase & IntegrationFeed {
+type CsvFeed implements Node & Document & IntegrationFeed {
   # Node
   id: ID!
 
@@ -22,7 +22,7 @@ type CsvFeed implements Node & DocumentBase & IntegrationFeed {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
 
   # IntegrationFeed
   remover_id: ID
