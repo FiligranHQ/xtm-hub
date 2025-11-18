@@ -88,10 +88,10 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   integration_subtype: ConnectorType;
   integration_type: IntegrationFeedType;
   labels?: Maybe<Array<Label>>;
-  manager_supported: Scalars['String']['output'];
+  manager_supported: Scalars['Boolean']['output'];
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  playbook_supported: Scalars['String']['output'];
+  playbook_supported: Scalars['Boolean']['output'];
   product_version: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
@@ -107,7 +107,7 @@ export type Connector = DocumentBase & IntegrationFeed & Node & {
   updater_id?: Maybe<Scalars['String']['output']>;
   uploader?: Maybe<User>;
   uploader_organization?: Maybe<Organization>;
-  verified: Scalars['String']['output'];
+  verified: Scalars['Boolean']['output'];
 };
 
 export enum ConnectorType {
@@ -394,6 +394,7 @@ export enum FilterKey {
   Label = 'label',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
+  ProductVersion = 'product_version',
   ServiceDefinitionIdentifier = 'serviceDefinition_identifier',
   Slug = 'slug'
 }
@@ -521,6 +522,7 @@ export type Mutation = {
   addYourselfInUserService?: Maybe<Array<Maybe<UserService>>>;
   adminAddUser?: Maybe<User>;
   adminEditUser: User;
+  autoRegisterPlatform: Success;
   changeSelectedOrganization?: Maybe<User>;
   createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
@@ -637,6 +639,11 @@ export type MutationAdminAddUserArgs = {
 export type MutationAdminEditUserArgs = {
   id: Scalars['ID']['input'];
   input: AdminEditUserInput;
+};
+
+
+export type MutationAutoRegisterPlatformArgs = {
+  platform: PlatformInput;
 };
 
 
@@ -990,7 +997,8 @@ export type PageInfo = {
 
 export enum PlatformContract {
   Ce = 'CE',
-  Ee = 'EE'
+  Ee = 'EE',
+  Trial = 'trial'
 }
 
 export type PlatformDeploymentRequest = {
@@ -1007,6 +1015,8 @@ export type PlatformDeploymentRequest = {
   product_service_instance_id?: Maybe<Scalars['String']['output']>;
   region: PlatformRegion;
   requester_email: Scalars['String']['output'];
+  requester_first_name?: Maybe<Scalars['String']['output']>;
+  requester_last_name?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
   status: DeploymentRequestStatus;
   type: DeploymentType;
@@ -1079,7 +1089,6 @@ export type Query = {
   publicIntegrationFeedBySlug?: Maybe<IntegrationFeed>;
   publicIntegrationFeeds: IntegrationFeedConnection;
   publicServiceInstances: ServiceConnection;
-  refreshOpenCTIManifest?: Maybe<Scalars['Boolean']['output']>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
@@ -1096,6 +1105,7 @@ export type Query = {
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
+  updateOpenCTIManifest: Success;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
@@ -1356,6 +1366,11 @@ export type QuerySubscribedServiceInstancesByIdentifierArgs = {
 
 export type QuerySubscriptionByIdArgs = {
   subscription_id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryUpdateOpenCtiManifestArgs = {
+  tag?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2208,6 +2223,10 @@ export type AuthDirectiveArgs = {
 
 export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type Platform_TokenDirectiveArgs = { };
+
+export type Platform_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = Platform_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type Service_CapaDirectiveArgs = {
   requires?: Maybe<Array<Maybe<ServiceRestriction>>>;
 };
@@ -2244,10 +2263,10 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   integration_subtype?: Resolver<ResolversTypes['ConnectorType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationFeedType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
-  manager_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  playbook_supported?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  playbook_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   product_version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
@@ -2263,7 +2282,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
-  verified?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2540,6 +2559,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addYourselfInUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddYourselfInUserServiceArgs, 'input'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
+  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
@@ -2682,6 +2702,8 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   product_service_instance_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
   requester_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requester_first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  requester_last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DeploymentRequestStatus'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentType'], ParentType, ContextType>;
@@ -2723,7 +2745,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['IntegrationFeed']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
   publicIntegrationFeeds?: Resolver<ResolversTypes['IntegrationFeedConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  refreshOpenCTIManifest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
@@ -2740,6 +2761,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
+  updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
@@ -3116,6 +3138,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
   auth?: AuthDirectiveResolver<any, any, ContextType>;
+  platform_token?: Platform_TokenDirectiveResolver<any, any, ContextType>;
   service_capa?: Service_CapaDirectiveResolver<any, any, ContextType>;
   system_token?: System_TokenDirectiveResolver<any, any, ContextType>;
 }>;

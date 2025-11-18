@@ -7,6 +7,7 @@ import {
 import IntegrationFeedsList from '@/components/service/integration-feeds/[serviceInstanceId]/integration-feeds-list';
 import { IntegrationFeedsListQuery } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
+import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
@@ -26,6 +27,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     labels,
     integrationTypes,
     connectorTypes,
+    productVersions,
     setSearch,
   } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
@@ -40,9 +42,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         filters: [
-          { key: 'label', value: labels },
-          { key: 'integration_type', value: integrationTypes },
-          { key: 'integration_subtype', value: connectorTypes },
+          { key: FilterKeyEnum.LABEL, value: labels },
+          { key: FilterKeyEnum.INTEGRATION_TYPE, value: integrationTypes },
+          { key: FilterKeyEnum.INTEGRATION_SUBTYPE, value: connectorTypes },
+          { key: FilterKeyEnum.PRODUCT_VERSION, value: productVersions },
         ],
       },
       {
@@ -57,6 +60,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     labels,
     integrationTypes,
     connectorTypes,
+    productVersions,
   ]);
 
   return (

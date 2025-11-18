@@ -1,4 +1,5 @@
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
 import { LogoGitIcon, OpenInNewIcon } from 'filigran-icon';
 import { Badge, Button } from 'filigran-ui/servers';
@@ -6,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
 
-interface ShareableResourceConnectorDetailsProps {
+export interface ShareableResourceConnectorDetailsProps {
   connectorDetails: {
     name: string;
     source_code?: string | null;
@@ -14,10 +15,12 @@ interface ShareableResourceConnectorDetailsProps {
     integration_subtype?: string | null;
     product_version?: string;
   };
+  compatibilityItem?: React.ReactNode;
 }
+
 export const ShareableResourceConnectorDetails: FunctionComponent<
   ShareableResourceConnectorDetailsProps
-> = ({ connectorDetails }) => {
+> = ({ connectorDetails, compatibilityItem }) => {
   const t = useTranslations();
 
   const connectorMetadata = getIngestionConnectorMetadata(
@@ -25,7 +28,7 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
   );
 
   return (
-    <>
+    <ShareableResourceBasicInformation>
       {connectorDetails.source_code && (
         <ShareableResourceDetailItem
           label={t('Service.Connectors.IntegrationDocumentationAndCode')}>
@@ -73,8 +76,8 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.ProductVersion')}>
-        <span>{connectorDetails?.product_version}</span>
+        {compatibilityItem || <span>{connectorDetails?.product_version}</span>}
       </ShareableResourceDetailItem>
-    </>
+    </ShareableResourceBasicInformation>
   );
 };

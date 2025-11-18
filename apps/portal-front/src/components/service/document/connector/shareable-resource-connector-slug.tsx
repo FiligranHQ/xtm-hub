@@ -7,9 +7,9 @@ import {
 } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 
-import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/shareable-resource-connector-details';
+import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/shareable-resource-connector-private-details';
+import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
-import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -31,6 +31,8 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
   ShareableResourceConnectorSlugProps
 > = ({ documentData, breadcrumbValue, shareUrl, logo }) => {
   const t = useTranslations();
+
+  const shouldDisplayOneClickDeployButton = documentData.manager_supported;
 
   return (
     <>
@@ -59,9 +61,16 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
             )}
             <div className="ml-auto">
               <ShareLinkButton
-                documentId={documentData.slug}
+                documentId={documentData.id}
                 url={shareUrl}
               />
+
+              {shouldDisplayOneClickDeployButton && (
+                <OneClickDeploy
+                  documentData={documentData}
+                  requiredProductVersion={documentData.product_version}
+                />
+              )}
             </div>
           </div>
           <div className="w-full mt-s mb-xs">
@@ -76,9 +85,9 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
         />
-        <ShareableResourceBasicInformation>
-          <ShareableResourceConnectorDetails connectorDetails={documentData} />
-        </ShareableResourceBasicInformation>
+        <ShareableResourceConnectorPrivateDetails
+          connectorDetails={documentData}
+        />
       </div>
     </>
   );

@@ -7,6 +7,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
+import { semanticVersionRegex } from '../../utils/semantic-versioning';
 import { Upload } from '../services/document/document.helper';
 import {
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
@@ -142,7 +143,7 @@ const ContractSchema = z.object({
   container_image: z.string().min(1),
   container_type: z.nativeEnum(ConnectorType),
   source_code: z.string().url(),
-  subscription_link: z.string().url().or(z.literal('')),
+  subscription_link: z.string().url().or(z.literal('')).nullish(),
   manager_supported: z.boolean(),
   playbook_supported: z.boolean(),
 });
@@ -151,7 +152,7 @@ const ManifestSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   description: z.string(),
-  version: z.string().min(1),
+  version: z.string().min(1).regex(semanticVersionRegex),
   contracts: z.array(z.unknown()),
 });
 

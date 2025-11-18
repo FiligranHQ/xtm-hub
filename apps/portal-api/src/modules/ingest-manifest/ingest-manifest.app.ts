@@ -6,12 +6,12 @@ import {
   ManifestExtractionResult,
 } from './ingest-manifest.helper';
 
-const OpenCTIConnectorsManifest =
-  'https://raw.githubusercontent.com/OpenCTI-Platform/connectors/master/manifest.json';
+const getOpenCTIConnectorsManifest = (tag: string) =>
+  `https://raw.githubusercontent.com/OpenCTI-Platform/connectors/tags/${tag}/manifest.json`;
 
 export const IngestManifestApp = {
-  async refreshOpenCTIManifest(): Promise<ManifestExtractionResult> {
-    const manifest = await fetchManifest(OpenCTIConnectorsManifest);
+  async updateOpenCTIManifest(tag: string): Promise<ManifestExtractionResult> {
+    const manifest = await fetchManifest(getOpenCTIConnectorsManifest(tag));
     const result = extractManifestInformation(manifest);
 
     if (result.validContracts.length > 0) {

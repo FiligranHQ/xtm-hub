@@ -2,11 +2,13 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterPlatformInput,
+  DeploymentRequestStatus,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
+  PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
@@ -16,8 +18,12 @@ import {
   RegisterPlatformInput,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
   UnregisterPlatformInput,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
+import { requestContext } from '../../../context/request.context';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
@@ -26,7 +32,12 @@ import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  ForbiddenErrorCode,
+  NotFoundErrorCode,
+} from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
@@ -39,7 +50,11 @@ import {
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
-import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
+import { DeploymentRequestDomain } from '../deployments/deployments.domain';
+import {
+  loadServiceDefinitionByServiceInstance,
+  updateServiceInstance,
+} from '../service-instance.domain';
 import {
   PlatformConfiguration,
   registrationDomain,
@@ -52,14 +67,11 @@ import {
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
-    context: PortalContext,
     platformId: string
   ): Promise<Organization | null> => {
+    const { user } = requestContext.require();
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(
-        context,
-        platformId
-      );
+      await serviceContractDomain.loadConfigurationByPlatform(platformId);
     if (!serviceConfiguration) {
       return null;
     }
@@ -73,7 +85,7 @@ export const registrationApp = {
 
     const [userOrganization] = await loadUserOrganization({
       organization_id: subscription.organization_id,
-      user_id: context.user.id,
+      user_id: user.id,
     });
 
     if (!userOrganization) {
@@ -84,11 +96,9 @@ export const registrationApp = {
   },
 
   loadRegisteredPlatforms: async (
-    context: PortalContext,
     input: RegisteredPlatformsInput
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms(
-      context,
       input?.identifier
     );
 
@@ -113,12 +123,10 @@ export const registrationApp = {
    * Be careful when using it.
    */
   loadPlatformRegistrationStatus: async (
-    context: PortalContext,
     input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
-        context,
         input
       );
     return {
@@ -129,12 +137,10 @@ export const registrationApp = {
   },
 
   refreshPlatformRegistrationConnectivityStatus: async (
-    context: PortalContext,
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
-        context,
         input
       );
     if (
@@ -142,7 +148,6 @@ export const registrationApp = {
       activeServiceConfiguration.config['version'] !== input.platformVersion
     ) {
       await serviceContractDomain.updateConfiguration(
-        context,
         activeServiceConfiguration.service_instance_id,
         {
           config: {
@@ -184,7 +189,6 @@ export const registrationApp = {
 
     const isConfigurationValid =
       await serviceContractDomain.isServiceConfigurationValid(
-        context,
         serviceDefinition.id,
         configuration
       );
@@ -193,13 +197,10 @@ export const registrationApp = {
     }
 
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(
-        context,
-        platform.id
-      );
+      await serviceContractDomain.loadConfigurationByPlatform(platform.id);
 
     if (serviceConfiguration) {
-      await registrationDomain.refreshExistingPlatform(context, {
+      await registrationDomain.refreshExistingPlatform({
         serviceInstanceId: serviceConfiguration.service_instance_id,
         targetOrganizationId: organizationId as OrganizationId,
         configuration,
@@ -261,7 +262,6 @@ export const registrationApp = {
   ) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
-        context,
         platformId,
         ServiceConfigurationStatus.Active
       );
@@ -277,7 +277,6 @@ export const registrationApp = {
     }
 
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      context,
       activeServiceConfiguration.service_instance_id
     );
 
@@ -299,7 +298,6 @@ export const registrationApp = {
     });
 
     await serviceContractDomain.updateConfiguration(
-      context,
       activeServiceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
     );
@@ -329,14 +327,10 @@ export const registrationApp = {
   },
 
   isPlatformRegistered: async (
-    context: PortalContext,
     input: IsPlatformRegisteredInput
   ): Promise<IsPlatformRegisteredResponse> => {
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(
-        context,
-        input.platformId
-      );
+      await serviceContractDomain.loadConfigurationByPlatform(input.platformId);
     if (!serviceConfiguration) {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
@@ -371,7 +365,6 @@ export const registrationApp = {
   }> => {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
-        context,
         platformId,
         ServiceConfigurationStatus.Active
       );
@@ -387,7 +380,6 @@ export const registrationApp = {
     }
 
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      context,
       subscription.service_instance_id
     );
     if (!serviceDefinition) {
@@ -418,4 +410,58 @@ export const registrationApp = {
 
     return { token };
   },
+
+  autoRegisterPlatform: async (token: string, platform: PlatformInput) => {
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        platform_token: token,
+      });
+
+    assertValidDeploymentRequest(deploymentRequest, platform.id);
+
+    const configuration: PlatformConfiguration = {
+      registerer_id: deploymentRequest.user_requester_id,
+      platform_id: platform.id,
+      platform_url: platform.url,
+      platform_title: platform.title,
+      platform_contract: platform.contract,
+      platform_version: platform.version,
+      token: deploymentRequest.platform_token,
+    };
+
+    await withTransaction(async () => {
+      await Promise.all([
+        serviceContractDomain.upsertConfiguration(
+          deploymentRequest.service_instance_id,
+          configuration
+        ),
+        updateServiceInstance(deploymentRequest.service_instance_id, {
+          creation_status: ServiceInstanceCreationStatus.Ready,
+        }),
+      ]);
+    });
+  },
+};
+
+const assertValidDeploymentRequest = (
+  deploymentRequest: DeploymentRequest,
+  platformId: string
+) => {
+  if (!deploymentRequest) {
+    throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+  }
+  if (
+    deploymentRequest.product_service_instance_id &&
+    deploymentRequest.product_service_instance_id !== platformId
+  ) {
+    throw new Error(BadRequestErrorCode.InvalidPlatformId);
+  }
+  if (
+    ![
+      DeploymentRequestStatus.Provisioning,
+      DeploymentRequestStatus.Active,
+    ].includes(deploymentRequest.status as DeploymentRequestStatus)
+  ) {
+    throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
+  }
 };

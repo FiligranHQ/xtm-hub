@@ -1,6 +1,7 @@
 import { Restriction } from '../src/__generated__/resolvers-types';
 
 import { OrganizationId } from '../src/model/kanel/public/Organization';
+import { ServiceCapabilityId } from '../src/model/kanel/public/ServiceCapability';
 import { ServiceDefinitionId } from '../src/model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
 import { PortalContext } from '../src/model/portal-context';
@@ -24,8 +25,9 @@ export const THALES_ORGA_ID =
 export const THALES_ADMIN_ORGA_ID = '015c0488-848d-4c89-95e3-8a243971f594';
 export const THALES_ADMIN_ORGA_EMAIL = 'admin@thales.com';
 export const SERVICE_MALWARE_ID = '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4';
-export const SERVICE_VAULT_ID = 'e88e8f80-ba9e-480b-ab27-8613a1565eff';
-export const SERVICE_CSV_FEEDS_ID =
+export const SERVICE_VAULT_ID =
+  'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceInstanceId;
+export const SERVICE_INTEGRATIONS_FEEDS_ID =
   'ad003d3f-c406-4be8-a650-880d72f952e9' as ServiceInstanceId;
 export const SERVICE_OPENAEV_SCENARIOS_ID =
   'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2';
@@ -36,6 +38,11 @@ export const SERVICE_OPENCTI_REGISTRATION =
 export const THALES_SIMPLE_USER_ID = '154006e2-f24b-42da-b39c-e0fb17bead00';
 export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
 export const FILIGRAN_USER_ID = '77b4b845-4ab4-4df8-8e12-0651da813ebb';
+export const INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD =
+  '26611d56-e443-45fb-9f6c-cc6b9b8a5de9' as ServiceCapabilityId;
+export const INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE =
+  '283e06b2-2d64-42c7-b432-890e69ac8b8f' as ServiceCapabilityId;
+
 export const contextAdminUser: PortalContext = {
   user: {
     id: ADMIN_UUID,

@@ -13,6 +13,7 @@ import { PortalContext } from './src/model/portal-context';
 import { INTEGRATION_FEED_METADATA } from './src/modules/services/integration-feeds/integration-feeds.model';
 import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
+import { compareSemanticVersions } from './src/utils/semantic-versioning';
 import { extractId } from './src/utils/utils';
 
 export interface SecuryQueryOpts {
@@ -277,6 +278,26 @@ export const paginate = async <T, U>(
               `${type}.service_definition_id`
             )
             .whereIn('ServiceDefinition.identifier', value);
+        }
+      } else if (key === FilterKey.ProductVersion) {
+        if (value.length > 0) {
+          const lowestVersion = value.sort((a, b) =>
+            compareSemanticVersions(a, b)
+          )[0];
+          const metaAlias = `metaFilter${key}`;
+          queryContext
+            .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+              this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+                `${metaAlias}.key`,
+                '=',
+                key
+              );
+            })
+            .whereRaw(
+              dbRaw(
+                `("${metaAlias}"."value" IS NULL OR string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
+              )
+            );
         }
       } else if ((INTEGRATION_FEED_METADATA as string[]).includes(key)) {
         if (value.length > 0) {

@@ -6,19 +6,19 @@ import SubscriptionCapability from '../../../model/kanel/public/SubscriptionCapa
 export const addCapabilitiesToSubscription = async (
   subscriptionId: SubscriptionId,
   capabilityIds: ServiceCapabilityId[]
-) => {
-  const promises = capabilityIds.map((capabilityId) => {
-    const data = {
-      service_capability_id: capabilityId,
-      subscription_id: subscriptionId,
-    };
+): Promise<SubscriptionCapability[]> => {
+  if (!capabilityIds.length) {
+    return [];
+  }
 
-    return db<SubscriptionCapability>('Subscription_Capability')
-      .insert(data)
-      .returning('*');
-  });
+  const data = capabilityIds.map((capabilityId) => ({
+    service_capability_id: capabilityId,
+    subscription_id: subscriptionId,
+  }));
 
-  await Promise.all(promises);
+  return db<SubscriptionCapability>('Subscription_Capability')
+    .insert(data)
+    .returning('*');
 };
 
 export const loadSubscriptionCapabilities = async (

@@ -79,27 +79,39 @@ const resolvers: Resolvers = {
         return toGlobalId('Document', illustration_document_id);
       }
     },
-    links: ({ id }, _, context) => loadLinks(context, id),
-    service_definition: ({ id }, _, context) =>
-      loadServiceDefinitionByServiceInstance(context, id),
+    links: ({ id }, _) => loadLinks(id),
+    service_definition: ({ id }, _) =>
+      loadServiceDefinitionByServiceInstance(id),
     organization_subscribed: ({ id }, _, context) =>
-      loadIsSubscribed(context, id),
+      loadIsSubscribed(
+        context.user.selected_organization_id,
+        id as ServiceInstanceId
+      ),
     capabilities: ({ id }, _, context) =>
       loadCapabilities(
         id,
         context.user.id,
         context.user.selected_organization_id
       ),
-    user_joined: ({ id }, _, context) => getUserJoined(context, id),
-    subscriptions: ({ id }, _, context) =>
-      loadServiceInstanceSubscriptions(context, id),
+    user_joined: ({ id }, _, context) =>
+      getUserJoined(
+        context.user.id,
+        context.user.selected_organization_id,
+        id as ServiceInstanceId
+      ),
+    subscriptions: ({ id }, _) =>
+      loadServiceInstanceSubscriptions(id as ServiceInstanceId),
   },
   Query: {
-    serviceInstances: async (_, opt, context) => {
-      return loadServiceInstances(context, opt);
+    serviceInstances: async (_, opt) => {
+      return loadServiceInstances(opt);
     },
     publicServiceInstances: async (_, opt, context) => {
-      return loadPublicServiceInstances(context, opt);
+      return loadPublicServiceInstances(
+        context.user.id,
+        context.user.selected_organization_id,
+        opt
+      );
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
       const serviceInstance = await serviceInstanceApp.loadServiceInstance(
@@ -111,23 +123,22 @@ const resolvers: Resolvers = {
     },
     serviceInstanceByIdWithSubscriptions: async (
       _,
-      { service_instance_id },
-      context
+      { service_instance_id }
     ) => {
-      return loadServiceWithSubscriptions(
-        context,
-        extractId(service_instance_id)
-      );
+      return loadServiceWithSubscriptions(extractId(service_instance_id));
     },
     subscribedServiceInstancesByIdentifier: async (
       _,
       { identifier },
       context
     ) => {
-      return loadSubscribedServiceInstancesByIdentifier(context, identifier);
+      return loadSubscribedServiceInstancesByIdentifier(
+        context.user.id,
+        identifier
+      );
     },
-    seoServiceInstances: async (_, _opt, context) => {
-      const services = await loadSeoServiceInstances(context);
+    seoServiceInstances: async (_, _opt) => {
+      const services = await loadSeoServiceInstances();
       return services.map((service: SeoServiceInstance) => ({
         ...service,
         ...(service.illustration_document_id && {
@@ -141,8 +152,8 @@ const resolvers: Resolvers = {
         }),
       }));
     },
-    seoServiceInstance: async (_, { slug }, context) => {
-      const serviceInstance = await loadSeoServiceInstanceBySlug(context, slug);
+    seoServiceInstance: async (_, { slug }) => {
+      const serviceInstance = await loadSeoServiceInstanceBySlug(slug);
       if (!serviceInstance) {
         throw NotFoundError(ErrorCode.ServiceNotFound);
       }
@@ -306,7 +317,6 @@ const resolvers: Resolvers = {
 
         // Get platform configuration to return RegisteredPlatform
         const config = await loadPlatformConfigurationByServiceInstanceId(
-          context,
           updatedServiceInstance.id
         );
 

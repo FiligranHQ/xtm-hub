@@ -17,6 +17,7 @@ export enum ForbiddenErrorCode {
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
   PersonalSpaceMustAlreadyExist = 'PERSONAL_SPACE_MUST_ALREADY_EXIST',
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
+  NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
 }
 
 export enum BadRequestErrorCode {
@@ -29,6 +30,7 @@ export enum BadRequestErrorCode {
   MissingStartOrEndDate = 'MISSING_START_OR_END_DATE',
   DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
   InvalidStatus = 'INVALID_STATUS',
+  InvalidPlatformId = 'INVALID_PLATFORM_ID',
 }
 
 export enum UnknownErrorCode {

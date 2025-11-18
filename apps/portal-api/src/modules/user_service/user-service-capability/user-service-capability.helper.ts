@@ -2,7 +2,6 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw } from '../../../../knexfile';
 import { Subscription } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionCapabilityId } from '../../../model/kanel/public/SubscriptionCapability';
 import UserService from '../../../model/kanel/public/UserService';
@@ -40,13 +39,9 @@ export const insertCapabilities = async (
         service_capability_id: serviceCapability.id,
         subscription_id: userService.subscription_id,
       });
-      const { portalContext } = requestContext.require();
-      const subscriptionCapabilities = await loadSubscriptionCapabilitiesBy(
-        portalContext,
-        {
-          subscription_id: userService.subscription_id,
-        }
-      );
+      const subscriptionCapabilities = await loadSubscriptionCapabilitiesBy({
+        subscription_id: userService.subscription_id,
+      });
       const isCapabilityGrantedForOrganization = subscriptionCapabilities.some(
         (subscriptionCapability) => {
           return (

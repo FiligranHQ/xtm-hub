@@ -193,14 +193,11 @@ describe('Registration domain', () => {
         Promise.reject('ERROR')
       );
 
-      const call = registrationDomain.refreshExistingPlatform(
-        contextAdminUser,
-        {
-          configuration,
-          serviceInstanceId,
-          targetOrganizationId,
-        }
-      );
+      const call = registrationDomain.refreshExistingPlatform({
+        configuration,
+        serviceInstanceId,
+        targetOrganizationId,
+      });
 
       await expect(call).rejects.toThrow('ERROR');
     });
@@ -209,14 +206,11 @@ describe('Registration domain', () => {
       assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
       loadSubscriptionBySpy.mockResolvedValue(null);
 
-      const call = registrationDomain.refreshExistingPlatform(
-        contextAdminUser,
-        {
-          configuration,
-          serviceInstanceId,
-          targetOrganizationId,
-        }
-      );
+      const call = registrationDomain.refreshExistingPlatform({
+        configuration,
+        serviceInstanceId,
+        targetOrganizationId,
+      });
 
       await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
     });
@@ -231,17 +225,16 @@ describe('Registration domain', () => {
       it('should update configuration', async () => {
         assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
 
-        await registrationDomain.refreshExistingPlatform(contextAdminUser, {
+        await registrationDomain.refreshExistingPlatform({
           configuration,
           serviceInstanceId,
           targetOrganizationId,
         });
 
-        expect(updateConfigurationSpy).toHaveBeenCalledWith(
-          contextAdminUser,
-          serviceInstanceId,
-          { config: configuration, status: ServiceConfigurationStatus.Active }
-        );
+        expect(updateConfigurationSpy).toHaveBeenCalledWith(serviceInstanceId, {
+          config: configuration,
+          status: ServiceConfigurationStatus.Active,
+        });
       });
     });
 
@@ -259,14 +252,11 @@ describe('Registration domain', () => {
         assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
         loadOrganizationsByUserSpy.mockResolvedValue([{}, {}, {}]);
 
-        const call = registrationDomain.refreshExistingPlatform(
-          contextAdminUser,
-          {
-            configuration,
-            serviceInstanceId,
-            targetOrganizationId,
-          }
-        );
+        const call = registrationDomain.refreshExistingPlatform({
+          configuration,
+          serviceInstanceId,
+          targetOrganizationId,
+        });
 
         await expect(call).rejects.toThrow(
           ErrorCode.RegistrationOnAnotherOrganizationForbidden
@@ -287,14 +277,11 @@ describe('Registration domain', () => {
           }
         );
 
-        const call = registrationDomain.refreshExistingPlatform(
-          contextAdminUser,
-          {
-            configuration,
-            serviceInstanceId,
-            targetOrganizationId,
-          }
-        );
+        const call = registrationDomain.refreshExistingPlatform({
+          configuration,
+          serviceInstanceId,
+          targetOrganizationId,
+        });
 
         await expect(call).rejects.toThrow(
           ErrorCode.MissingCapabilityOnOrganization
@@ -304,7 +291,7 @@ describe('Registration domain', () => {
       it('should transfer the subscription and refresh configuration when user is allowed', async () => {
         assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
 
-        await registrationDomain.refreshExistingPlatform(contextAdminUser, {
+        await registrationDomain.refreshExistingPlatform({
           configuration,
           serviceInstanceId,
           targetOrganizationId,
@@ -315,11 +302,10 @@ describe('Registration domain', () => {
           organizationId: targetOrganizationId,
         });
 
-        expect(updateConfigurationSpy).toHaveBeenCalledWith(
-          contextAdminUser,
-          serviceInstanceId,
-          { config: configuration, status: ServiceConfigurationStatus.Active }
-        );
+        expect(updateConfigurationSpy).toHaveBeenCalledWith(serviceInstanceId, {
+          config: configuration,
+          status: ServiceConfigurationStatus.Active,
+        });
       });
     });
   });
@@ -368,8 +354,7 @@ describe('Registration domain', () => {
     });
 
     it('should return all registered platform without platformIdentifier in input ', async () => {
-      const platforms =
-        await registrationDomain.loadRegisteredPlatforms(contextAdminUser);
+      const platforms = await registrationDomain.loadRegisteredPlatforms();
 
       expect(
         platforms.some(
@@ -386,7 +371,6 @@ describe('Registration domain', () => {
     });
     it('should return only the right registered platform if platformIdentifier in input ', async () => {
       const platforms = await registrationDomain.loadRegisteredPlatforms(
-        contextAdminUser,
         PlatformIdentifier.Openaev
       );
       expect(

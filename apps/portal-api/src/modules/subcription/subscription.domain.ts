@@ -4,7 +4,6 @@ import {
   ServiceCapability,
   UserService,
 } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import Subscription, {
   SubscriptionId,
@@ -63,9 +62,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
 
   const organization = await loadOrganizationBy({ id: sub.organization_id });
 
-  const { portalContext } = requestContext.require();
   const serviceInstance = await loadServiceInstanceBy(
-    portalContext,
     'ServiceInstance.id',
     sub.service_instance_id
   );

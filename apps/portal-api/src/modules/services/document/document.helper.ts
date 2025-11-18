@@ -23,6 +23,12 @@ import {
   sendFileToS3,
 } from './document.domain';
 
+export const BOOLEAN_METADATA = [
+  'verified',
+  'manager_supported',
+  'playbook_supported',
+];
+
 export type Document = WithLabels<DocumentModel>;
 export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];

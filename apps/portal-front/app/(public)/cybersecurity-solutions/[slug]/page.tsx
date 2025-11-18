@@ -187,7 +187,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
     ];
 
     const isConnectorsFeatureEnabled = await isFeatureEnabled(
-      FeatureFlag.CONNECTORS
+      FeatureFlag.CONNECTORS_INTEGRATION_FEEDS
     );
 
     return (

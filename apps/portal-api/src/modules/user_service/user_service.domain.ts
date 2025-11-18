@@ -5,7 +5,6 @@ import {
   UserServiceCapability,
   UserServiceConnection,
 } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService, {
@@ -250,8 +249,7 @@ export const addAdminAccess = async (
     user_service_id: userService.id,
     generic_service_capability_id: capabilityId,
   }));
-  const { portalContext } = requestContext.require();
-  await insertServiceCapability(portalContext, dataCapabilities);
+  await insertServiceCapability(dataCapabilities);
 };
 
 export const loadUserServiceBy = async (

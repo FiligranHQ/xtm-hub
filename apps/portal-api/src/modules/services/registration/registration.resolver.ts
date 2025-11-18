@@ -3,6 +3,7 @@ import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
@@ -14,7 +15,7 @@ const resolvers: Resolvers = {
     subscription: ({ id }, _, context) =>
       loadServiceInstanceSubscription(
         context.user.selected_organization_id,
-        id
+        id as ServiceInstanceId
       ),
     deployment_request: ({ id }, _, __) =>
       DeploymentRequestDomain.loadDeploymentRequestBy({
@@ -22,12 +23,9 @@ const resolvers: Resolvers = {
       }),
   },
   Query: {
-    isPlatformRegistered: async (_, { input }, context) => {
+    isPlatformRegistered: async (_, { input }) => {
       try {
-        const response = await registrationApp.isPlatformRegistered(
-          context,
-          input
-        );
+        const response = await registrationApp.isPlatformRegistered(input);
         return response;
       } catch (error) {
         throw mapToGraphQLError(
@@ -63,18 +61,17 @@ const resolvers: Resolvers = {
         );
       }
     },
-    registeredPlatforms: async (_, { input }, context) =>
-      registrationApp.loadRegisteredPlatforms(context, input),
+    registeredPlatforms: async (_, { input }) =>
+      registrationApp.loadRegisteredPlatforms(input),
     /**
      * @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead.
      * This function is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the new endpoint.
      */
-    openCTIPlatformRegistrationStatus: async (_, { input }, context) =>
-      registrationApp.loadPlatformRegistrationStatus(context, input),
-    platformAssociatedOrganization: async (_, { platformId }, context) => {
+    openCTIPlatformRegistrationStatus: async (_, { input }) =>
+      registrationApp.loadPlatformRegistrationStatus(input),
+    platformAssociatedOrganization: async (_, { platformId }) => {
       try {
         return await registrationApp.loadPlatformAssociatedOrganization(
-          context,
           platformId
         );
       } catch (error) {
@@ -127,15 +124,13 @@ const resolvers: Resolvers = {
         );
       }
     },
-    refreshPlatformRegistrationConnectivityStatus: async (
-      _,
-      { input },
-      context
-    ) =>
-      registrationApp.refreshPlatformRegistrationConnectivityStatus(
-        context,
-        input
-      ),
+    refreshPlatformRegistrationConnectivityStatus: async (_, { input }) =>
+      registrationApp.refreshPlatformRegistrationConnectivityStatus(input),
+    autoRegisterPlatform: async (_, { platform }, context: PortalContext) => {
+      const token = context.req.header('XTM-Hub-Platform-Token');
+      await registrationApp.autoRegisterPlatform(token, platform);
+      return { success: true };
+    },
   },
 };
 

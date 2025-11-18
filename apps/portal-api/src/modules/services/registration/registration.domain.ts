@@ -14,7 +14,6 @@ import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
-import { PortalContext } from '../../../model/portal-context';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
@@ -59,7 +58,6 @@ export const registrationDomain = {
 
     const serviceInstanceId =
       await serviceInstanceDomain.createPlatformServiceInstance(
-        context,
         serviceDefinitionId,
         platformIdentifier,
         serviceInstanceCreationStatus
@@ -79,7 +77,6 @@ export const registrationDomain = {
 
     if (configuration) {
       await serviceContractDomain.createConfiguration(
-        context,
         serviceInstanceId,
         configuration
       );
@@ -87,18 +84,16 @@ export const registrationDomain = {
     return serviceInstanceId;
   },
 
-  refreshExistingPlatform: async (
-    context: PortalContext,
-    {
-      configuration,
-      serviceInstanceId,
-      targetOrganizationId,
-    }: {
-      configuration: PlatformConfiguration;
-      serviceInstanceId: ServiceInstanceId;
-      targetOrganizationId: OrganizationId;
-    }
-  ) => {
+  refreshExistingPlatform: async ({
+    configuration,
+    serviceInstanceId,
+    targetOrganizationId,
+  }: {
+    configuration: PlatformConfiguration;
+    serviceInstanceId: ServiceInstanceId;
+    targetOrganizationId: OrganizationId;
+  }) => {
+    const { portalContext: context } = requestContext.require();
     await securityGuard.assertUserIsAllowedOnOrganization(context, {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -127,15 +122,13 @@ export const registrationDomain = {
       });
     }
 
-    await serviceContractDomain.updateConfiguration(
-      context,
-      serviceInstanceId,
-      { config: configuration, status: ServiceConfigurationStatus.Active }
-    );
+    await serviceContractDomain.updateConfiguration(serviceInstanceId, {
+      config: configuration,
+      status: ServiceConfigurationStatus.Active,
+    });
   },
 
   loadRegisteredPlatforms: async (
-    context: PortalContext,
     platformIdentifier?: PlatformIdentifier,
     opts: QueryOpts = {}
   ): Promise<
@@ -146,7 +139,8 @@ export const registrationDomain = {
       id: string;
     }[]
   > => {
-    const userSelectedOrganization = context.user.selected_organization_id;
+    const { user } = requestContext.require();
+    const userSelectedOrganization = user.selected_organization_id;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
           serviceDefinitionIdentifierMappedByPlatformIdentifier[
@@ -155,7 +149,7 @@ export const registrationDomain = {
         ]
       : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
-    return await db<ServiceInstance>(context, 'ServiceInstance', opts)
+    return await db<ServiceInstance>('ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',
@@ -178,6 +172,7 @@ export const registrationDomain = {
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
+      .where('Service_Configuration.status', '=', 'active')
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',

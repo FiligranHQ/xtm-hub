@@ -8,8 +8,8 @@ import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
-import { CAPABILITY_BYPASS } from '../../portal.const';
 import { dispatch } from '../../pub';
+import { isUserAdminPlatform } from '../../security/access';
 import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -53,11 +53,8 @@ export const usersAdminApp = {
     // Only the admin PLTFM can by pass this check
     const isEmailOutsideOrganization =
       chosenOrganizationId !== organizationFromEmail?.id;
-    const hasUserBypassCapability = contextUser.capabilities.some(
-      (c) => c.id === CAPABILITY_BYPASS.id
-    );
 
-    if (isEmailOutsideOrganization && !hasUserBypassCapability) {
+    if (isEmailOutsideOrganization && !isUserAdminPlatform(contextUser)) {
       logApp.warn(
         'You cannot add a user whose email domain is outside your organization'
       );

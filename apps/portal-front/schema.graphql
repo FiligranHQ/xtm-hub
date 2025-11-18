@@ -1,5 +1,7 @@
 directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 
+directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
+
 directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
@@ -18,6 +20,7 @@ enum FilterKey {
   integration_type
   integration_subtype
   slug
+  product_version
 }
 
 input Filter {
@@ -30,7 +33,7 @@ type Success {
 }
 
 type Query {
-  refreshOpenCTIManifest: Boolean
+  updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -105,6 +108,7 @@ type Mutation {
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  autoRegisterPlatform(platform: PlatformInput!): Success!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
@@ -301,6 +305,8 @@ type PlatformDeploymentRequest {
   organization_name: String!
   organization_domains: [String!]
   requester_email: String!
+  requester_first_name: String
+  requester_last_name: String
   product_service_instance_id: String
   failure_reason: String
 }
@@ -555,12 +561,12 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   integration_type: IntegrationFeedType!
   product_version: String!
   container_image: String
-  verified: String!
+  verified: Boolean!
   source_code: String
   subscription_link: String
   integration_subtype: ConnectorType!
-  manager_supported: String!
-  playbook_supported: String!
+  manager_supported: Boolean!
+  playbook_supported: Boolean!
 }
 
 type IntegrationFeedEdge {
@@ -645,6 +651,7 @@ type OpenCTIPlatformRegistrationStatusResponse {
 enum PlatformContract {
   CE
   EE
+  trial
 }
 
 type RegisteredPlatform implements Node {
