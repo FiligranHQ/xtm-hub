@@ -1,6 +1,8 @@
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { SettingsResponse } from '@/utils/settings.service';
+import { Restriction } from '@generated/meContext_fragment.graphql';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import PlatformAssociatedOrganizationQueryGraphql, {
   platformAssociatedOrganizationQuery,
@@ -22,6 +24,8 @@ interface MeResponse {
         name: string;
         personal_space: boolean;
       }[];
+      capabilities: Restriction[];
+      selected_org_capabilities: OrganizationCapabilityEnum[];
     };
   };
 }

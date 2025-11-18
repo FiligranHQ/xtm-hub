@@ -1,0 +1,94 @@
+import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { NextRequest, NextResponse } from 'next/server';
+import { graphql } from 'react-relay';
+import { loadBaseUrlFront, loadMeUser } from './utils/load';
+import { getLoginRedirectionURL } from './utils/url';
+
+const CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery = graphql`
+  query createFreeTrialRegisteredPlatformsStatusAndTypeQuery(
+    $input: RegisteredPlatformsInput
+  ) {
+    registeredPlatforms(input: $input) {
+      id
+      deployment_request {
+        type
+        status
+      }
+    }
+  }
+`;
+
+export const redirectToCreateFreeTrial = async (request: NextRequest) => {
+  const baseUrlFront = await loadBaseUrlFront();
+  const redirectionUrl = getLoginRedirectionURL(baseUrlFront, request);
+  try {
+    const user = await loadMeUser();
+    if (!user) {
+      return NextResponse.redirect(redirectionUrl);
+    }
+
+    const freeTrialUrl = new URL(`/app/service/free-trial`, baseUrlFront);
+
+    const isAdmin = user.capabilities.includes(RestrictionEnum.BYPASS);
+    const requiredCapabilities: OrganizationCapabilityEnum[] = [
+      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+    ];
+    const userIsAllowed = requiredCapabilities.some((cap) =>
+      user.selected_org_capabilities.includes(cap)
+    );
+
+    if (!userIsAllowed && !isAdmin) {
+      return NextResponse.redirect(freeTrialUrl);
+    }
+
+    const response =
+      await serverFetchGraphQL<createFreeTrialRegisteredPlatformsStatusAndTypeQuery>(
+        CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery,
+        {
+          input: {
+            identifier: PlatformIdentifierEnum.OPENCTI,
+          },
+        }
+      );
+
+    const platforms = response.data.registeredPlatforms || [];
+    const freeTrials = platforms.filter(
+      (platform) =>
+        platform.deployment_request?.type === DeploymentTypeEnum.TRIAL
+    );
+
+    const isTrialStarted =
+      freeTrials.length > 0 &&
+      freeTrials[0]?.deployment_request?.status &&
+      [
+        DeploymentRequestStatusEnum.QUEUED,
+        DeploymentRequestStatusEnum.PENDING,
+      ].includes(
+        freeTrials[0].deployment_request?.status as DeploymentRequestStatusEnum
+      );
+
+    if (isTrialStarted) {
+      const instanceUrl = new URL(
+        `/app/service/opencti_registration/${freeTrials[0]?.id}`,
+        baseUrlFront
+      );
+      return NextResponse.redirect(instanceUrl);
+    }
+
+    return NextResponse.redirect(`${freeTrialUrl}?openForm`);
+  } catch (error) {
+    if ((error as Error).message === 'UNAUTHENTICATED') {
+      return NextResponse.redirect(redirectionUrl);
+    }
+
+    const loginURL = new URL('/login', baseUrlFront);
+    return NextResponse.redirect(loginURL);
+  }
+};
