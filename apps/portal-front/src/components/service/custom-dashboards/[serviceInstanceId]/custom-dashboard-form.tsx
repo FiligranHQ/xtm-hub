@@ -124,7 +124,7 @@ export const CustomDashboardForm = ({
             ? me?.selected_organization_id
             : customDashboard?.uploader_organization?.id) ?? '',
       }) as CustomDashboardFormValues,
-    [me, customDashboard]
+    [me, customDashboard, isCreation]
   );
   const formSchema = useMemo(
     () =>
@@ -153,9 +153,6 @@ export const CustomDashboardForm = ({
             if (currentSlug !== generatedSlug) {
               form.setValue('slug', generatedSlug, { shouldDirty: false });
             }
-          }
-          if (!isCreation && values.images) {
-            form.setValue('images', images as unknown as FileList);
           }
         }}
         values={values}

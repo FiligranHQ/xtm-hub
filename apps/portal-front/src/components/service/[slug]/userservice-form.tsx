@@ -72,6 +72,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   );
   const { toast } = useToast();
   const t = useTranslations();
+  const isUserCreation = !userService?.id;
 
   const organizationId = subscription.subscriptionById?.organization?.id;
   const genericCapabilities = [
@@ -143,7 +144,6 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   }, [form.formState.isDirty]);
 
   useEffect(() => {
-    const isUserCreation = !userService?.id;
     form.reset({
       email: [{ id: '', text: '' }],
       capabilities: isUserCreation ? [] : getCurrentCapabilities(),
@@ -294,15 +294,14 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   return (
-    <Form {...capabilitiesForm}>
+    <Form {...(form as typeof extendedForm)}>
       <form
         className="space-y-xl"
         onSubmit={(e) => {
           e.preventDefault();
-
-          !userService?.id
-            ? extendedForm.handleSubmit(onSubmitExtendSchema)(e)
-            : capabilitiesForm.handleSubmit(onSubmitCapabilitiesSchema)(e);
+          userService?.id
+            ? capabilitiesForm.handleSubmit(onSubmitCapabilitiesSchema)(e)
+            : extendedForm.handleSubmit(onSubmitExtendSchema)(e);
         }}>
         {!userService?.id && (
           <>
@@ -344,12 +343,13 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
           {capabilitiesData.map((capability) => (
             <FormField
               key={capability!.id}
-              control={capabilitiesForm.control}
+              control={(form as typeof capabilitiesForm).control}
               name="capabilities"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2">
                   <FormControl>
                     <Checkbox
+                      {...field}
                       disabled={isCapabilityDisabled(capability!.id)}
                       className="mt-xs"
                       checked={(field.value as string[]).includes(
