@@ -202,7 +202,7 @@ input UpdateCustomDashboardInput {
   product_version: String
 }
 
-type CustomDashboard implements DocumentBase & Node {
+type CustomDashboard implements Document & Node {
   id: ID!
   type: String!
   uploader: User
@@ -223,7 +223,7 @@ type CustomDashboard implements DocumentBase & Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   product_version: String
 }
 
@@ -358,9 +358,14 @@ type DeploymentAvailability {
   availableCount: Int!
 }
 
-type ShareableResourceImage {
+type ShareableResource {
   id: ID!
   file_name: String!
+  created_at: Date!
+  name: String!
+  description: String
+  download_number: Int
+  active: Boolean!
 }
 
 enum DocumentOrdering {
@@ -370,7 +375,11 @@ enum DocumentOrdering {
   download_number
 }
 
-interface DocumentBase implements Node {
+"""
+ /!\ WARNING Do not use this type.
+It exists only to cover cases where we failed to map to a specific Document.
+"""
+type DefaultDocument implements Node & Document {
   id: ID!
   type: String!
   uploader: User
@@ -391,19 +400,18 @@ interface DocumentBase implements Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
 }
 
-type Document implements Node {
+interface Document implements Node {
   id: ID!
   type: String!
   uploader: User
   uploader_organization: Organization
-  service_instance_id: String!
-  name: String
+  name: String!
   short_description: String
   description: String
-  file_name: String!
+  file_name: String
   minio_name: String!
   active: Boolean!
   created_at: Date!
@@ -411,10 +419,12 @@ type Document implements Node {
   updater_id: String
   download_number: Int
   share_number: Int
-  children_documents: [Document!]
-  slug: String
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
 }
 
 input EditDocumentInput {
@@ -444,7 +454,7 @@ type ServiceLink implements Node {
   name: String
 }
 
-type CsvFeed implements Node & DocumentBase & IntegrationFeed {
+type CsvFeed implements Node & Document & IntegrationFeed {
   id: ID!
   type: String!
   uploader: User
@@ -465,7 +475,7 @@ type CsvFeed implements Node & DocumentBase & IntegrationFeed {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationFeedType!
 }
@@ -509,7 +519,7 @@ enum ConnectorType {
   STREAM
 }
 
-interface IntegrationFeed implements Node & DocumentBase {
+interface IntegrationFeed implements Node & Document {
   id: ID!
   type: String!
   uploader: User
@@ -530,12 +540,12 @@ interface IntegrationFeed implements Node & DocumentBase {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationFeedType!
 }
 
-type Connector implements Node & DocumentBase & IntegrationFeed {
+type Connector implements Node & Document & IntegrationFeed {
   id: ID!
   type: String!
   uploader: User
@@ -556,7 +566,7 @@ type Connector implements Node & DocumentBase & IntegrationFeed {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationFeedType!
   product_version: String!
@@ -603,7 +613,7 @@ input UpdateOpenAEVScenarioInput {
   product_version: String
 }
 
-type OpenAEVScenario implements DocumentBase & Node {
+type OpenAEVScenario implements Document & Node {
   id: ID!
   type: String!
   uploader: User
@@ -624,7 +634,7 @@ type OpenAEVScenario implements DocumentBase & Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   product_version: String
 }
 
