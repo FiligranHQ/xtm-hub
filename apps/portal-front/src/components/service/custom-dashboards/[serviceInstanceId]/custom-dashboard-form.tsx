@@ -120,19 +120,19 @@ export const CustomDashboardForm = ({
         labels: customDashboard?.labels?.map((label) => label.id),
         uploader_id: customDashboard?.uploader?.id ?? me?.id,
         uploader_organization_id:
-          customDashboard?.uploader_organization?.id ?? '',
+          (isCreation
+            ? me?.selected_organization_id
+            : customDashboard?.uploader_organization?.id) ?? '',
       }) as CustomDashboardFormValues,
     [me, customDashboard]
   );
   const formSchema = useMemo(
     () =>
       customDashboard
-        ? customDashboardSchema.extend(
-            z.object({
-              document: z.custom<FileList>(fileListCheck).optional(),
-              images: z.custom<FileList>(fileListCheck).optional(),
-            }).shape
-          )
+        ? customDashboardSchema.extend({
+            document: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(fileListCheck).optional(),
+          })
         : customDashboardSchema,
     [customDashboard]
   );
@@ -156,12 +156,6 @@ export const CustomDashboardForm = ({
           }
           if (!isCreation && values.images) {
             form.setValue('images', images as unknown as FileList);
-          }
-          if (isCreation) {
-            form.setValue(
-              'uploader_organization_id',
-              me!.selected_organization_id
-            );
           }
         }}
         values={values}

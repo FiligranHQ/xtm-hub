@@ -76,12 +76,10 @@ export const OpenaevScenarioForm = ({
   const formSchema = useMemo(
     () =>
       openAEVScenario
-        ? openAEVScenarioFormSchema.extend(
-            z.object({
-              document: z.custom<FileList>(fileListCheck).optional(),
-              illustration: z.custom<FileList>(fileListCheck).optional(),
-            }).shape
-          )
+        ? openAEVScenarioFormSchema.extend({
+            document: z.custom<FileList>(fileListCheck).optional(),
+            illustration: z.custom<FileList>(fileListCheck).optional(),
+          })
         : openAEVScenarioFormSchema,
     [openAEVScenario]
   );
