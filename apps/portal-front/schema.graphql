@@ -384,7 +384,7 @@ type DefaultDocument implements Node & Document {
   type: String!
   uploader: User
   uploader_organization: Organization
-  name: String!
+  name: String
   short_description: String
   description: String
   file_name: String
@@ -395,7 +395,7 @@ type DefaultDocument implements Node & Document {
   updater_id: String
   download_number: Int
   share_number: Int
-  slug: String!
+  slug: String
   labels: [Label!]
   service_instance_id: String!
   service_instance: ServiceInstance
@@ -408,7 +408,7 @@ interface Document implements Node {
   type: String!
   uploader: User
   uploader_organization: Organization
-  name: String!
+  name: String
   short_description: String
   description: String
   file_name: String
@@ -419,7 +419,7 @@ interface Document implements Node {
   updater_id: String
   download_number: Int
   share_number: Int
-  slug: String!
+  slug: String
   labels: [Label!]
   service_instance_id: String!
   service_instance: ServiceInstance
