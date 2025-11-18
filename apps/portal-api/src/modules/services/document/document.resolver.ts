@@ -172,8 +172,14 @@ const resolvers: Resolvers = {
         return TYPE_MAPPINGS[document.type];
       } else if (document.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
         const integrationType = await loadIntegrationType(document.id);
+        logApp.warn(
+          `Document resolver type - Unresolved integration type ${integrationType}`
+        );
         return INTEGRATION_MAPPINGS[integrationType] ?? 'DefaultDocument';
       }
+      logApp.warn(
+        `Document resolver type - Unresolved document type ${document.type}`
+      );
       return 'DefaultDocument';
     },
 
