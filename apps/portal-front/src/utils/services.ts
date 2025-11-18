@@ -37,7 +37,7 @@ export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
     serviceInstance.service_instance_status ===
     ServiceInstanceCreationStatusEnum.PENDING
   ) {
-    return 'Provisionning';
+    return 'Provisioning';
   }
   if (!serviceInstance?.end_date) {
     return serviceInstance.status;
