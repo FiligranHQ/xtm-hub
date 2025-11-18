@@ -1,8 +1,14 @@
 import {
+  DeploymentRequestStatus,
+  DeploymentType,
+  PlatformRegion,
+} from '../../__generated__/resolvers-types';
+import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
   TelemetryOrganizationType,
+  TelemetryTargetProduct,
 } from './telemetry.const';
 
 export enum TelemetryEventType {
@@ -15,6 +21,8 @@ export enum TelemetryEventType {
   ONE_CLICK_DEPLOY = 'one_click_deploy',
   UPDATE_ORGANIZATION = 'update_organization',
   CREATE_ORGANIZATION = 'create_organization',
+  CREATE_DEPLOYMENT = 'create_deployment',
+  UPDATE_DEPLOYMENT = 'update_deployment',
 }
 
 export interface BaseTelemetryEvent {
@@ -64,7 +72,7 @@ export interface CreateEvent extends BaseTelemetryEvent {
 
 export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.REGISTER;
-  target_product: string;
+  target_product: TelemetryTargetProduct;
   platform_id: string;
   platform_contract: string;
   platform_version: string;
@@ -72,7 +80,7 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
 
 export interface OneClickDeployEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.ONE_CLICK_DEPLOY;
-  target_product: string;
+  target_product: TelemetryTargetProduct;
   service: TelemetryEventService;
   service_type?: TelemetryEventServiceType;
   resource_id: string;
@@ -91,6 +99,28 @@ export interface CreateOrganizationEvent extends BaseTelemetryEvent {
   domains: string[];
 }
 
+export interface CreateDeploymentEvent extends BaseTelemetryEvent {
+  activity_sector: string;
+  deployment_id: string;
+  deployment_type: DeploymentType;
+  email: string;
+  event_type: TelemetryEventType.CREATE_DEPLOYMENT;
+  job_title: string;
+  region: PlatformRegion;
+  status: DeploymentRequestStatus;
+  use_case: string;
+  target_product: TelemetryTargetProduct;
+}
+
+export interface UpdateDeploymentEvent extends BaseTelemetryEvent {
+  deployment_id: string;
+  deployment_type: DeploymentType;
+  start_date: Date;
+  end_date: Date;
+  platform_id: string;
+  status: DeploymentRequestStatus;
+}
+
 export type TelemetryEvent =
   | LoginEvent
   | SubscribeEvent
@@ -100,4 +130,6 @@ export type TelemetryEvent =
   | RegisterPlatformEvent
   | OneClickDeployEvent
   | UpdateOrganizationEvent
-  | CreateOrganizationEvent;
+  | CreateOrganizationEvent
+  | CreateDeploymentEvent
+  | UpdateDeploymentEvent;
