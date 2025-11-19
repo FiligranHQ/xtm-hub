@@ -437,7 +437,8 @@
       "Type": "Type",
       "VendorContact": "Vendor Contact",
       "VisitVendor": "Visit the vendor's page to learn more and get in touch",
-      "Incompatible": "{platformToBeUpdated} need to be updated to deploy this connector."
+      "Incompatible": "{platformToBeUpdated} need to be updated to deploy this connector.",
+      "UnavailableDeployments": "This connector is not available for automatic deployment."
     },
     "CreationStatus": "Creation status",
     "OpenctiIntegrationFeeds": {

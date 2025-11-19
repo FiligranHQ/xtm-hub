@@ -3,13 +3,10 @@ import ChoosePlatformForm from '@/components/service/document/one-click-deploy/c
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
+import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibilityTranslationKey';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
-import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
-import {
-  ShareableResource,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { getPlatformIdentifier } from '@/utils/platform';
+import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
 import {
   AlertDialog,
@@ -32,10 +29,7 @@ const OneClickDeploy = ({
   requiredProductVersion,
 }: OneClickDeployProps) => {
   const t = useTranslations();
-  const platformIdentifier =
-    documentData.type === ShareableResourceType.OPENAEV_SCENARIO
-      ? PlatformIdentifierEnum.OPENAEV
-      : PlatformIdentifierEnum.OPENCTI;
+  const platformIdentifier = getPlatformIdentifier(documentData.type);
   const { platforms } = useRegisteredPlatforms(platformIdentifier);
 
   const SendOneClickDeployTelemetryMutation = graphql`
@@ -57,6 +51,11 @@ const OneClickDeploy = ({
   const [platformBasePath, setPlatformBasePath] = useState('');
   const [shouldOpenTab, setShouldOpenTab] = useState(false);
   const { openTab } = useOneClickDeployTab({ platformBasePath, documentData });
+  const { platformToBeUpdated, incompatiblePlatformsCount } =
+    useBuildCompatibilityTranslationKey({
+      platforms,
+      requiredProductVersion,
+    });
 
   const onOneClickDeploy = useCallback(
     (basePath: string) => {
@@ -140,15 +139,8 @@ const OneClickDeploy = ({
   ]);
 
   const isDeploymentDisabled = useMemo(() => {
-    if (platforms.length !== 1) {
-      return false;
-    }
-
-    return !isCompatibleWithSemanticVersion(
-      platforms[0]!.version,
-      requiredProductVersion
-    );
-  }, [platforms, requiredProductVersion]);
+    return platforms.length === 1 && incompatiblePlatformsCount === 1;
+  }, [platforms, incompatiblePlatformsCount]);
 
   const button = (
     <Button
@@ -162,7 +154,11 @@ const OneClickDeploy = ({
   );
 
   const container = isDeploymentDisabled ? (
-    <SimpleTooltip title={t('Service.Connectors.Incompatible.Required')}>
+    <SimpleTooltip
+      title={t('Service.Connectors.Incompatible', {
+        platformToBeUpdated,
+        count: incompatiblePlatformsCount,
+      })}>
       {button}
     </SimpleTooltip>
   ) : (
