@@ -36,12 +36,12 @@ export interface ServiceInstanceCardData {
   isDisabled: boolean;
   name: string;
   slug?: string;
-  platform_contract?: string;
-  platform_id?: string;
   logoBackgroundImageUrl: string | null;
+  fullBackgroundImage?: boolean;
   illustration_document_id: string | null;
   service_definition_identifier: ServiceDefinitionIdentifierEnum;
   card_background?: string | null;
+  cardTitleOverride?: string;
   description?: string;
   url?: string;
   ordering: number;
@@ -59,41 +59,6 @@ interface ServiceInstanceCardProps {
   seo?: boolean;
   className?: string;
 }
-
-const RegistrationDetails: React.FunctionComponent<{
-  serviceInstance: ServiceInstanceCardData;
-  serviceHref: string;
-}> = () => {
-  const t = useTranslations();
-  return (
-    <p className="txt-sub-content text-muted-foreground">
-      {t('Register.Details.Description')}
-    </p>
-  );
-
-  /* Temporary hidden :
-
-  return (
-    <dl className="grid grid-cols-3 gap-s">
-      <dt className="txt-sub-content text-muted-foreground">
-        {t('Register.Details.PlatformID')}
-      </dt>
-      <dd className="txt-sub-content col-span-2">
-        {serviceInstance.platform_id}
-      </dd>
-      <dt className="txt-sub-content text-muted-foreground">
-        {t('Register.Details.PlatformURL')}
-      </dt>
-      <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
-      <dt className="txt-sub-content text-muted-foreground">
-        {t('Register.Details.Contract')}
-      </dt>
-      <dd className="txt-sub-content col-span-2">
-        {t(`Register.Details.Contracts.${serviceInstance.platform_contract}`)}
-      </dd>
-    </dl>
-  );*/
-};
 
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
@@ -179,11 +144,11 @@ const ServiceInstanceCard: React.FunctionComponent<
             ratio={16 / 9}
             className={cn(
               'rounded-t',
-              isRegistrationService(serviceInstance)
+              serviceInstance.fullBackgroundImage
                 ? 'overflow-visible'
                 : 'overflow-hidden'
             )}>
-            {(isRegistrationService(serviceInstance) && (
+            {(serviceInstance.fullBackgroundImage && (
               <>
                 <Image
                   width="580"
@@ -232,10 +197,7 @@ const ServiceInstanceCard: React.FunctionComponent<
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
                 aria-disabled={serviceInstance.isDisabled}>
                 <h2>
-                  {serviceInstance.name}
-                  {isRegistrationService(serviceInstance) && (
-                    <> - {t('Register.Details.PrivatePlatform')}</>
-                  )}
+                  {serviceInstance.cardTitleOverride || serviceInstance.name}
                 </h2>
               </Link>
             )}
@@ -266,16 +228,9 @@ const ServiceInstanceCard: React.FunctionComponent<
               )}
             </div>
           </div>
-          {(isRegistrationService(serviceInstance) && (
-            <RegistrationDetails
-              serviceInstance={serviceInstance}
-              serviceHref={serviceHref}
-            />
-          )) || (
-            <p className="txt-sub-content text-muted-foreground">
-              {serviceInstance.description}
-            </p>
-          )}
+          <p className="txt-sub-content text-muted-foreground">
+            {serviceInstance.description}
+          </p>
           {rightAction && (
             <div
               className="flex pt-s mt-auto ml-auto

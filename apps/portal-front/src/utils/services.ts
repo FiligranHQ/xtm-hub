@@ -6,6 +6,7 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
+import { useTranslations } from 'next-intl';
 
 export const isExternalService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum
@@ -66,6 +67,7 @@ const buildDocumentUrl = (
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
+  const t = useTranslations();
   const cardBackgroundByServiceMap: Partial<
     Record<ServiceDefinitionIdentifierEnum, string>
   > = {
@@ -78,14 +80,15 @@ export const registeredPlatformToServiceInstanceCardData = (
     platform.identifier as ServiceDefinitionIdentifierEnum;
   return {
     id: platform.id,
-    platform_id: platform.platform_id,
     isDisabled: false,
     name: platform.title,
-    platform_contract: platform.contract,
+    description: t('Register.Details.Description'),
     illustration_document_id: platform.illustration_document_id
       ? platform.illustration_document_id
       : null,
     logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
+    fullBackgroundImage: true,
+    cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
     service_definition_identifier: platformIdentifier,
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
