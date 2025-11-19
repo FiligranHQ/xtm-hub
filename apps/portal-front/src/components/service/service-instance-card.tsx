@@ -20,7 +20,6 @@ import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import {
   ArrowOutwardIcon,
   LogoFiligranIcon,
@@ -34,7 +33,7 @@ import { ReactNode, useContext, useState } from 'react';
 
 export interface ServiceInstanceCardData {
   id: string;
-  creation_status: ServiceInstanceCreationStatusEnum;
+  isDisabled: boolean;
   name: string;
   slug?: string;
   platform_contract?: string;
@@ -102,9 +101,6 @@ const ServiceInstanceCard: React.FunctionComponent<
   const t = useTranslations();
   const { hasOrganizationCapability, hasCapability } =
     useContext(PortalContext);
-  const isDisabled =
-    serviceInstance.creation_status ===
-    ServiceInstanceCreationStatusEnum.PENDING;
 
   const serviceHref =
     isExternalService(serviceInstance.service_definition_identifier) &&
@@ -238,10 +234,10 @@ const ServiceInstanceCard: React.FunctionComponent<
               <h2>{serviceInstance.name}</h2>
             ) : (
               <Link
-                href={isDisabled ? '#' : serviceHref}
+                href={serviceInstance.isDisabled ? '#' : serviceHref}
                 target={serviceHref.startsWith('http') ? '_blank' : '_self'}
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
-                aria-disabled={isDisabled}>
+                aria-disabled={serviceInstance.isDisabled}>
                 <h2>
                   {serviceInstance.name}
                   {isRegistrationService(serviceInstance) && (

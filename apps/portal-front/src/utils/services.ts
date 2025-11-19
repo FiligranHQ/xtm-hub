@@ -51,7 +51,7 @@ export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
   if (diffInDays <= 0) {
     return 'Expired';
   }
-  return `${diffInDays} days remaning`;
+  return `${diffInDays} days remaining`;
 };
 
 export const registeredPlatformToServiceInstanceCardData = (
@@ -70,7 +70,7 @@ export const registeredPlatformToServiceInstanceCardData = (
   return {
     id: platform.id,
     platform_id: platform.platform_id,
-    creation_status: ServiceInstanceCreationStatusEnum.CREATED,
+    isDisabled: false,
     name: platform.title,
     platform_contract: platform.contract,
     illustration_document_id: platform.illustration_document_id
@@ -104,8 +104,8 @@ export const publicServiceInstanceToInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    creation_status:
-      instance.creation_status as ServiceInstanceCreationStatusEnum,
+    isDisabled:
+      instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
@@ -123,8 +123,8 @@ export const userServicesOwnedServiceToInstanceCardData = ({
   const instance = subscription!.service_instance!;
   return {
     id: instance.id,
-    creation_status:
-      instance.creation_status as ServiceInstanceCreationStatusEnum,
+    isDisabled:
+      instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
@@ -141,7 +141,7 @@ export const seoServiceInstanceToInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    creation_status: ServiceInstanceCreationStatusEnum.CREATED,
+    isDisabled: false,
     name: instance.name,
     slug: instance.slug as string,
     description: instance.description!,
