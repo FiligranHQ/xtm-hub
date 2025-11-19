@@ -1,10 +1,12 @@
 import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
+import { roundToNearest } from '@/lib/utils';
 import { LogoGitIcon, OpenInNewIcon } from 'filigran-icon';
 import { Badge, Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import * as React from 'react';
 import { FunctionComponent } from 'react';
 
 export interface ShareableResourceConnectorDetailsProps {
@@ -14,6 +16,7 @@ export interface ShareableResourceConnectorDetailsProps {
     subscription_link?: string | null;
     integration_subtype?: string | null;
     product_version?: string;
+    share_number?: number | null;
   };
   compatibilityItem?: React.ReactNode;
 }
@@ -77,6 +80,10 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.ProductVersion')}>
         {compatibilityItem || <span>{connectorDetails?.product_version}</span>}
+      </ShareableResourceDetailItem>
+      <ShareableResourceDetailItem
+        label={t('Service.ShareableResources.Details.Shares')}>
+        <span>{roundToNearest(connectorDetails.share_number ?? 0)}</span>
       </ShareableResourceDetailItem>
     </ShareableResourceBasicInformation>
   );
