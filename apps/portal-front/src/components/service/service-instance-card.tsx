@@ -8,13 +8,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import {
-  getDisplayDays,
-  isExpired,
-  isExternalService,
-  isRegistrationService,
-  isTrialInstance,
-} from '@/utils/services';
+import { isExpired, isExternalService } from '@/utils/services';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -41,6 +35,9 @@ export interface ServiceInstanceCardData {
   illustration_document_id: string | null;
   service_definition_identifier: ServiceDefinitionIdentifierEnum;
   card_background?: string | null;
+  displayedServiceStatus?: string;
+  displayLinkArrow?: boolean;
+  displayUpdatePlatformIfAllowed?: boolean;
   cardTitleOverride?: string;
   description?: string;
   url?: string;
@@ -77,10 +74,7 @@ const ServiceInstanceCard: React.FunctionComponent<
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
 
   const canUpdatePlatform = () => {
-    if (
-      !isRegistrationService(serviceInstance) ||
-      isTrialInstance(serviceInstance)
-    ) {
+    if (!serviceInstance.displayUpdatePlatformIfAllowed) {
       return false;
     }
 
@@ -121,10 +115,9 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}>
           <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
-            {isRegistrationService(serviceInstance) &&
-            isTrialInstance(serviceInstance) ? (
+            {serviceInstance.displayedServiceStatus ? (
               <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
-                {getDisplayDays(serviceInstance)}
+                {serviceInstance.displayedServiceStatus}
               </span>
             ) : (
               serviceInstance.logoBackgroundImageUrl && (
@@ -206,7 +199,7 @@ const ServiceInstanceCard: React.FunctionComponent<
               {isExternalService(
                 serviceInstance.service_definition_identifier
               ) &&
-                !isTrialInstance(serviceInstance) && (
+                serviceInstance.displayLinkArrow && (
                   <div className="pt-2">
                     <ArrowOutwardIcon className="size-3 shrink-0" />
                   </div>

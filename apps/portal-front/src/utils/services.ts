@@ -26,24 +26,32 @@ export const isRegistrationService = (
   ].includes(
     serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
   );
-export const isTrialInstance = (serviceInstance: ServiceInstanceCardData) => {
-  return serviceInstance.deployment_request_type === DeploymentTypeEnum.TRIAL;
+
+const isTrial = (
+  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
+) => {
+  return platform.deployment_request?.type === DeploymentTypeEnum.TRIAL;
 };
 
 export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
   serviceInstance.end_date && new Date(serviceInstance.end_date) < new Date();
 
-export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
+export const getDisplayDays = (
+  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
+) => {
+  if (!isTrial) {
+    return undefined;
+  }
   if (
-    serviceInstance.service_instance_status ===
+    platform.subscription?.service_instance?.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING
   ) {
     return 'Provisioning';
   }
-  if (!serviceInstance?.end_date) {
-    return serviceInstance.status;
+  if (!platform.subscription?.end_date) {
+    return platform.deployment_request?.status;
   }
-  const target = new Date(serviceInstance.end_date);
+  const target = new Date(platform.subscription?.end_date);
   const now = new Date();
 
   const diffInMs = target.getTime() - now.getTime();
@@ -83,6 +91,9 @@ export const registeredPlatformToServiceInstanceCardData = (
     isDisabled: false,
     name: platform.title,
     description: t('Register.Details.Description'),
+    displayedServiceStatus: getDisplayDays(platform),
+    displayLinkArrow: !isTrial(platform),
+    displayUpdatePlatformIfAllowed: !isTrial(platform),
     illustration_document_id: platform.illustration_document_id
       ? platform.illustration_document_id
       : null,
@@ -120,6 +131,7 @@ export const publicServiceInstanceToInstanceCardData = (
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
+    displayLinkArrow: true,
     illustration_document_id: instance.illustration_document_id as string,
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
@@ -142,6 +154,7 @@ export const userServicesOwnedServiceToInstanceCardData = ({
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
+    displayLinkArrow: true,
     illustration_document_id: instance.illustration_document_id as string,
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
@@ -163,6 +176,7 @@ export const seoServiceInstanceToInstanceCardData = (
     name: instance.name,
     slug: instance.slug as string,
     description: instance.description!,
+    displayLinkArrow: true,
     illustration_document_id: instance.illustration_document_id as string,
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
