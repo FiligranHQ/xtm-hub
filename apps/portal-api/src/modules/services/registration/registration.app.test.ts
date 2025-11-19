@@ -11,7 +11,6 @@ import {
 } from 'vitest';
 import { db, dbUnsecure } from '../../../../knexfile';
 import {
-  ADMIN_USER_ID,
   contextAdminOrgaThales,
   contextAdminUser,
   contextSimpleUserThales,
@@ -21,6 +20,7 @@ import {
   requestContextThalesUser,
   SERVICE_OPENCTI_REGISTRATION,
   THALES_ORGA_ID,
+  THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestStatus,
@@ -48,7 +48,11 @@ import Subscription, {
 } from '../../../model/kanel/public/Subscription';
 
 import { UserLoadUserBy } from '../../../model/user';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import {
+  ADMIN_UUID,
+  PLATFORM_NAME,
+  PLATFORM_ORGANIZATION_UUID,
+} from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
 import {
   BadRequestErrorCode,
@@ -60,6 +64,7 @@ import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
+  TelemetryOrganizationType,
   TelemetryTargetProduct,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -761,7 +766,7 @@ describe('Registration app', () => {
           type: DeploymentType.Trial,
           use_case: 'use_case',
           service_instance_id: serviceInstanceId as ServiceInstanceId,
-          user_requester_id: ADMIN_UUID,
+          user_requester_id: THALES_SIMPLE_USER_ID,
         })) as DeploymentRequest;
     });
     afterEach(async () => {
@@ -831,7 +836,7 @@ describe('Registration app', () => {
           platform_title: platformConfiguration.title,
           platform_url: platformConfiguration.url,
           platform_version: platformConfiguration.version,
-          registerer_id: ADMIN_USER_ID,
+          registerer_id: THALES_SIMPLE_USER_ID,
           token: deploymentRequest.platform_token,
         },
         service_instance_id: deploymentRequest.service_instance_id,
@@ -872,11 +877,42 @@ describe('Registration app', () => {
           platform_title: newPlatformConfiguration.title,
           platform_url: newPlatformConfiguration.url,
           platform_version: newPlatformConfiguration.version,
-          registerer_id: ADMIN_USER_ID,
+          registerer_id: THALES_SIMPLE_USER_ID,
           token: deploymentRequest.platform_token,
         },
         service_instance_id: deploymentRequest.service_instance_id,
         status: ServiceConfigurationStatus.Active,
+      });
+    });
+
+    describe('telemetry', () => {
+      it('should send register event when platform is autoregistered', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const telemetrySpy = vi
+          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        await registrationApp.autoRegisterPlatform(
+          deploymentRequest.platform_token as string,
+          platformConfiguration
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.REGISTER,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          platform_contract: PlatformContract.Trial,
+          platform_id: platformConfiguration.id,
+          platform_version: platformConfiguration.version,
+          source: TELEMETRY_SOURCE,
+          target_product: 'open-cti',
+          user_id: THALES_SIMPLE_USER_ID,
+        });
       });
     });
   });

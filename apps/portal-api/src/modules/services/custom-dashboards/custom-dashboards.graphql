@@ -23,7 +23,7 @@ input UpdateCustomDashboardInput {
   product_version: String
 }
 
-type CustomDashboard implements DocumentBase & Node {
+type CustomDashboard implements Document & Node {
   id: ID!
   type: String!
   uploader: User
@@ -44,7 +44,7 @@ type CustomDashboard implements DocumentBase & Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   # Specific fields for custom dashboards
   product_version: String
 }

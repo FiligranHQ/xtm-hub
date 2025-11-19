@@ -20,6 +20,8 @@ import {
   TelemetryTargetProduct,
 } from './telemetry.const';
 import {
+  BaseTelemetryEvent,
+  CreateDeploymentEvent,
   CreateEvent,
   CreateOrganizationEvent,
   DownloadEvent,
@@ -29,6 +31,7 @@ import {
   ShareEvent,
   SubscribeEvent,
   TelemetryEventType,
+  UpdateDeploymentEvent,
   UpdateOrganizationEvent,
 } from './telemetry.types';
 
@@ -267,5 +270,44 @@ export function buildCreateOrganizationEvent(
     event_type: TelemetryEventType.CREATE_ORGANIZATION,
     ...baseEvent,
     domains: organization.domains,
+  };
+}
+
+export function buildCreateDeploymentEvent(
+  organization: Organization,
+  user_id: UserId,
+  platform_identifier: PlatformIdentifier,
+  additional_data: Omit<
+    CreateDeploymentEvent,
+    'event_type' | 'target_product' | keyof BaseTelemetryEvent
+  >,
+  timestamp?: Date
+): CreateDeploymentEvent {
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+  return {
+    ...baseEvent,
+    ...additional_data,
+    event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+    target_product:
+      TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
+  };
+}
+
+export function buildUpdateDeploymentEvent(
+  organization: Organization,
+  user_id: UserId,
+  additional_data: Omit<
+    UpdateDeploymentEvent,
+    'event_type' | keyof BaseTelemetryEvent
+  >,
+  timestamp?: Date
+): UpdateDeploymentEvent {
+  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+  return {
+    ...baseEvent,
+    ...additional_data,
+    event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
   };
 }
