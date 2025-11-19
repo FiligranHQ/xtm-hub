@@ -119,7 +119,7 @@ export const TryOpenCTICallout = ({}) => {
     queued: {
       text: () => (
         <>
-          {t('Service.Trials.Provisionning')}{' '}
+          {t('Service.Trials.Provisioning')}{' '}
           <b>{t('Service.Trials.Requested')}</b>
           <Link
             href={`${settings.base_url_front}/app/service/free-trial`}
@@ -130,11 +130,11 @@ export const TryOpenCTICallout = ({}) => {
       ),
       button: () => <></>,
     },
-    provisionning: {
+    provisioning: {
       text: () => (
         <>
-          {t('Service.Trials.Provisionning')}{' '}
-          <b>{t('Service.Trials.ProvisionningBold')}</b>
+          {t('Service.Trials.Provisioning')}{' '}
+          <b>{t('Service.Trials.ProvisioningBold')}</b>
         </>
       ),
       button: () => <></>,
@@ -167,7 +167,7 @@ export const TryOpenCTICallout = ({}) => {
       freeTrial[0]?.subscription?.service_instance?.creation_status ===
       'PENDING'
     )
-      return 'provisionning';
+      return 'provisioning';
     if (diffInDays <= 0) return 'expired';
     return 'active';
   };

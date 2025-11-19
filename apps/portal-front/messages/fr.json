@@ -651,8 +651,8 @@
     "Trials": {
       "Explore": "Explorer la plateforme OpenCTI avec 30 jours",
       "Active": "Votre plateforme d'essai activée",
-      "Provisionning": "Votre plateforme OpenCTI Free Trial est",
-      "ProvisionningBold": "en cours de provisionnement !",
+      "Provisioning": "Votre plateforme OpenCTI Free Trial est",
+      "ProvisioningBold": "en cours de provisionnement !",
       "Requested": "demandée",
       "Expired": "Votre plateforme d'essai a expiré",
       "DaysRemaning": "{days} Jours restants",
