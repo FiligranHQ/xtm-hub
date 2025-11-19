@@ -440,6 +440,26 @@ export const registrationApp = {
         }),
       ]);
     });
+
+    try {
+      const selectedOrga = await loadOrganizationBy({
+        id: deploymentRequest.organization_requester_id,
+      });
+
+      const registerEvent = buildRegisterEvent(
+        selectedOrga,
+        deploymentRequest.user_requester_id,
+        deploymentRequest.platform_identifier,
+        platform.id,
+        platform.contract,
+        platform.version
+      );
+      telemetryApp.sendTelemetryEvent(registerEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for registration', {
+        error,
+      });
+    }
   },
 };
 

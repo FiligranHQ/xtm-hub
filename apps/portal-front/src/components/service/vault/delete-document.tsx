@@ -43,7 +43,7 @@ export const DeleteDocument: FunctionComponent<DeleteDocumentProps> = ({
         toast({
           title: t('Utils.Success'),
           description: t('VaultActions.DocumentDeleted', {
-            file_name: documentData.file_name,
+            file_name: documentData.file_name ?? '',
           }),
         });
         setMenuOpen(false);

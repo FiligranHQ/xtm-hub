@@ -44,7 +44,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         toast({
           title: t('Utils.Success'),
           description: t('VaultActions.DocumentAdded', {
-            file_name: response.addDocument.file_name,
+            file_name: response.addDocument.file_name ?? '',
           }),
         });
       },

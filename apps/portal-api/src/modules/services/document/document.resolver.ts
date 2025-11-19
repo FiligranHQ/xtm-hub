@@ -1,6 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { dbTx } from '../../../../knexfile';
 import {
+  IntegrationFeedType,
   Resolvers,
   SubscriptionModel,
 } from '../../../__generated__/resolvers-types';
@@ -17,6 +18,9 @@ import {
   buildShareEvent,
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
+import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
@@ -29,6 +33,7 @@ import {
   getUploaderOrganization,
   loadDocumentById,
   loadDocuments,
+  loadIntegrationType,
   updateDocument,
 } from './document.domain';
 import {
@@ -154,6 +159,30 @@ const resolvers: Resolvers = {
     },
   },
   Document: {
+    async __resolveType(document: Document) {
+      const TYPE_MAPPINGS = {
+        [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'CustomDashboard',
+        [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
+      };
+      const INTEGRATION_MAPPINGS = {
+        [IntegrationFeedType.Connector]: 'Connector',
+        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+      };
+      if (TYPE_MAPPINGS[document.type]) {
+        return TYPE_MAPPINGS[document.type];
+      } else if (document.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+        const integrationType = await loadIntegrationType(document.id);
+        const responseType = INTEGRATION_MAPPINGS[integrationType]
+        if (responseType) {
+          return responseType;
+        }
+      }
+      logApp.warn(
+        `Document resolver type - Unresolved document type ${document.type}`
+      );
+      return 'DefaultDocument';
+    },
+
     children_documents: ({ id }, _, context) =>
       getChildrenDocuments(context, id, {
         unsecured: true,

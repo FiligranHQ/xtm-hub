@@ -4,6 +4,7 @@ import { OrganizationId } from '../src/model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../src/model/kanel/public/ServiceCapability';
 import { ServiceDefinitionId } from '../src/model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
+import { UserId } from '../src/model/kanel/public/User';
 import { PortalContext } from '../src/model/portal-context';
 import {
   ADMIN_UUID,
@@ -35,7 +36,8 @@ export const SERVICE_CUSTOM_DASHBOARDS_ID =
   'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4';
 export const SERVICE_OPENCTI_REGISTRATION =
   '6c837a7d-2821-4c3d-9479-d3e7fa02f0cb' as ServiceDefinitionId;
-export const THALES_SIMPLE_USER_ID = '154006e2-f24b-42da-b39c-e0fb17bead00';
+export const THALES_SIMPLE_USER_ID =
+  '154006e2-f24b-42da-b39c-e0fb17bead00' as UserId;
 export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
 export const FILIGRAN_USER_ID = '77b4b845-4ab4-4df8-8e12-0651da813ebb';
 export const INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD =
