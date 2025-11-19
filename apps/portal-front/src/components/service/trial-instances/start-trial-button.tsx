@@ -32,11 +32,16 @@ import {
   useRelayEnvironment,
 } from 'react-relay';
 
+import { cn } from '@/lib/utils';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
+interface Props {
+  className?: string;
+}
+
 // Component
-export const StartTrialButton = ({}) => {
+export const StartTrialButton: React.FC<Props> = ({ className }) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
 
@@ -108,7 +113,7 @@ export const StartTrialButton = ({}) => {
           ]}>
           <Button
             onClick={() => setOpenSheet(true)}
-            className="ml-xl bg-white text-black hover:bg-white">
+            className={cn(className, 'bg-white text-black hover:bg-white')}>
             {t('Service.Trials.StartTrial')}
             <ArrowRightAltIcon className="ml-s size-4" />
           </Button>

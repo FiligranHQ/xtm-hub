@@ -114,7 +114,7 @@ export const TryOpenCTICallout = ({}) => {
           </Link>
         </>
       ),
-      button: () => <StartTrialButton />,
+      button: () => <StartTrialButton className="ml-xl" />,
     },
     queued: {
       text: () => (
