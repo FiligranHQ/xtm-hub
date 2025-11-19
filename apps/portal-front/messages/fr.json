@@ -465,6 +465,9 @@
         },
         "ProductVersion": {
           "Placeholder": "Plateforme..."
+        },
+        "ManagerSupported": {
+          "Placeholder": "Est déployable..."
         }
       }
     },
@@ -586,7 +589,8 @@
         "Key": {
           "label": "Cas d'utilisation",
           "integration_feed_type": "Type de flux d'intégration",
-          "product_version": "Plateforme"
+          "product_version": "Plateforme",
+          "manager_supported": "Est déployable"
         }
       }
     },

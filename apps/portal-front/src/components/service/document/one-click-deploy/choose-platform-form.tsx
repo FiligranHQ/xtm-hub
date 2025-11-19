@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
@@ -83,7 +84,11 @@ const ChoosePlatformForm = ({
                           value={platform.url}
                           className="h-4 w-4 accent-primary"
                         />
-                        <FormLabel htmlFor={platform.id}>
+                        <FormLabel
+                          htmlFor={platform.id}
+                          className={cn(
+                            !isPlatformCompatible && 'text-gray/60'
+                          )}>
                           {platform.title}
                         </FormLabel>
                       </div>

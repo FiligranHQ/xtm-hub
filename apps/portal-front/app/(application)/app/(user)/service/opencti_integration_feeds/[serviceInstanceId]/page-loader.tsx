@@ -29,6 +29,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     connectorTypes,
     productVersions,
     setSearch,
+    deployable,
   } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );
@@ -46,6 +47,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
           { key: FilterKeyEnum.INTEGRATION_TYPE, value: integrationTypes },
           { key: FilterKeyEnum.INTEGRATION_SUBTYPE, value: connectorTypes },
           { key: FilterKeyEnum.PRODUCT_VERSION, value: productVersions },
+          { key: FilterKeyEnum.MANAGER_SUPPORTED, value: deployable },
         ],
       },
       {
@@ -61,6 +63,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     integrationTypes,
     connectorTypes,
     productVersions,
+    deployable,
   ]);
 
   return (

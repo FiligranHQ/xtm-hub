@@ -17,6 +17,7 @@ import {
   IntegrationFeedsListQuery,
 } from '@/components/service/integration-feeds/integration-feed.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
+import { IntegrationFeedDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-deployable-filter';
 import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/product-version-filter';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
@@ -78,6 +79,7 @@ const IntegrationFeedsList = ({
     removeConnectorTypes,
     removeIntegrationTypes,
     removeProductVersions,
+    removeDeployable,
     pageSize,
     setPageSize,
   } = useServiceListLocalStorage(localStorageKey);
@@ -101,9 +103,11 @@ const IntegrationFeedsList = ({
               platformIdentifier={PlatformIdentifierEnum.OPENCTI}
             />
           ),
-          reset: () => {
-            removeProductVersions();
-          },
+          reset: removeProductVersions,
+        },
+        [ServiceListFilterKey.ManagerSupported]: {
+          node: <IntegrationFeedDeployableFilter />,
+          reset: removeDeployable,
         },
       }
     : {};
