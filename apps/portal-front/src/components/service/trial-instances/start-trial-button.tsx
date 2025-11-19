@@ -115,7 +115,7 @@ export const StartTrialButton: FunctionComponent<StartTrialButtonProps> = ({
         setOpen={setOpenSheet}
         open={openSheet}
         trigger={
-          freeTrial && (
+          !freeTrial && (
             <Button
               onClick={() => setOpenSheet(true)}
               className="ml-xl bg-white text-black hover:bg-white">
