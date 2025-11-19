@@ -437,10 +437,7 @@
       "Type": "Type",
       "VendorContact": "Contact vendeur",
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
-      "Incompatible": {
-        "Required": "La mise à jour de votre plateforme est nécessaire pour déployer ce connecteur",
-        "Optional": "Certaines de vos plateformes doivent être mises à jour pour déployer ce connecteur"
-      }
+      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mises à jour pour déployer ce connecteur."
     },
     "CreationStatus": "Statut de la création",
     "OpenctiIntegrationFeeds": {

@@ -11,32 +11,34 @@ export const useBuildCompatibilityTranslationKey = ({
   platforms,
   requiredProductVersion,
 }: Props): {
-  translationKey: 'Required' | 'Optional' | undefined;
+  platformToBeUpdated: string;
+  incompatiblePlatformsCount: number;
 } => {
-  const translationKey = useMemo(() => {
+  const { platformToBeUpdated, incompatiblePlatformsCount } = useMemo(() => {
     if (!requiredProductVersion) {
-      return undefined;
+      return {
+        platformToBeUpdated: '',
+        incompatiblePlatformsCount: 0,
+      };
     }
 
-    const compatiblePlatformsCount = platforms.reduce(
-      (acc, platform) =>
-        isCompatibleWithSemanticVersion(
+    const incompatiblePlatforms = platforms.filter(
+      (platform) =>
+        !isCompatibleWithSemanticVersion(
           platform.version,
           requiredProductVersion
         )
-          ? acc + 1
-          : acc,
-      0
     );
 
-    if (compatiblePlatformsCount === platforms.length) {
-      return;
-    }
+    const platformToBeUpdated = incompatiblePlatforms
+      .map((platform) => platform.title)
+      .join(', ');
 
-    return platforms.length === 1 || compatiblePlatformsCount === 0
-      ? 'Required'
-      : 'Optional';
+    return {
+      platformToBeUpdated,
+      incompatiblePlatformsCount: incompatiblePlatforms.length,
+    };
   }, [platforms, requiredProductVersion]);
 
-  return { translationKey };
+  return { platformToBeUpdated, incompatiblePlatformsCount };
 };

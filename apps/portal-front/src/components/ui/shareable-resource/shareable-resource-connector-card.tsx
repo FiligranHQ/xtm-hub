@@ -5,6 +5,7 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { DisplayVersionCard } from '@/components/ui/shareable-resource/display-version-card';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
@@ -24,7 +25,7 @@ export interface ShareableResourceConnectorCardProps {
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
-  productVersionItem?: React.ReactNode;
+  requiredProductVersion?: string;
 }
 
 const ShareableResourceConnectorCard: FunctionComponent<
@@ -34,7 +35,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
   serviceInstance,
   shareLinkUrl,
   detailUrl,
-  productVersionItem,
+  requiredProductVersion,
 }) => {
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
@@ -87,11 +88,11 @@ const ShareableResourceConnectorCard: FunctionComponent<
                 {connectorMetadata.label}
               </Badge>
             )}
-            {productVersionItem ?? (
-              <span className="text-sm">
-                {shareableConnector.product_version}
-              </span>
-            )}
+            <DisplayVersionCard
+              className="text-sm"
+              product_version={shareableConnector.product_version}
+              requiredProductVersion={requiredProductVersion}
+            />
           </div>
           <ShareLinkButton
             documentId={shareableConnector.id}
