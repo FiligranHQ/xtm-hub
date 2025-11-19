@@ -9,7 +9,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   const isProductionDomain =
     domain === 'hub.filigran.io' || domain === 'www.hub.filigran.io';
 
-  if (!isProductionDomain) {
+  if (isProductionDomain) {
     return {
       rules: [
         {
