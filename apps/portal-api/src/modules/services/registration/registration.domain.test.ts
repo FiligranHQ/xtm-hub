@@ -25,6 +25,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import * as organizationDomain from '../../organizations/organizations.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
+import { deleteServiceInstanceBy } from '../service-instance.domain';
 import {
   PlatformConfiguration,
   registrationDomain,
@@ -353,7 +354,10 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Openaev,
       });
     });
-
+    afterEach(async () => {
+      await serviceContractDomain.deleteConfigurationBy({});
+      await deleteServiceInstanceBy({});
+    });
     it('should return all registered platform without platformIdentifier in input ', async () => {
       const platforms = await registrationDomain.loadRegisteredPlatforms();
 
