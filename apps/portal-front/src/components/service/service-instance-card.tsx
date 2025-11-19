@@ -38,7 +38,7 @@ export interface ServiceInstanceCardData {
   slug?: string;
   platform_contract?: string;
   platform_id?: string;
-  logo_document_id: string | null;
+  logoBackgroundImageUrl: string | null;
   illustration_document_id: string | null;
   service_definition_identifier: ServiceDefinitionIdentifierEnum;
   card_background?: string | null;
@@ -108,15 +108,6 @@ const ServiceInstanceCard: React.FunctionComponent<
       ? serviceInstance.url
       : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
 
-  let backgroundImage =
-    serviceInstance.logo_document_id !== null
-      ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
-      : '';
-
-  if (isRegistrationService(serviceInstance)) {
-    backgroundImage = `url(/${serviceInstance.service_definition_identifier}-private-platform-logo.png)`;
-  }
-
   // Check if user can update platform
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
 
@@ -171,15 +162,17 @@ const ServiceInstanceCard: React.FunctionComponent<
                 {getDisplayDays(serviceInstance)}
               </span>
             ) : (
-              <div
-                className="w-full h-12"
-                style={{
-                  backgroundImage,
-                  backgroundSize: 'contain',
-                  backgroundPosition: 'left center',
-                  backgroundRepeat: 'no-repeat',
-                }}
-              />
+              serviceInstance.logoBackgroundImageUrl && (
+                <div
+                  className="w-full h-12"
+                  style={{
+                    backgroundImage: serviceInstance.logoBackgroundImageUrl,
+                    backgroundSize: 'contain',
+                    backgroundPosition: 'left center',
+                    backgroundRepeat: 'no-repeat',
+                  }}
+                />
+              )
             )}
           </div>
           <AspectRatio

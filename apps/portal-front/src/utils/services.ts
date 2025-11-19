@@ -54,6 +54,15 @@ export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
   return `${diffInDays} days remaining`;
 };
 
+const buildDocumentUrl = (
+  serviceInstanceId: string,
+  logoDocumentId: string | null | undefined
+) => {
+  if (logoDocumentId)
+    return `url(/document/images/${serviceInstanceId}/${logoDocumentId})`;
+  return null;
+};
+
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
@@ -76,7 +85,7 @@ export const registeredPlatformToServiceInstanceCardData = (
     illustration_document_id: platform.illustration_document_id
       ? platform.illustration_document_id
       : null,
-    logo_document_id: null,
+    logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
     service_definition_identifier: platformIdentifier,
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
@@ -109,7 +118,10 @@ export const publicServiceInstanceToInstanceCardData = (
     name: instance.name,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
-    logo_document_id: instance.logo_document_id as string,
+    logoBackgroundImageUrl: buildDocumentUrl(
+      instance.id,
+      instance.logo_document_id
+    ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
     url: instance.links?.[0]?.url as string,
@@ -128,7 +140,10 @@ export const userServicesOwnedServiceToInstanceCardData = ({
     name: instance.name,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
-    logo_document_id: instance.logo_document_id as string,
+    logoBackgroundImageUrl: buildDocumentUrl(
+      instance.id,
+      instance.logo_document_id
+    ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
     url: instance.links?.[0]?.url as string,
@@ -146,7 +161,10 @@ export const seoServiceInstanceToInstanceCardData = (
     slug: instance.slug as string,
     description: instance.description!,
     illustration_document_id: instance.illustration_document_id as string,
-    logo_document_id: instance.logo_document_id as string,
+    logoBackgroundImageUrl: buildDocumentUrl(
+      instance.id,
+      instance.logo_document_id
+    ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
     url: instance.links?.[0]?.url as string,
