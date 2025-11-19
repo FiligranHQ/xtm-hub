@@ -21,14 +21,12 @@ const resolvers: Resolvers = {
           fromGlobalId(input.user_service_id).id as UserServiceId,
           input.capabilities
         );
-
         const user_service_id = fromGlobalId(input.user_service_id).id;
-        await db<UserServiceCapability>('UserService_Capability', {
-          methodType: 'del',
-        })
+        await db<UserServiceCapability>('UserService_Capability')
           .where('user_service_id', '=', user_service_id)
           .delete('*')
           .transacting(trx);
+
         const userService = await loadUserServiceById(user_service_id);
 
         await insertCapabilities(trx, input.capabilities, userService);

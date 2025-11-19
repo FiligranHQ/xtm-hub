@@ -3,17 +3,20 @@ import { Restriction } from '../../../__generated__/resolvers-types';
 import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
+import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
 
 export const getManageAccessLeft = async (userServiceId: UserServiceId) => {
   const userService = await db<UserService>('User_Service')
     .select('subscription_id')
-    .where('id', userServiceId)
+    .tap(restrictSubscriptionToUserOrganization)
+    .where('User_Service.id', userServiceId)
     .first();
 
   if (!userService) {
     return false;
   }
   const result = await db<UserService>('User_Service')
+    .tap(restrictSubscriptionToUserOrganization)
     .leftJoin(
       'UserService_Capability',
       'User_Service.id',
