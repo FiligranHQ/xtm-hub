@@ -23,7 +23,7 @@ input UpdateOpenAEVScenarioInput {
   product_version: String
 }
 
-type OpenAEVScenario implements DocumentBase & Node {
+type OpenAEVScenario implements Document & Node {
   id: ID!
   type: String!
   uploader: User
@@ -44,7 +44,7 @@ type OpenAEVScenario implements DocumentBase & Node {
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
-  children_documents: [ShareableResourceImage!]
+  children_documents: [ShareableResource!]
   # Specific fields for OpenAEVScenario scenarios
   product_version: String
 }

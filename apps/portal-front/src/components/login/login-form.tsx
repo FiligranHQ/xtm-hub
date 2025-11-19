@@ -20,7 +20,7 @@ import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
 const formSchema = z.object({
-  email: z.string().email('This is not a valid email.'),
+  email: z.email('This is not a valid email.'),
   password: z.string(),
 });
 

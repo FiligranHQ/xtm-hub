@@ -1,7 +1,16 @@
 import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import {
+  ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
   SERVICE_OPENCTI_REGISTRATION,
 } from '../../../../tests/tests.const';
@@ -20,7 +29,11 @@ import DeploymentRequest, {
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import {
+  ADMIN_UUID,
+  PLATFORM_NAME,
+  PLATFORM_ORGANIZATION_UUID,
+} from '../../../portal.const';
 import {
   BadRequestErrorCode,
   NotFoundErrorCode,
@@ -30,6 +43,12 @@ import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
 } from '../../subcription/subscription.helper';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import {
+  TELEMETRY_SOURCE,
+  TelemetryOrganizationType,
+} from '../../telemetry/telemetry.const';
+import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import {
   deleteServiceInstanceBy,
@@ -82,11 +101,21 @@ async function insertOpenCtiDeploymentRequest(
 }
 
 describe('Deployment app', () => {
+  const telemetrySpy = vi
+    .spyOn(telemetryApp, 'sendTelemetryEvent')
+    .mockResolvedValue();
+
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await deleteServiceInstanceBy({});
     await deleteSubscriptionUnsecure({});
+    vi.resetAllMocks();
   });
+
+  afterAll(async () => {
+    vi.useRealTimers();
+  });
+
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
       const deployment = await DeploymentsApp.createDeploymentRequest({
@@ -175,6 +204,58 @@ describe('Deployment app', () => {
         status: DeploymentRequestStatus.Active,
       });
       await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
+    });
+    describe('telemetry', () => {
+      it('should send a telemetry event', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const deployment = await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: PlatformRegion.Us,
+          type: DeploymentType.Trial,
+        });
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          email: DEFAULT_ADMIN_EMAIL,
+          job_title: 'myJob',
+          user_id: ADMIN_USER_ID,
+          deployment_id: deployment.id,
+          region: PlatformRegion.Us,
+          use_case: 'use_case',
+          deployment_type: DeploymentType.Trial,
+          status: DeploymentRequestStatus.Pending,
+          activity_sector: 'cybersecurity',
+          target_product: 'open-cti',
+        });
+      });
+      it('should not throw when an error is thrown by telemetry', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+        telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
+
+        const deployment = await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: PlatformRegion.Us,
+          type: DeploymentType.Trial,
+        });
+
+        expect(deployment).toBeDefined();
+      });
     });
   });
   describe('loadDeploymentRequests', () => {
@@ -372,7 +453,67 @@ describe('Deployment app', () => {
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
     });
+    describe('telemetry', () => {
+      it('should send a telemetry event', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const start_date = new Date(2025, 1, 3);
+        const end_date = new Date(2025, 2, 3);
+
+        const deployment = await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          status: DeploymentRequestStatus.Active,
+          start_date,
+          end_date,
+          product_service_instance_id: 'fake product instance id',
+          failure_reason: 'not failed',
+        });
+
+        const dbDeploymentRequest =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: deployment.id as DeploymentRequestId,
+          });
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          user_id: ADMIN_USER_ID,
+          deployment_id: dbDeploymentRequest.id,
+          deployment_type: DeploymentType.Trial,
+          platform_id: 'fake product instance id',
+          start_date,
+          end_date,
+          status: DeploymentRequestStatus.Active,
+        });
+      });
+
+      it('should not throw when telemetry throws an error', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
+        vi.setSystemTime(date);
+
+        const start_date = new Date(2025, 1, 3);
+        const end_date = new Date(2025, 2, 3);
+
+        const deployment = await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          status: DeploymentRequestStatus.Active,
+          start_date,
+          end_date,
+          product_service_instance_id: 'fake product instance id',
+          failure_reason: 'not failed',
+        });
+        expect(deployment).toBeDefined();
+      });
+    });
   });
+
   describe('loadAvailableDeploymentRequests', () => {
     it.each([
       {

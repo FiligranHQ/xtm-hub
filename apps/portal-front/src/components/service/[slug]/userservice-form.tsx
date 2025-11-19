@@ -72,6 +72,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   );
   const { toast } = useToast();
   const t = useTranslations();
+  const isUserCreation = !userService?.id;
 
   const organizationId = subscription.subscriptionById?.organization?.id;
   const genericCapabilities = [
@@ -90,6 +91,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
 
   const capabilitiesFormSchema = z.object({
     capabilities: z.array(z.string()),
+    organizationId: z.string(),
   });
 
   const extendedSchema = capabilitiesFormSchema.extend({
@@ -100,7 +102,9 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
           text: z.string(),
         })
       )
-      .min(1, { message: 'Please provide at least one email.' }),
+      .min(1, {
+        error: 'Please provide at least one email.',
+      }),
   });
 
   const getCurrentCapabilities = (): string[] => {
@@ -116,22 +120,30 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
     return currentCapabilities ?? [];
   };
 
-  const form = useForm({
-    resolver: zodResolver(
-      userService?.id ? capabilitiesFormSchema : extendedSchema
-    ),
+  const capabilitiesForm = useForm<z.infer<typeof capabilitiesFormSchema>>({
+    resolver: zodResolver(capabilitiesFormSchema),
+    defaultValues: {
+      capabilities: getCurrentCapabilities(),
+      organizationId: organizationId,
+    },
+  });
+
+  const extendedForm = useForm<z.infer<typeof extendedSchema>>({
+    resolver: zodResolver(extendedSchema),
     defaultValues: {
       email: [{ id: '', text: '' }],
       capabilities: getCurrentCapabilities(),
       organizationId: organizationId,
     },
   });
+
+  const form = userService?.id ? capabilitiesForm : extendedForm;
+
   useEffect(() => {
     setIsDirty(form.formState.isDirty);
   }, [form.formState.isDirty]);
 
   useEffect(() => {
-    const isUserCreation = !userService?.id;
     form.reset({
       email: [{ id: '', text: '' }],
       capabilities: isUserCreation ? [] : getCurrentCapabilities(),
@@ -203,10 +215,6 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
       },
     });
   };
-
-  const onSubmit = userService?.id
-    ? onSubmitCapabilitiesSchema
-    : onSubmitExtendSchema;
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
 
@@ -280,23 +288,25 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
         text: user.email,
       };
     });
-  const { setValue } = form;
 
+  const { setValue } = extendedForm;
   const [tags, setTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   return (
-    <Form {...form}>
+    <Form {...(form as typeof extendedForm)}>
       <form
         className="space-y-xl"
         onSubmit={(e) => {
           e.preventDefault();
-          form.handleSubmit(onSubmit)(e);
+          userService?.id
+            ? capabilitiesForm.handleSubmit(onSubmitCapabilitiesSchema)(e)
+            : extendedForm.handleSubmit(onSubmitExtendSchema)(e);
         }}>
         {!userService?.id && (
           <>
             <FormField
-              control={form.control}
+              control={extendedForm.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
@@ -333,12 +343,13 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
           {capabilitiesData.map((capability) => (
             <FormField
               key={capability!.id}
-              control={form.control}
+              control={(form as typeof capabilitiesForm).control}
               name="capabilities"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2">
                   <FormControl>
                     <Checkbox
+                      {...field}
                       disabled={isCapabilityDisabled(capability!.id)}
                       className="mt-xs"
                       checked={(field.value as string[]).includes(

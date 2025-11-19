@@ -248,7 +248,9 @@ describe('Ingest manifest helper', () => {
           'Invalid Contract Missing Fields'
         );
         expect(result.errors[0]?.contractSlug).toBe('invalid-missing');
-        expect(result.errors[0]?.error).toContain('Required');
+        expect(result.errors[0]?.error).toContain(
+          'expected string, received undefined'
+        );
 
         // Check second error
         expect(result.errors[1]?.contractTitle).toBe(
