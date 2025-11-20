@@ -17,6 +17,7 @@ export interface ShareableResourceConnectorDetailsProps {
     integration_subtype?: string | null;
     product_version?: string;
     share_number?: number | null;
+    manager_supported?: boolean;
   };
   compatibilityItem?: React.ReactNode;
 }

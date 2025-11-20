@@ -17,7 +17,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { getPlatformIdentifier } from '@/utils/platform';
 import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
-import { VerifiedIcon } from 'filigran-icon';
+import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
 import { SimpleTooltip } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import Image from 'next/image';
@@ -57,6 +57,12 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
         <div className="flex flex-col flex-1 justify-center">
           <div className="flex items-center gap-s flex-wrap">
             <h1 className="whitespace-nowrap">{documentData.name}</h1>
+            {documentData.manager_supported && (
+              <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100  text-green-500 dark:bg-turquoise-900 rounded-lg">
+                <MotionPlayIcon className="h-5 w-5 shrink-0 mr-xs" />
+                {t('Utils.Deployable')}
+              </div>
+            )}
             {documentData.verified && (
               <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100  text-green-500 dark:bg-turquoise-900 rounded-lg">
                 <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />

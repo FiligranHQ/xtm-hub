@@ -466,8 +466,8 @@
         },
         "ManagerSupported": {
           "Placeholder": "Is deployable...",
-          "Deployable": "is deployable",
-          "NotDeployable": "is not deployable"
+          "AutomaticDeploy": "Automatic deploy",
+          "ManualDeploy": "Manual deploy"
         }
       }
     },
@@ -900,7 +900,8 @@
     "ValidateForm": "Validate form",
     "Verified": "Verified",
     "Visualize": "Visualize",
-    "DangerZone": "Danger Zone"
+    "DangerZone": "Danger Zone",
+    "Deployable": "Deployable"
   },
   "Platform": {
     "Update": "Update",
