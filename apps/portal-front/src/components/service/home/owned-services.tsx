@@ -64,7 +64,7 @@ const OwnedServices = ({
     isFreeTrialFeatureEnabled &&
     (trialInstances.length === 0 || isTrialInstanceQueued);
 
-  const freeTrialServiceInstaceDataCard =
+  const freeTrialServiceInstanceDataCard =
     freeTrialSkeletonToServiceInstanceCardData(
       isTrialInstanceQueued,
       ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
@@ -76,7 +76,7 @@ const OwnedServices = ({
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l">
           {shouldDisplayFreeTrialSkeletton && (
             <ServiceInstanceCard
-              serviceInstance={freeTrialServiceInstaceDataCard}
+              serviceInstance={freeTrialServiceInstanceDataCard}
             />
           )}
           {sortedServices.map((service) => (

@@ -95,7 +95,10 @@ const ServiceInstanceCard: React.FunctionComponent<
           <div className="mt-s flex items-center h-12 w-full">
             {serviceInstance.logoBackgroundImageUrl && (
               <div
-                className={`h-12 ${serviceInstance.displayedServiceStatus ? 'w-2/3' : 'w-full'}`}
+                className={cn(
+                  'h-12',
+                  serviceInstance.displayedServiceStatus ? 'w-2/3' : 'w-full'
+                )}
                 style={{
                   backgroundImage: serviceInstance.logoBackgroundImageUrl,
                   backgroundSize: 'contain',
