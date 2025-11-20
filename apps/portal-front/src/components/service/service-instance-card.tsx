@@ -4,8 +4,6 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
@@ -22,13 +20,14 @@ import { ReactNode, useContext, useState } from 'react';
 
 export interface ServiceInstanceCardData {
   id: string;
-  isDisabled: boolean;
+  isLinkDisabled?: boolean;
   name: string;
   slug?: string;
   logoBackgroundImageUrl: string | null;
   fullBackgroundImage?: boolean;
-  illustration_document_id: string | null;
   service_definition_identifier: ServiceDefinitionIdentifierEnum;
+  illustrationDocumentUrl: string | null;
+  isCustomIllustrationDocument?: boolean;
   card_background?: string | null;
   displayedServiceStatus?: string;
   displayLinkArrow?: boolean;
@@ -38,12 +37,6 @@ export interface ServiceInstanceCardData {
   description?: string;
   url: string;
   ordering: number;
-  status?: string;
-  deployment_request_type?: DeploymentTypeEnum;
-  deployment_status?: DeploymentRequestStatusEnum;
-  service_instance_status?: string;
-  start_date?: Date;
-  end_date?: Date;
 }
 
 interface ServiceInstanceCardProps {
@@ -131,20 +124,16 @@ const ServiceInstanceCard: React.FunctionComponent<
                 <Image
                   width="580"
                   height="281"
-                  src={
-                    serviceInstance.illustration_document_id
-                      ? `/document/visualize/${serviceInstance.id}/${serviceInstance.illustration_document_id}`
-                      : `/${serviceInstance.service_definition_identifier}-private-platform-illustration.png`
-                  }
+                  src={serviceInstance.illustrationDocumentUrl!}
                   priority={false}
                   loading="lazy"
                   alt={`Illustration of ${serviceInstance.name}`}
                   className={
-                    !serviceInstance.illustration_document_id
+                    !serviceInstance.isCustomIllustrationDocument
                       ? 'absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45'
                       : ''
                   }
-                  unoptimized={!!serviceInstance.illustration_document_id}
+                  unoptimized={!!serviceInstance.isCustomIllustrationDocument}
                 />
                 <h3
                   className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
@@ -153,10 +142,10 @@ const ServiceInstanceCard: React.FunctionComponent<
                 </h3>
               </>
             )) ||
-              (serviceInstance.illustration_document_id && (
+              (serviceInstance.illustrationDocumentUrl && (
                 <Image
                   fill
-                  src={`/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`}
+                  src={serviceInstance.illustrationDocumentUrl}
                   objectPosition="top"
                   objectFit="cover"
                   alt={`Illustration of ${serviceInstance.name}`}
@@ -170,12 +159,14 @@ const ServiceInstanceCard: React.FunctionComponent<
               <h2>{serviceInstance.name}</h2>
             ) : (
               <Link
-                href={serviceInstance.isDisabled ? '#' : serviceInstance.url}
+                href={
+                  serviceInstance.isLinkDisabled ? '#' : serviceInstance.url
+                }
                 target={
                   serviceInstance.url.startsWith('http') ? '_blank' : '_self'
                 }
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
-                aria-disabled={serviceInstance.isDisabled}>
+                aria-disabled={serviceInstance.isLinkDisabled}>
                 <h2>
                   {serviceInstance.cardTitleOverride || serviceInstance.name}
                 </h2>

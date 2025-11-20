@@ -83,15 +83,15 @@ export const registeredPlatformToServiceInstanceCardData = (
     platform.identifier as ServiceDefinitionIdentifierEnum;
   return {
     id: platform.id,
-    isDisabled: false,
     name: platform.title,
     description: t('Register.Details.Description'),
     displayedServiceStatus: getDisplayDays(platform),
     displayLinkArrow: !isTrial(platform),
     displayUpdatePlatformIfAllowed: !isTrial(platform),
-    illustration_document_id: platform.illustration_document_id
-      ? platform.illustration_document_id
-      : null,
+    illustrationDocumentUrl: platform.illustration_document_id
+      ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
+      : `/${platformIdentifier}-private-platform-illustration.png`,
+    isCustomIllustrationDocument: !!platform.illustration_document_id,
     logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
     fullBackgroundImage: true,
     cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
@@ -99,23 +99,8 @@ export const registeredPlatformToServiceInstanceCardData = (
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
     ordering: -1, // registered platforms are displayed at the first position
-    deployment_request_type: (platform.deployment_request?.type ??
-      undefined) as DeploymentTypeEnum,
-    service_instance_status:
-      platform.subscription?.service_instance?.creation_status ?? undefined,
     disableCard: isExpired(platform.subscription?.end_date),
-    start_date: platform.subscription?.start_date ?? undefined,
-    end_date: platform.subscription?.end_date ?? undefined,
   };
-};
-
-export const hasTrialInstance = (
-  registrationList: ServiceInstanceCardData[]
-): boolean => {
-  const activeTrialInstances = registrationList.filter(
-    (platform) => platform.deployment_request_type === DeploymentTypeEnum.TRIAL
-  );
-  return activeTrialInstances.length >= 1;
 };
 
 const computeUrl = (
@@ -140,19 +125,31 @@ const computeUrl = (
   return `/${APP_PATH}/service/${serviceDefinitionIdentifier}/${instance.id}`;
 };
 
+const computeIllustrationDocumentUrl = (
+  instanceId: string,
+  illustrationDocumentId: string | null | undefined
+) => {
+  if (illustrationDocumentId)
+    return `/document/images/${instanceId}/${illustrationDocumentId}`;
+  return null;
+};
+
 export const publicServiceInstanceToInstanceCardData = (
   instance: serviceList_fragment$data
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    isDisabled:
+    isLinkDisabled:
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
     displayLinkArrow: isExternalService(
       instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
     ),
-    illustration_document_id: instance.illustration_document_id as string,
+    illustrationDocumentUrl: computeIllustrationDocumentUrl(
+      instance.id,
+      instance.illustration_document_id
+    ),
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
       instance.logo_document_id
@@ -170,14 +167,17 @@ export const userServicesOwnedServiceToInstanceCardData = ({
   const instance = subscription!.service_instance!;
   return {
     id: instance.id,
-    isDisabled:
+    isLinkDisabled:
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
     displayLinkArrow: isExternalService(
       instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
     ),
-    illustration_document_id: instance.illustration_document_id as string,
+    illustrationDocumentUrl: computeIllustrationDocumentUrl(
+      instance.id,
+      instance.illustration_document_id
+    ),
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
       instance.logo_document_id
@@ -194,14 +194,16 @@ export const seoServiceInstanceToInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    isDisabled: false,
     name: instance.name,
     slug: instance.slug as string,
     description: instance.description!,
     displayLinkArrow: isExternalService(
       instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
     ),
-    illustration_document_id: instance.illustration_document_id as string,
+    illustrationDocumentUrl: computeIllustrationDocumentUrl(
+      instance.id,
+      instance.illustration_document_id
+    ),
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
       instance.logo_document_id
