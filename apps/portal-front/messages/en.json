@@ -672,9 +672,9 @@
       "Display": {
         "New": "New",
         "Requested": "Requested",
-        "Title": "OpenCTI - Free Trial platform",
+        "Title": "OpenCTI 30-days Free Trial",
         "DaysRemaning": "{numberOfDays} Days Remaining",
-        "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."
+        "FreeTrialDescription": "Explore a fully functional version of OpenCTI to see how you can operationalize your threat intelligence - end-to-end! "
       },
       "CapacityWarning": {
         "Title": "No platform available",

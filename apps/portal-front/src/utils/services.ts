@@ -67,6 +67,33 @@ const buildDocumentUrl = (
   return null;
 };
 
+const freeTrialStaticData = () => {
+  const t = useTranslations();
+  return {
+    description: t('Service.Trials.Display.FreeTrialDescription'),
+    name: t('Service.Trials.Display.Title'),
+    logoBackgroundImageUrl: `url(/opencti_free-trial-logo.png)`,
+    illustrationDocumentUrl: `/opencti_free-trial-illustration.png`,
+    ordering: -2,
+  };
+};
+
+export const freeTrialSkeletonToServiceInstanceCardData = (
+  isTrialInstanceQueued: boolean,
+  serviceDefinitionIdentifier: ServiceDefinitionIdentifierEnum
+) => {
+  const t = useTranslations();
+  return {
+    ...freeTrialStaticData(),
+    id: 'freeTrial',
+    displayedServiceStatus: isTrialInstanceQueued
+      ? t('Service.Trials.Display.Requested')
+      : t('Service.Trials.Display.New'),
+    service_definition_identifier: serviceDefinitionIdentifier,
+    url: 'app/service/free-trial',
+  };
+};
+
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
@@ -81,26 +108,36 @@ export const registeredPlatformToServiceInstanceCardData = (
   };
   const platformIdentifier =
     platform.identifier as ServiceDefinitionIdentifierEnum;
-  return {
+
+  const commonValues = {
     id: platform.id,
-    name: platform.title,
-    description: t('Register.Details.Description'),
-    displayedServiceStatus: getDisplayDays(platform),
-    displayLinkArrow: !isTrial(platform),
-    displayUpdatePlatformIfAllowed: !isTrial(platform),
-    illustrationDocumentUrl: platform.illustration_document_id
-      ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
-      : `/${platformIdentifier}-private-platform-illustration.png`,
-    isCustomIllustrationDocument: !!platform.illustration_document_id,
-    logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
-    fullBackgroundImage: true,
-    cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
     service_definition_identifier: platformIdentifier,
-    card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
-    ordering: -1, // registered platforms are displayed at the first position
     disableCard: isExpired(platform.subscription?.end_date),
   };
+  if (isTrial(platform)) {
+    return {
+      ...commonValues,
+      ...freeTrialStaticData(),
+      displayedServiceStatus: getDisplayDays(platform),
+    };
+  } else
+    return {
+      ...commonValues,
+      name: platform.title,
+      description: t('Register.Details.Description'),
+      displayLinkArrow: true,
+      displayUpdatePlatformIfAllowed: true,
+      illustrationDocumentUrl: platform.illustration_document_id
+        ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
+        : `/${platformIdentifier}-private-platform-illustration.png`,
+      isCustomIllustrationDocument: !!platform.illustration_document_id,
+      logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
+      fullBackgroundImage: true,
+      cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
+      card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
+      ordering: -1, // registered platforms are displayed at the first position, after free trials
+    };
 };
 
 const computeUrl = (

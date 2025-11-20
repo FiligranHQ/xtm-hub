@@ -671,9 +671,9 @@
       "Display": {
         "New": "Nouveau",
         "Requested": "Demandée",
-        "Title": "OpenCTI - Plate-forme d'essai gratuite",
+        "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
         "DaysRemaning": "{numberOfDays} Jours restants",
-        "FreeTrialDescription": "Vache tout le monde aime le cheeseburger. Bavarois bergkase emmental bocconcini emmental fromage ficelles qui a déplacé mon fromage qui a déplacé mon fromage paneer."
+        "FreeTrialDescription": "Explorez une version entièrement fonctionnelle d'OpenCTI pour voir comment vous pouvez rendre vos renseignements sur les menaces opérationnels - de bout en bout !"
       },
       "CapacityWarning": {
         "Title": "Aucune plateforme disponible",

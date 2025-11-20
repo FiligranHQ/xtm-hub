@@ -1,9 +1,9 @@
 'use client';
 
-import SkeletonServiceCard from '@/components/service/home/skeleton-service-card';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import {
+  freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
   registeredPlatformToServiceInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
@@ -64,12 +64,20 @@ const OwnedServices = ({
     isFreeTrialFeatureEnabled &&
     (trialInstances.length === 0 || isTrialInstanceQueued);
 
+  const freeTrialServiceInstaceDataCard =
+    freeTrialSkeletonToServiceInstanceCardData(
+      isTrialInstanceQueued,
+      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
+    );
+
   if (sortedServices.length > 0) {
     return (
       <Suspense>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l">
           {shouldDisplayFreeTrialSkeletton && (
-            <SkeletonServiceCard isTrialRequested={isTrialInstanceQueued} />
+            <ServiceInstanceCard
+              serviceInstance={freeTrialServiceInstaceDataCard}
+            />
           )}
           {sortedServices.map((service) => (
             <ServiceInstanceCard
