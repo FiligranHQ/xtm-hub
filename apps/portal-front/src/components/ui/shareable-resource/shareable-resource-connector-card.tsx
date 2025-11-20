@@ -26,6 +26,7 @@ export interface ShareableResourceConnectorCardProps {
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
   requiredProductVersion?: string;
+  publicPath?: boolean;
 }
 
 const ShareableResourceConnectorCard: FunctionComponent<
@@ -36,6 +37,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
   shareLinkUrl,
   detailUrl,
   requiredProductVersion,
+  publicPath = false,
 }) => {
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
@@ -88,11 +90,17 @@ const ShareableResourceConnectorCard: FunctionComponent<
                 {connectorMetadata.label}
               </Badge>
             )}
-            <DisplayVersionCard
-              className="text-sm"
-              product_version={shareableConnector.product_version}
-              requiredProductVersion={requiredProductVersion}
-            />
+            {publicPath ? (
+              <span className="text-sm">
+                {shareableConnector.product_version}
+              </span>
+            ) : (
+              <DisplayVersionCard
+                className="text-sm"
+                product_version={shareableConnector.product_version}
+                requiredProductVersion={requiredProductVersion}
+              />
+            )}
           </div>
           <ShareLinkButton
             documentId={shareableConnector.id}
