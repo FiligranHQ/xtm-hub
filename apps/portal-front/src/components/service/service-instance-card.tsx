@@ -4,11 +4,7 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
-import {
-  APP_PATH,
-  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
-} from '@/utils/path/constant';
-import { isExpired, isExternalService } from '@/utils/services';
+import { isExpired } from '@/utils/services';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -40,7 +36,7 @@ export interface ServiceInstanceCardData {
   displayUpdatePlatformIfAllowed?: boolean;
   cardTitleOverride?: string;
   description?: string;
-  url?: string;
+  url: string;
   ordering: number;
   status?: string;
   deployment_request_type?: DeploymentTypeEnum;
@@ -53,22 +49,15 @@ export interface ServiceInstanceCardData {
 interface ServiceInstanceCardProps {
   serviceInstance: ServiceInstanceCardData;
   rightAction?: ReactNode;
-  seo?: boolean;
   className?: string;
 }
 
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
-> = ({ serviceInstance, rightAction, className, seo }) => {
+> = ({ serviceInstance, rightAction, className }) => {
   const t = useTranslations();
   const { hasOrganizationCapability, hasCapability } =
     useContext(PortalContext);
-
-  const serviceHref =
-    isExternalService(serviceInstance.service_definition_identifier) &&
-    serviceInstance.url
-      ? serviceInstance.url
-      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
 
   // Check if user can update platform
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
@@ -79,7 +68,7 @@ const ServiceInstanceCard: React.FunctionComponent<
     }
 
     // Allow BYPASS users to update platforms
-    if (hasCapability && hasCapability(RestrictionEnum.BYPASS)) {
+    if (hasCapability?.(RestrictionEnum.BYPASS)) {
       return true;
     }
 
@@ -88,17 +77,13 @@ const ServiceInstanceCard: React.FunctionComponent<
       return false;
     }
 
-    // Check ADMINISTRATE_ORGANIZATION capability
-    const hasAdminCap = hasOrganizationCapability(
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
-    );
-
-    if (!hasAdminCap) {
-      return false;
-    }
-
-    return hasOrganizationCapability(
-      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+    return (
+      hasOrganizationCapability(
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      ) &&
+      hasOrganizationCapability(
+        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+      )
     );
   };
 
@@ -185,8 +170,10 @@ const ServiceInstanceCard: React.FunctionComponent<
               <h2>{serviceInstance.name}</h2>
             ) : (
               <Link
-                href={serviceInstance.isDisabled ? '#' : serviceHref}
-                target={serviceHref.startsWith('http') ? '_blank' : '_self'}
+                href={serviceInstance.isDisabled ? '#' : serviceInstance.url}
+                target={
+                  serviceInstance.url.startsWith('http') ? '_blank' : '_self'
+                }
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
                 aria-disabled={serviceInstance.isDisabled}>
                 <h2>
@@ -196,14 +183,11 @@ const ServiceInstanceCard: React.FunctionComponent<
             )}
 
             <div className="flex pl-s ml-auto gap-m items-start">
-              {isExternalService(
-                serviceInstance.service_definition_identifier
-              ) &&
-                serviceInstance.displayLinkArrow && (
-                  <div className="pt-2">
-                    <ArrowOutwardIcon className="size-3 shrink-0" />
-                  </div>
-                )}
+              {serviceInstance.displayLinkArrow && (
+                <div className="pt-2">
+                  <ArrowOutwardIcon className="size-3 shrink-0" />
+                </div>
+              )}
               {canUpdatePlatform() && (
                 <div className="relative">
                   <IconActions

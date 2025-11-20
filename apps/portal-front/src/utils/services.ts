@@ -1,4 +1,8 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -122,6 +126,28 @@ export const hasTrialInstance = (
   return activeTrialInstances.length >= 1;
 };
 
+const computeUrl = (
+  instance:
+    | serviceList_fragment$data
+    | seoServiceInstanceFragment$data
+    | NonNullable<
+        NonNullable<
+          userServicesOwned_fragment$data['subscription']
+        >['service_instance']
+      >,
+  seo?: boolean
+) => {
+  const instanceLink = instance.links?.[0]?.url;
+  const serviceDefinitionIdentifier = instance.service_definition!
+    .identifier as ServiceDefinitionIdentifierEnum;
+  if (isExternalService(serviceDefinitionIdentifier) && instanceLink)
+    return instanceLink as string;
+  if (seo) {
+    return `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${instance.slug}`;
+  }
+  return `/${APP_PATH}/service/${serviceDefinitionIdentifier}/${instance.id}`;
+};
+
 export const publicServiceInstanceToInstanceCardData = (
   instance: serviceList_fragment$data
 ): ServiceInstanceCardData => {
@@ -131,7 +157,9 @@ export const publicServiceInstanceToInstanceCardData = (
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
-    displayLinkArrow: true,
+    displayLinkArrow: isExternalService(
+      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+    ),
     illustration_document_id: instance.illustration_document_id as string,
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
@@ -139,7 +167,7 @@ export const publicServiceInstanceToInstanceCardData = (
     ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
-    url: instance.links?.[0]?.url as string,
+    url: computeUrl(instance),
     ordering: instance.ordering,
   };
 };
@@ -154,7 +182,9 @@ export const userServicesOwnedServiceToInstanceCardData = ({
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
-    displayLinkArrow: true,
+    displayLinkArrow: isExternalService(
+      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+    ),
     illustration_document_id: instance.illustration_document_id as string,
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
@@ -162,7 +192,7 @@ export const userServicesOwnedServiceToInstanceCardData = ({
     ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
-    url: instance.links?.[0]?.url as string,
+    url: computeUrl(instance),
     ordering: instance.ordering,
   };
 };
@@ -176,7 +206,9 @@ export const seoServiceInstanceToInstanceCardData = (
     name: instance.name,
     slug: instance.slug as string,
     description: instance.description!,
-    displayLinkArrow: true,
+    displayLinkArrow: isExternalService(
+      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+    ),
     illustration_document_id: instance.illustration_document_id as string,
     logoBackgroundImageUrl: buildDocumentUrl(
       instance.id,
@@ -184,7 +216,7 @@ export const seoServiceInstanceToInstanceCardData = (
     ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
-    url: instance.links?.[0]?.url as string,
+    url: computeUrl(instance, true),
     ordering: 0,
   };
 };
