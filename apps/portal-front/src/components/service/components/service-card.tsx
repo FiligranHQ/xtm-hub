@@ -5,8 +5,8 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
-import { PrivateShareableResourceConnectorCard } from '@/components/ui/shareable-resource/private-shareable-resource-connector-card';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
+import ShareableResourceConnectorCard from '@/components/ui/shareable-resource/shareable-resource-connector-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import {
   APP_PATH,
@@ -50,7 +50,7 @@ const ServiceCard = ({
   if (isConnectorResource(document)) {
     const docResource: ShareableResourceConnectorType = document;
     return (
-      <PrivateShareableResourceConnectorCard
+      <ShareableResourceConnectorCard
         shareableConnector={docResource}
         requiredProductVersion={docResource.product_version}
         serviceInstance={serviceInstance}
