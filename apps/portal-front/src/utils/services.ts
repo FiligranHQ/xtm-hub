@@ -21,24 +21,15 @@ export const isExternalService = (
     ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
 
-export const isRegistrationService = (
-  serviceInstance: ServiceInstanceCardData
-) =>
-  [
-    ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-    ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
-  ].includes(
-    serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
-  );
-
 const isTrial = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ) => {
   return platform.deployment_request?.type === DeploymentTypeEnum.TRIAL;
 };
 
-export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
-  serviceInstance.end_date && new Date(serviceInstance.end_date) < new Date();
+export const isExpired = (endDate: Date | undefined | null): boolean => {
+  return endDate ? new Date(endDate) < new Date() : false;
+};
 
 export const getDisplayDays = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
@@ -112,6 +103,7 @@ export const registeredPlatformToServiceInstanceCardData = (
       undefined) as DeploymentTypeEnum,
     service_instance_status:
       platform.subscription?.service_instance?.creation_status ?? undefined,
+    disableCard: isExpired(platform.subscription?.end_date),
     start_date: platform.subscription?.start_date ?? undefined,
     end_date: platform.subscription?.end_date ?? undefined,
   };

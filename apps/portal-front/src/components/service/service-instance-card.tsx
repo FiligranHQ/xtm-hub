@@ -4,7 +4,6 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
-import { isExpired } from '@/utils/services';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -34,6 +33,7 @@ export interface ServiceInstanceCardData {
   displayedServiceStatus?: string;
   displayLinkArrow?: boolean;
   displayUpdatePlatformIfAllowed?: boolean;
+  disableCard?: boolean;
   cardTitleOverride?: string;
   description?: string;
   url: string;
@@ -89,7 +89,7 @@ const ServiceInstanceCard: React.FunctionComponent<
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
-      {isExpired(serviceInstance) && (
+      {serviceInstance.disableCard && (
         <div className="absolute inset-0 bg-black/60 z-10 rounded pointer-events-none" />
       )}
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
