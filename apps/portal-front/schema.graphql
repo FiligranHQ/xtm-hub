@@ -21,6 +21,7 @@ enum FilterKey {
   integration_subtype
   slug
   product_version
+  manager_supported
 }
 
 input Filter {

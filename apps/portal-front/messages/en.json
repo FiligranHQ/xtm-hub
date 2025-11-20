@@ -463,6 +463,11 @@
         },
         "ProductVersion": {
           "Placeholder": "Platform..."
+        },
+        "ManagerSupported": {
+          "Placeholder": "Is deployable...",
+          "Deployable": "is deployable",
+          "NotDeployable": "is not deployable"
         }
       }
     },
@@ -584,7 +589,8 @@
         "Key": {
           "label": "Use case",
           "integration_feed_type": "Integration feed type",
-          "product_version": "Platform"
+          "product_version": "Platform",
+          "manager_supported": "Is deployable"
         }
       }
     },
