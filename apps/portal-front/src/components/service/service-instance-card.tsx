@@ -108,7 +108,7 @@ const ServiceInstanceCard: React.FunctionComponent<
               />
             )}
             {serviceInstance.displayedServiceStatus && (
-              <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
+              <span className="px-2 py-1 ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-[11px] text-black">
                 {serviceInstance.displayedServiceStatus}
               </span>
             )}
