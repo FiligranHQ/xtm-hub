@@ -1,24 +1,57 @@
+import { TrialsDetailsPage } from '@/components/service/trial-instances/trials-details-page';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { APP_PATH } from '@/utils/path/constant';
-import ServiceByIdQuery, {
-  serviceByIdQuery,
-} from '@generated/serviceByIdQuery.graphql';
-import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
+import { pageRegisteredPlatformByServiceInstanceId_fragment$data } from '@generated/pageRegisteredPlatformByServiceInstanceId_fragment.graphql';
+import pageRegisteredPlatformByServiceInstanceIdQueryGraphql, {
+  pageRegisteredPlatformByServiceInstanceIdQuery,
+} from '@generated/pageRegisteredPlatformByServiceInstanceIdQuery.graphql';
+import { notFound } from 'next/navigation';
+import { graphql } from 'react-relay';
 
 interface ServiceCustomDashboardsPageProps {
   params: Promise<{ serviceInstanceId: string }>;
 }
 
+export const registeredPlatformByServiceInstanceId = graphql`
+  query pageRegisteredPlatformByServiceInstanceIdQuery(
+    $input: RegisteredPlatformInput!
+  ) {
+    registeredPlatform(input: $input) {
+      ...pageRegisteredPlatformByServiceInstanceId_fragment
+    }
+  }
+`;
+
+export const registeredPlatformByServiceInstanceIdFragment = graphql`
+  fragment pageRegisteredPlatformByServiceInstanceId_fragment on RegisteredPlatform {
+    id
+    title
+    contract
+    url
+  }
+`;
+
 const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   const { serviceInstanceId } = await params;
   const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
-  const response = await serverFetchGraphQL<serviceByIdQuery>(
-    ServiceByIdQuery,
-    {
-      service_instance_id: decodedServiceInstanceId,
-    }
-  );
+  const response =
+    await serverFetchGraphQL<pageRegisteredPlatformByServiceInstanceIdQuery>(
+      pageRegisteredPlatformByServiceInstanceIdQueryGraphql,
+      {
+        input: {
+          service_instance_id: decodedServiceInstanceId,
+        },
+      }
+    );
+
+  const data = response.data
+    .registeredPlatform as unknown as pageRegisteredPlatformByServiceInstanceId_fragment$data;
+
+  if (!data || data.contract !== PlatformContractEnum.TRIAL) {
+    notFound();
+  }
 
   const breadcrumbs = [
     {
@@ -26,24 +59,16 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       href: `/${APP_PATH}`,
     },
     {
-      label:
-        (
-          response?.data
-            .serviceInstanceById as unknown as serviceInstance_fragment$data
-        )?.name ?? '',
+      label: data.title,
       original: true,
     },
   ];
 
   return (
     <>
-      {response ? (
-        <>
-          <BreadcrumbNav value={breadcrumbs} />
-          <div>Registered instance page :) </div>
-        </>
-      ) : (
-        <h1>Service not found</h1>
+      <BreadcrumbNav value={breadcrumbs} />
+      {data.contract === PlatformContractEnum.TRIAL && (
+        <TrialsDetailsPage platform={data} />
       )}
     </>
   );

@@ -71,6 +71,7 @@ export const TrialsLearnMore: React.FC = () => {
             <iframe
               width="413"
               height="232"
+              allowFullScreen
               src="https://www.youtube.com/embed/KwF22zye3iI"
             />
           </div>
