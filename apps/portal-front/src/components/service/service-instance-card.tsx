@@ -93,22 +93,24 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}>
           <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
-            {serviceInstance.displayedServiceStatus ? (
-              <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
+            {serviceInstance.logoBackgroundImageUrl && (
+              <div
+                className={cn(
+                  'h-12',
+                  serviceInstance.displayedServiceStatus ? 'w-2/3' : 'w-full'
+                )}
+                style={{
+                  backgroundImage: serviceInstance.logoBackgroundImageUrl,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'left center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            )}
+            {serviceInstance.displayedServiceStatus && (
+              <span className="px-2 py-1 ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-[11px] text-black">
                 {serviceInstance.displayedServiceStatus}
               </span>
-            ) : (
-              serviceInstance.logoBackgroundImageUrl && (
-                <div
-                  className="w-full h-12"
-                  style={{
-                    backgroundImage: serviceInstance.logoBackgroundImageUrl,
-                    backgroundSize: 'contain',
-                    backgroundPosition: 'left center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                />
-              )
             )}
           </div>
           <AspectRatio
