@@ -16,11 +16,15 @@ export const IntegrationFeedDeployableFilter = () => {
       <MultiSelectFormField
         options={[
           {
-            label: 'true',
+            label: t(
+              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.Deployable'
+            ),
             value: 'true',
           },
           {
-            label: 'false',
+            label: t(
+              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.NotDeployable'
+            ),
             value: 'false',
           },
         ]}

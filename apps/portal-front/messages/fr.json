@@ -467,7 +467,9 @@
           "Placeholder": "Plateforme..."
         },
         "ManagerSupported": {
-          "Placeholder": "Est déployable..."
+          "Placeholder": "Est déployable...",
+          "Deployable": "est déployable",
+          "NotDeployable": "n'est pas déployable"
         }
       }
     },
