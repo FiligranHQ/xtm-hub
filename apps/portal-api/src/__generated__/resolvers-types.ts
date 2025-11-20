@@ -1094,6 +1094,7 @@ export type Query = {
   publicIntegrationFeedBySlug?: Maybe<IntegrationFeed>;
   publicIntegrationFeeds: IntegrationFeedConnection;
   publicServiceInstances: ServiceConnection;
+  registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
@@ -1300,6 +1301,11 @@ export type QueryPublicServiceInstancesArgs = {
 };
 
 
+export type QueryRegisteredPlatformArgs = {
+  input: RegisteredPlatformInput;
+};
+
+
 export type QueryRegisteredPlatformsArgs = {
   input?: InputMaybe<RegisteredPlatformsInput>;
 };
@@ -1444,6 +1450,10 @@ export type RegisteredPlatform = Node & {
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
   version?: Maybe<Scalars['String']['output']>;
+};
+
+export type RegisteredPlatformInput = {
+  service_instance_id: Scalars['ID']['input'];
 };
 
 export type RegisteredPlatformsInput = {
@@ -2050,6 +2060,7 @@ export type ResolversTypes = ResolversObject<{
   RefreshUserPlatformTokenResponse: ResolverTypeWrapper<RefreshUserPlatformTokenResponse>;
   RegisterPlatformInput: RegisterPlatformInput;
   RegisteredPlatform: ResolverTypeWrapper<RegisteredPlatform>;
+  RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   Restriction: Restriction;
@@ -2181,6 +2192,7 @@ export type ResolversParentTypes = ResolversObject<{
   RefreshUserPlatformTokenResponse: RefreshUserPlatformTokenResponse;
   RegisterPlatformInput: RegisterPlatformInput;
   RegisteredPlatform: RegisteredPlatform;
+  RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: RegistrationResponse;
   RolePortal: RolePortal;
@@ -2756,6 +2768,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['IntegrationFeed']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
   publicIntegrationFeeds?: Resolver<ResolversTypes['IntegrationFeedConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;

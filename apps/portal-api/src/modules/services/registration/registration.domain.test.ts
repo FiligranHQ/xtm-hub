@@ -310,7 +310,9 @@ describe('Registration domain', () => {
     });
   });
 
-  describe('loadRegisteredPlatforms', () => {
+  describe('loadRegisteredPlatformsBy', () => {
+    let openCTIServiceInstanceId: ServiceInstanceId;
+
     const openAEVplatformId = uuidv4();
 
     const openAEVplatformTitle = 'My OpenCTI platform';
@@ -322,7 +324,7 @@ describe('Registration domain', () => {
     const openAEVServiceDefinitionId = 'e66a6b50-1f92-4f62-b84c-88ed6b871790';
 
     beforeEach(async () => {
-      await registrationDomain.registerNewPlatform({
+      openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
@@ -354,7 +356,7 @@ describe('Registration domain', () => {
     });
 
     it('should return all registered platform without platformIdentifier in input ', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatforms();
+      const platforms = await registrationDomain.loadRegisteredPlatformsBy();
 
       expect(
         platforms.some(
@@ -370,15 +372,23 @@ describe('Registration domain', () => {
       ).toBe(true);
     });
     it('should return only the right registered platform if platformIdentifier in input ', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatforms(
-        PlatformIdentifier.Openaev
-      );
+      const platforms = await registrationDomain.loadRegisteredPlatformsBy({
+        platformIdentifier: PlatformIdentifier.Openaev,
+      });
       expect(
         platforms.every(
           (item) =>
             item.identifier === ServiceDefinitionIdentifier.OpenaevRegistration
         )
       ).toBe(true);
+    });
+    it('should return only the registered platform linked to the service instance', async () => {
+      const platforms = await registrationDomain.loadRegisteredPlatformsBy({
+        'ServiceInstance.id': openCTIServiceInstanceId,
+      });
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
   });
 });

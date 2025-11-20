@@ -36,6 +36,13 @@ export type PlatformConfiguration = {
   token: string;
 };
 
+export interface DomainRegisteredPlatform {
+  config: PlatformConfiguration;
+  identifier: ServiceDefinitionIdentifier;
+  illustration_document_id: string | null;
+  id: string;
+}
+
 export const registrationDomain = {
   registerNewPlatform: async ({
     serviceDefinitionId,
@@ -128,18 +135,15 @@ export const registrationDomain = {
     });
   },
 
-  loadRegisteredPlatforms: async (
-    platformIdentifier?: PlatformIdentifier,
+  loadRegisteredPlatformsBy: async (
+    query: {
+      platformIdentifier?: PlatformIdentifier;
+      'ServiceInstance.id'?: ServiceInstanceId;
+    } = {},
     opts: QueryOpts = {}
-  ): Promise<
-    {
-      config: PlatformConfiguration;
-      identifier: ServiceDefinitionIdentifier;
-      illustration_document_id: string | null;
-      id: string;
-    }[]
-  > => {
+  ): Promise<DomainRegisteredPlatform[]> => {
     const { user } = requestContext.require();
+    const { platformIdentifier, ...field } = query;
     const userSelectedOrganization = user.selected_organization_id;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
@@ -149,7 +153,7 @@ export const registrationDomain = {
         ]
       : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
-    return await db<ServiceInstance>('ServiceInstance', opts)
+    return db<ServiceInstance>('ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',
@@ -173,6 +177,7 @@ export const registrationDomain = {
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .where('Service_Configuration.status', '=', 'active')
+      .where(field)
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',
