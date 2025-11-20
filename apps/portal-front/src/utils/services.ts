@@ -1,4 +1,8 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -6,6 +10,7 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
+import { useTranslations } from 'next-intl';
 
 export const isExternalService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum
@@ -16,33 +21,32 @@ export const isExternalService = (
     ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
 
-export const isRegistrationService = (
-  serviceInstance: ServiceInstanceCardData
-) =>
-  [
-    ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-    ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
-  ].includes(
-    serviceInstance.service_definition_identifier as ServiceDefinitionIdentifierEnum
-  );
-export const isTrialInstance = (serviceInstance: ServiceInstanceCardData) => {
-  return serviceInstance.deployment_request_type === DeploymentTypeEnum.TRIAL;
+const isTrial = (
+  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
+) => {
+  return platform.deployment_request?.type === DeploymentTypeEnum.TRIAL;
 };
 
-export const isExpired = (serviceInstance: ServiceInstanceCardData) =>
-  serviceInstance.end_date && new Date(serviceInstance.end_date) < new Date();
+export const isExpired = (endDate: Date | undefined | null): boolean => {
+  return endDate ? new Date(endDate) < new Date() : false;
+};
 
-export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
+export const getDisplayDays = (
+  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
+) => {
+  if (!isTrial) {
+    return undefined;
+  }
   if (
-    serviceInstance.service_instance_status ===
+    platform.subscription?.service_instance?.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING
   ) {
     return 'Provisioning';
   }
-  if (!serviceInstance?.end_date) {
-    return serviceInstance.status;
+  if (!platform.subscription?.end_date) {
+    return platform.deployment_request?.status;
   }
-  const target = new Date(serviceInstance.end_date);
+  const target = new Date(platform.subscription?.end_date);
   const now = new Date();
 
   const diffInMs = target.getTime() - now.getTime();
@@ -51,12 +55,22 @@ export const getDisplayDays = (serviceInstance: ServiceInstanceCardData) => {
   if (diffInDays <= 0) {
     return 'Expired';
   }
-  return `${diffInDays} days remaning`;
+  return `${diffInDays} days remaining`;
+};
+
+const buildDocumentUrl = (
+  serviceInstanceId: string,
+  logoDocumentId: string | null | undefined
+) => {
+  if (logoDocumentId)
+    return `url(/document/images/${serviceInstanceId}/${logoDocumentId})`;
+  return null;
 };
 
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ): ServiceInstanceCardData => {
+  const t = useTranslations();
   const cardBackgroundByServiceMap: Partial<
     Record<ServiceDefinitionIdentifierEnum, string>
   > = {
@@ -69,34 +83,55 @@ export const registeredPlatformToServiceInstanceCardData = (
     platform.identifier as ServiceDefinitionIdentifierEnum;
   return {
     id: platform.id,
-    platform_id: platform.platform_id,
-    creation_status: ServiceInstanceCreationStatusEnum.CREATED,
     name: platform.title,
-    platform_contract: platform.contract,
-    illustration_document_id: platform.illustration_document_id
-      ? platform.illustration_document_id
-      : null,
-    logo_document_id: null,
+    description: t('Register.Details.Description'),
+    displayedServiceStatus: getDisplayDays(platform),
+    displayLinkArrow: !isTrial(platform),
+    displayUpdatePlatformIfAllowed: !isTrial(platform),
+    illustrationDocumentUrl: platform.illustration_document_id
+      ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
+      : `/${platformIdentifier}-private-platform-illustration.png`,
+    isCustomIllustrationDocument: !!platform.illustration_document_id,
+    logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
+    fullBackgroundImage: true,
+    cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
     service_definition_identifier: platformIdentifier,
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     url: platform.url,
     ordering: -1, // registered platforms are displayed at the first position
-    deployment_request_type: (platform.deployment_request?.type ??
-      undefined) as DeploymentTypeEnum,
-    service_instance_status:
-      platform.subscription?.service_instance?.creation_status ?? undefined,
-    start_date: platform.subscription?.start_date ?? undefined,
-    end_date: platform.subscription?.end_date ?? undefined,
+    disableCard: isExpired(platform.subscription?.end_date),
   };
 };
 
-export const hasTrialInstance = (
-  registrationList: ServiceInstanceCardData[]
-): boolean => {
-  const activeTrialInstances = registrationList.filter(
-    (platform) => platform.deployment_request_type === DeploymentTypeEnum.TRIAL
-  );
-  return activeTrialInstances.length >= 1;
+const computeUrl = (
+  instance:
+    | serviceList_fragment$data
+    | seoServiceInstanceFragment$data
+    | NonNullable<
+        NonNullable<
+          userServicesOwned_fragment$data['subscription']
+        >['service_instance']
+      >,
+  seo?: boolean
+) => {
+  const instanceLink = instance.links?.[0]?.url;
+  const serviceDefinitionIdentifier = instance.service_definition!
+    .identifier as ServiceDefinitionIdentifierEnum;
+  if (isExternalService(serviceDefinitionIdentifier) && instanceLink)
+    return instanceLink as string;
+  if (seo) {
+    return `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${instance.slug}`;
+  }
+  return `/${APP_PATH}/service/${serviceDefinitionIdentifier}/${instance.id}`;
+};
+
+const computeIllustrationDocumentUrl = (
+  instanceId: string,
+  illustrationDocumentId: string | null | undefined
+) => {
+  if (illustrationDocumentId)
+    return `/document/images/${instanceId}/${illustrationDocumentId}`;
+  return null;
 };
 
 export const publicServiceInstanceToInstanceCardData = (
@@ -104,15 +139,24 @@ export const publicServiceInstanceToInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    creation_status:
-      instance.creation_status as ServiceInstanceCreationStatusEnum,
+    isLinkDisabled:
+      instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
-    illustration_document_id: instance.illustration_document_id as string,
-    logo_document_id: instance.logo_document_id as string,
+    displayLinkArrow: isExternalService(
+      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+    ),
+    illustrationDocumentUrl: computeIllustrationDocumentUrl(
+      instance.id,
+      instance.illustration_document_id
+    ),
+    logoBackgroundImageUrl: buildDocumentUrl(
+      instance.id,
+      instance.logo_document_id
+    ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
-    url: instance.links?.[0]?.url as string,
+    url: computeUrl(instance),
     ordering: instance.ordering,
   };
 };
@@ -123,15 +167,24 @@ export const userServicesOwnedServiceToInstanceCardData = ({
   const instance = subscription!.service_instance!;
   return {
     id: instance.id,
-    creation_status:
-      instance.creation_status as ServiceInstanceCreationStatusEnum,
+    isLinkDisabled:
+      instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
     name: instance.name,
     description: instance.description!,
-    illustration_document_id: instance.illustration_document_id as string,
-    logo_document_id: instance.logo_document_id as string,
+    displayLinkArrow: isExternalService(
+      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+    ),
+    illustrationDocumentUrl: computeIllustrationDocumentUrl(
+      instance.id,
+      instance.illustration_document_id
+    ),
+    logoBackgroundImageUrl: buildDocumentUrl(
+      instance.id,
+      instance.logo_document_id
+    ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
-    url: instance.links?.[0]?.url as string,
+    url: computeUrl(instance),
     ordering: instance.ordering,
   };
 };
@@ -141,15 +194,23 @@ export const seoServiceInstanceToInstanceCardData = (
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    creation_status: ServiceInstanceCreationStatusEnum.CREATED,
     name: instance.name,
     slug: instance.slug as string,
     description: instance.description!,
-    illustration_document_id: instance.illustration_document_id as string,
-    logo_document_id: instance.logo_document_id as string,
+    displayLinkArrow: isExternalService(
+      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+    ),
+    illustrationDocumentUrl: computeIllustrationDocumentUrl(
+      instance.id,
+      instance.illustration_document_id
+    ),
+    logoBackgroundImageUrl: buildDocumentUrl(
+      instance.id,
+      instance.logo_document_id
+    ),
     service_definition_identifier: instance.service_definition!
       .identifier as ServiceDefinitionIdentifierEnum,
-    url: instance.links?.[0]?.url as string,
+    url: computeUrl(instance, true),
     ordering: 0,
   };
 };
