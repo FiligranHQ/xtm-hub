@@ -437,10 +437,8 @@
       "Type": "Type",
       "VendorContact": "Vendor Contact",
       "VisitVendor": "Visit the vendor's page to learn more and get in touch",
-      "Incompatible": {
-        "Required": "Updating your platform is necessary to deploy this connector",
-        "Optional": "Some of your platforms need to be updated to deploy this connector"
-      }
+      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {needs} other {need}} to be updated to deploy this connector.",
+      "UnavailableDeployments": "This connector is not available for automatic deployment."
     },
     "CreationStatus": "Creation status",
     "OpenctiIntegrationFeeds": {
@@ -465,6 +463,11 @@
         },
         "ProductVersion": {
           "Placeholder": "Platform..."
+        },
+        "ManagerSupported": {
+          "Placeholder": "Is deployable...",
+          "Deployable": "is deployable",
+          "NotDeployable": "is not deployable"
         }
       }
     },
@@ -586,7 +589,8 @@
         "Key": {
           "label": "Use case",
           "integration_feed_type": "Integration feed type",
-          "product_version": "Platform"
+          "product_version": "Platform",
+          "manager_supported": "Is deployable"
         }
       }
     },
@@ -674,9 +678,9 @@
       "Display": {
         "New": "New",
         "Requested": "Requested",
-        "Title": "OpenCTI - Free Trial platform",
+        "Title": "OpenCTI 30-days Free Trial",
         "DaysRemaning": "{numberOfDays} Days Remaining",
-        "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."
+        "FreeTrialDescription": "Explore a fully functional version of OpenCTI to see how you can operationalize your threat intelligence - end-to-end! "
       },
       "CapacityWarning": {
         "Title": "No platform available",

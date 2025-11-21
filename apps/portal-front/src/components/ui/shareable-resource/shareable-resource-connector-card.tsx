@@ -5,8 +5,10 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { DisplayVersionCard } from '@/components/ui/shareable-resource/display-version-card';
+import { cn } from '@/lib/utils';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
-import { VerifiedIcon } from 'filigran-icon';
+import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
 import { Badge } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,7 +26,8 @@ export interface ShareableResourceConnectorCardProps {
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
-  productVersionItem?: React.ReactNode;
+  requiredProductVersion?: string;
+  publicPath?: boolean;
 }
 
 const ShareableResourceConnectorCard: FunctionComponent<
@@ -34,7 +37,8 @@ const ShareableResourceConnectorCard: FunctionComponent<
   serviceInstance,
   shareLinkUrl,
   detailUrl,
-  productVersionItem,
+  requiredProductVersion,
+  publicPath = false,
 }) => {
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
@@ -59,9 +63,16 @@ const ShareableResourceConnectorCard: FunctionComponent<
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 pr-xxl">
+              <h2
+                className={cn(
+                  'text-base md:text-lg font-semibold leading-tight min-w-0 pr-xxl',
+                  shareableConnector.manager_supported && 'pr-[3.25rem]'
+                )}>
                 {shareableConnector.name}
               </h2>
+              {shareableConnector.manager_supported && (
+                <MotionPlayIcon className="absolute top-l right-[2.75rem] h-6 w-6 shrink-0 text-green-500" />
+              )}
               {shareableConnector.verified && (
                 <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
               )}
@@ -87,10 +98,16 @@ const ShareableResourceConnectorCard: FunctionComponent<
                 {connectorMetadata.label}
               </Badge>
             )}
-            {productVersionItem ?? (
+            {publicPath ? (
               <span className="text-sm">
                 {shareableConnector.product_version}
               </span>
+            ) : (
+              <DisplayVersionCard
+                className="text-sm"
+                product_version={shareableConnector.product_version}
+                requiredProductVersion={requiredProductVersion}
+              />
             )}
           </div>
           <ShareLinkButton

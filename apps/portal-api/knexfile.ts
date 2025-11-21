@@ -45,6 +45,12 @@ declare module 'knex' {
   }
 }
 
+type FilterHandler = (
+  queryContext: KnexQueryBuilder,
+  type: DatabaseType,
+  value: string[]
+) => void;
+
 type BaseDatabaseType =
   | 'User'
   | 'Organization'
@@ -243,6 +249,106 @@ const searchAttributes = [
   'country',
 ];
 
+const filterHandlers: Record<string, FilterHandler> = {
+  [FilterKey.Label]: (queryContext, type, value) => {
+    if (value.length === 0) return;
+
+    queryContext
+      .leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`)
+      .whereIn('ol.label_id', value.map(extractId));
+  },
+
+  [FilterKey.ServiceDefinitionIdentifier]: (queryContext, type, value) => {
+    if (value.length === 0) return;
+
+    queryContext
+      .leftJoin(
+        'ServiceDefinition',
+        'ServiceDefinition.id',
+        '=',
+        `${type}.service_definition_id`
+      )
+      .whereIn('ServiceDefinition.identifier', value);
+  },
+
+  [FilterKey.ProductVersion]: (queryContext, type, value) => {
+    if (value.length === 0) return;
+
+    const lowestVersion = value.sort(compareSemanticVersions)[0];
+    const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
+
+    queryContext
+      .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+          `${metaAlias}.key`,
+          '=',
+          FilterKey.ProductVersion
+        );
+      })
+      .whereRaw(
+        dbRaw(
+          `("${metaAlias}"."value" IS NULL OR string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
+        )
+      );
+  },
+};
+const createIdFilterHandler =
+  (key: string): FilterHandler =>
+  (queryContext, type, value) => {
+    queryContext.whereIn(key, value.map(extractId));
+  };
+
+const createDefaultFilterHandler =
+  (key: string): FilterHandler =>
+  (queryContext, type, value) => {
+    queryContext.whereIn(key, value);
+  };
+
+const createMetadataFilterHandler =
+  (key: string): FilterHandler =>
+  (queryContext, _, value) => {
+    if (value.length === 0) return;
+
+    const metaAlias = `metaFilter${key}`;
+    queryContext
+      .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+          `${metaAlias}.key`,
+          '=',
+          key
+        );
+      })
+      .whereIn(`${metaAlias}.value`, value);
+  };
+
+const getFilterHandler = (key: string): FilterHandler => {
+  if (filterHandlers[key]) {
+    return filterHandlers[key];
+  }
+
+  // Check if it's a metadata filter
+  if ((INTEGRATION_FEED_METADATA as string[]).includes(key)) {
+    return createMetadataFilterHandler(key);
+  }
+
+  // Check if it's an ID filter
+  if (key.includes('id')) {
+    return createIdFilterHandler(key);
+  }
+
+  // Use default handler
+  return createDefaultFilterHandler(key);
+};
+
+export const applyFilter = (
+  queryContext: Knex.QueryBuilder,
+  type: DatabaseType,
+  { key, value }: { key: string; value: string[] }
+) => {
+  const handler = getFilterHandler(key);
+  handler(queryContext, type, value);
+  return queryContext;
+};
 export const paginate = async <T, U>(
   type: DatabaseType,
   pagination: Pagination,
@@ -257,70 +363,9 @@ export const paginate = async <T, U>(
     ...pagination,
     connection: true,
   });
+
   if (filters) {
-    filters.forEach(({ key, value }) => {
-      if (key === FilterKey.Label) {
-        if (value.length > 0) {
-          queryContext
-            .leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`)
-            .whereIn(
-              'ol.label_id',
-              value.map((id) => extractId(id))
-            );
-        }
-      } else if (key === FilterKey.ServiceDefinitionIdentifier) {
-        if (value.length > 0) {
-          queryContext
-            .leftJoin(
-              'ServiceDefinition',
-              'ServiceDefinition.id',
-              '=',
-              `${type}.service_definition_id`
-            )
-            .whereIn('ServiceDefinition.identifier', value);
-        }
-      } else if (key === FilterKey.ProductVersion) {
-        if (value.length > 0) {
-          const lowestVersion = value.sort((a, b) =>
-            compareSemanticVersions(a, b)
-          )[0];
-          const metaAlias = `metaFilter${key}`;
-          queryContext
-            .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-              this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-                `${metaAlias}.key`,
-                '=',
-                key
-              );
-            })
-            .whereRaw(
-              dbRaw(
-                `("${metaAlias}"."value" IS NULL OR string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
-              )
-            );
-        }
-      } else if ((INTEGRATION_FEED_METADATA as string[]).includes(key)) {
-        if (value.length > 0) {
-          const metaAlias = `metaFilter${key}`;
-          queryContext
-            .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-              this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-                `${metaAlias}.key`,
-                '=',
-                key
-              );
-            })
-            .whereIn(`${metaAlias}.value`, value);
-        }
-      } else if (key.includes('id')) {
-        queryContext.whereIn(
-          key,
-          value.map((id) => extractId(id))
-        );
-      } else {
-        queryContext.whereIn(key, value);
-      }
-    });
+    filters.forEach((filter) => applyFilter(queryContext, type, filter));
   }
 
   const search = [];

@@ -437,10 +437,7 @@
       "Type": "Type",
       "VendorContact": "Contact vendeur",
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
-      "Incompatible": {
-        "Required": "La mise à jour de votre plateforme est nécessaire pour déployer ce connecteur",
-        "Optional": "Certaines de vos plateformes doivent être mises à jour pour déployer ce connecteur"
-      }
+      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mises à jour pour déployer ce connecteur."
     },
     "CreationStatus": "Statut de la création",
     "OpenctiIntegrationFeeds": {
@@ -465,6 +462,11 @@
         },
         "ProductVersion": {
           "Placeholder": "Plateforme..."
+        },
+        "ManagerSupported": {
+          "Placeholder": "Est déployable...",
+          "Deployable": "est déployable",
+          "NotDeployable": "n'est pas déployable"
         }
       }
     },
@@ -586,7 +588,8 @@
         "Key": {
           "label": "Cas d'utilisation",
           "integration_feed_type": "Type de flux d'intégration",
-          "product_version": "Plateforme"
+          "product_version": "Plateforme",
+          "manager_supported": "Est déployable"
         }
       }
     },
@@ -674,9 +677,9 @@
       "Display": {
         "New": "Nouveau",
         "Requested": "Demandée",
-        "Title": "OpenCTI - Plate-forme d'essai gratuite",
+        "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
         "DaysRemaning": "{numberOfDays} Jours restants",
-        "FreeTrialDescription": "Vache tout le monde aime le cheeseburger. Bavarois bergkase emmental bocconcini emmental fromage ficelles qui a déplacé mon fromage qui a déplacé mon fromage paneer."
+        "FreeTrialDescription": "Explorez une version entièrement fonctionnelle d'OpenCTI pour voir comment vous pouvez rendre vos renseignements sur les menaces opérationnels - de bout en bout !"
       },
       "CapacityWarning": {
         "Title": "Aucune plateforme disponible",

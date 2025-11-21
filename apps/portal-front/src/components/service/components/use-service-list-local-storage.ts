@@ -45,6 +45,10 @@ export const useServiceListLocalStorage = (
   const [productVersions, setProductVersions, removeProductVersions] =
     useLocalStorage<string[]>(`productVersion${serviceName}List`, []);
 
+  const [deployable, setDeployable, removeDeployable] = useLocalStorage<
+    string[]
+  >(`deployable${serviceName}List`, []);
+
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     `count${serviceName}List`,
     50
@@ -58,6 +62,7 @@ export const useServiceListLocalStorage = (
     removeSelectedFilters();
     removeIntegrationTypes();
     removeConnectorTypes();
+    removeDeployable();
   };
 
   return {
@@ -84,5 +89,8 @@ export const useServiceListLocalStorage = (
     productVersions,
     setProductVersions,
     removeProductVersions,
+    deployable,
+    setDeployable,
+    removeDeployable,
   };
 };

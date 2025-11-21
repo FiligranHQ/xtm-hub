@@ -397,6 +397,7 @@ export enum FilterKey {
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   Label = 'label',
+  ManagerSupported = 'manager_supported',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',

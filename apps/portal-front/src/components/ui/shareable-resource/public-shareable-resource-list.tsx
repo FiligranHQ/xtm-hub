@@ -33,6 +33,7 @@ export const PublicShareableResourceList: React.FC<Props> = ({
             serviceInstance={serviceInstance}
             detailUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
             shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
+            publicPath
           />
         );
       }

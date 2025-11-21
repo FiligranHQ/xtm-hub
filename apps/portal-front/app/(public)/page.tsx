@@ -28,7 +28,6 @@ const Page = async () => {
           <ServiceInstanceCard
             key={service.id}
             serviceInstance={seoServiceInstanceToInstanceCardData(service)}
-            seo={true}
           />
         ))}
       </ul>
