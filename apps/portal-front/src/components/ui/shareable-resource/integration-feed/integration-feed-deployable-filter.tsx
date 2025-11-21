@@ -17,13 +17,13 @@ export const IntegrationFeedDeployableFilter = () => {
         options={[
           {
             label: t(
-              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.Deployable'
+              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.AutomaticDeploy'
             ),
             value: 'true',
           },
           {
             label: t(
-              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.NotDeployable'
+              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.ManualDeploy'
             ),
             value: 'false',
           },

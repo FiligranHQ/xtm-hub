@@ -39,7 +39,7 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
         connectorDetails={connectorDetails}
         compatibilityItem={compatibilityItem}
       />
-      {incompatiblePlatformsCount > 0 ? (
+      {incompatiblePlatformsCount > 0 && connectorDetails.manager_supported ? (
         <ShareableResourceIncompatibleWarning
           message={t(`Service.Connectors.Incompatible`, {
             count: incompatiblePlatformsCount,

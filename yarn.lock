@@ -10938,7 +10938,7 @@ __metadata:
     eslint-config-next: "npm:15.5.6"
     eslint-config-prettier: "npm:10.1.8"
     extract-files: "npm:13.0.0"
-    filigran-icon: "npm:0.19.0"
+    filigran-icon: "npm:0.19.1"
     filigran-ui: "npm:0.39.17"
     graphql: "npm:16.11.0"
     graphql-sse: "npm:2.5.4"
@@ -15523,10 +15523,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-icon@npm:0.19.0":
-  version: 0.19.0
-  resolution: "filigran-icon@npm:0.19.0"
-  checksum: 10c0/2fb349a6a72a3f2456d1fe1c75310cae9fca4905fd460de7f07d5d4a7178a8e6fdb31dfe8856263589f71befca6ba85f110e9514aa4909de21d597f1faad7865
+"filigran-icon@npm:0.19.1":
+  version: 0.19.1
+  resolution: "filigran-icon@npm:0.19.1"
+  checksum: 10c0/fcde5ae71b71e2ea2080cff5945a681157b9b49ded5b987e63cac2fb24461870a3e23f1d5aee5d830bf8bd638d5b1338dc766e3cbf46ba4baa3a661d4cfdbddd
   languageName: node
   linkType: hard
 
