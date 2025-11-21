@@ -3,7 +3,7 @@ import {
   ServiceListFilterKey,
 } from '@/components/service/components/header/service-list-header';
 import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
-import { DeleteIcon } from 'filigran-icon';
+import { CancelIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui';
 import React from 'react';
 
@@ -29,7 +29,7 @@ export const ServiceListFilterItem: React.FC<Props> = ({
           filter.reset();
           removeFilter(selectedFilterKey);
         }}>
-        <DeleteIcon className="h-4 w-4" />
+        <CancelIcon className="h-6 w-6 text-gray/60" />
       </Button>
     </div>
   );
