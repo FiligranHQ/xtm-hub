@@ -8,6 +8,7 @@ import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { ArrowRightAltIcon } from 'filigran-icon';
 import { Callout } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
@@ -139,7 +140,8 @@ export const TryOpenCTICallout = ({}) => {
     }
 
     if (
-      freeTrial?.subscription?.service_instance?.creation_status === 'PENDING'
+      freeTrial?.subscription?.service_instance?.creation_status ===
+      ServiceInstanceCreationStatusEnum.PENDING
     )
       return 'provisioning';
     if (diffInDays <= 0) return 'expired';
