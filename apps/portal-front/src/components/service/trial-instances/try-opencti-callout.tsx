@@ -2,25 +2,17 @@
 
 import { useTranslations } from 'next-intl';
 
-import {
-  registerRegisteredPlatformListFragment,
-  RegisterRegisteredPlatformsQuery,
-} from '@/components/registration/register/register.graphql';
 import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
+import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
-import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { ArrowRightAltIcon } from 'filigran-icon';
 import { Callout } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
 // Component
 export const TryOpenCTICallout = ({}) => {
@@ -31,24 +23,9 @@ export const TryOpenCTICallout = ({}) => {
   );
   if (!settings || !isOpenCTIFreeTrialActivated) return null;
 
-  const queryData = useLazyLoadQuery<registerRegisteredPlatformsQuery>(
-    RegisterRegisteredPlatformsQuery,
-    {
-      input: {
-        identifier: PlatformIdentifierEnum.OPENCTI,
-      },
-    }
-  );
+  const { freeTrial } = useFreeTrial();
 
-  const [data] = useRefetchableFragment<
-    registerRegisteredPlatformsQuery,
-    registerRegisteredPlatformListFragment$key
-  >(registerRegisteredPlatformListFragment, queryData);
-
-  const freeTrial = data.registeredPlatforms.filter(
-    (platform) => platform.deployment_request?.type === DeploymentTypeEnum.TRIAL
-  );
-  const target = new Date(freeTrial[0]?.subscription?.end_date);
+  const target = new Date(freeTrial?.subscription?.end_date);
   const now = new Date();
 
   const diffInMs = target.getTime() - now.getTime();
@@ -62,10 +39,7 @@ export const TryOpenCTICallout = ({}) => {
   };
 
   const getGradientClass = (days: number): string => {
-    if (
-      freeTrial.length === 0 ||
-      freeTrial[0]?.subscription?.end_date < new Date()
-    ) {
+    if (freeTrial?.subscription?.end_date < new Date()) {
       return GRADIENT_CLASSES.default;
     }
 
@@ -74,11 +48,11 @@ export const TryOpenCTICallout = ({}) => {
     return GRADIENT_CLASSES.default;
   };
 
-  const trialUrl = freeTrial[0]?.url ?? '/app';
+  const trialUrl = freeTrial?.url ?? '/app';
 
   const goToTrialButton = () => (
     <Button
-      className="ml-xl bg-white text-black hover:bg-white"
+      className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
       asChild>
       <Link
         href={trialUrl}
@@ -89,29 +63,33 @@ export const TryOpenCTICallout = ({}) => {
     </Button>
   );
 
-  const reachSalesButton = () => (
+  const contactUsButton = () => (
     <Button
-      className="ml-xl bg-white text-black hover:bg-white"
+      className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
       asChild>
       <Link
         href={trialUrl}
         target="_blank">
-        {t('Service.Trials.ReachSales')}
+        {t('Service.Trials.ContactUs')}
         <ArrowRightAltIcon className="ml-s size-4" />
       </Link>
     </Button>
+  );
+
+  const LearnMoreLink = () => (
+    <Link
+      href={`${settings.base_url_front}/app/service/free-trial`}
+      className="ml-xs underline font-bold">
+      {t('Service.Trials.LearnMore')}
+    </Link>
   );
 
   const CONTENT_CONFIG = {
     noTrial: {
       text: () => (
         <>
-          {t('Service.Trials.Explore')} <b>{t('Service.Trials.FreeTrial')}</b>
-          <Link
-            href={`${settings.base_url_front}/app/service/free-trial`}
-            className="ml-xs underline">
-            {t('Service.Trials.LearnMore')}
-          </Link>
+          {t('Service.Trials.Explore')}
+          <LearnMoreLink />
         </>
       ),
       button: () => <StartTrialButton />,
@@ -119,13 +97,8 @@ export const TryOpenCTICallout = ({}) => {
     queued: {
       text: () => (
         <>
-          {t('Service.Trials.Provisioning')}{' '}
-          <b>{t('Service.Trials.Requested')}</b>
-          <Link
-            href={`${settings.base_url_front}/app/service/free-trial`}
-            className="ml-xs underline">
-            {t('Service.Trials.LearnMore')}
-          </Link>
+          {t('Service.Trials.Requested')}
+          <LearnMoreLink />
         </>
       ),
       button: () => <></>,
@@ -133,21 +106,23 @@ export const TryOpenCTICallout = ({}) => {
     provisioning: {
       text: () => (
         <>
-          {t('Service.Trials.Provisioning')}{' '}
-          <b>{t('Service.Trials.ProvisioningBold')}</b>
+          {t('Service.Trials.Provisioning')}
+          <LearnMoreLink />
         </>
       ),
       button: () => <></>,
     },
     expired: {
       text: () => t('Service.Trials.Expired'),
-      button: () => reachSalesButton(),
+      button: () => contactUsButton(),
     },
     active: {
       text: () => (
         <>
           {t('Service.Trials.Active')}:{' '}
-          <b>{t('Service.Trials.DaysRemaning', { days: diffInDays })}</b>
+          <strong>
+            {t('Service.Trials.DaysRemaining', { days: diffInDays })}
+          </strong>
         </>
       ),
       button: () => goToTrialButton(),
@@ -155,17 +130,16 @@ export const TryOpenCTICallout = ({}) => {
   };
 
   const getContentKey = () => {
-    if (freeTrial.length < 1) return 'noTrial';
+    if (!freeTrial) return 'noTrial';
     if (
-      freeTrial[0]?.deployment_request?.status ===
+      freeTrial?.deployment_request?.status ===
       DeploymentRequestStatusEnum.QUEUED
     ) {
       return 'queued';
     }
 
     if (
-      freeTrial[0]?.subscription?.service_instance?.creation_status ===
-      'PENDING'
+      freeTrial?.subscription?.service_instance?.creation_status === 'PENDING'
     )
       return 'provisioning';
     if (diffInDays <= 0) return 'expired';
@@ -173,11 +147,10 @@ export const TryOpenCTICallout = ({}) => {
   };
 
   const content = CONTENT_CONFIG[getContentKey()];
-
   return (
     <Callout
       variant="destructive"
-      className={`rounded-none ${getGradientClass(diffInDays)} text-black justify-center uppercase`}>
+      className={`rounded-none ${getGradientClass(diffInDays)} text-black justify-center`}>
       <div>
         {content.text()}
         {content.button()}
