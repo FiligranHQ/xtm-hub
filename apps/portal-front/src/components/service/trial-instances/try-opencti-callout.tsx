@@ -52,7 +52,7 @@ export const TryOpenCTICallout = ({}) => {
 
   const goToTrialButton = () => (
     <Button
-      className="ml-xl bg-white text-black hover:bg-white"
+      className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
       asChild>
       <Link
         href={trialUrl}
@@ -63,29 +63,33 @@ export const TryOpenCTICallout = ({}) => {
     </Button>
   );
 
-  const reachSalesButton = () => (
+  const contactUsButton = () => (
     <Button
-      className="ml-xl bg-white text-black hover:bg-white"
+      className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
       asChild>
       <Link
         href={trialUrl}
         target="_blank">
-        {t('Service.Trials.ReachSales')}
+        {t('Service.Trials.ContactUs')}
         <ArrowRightAltIcon className="ml-s size-4" />
       </Link>
     </Button>
+  );
+
+  const LearnMoreLink = () => (
+    <Link
+      href={`${settings.base_url_front}/app/service/free-trial`}
+      className="ml-xs underline font-bold">
+      {t('Service.Trials.LearnMore')}
+    </Link>
   );
 
   const CONTENT_CONFIG = {
     noTrial: {
       text: () => (
         <>
-          {t('Service.Trials.Explore')} <b>{t('Service.Trials.FreeTrial')}</b>
-          <Link
-            href={`${settings.base_url_front}/app/service/free-trial`}
-            className="ml-xs underline">
-            {t('Service.Trials.LearnMore')}
-          </Link>
+          {t('Service.Trials.Explore')}
+          <LearnMoreLink />
         </>
       ),
       button: () => <StartTrialButton />,
@@ -93,13 +97,8 @@ export const TryOpenCTICallout = ({}) => {
     queued: {
       text: () => (
         <>
-          {t('Service.Trials.Provisioning')}{' '}
-          <b>{t('Service.Trials.Requested')}</b>
-          <Link
-            href={`${settings.base_url_front}/app/service/free-trial`}
-            className="ml-xs underline">
-            {t('Service.Trials.LearnMore')}
-          </Link>
+          {t('Service.Trials.Requested')}
+          <LearnMoreLink />
         </>
       ),
       button: () => <></>,
@@ -107,21 +106,23 @@ export const TryOpenCTICallout = ({}) => {
     provisioning: {
       text: () => (
         <>
-          {t('Service.Trials.Provisioning')}{' '}
-          <b>{t('Service.Trials.ProvisioningBold')}</b>
+          {t('Service.Trials.Provisioning')}
+          <LearnMoreLink />
         </>
       ),
       button: () => <></>,
     },
     expired: {
       text: () => t('Service.Trials.Expired'),
-      button: () => reachSalesButton(),
+      button: () => contactUsButton(),
     },
     active: {
       text: () => (
         <>
           {t('Service.Trials.Active')}:{' '}
-          <b>{t('Service.Trials.DaysRemaning', { days: diffInDays })}</b>
+          <strong>
+            {t('Service.Trials.DaysRemaining', { days: diffInDays })}
+          </strong>
         </>
       ),
       button: () => goToTrialButton(),
@@ -146,11 +147,10 @@ export const TryOpenCTICallout = ({}) => {
   };
 
   const content = CONTENT_CONFIG[getContentKey()];
-
   return (
     <Callout
       variant="destructive"
-      className={`rounded-none ${getGradientClass(diffInDays)} text-black justify-center uppercase`}>
+      className={`rounded-none ${getGradientClass(diffInDays)} text-black justify-center`}>
       <div>
         {content.text()}
         {content.button()}
