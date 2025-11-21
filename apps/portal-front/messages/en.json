@@ -901,7 +901,7 @@
     "Verified": "Verified",
     "Visualize": "Visualize",
     "DangerZone": "Danger Zone",
-    "Deployable": "Deployable"
+    "AutomaticDeploy": "Automatic deploy"
   },
   "Platform": {
     "Update": "Update",

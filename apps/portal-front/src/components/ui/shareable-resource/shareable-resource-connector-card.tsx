@@ -85,7 +85,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
                       <MotionPlayIcon className="absolute top-l right-[2.75rem] h-6 w-6 shrink-0 text-green-500" />
                     </TooltipTrigger>
                     <TooltipContent className="bg-gray-50">
-                      {t('Utils.Deployable')}
+                      {t('Utils.AutomaticDeploy')}
                     </TooltipContent>
                   </Tooltip>
                 )}

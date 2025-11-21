@@ -466,8 +466,8 @@
         },
         "ManagerSupported": {
           "Placeholder": "Est déployable...",
-          "Deployable": "est déployable",
-          "NotDeployable": "n'est pas déployable"
+          "AutomaticDeploy": "Déploiement automatique",
+          "ManualDeploy": "Déploiement manuel"
         }
       }
     },
@@ -901,7 +901,7 @@
     "Verified": "Vérifié",
     "Visualize": "Visualiser",
     "DangerZone": "Zone de danger",
-    "Deployable": "Déployable"
+    "AutomaticDeploy": "Déploiement automatique"
   },
   "Platform": {
     "Update": "Mettre à jour",
