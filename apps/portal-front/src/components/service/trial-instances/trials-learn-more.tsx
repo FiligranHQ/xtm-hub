@@ -132,7 +132,15 @@ export const TrialsLearnMore: React.FC = () => {
         <div className="flex gap-xl">
           <div className="flex flex-col gap-s basis-full">
             <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
-              <h3 className="mb-m">OpenCTI</h3>
+              <h3 className="mb-m flex gap-s">
+                <Image
+                  width="25"
+                  height="25"
+                  src="/logo_opencti_dark.png"
+                  alt="OpenCTI Logo"
+                />
+                OpenCTI
+              </h3>
               <P>
                 Structure and operationalize threat intelligence across
                 technical, operational, and strategic levels, enabling security
@@ -145,7 +153,15 @@ export const TrialsLearnMore: React.FC = () => {
               </P>
             </div>
             <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
-              <h3 className="mb-m">OpenAEV</h3>
+              <h3 className="mb-m flex gap-s">
+                <Image
+                  width="25"
+                  height="25"
+                  src="/logo_openaev_dark.png"
+                  alt="OpenAEV Logo"
+                />
+                OpenAEV
+              </h3>
               <P>
                 Help identify critical vulnerabilities and strengthen
                 organizational security posture through advanced attack

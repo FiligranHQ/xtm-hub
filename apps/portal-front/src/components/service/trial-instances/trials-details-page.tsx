@@ -1,6 +1,8 @@
 import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
+import { formatDate } from '@/utils/date';
+import { formatTitleCase } from '@/utils/format/case';
 import { pageRegisteredPlatformByServiceInstanceId_fragment$data } from '@generated/pageRegisteredPlatformByServiceInstanceId_fragment.graphql';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
@@ -20,12 +22,22 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
             <span className="text-gray/60">Platform name:</span>{' '}
             {platform.title}
           </li>
+          {platform.deployment_request?.status && (
+            <li>
+              <span className="text-gray/60">Registration status:</span>{' '}
+              {formatTitleCase(platform.deployment_request?.status)}
+            </li>
+          )}
+          {platform.deployment_request?.start_date && (
+            <li>
+              <span className="text-gray/60">Registration date:</span>{' '}
+              {formatDate(platform.deployment_request?.start_date)}{' '}
+              {platform.deployment_request?.end_date &&
+                `- ${formatDate(platform.deployment_request.end_date)}`}
+            </li>
+          )}
           <li>
-            <span className="text-gray/60">Registration date:</span> TO BE
-            DEFINED
-          </li>
-          <li>
-            <span className="text-gray/60">License:</span> Free trial
+            <span className="text-gray/60">License:</span> Enterprise Edition
           </li>
         </ul>
 
