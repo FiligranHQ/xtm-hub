@@ -9,7 +9,14 @@ import { DisplayVersionCard } from '@/components/ui/shareable-resource/display-v
 import { cn } from '@/lib/utils';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui/clients';
 import { Badge } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
@@ -40,6 +47,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
   requiredProductVersion,
   publicPath = false,
 }) => {
+  const t = useTranslations();
   const connectorMetadata = getIngestionConnectorMetadata(
     shareableConnector.integration_subtype
   );
@@ -70,12 +78,28 @@ const ShareableResourceConnectorCard: FunctionComponent<
                 )}>
                 {shareableConnector.name}
               </h2>
-              {shareableConnector.manager_supported && (
-                <MotionPlayIcon className="absolute top-l right-[2.75rem] h-6 w-6 shrink-0 text-green-500" />
-              )}
-              {shareableConnector.verified && (
-                <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
-              )}
+              <TooltipProvider>
+                {shareableConnector.manager_supported && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <MotionPlayIcon className="absolute top-l right-[2.75rem] h-6 w-6 shrink-0 text-green-500" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-gray-50">
+                      {t('Utils.AutomaticDeploy')}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                {shareableConnector.verified && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-gray-50">
+                      {t('Utils.Verified')}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </TooltipProvider>
             </div>
             <div className="mt-s flex flex-wrap gap-s mb-xs">
               <BadgeOverflowCounter
@@ -98,7 +122,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
                 {connectorMetadata.label}
               </Badge>
             )}
-            {publicPath ? (
+            {publicPath || !shareableConnector.manager_supported ? (
               <span className="text-sm">
                 {shareableConnector.product_version}
               </span>
