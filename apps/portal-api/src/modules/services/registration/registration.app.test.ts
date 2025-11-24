@@ -930,6 +930,7 @@ describe('Registration app', () => {
           template: 'opencti_free_trial_registered',
           params: {
             firstName: 'Thalesuserfirstname',
+            platformUrl: 'http://example.com',
           },
         });
       });
