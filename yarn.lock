@@ -4497,15 +4497,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:9.1.3, @graphql-tools/merge@npm:^9.1.3":
-  version: 9.1.3
-  resolution: "@graphql-tools/merge@npm:9.1.3"
+"@graphql-tools/merge@npm:9.1.5, @graphql-tools/merge@npm:^9.1.5":
+  version: 9.1.5
+  resolution: "@graphql-tools/merge@npm:9.1.5"
   dependencies:
-    "@graphql-tools/utils": "npm:^10.10.1"
+    "@graphql-tools/utils": "npm:^10.10.3"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10c0/e9cae683ff1df77e86442ab80391d956187b512abdc58817a376be3264d938900615d3c95cdd9c7560f55b28843c3d430ffc832649f1b07479354ce9bb192b01
+  checksum: 10c0/2873105f78029832721f1943d44f6940617c97a34867936d7c5664d7679251e692bc2dda28fa8436f8eecbf56f1369b9059a2c1ef2d45f0e3682200597c5ecd1
   languageName: node
   linkType: hard
 
@@ -4584,16 +4584,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:10.0.27":
-  version: 10.0.27
-  resolution: "@graphql-tools/schema@npm:10.0.27"
+"@graphql-tools/schema@npm:10.0.29":
+  version: 10.0.29
+  resolution: "@graphql-tools/schema@npm:10.0.29"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.1.3"
-    "@graphql-tools/utils": "npm:^10.10.1"
+    "@graphql-tools/merge": "npm:^9.1.5"
+    "@graphql-tools/utils": "npm:^10.10.3"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10c0/61ee7de2c9ff2bf6d5210038589f17d73c9683de80e77907e5dae98c5b48740e76e8d35fb6d0b444ef20c2a7601b46eeb481d5ea2168281faa0a9ccb5c7eb76b
+  checksum: 10c0/ec80dfbcb6a8a90fb3ca0b69747d75a94f8cb99eda127694a2d60e38bac7822c4f4bec4fcc2ba33513dd7457da3dfc583dfee645c1d41e1cd20e8fba34a02379
   languageName: node
   linkType: hard
 
@@ -4646,9 +4646,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:10.10.1, @graphql-tools/utils@npm:^10.10.1":
-  version: 10.10.1
-  resolution: "@graphql-tools/utils@npm:10.10.1"
+"@graphql-tools/utils@npm:10.10.3, @graphql-tools/utils@npm:^10.10.3":
+  version: 10.10.3
+  resolution: "@graphql-tools/utils@npm:10.10.3"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@whatwg-node/promise-helpers": "npm:^1.0.0"
@@ -4656,7 +4656,7 @@ __metadata:
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10c0/3bce37c9dfd0109e15a0d0017332b84a3727a530496d664e9eba816abb3397717ec720295854be4c4b2aa4110961cb0c307964b10c40002c16ff2f4b8d233f06
+  checksum: 10c0/c294a7e239e5bc18fd0cb16fd3e579fed64ae0d8913524ab3e2368de0bee9e39abb2b9b701f877adab5e1a78162b5545dc93539a4c9ab8f3981e1fbaa03e3ed9
   languageName: node
   linkType: hard
 
@@ -10847,9 +10847,9 @@ __metadata:
     "@graphql-codegen/typescript": "npm:4.1.6"
     "@graphql-codegen/typescript-resolvers": "npm:4.5.2"
     "@graphql-tools/load-files": "npm:7.0.1"
-    "@graphql-tools/merge": "npm:9.1.3"
-    "@graphql-tools/schema": "npm:10.0.27"
-    "@graphql-tools/utils": "npm:10.10.1"
+    "@graphql-tools/merge": "npm:9.1.5"
+    "@graphql-tools/schema": "npm:10.0.29"
+    "@graphql-tools/utils": "npm:10.10.3"
     "@types/config": "npm:3.3.5"
     "@types/cors": "npm:2.8.19"
     "@types/express": "npm:4.17.25"
@@ -10929,7 +10929,7 @@ __metadata:
     "@uiw/react-md-editor": "npm:4.0.8"
     "@vitejs/plugin-react": "npm:5.1.0"
     "@vitest/coverage-v8": "npm:3.2.4"
-    autoprefixer: "npm:10.4.21"
+    autoprefixer: "npm:10.4.22"
     babel-plugin-relay: "npm:20.1.1"
     class-variance-authority: "npm:0.7.1"
     clsx: "npm:2.1.1"
@@ -10938,8 +10938,8 @@ __metadata:
     eslint-config-next: "npm:15.5.6"
     eslint-config-prettier: "npm:10.1.8"
     extract-files: "npm:13.0.0"
-    filigran-icon: "npm:0.18.8"
-    filigran-ui: "npm:0.39.17"
+    filigran-icon: "npm:0.19.1"
+    filigran-ui: "npm:0.40.0"
     graphql: "npm:16.11.0"
     graphql-sse: "npm:2.5.4"
     husky: "npm:9.1.7"
@@ -10959,10 +10959,10 @@ __metadata:
     react-dom: "npm:19.2.0"
     react-hook-form: "npm:7.55.0"
     react-markdown: "npm:10.1.0"
-    react-relay: "npm:18.2.0"
+    react-relay: "npm:20.1.1"
     rehype-sanitize: "npm:6.0.0"
-    relay-compiler: "npm:18.2.0"
-    relay-test-utils: "npm:18.2.0"
+    relay-compiler: "npm:20.1.1"
+    relay-test-utils: "npm:20.1.1"
     slugify: "npm:1.6.6"
     tailwind-merge: "npm:3.3.1"
     tailwindcss: "npm:3.4.18"
@@ -11615,7 +11615,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:10.4.21, autoprefixer@npm:^10.4.9":
+"autoprefixer@npm:10.4.22":
+  version: 10.4.22
+  resolution: "autoprefixer@npm:10.4.22"
+  dependencies:
+    browserslist: "npm:^4.27.0"
+    caniuse-lite: "npm:^1.0.30001754"
+    fraction.js: "npm:^5.3.4"
+    normalize-range: "npm:^0.1.2"
+    picocolors: "npm:^1.1.1"
+    postcss-value-parser: "npm:^4.2.0"
+  peerDependencies:
+    postcss: ^8.1.0
+  bin:
+    autoprefixer: bin/autoprefixer
+  checksum: 10c0/2ae8d135af2deaaa5065a3a466c877787373c0ed766b8a8e8259d7871db79c1a7e1d9f6c9541c54fa95647511d3c2066bb08a30160e58c9bfa75506f9c18f3aa
+  languageName: node
+  linkType: hard
+
+"autoprefixer@npm:^10.4.9":
   version: 10.4.21
   resolution: "autoprefixer@npm:10.4.21"
   dependencies:
@@ -11789,6 +11807,15 @@ __metadata:
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
   checksum: 10c0/f23823513b63173a001030fae4f2dabe283b99a9d324ade3ad3d148e218134676f1ee8568c877cd79ec1c53158dcf2d2ba527a97c606618928ba99dd930102bf
+  languageName: node
+  linkType: hard
+
+"baseline-browser-mapping@npm:^2.8.25":
+  version: 2.8.29
+  resolution: "baseline-browser-mapping@npm:2.8.29"
+  bin:
+    baseline-browser-mapping: dist/cli.js
+  checksum: 10c0/bb5f082d91b59c885504fd4ff999bd890c39e8b818afe00f15f0dfcdb7f7b80a655ad57429563091c0d3722649ba4a2f023ca3ede02e022b12ba6b0322a3314e
   languageName: node
   linkType: hard
 
@@ -11970,6 +11997,21 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 10c0/3899ee3b7fd205ece4ffe4392697c3f2b120b68f3741ef1789212b4971771aee3f66cf37c5c3accf86ce59c0605b5980c0f132711abbcc9e62c132e6e0ee45f3
+  languageName: node
+  linkType: hard
+
+"browserslist@npm:^4.27.0":
+  version: 4.28.0
+  resolution: "browserslist@npm:4.28.0"
+  dependencies:
+    baseline-browser-mapping: "npm:^2.8.25"
+    caniuse-lite: "npm:^1.0.30001754"
+    electron-to-chromium: "npm:^1.5.249"
+    node-releases: "npm:^2.0.27"
+    update-browserslist-db: "npm:^1.1.4"
+  bin:
+    browserslist: cli.js
+  checksum: 10c0/4284fd568f7d40a496963083860d488cb2a89fb055b6affd316bebc59441fec938e090b3e62c0ee065eb0bc88cd1bc145f4300a16c75f3f565621c5823715ae1
   languageName: node
   linkType: hard
 
@@ -12195,6 +12237,13 @@ __metadata:
   version: 1.0.30001748
   resolution: "caniuse-lite@npm:1.0.30001748"
   checksum: 10c0/4a6e4495560519d6db73a62804cceafed108cfdda1ab78bcc0d588a921ed54554254647b8f4a410e97f8843eb020ec01dfcead7fd504a43b120b8f1a06dc7647
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001754":
+  version: 1.0.30001756
+  resolution: "caniuse-lite@npm:1.0.30001756"
+  checksum: 10c0/863df07bd8d5139371ce7d4e582f03fef38141726282dcd532421bbd95ea298c7f953a8e1a9790db89ca1816bd8ce3cce638a66361b769dd1f2dc8d4c721d546
   languageName: node
   linkType: hard
 
@@ -14069,6 +14118,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-to-chromium@npm:^1.5.249":
+  version: 1.5.256
+  resolution: "electron-to-chromium@npm:1.5.256"
+  checksum: 10c0/7a8da43a97662db224848e77550bc7cf765b9e584fb32e4ce60ad477b4fe424c5577b5d418730dd51269e6ace623264f6efdf7a86d306ff35a72f89d3dbe6c05
+  languageName: node
+  linkType: hard
+
 "embla-carousel-react@npm:8.6.0":
   version: 8.6.0
   resolution: "embla-carousel-react@npm:8.6.0"
@@ -15523,10 +15579,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-icon@npm:0.18.8":
-  version: 0.18.8
-  resolution: "filigran-icon@npm:0.18.8"
-  checksum: 10c0/c3d355d3bbb75b13218f1ba8e212a9106b9d2fb1649f450406f9cbbe34c789d6cf1d684c6cfdd1a819854a24a2e0868d526d4e9aa7a7de035fa23311e2b76bba
+"filigran-icon@npm:0.19.1":
+  version: 0.19.1
+  resolution: "filigran-icon@npm:0.19.1"
+  checksum: 10c0/fcde5ae71b71e2ea2080cff5945a681157b9b49ded5b987e63cac2fb24461870a3e23f1d5aee5d830bf8bd638d5b1338dc766e3cbf46ba4baa3a661d4cfdbddd
   languageName: node
   linkType: hard
 
@@ -15537,9 +15593,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filigran-ui@npm:0.39.17":
-  version: 0.39.17
-  resolution: "filigran-ui@npm:0.39.17"
+"filigran-ui@npm:0.40.0":
+  version: 0.40.0
+  resolution: "filigran-ui@npm:0.40.0"
   dependencies:
     "@dnd-kit/core": "npm:6.1.0"
     "@dnd-kit/modifiers": "npm:7.0.0"
@@ -15584,7 +15640,7 @@ __metadata:
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
-  checksum: 10c0/8e2e2860cb0563e6924c76c27c2cf7d1bc382f024a3e3e9b8255ea2363fb873172d6c140ea5a074c2a662cc812834796e420e41e2560b88f6ad8e580e8928781
+  checksum: 10c0/b9919e8a111fdb4a34c5d139f2dbba9c40ac269708c0c191da4894665df6b7a3f6d8de30c8cb41993acfcda4f2402c98524d407a10e5c989bef68191bc47c546
   languageName: node
   linkType: hard
 
@@ -15835,6 +15891,13 @@ __metadata:
   version: 4.3.7
   resolution: "fraction.js@npm:4.3.7"
   checksum: 10c0/df291391beea9ab4c263487ffd9d17fed162dbb736982dee1379b2a8cc94e4e24e46ed508c6d278aded9080ba51872f1bc5f3a5fd8d7c74e5f105b508ac28711
+  languageName: node
+  linkType: hard
+
+"fraction.js@npm:^5.3.4":
+  version: 5.3.4
+  resolution: "fraction.js@npm:5.3.4"
+  checksum: 10c0/f90079fe9bfc665e0a07079938e8ff71115bce9462f17b32fc283f163b0540ec34dc33df8ed41bb56f028316b04361b9a9995b9ee9258617f8338e0b05c5f95a
   languageName: node
   linkType: hard
 
@@ -20645,6 +20708,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-releases@npm:^2.0.27":
+  version: 2.0.27
+  resolution: "node-releases@npm:2.0.27"
+  checksum: 10c0/f1e6583b7833ea81880627748d28a3a7ff5703d5409328c216ae57befbced10ce2c991bea86434e8ec39003bd017f70481e2e5f8c1f7e0a7663241f81d6e00e2
+  languageName: node
+  linkType: hard
+
 "node-schedule@npm:2.1.1":
   version: 2.1.1
   resolution: "node-schedule@npm:2.1.1"
@@ -23106,18 +23176,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-relay@npm:18.2.0":
-  version: 18.2.0
-  resolution: "react-relay@npm:18.2.0"
+"react-relay@npm:20.1.1":
+  version: 20.1.1
+  resolution: "react-relay@npm:20.1.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
     nullthrows: "npm:^1.1.1"
-    relay-runtime: "npm:18.2.0"
+    relay-runtime: "npm:20.1.1"
   peerDependencies:
-    react: ^16.9.0 || ^17 || ^18
-  checksum: 10c0/f753212408fe5b6e5bedac116f3ac94414d3c94efb3cc4a3de4f32336a80f2d1f54db472b89b5777fcb6149df0f4ad13df28a0f8acf6fd7c005a9028dc7d4a54
+    react: ^16.9.0 || ^17 || ^18 || ^19
+  checksum: 10c0/c2f6c3f3d45394efebd79d5583d0a980b57c6f7fbaf2781caa9674ee1d2469f70bdf896ef3797c33e17356af6c9e70104d2108e63861d50995ac412979b31820
   languageName: node
   linkType: hard
 
@@ -23532,12 +23602,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-compiler@npm:18.2.0":
-  version: 18.2.0
-  resolution: "relay-compiler@npm:18.2.0"
+"relay-compiler@npm:20.1.1":
+  version: 20.1.1
+  resolution: "relay-compiler@npm:20.1.1"
   bin:
     relay-compiler: cli.js
-  checksum: 10c0/3249b9def1cf152813a9f7814e708c9a918ec1b87434188d4a710742b11be0a973d6f49b8935a28708e74e628fc326f72072b0c9da58c2824cd8afbcd3c94643
+  checksum: 10c0/6facd3fbc5b27853a70deb059f300f37af1bad8e2cc1a81dd014c7bb5df7d1d11004ab972b62396b19f44bf614adb6c1c4ea757fc36e5ad2fa3acf1f24661fbf
   languageName: node
   linkType: hard
 
@@ -23552,26 +23622,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-runtime@npm:18.2.0":
-  version: 18.2.0
-  resolution: "relay-runtime@npm:18.2.0"
+"relay-runtime@npm:20.1.1":
+  version: 20.1.1
+  resolution: "relay-runtime@npm:20.1.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
-  checksum: 10c0/497ec7139a56e0834e5a21d3b86af1800dd10f56b4cc730d2265d94a581910a7768ae469edb38ac9538411255c2ea6864a468dd29fec21610971cb98d3b48f0a
+  checksum: 10c0/c12bc83902f6b93f9f2f855f6dd2c16ae4aaa3915c79819b6d5ab923c025856f43763959bea6054826f9d6f1f8006df09f260eb5b6bead8c4b20f79304fbae86
   languageName: node
   linkType: hard
 
-"relay-test-utils@npm:18.2.0":
-  version: 18.2.0
-  resolution: "relay-test-utils@npm:18.2.0"
+"relay-test-utils@npm:20.1.1":
+  version: 20.1.1
+  resolution: "relay-test-utils@npm:20.1.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
-    relay-runtime: "npm:18.2.0"
-  checksum: 10c0/b5c27fbe567ec1a1bbf76c143dcf712730023d6be879f35a075105f11df7ef90f82541d96dd1e2ee543377bafaeab60dc460bb409173f245382fb9ec15d6ec4f
+    relay-runtime: "npm:20.1.1"
+  checksum: 10c0/0784d3a3169d579ed89e289e6d027b8a4ebe39b06a7b21316cbd305ed430be3dd6d7a9f2c73f814b2df25e3aecd6a3461dd2b8d4bd8a6a632a22b198ef59c9a9
   languageName: node
   linkType: hard
 
@@ -26806,6 +26876,20 @@ __metadata:
   bin:
     update-browserslist-db: cli.js
   checksum: 10c0/682e8ecbf9de474a626f6462aa85927936cdd256fe584c6df2508b0df9f7362c44c957e9970df55dfe44d3623807d26316ea2c7d26b80bb76a16c56c37233c32
+  languageName: node
+  linkType: hard
+
+"update-browserslist-db@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "update-browserslist-db@npm:1.1.4"
+  dependencies:
+    escalade: "npm:^3.2.0"
+    picocolors: "npm:^1.1.1"
+  peerDependencies:
+    browserslist: ">= 4.21.0"
+  bin:
+    update-browserslist-db: cli.js
+  checksum: 10c0/db0c9aaecf1258a6acda5e937fc27a7996ccca7a7580a1b4aa8bba6a9b0e283e5e65c49ebbd74ec29288ef083f1b88d4da13e3d4d326c1e5fc55bf72d7390702
   languageName: node
   linkType: hard
 

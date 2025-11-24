@@ -437,10 +437,8 @@
       "Type": "Type",
       "VendorContact": "Contact vendeur",
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
-      "Incompatible": {
-        "Required": "La mise à jour de votre plateforme est nécessaire pour déployer ce connecteur",
-        "Optional": "Certaines de vos plateformes doivent être mises à jour pour déployer ce connecteur"
-      }
+      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mises à jour pour déployer ce connecteur.",
+      "UnavailableDeployments": "Ce connecteur n'est pas disponible pour le déploiement automatique."
     },
     "CreationStatus": "Statut de la création",
     "OpenctiIntegrationFeeds": {
@@ -465,6 +463,11 @@
         },
         "ProductVersion": {
           "Placeholder": "Plateforme..."
+        },
+        "ManagerSupported": {
+          "Placeholder": "Est déployable...",
+          "AutomaticDeploy": "Déploiement automatique",
+          "ManualDeploy": "Déploiement manuel"
         }
       }
     },
@@ -586,7 +589,8 @@
         "Key": {
           "label": "Cas d'utilisation",
           "integration_feed_type": "Type de flux d'intégration",
-          "product_version": "Plateforme"
+          "product_version": "Plateforme",
+          "manager_supported": "Est déployable"
         }
       }
     },
@@ -649,18 +653,16 @@
     "SureWantSubscriptionDirect": "Voulez-vous souscrire au service {serviceName} ? Ce service est gratuit et vous donne accès aux ressources créées par l'équipe Filigran.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
-      "Explore": "Explorer la plateforme OpenCTI avec 30 jours",
-      "Active": "Votre plateforme d'essai activée",
-      "Provisioning": "Votre plateforme OpenCTI Free Trial est",
-      "ProvisioningBold": "en cours de provisionnement !",
-      "Requested": "demandée",
-      "Expired": "Votre plateforme d'essai a expiré",
-      "DaysRemaning": "{days} Jours restants",
-      "FreeTrial": "D'essai gratuit !",
+      "Explore": "Explorez tout le potentiel d'OpenCTI Enterprise Edition, commencez votre essai gratuit de 30 jours.",
+      "Active": "Votre essai gratuit d'OpenCTI Enterprise Edition est actif",
+      "Provisioning": "Votre essai gratuit d'OpenCTI Enterprise Edition est en cours de provisionnement.",
+      "Requested": "Votre essai gratuit d'OpenCTI Enterprise Edition a été demandé.",
+      "Expired": "Votre essai gratuit d'OpenCTI Enterprise Edition a expiré.",
+      "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
       "LearnMore": "En savoir plus",
-      "StartTrial": "Commencer un essai",
-      "GoToMyTrial": "Aller à mon procès",
-      "ReachSales": "Contacter le service commercial",
+      "StartTrial": "Commencez votre essai gratuit",
+      "GoToMyTrial": "Accéder à ma version d'évaluation",
+      "ContactUs": "Contactez nous",
       "Form": {
         "Region": "Région",
         "AssociatedEmail": "Email associé",
@@ -674,9 +676,8 @@
       "Display": {
         "New": "Nouveau",
         "Requested": "Demandée",
-        "Title": "OpenCTI - Plate-forme d'essai gratuite",
-        "DaysRemaning": "{numberOfDays} Jours restants",
-        "FreeTrialDescription": "Vache tout le monde aime le cheeseburger. Bavarois bergkase emmental bocconcini emmental fromage ficelles qui a déplacé mon fromage qui a déplacé mon fromage paneer."
+        "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
+        "FreeTrialDescription": "Explorez une version entièrement fonctionnelle d'OpenCTI pour voir comment vous pouvez rendre vos renseignements sur les menaces opérationnels - de bout en bout !"
       },
       "CapacityWarning": {
         "Title": "Aucune plateforme disponible",
@@ -896,7 +897,8 @@
     "ValidateForm": "Valider le formulaire",
     "Verified": "Vérifié",
     "Visualize": "Visualiser",
-    "DangerZone": "Zone de danger"
+    "DangerZone": "Zone de danger",
+    "AutomaticDeploy": "Déploiement automatique"
   },
   "Platform": {
     "Update": "Mettre à jour",

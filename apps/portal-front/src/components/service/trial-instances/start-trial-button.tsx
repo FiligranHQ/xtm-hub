@@ -3,7 +3,7 @@
 import { ArrowRightAltIcon } from 'filigran-icon';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { FunctionComponent, useMemo, useState } from 'react';
 
 import GuardCapacityComponent from '@/components/admin-guard';
 
@@ -32,15 +32,24 @@ import {
   useRelayEnvironment,
 } from 'react-relay';
 
+import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
+interface StartTrialButtonProps {
+  openForm?: boolean;
+}
+
 // Component
-export const StartTrialButton = ({}) => {
+export const StartTrialButton: FunctionComponent<StartTrialButtonProps> = ({
+  openForm = false,
+}) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
 
-  const [openSheet, setOpenSheet] = useState(false);
+  const { freeTrial } = useFreeTrial();
+
+  const [openSheet, setOpenSheet] = useState(openForm);
   const [commitCreateDeploymentRequestMutationMutation] =
     useMutation<trialInstancesCreateDeploymentRequestMutation>(
       CreateDeploymentRequestMutation
@@ -95,32 +104,34 @@ export const StartTrialButton = ({}) => {
     });
   };
   return (
-    <SheetWithPreventingDialog
-      title={t('Service.Trials.StartTrial')}
-      setOpen={setOpenSheet}
-      open={openSheet}
-      trigger={
-        <GuardCapacityComponent
-          shouldNotBePersonalSpace
-          capacityRestriction={[
-            OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-            OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
-          ]}>
-          <Button
-            onClick={() => setOpenSheet(true)}
-            className="ml-xl bg-white text-black hover:bg-white">
-            {t('Service.Trials.StartTrial')}
-            <ArrowRightAltIcon className="ml-s size-4" />
-          </Button>
-        </GuardCapacityComponent>
-      }>
-      <TryOpenCTIForm
-        handleSubmit={handleSubmit}
-        handleCloseSheet={() => setOpenSheet(false)}
-        deploymentRequestsAvailabilityQueryRef={
-          deploymentRequestsAvailabilityQueryRef
-        }
-      />
-    </SheetWithPreventingDialog>
+    <GuardCapacityComponent
+      shouldNotBePersonalSpace
+      capacityRestriction={[
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+      ]}>
+      <SheetWithPreventingDialog
+        title={t('Service.Trials.StartTrial')}
+        setOpen={setOpenSheet}
+        open={openSheet}
+        trigger={
+          !freeTrial && (
+            <Button
+              onClick={() => setOpenSheet(true)}
+              className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
+              {t('Service.Trials.StartTrial')}
+              <ArrowRightAltIcon className="ml-s size-4" />
+            </Button>
+          )
+        }>
+        <TryOpenCTIForm
+          handleSubmit={handleSubmit}
+          handleCloseSheet={() => setOpenSheet(false)}
+          deploymentRequestsAvailabilityQueryRef={
+            deploymentRequestsAvailabilityQueryRef
+          }
+        />
+      </SheetWithPreventingDialog>
+    </GuardCapacityComponent>
   );
 };

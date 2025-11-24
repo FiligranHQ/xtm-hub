@@ -437,10 +437,8 @@
       "Type": "Type",
       "VendorContact": "Vendor Contact",
       "VisitVendor": "Visit the vendor's page to learn more and get in touch",
-      "Incompatible": {
-        "Required": "Updating your platform is necessary to deploy this connector",
-        "Optional": "Some of your platforms need to be updated to deploy this connector"
-      }
+      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {needs} other {need}} to be updated to deploy this connector.",
+      "UnavailableDeployments": "This connector is not available for automatic deployment."
     },
     "CreationStatus": "Creation status",
     "OpenctiIntegrationFeeds": {
@@ -465,6 +463,11 @@
         },
         "ProductVersion": {
           "Placeholder": "Platform..."
+        },
+        "ManagerSupported": {
+          "Placeholder": "Is deployable...",
+          "AutomaticDeploy": "Automatic deploy",
+          "ManualDeploy": "Manual deploy"
         }
       }
     },
@@ -586,7 +589,8 @@
         "Key": {
           "label": "Use case",
           "integration_feed_type": "Integration feed type",
-          "product_version": "Platform"
+          "product_version": "Platform",
+          "manager_supported": "Is deployable"
         }
       }
     },
@@ -649,18 +653,16 @@
     "SureWantSubscriptionDirect": "Do you want to subscribe to the {serviceName} service ? This service is free and gives you access to resources built carefully by the Filigran Team.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
-      "Explore": "Explore OpenCTI platform with 30 days",
-      "Active": "Your trial platform activated",
-      "Provisioning": "Your OpenCTI platform Free Trial platform is",
-      "ProvisioningBold": "currently getting provisionned!",
-      "Requested": "requested",
-      "Expired": "Your trial platform has expired",
-      "DaysRemaning": "{days} Days remaining",
-      "FreeTrial": "Free Trial!",
+      "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
+      "Active": "Your OpenCTI Enterprise Edition free trial is active",
+      "Provisioning": "Your OpenCTI Enterprise Edition free trial is currently being provisioned.",
+      "Requested": "Your OpenCTI Enterprise Edition free trial has been requested.",
+      "Expired": "Your OpenCTI Enterprise Edition free trial has expired.",
+      "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "LearnMore": "Learn more",
-      "StartTrial": "Start a Trial",
+      "StartTrial": "Start your free trial",
       "GoToMyTrial": "Go to my trial",
-      "ReachSales": "Reach out to sales",
+      "ContactUs": "Contact us",
       "Form": {
         "Region": "Region",
         "AssociatedEmail": "Associated Email",
@@ -674,9 +676,8 @@
       "Display": {
         "New": "New",
         "Requested": "Requested",
-        "Title": "OpenCTI - Free Trial platform",
-        "DaysRemaning": "{numberOfDays} Days Remaining",
-        "FreeTrialDescription": "Cow everyone loves cheeseburger. Bavarian bergkase emmental bocconcini emmental cheese strings who moved my cheese who moved my cheese paneer."
+        "Title": "OpenCTI 30-days Free Trial",
+        "FreeTrialDescription": "Explore a fully functional version of OpenCTI to see how you can operationalize your threat intelligence - end-to-end! "
       },
       "CapacityWarning": {
         "Title": "No platform available",
@@ -896,7 +897,8 @@
     "ValidateForm": "Validate form",
     "Verified": "Verified",
     "Visualize": "Visualize",
-    "DangerZone": "Danger Zone"
+    "DangerZone": "Danger Zone",
+    "AutomaticDeploy": "Automatic deploy"
   },
   "Platform": {
     "Update": "Update",

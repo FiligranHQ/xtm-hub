@@ -3,7 +3,6 @@
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { isRegistrationService } from '@/utils/services';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
@@ -59,8 +58,12 @@ export const PlatformUpdateSheet: FunctionComponent<
   });
 
   const onSubmit = (values: z.infer<typeof platformUpdateSchema>) => {
-    const document = !values.illustration_document ? null : Array.from(values.illustration_document);
-    const uploadables = !document ? undefined : fileListToUploadableMap(document);
+    const document = !values.illustration_document
+      ? null
+      : Array.from(values.illustration_document);
+    const uploadables = !document
+      ? undefined
+      : fileListToUploadableMap(document);
 
     updatePlatformMetadata({
       variables: {
@@ -93,11 +96,6 @@ export const PlatformUpdateSheet: FunctionComponent<
       },
     });
   };
-
-  // Only show for registration services (OpenCTI/OpenAEV platforms)
-  if (!isRegistrationService(serviceInstance)) {
-    return null;
-  }
 
   // Get platform name for display
   const getPlatformName = () => {

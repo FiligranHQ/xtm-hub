@@ -4,23 +4,9 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
-import {
-  APP_PATH,
-  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
-} from '@/utils/path/constant';
-import {
-  getDisplayDays,
-  isExpired,
-  isExternalService,
-  isRegistrationService,
-  isTrialInstance,
-} from '@/utils/services';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import {
   ArrowOutwardIcon,
   LogoFiligranIcon,
@@ -34,106 +20,48 @@ import { ReactNode, useContext, useState } from 'react';
 
 export interface ServiceInstanceCardData {
   id: string;
-  creation_status: ServiceInstanceCreationStatusEnum;
+  isLinkDisabled?: boolean;
   name: string;
   slug?: string;
-  platform_contract?: string;
-  platform_id?: string;
-  logo_document_id: string | null;
-  illustration_document_id: string | null;
+  logoBackgroundImageUrl: string | null;
+  fullBackgroundImage?: boolean;
   service_definition_identifier: ServiceDefinitionIdentifierEnum;
+  illustrationDocumentUrl: string | null;
+  isCustomIllustrationDocument?: boolean;
   card_background?: string | null;
+  displayedServiceStatus?: string;
+  displayLinkArrow?: boolean;
+  displayUpdatePlatformIfAllowed?: boolean;
+  disableCard?: boolean;
+  cardTitleOverride?: string;
   description?: string;
-  url?: string;
+  url: string;
   ordering: number;
-  status?: string;
-  deployment_request_type?: DeploymentTypeEnum;
-  deployment_status?: DeploymentRequestStatusEnum;
-  service_instance_status?: string;
-  start_date?: Date;
-  end_date?: Date;
 }
 
 interface ServiceInstanceCardProps {
   serviceInstance: ServiceInstanceCardData;
   rightAction?: ReactNode;
-  seo?: boolean;
   className?: string;
 }
 
-const RegistrationDetails: React.FunctionComponent<{
-  serviceInstance: ServiceInstanceCardData;
-  serviceHref: string;
-}> = () => {
-  const t = useTranslations();
-  return (
-    <p className="txt-sub-content text-muted-foreground">
-      {t('Register.Details.Description')}
-    </p>
-  );
-
-  /* Temporary hidden :
-
-  return (
-    <dl className="grid grid-cols-3 gap-s">
-      <dt className="txt-sub-content text-muted-foreground">
-        {t('Register.Details.PlatformID')}
-      </dt>
-      <dd className="txt-sub-content col-span-2">
-        {serviceInstance.platform_id}
-      </dd>
-      <dt className="txt-sub-content text-muted-foreground">
-        {t('Register.Details.PlatformURL')}
-      </dt>
-      <dd className="txt-sub-content col-span-2">{serviceHref}</dd>
-      <dt className="txt-sub-content text-muted-foreground">
-        {t('Register.Details.Contract')}
-      </dt>
-      <dd className="txt-sub-content col-span-2">
-        {t(`Register.Details.Contracts.${serviceInstance.platform_contract}`)}
-      </dd>
-    </dl>
-  );*/
-};
-
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
-> = ({ serviceInstance, rightAction, className, seo }) => {
+> = ({ serviceInstance, rightAction, className }) => {
   const t = useTranslations();
   const { hasOrganizationCapability, hasCapability } =
     useContext(PortalContext);
-  const isDisabled =
-    serviceInstance.creation_status ===
-    ServiceInstanceCreationStatusEnum.PENDING;
-
-  const serviceHref =
-    isExternalService(serviceInstance.service_definition_identifier) &&
-    serviceInstance.url
-      ? serviceInstance.url
-      : `${seo ? `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}` : `/${APP_PATH}/service/${serviceInstance.service_definition_identifier}/${serviceInstance.id}`}`;
-
-  let backgroundImage =
-    serviceInstance.logo_document_id !== null
-      ? `url(/document/images/${serviceInstance.id}/${serviceInstance.logo_document_id})`
-      : '';
-
-  if (isRegistrationService(serviceInstance)) {
-    backgroundImage = `url(/${serviceInstance.service_definition_identifier}-private-platform-logo.png)`;
-  }
 
   // Check if user can update platform
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
 
   const canUpdatePlatform = () => {
-    if (
-      !isRegistrationService(serviceInstance) ||
-      isTrialInstance(serviceInstance)
-    ) {
+    if (!serviceInstance.displayUpdatePlatformIfAllowed) {
       return false;
     }
 
     // Allow BYPASS users to update platforms
-    if (hasCapability && hasCapability(RestrictionEnum.BYPASS)) {
+    if (hasCapability?.(RestrictionEnum.BYPASS)) {
       return true;
     }
 
@@ -142,23 +70,19 @@ const ServiceInstanceCard: React.FunctionComponent<
       return false;
     }
 
-    // Check ADMINISTRATE_ORGANIZATION capability
-    const hasAdminCap = hasOrganizationCapability(
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
-    );
-
-    if (!hasAdminCap) {
-      return false;
-    }
-
-    return hasOrganizationCapability(
-      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+    return (
+      hasOrganizationCapability(
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      ) &&
+      hasOrganizationCapability(
+        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+      )
     );
   };
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
-      {isExpired(serviceInstance) && (
+      {serviceInstance.disableCard && (
         <div className="absolute inset-0 bg-black/60 z-10 rounded pointer-events-none" />
       )}
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
@@ -169,50 +93,49 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}>
           <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
-            {isRegistrationService(serviceInstance) &&
-            isTrialInstance(serviceInstance) ? (
-              <span className="p-s ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-xs text-black">
-                {getDisplayDays(serviceInstance)}
-              </span>
-            ) : (
+            {serviceInstance.logoBackgroundImageUrl && (
               <div
-                className="w-full h-12"
+                className={cn(
+                  'h-12',
+                  serviceInstance.displayedServiceStatus ? 'w-2/3' : 'w-full'
+                )}
                 style={{
-                  backgroundImage,
+                  backgroundImage: serviceInstance.logoBackgroundImageUrl,
                   backgroundSize: 'contain',
                   backgroundPosition: 'left center',
                   backgroundRepeat: 'no-repeat',
                 }}
               />
             )}
+            {serviceInstance.displayedServiceStatus && (
+              <span className="px-2 py-1 ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-[11px] text-black">
+                {serviceInstance.displayedServiceStatus}
+              </span>
+            )}
           </div>
           <AspectRatio
             ratio={16 / 9}
             className={cn(
               'rounded-t',
-              isRegistrationService(serviceInstance)
+              serviceInstance.fullBackgroundImage
                 ? 'overflow-visible'
                 : 'overflow-hidden'
             )}>
-            {(isRegistrationService(serviceInstance) && (
+            {(serviceInstance.fullBackgroundImage && (
               <>
                 <Image
                   width="580"
                   height="281"
-                  src={
-                    serviceInstance.illustration_document_id
-                      ? `/document/visualize/${serviceInstance.id}/${serviceInstance.illustration_document_id}`
-                      : `/${serviceInstance.service_definition_identifier}-private-platform-illustration.png`
-                  }
+                  src={serviceInstance.illustrationDocumentUrl!}
                   priority={false}
                   loading="lazy"
                   alt={`Illustration of ${serviceInstance.name}`}
                   className={
-                    !serviceInstance.illustration_document_id
+                    !serviceInstance.isCustomIllustrationDocument
                       ? 'absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45'
                       : ''
                   }
-                  unoptimized={!!serviceInstance.illustration_document_id}
+                  unoptimized={!!serviceInstance.isCustomIllustrationDocument}
                 />
                 <h3
                   className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
@@ -221,10 +144,10 @@ const ServiceInstanceCard: React.FunctionComponent<
                 </h3>
               </>
             )) ||
-              (serviceInstance.illustration_document_id && (
+              (serviceInstance.illustrationDocumentUrl && (
                 <Image
                   fill
-                  src={`/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`}
+                  src={serviceInstance.illustrationDocumentUrl}
                   objectPosition="top"
                   objectFit="cover"
                   alt={`Illustration of ${serviceInstance.name}`}
@@ -238,28 +161,26 @@ const ServiceInstanceCard: React.FunctionComponent<
               <h2>{serviceInstance.name}</h2>
             ) : (
               <Link
-                href={isDisabled ? '#' : serviceHref}
-                target={serviceHref.startsWith('http') ? '_blank' : '_self'}
+                href={
+                  serviceInstance.isLinkDisabled ? '#' : serviceInstance.url
+                }
+                target={
+                  serviceInstance.url.startsWith('http') ? '_blank' : '_self'
+                }
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
-                aria-disabled={isDisabled}>
+                aria-disabled={serviceInstance.isLinkDisabled}>
                 <h2>
-                  {serviceInstance.name}
-                  {isRegistrationService(serviceInstance) && (
-                    <> - {t('Register.Details.PrivatePlatform')}</>
-                  )}
+                  {serviceInstance.cardTitleOverride || serviceInstance.name}
                 </h2>
               </Link>
             )}
 
             <div className="flex pl-s ml-auto gap-m items-start">
-              {isExternalService(
-                serviceInstance.service_definition_identifier
-              ) &&
-                !isTrialInstance(serviceInstance) && (
-                  <div className="pt-2">
-                    <ArrowOutwardIcon className="size-3 shrink-0" />
-                  </div>
-                )}
+              {serviceInstance.displayLinkArrow && (
+                <div className="pt-2">
+                  <ArrowOutwardIcon className="size-3 shrink-0" />
+                </div>
+              )}
               {canUpdatePlatform() && (
                 <div className="relative">
                   <IconActions
@@ -277,16 +198,9 @@ const ServiceInstanceCard: React.FunctionComponent<
               )}
             </div>
           </div>
-          {(isRegistrationService(serviceInstance) && (
-            <RegistrationDetails
-              serviceInstance={serviceInstance}
-              serviceHref={serviceHref}
-            />
-          )) || (
-            <p className="txt-sub-content text-muted-foreground">
-              {serviceInstance.description}
-            </p>
-          )}
+          <p className="txt-sub-content text-muted-foreground">
+            {serviceInstance.description}
+          </p>
           {rightAction && (
             <div
               className="flex pt-s mt-auto ml-auto

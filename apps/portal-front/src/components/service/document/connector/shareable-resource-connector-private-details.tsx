@@ -19,18 +19,19 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI);
-  const { translationKey: incompatibilityTranslationKey } =
+  const { platformToBeUpdated, incompatiblePlatformsCount } =
     useBuildCompatibilityTranslationKey({
       platforms,
       requiredProductVersion: connectorDetails?.product_version,
     });
 
-  const compatibilityItem = incompatibilityTranslationKey && (
-    <span className="text-gray/60 flex gap-xs items-center">
-      {connectorDetails?.product_version}
-      <CheckIndeterminateIcon className="h-4 w-4" />
-    </span>
-  );
+  const compatibilityItem =
+    incompatiblePlatformsCount > 0 ? (
+      <span className="text-gray/60 flex gap-s items-center">
+        {connectorDetails?.product_version}
+        <CheckIndeterminateIcon className="h-4 w-4" />
+      </span>
+    ) : undefined;
 
   return (
     <div className="flex flex-col justify-start gap-s flex-1">
@@ -38,13 +39,14 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
         connectorDetails={connectorDetails}
         compatibilityItem={compatibilityItem}
       />
-      {incompatibilityTranslationKey && (
+      {incompatiblePlatformsCount > 0 && connectorDetails.manager_supported ? (
         <ShareableResourceIncompatibleWarning
-          message={t(
-            `Service.Connectors.Incompatible.${incompatibilityTranslationKey}`
-          )}
+          message={t(`Service.Connectors.Incompatible`, {
+            count: incompatiblePlatformsCount,
+            platformToBeUpdated,
+          })}
         />
-      )}
+      ) : null}
     </div>
   );
 };
