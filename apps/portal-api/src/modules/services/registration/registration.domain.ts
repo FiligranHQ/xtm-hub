@@ -135,7 +135,7 @@ export const registrationDomain = {
     });
   },
 
-  loadRegisteredPlatformsBy: async (
+  loadRegisteredPlatforms: async (
     query: {
       platformIdentifier?: PlatformIdentifier;
       'ServiceInstance.id'?: ServiceInstanceId;

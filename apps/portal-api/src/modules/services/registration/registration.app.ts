@@ -102,7 +102,7 @@ export const registrationApp = {
   loadRegisteredPlatform: async (
     input: RegisteredPlatformInput
   ): Promise<RegisteredPlatform | null> => {
-    const [platform] = await registrationDomain.loadRegisteredPlatformsBy({
+    const [platform] = await registrationDomain.loadRegisteredPlatforms({
       'ServiceInstance.id': extractId<ServiceInstanceId>(
         input.service_instance_id
       ),
@@ -114,7 +114,7 @@ export const registrationApp = {
   loadRegisteredPlatforms: async (
     input: RegisteredPlatformsInput
   ): Promise<RegisteredPlatform[]> => {
-    const platforms = await registrationDomain.loadRegisteredPlatformsBy({
+    const platforms = await registrationDomain.loadRegisteredPlatforms({
       platformIdentifier: input?.identifier,
     });
 

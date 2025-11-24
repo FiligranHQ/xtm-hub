@@ -311,9 +311,7 @@ describe('Registration domain', () => {
     });
   });
 
-  describe('loadRegisteredPlatformsBy', () => {
-    let openCTIServiceInstanceId: ServiceInstanceId;
-
+  describe('loadRegisteredPlatforms', () => {
     const openAEVplatformId = uuidv4();
 
     const openAEVplatformTitle = 'My OpenCTI platform';
@@ -324,6 +322,7 @@ describe('Registration domain', () => {
     const openAEVToken = uuidv4();
     const openAEVServiceDefinitionId = 'e66a6b50-1f92-4f62-b84c-88ed6b871790';
 
+    let openCTIServiceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
       openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
@@ -360,7 +359,7 @@ describe('Registration domain', () => {
       await deleteServiceInstanceBy({});
     });
     it('should return all registered platform without platformIdentifier in input ', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatformsBy();
+      const platforms = await registrationDomain.loadRegisteredPlatforms();
 
       expect(
         platforms.some(
@@ -376,7 +375,7 @@ describe('Registration domain', () => {
       ).toBe(true);
     });
     it('should return only the right registered platform if platformIdentifier in input ', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatformsBy({
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Openaev,
       });
       expect(
@@ -394,7 +393,7 @@ describe('Registration domain', () => {
         }
       );
 
-      const platforms = await registrationDomain.loadRegisteredPlatformsBy({
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
       });
       expect(platforms.length).toBe(0);
@@ -407,7 +406,7 @@ describe('Registration domain', () => {
           platformIdentifier: PlatformIdentifier.Opencti,
         });
 
-      const platforms = await registrationDomain.loadRegisteredPlatformsBy({
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
       });
       expect(
@@ -417,7 +416,7 @@ describe('Registration domain', () => {
       ).toBe(true);
     });
     it('should return only the registered platform linked to the service instance', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatformsBy({
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
         'ServiceInstance.id': openCTIServiceInstanceId,
       });
 
