@@ -27,7 +27,9 @@ export interface PlatformRegisteredModel {
 export interface OpenCTIFreeTrialModel {
   TODO: string;
 }
-
+export interface OpenCTIFreeTrialRequestedModel {
+  firstName: string;
+}
 export interface PlatformUnregisteredModel {
   adminName: string;
 }
@@ -61,6 +63,7 @@ export type MailTemplates = {
   openaev_platform_registered: PlatformRegisteredModel;
   openaev_platform_unregistered: PlatformUnregisteredModel;
   opencti_free_trial: OpenCTIFreeTrialModel;
+  opencti_free_trial_requested: OpenCTIFreeTrialRequestedModel;
 };
 
 export const templateSubjects: {
@@ -88,4 +91,5 @@ export const templateSubjects: {
   openaev_platform_unregistered: () =>
     `OpenAEV Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
   opencti_free_trial: () => `Your free trial`,
+  opencti_free_trial_requested: () => `Thanks for requesting a Free Trial!`,
 };

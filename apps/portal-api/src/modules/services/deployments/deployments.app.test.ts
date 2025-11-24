@@ -34,6 +34,7 @@ import {
   PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
 } from '../../../portal.const';
+import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
   NotFoundErrorCode,
@@ -104,6 +105,7 @@ describe('Deployment app', () => {
   const telemetrySpy = vi
     .spyOn(telemetryApp, 'sendTelemetryEvent')
     .mockResolvedValue();
+  const mockSendMail = vi.spyOn(mailService, 'sendMail');
 
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
@@ -255,6 +257,26 @@ describe('Deployment app', () => {
         });
 
         expect(deployment).toBeDefined();
+      });
+    });
+    describe('mail', () => {
+      it('should send a mail if status is pending', async () => {
+        await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: PlatformRegion.Us,
+          type: DeploymentType.Trial,
+        });
+
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'admin@filigran.io',
+          template: 'opencti_free_trial_requested',
+          params: {
+            firstName: 'Firstname',
+          },
+        });
       });
     });
   });
