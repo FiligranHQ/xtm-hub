@@ -2,8 +2,10 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
+  requestContextAdminUser,
   SERVICE_CUSTOM_DASHBOARDS_ID,
 } from '../../../../tests/tests.const';
+import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
@@ -43,6 +45,14 @@ describe('custom dashboards app', () => {
       .spyOn(telemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
     const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
+    const testContext = {
+      user: requestContextAdminUser.user,
+      portalContext: {
+        ...contextAdminUser,
+        serviceInstanceId: SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
+      },
+    };
+    requestContext.set(testContext);
 
     await CustomDashboardsApp.createCustomDashboard(
       {
@@ -108,7 +118,6 @@ describe('custom dashboards app', () => {
       },
       [],
       CUSTOM_DASHBOARD_METADATA,
-      contextAdminUser,
       trx
     );
     await trx.commit();
@@ -154,7 +163,6 @@ describe('custom dashboards app', () => {
       },
       [],
       CUSTOM_DASHBOARD_METADATA,
-      contextAdminUser,
       trx
     );
     await trx.commit();

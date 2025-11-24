@@ -4,9 +4,11 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
+  requestContextAdminUser,
   SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../tests/tests.const';
 import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
   DocumentMutator,
@@ -88,7 +90,6 @@ describe('should add new file', () => {
   beforeAll(async () => {
     const trx = await dbTx();
     await createDocument(
-      contextAdminUser,
       {
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
         description: 'description',
@@ -114,7 +115,7 @@ describe('should add new file', () => {
       type: 'vault',
     };
     const trx = await dbTx();
-    await insertDocument(contextAdminUser, data, trx);
+    await insertDocument(data, trx);
     await trx.commit();
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
     expect(inDb).toBeTruthy();
@@ -132,7 +133,7 @@ describe('should add new file', () => {
       type: 'vault',
     };
     const trx = await dbTx();
-    await insertDocument(contextAdminUser, data, trx);
+    await insertDocument(data, trx);
     await trx.commit();
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
     expect(inDb).toBeTruthy();
@@ -150,7 +151,6 @@ describe('Should modify document', () => {
   beforeAll(async () => {
     const trx = await dbTx();
     await createDocument(
-      contextAdminUser,
       {
         id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
         uploader_id: toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3'),
@@ -223,7 +223,6 @@ describe('should check if file already exists', () => {
   beforeAll(async () => {
     const trx = await dbTx();
     await createDocument(
-      contextAdminUser,
       {
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
         description: 'description',
@@ -261,7 +260,6 @@ describe('Documents loading', () => {
   beforeAll(async () => {
     const trx = await dbTx();
     await createDocument(
-      contextAdminUser,
       {
         id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -276,7 +274,6 @@ describe('Documents loading', () => {
       trx
     );
     await createDocument(
-      contextAdminUser,
       {
         id: '96847916-2f35-4402-8e64-888c5d5e8b7a' as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -357,12 +354,16 @@ describe('Documents loading', () => {
 describe('increment shared counter', () => {
   const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
   beforeAll(async () => {
-    const trx = await dbTx();
-    await createDocument<CsvFeed>(
-      {
+    const testContext = {
+      user: requestContextAdminUser.user,
+      portalContext: {
         ...contextAdminUser,
         serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
       },
+    };
+    requestContext.set(testContext);
+    const trx = await dbTx();
+    await createDocument<CsvFeed>(
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',

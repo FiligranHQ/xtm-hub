@@ -179,7 +179,7 @@ export const uploadNewFile = async (
     type: 'service_picture',
   };
 
-  return createDocument(context, data, [], trx);
+  return createDocument(data, [], trx);
 };
 
 export const deleteDocuments = async () => {
@@ -222,7 +222,7 @@ export const loadDocumentWithCountersById = async <T extends Document>(
   id: string,
   include_metadata: string[] = []
 ) => {
-  const document: T = await loadDocumentById(context, id, include_metadata);
+  const document: T = await loadDocumentById(id, include_metadata);
   return updateDocumentWithCounters(document);
 };
 

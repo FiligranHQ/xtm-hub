@@ -29,7 +29,6 @@ export const csvFeedsApp = {
         { ...input, integration_type: IntegrationFeedType.CsvFeed },
         document,
         INTEGRATION_FEED_CSV_FEED_METADATA,
-        context,
         trx
       );
       await trx.commit();

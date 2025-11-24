@@ -28,7 +28,6 @@ export const integrationFeedsApp = {
   ) => {
     return loadParentDocumentsByServiceInstance<IntegrationFeedConnection>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-      context,
       input,
       INTEGRATION_FEED_METADATA
     );

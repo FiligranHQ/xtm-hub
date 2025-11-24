@@ -2,9 +2,11 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../../knexfile';
 import {
   contextAdminUser,
+  requestContextAdminUser,
   SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../../tests/tests.const';
 import { IntegrationFeedType } from '../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../context/request.context';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import {
   ADMIN_UUID,
@@ -46,6 +48,15 @@ describe('csv feeds app', () => {
       .spyOn(telemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
     const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
+
+    const testContext = {
+      user: requestContextAdminUser.user,
+      portalContext: {
+        ...contextAdminUser,
+        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
+      },
+    };
+    requestContext.set(testContext);
 
     await csvFeedsApp.createCsvFeed(
       {
@@ -112,7 +123,6 @@ describe('csv feeds app', () => {
       },
       [],
       INTEGRATION_FEED_CSV_FEED_METADATA,
-      contextAdminUser,
       trx
     );
     await trx.commit();

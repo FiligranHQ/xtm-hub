@@ -29,10 +29,9 @@ const resolvers: Resolvers = {
     labels: ({ id }) =>
       labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, { unsecured: true }),
-    uploader_organization: ({ id }, _, context) =>
-      getUploaderOrganization(context, id, { unsecured: true }),
+    uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
+    uploader_organization: ({ id }, _) =>
+      getUploaderOrganization(id, { unsecured: true }),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>

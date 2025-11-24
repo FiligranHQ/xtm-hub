@@ -31,8 +31,8 @@ import {
 const resolvers: Resolvers = {
   SeoOpenAEVScenario: {
     children_documents: ({ id }) => loadImagesByDocumentId(id),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, {
+    uploader: ({ id }, _) =>
+      getUploader(id, {
         unsecured: true,
       }),
     labels: ({ id }) =>
@@ -44,10 +44,9 @@ const resolvers: Resolvers = {
     labels: ({ id }) =>
       labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, { unsecured: true }),
-    uploader_organization: ({ id }, _, context) =>
-      getUploaderOrganization(context, id, { unsecured: true }),
+    uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
+    uploader_organization: ({ id }, _) =>
+      getUploaderOrganization(id, { unsecured: true }),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
@@ -64,10 +63,9 @@ const resolvers: Resolvers = {
     seoOpenAEVScenarioBySlug: async (_, { slug }) => {
       return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
     },
-    openAEVScenarios: async (_, input, context) => {
+    openAEVScenarios: async (_, input) => {
       return loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        context,
         input,
         OPENAEV_SCENARIO_METADATA
       );
@@ -98,7 +96,7 @@ const resolvers: Resolvers = {
         );
       }
     },
-    updateOpenAEVScenario: async (_, input, context) => {
+    updateOpenAEVScenario: async (_, input) => {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<OpenAEVScenario>(
@@ -106,7 +104,6 @@ const resolvers: Resolvers = {
           extractId<DocumentId>(input.documentId),
           input,
           OPENAEV_SCENARIO_METADATA,
-          context,
           trx
         );
         await trx.commit();
@@ -128,7 +125,6 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await deleteDocument<OpenAEVScenario>(
-          context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true,

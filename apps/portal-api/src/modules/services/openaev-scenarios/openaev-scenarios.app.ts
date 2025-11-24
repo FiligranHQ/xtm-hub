@@ -29,7 +29,6 @@ export const OpenAEVScenariosApp = {
         input,
         document,
         OPENAEV_SCENARIO_METADATA,
-        context,
         trx
       );
       await trx.commit();

@@ -29,7 +29,6 @@ export const CustomDashboardsApp = {
         input,
         document,
         CUSTOM_DASHBOARD_METADATA,
-        context,
         trx
       );
       await trx.commit();

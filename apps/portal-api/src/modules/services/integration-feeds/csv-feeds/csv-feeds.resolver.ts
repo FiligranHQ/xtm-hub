@@ -38,7 +38,7 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedInsertionError);
       }
     },
-    updateCsvFeed: async (_, input, context) => {
+    updateCsvFeed: async (_, input) => {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CsvFeed>(
@@ -52,7 +52,6 @@ const resolvers: Resolvers = {
             },
           },
           INTEGRATION_FEED_CSV_FEED_METADATA,
-          context,
           trx
         );
         await trx.commit();
@@ -72,7 +71,6 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const deletedDoc = await deleteDocument<CsvFeed>(
-          context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true,
