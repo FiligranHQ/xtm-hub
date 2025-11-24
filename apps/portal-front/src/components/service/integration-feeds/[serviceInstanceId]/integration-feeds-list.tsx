@@ -20,8 +20,6 @@ import { PaginationControls } from '@/components/ui/pagination/pagination-contro
 import { IntegrationFeedDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-deployable-filter';
 import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/product-version-filter';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import {
   integrationFeedsItem_fragment$data,
   integrationFeedsItem_fragment$key,
@@ -84,33 +82,27 @@ const IntegrationFeedsList = ({
     setPageSize,
   } = useServiceListLocalStorage(localStorageKey);
 
-  const isConnectorsFeatureFlagEnabled = useIsFeatureEnabled(
-    FeatureFlag.CONNECTORS_INTEGRATION_FEEDS
-  );
-
-  const filters: ServiceListFilterMap = isConnectorsFeatureFlagEnabled
-    ? {
-        [ServiceListFilterKey.IntegrationFeedType]: {
-          node: <IntegrationFeedFilters />,
-          reset: () => {
-            removeConnectorTypes();
-            removeIntegrationTypes();
-          },
-        },
-        [ServiceListFilterKey.ProductVersion]: {
-          node: (
-            <ProductVersionFilter
-              platformIdentifier={PlatformIdentifierEnum.OPENCTI}
-            />
-          ),
-          reset: removeProductVersions,
-        },
-        [ServiceListFilterKey.ManagerSupported]: {
-          node: <IntegrationFeedDeployableFilter />,
-          reset: removeDeployable,
-        },
-      }
-    : {};
+  const filters: ServiceListFilterMap = {
+    [ServiceListFilterKey.IntegrationFeedType]: {
+      node: <IntegrationFeedFilters />,
+      reset: () => {
+        removeConnectorTypes();
+        removeIntegrationTypes();
+      },
+    },
+    [ServiceListFilterKey.ProductVersion]: {
+      node: (
+        <ProductVersionFilter
+          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+        />
+      ),
+      reset: removeProductVersions,
+    },
+    [ServiceListFilterKey.ManagerSupported]: {
+      node: <IntegrationFeedDeployableFilter />,
+      reset: removeDeployable,
+    },
+  };
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -151,15 +143,13 @@ const IntegrationFeedsList = ({
           onSearchChange={onSearchChange}
           additionalFilters={filters}
           paginationControls={
-            isConnectorsFeatureFlagEnabled && (
-              <PaginationControls
-                totalCount={data.integrationFeeds.totalCount}
-                pageSize={pageSize}
-                pageIndex={pagination.pageIndex}
-                onPaginationChange={onPaginationChange}
-                onSetPageSize={setPageSize}
-              />
-            )
+            <PaginationControls
+              totalCount={data.integrationFeeds.totalCount}
+              pageSize={pageSize}
+              pageIndex={pagination.pageIndex}
+              onPaginationChange={onPaginationChange}
+              onSetPageSize={setPageSize}
+            />
           }
         />
       </AppServiceListLocalStorageKeyContext>
