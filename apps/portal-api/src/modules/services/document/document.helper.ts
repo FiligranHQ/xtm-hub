@@ -1,13 +1,13 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Knex } from 'knex';
 import { dbUnsecure } from '../../../../knexfile';
+import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
   default as DocumentModel,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
 import { WithLabels } from '../../../utils/types';
 import { extractId } from '../../../utils/utils';
@@ -82,31 +82,25 @@ export const waitForUploads = async (uploads: Upload[] | Upload) => {
   await Promise.all(uploads.map((upload) => upload.promise));
 };
 
-export const processUploads = async (
-  uploads: Upload[] | Upload,
-  context: PortalContext
-) => {
+export const processUploads = async (uploads: Upload[] | Upload) => {
   if (!Array.isArray(uploads)) {
     uploads = [uploads];
   }
   await waitForUploads(uploads);
-  return Promise.all(
-    uploads.map((doc: Upload) => createFileInMinIO(doc, context))
-  );
+  return Promise.all(uploads.map((doc: Upload) => createFileInMinIO(doc)));
 };
 
 export const processDocumentUpdateUploads = async (
   document: Upload[] | undefined,
   updateDocument: boolean,
-  images: string[],
-  context: PortalContext
+  images: string[]
 ): Promise<UpdateDocumentDocuments> => {
   let documentFile: MinioFile;
   let newImages: MinioFile[] = [];
   if (document && document.length > 0) {
     await waitForUploads(document);
     const files = await Promise.all(
-      document.map((doc: Upload) => createFileInMinIO(doc, context))
+      document.map((doc: Upload) => createFileInMinIO(doc))
     );
     if (updateDocument) {
       documentFile = files.shift();
@@ -122,15 +116,15 @@ export const processDocumentUpdateUploads = async (
 };
 
 export const createFileInMinIO = async (
-  jsonFile: Upload,
-  context: PortalContext
+  jsonFile: Upload
 ): Promise<MinioFile> => {
+  const { portalContext, user } = requestContext.require();
   const fileName = normalizeDocumentName(jsonFile.file.filename);
   const minioName = await sendFileToS3(
     jsonFile.file,
     fileName,
-    context.user.id,
-    context.serviceInstanceId as ServiceInstanceId
+    user.id,
+    portalContext.serviceInstanceId as ServiceInstanceId
   );
   return { minioName, fileName, mimeType: jsonFile.file.mimetype };
 };
@@ -153,24 +147,21 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const uploadNewFile = async (
-  context: PortalContext,
-  document,
-  trx: Knex.Transaction
-) => {
+export const uploadNewFile = async (document, trx: Knex.Transaction) => {
   if (!document || !document.file) {
     return;
   }
+  const { portalContext, user } = requestContext.require();
   const minioName = await sendFileToS3(
     document.file,
     document.file.name,
-    context.user.id,
-    context.serviceInstanceId as ServiceInstanceId
+    user.id,
+    portalContext.serviceInstanceId as ServiceInstanceId
   );
 
   const data: FullDocumentMutator = {
-    uploader_id: context.user.id,
-    name: context.serviceInstanceId,
+    uploader_id: user.id,
+    name: portalContext.serviceInstanceId,
     minio_name: minioName,
     file_name: document.file.name,
     service_instance_id: null,
@@ -218,7 +209,6 @@ export const updateDocumentWithCounters = async <T extends Document>(
 };
 
 export const loadDocumentWithCountersById = async <T extends Document>(
-  context: PortalContext,
   id: string,
   include_metadata: string[] = []
 ) => {

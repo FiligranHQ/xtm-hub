@@ -56,11 +56,7 @@ export const CustomDashboardsApp = {
     context: PortalContext,
     documentId: DocumentId
   ) => {
-    return loadDocumentWithCountersById(
-      context,
-      documentId,
-      CUSTOM_DASHBOARD_METADATA
-    );
+    return loadDocumentWithCountersById(documentId, CUSTOM_DASHBOARD_METADATA);
   },
 
   loadSeoCustomDashboard: async (slug: string) => {

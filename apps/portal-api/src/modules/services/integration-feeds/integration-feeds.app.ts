@@ -36,11 +36,7 @@ export const integrationFeedsApp = {
     context: PortalContext,
     documentId: DocumentId
   ): Promise<WithLabels<IntegrationFeed>> => {
-    return loadDocumentWithCountersById(
-      context,
-      documentId,
-      INTEGRATION_FEED_METADATA
-    );
+    return loadDocumentWithCountersById(documentId, INTEGRATION_FEED_METADATA);
   },
   loadPublicAccessIntegrationFeeds: async (serviceSlug: string) =>
     loadSeoDocumentsByServiceSlug(

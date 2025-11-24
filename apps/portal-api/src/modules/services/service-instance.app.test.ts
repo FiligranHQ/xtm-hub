@@ -411,9 +411,6 @@ describe('Service Instance app', () => {
         );
 
         expect(uploadNewFileSpy).toHaveBeenCalledWith(
-          expect.objectContaining({
-            serviceInstanceId: mockServiceInstanceId,
-          }),
           mockUpload,
           expect.any(Function)
         );

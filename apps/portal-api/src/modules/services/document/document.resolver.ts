@@ -47,18 +47,12 @@ import {
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (
-      _,
-      { document, parentDocumentId, ...payload },
-      context
-    ) => {
+    addDocument: async (_, { document, parentDocumentId, ...payload }) => {
       const trx = await dbTx();
       try {
         await waitForUploads(document);
-        const { minioName, fileName, mimeType } = await createFileInMinIO(
-          document,
-          context
-        );
+        const { minioName, fileName, mimeType } =
+          await createFileInMinIO(document);
 
         const addedDocument = await createDocument<Document>(
           {
@@ -169,7 +163,7 @@ const resolvers: Resolvers = {
         return TYPE_MAPPINGS[document.type];
       } else if (document.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
         const integrationType = await loadIntegrationType(document.id);
-        const responseType = INTEGRATION_MAPPINGS[integrationType]
+        const responseType = INTEGRATION_MAPPINGS[integrationType];
         if (responseType) {
           return responseType;
         }

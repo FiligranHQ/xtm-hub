@@ -50,6 +50,6 @@ export const csvFeedsApp = {
   },
 
   loadCsvFeed: async (context: PortalContext, documentId: DocumentId) => {
-    return loadDocumentWithCountersById(context, documentId);
+    return loadDocumentWithCountersById(documentId);
   },
 };

@@ -56,11 +56,7 @@ export const OpenAEVScenariosApp = {
     context: PortalContext,
     documentId: DocumentId
   ) => {
-    return loadDocumentWithCountersById(
-      context,
-      documentId,
-      OPENAEV_SCENARIO_METADATA
-    );
+    return loadDocumentWithCountersById(documentId, OPENAEV_SCENARIO_METADATA);
   },
 
   loadSeoOpenAEVScenario: async (slug: string) => {

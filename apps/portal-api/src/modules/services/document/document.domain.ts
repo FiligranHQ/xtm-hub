@@ -137,8 +137,7 @@ export const upsertImage = async <T extends DocumentModel>(
   upload: Upload[] | Upload,
   trx: Knex.Transaction
 ) => {
-  const { portalContext } = requestContext.require();
-  const files = await processUploads(upload, portalContext);
+  const files = await processUploads(upload);
 
   const deletedDocuments = await db('Document')
     .delete()
@@ -351,8 +350,7 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
   metadataKeys: DocumentMetadataKeys<T>,
   trx: Knex.Transaction
 ) => {
-  const { portalContext: context } = requestContext.require();
-  const files = await processUploads(uploads, context);
+  const files = await processUploads(uploads);
 
   const docFile = files.shift();
   const doc = await createDocument<T>(
@@ -467,12 +465,10 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   trx: Knex.Transaction
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
-  const { portalContext: context } = requestContext.require();
   const documents = await processDocumentUpdateUploads(
     document,
     isUpdateDoc,
-    images,
-    context
+    images
   );
 
   const { documentFile, newImages, existingImages } = documents;
