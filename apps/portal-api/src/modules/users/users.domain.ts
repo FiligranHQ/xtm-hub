@@ -344,10 +344,6 @@ export const loadPendingUsers = (opts: QueryUsersArgs) => {
   );
 };
 
-export const loadUnsecureUserBy = async (field: UserMutator) => {
-  return dbUnsecure<User>('User').where(field);
-};
-
 export const resetPassword = async (): Promise<void> => {
   const { user } = requestContext.require();
   await auth0Client.resetPassword(user.email);
