@@ -30,14 +30,12 @@ interface Props {
   onSearchChange: (v: string) => void;
   queryRef: PreloadedQuery<seoIntegrationFeedsQuery>;
   baseUrl: string;
-  isConnectorsFeatureEnabled: boolean;
 }
 
 const PublicIntegrationFeedsList: React.FC<Props> = ({
   queryRef,
   serviceInstance,
   baseUrl,
-  isConnectorsFeatureEnabled,
 }) => {
   const queryData = usePreloadedQuery<seoIntegrationFeedsQuery>(
     SeoIntegrationFeedListQuery,
@@ -98,23 +96,21 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
 
   return (
     <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
-      {isConnectorsFeatureEnabled && (
-        <ServiceListHeader
-          search={search}
-          onSearchChange={setSearch}
-          filters={filters}
-          className="mb-3"
-          paginationControls={
-            <PaginationControls
-              totalCount={data.publicIntegrationFeeds.totalCount}
-              pageSize={pageSize}
-              pageIndex={pagination.pageIndex}
-              onPaginationChange={onPaginationChange}
-              onSetPageSize={setPageSize}
-            />
-          }
-        />
-      )}
+      <ServiceListHeader
+        search={search}
+        onSearchChange={setSearch}
+        filters={filters}
+        className="mb-3"
+        paginationControls={
+          <PaginationControls
+            totalCount={data.publicIntegrationFeeds.totalCount}
+            pageSize={pageSize}
+            pageIndex={pagination.pageIndex}
+            onPaginationChange={onPaginationChange}
+            onSetPageSize={setPageSize}
+          />
+        }
+      />
       <PublicShareableResourceList
         documents={integrationFeeds}
         serviceInstance={serviceInstance}

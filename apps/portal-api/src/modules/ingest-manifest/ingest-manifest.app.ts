@@ -15,7 +15,7 @@ export const IngestManifestApp = {
     const result = extractManifestInformation(manifest);
 
     if (result.validContracts.length > 0) {
-      await upsertConnectors(result.validContracts);
+      void upsertConnectors(result.validContracts);
     }
 
     // If there are errors, throw a GraphQL error with details
