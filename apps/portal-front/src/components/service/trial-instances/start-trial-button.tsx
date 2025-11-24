@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowRightAltIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
+import { Button, GradientButton } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -32,25 +32,29 @@ import {
   useRelayEnvironment,
 } from 'react-relay';
 
-import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
+export enum StartTrialButtonVariant {
+  Default = 'default',
+  Gradient = 'gradient',
+}
+
 interface Props {
   openForm?: boolean;
-  className?: string;
+  variant?: StartTrialButtonVariant;
 }
 
 // Component
 export const StartTrialButton: React.FC<Props> = ({
-  className,
   openForm = false,
+  variant = StartTrialButtonVariant.Default,
 }) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
 
-  const { freeTrial } = useFreeTrial();
-
+  //const { freeTrial } = useFreeTrial();
+  const freeTrial = null;
   const [openSheet, setOpenSheet] = useState(openForm);
   const [commitCreateDeploymentRequestMutationMutation] =
     useMutation<trialInstancesCreateDeploymentRequestMutation>(
@@ -117,17 +121,21 @@ export const StartTrialButton: React.FC<Props> = ({
         setOpen={setOpenSheet}
         open={openSheet}
         trigger={
-          !freeTrial && (
+          !freeTrial &&
+          (variant === StartTrialButtonVariant.Default ? (
             <Button
               onClick={() => setOpenSheet(true)}
-              className={cn(
-                className,
+              className={
                 'ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto'
-              )}>
+              }>
               {t('Service.Trials.StartTrial')}
               <ArrowRightAltIcon className="ml-s size-4" />
             </Button>
-          )
+          ) : (
+            <GradientButton className="flex items-center">
+              {t('Service.Trials.StartTrial')}
+            </GradientButton>
+          ))
         }>
         <TryOpenCTIForm
           handleSubmit={handleSubmit}

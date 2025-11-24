@@ -9,7 +9,14 @@ import { publicServiceInstanceToInstanceCardData } from '@/utils/services';
 import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import {
+  AnalyticsIcon,
+  ArrowRightAltIcon,
+  ArrowsInputIcon,
+  ArrowsOutputIcon,
+} from 'filigran-icon';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
@@ -32,7 +39,7 @@ const Section = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <section className={cn(className, 'flex flex-col gap-xxl py-20')}>
+  <section className={cn('flex flex-col gap-xxl py-20', className)}>
     {children}
   </section>
 );
@@ -65,7 +72,7 @@ export const TrialsLearnMore: React.FC = () => {
 
   return (
     <>
-      <Section>
+      <Section className="pt-0">
         <div className="flex gap-xl items-center">
           <div className="w-[413px]">
             <iframe
@@ -77,56 +84,86 @@ export const TrialsLearnMore: React.FC = () => {
           </div>
           <article className="p-xl w-[60%]">
             <H2>What can you do with OpenCTI trial?</H2>
+            <P className="mb-l">
+              Get 30 days to explore all OpenCTI functionalities and enrich your
+              threat intelligence. This includes all OpenCTI Enterprise Edition
+              features such as automated playbooks, ability to set-up priority
+              intelligence requirements (PIRs), FINTEL, as well as AI-powered
+              files import, report generation and NLP search functionality.
+            </P>
+            <P className="mb-l">
+              Explore how OpenCTI can support your specific needs—whether threat
+              hunting, incident response, or case management—and integrate with
+              your preferred data sources to make actionable threat intelligence
+              flow across your security stack.
+            </P>
             <P>
-              OpenCTI trial provides you{' '}
-              <strong>30 days access to explore all key functionality</strong> -
-              gather and enrich intelligence, use powerful tools to visualize
-              relationships, run investigations, and try our extensive
-              integrations.
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://filigran.io/offerings/opencti-enterprise-edition/"
+                className="underline flex gap-s items-center">
+                <ArrowRightAltIcon className="size-3" />
+                Discover all OpenCTI Enterprise Edition Features
+              </Link>
             </P>
           </article>
         </div>
         <div className="flex justify-between gap-l">
           <article className="border border-solid border-b rounded p-6 basis-full">
-            <h3 className="text-blue mb-s font-bold">Ingestion</h3>
+            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+              <span className="p-2 bg-blue/5 rounded">
+                <ArrowsInputIcon className="size-4" />
+              </span>
+              Ingestion
+            </h3>
             <P>
-              Consolidate your disparate threat feeds into a centralized
-              platform with 300+ integrations, using a consistent STIX 2.1 data
-              model.
+              Consolidate and enrich threat intelligence from any
+              feed—commercial, open-source, internal—into a centralized
+              platform. The system standardizes data using the STIX 2.1
+              framework and leverages 300+ integrations. Save countless analyst
+              hours with AI-assisted import of CTI reports.
             </P>
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
-            <h3 className="text-blue mb-s font-bold">Processing</h3>
+            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+              <span className="p-2 bg-blue/5 bg-opacity-5 rounded">
+                <AnalyticsIcon className="size-4" />
+              </span>
+              Processing
+            </h3>
             <P>
-              Work with modern & intuitive dashboards with powerful
-              visualizations, knowledge hypergraph and playbooks to pivot across
-              actors, malware, TTPs, and indicators with visual graphs,
-              timelines, and ATT&CK mappings. Customize your dashboard depending
-              on your use case like threat monitoring, threat hunting, incident
-              response and investigations. Make AI your companion at every step
-              of your activities.
+              Access powerful dashboard visualizations, knowledge hypergraphs,
+              and playbooks to pivot across threat actors using timelines and
+              ATT&CK mappings. Customize your dashboards to meet your specific
+              needs—whether threat hunting or tailored incident response—and
+              make AI your companion at every step.
             </P>
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
-            <h3 className="text-blue mb-s font-bold">Output</h3>
+            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+              <span className="p-2 bg-blue/5 bg-opacity-5 rounded">
+                <ArrowsOutputIcon className="size-4" />
+              </span>
+              Output
+            </h3>
             <P>
-              Make threat intelligence flow through your entire security
-              systems. Role based sharing and dissemination across teams and
-              tools for timely action. Use OpenAEV to validate and improve your
-              security postures (fully integrated with OpenCTI).
+              Make threat intelligence flow through your entire security system.
+              Share and disseminate intelligence across teams and tools with
+              role-based access for timely action. Use OpenAEV—fully integrated
+              with OpenCTI—to validate and improve your security posture.
             </P>
           </article>
         </div>
       </Section>
-      <Section className="bg-[#0A101F] px-xl">
-        <div className="text-center w-[80%] m-auto">
-          <H2>Who are we ?</H2>
+      <Section className="bg-blue-800/5 px-xl">
+        <div className="text-center w-[70%] m-auto">
+          <H2>Your eXtended Threat Management (XTM) suite</H2>
           <P>
-            Filigran stands out in the crowded cyber security ecosystem with our
-            unique open-source, threat-informed cybersecurity solutions. Our
-            eXtended Threat Management (XTM) suite is designed to help
-            organizations anticipate cyberattacks and manage threats end-to-end.
-            The suite currently includes two solutions:
+            OpenCTI is part of Filigran’s open-source threat intelligence,
+            advanced adversary simulation, and strategic cyber risk management
+            solution designed to help your organization anticipate and manage
+            threats end-to-end.
           </P>
         </div>
         <div className="flex gap-xl">

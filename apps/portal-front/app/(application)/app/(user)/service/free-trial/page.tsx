@@ -1,7 +1,10 @@
 'use client';
 
 import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
-import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
+import {
+  StartTrialButton,
+  StartTrialButtonVariant,
+} from '@/components/service/trial-instances/start-trial-button';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
@@ -31,7 +34,10 @@ const Page = ({}) => {
         actions={
           <>
             <ContactUsButton />
-            <StartTrialButton openForm={openTrialForm} />
+            <StartTrialButton
+              variant={StartTrialButtonVariant.Gradient}
+              openForm={openTrialForm}
+            />
           </>
         }
       />

@@ -10,7 +10,7 @@ export const TrialsHeader: React.FC<Props> = ({ actions }) => {
       <div className="flex flex-col">
         <h2 className="text-blue text-2xl mb-2">Welcome to Filigran</h2>
         <h1 className="text-3xl">
-          New to OpenCTI Trial? This is a great place to start!
+          Let’s get you started with your OpenCTI free trial!
         </h1>
       </div>
       <div className="flex gap-s">{actions}</div>
