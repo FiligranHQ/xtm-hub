@@ -122,11 +122,11 @@ export const TrialsLearnMore: React.FC = () => {
         <div className="text-center w-[80%] m-auto">
           <H2>Who are we ?</H2>
           <P>
-            Filigran stands out stand out in the crowded cyber security
-            ecosystem with our unique open-source, threat-informed cybersecurity
-            solutions. Our eXtended Threat Management (XTM) suite is designed to
-            help organizations anticipate cyberattacks and manage threats
-            end-to-end. The suite currently includes two solutions:
+            Filigran stands out in the crowded cyber security ecosystem with our
+            unique open-source, threat-informed cybersecurity solutions. Our
+            eXtended Threat Management (XTM) suite is designed to help
+            organizations anticipate cyberattacks and manage threats end-to-end.
+            The suite currently includes two solutions:
           </P>
         </div>
         <div className="flex gap-xl">
@@ -179,7 +179,7 @@ export const TrialsLearnMore: React.FC = () => {
             <Image
               width="616"
               height="346"
-              src={`/xtm_schema.jpg`}
+              src={`/xtm_schema.png`}
               priority={false}
               loading="lazy"
               alt={`Illustration of free trial service`}
