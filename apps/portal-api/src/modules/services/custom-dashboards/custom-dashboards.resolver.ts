@@ -74,21 +74,14 @@ const resolvers: Resolvers = {
         CUSTOM_DASHBOARD_METADATA
       );
     },
-    customDashboard: async (_, { id }, context) =>
-      CustomDashboardsApp.loadCustomDashboard(
-        context,
-        extractId<DocumentId>(id)
-      ),
+    customDashboard: async (_, { id }) =>
+      CustomDashboardsApp.loadCustomDashboard(extractId<DocumentId>(id)),
   },
   Mutation: {
-    createCustomDashboard: async (_, { input, document }, context) => {
+    createCustomDashboard: async (_, { input, document }) => {
       const trx = await dbTx();
       try {
-        return await CustomDashboardsApp.createCustomDashboard(
-          context,
-          input,
-          document
-        );
+        return await CustomDashboardsApp.createCustomDashboard(input, document);
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {

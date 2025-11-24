@@ -56,10 +56,6 @@ describe('custom dashboards app', () => {
 
     await CustomDashboardsApp.createCustomDashboard(
       {
-        ...contextAdminUser,
-        serviceInstanceId: SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
-      },
-      {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
         name: 'myCustomDashboard',
@@ -122,10 +118,8 @@ describe('custom dashboards app', () => {
     );
     await trx.commit();
 
-    const documentLoaded = await CustomDashboardsApp.loadCustomDashboard(
-      contextAdminUser,
-      documentId
-    );
+    const documentLoaded =
+      await CustomDashboardsApp.loadCustomDashboard(documentId);
 
     expect(documentLoaded.download_number).toBe(5);
     expect(documentLoaded.share_number).toBe(12);
