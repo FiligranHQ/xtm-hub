@@ -54,6 +54,7 @@ import {
   PLATFORM_ORGANIZATION_UUID,
 } from '../../../portal.const';
 import * as authHelper from '../../../security/auth.helper';
+import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -912,6 +913,24 @@ describe('Registration app', () => {
           source: TELEMETRY_SOURCE,
           target_product: 'open-cti',
           user_id: THALES_SIMPLE_USER_ID,
+        });
+      });
+    });
+    describe('sendMail', () => {
+      it('should send a mail when platform is autoregistered', async () => {
+        const mockSendMail = vi.spyOn(mailService, 'sendMail');
+
+        await registrationApp.autoRegisterPlatform(
+          deploymentRequest.platform_token as string,
+          platformConfiguration
+        );
+
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'user@thales.com',
+          template: 'opencti_free_trial_registered',
+          params: {
+            firstName: 'Thalesuserfirstname',
+          },
         });
       });
     });

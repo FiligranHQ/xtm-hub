@@ -137,27 +137,25 @@
                       Welcome to your OpenCTI free trial!
                     </h1>
                     <p style="margin: 0; line-height: 24px">
-                      Hi {{FirstName}},<br />
+                      Hi {{firstName}},<br />
                       <br />
-                      Welcome aboard Filigran world of threat management! For
-                      the next 30 days you’ll have full access to our Threat
-                      Intelligence Platform (TIP), OpenCTI, to explore all key
-                      functionality - gather and enrich intelligence, use
-                      powerful tools to visualize relationships, run
-                      investigations, and try our extensive integrations.
+                      Welcome to Filigran! Let's get you started with your free trial.<br />
                       <br />
+                      For the next 30 days, you'll have full access to OpenCTI Enterprise Edition,
+                      our leading Threat Intelligence Platform. Explore all key functionality: gather
+                      and enrich intelligence, visualize relationships with powerful tools,
+                      run investigations, and try our extensive integrations.<br />
                       <br />
-                      Quick start guide: Documentation link or Storylane
-                      onboarding video (Use Nino’s video)
+                      Log in to your free trial: <a href="{{ platformUrl }}"> {{ platformUrl }}</a> <br />
                       <br />
+                      If you'd like a walkthrough or have questions, simply reply to this email or use the 'Contact Us'
+                      option in the platform—we're here to help.<br />
                       <br />
-                      If you’d like a brief walkthrough or have any questions,
-                      just reply or use the ‘Contact Us’ option in the platform
-                      anytime - we’re here to help.
+                      Need help getting started? Check out our quick onboarding video:
                     </p>
                     <div style="text-align: center">
                       <a
-                        href="{{ serviceLink }}"
+                        href="{{ platformUrl }}"
                         style="
                           color: #f4f4f6;
                           background-color: #001bdb;
@@ -177,7 +175,7 @@
                           >
                         <![endif]-->
                         <span style="mso-text-raise: 16px">
-                          Access Free Trial
+                          Watch onboarding video
                         </span>
                         <!--[if mso]>
                           <i
@@ -191,6 +189,10 @@
                     <p style="margin: 0; padding-top: 16px">
                       Best regards, <br />Filigran Team
                     </p>
+                    <p>
+                      Note: This trial uses public Filigran API keys, but you can change them
+                      based on your requirements.
+                    </p>
                     <div
                       role="separator"
                       style="
@@ -202,8 +204,10 @@
                       &zwj;
                     </div>
                     <p style="margin: 0; font-size: 14px">
-                      Note: This trial uses public Filigran API keys, but you
-                      can change it as per your requirement.
+                      If you have any questions or need support, don’t hesitate
+                      to reach out to us at
+                      <a href="mailto:{{ contactEmail }}">{{ contactEmail }}</a
+                      >.
                     </p>
                   </td>
                 </tr>
