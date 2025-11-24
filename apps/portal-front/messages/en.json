@@ -465,7 +465,7 @@
           "Placeholder": "Platform..."
         },
         "ManagerSupported": {
-          "Placeholder": "Is deployable...",
+          "Placeholder": "Deployment type...",
           "AutomaticDeploy": "Automatic deploy",
           "ManualDeploy": "Manual deploy"
         }
@@ -590,7 +590,7 @@
           "label": "Use case",
           "integration_feed_type": "Integration feed type",
           "product_version": "Platform",
-          "manager_supported": "Is deployable"
+          "manager_supported": "Deployment type"
         }
       }
     },
