@@ -1,7 +1,6 @@
 import { dbTx } from '../../../../../knexfile';
 import { IntegrationFeedType } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
-import { PortalContext } from '../../../../model/portal-context';
 import { logApp } from '../../../../utils/app-logger.util';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../../telemetry/telemetry.helper';
@@ -17,11 +16,7 @@ import {
 } from '../integration-feeds.model';
 
 export const csvFeedsApp = {
-  createCsvFeed: async (
-    context: PortalContext,
-    input: Partial<CsvFeed>,
-    document: Upload[]
-  ) => {
+  createCsvFeed: async (input: Partial<CsvFeed>, document: Upload[]) => {
     const trx = await dbTx();
     try {
       const doc = await createDocumentWithChildren<CsvFeed>(
@@ -49,7 +44,7 @@ export const csvFeedsApp = {
     }
   },
 
-  loadCsvFeed: async (context: PortalContext, documentId: DocumentId) => {
+  loadCsvFeed: async (documentId: DocumentId) => {
     return loadDocumentWithCountersById(documentId);
   },
 };

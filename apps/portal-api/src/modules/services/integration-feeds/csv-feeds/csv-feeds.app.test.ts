@@ -60,10 +60,6 @@ describe('csv feeds app', () => {
 
     await csvFeedsApp.createCsvFeed(
       {
-        ...contextAdminUser,
-        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
-      },
-      {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
         name: 'myCsvFeed',
@@ -127,10 +123,7 @@ describe('csv feeds app', () => {
     );
     await trx.commit();
 
-    const documentLoaded = await csvFeedsApp.loadCsvFeed(
-      contextAdminUser,
-      documentId
-    );
+    const documentLoaded = await csvFeedsApp.loadCsvFeed(documentId);
 
     expect(documentLoaded.download_number).toBe(5);
     expect(documentLoaded.share_number).toBe(12);

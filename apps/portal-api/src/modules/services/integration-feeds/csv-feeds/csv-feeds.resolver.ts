@@ -25,9 +25,9 @@ import { csvFeedsApp } from './csv-feeds.app';
 
 const resolvers: Resolvers = {
   Mutation: {
-    createCsvFeed: async (_, { input, document }, context) => {
+    createCsvFeed: async (_, { input, document }) => {
       try {
-        return await csvFeedsApp.createCsvFeed(context, input, document);
+        return await csvFeedsApp.createCsvFeed(input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {

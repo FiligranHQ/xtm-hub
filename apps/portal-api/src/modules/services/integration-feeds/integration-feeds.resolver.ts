@@ -38,14 +38,11 @@ const resolvers: Resolvers = {
       subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
   Query: {
-    integrationFeeds: async (_, input, context) =>
-      integrationFeedsApp.loadIntegrationFeeds(context, input),
+    integrationFeeds: async (_, input) =>
+      integrationFeedsApp.loadIntegrationFeeds(input),
 
-    integrationFeed: async (_, { id }, context) =>
-      integrationFeedsApp.loadIntegrationFeed(
-        context,
-        extractId<DocumentId>(id)
-      ),
+    integrationFeed: async (_, { id }) =>
+      integrationFeedsApp.loadIntegrationFeed(extractId<DocumentId>(id)),
     publicIntegrationFeeds: async (_, input) =>
       integrationFeedsApp.loadPaginatedPublicAccessIntegrationFeeds(input),
     publicIntegrationFeedByServiceSlug: async (_, { serviceSlug }) =>
