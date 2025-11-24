@@ -46,10 +46,7 @@ describe('Users domain', () => {
       .spyOn(telemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
 
-    await updateUserAtLogin(
-      contextSimpleUserThales,
-      contextSimpleUserThales.user
-    );
+    await updateUserAtLogin(contextSimpleUserThales.user);
     expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
       '@timestamp': '2025-02-03T13:12:15.000Z',
       event_type: 'login',

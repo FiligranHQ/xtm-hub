@@ -1,5 +1,4 @@
 import type { Request, Response } from 'express';
-import { PortalContext } from '../model/portal-context';
 import { UserInfo } from '../model/user';
 import { loadUserBy, updateUserAtLogin } from '../modules/users/users.domain';
 import { getOrCreateUser } from '../modules/users/users.helper';
@@ -43,12 +42,7 @@ export const authenticateUser = async (
   if (!logged || logged.disabled) {
     return;
   }
-  const context: PortalContext = {
-    req,
-    res,
-    user: logged,
-  };
-  req.session.user = await updateUserAtLogin(context, logged);
+  req.session.user = await updateUserAtLogin(logged);
   req.session.save();
   return logged;
 };

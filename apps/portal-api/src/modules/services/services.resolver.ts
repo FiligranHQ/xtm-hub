@@ -115,7 +115,7 @@ const resolvers: Resolvers = {
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
       const serviceInstance = await serviceInstanceApp.loadServiceInstance(
-        context,
+        context.user,
         extractId<ServiceInstanceId>(service_instance_id)
       );
 

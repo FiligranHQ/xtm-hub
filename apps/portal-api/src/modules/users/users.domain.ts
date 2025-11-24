@@ -13,7 +13,6 @@ import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
-import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
 import { auth0Client } from '../../thirdparty/auth0/client';
@@ -470,7 +469,6 @@ export const userHasOrganizationWithSubscription = async () => {
  * #185: If the user has only ONE organization, land him on it rather than its personal space
  */
 export const updateUserAtLogin = async (
-  context: PortalContext,
   user: UserLoadUserBy
 ): Promise<UserLoadUserBy> => {
   // Send data to HubSpot, fire-and-forget, don't wait for promise
@@ -490,7 +488,7 @@ export const updateUserAtLogin = async (
     .returning('*');
 
   try {
-    const selectedOrga = context.user.organizations.find(
+    const selectedOrga = user.organizations.find(
       (org) => org.id === updatedUser.selected_organization_id
     );
     const loginEvent = buildLoginEvent(selectedOrga, user.id);

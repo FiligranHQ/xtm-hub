@@ -83,7 +83,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser,
+        contextAdminUser.user,
         mockServiceInstanceId
       );
 
@@ -113,7 +113,7 @@ describe('Service Instance app', () => {
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser,
+        contextAdminUser.user,
         mockServiceInstanceId
       );
 
@@ -135,7 +135,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser,
+        contextAdminUser.user,
         mockServiceInstanceId
       );
 
@@ -157,7 +157,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser,
+        contextAdminUser.user,
         mockServiceInstanceId
       );
 
@@ -171,7 +171,7 @@ describe('Service Instance app', () => {
 
       await expect(
         serviceInstanceApp.loadServiceInstance(
-          contextAdminUser,
+          contextAdminUser.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Error');
@@ -192,7 +192,7 @@ describe('Service Instance app', () => {
 
       await expect(
         serviceInstanceApp.loadServiceInstance(
-          contextAdminUser,
+          contextAdminUser.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Other error');
@@ -215,7 +215,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
       await serviceInstanceApp.loadServiceInstance(
-        differentContext,
+        differentContext.user,
         mockServiceInstanceId
       );
 
@@ -362,7 +362,7 @@ describe('Service Instance app', () => {
           mockServiceInstanceId
         );
         expect(assertUserCanModifyPlatformServiceSpy).toHaveBeenCalledWith(
-          contextAdminUser,
+          contextAdminUser.user,
           mockServiceDefinition
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
