@@ -1,10 +1,10 @@
-import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { Button } from 'filigran-ui/servers';
+import { Button, GradientButton } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
 
@@ -13,9 +13,14 @@ interface Props {
 }
 
 export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
+  const t = useTranslations();
   return (
     <>
-      <TrialsHeader actions={<ContactUsButton />} />
+      <TrialsHeader
+        actions={
+          <GradientButton>{t('Service.Trials.ContactUs')}</GradientButton>
+        }
+      />
       <section className="flex justify-between p-xl border border-solid border-blue rounded">
         <ul className="text-sm flex flex-col gap-l">
           <li>

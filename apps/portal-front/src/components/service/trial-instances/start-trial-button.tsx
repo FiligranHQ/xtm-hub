@@ -32,6 +32,7 @@ import {
   useRelayEnvironment,
 } from 'react-relay';
 
+import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
@@ -53,8 +54,8 @@ export const StartTrialButton: React.FC<Props> = ({
   const t = useTranslations();
   const environment = useRelayEnvironment();
 
-  //const { freeTrial } = useFreeTrial();
-  const freeTrial = null;
+  const { freeTrial } = useFreeTrial();
+
   const [openSheet, setOpenSheet] = useState(openForm);
   const [commitCreateDeploymentRequestMutationMutation] =
     useMutation<trialInstancesCreateDeploymentRequestMutation>(
@@ -125,9 +126,7 @@ export const StartTrialButton: React.FC<Props> = ({
           (variant === StartTrialButtonVariant.Default ? (
             <Button
               onClick={() => setOpenSheet(true)}
-              className={
-                'ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto'
-              }>
+              className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
               {t('Service.Trials.StartTrial')}
               <ArrowRightAltIcon className="ml-s size-4" />
             </Button>
