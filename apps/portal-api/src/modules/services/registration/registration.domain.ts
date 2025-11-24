@@ -172,7 +172,11 @@ export const registrationDomain = {
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
-      .where('Service_Configuration.status', '=', 'active')
+      .where(function () {
+        this.where('Service_Configuration.status', '=', 'active').orWhereNull(
+          'Service_Configuration.service_instance_id'
+        );
+      })
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',
