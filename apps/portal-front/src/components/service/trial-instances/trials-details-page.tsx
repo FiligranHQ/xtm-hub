@@ -3,13 +3,13 @@ import { TrialsHeader } from '@/components/service/trial-instances/trials-header
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
-import { pageRegisteredPlatformByServiceInstanceId_fragment$data } from '@generated/pageRegisteredPlatformByServiceInstanceId_fragment.graphql';
+import { pageLoaderRegisteredPlatformByServiceInstanceId_fragment$data } from '@generated/pageLoaderRegisteredPlatformByServiceInstanceId_fragment.graphql';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
 import React from 'react';
 
 interface Props {
-  platform: pageRegisteredPlatformByServiceInstanceId_fragment$data;
+  platform: pageLoaderRegisteredPlatformByServiceInstanceId_fragment$data;
 }
 
 export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
