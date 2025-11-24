@@ -70,20 +70,13 @@ const resolvers: Resolvers = {
         OPENAEV_SCENARIO_METADATA
       );
     },
-    openAEVScenario: async (_, { id }, context) =>
-      OpenAEVScenariosApp.loadOpenAEVScenario(
-        context,
-        extractId<DocumentId>(id)
-      ),
+    openAEVScenario: async (_, { id }) =>
+      OpenAEVScenariosApp.loadOpenAEVScenario(extractId<DocumentId>(id)),
   },
   Mutation: {
-    createOpenAEVScenario: async (_, { input, document }, context) => {
+    createOpenAEVScenario: async (_, { input, document }) => {
       try {
-        return await OpenAEVScenariosApp.createOpenAEVScenario(
-          context,
-          input,
-          document
-        );
+        return await OpenAEVScenariosApp.createOpenAEVScenario(input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
