@@ -119,6 +119,7 @@ export const registerRegisteredPlatformFragment = graphql`
       end_date
       start_date
       service_instance {
+        id
         creation_status
         name
       }

@@ -3,6 +3,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
+import { buildPlatformHoverLinks } from '@/utils/platform';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -34,7 +35,7 @@ export const isExpired = (endDate: Date | undefined | null): boolean => {
 export const getDisplayDays = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ) => {
-  if (!isTrial) {
+  if (!isTrial(platform)) {
     return undefined;
   }
   if (
@@ -119,25 +120,27 @@ export const registeredPlatformToServiceInstanceCardData = (
     return {
       ...commonValues,
       ...freeTrialStaticData(),
+      hoverLinks: buildPlatformHoverLinks(platform),
       displayedServiceStatus: getDisplayDays(platform),
     };
-  } else
-    return {
-      ...commonValues,
-      name: platform.title,
-      description: t('Register.Details.Description'),
-      displayLinkArrow: true,
-      displayUpdatePlatformIfAllowed: true,
-      illustrationDocumentUrl: platform.illustration_document_id
-        ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
-        : `/${platformIdentifier}-private-platform-illustration.png`,
-      isCustomIllustrationDocument: !!platform.illustration_document_id,
-      logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
-      fullBackgroundImage: true,
-      cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
-      card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
-      ordering: -1, // registered platforms are displayed at the first position, after free trials
-    };
+  }
+
+  return {
+    ...commonValues,
+    name: platform.title,
+    description: t('Register.Details.Description'),
+    displayLinkArrow: true,
+    displayUpdatePlatformIfAllowed: true,
+    illustrationDocumentUrl: platform.illustration_document_id
+      ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
+      : `/${platformIdentifier}-private-platform-illustration.png`,
+    isCustomIllustrationDocument: !!platform.illustration_document_id,
+    logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
+    fullBackgroundImage: true,
+    cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
+    card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
+    ordering: -1, // registered platforms are displayed at the first position, after free trials
+  };
 };
 
 const computeUrl = (

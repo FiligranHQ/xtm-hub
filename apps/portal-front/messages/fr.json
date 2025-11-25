@@ -618,6 +618,10 @@
     "NoOwnedService": "Vous n'avez pas encore de service.",
     "NoService": "Il n'y a pas encore de service...",
     "Organizations": "Organisations",
+    "RegisteredPlatforms": {
+      "PlatformDetails": "Détails de la plateforme",
+      "GoToMyPlatform": "Accéder à ma plateforme"
+    },
     "SearchServices": "Service de recherche...",
     "ServiceName": "Nom du service",
     "ShareableResources": {
