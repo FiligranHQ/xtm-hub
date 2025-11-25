@@ -91,5 +91,5 @@ export const templateSubjects: {
   openaev_platform_unregistered: () =>
     `OpenAEV Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
   opencti_free_trial_registered: () => `Welcome to your OpenCTI free trial!`,
-  opencti_free_trial_requested: () => `Thank you for requesting a Free Trial!`,
+  opencti_free_trial_requested: () => `Your OpenCTI Free Trial Request`,
 };
