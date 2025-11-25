@@ -172,7 +172,7 @@ const resolvers: Resolvers = {
         return TYPE_MAPPINGS[document.type];
       } else if (document.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
         const integrationType = await loadIntegrationType(document.id);
-        const responseType = INTEGRATION_MAPPINGS[integrationType]
+        const responseType = INTEGRATION_MAPPINGS[integrationType];
         if (responseType) {
           return responseType;
         }
