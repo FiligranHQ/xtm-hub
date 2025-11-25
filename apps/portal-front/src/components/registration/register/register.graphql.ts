@@ -91,10 +91,12 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
     title
     contract
     url
-    deployment_request {
-      status
+    subscription {
       start_date
       end_date
+    }
+    deployment_request {
+      status
     }
   }
 `;

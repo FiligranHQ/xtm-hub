@@ -33,12 +33,12 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
               {formatTitleCase(platform.deployment_request?.status)}
             </li>
           )}
-          {platform.deployment_request?.start_date && (
+          {platform.subscription?.start_date && (
             <li>
               <span className="text-gray/60">Registration date:</span>{' '}
-              {formatDate(platform.deployment_request?.start_date)}{' '}
-              {platform.deployment_request?.end_date &&
-                `- ${formatDate(platform.deployment_request.end_date)}`}
+              {formatDate(platform.subscription?.start_date)}{' '}
+              {platform.subscription?.end_date &&
+                `- ${formatDate(platform.subscription.end_date)}`}
             </li>
           )}
           <li>
