@@ -91,7 +91,7 @@ export const freeTrialSkeletonToServiceInstanceCardData = (
       ? t('Service.Trials.Display.Requested')
       : t('Service.Trials.Display.New'),
     service_definition_identifier: serviceDefinitionIdentifier,
-    url: 'app/service/free-trial',
+    url: '/app/service/free-trial',
   };
 };
 
