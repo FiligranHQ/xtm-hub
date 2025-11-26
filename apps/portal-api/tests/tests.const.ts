@@ -129,8 +129,8 @@ export const contextSimpleUserThales: PortalContext = {
     email: THALES_SIMPLE_USER_EMAIL,
     password: null,
     salt: null,
-    first_name: null,
-    last_name: null,
+    first_name: 'thalesUserFirstName',
+    last_name: 'thalesUserLastName',
     selected_organization_id: THALES_ORGA_ID,
     organizations: [
       {

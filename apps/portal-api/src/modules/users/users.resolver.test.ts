@@ -46,7 +46,7 @@ import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
 } from '../subcription/subscription.helper';
-import { deleteUserById, loadUnsecureUserBy, loadUserBy } from './users.domain';
+import { deleteUserById, loadUnsecureUser, loadUserBy } from './users.domain';
 import { removeUser } from './users.helper';
 import usersResolver from './users.resolver';
 
@@ -870,12 +870,12 @@ describe('User mutation resolver', () => {
       expect(response.picture).toEqual(newPicture);
 
       // assert database
-      const [dbUser] = await loadUnsecureUserBy({ email: DEFAULT_ADMIN_EMAIL });
+      const [dbUser] = await loadUnsecureUser({ email: DEFAULT_ADMIN_EMAIL });
       expect(dbUser).toBeDefined();
-      expect(dbUser.first_name).toEqual(newFirstName);
-      expect(dbUser.last_name).toEqual(newLastName);
-      expect(dbUser.country).toEqual(newCountry);
-      expect(dbUser.picture).toEqual(newPicture);
+      expect(dbUser?.first_name).toEqual(newFirstName);
+      expect(dbUser?.last_name).toEqual(newLastName);
+      expect(dbUser?.country).toEqual(newCountry);
+      expect(dbUser?.picture).toEqual(newPicture);
 
       // assert auth0 call
       expect(auth0Spy).toBeCalledWith({

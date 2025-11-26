@@ -24,10 +24,13 @@ export interface RequestTransferPersonalSpaceMailModel {
 export interface PlatformRegisteredModel {
   adminName: string;
 }
-export interface OpenCTIFreeTrialModel {
-  TODO: string;
+export interface OpenCTIFreeTrialRegistered {
+  firstName: string;
+  platformUrl: string;
 }
-
+export interface OpenCTIFreeTrialRequestedModel {
+  firstName: string;
+}
 export interface PlatformUnregisteredModel {
   adminName: string;
 }
@@ -45,7 +48,6 @@ export const ServiceIdentifierToMailTemplate = new Map<
     'opencti_integration_feeds',
   ],
   [ServiceDefinitionIdentifier.Vault, 'vault'],
-  [ServiceDefinitionIdentifier.OpenctiRegistration, 'opencti_free_trial'],
 ]);
 // ATTENTION, the key should be the same as the template file
 export type MailTemplates = {
@@ -60,7 +62,8 @@ export type MailTemplates = {
   opencti_platform_unregistered: PlatformUnregisteredModel;
   openaev_platform_registered: PlatformRegisteredModel;
   openaev_platform_unregistered: PlatformUnregisteredModel;
-  opencti_free_trial: OpenCTIFreeTrialModel;
+  opencti_free_trial_registered: OpenCTIFreeTrialRegistered;
+  opencti_free_trial_requested: OpenCTIFreeTrialRequestedModel;
 };
 
 export const templateSubjects: {
@@ -87,5 +90,6 @@ export const templateSubjects: {
     `OpenAEV Platform Successfully Registered to XTM Hub – Integration Now Active`,
   openaev_platform_unregistered: () =>
     `OpenAEV Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
-  opencti_free_trial: () => `Your free trial`,
+  opencti_free_trial_registered: () => `Welcome to your OpenCTI free trial!`,
+  opencti_free_trial_requested: () => `Your OpenCTI Free Trial Request`,
 };

@@ -67,8 +67,7 @@ const buildDocumentUrl = (
   return null;
 };
 
-const freeTrialStaticData = () => {
-  const t = useTranslations();
+const freeTrialStaticData = (t: ReturnType<typeof useTranslations>) => {
   return {
     description: t('Service.Trials.Display.FreeTrialDescription'),
     name: t('Service.Trials.Display.Title'),
@@ -80,11 +79,11 @@ const freeTrialStaticData = () => {
 
 export const freeTrialSkeletonToServiceInstanceCardData = (
   isTrialInstanceQueued: boolean,
-  serviceDefinitionIdentifier: ServiceDefinitionIdentifierEnum
+  serviceDefinitionIdentifier: ServiceDefinitionIdentifierEnum,
+  t: ReturnType<typeof useTranslations>
 ) => {
-  const t = useTranslations();
   return {
-    ...freeTrialStaticData(),
+    ...freeTrialStaticData(t),
     id: 'freeTrial',
     displayedServiceStatus: isTrialInstanceQueued
       ? t('Service.Trials.Display.Requested')
@@ -95,9 +94,9 @@ export const freeTrialSkeletonToServiceInstanceCardData = (
 };
 
 export const registeredPlatformToServiceInstanceCardData = (
-  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
+  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
+  t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
-  const t = useTranslations();
   const cardBackgroundByServiceMap: Partial<
     Record<ServiceDefinitionIdentifierEnum, string>
   > = {
@@ -118,7 +117,7 @@ export const registeredPlatformToServiceInstanceCardData = (
   if (isTrial(platform)) {
     return {
       ...commonValues,
-      ...freeTrialStaticData(),
+      ...freeTrialStaticData(t),
       displayedServiceStatus: getDisplayDays(platform),
     };
   } else
