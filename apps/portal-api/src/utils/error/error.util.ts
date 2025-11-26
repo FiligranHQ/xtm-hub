@@ -129,7 +129,7 @@ export const NotFoundError: ErrorBuilder = (
   data?: Record<string, unknown>
 ): CustomApolloError => {
   logApp.error(
-    `${message} ${information ? `details: ${information.detail}` : ''}`
+    `${message} ${information ? `details: ${JSON.stringify(information)}` : ''}`
   );
 
   return errorUtil(
