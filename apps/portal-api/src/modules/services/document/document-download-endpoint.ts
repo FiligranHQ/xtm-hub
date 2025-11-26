@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { dbTx } from '../../../../knexfile';
+import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
@@ -81,6 +82,7 @@ export const documentDownloadEndpoint = (app) => {
           req,
           res,
         };
+        requestContext.update({ portalContext: context });
         const token = extractPlatformToken(req);
         // check only if token is present to keep old OpenCTI versions compatibility
         if (isLoadedFromUserPlatformToken && token) {
@@ -97,7 +99,7 @@ export const documentDownloadEndpoint = (app) => {
 
         const trx = await dbTx();
         try {
-          const [document] = await loadDocumentBy(context, {
+          const [document] = await loadDocumentBy({
             'Document.id': fromGlobalId(req.params.filename).id as DocumentId,
           });
 

@@ -1,6 +1,5 @@
 import { dbTx } from '../../../../knexfile';
 import { DocumentId } from '../../../model/kanel/public/Document';
-import { PortalContext } from '../../../model/portal-context';
 import { logApp } from '../../../utils/app-logger.util';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
@@ -18,7 +17,6 @@ import {
 
 export const CustomDashboardsApp = {
   createCustomDashboard: async (
-    context: PortalContext,
     input: Partial<CustomDashboard>,
     document: Upload[]
   ) => {
@@ -29,7 +27,6 @@ export const CustomDashboardsApp = {
         input,
         document,
         CUSTOM_DASHBOARD_METADATA,
-        context,
         trx
       );
       await trx.commit();
@@ -53,15 +50,8 @@ export const CustomDashboardsApp = {
     }
   },
 
-  loadCustomDashboard: async (
-    context: PortalContext,
-    documentId: DocumentId
-  ) => {
-    return loadDocumentWithCountersById(
-      context,
-      documentId,
-      CUSTOM_DASHBOARD_METADATA
-    );
+  loadCustomDashboard: async (documentId: DocumentId) => {
+    return loadDocumentWithCountersById(documentId, CUSTOM_DASHBOARD_METADATA);
   },
 
   loadSeoCustomDashboard: async (slug: string) => {

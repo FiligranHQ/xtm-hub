@@ -17,13 +17,7 @@ export const UsersAuthApp = {
     const { req } = context;
     const loggedUser = await loadUserBy({ email });
     if (loggedUser && validPassword(loggedUser, password)) {
-      req.session.user = await updateUserAtLogin(
-        {
-          ...context,
-          user: loggedUser,
-        },
-        loggedUser
-      );
+      req.session.user = await updateUserAtLogin(loggedUser);
 
       return loggedUser;
     }

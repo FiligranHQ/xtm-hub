@@ -2,8 +2,10 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
+  requestContextAdminUser,
   SERVICE_OPENAEV_SCENARIOS_ID,
 } from '../../../../tests/tests.const';
+import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
@@ -44,11 +46,16 @@ describe('openaev scenarios app', () => {
       .mockResolvedValue();
     const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
 
-    await OpenAEVScenariosApp.createOpenAEVScenario(
-      {
+    const testContext = {
+      user: requestContextAdminUser.user,
+      portalContext: {
         ...contextAdminUser,
         serviceInstanceId: SERVICE_OPENAEV_SCENARIOS_ID as ServiceInstanceId,
       },
+    };
+    requestContext.set(testContext);
+
+    await OpenAEVScenariosApp.createOpenAEVScenario(
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -108,15 +115,12 @@ describe('openaev scenarios app', () => {
       },
       [],
       OPENAEV_SCENARIO_METADATA,
-      contextAdminUser,
       trx
     );
     await trx.commit();
 
-    const documentLoaded = await OpenAEVScenariosApp.loadOpenAEVScenario(
-      contextAdminUser,
-      documentId
-    );
+    const documentLoaded =
+      await OpenAEVScenariosApp.loadOpenAEVScenario(documentId);
 
     expect(documentLoaded.download_number).toBe(5);
     expect(documentLoaded.share_number).toBe(12);
@@ -154,7 +158,6 @@ describe('openaev scenarios app', () => {
       },
       [],
       OPENAEV_SCENARIO_METADATA,
-      contextAdminUser,
       trx
     );
     await trx.commit();

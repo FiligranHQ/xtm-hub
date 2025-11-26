@@ -1,8 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  contextAdminUser,
-  SERVICE_INTEGRATIONS_FEEDS_ID,
-} from '../../../tests/tests.const';
+import { SERVICE_INTEGRATIONS_FEEDS_ID } from '../../../tests/tests.const';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -155,7 +152,6 @@ describe('TelemetryApp', () => {
         },
         [],
         INTEGRATION_FEED_CSV_FEED_METADATA,
-        contextAdminUser,
         trx
       );
       trx.commit();
@@ -299,7 +295,6 @@ describe('TelemetryApp', () => {
         },
         [],
         INTEGRATION_FEED_CSV_FEED_METADATA,
-        contextAdminUser,
         trx
       );
       trx.commit();

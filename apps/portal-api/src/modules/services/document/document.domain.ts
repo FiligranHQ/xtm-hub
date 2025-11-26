@@ -27,7 +27,6 @@ import { LabelId } from '../../../model/kanel/public/Label';
 import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { PortalContext } from '../../../model/portal-context';
 import { formatRawObject } from '../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../utils/utils';
 import {
@@ -101,7 +100,6 @@ export const passOldDocumentsIntoInactive = async (
 };
 
 export const insertDocument = async (
-  context: PortalContext,
   documentData: FullDocumentMutator,
   trx: Knex.Transaction
 ): Promise<Document> => {
@@ -112,7 +110,7 @@ export const insertDocument = async (
     passOldDocumentsIntoInactive(existingDocuments, trx);
   }
 
-  return createDocument<Document>(context, documentData, [], trx);
+  return createDocument<Document>(documentData, [], trx);
 };
 export const upsertDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
@@ -139,10 +137,9 @@ export const upsertImage = async <T extends DocumentModel>(
   upload: Upload[] | Upload,
   trx: Knex.Transaction
 ) => {
-  const { portalContext } = requestContext.require();
-  const files = await processUploads(upload, portalContext);
+  const files = await processUploads(upload);
 
-  const deletedDocuments = await db(portalContext, 'Document')
+  const deletedDocuments = await db('Document')
     .delete()
     .whereIn('id', function () {
       this.select('child_document_id')
@@ -157,7 +154,6 @@ export const upsertImage = async <T extends DocumentModel>(
   await Promise.all(
     files.map((file) =>
       createDocument(
-        portalContext,
         {
           type: 'image',
           parent_document_id: doc.id as DocumentId,
@@ -190,7 +186,7 @@ export const upsertDocument = async <T extends DocumentModel>(
   trx: Knex.Transaction
 ): Promise<T> => {
   // Prepare the data to insert
-  const { portalContext, user: contextUser } = requestContext.require();
+  const { user: contextUser } = requestContext.require();
   const insertData = {
     ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
     uploader_id: contextUser.id,
@@ -198,7 +194,7 @@ export const upsertDocument = async <T extends DocumentModel>(
   };
 
   // Upsert on slug
-  const [document] = await db<DocumentModel>(portalContext, 'Document')
+  const [document] = await db<DocumentModel>('Document')
     .insert(insertData)
     .onConflict('slug')
     .merge({
@@ -215,13 +211,13 @@ export const upsertDocument = async <T extends DocumentModel>(
   if (documentData.parent_document_id) {
     // First, delete existing relationship if it exists (for upsert scenario)
     if (documentWasUpdated) {
-      await db<DocumentChildren>(portalContext, 'Document_Children')
+      await db<DocumentChildren>('Document_Children')
         .where({ child_document_id: document.id })
         .delete()
         .transacting(trx);
     }
     // Insert new relationship
-    await db<DocumentChildren>(portalContext, 'Document_Children')
+    await db<DocumentChildren>('Document_Children')
       .insert({
         parent_document_id: documentData.parent_document_id as DocumentId,
         child_document_id: document.id,
@@ -255,15 +251,12 @@ export const upsertDocument = async <T extends DocumentModel>(
     // If document was updated (not created)
     if (documentWasUpdated) {
       // Delete all existing metadata except 'version'
-      await db<DocumentMetadata>(portalContext, 'Document_Metadata')
+      await db<DocumentMetadata>('Document_Metadata')
         .where('document_id', document.id)
         .whereNot('key', 'product_version') // Keep version metadata
         .delete()
         .transacting(trx);
-      const existingVersion = await db<DocumentMetadata>(
-        portalContext,
-        'Document_Metadata'
-      )
+      const existingVersion = await db<DocumentMetadata>('Document_Metadata')
         .where('document_id', document.id)
         .where('key', 'product_version')
         .select('value')
@@ -283,10 +276,7 @@ export const upsertDocument = async <T extends DocumentModel>(
       }));
 
     if (metadataToInsert.length > 0) {
-      const metadatas = await db<DocumentMetadata>(
-        portalContext,
-        'Document_Metadata'
-      )
+      const metadatas = await db<DocumentMetadata>('Document_Metadata')
         .insert(metadataToInsert)
         .returning('*')
         .transacting(trx);
@@ -299,7 +289,6 @@ export const upsertDocument = async <T extends DocumentModel>(
   return document as T;
 };
 export const createDocument = async <T extends DocumentModel>(
-  context: PortalContext,
   documentData: Omit<Partial<T>, 'labels'> & {
     labels?: string[];
     parent_document_id?: string;
@@ -307,16 +296,17 @@ export const createDocument = async <T extends DocumentModel>(
   metadataKeys: DocumentMetadataKeys<T> = [],
   trx: Knex.Transaction
 ): Promise<T> => {
+  const { portalContext: context, user } = requestContext.require();
   const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
   const uploader_id = (
-    documentData.uploader_id && extractedId ? extractedId : context.user.id
+    documentData.uploader_id && extractedId ? extractedId : user.id
   ) as UserId;
-  const [document] = await db<DocumentModel>(context, 'Document')
+  const [document] = await db<DocumentModel>('Document')
     .insert({
       ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
       active: documentData.active ?? true,
       uploader_id,
-      uploader_organization_id: context.user.selected_organization_id,
+      uploader_organization_id: user.selected_organization_id,
       ...(!!context.serviceInstanceId && {
         service_instance_id: context.serviceInstanceId as ServiceInstanceId,
       }),
@@ -325,7 +315,7 @@ export const createDocument = async <T extends DocumentModel>(
     .transacting(trx);
 
   if (documentData.parent_document_id) {
-    await db<DocumentChildren>(context, 'Document_Children')
+    await db<DocumentChildren>('Document_Children')
       .insert({
         parent_document_id: documentData.parent_document_id as DocumentId,
         child_document_id: document.id,
@@ -334,7 +324,7 @@ export const createDocument = async <T extends DocumentModel>(
   }
 
   if (metadataKeys.length) {
-    const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+    const metadatas = await db<DocumentMetadata>('Document_Metadata')
       .insert(
         metadataKeys.map((key) => ({
           document_id: document.id,
@@ -358,14 +348,12 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
   input: Partial<T>,
   uploads: Upload[] | Upload,
   metadataKeys: DocumentMetadataKeys<T>,
-  context: PortalContext,
   trx: Knex.Transaction
 ) => {
-  const files = await processUploads(uploads, context);
+  const files = await processUploads(uploads);
 
   const docFile = files.shift();
   const doc = await createDocument<T>(
-    context,
     {
       ...input,
       type,
@@ -380,7 +368,6 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
   await Promise.all(
     files.map((file) =>
       createDocument(
-        context,
         {
           type: 'image',
           parent_document_id: doc.id as DocumentId,
@@ -398,7 +385,6 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
 };
 
 export const updateDocument = async <T extends DocumentModel>(
-  context: PortalContext,
   documentId: string,
   documentData: Omit<Partial<T>, 'labels'> & {
     labels?: string[];
@@ -406,23 +392,24 @@ export const updateDocument = async <T extends DocumentModel>(
   metadataKeys: DocumentMetadataKeys<T> = [],
   trx: Knex.Transaction
 ): Promise<T> => {
+  const { user } = requestContext.require();
   const uploader_organization_id = documentData.uploader_organization_id
     ? extractId<OrganizationId>(documentData.uploader_organization_id)
     : null;
 
   const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
   const uploader_id = (
-    documentData.uploader_id && extractedId ? extractedId : context.user.id
+    documentData.uploader_id && extractedId ? extractedId : user.id
   ) as UserId;
 
-  const [document] = await db<DocumentModel>(context, 'Document')
+  const [document] = await db<DocumentModel>('Document')
     .where('id', '=', documentId)
     .update({
       ...omit(documentData, ['labels', ...metadataKeys]),
       uploader_organization_id,
       uploader_id,
       updated_at: new Date(),
-      updater_id: context.user.id,
+      updater_id: user.id,
     })
     .returning('*')
     .transacting(trx);
@@ -446,12 +433,12 @@ export const updateDocument = async <T extends DocumentModel>(
   }
 
   if (metadataKeys.length) {
-    await db<DocumentMetadata>(context, 'Document_Metadata')
+    await db<DocumentMetadata>('Document_Metadata')
       .where('document_id', '=', documentId)
       .delete()
       .transacting(trx);
 
-    const metadatas = await db<DocumentMetadata>(context, 'Document_Metadata')
+    const metadatas = await db<DocumentMetadata>('Document_Metadata')
       .insert(
         metadataKeys.map((key) => ({
           document_id: documentId as DocumentId,
@@ -475,15 +462,13 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   id: string,
   mutationArgs: MutationUpdateDocumentArgs,
   metadataKeys: DocumentMetadataKeys<T>,
-  context: PortalContext,
   trx: Knex.Transaction
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
   const documents = await processDocumentUpdateUploads(
     document,
     isUpdateDoc,
-    images,
-    context
+    images
   );
 
   const { documentFile, newImages, existingImages } = documents;
@@ -501,22 +486,16 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     });
   }
 
-  const updatedDocument = await updateDocument<T>(
-    context,
-    id,
-    data,
-    metadataKeys,
-    trx
-  );
+  const updatedDocument = await updateDocument<T>(id, data, metadataKeys, trx);
 
   // Delete the images that are not in the existingImages array
-  const childIds = await db<DocumentChildren>(context, 'Document_Children')
+  const childIds = await db<DocumentChildren>('Document_Children')
     .where('parent_document_id', '=', id)
     .whereNotIn('child_document_id', existingImages)
     .select('child_document_id')
     .transacting(trx);
   if (childIds.length > 0) {
-    await db<Document>(context, 'Document')
+    await db<Document>('Document')
       .whereIn(
         'id',
         childIds.map((childId) => childId.child_document_id)
@@ -529,7 +508,6 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   await Promise.all(
     newImages.map((image) =>
       createDocument(
-        context,
         {
           type: 'image',
           parent_document_id: id,
@@ -547,13 +525,12 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
 };
 
 export const deleteDocument = async <T extends DocumentModel>(
-  context: PortalContext,
   documentId: DocumentId,
   serviceInstanceId: ServiceInstanceId,
   hardDelete: boolean,
   trx: Knex.Transaction
 ): Promise<T> => {
-  const [documentFromDb] = await loadDocumentBy(context, {
+  const [documentFromDb] = await loadDocumentBy({
     'Document.id': documentId,
     'Document.service_instance_id': serviceInstanceId,
   });
@@ -562,19 +539,19 @@ export const deleteDocument = async <T extends DocumentModel>(
     throw new Error('Document not found');
   }
 
-  const children = await db<DocumentChildren>(context, 'Document_Children')
+  const children = await db<DocumentChildren>('Document_Children')
     .where('parent_document_id', '=', documentId)
     .select('child_document_id');
   const childIds = children.map((c) => c.child_document_id);
 
   if (hardDelete) {
     // Children
-    await db<DocumentChildren>(context, 'Document_Children')
+    await db<DocumentChildren>('Document_Children')
       .where('parent_document_id', '=', documentId)
       .delete('Document_Children.*')
       .transacting(trx);
 
-    await db<Document>(context, 'Document')
+    await db<Document>('Document')
       .whereIn('Document.id', childIds)
       .delete('Document.*')
       .transacting(trx);
@@ -587,7 +564,7 @@ export const deleteDocument = async <T extends DocumentModel>(
       trx
     );
     // Parent doc
-    await db<Document>(context, 'Document')
+    await db<Document>('Document')
       .where('Document.id', '=', documentId)
       .delete()
       .transacting(trx);
@@ -596,19 +573,19 @@ export const deleteDocument = async <T extends DocumentModel>(
   }
 
   // Soft delete => desactivate the document
-  await passDocumentToInactive(context, [documentId, ...childIds]);
+  await passDocumentToInactive([documentId, ...childIds]);
 
   return documentFromDb as T;
 };
 
 export const passDocumentToInactive = async (
-  context: PortalContext,
   documentId: DocumentId | DocumentId[]
 ) => {
+  const { user } = requestContext.require();
   documentId = Array.isArray(documentId) ? documentId : [documentId];
-  await db<Document>(context, 'Document')
+  await db<Document>('Document')
     .whereIn('Document.id', documentId)
-    .update({ active: false, remover_id: context.user.id });
+    .update({ active: false, remover_id: user.id });
 };
 
 export const loadParentDocumentsByServiceInstance = async <
@@ -618,12 +595,10 @@ export const loadParentDocumentsByServiceInstance = async <
     | CustomDashboardConnection,
 >(
   type: string,
-  context: PortalContext,
   input: QueryDocumentsArgs,
   include_metadata?: string[]
 ): Promise<T> => {
   return loadDocuments<T>(
-    context,
     {
       ...input,
       parentsOnly: true,
@@ -645,12 +620,11 @@ export const loadDocuments = async <
     | IntegrationFeedConnection
     | CustomDashboardConnection,
 >(
-  context: PortalContext,
   opts: Partial<QueryDocumentsArgs>,
   field: Record<string, unknown>,
   include_metadata?: string[]
 ): Promise<T> => {
-  const loadDocumentQuery = db<Document>(context, 'Document', opts)
+  const loadDocumentQuery = db<Document>('Document', opts)
     .select(['Document.*'])
     .where(field);
 
@@ -704,21 +678,17 @@ export const loadDocuments = async <
 };
 
 export const loadDocumentBy = async (
-  context: PortalContext,
   field: Record<string, unknown>,
   opts = {}
 ): Promise<DocumentModel[]> => {
-  return db<DocumentModel>(context, 'Document', opts)
-    .where(field)
-    .select('Document.*');
+  return db<DocumentModel>('Document', opts).where(field).select('Document.*');
 };
 
 export const getChildrenDocuments = async (
-  context: PortalContext,
   documentId: string,
   opts: Partial<QueryOpts> = {}
 ): Promise<Document[]> => {
-  return db<Document>(context, 'Document_Children', opts)
+  return db<Document>('Document_Children', opts)
     .leftJoin('Document', 'Document.id', 'Document_Children.child_document_id')
     .where('Document_Children.parent_document_id', '=', documentId)
     .orderBy('created_at', 'asc')
@@ -727,12 +697,11 @@ export const getChildrenDocuments = async (
 };
 
 export const getUploader = async (
-  context: PortalContext,
   documentId: string,
   opts: Partial<QueryOpts> = {}
 ): Promise<User> => {
   return (
-    await db<User>(context, 'User', opts)
+    await db<User>('User', opts)
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
       .where('Document.id', '=', documentId)
       .limit(1)
@@ -741,11 +710,10 @@ export const getUploader = async (
 };
 
 export const getUploaderOrganization = async (
-  context: PortalContext,
   documentId: string,
   opts: Partial<QueryOpts> = {}
 ): Promise<Organization> => {
-  const [organization] = await db<Organization>(context, 'Organization', opts)
+  const [organization] = await db<Organization>('Organization', opts)
     .leftJoin(
       'Document',
       'Document.uploader_organization_id',
@@ -758,11 +726,10 @@ export const getUploaderOrganization = async (
 };
 
 export const loadDocumentById = async <T extends Document>(
-  context: PortalContext,
   id: string,
   include_metadata: string[] = []
 ): Promise<T> => {
-  const docQuery = db<T>(context, 'Document')
+  const docQuery = db<T>('Document')
     .where('Document.id', '=', id)
     .select('Document.*')
     .groupBy(['Document.id']);

@@ -47,21 +47,14 @@ import {
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (
-      _,
-      { document, parentDocumentId, ...payload },
-      context
-    ) => {
+    addDocument: async (_, { document, parentDocumentId, ...payload }) => {
       const trx = await dbTx();
       try {
         await waitForUploads(document);
-        const { minioName, fileName, mimeType } = await createFileInMinIO(
-          document,
-          context
-        );
+        const { minioName, fileName, mimeType } =
+          await createFileInMinIO(document);
 
         const addedDocument = await createDocument<Document>(
-          context,
           {
             ...omit(payload, ['service_instance_id']),
             minio_name: minioName,
@@ -82,11 +75,10 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.InsertDocumentError);
       }
     },
-    editDocument: async (_, { documentId, input }, context) => {
+    editDocument: async (_, { documentId, input }) => {
       const trx = await dbTx();
       try {
         const document = await updateDocument(
-          context,
           extractId<DocumentId>(documentId),
           input,
           [],
@@ -103,7 +95,6 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await deleteDocument(
-          context,
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId,
           forceDelete,
@@ -183,16 +174,16 @@ const resolvers: Resolvers = {
       return 'DefaultDocument';
     },
 
-    children_documents: ({ id }, _, context) =>
-      getChildrenDocuments(context, id, {
+    children_documents: ({ id }, _) =>
+      getChildrenDocuments(id, {
         unsecured: true,
       }),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, {
+    uploader: ({ id }, _) =>
+      getUploader(id, {
         unsecured: true,
       }),
-    uploader_organization: ({ id }, _, context) =>
-      getUploaderOrganization(context, id, {
+    uploader_organization: ({ id }, _) =>
+      getUploaderOrganization(id, {
         unsecured: true,
       }),
     service_instance: ({ service_instance_id }, _) => {
@@ -230,12 +221,10 @@ const resolvers: Resolvers = {
         filters,
         serviceInstanceId,
         parentsOnly,
-      },
-      context
+      }
     ) => {
       try {
         return loadDocuments(
-          context,
           {
             first,
             after,
@@ -254,8 +243,8 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    document: async (_, { documentId }, context) =>
-      loadDocumentById(context, extractId<DocumentId>(documentId)),
+    document: async (_, { documentId }) =>
+      loadDocumentById(extractId<DocumentId>(documentId)),
   },
 };
 

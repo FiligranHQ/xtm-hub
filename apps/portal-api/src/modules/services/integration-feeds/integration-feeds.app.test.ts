@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../knexfile';
-import {
-  contextAdminUser,
-  SERVICE_INTEGRATIONS_FEEDS_ID,
-} from '../../../../tests/tests.const';
+import { SERVICE_INTEGRATIONS_FEEDS_ID } from '../../../../tests/tests.const';
 import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -61,7 +58,6 @@ describe('csv feeds app', () => {
       },
       [],
       INTEGRATION_FEED_CSV_FEED_METADATA,
-      contextAdminUser,
       trx
     );
     await trx.commit();

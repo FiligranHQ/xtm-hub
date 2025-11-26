@@ -10,6 +10,7 @@ import {
   ServiceInstanceMutator,
 } from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
+import { UserLoadUserBy } from '../../model/user';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
@@ -30,7 +31,7 @@ import {
 
 export const serviceInstanceApp = {
   loadServiceInstance: async (
-    context: PortalContext,
+    user: UserLoadUserBy,
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
     const subscription = await loadSubscriptionBy({
@@ -38,14 +39,14 @@ export const serviceInstanceApp = {
     });
     const userService = await loadUserServiceBy({
       subscription_id: subscription.id,
-      user_id: context.user.id,
+      user_id: user.id,
     });
     if (userService.length === 0) {
       console.warn('USER_MUST_JOIN_SERVICE_BEFORE_ACCESSING_IT');
       if (subscription.joining === 'AUTO_JOIN') {
         await grantServiceAccess(
           [GenericServiceCapabilityIds.AccessId],
-          [context.user.id],
+          [user.id],
           subscription.id
         );
       }
@@ -84,7 +85,7 @@ export const serviceInstanceApp = {
 
       // Verify platform type and check capabilities
       await securityGuard.assertUserCanModifyPlatformService(
-        context,
+        context.user,
         serviceDefinition
       );
 
@@ -99,7 +100,7 @@ export const serviceInstanceApp = {
       // Handle illustration image upload if provided
       if (upload) {
         context.serviceInstanceId = serviceInstance.id;
-        const document = await uploadNewFile(context, upload, trx);
+        const document = await uploadNewFile(upload, trx);
         updateData.illustration_document_id = document.id;
       }
 

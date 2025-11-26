@@ -10,7 +10,6 @@ import {
 import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { SubscriptionMutator } from '../model/kanel/public/Subscription';
-import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
 import { loadUserOrganizationCapabilities } from '../modules/common/user-organization-capability.domain';
 import { loadUserOrganization } from '../modules/common/user-organization.domain';
@@ -132,7 +131,7 @@ export const isUserAllowed = ({
 };
 
 export const isUserAllowedOnOrganization = async (
-  context: PortalContext,
+  user: UserLoadUserBy,
   {
     organizationId,
     requiredCapability,
@@ -146,7 +145,7 @@ export const isUserAllowedOnOrganization = async (
 
   const isAllowed = isUserAllowed({
     requiredCapability: requiredCapability,
-    userCapabilities: context.user.capabilities,
+    userCapabilities: user.capabilities,
     organizationCapabilities: organizationCapabilities.map(
       ({ name }) => name as OrganizationCapability
     ),
@@ -160,7 +159,7 @@ export const isUserAllowedOnOrganization = async (
   }
 
   const [userOrganization] = await loadUserOrganization({
-    user_id: context.user.id,
+    user_id: user.id,
     organization_id: organizationId as OrganizationId,
   });
 
