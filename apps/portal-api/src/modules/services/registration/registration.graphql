@@ -86,6 +86,7 @@ input RefreshPlatformRegistrationConnectivityStatusInput {
   platformId: String!
   token: String!
   platformVersion: String!
+  platformIdentifier: PlatformIdentifier
 }
 
 type RefreshPlatformRegistrationConnectivityStatusResponse {

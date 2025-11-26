@@ -647,7 +647,7 @@ describe('Registration app', () => {
         await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformVersion);
       });
 
-      it('should return not found when platform is not registered and has minimum version', async () => {
+      it('should return inactive when platform is not registered but identifier is not provided', async () => {
         const result =
           await registrationApp.refreshPlatformRegistrationConnectivityStatus({
             platformId: uuidv4(),
@@ -656,11 +656,25 @@ describe('Registration app', () => {
           });
 
         expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.Inactive
+        );
+      });
+
+      it('should return not found when platform is not registered and has required version', async () => {
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
+            platformId: uuidv4(),
+            token: uuidv4(),
+            platformVersion: '7.0.0',
+            platformIdentifier: PlatformIdentifier.Opencti,
+          });
+
+        expect(result.status).toBe(
           PlatformRegistrationConnectivityStatus.NotFound
         );
       });
 
-      it('should return inactive when platform is not registered and does not have minimum version', async () => {
+      it('should return inactive when platform is not registered and has not required version', async () => {
         const result =
           await registrationApp.refreshPlatformRegistrationConnectivityStatus({
             platformId: uuidv4(),

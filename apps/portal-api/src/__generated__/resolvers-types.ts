@@ -1420,6 +1420,7 @@ export type QueryUsersWithCapabilitiesInOrganizationArgs = {
 
 export type RefreshPlatformRegistrationConnectivityStatusInput = {
   platformId: Scalars['String']['input'];
+  platformIdentifier?: InputMaybe<PlatformIdentifier>;
   platformVersion: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };

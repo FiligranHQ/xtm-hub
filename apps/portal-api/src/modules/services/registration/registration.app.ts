@@ -41,12 +41,12 @@ import {
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
-import { extractId } from '../../../utils/utils';
-import { OpenCTIRequiredVersion } from '../../../utils/opencti-required-version';
+import { RequiredPlatformVersions } from '../../../utils/required-platform-version';
 import {
   isSemanticVersionString,
   isVersionAtLeast,
 } from '../../../utils/semantic-versioning';
+import { extractId } from '../../../utils/utils';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -154,11 +154,22 @@ export const registrationApp = {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatformAndToken(input);
     if (!serviceConfiguration) {
+      if (!input.platformIdentifier) {
+        return { status: PlatformRegistrationConnectivityStatus.Inactive };
+      }
+
+      const requiredVersionForNotFoundStatus =
+        RequiredPlatformVersions.RefreshConnectivityStatusSendsNotFound[
+          input.platformIdentifier
+        ];
+
+      const shouldSendNotFoundStatus = isVersionAtLeast(
+        input.platformVersion,
+        requiredVersionForNotFoundStatus
+      );
+
       return {
-        status: isVersionAtLeast(
-          input.platformVersion,
-          OpenCTIRequiredVersion.RefreshConnectivityStatusSendsNotFound
-        )
+        status: shouldSendNotFoundStatus
           ? PlatformRegistrationConnectivityStatus.NotFound
           : PlatformRegistrationConnectivityStatus.Inactive,
       };
