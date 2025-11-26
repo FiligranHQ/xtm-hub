@@ -79,6 +79,7 @@ input UnregisterPlatformInput {
 enum PlatformRegistrationConnectivityStatus {
   active
   inactive
+  not_found
 }
 
 input RefreshPlatformRegistrationConnectivityStatusInput {

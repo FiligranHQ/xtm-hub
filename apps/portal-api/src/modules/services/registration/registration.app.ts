@@ -42,6 +42,11 @@ import {
 } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { extractId } from '../../../utils/utils';
+import { OpenCTIRequiredVersion } from '../../../utils/opencti-required-version';
+import {
+  isSemanticVersionString,
+  isVersionAtLeast,
+} from '../../../utils/semantic-versioning';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -129,42 +134,55 @@ export const registrationApp = {
   loadPlatformRegistrationStatus: async (
     input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    const activeServiceConfiguration =
-      await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
-        input
-      );
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatformAndToken(input);
     return {
-      status: activeServiceConfiguration
-        ? PlatformRegistrationConnectivityStatus.Active
-        : PlatformRegistrationConnectivityStatus.Inactive,
+      status:
+        serviceConfiguration?.status === ServiceConfigurationStatus.Active
+          ? PlatformRegistrationConnectivityStatus.Active
+          : PlatformRegistrationConnectivityStatus.Inactive,
     };
   },
 
   refreshPlatformRegistrationConnectivityStatus: async (
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    const activeServiceConfiguration =
-      await serviceContractDomain.loadActiveConfigurationByPlatformAndToken(
-        input
-      );
-    if (
-      activeServiceConfiguration &&
-      activeServiceConfiguration.config['version'] !== input.platformVersion
-    ) {
+    if (!isSemanticVersionString(input.platformVersion)) {
+      throw new Error(ErrorCode.InvalidPlatformVersion);
+    }
+
+    const serviceConfiguration =
+      await serviceContractDomain.loadConfigurationByPlatformAndToken(input);
+    if (!serviceConfiguration) {
+      return {
+        status: isVersionAtLeast(
+          input.platformVersion,
+          OpenCTIRequiredVersion.RefreshConnectivityStatusSendsNotFound
+        )
+          ? PlatformRegistrationConnectivityStatus.NotFound
+          : PlatformRegistrationConnectivityStatus.Inactive,
+      };
+    }
+
+    const shouldUpdatePlatformVersion =
+      serviceConfiguration.config['version'] !== input.platformVersion;
+    if (shouldUpdatePlatformVersion) {
       await serviceContractDomain.updateConfiguration(
-        activeServiceConfiguration.service_instance_id,
+        serviceConfiguration.service_instance_id,
         {
           config: {
-            ...(activeServiceConfiguration.config as object),
+            ...(serviceConfiguration.config as object),
             platform_version: input.platformVersion,
           },
         }
       );
     }
+
     return {
-      status: activeServiceConfiguration
-        ? PlatformRegistrationConnectivityStatus.Active
-        : PlatformRegistrationConnectivityStatus.Inactive,
+      status:
+        serviceConfiguration.status === ServiceConfigurationStatus.Active
+          ? PlatformRegistrationConnectivityStatus.Active
+          : PlatformRegistrationConnectivityStatus.Inactive,
     };
   },
 

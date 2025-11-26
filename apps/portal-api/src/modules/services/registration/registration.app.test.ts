@@ -636,12 +636,36 @@ describe('Registration app', () => {
     });
 
     describe('refreshPlatformRegistrationConnectivityStatus', () => {
-      it('should return inactive when platform is not registered', async () => {
+      it('should throw an error when version is not formatted as a semantic version', async () => {
+        const call =
+          registrationApp.refreshPlatformRegistrationConnectivityStatus({
+            platformId: uuidv4(),
+            token: uuidv4(),
+            platformVersion: '9.Y.Z',
+          });
+
+        await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformVersion);
+      });
+
+      it('should return not found when platform is not registered and has minimum version', async () => {
         const result =
           await registrationApp.refreshPlatformRegistrationConnectivityStatus({
             platformId: uuidv4(),
             token: uuidv4(),
-            platformVersion: 'X.Y.Z',
+            platformVersion: '7.0.0',
+          });
+
+        expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.NotFound
+        );
+      });
+
+      it('should return inactive when platform is not registered and does not have minimum version', async () => {
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
+            platformId: uuidv4(),
+            token: uuidv4(),
+            platformVersion: '6.0.0',
           });
 
         expect(result.status).toBe(
