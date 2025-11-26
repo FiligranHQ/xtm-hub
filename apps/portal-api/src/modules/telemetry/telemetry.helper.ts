@@ -10,7 +10,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 
 import { requestContext } from '../../context/request.context';
-import { loadIntegrationType } from '../services/document/document.domain';
+import { DocumentMetadataDomain } from '../services/document/domain/document.metadata.domain';
 import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import {
   TELEMETRY_SOURCE,
@@ -97,8 +97,8 @@ const IntegrationFeedTypeToEventServiceType = new Map<
 ]);
 
 const buildServiceTypeEvent = async (resource_id: string) => {
-  const integration_type: IntegrationFeedType =
-    await loadIntegrationType(resource_id);
+  const integration_type =
+    await DocumentMetadataDomain.loadIntegrationType(resource_id);
 
   return IntegrationFeedTypeToEventServiceType.get(integration_type);
 };

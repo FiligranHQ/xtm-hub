@@ -1,22 +1,22 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { db, dbTx } from '../../../../knexfile';
+import { db, dbTx } from '../../../../../knexfile';
 import {
   contextAdminUser,
   requestContextAdminUser,
-} from '../../../../tests/tests.const';
+} from '../../../../../tests/tests.const';
 import {
   DocumentOrdering,
   FilterKey,
   IntegrationFeedConnection,
   IntegrationFeedType,
   OrderingMode,
-} from '../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../model/kanel/public/Document';
-import { upsertConnectors } from '../../ingest-manifest/ingest-manifest.domain';
-import { ManifestInformation } from '../../ingest-manifest/ingest-manifest.model';
-import sampleExtractedManifest from '../../ingest-manifest/test/sample-extracted-manifest.json';
+} from '../../../../__generated__/resolvers-types';
+import { DocumentId } from '../../../../model/kanel/public/Document';
+import { upsertConnectors } from '../../../ingest-manifest/ingest-manifest.domain';
+import { ManifestInformation } from '../../../ingest-manifest/ingest-manifest.model';
+import sampleExtractedManifest from '../../../ingest-manifest/test/sample-extracted-manifest.json';
 import {
   Connector,
   CsvFeed,
@@ -25,14 +25,14 @@ import {
   INTEGRATION_FEED_METADATA,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../integration-feeds/integration-feeds.model';
+} from '../../integration-feeds/integration-feeds.model';
 import {
   createDocumentWithChildren,
   loadParentDocumentsByServiceInstance,
 } from './document.domain';
 
-import { requestContext } from '../../../context/request.context';
-import * as DocumentUploadsHelper from './document.uploads.helper';
+import { requestContext } from '../../../../context/request.context';
+import * as DocumentUploadsHelper from '../document.uploads.helper';
 
 describe('Document domain', () => {
   const minioFileMock = {

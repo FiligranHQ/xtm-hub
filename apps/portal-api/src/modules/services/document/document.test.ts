@@ -30,7 +30,6 @@ import {
   INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds/integration-feeds.model';
-import { createDocument, insertDocument } from './document.domain';
 import {
   checkDocumentExists,
   deleteDocumentBy,
@@ -40,6 +39,7 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
+import { createDocument, insertDocument } from './domain/document.domain';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {

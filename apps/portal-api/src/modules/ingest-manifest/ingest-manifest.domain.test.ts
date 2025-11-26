@@ -6,7 +6,7 @@ import {
   SYSTEM_USER_UUID,
 } from '../../portal.const';
 import { minioInit } from '../../server/initialize';
-import { loadImagesByDocumentId } from '../services/document/document.domain';
+import { loadImagesByDocumentId } from '../services/document/domain/document.domain';
 import {
   Connector,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,

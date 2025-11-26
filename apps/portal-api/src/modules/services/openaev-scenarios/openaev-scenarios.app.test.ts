@@ -15,9 +15,9 @@ import {
   TelemetryEventService,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { createDocumentWithChildren } from '../document/document.domain';
 import { deleteDocuments } from '../document/document.helper';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { createDocumentWithChildren } from '../document/domain/document.domain';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,

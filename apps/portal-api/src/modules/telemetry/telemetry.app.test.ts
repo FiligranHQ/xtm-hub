@@ -22,8 +22,8 @@ import {
 } from '../../__generated__/resolvers-types';
 import { DocumentId } from '../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { createDocumentWithChildren } from '../services/document/document.domain';
 import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
+import { createDocumentWithChildren } from '../services/document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
