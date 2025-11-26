@@ -1,4 +1,3 @@
-import config from 'config';
 import { Knex } from 'knex';
 import {
   db,
@@ -27,23 +26,15 @@ import { LabelId } from '../../../model/kanel/public/Label';
 import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { formatRawObject } from '../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../utils/utils';
-import {
-  deleteFileToMinio,
-  insertFileInMinio,
-  UploadedFile,
-} from './document-storage';
 import {
   BOOLEAN_METADATA,
   Document,
   FullDocumentMutator,
-  getDocumentName,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
-  processDocumentUpdateUploads,
-  processUploads,
-  Upload,
 } from './document.helper';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
@@ -54,6 +45,11 @@ import DocumentMetadata, {
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
+import {
+  processDocumentUpdateUploads,
+  processUploads,
+  Upload,
+} from './document.uploads.helper';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
   Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
@@ -62,30 +58,6 @@ export type DocumentMetadataKeys<T extends DocumentModel> = Array<
 type MutationUpdateDocumentArgs =
   | MutationUpdateCustomDashboardArgs
   | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
-
-export const sendFileToS3 = async (
-  file: UploadedFile,
-  filename: string,
-  userId: string,
-  serviceInstanceId: ServiceInstanceId
-) => {
-  const fullMetadata = {
-    mimetype: file.mimetype,
-    filename,
-    encoding: file.encoding,
-    Uploadinguserid: userId,
-    ServiceInstanceId: serviceInstanceId,
-  };
-
-  const fileParams = {
-    Bucket: config.get('minio.bucketName'),
-    Key: getDocumentName(file.filename),
-    Body: file.createReadStream(),
-    Metadata: fullMetadata,
-  };
-
-  return await insertFileInMinio(fileParams);
-};
 
 export const passOldDocumentsIntoInactive = async (
   existingDocuments: Document[],
@@ -171,7 +143,7 @@ export const upsertImage = async <T extends DocumentModel>(
   if (deletedDocuments.length > 0) {
     await Promise.all(
       deletedDocuments.map((doc) => {
-        return deleteFileToMinio(doc.minio_name);
+        return MinIOClient.deleteFile(doc.minio_name);
       })
     );
   }
@@ -465,13 +437,8 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   trx: Knex.Transaction
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
-  const documents = await processDocumentUpdateUploads(
-    document,
-    isUpdateDoc,
-    images
-  );
-
-  const { documentFile, newImages, existingImages } = documents;
+  const { documentFile, newImages, existingImages } =
+    await processDocumentUpdateUploads(document, isUpdateDoc, images);
   const data = {
     ...input,
     type,

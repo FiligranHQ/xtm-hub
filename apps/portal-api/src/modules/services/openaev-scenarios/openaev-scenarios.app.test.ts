@@ -16,8 +16,8 @@ import {
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { createDocumentWithChildren } from '../document/document.domain';
-import * as DocumentHelper from '../document/document.helper';
 import { deleteDocuments } from '../document/document.helper';
+import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
@@ -32,7 +32,7 @@ describe('openaev scenarios app', () => {
     fileName: 'csvfilename',
   };
   beforeEach(() => {
-    vi.spyOn(DocumentHelper, 'processUploads').mockResolvedValue([
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
   });

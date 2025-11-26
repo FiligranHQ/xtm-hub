@@ -7,8 +7,8 @@ import { createDocumentWithChildren } from '../document/document.domain';
 import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
-  Upload,
 } from '../document/document.helper';
+import { Upload } from '../document/document.uploads.helper';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA,

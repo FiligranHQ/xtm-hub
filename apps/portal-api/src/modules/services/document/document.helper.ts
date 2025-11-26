@@ -1,4 +1,3 @@
-import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Knex } from 'knex';
 import { dbUnsecure } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
@@ -8,9 +7,9 @@ import {
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { WithLabels } from '../../../utils/types';
-import { extractId } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
@@ -20,7 +19,6 @@ import {
   createDocument,
   loadDocumentById,
   loadSeoDocumentBySlug,
-  sendFileToS3,
 } from './document.domain';
 
 export const BOOLEAN_METADATA = [
@@ -34,12 +32,6 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];
   parent_document_id?: DocumentId;
 };
-
-export interface UpdateDocumentDocuments {
-  documentFile: MinioFile | undefined;
-  newImages: MinioFile[];
-  existingImages: string[];
-}
 
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');
@@ -56,77 +48,6 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .replace(/[^a-z0-9\-_.]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
-};
-
-export interface MinioFile {
-  minioName: string;
-  fileName: string;
-  mimeType: string;
-}
-
-export interface ExistingFile {
-  id: string;
-  file_name: string;
-  name: string;
-}
-
-export interface Upload {
-  file: FileUpload;
-  promise: Promise<FileUpload>;
-}
-
-export const waitForUploads = async (uploads: Upload[] | Upload) => {
-  if (!Array.isArray(uploads)) {
-    uploads = [uploads];
-  }
-  await Promise.all(uploads.map((upload) => upload.promise));
-};
-
-export const processUploads = async (uploads: Upload[] | Upload) => {
-  if (!Array.isArray(uploads)) {
-    uploads = [uploads];
-  }
-  await waitForUploads(uploads);
-  return Promise.all(uploads.map((doc: Upload) => createFileInMinIO(doc)));
-};
-
-export const processDocumentUpdateUploads = async (
-  document: Upload[] | undefined,
-  updateDocument: boolean,
-  images: string[]
-): Promise<UpdateDocumentDocuments> => {
-  let documentFile: MinioFile;
-  let newImages: MinioFile[] = [];
-  if (document && document.length > 0) {
-    await waitForUploads(document);
-    const files = await Promise.all(
-      document.map((doc: Upload) => createFileInMinIO(doc))
-    );
-    if (updateDocument) {
-      documentFile = files.shift();
-    }
-    newImages = files;
-  }
-
-  return {
-    documentFile,
-    newImages,
-    existingImages: images.map((imageId) => extractId<DocumentId>(imageId)),
-  };
-};
-
-export const createFileInMinIO = async (
-  jsonFile: Upload
-): Promise<MinioFile> => {
-  const { portalContext, user } = requestContext.require();
-  const fileName = normalizeDocumentName(jsonFile.file.filename);
-  const minioName = await sendFileToS3(
-    jsonFile.file,
-    fileName,
-    user.id,
-    portalContext.serviceInstanceId as ServiceInstanceId
-  );
-  return { minioName, fileName, mimeType: jsonFile.file.mimetype };
 };
 
 export const checkDocumentExists = async (
@@ -152,7 +73,7 @@ export const uploadNewFile = async (document, trx: Knex.Transaction) => {
     return;
   }
   const { portalContext, user } = requestContext.require();
-  const minioName = await sendFileToS3(
+  const minioName = await MinIOClient.sendFile(
     document.file,
     document.file.name,
     user.id,
