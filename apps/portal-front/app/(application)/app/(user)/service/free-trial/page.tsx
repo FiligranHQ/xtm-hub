@@ -1,11 +1,19 @@
 'use client';
 
-import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
+import {
+  StartTrialButton,
+  StartTrialButtonVariant,
+} from '@/components/service/trial-instances/start-trial-button';
+import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
+import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
+import { Button } from 'filigran-ui/servers';
+import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
 const Page = ({}) => {
+  const t = useTranslations();
   const searchParams = useSearchParams();
   const openTrialForm = searchParams.has('openForm');
 
@@ -24,9 +32,22 @@ const Page = ({}) => {
     <>
       <BreadcrumbNav value={breadcrumbs} />
 
-      <h1>OpenCTI Trial platform</h1>
-      <span>TODO Ellyn : on met quoi ici :) </span>
-      <StartTrialButton openForm={openTrialForm} />
+      <TrialsHeader
+        actions={
+          <>
+            <Button
+              onClick={() => console.warn('Contact Us')}
+              variant="outline-primary">
+              {t('Service.Trials.ContactUs')}
+            </Button>
+            <StartTrialButton
+              variant={StartTrialButtonVariant.Gradient}
+              openForm={openTrialForm}
+            />
+          </>
+        }
+      />
+      <TrialsLearnMore />
     </>
   );
 };

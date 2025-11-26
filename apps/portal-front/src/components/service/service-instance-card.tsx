@@ -37,6 +37,7 @@ export interface ServiceInstanceCardData {
   description?: string;
   url: string;
   ordering: number;
+  hoverLinks?: ReactNode;
 }
 
 interface ServiceInstanceCardProps {
@@ -84,6 +85,13 @@ const ServiceInstanceCard: React.FunctionComponent<
     <li className={cn('relative border border-light rounded flex', className)}>
       {serviceInstance.disableCard && (
         <div className="absolute inset-0 bg-black/60 z-10 rounded pointer-events-none" />
+      )}
+      {serviceInstance.hoverLinks && (
+        <div className="absolute inset-0 bg-black/80 z-10 opacity-0 hover:opacity-100 flex">
+          <div className="flex flex-col gap-s m-auto">
+            {serviceInstance.hoverLinks}
+          </div>
+        </div>
       )}
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
         <div
@@ -157,7 +165,7 @@ const ServiceInstanceCard: React.FunctionComponent<
         </div>
         <div className="min-h-40 flex flex-col p-l gap-l flex-1 bg-page-background group-hover:bg-hover">
           <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
-            {rightAction ? (
+            {rightAction || serviceInstance.hoverLinks ? (
               <h2>{serviceInstance.name}</h2>
             ) : (
               <Link

@@ -61,6 +61,8 @@ const resolvers: Resolvers = {
         );
       }
     },
+    registeredPlatform: async (_, { input }) =>
+      registrationApp.loadRegisteredPlatform(input),
     registeredPlatforms: async (_, { input }) =>
       registrationApp.loadRegisteredPlatforms(input),
     /**

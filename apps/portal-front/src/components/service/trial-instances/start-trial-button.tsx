@@ -1,9 +1,9 @@
 'use client';
 
 import { ArrowRightAltIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
+import { Button, GradientButton } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import GuardCapacityComponent from '@/components/admin-guard';
 
@@ -36,13 +36,20 @@ import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
-interface StartTrialButtonProps {
+export enum StartTrialButtonVariant {
+  Default = 'default',
+  Gradient = 'gradient',
+}
+
+interface Props {
   openForm?: boolean;
+  variant?: StartTrialButtonVariant;
 }
 
 // Component
-export const StartTrialButton: FunctionComponent<StartTrialButtonProps> = ({
+export const StartTrialButton: React.FC<Props> = ({
   openForm = false,
+  variant = StartTrialButtonVariant.Default,
 }) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
@@ -115,14 +122,19 @@ export const StartTrialButton: FunctionComponent<StartTrialButtonProps> = ({
         setOpen={setOpenSheet}
         open={openSheet}
         trigger={
-          !freeTrial && (
+          !freeTrial &&
+          (variant === StartTrialButtonVariant.Default ? (
             <Button
               onClick={() => setOpenSheet(true)}
               className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
               {t('Service.Trials.StartTrial')}
               <ArrowRightAltIcon className="ml-s size-4" />
             </Button>
-          )
+          ) : (
+            <GradientButton className="flex items-center">
+              {t('Service.Trials.StartTrial')}
+            </GradientButton>
+          ))
         }>
         <TryOpenCTIForm
           handleSubmit={handleSubmit}
