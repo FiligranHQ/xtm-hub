@@ -15,6 +15,7 @@ import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInst
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
+import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 
@@ -32,6 +33,7 @@ const OwnedServices = ({
   const isFreeTrialFeatureEnabled = useIsFeatureEnabled(
     FeatureFlag.OPEN_CTI_FREE_TRIAL
   );
+  const t = useTranslations();
   // Merge and sort by ordering property
   const sortedServices = [
     ...services
@@ -49,7 +51,9 @@ const OwnedServices = ({
           service.subscription?.service_instance?.creation_status !==
           ServiceInstanceCreationStatusEnum.DISABLED
       )
-      .map(registeredPlatformToServiceInstanceCardData),
+      .map((platform) =>
+        registeredPlatformToServiceInstanceCardData(platform, t)
+      ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
   const trialInstances = registeredPlatforms.filter(
@@ -67,7 +71,8 @@ const OwnedServices = ({
   const freeTrialServiceInstanceDataCard =
     freeTrialSkeletonToServiceInstanceCardData(
       isTrialInstanceQueued,
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
+      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+      t
     );
 
   if (sortedServices.length > 0) {
