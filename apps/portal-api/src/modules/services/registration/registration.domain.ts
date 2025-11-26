@@ -57,8 +57,8 @@ export const registrationDomain = {
     platformIdentifier: PlatformIdentifier;
     serviceInstanceCreationStatus?: ServiceInstanceCreationStatus;
   }): Promise<ServiceInstanceId> => {
-    const context = requestContext.require().portalContext;
-    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+    const { user } = requestContext.require();
+    await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -100,8 +100,8 @@ export const registrationDomain = {
     serviceInstanceId: ServiceInstanceId;
     targetOrganizationId: OrganizationId;
   }) => {
-    const { portalContext: context } = requestContext.require();
-    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+    const { user } = requestContext.require();
+    await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -113,12 +113,12 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      const userOrganizations = await loadOrganizationsByUser(context.user.id);
+      const userOrganizations = await loadOrganizationsByUser(user.id);
       if (userOrganizations.length > 2) {
         throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
       }
 
-      await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      await securityGuard.assertUserIsAllowedOnOrganization(user, {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });

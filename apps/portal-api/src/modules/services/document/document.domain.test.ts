@@ -2,7 +2,10 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db, dbTx } from '../../../../knexfile';
-import { contextAdminUser } from '../../../../tests/tests.const';
+import {
+  contextAdminUser,
+  requestContextAdminUser,
+} from '../../../../tests/tests.const';
 import {
   DocumentOrdering,
   FilterKey,
@@ -28,6 +31,7 @@ import {
   loadParentDocumentsByServiceInstance,
 } from './document.domain';
 
+import { requestContext } from '../../../context/request.context';
 import * as DocumentHelper from './document.helper';
 
 describe('Document domain', () => {
@@ -50,6 +54,14 @@ describe('Document domain', () => {
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       const documentId = uuidv4() as DocumentId;
+      const testContext = {
+        user: requestContextAdminUser.user,
+        portalContext: {
+          ...contextAdminUser,
+          serviceInstanceId: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
+        },
+      };
+      requestContext.set(testContext);
       const trx = await dbTx();
       await createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
@@ -66,10 +78,6 @@ describe('Document domain', () => {
         },
         [],
         INTEGRATION_FEED_CSV_FEED_METADATA,
-        {
-          ...contextAdminUser,
-          serviceInstanceId: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-        },
         trx
       );
 
@@ -82,7 +90,6 @@ describe('Document domain', () => {
       const connection: IntegrationFeedConnection =
         await loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-          contextAdminUser,
           {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
@@ -116,6 +123,14 @@ describe('Document domain', () => {
     it('should filter an integration feed with a metadata type', async () => {
       // Create data
       const documentId = uuidv4() as DocumentId;
+      const testContext = {
+        user: requestContextAdminUser.user,
+        portalContext: {
+          ...contextAdminUser,
+          serviceInstanceId: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
+        },
+      };
+      requestContext.set(testContext);
       const trx = await dbTx();
       const csvFeed = await createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
@@ -132,10 +147,6 @@ describe('Document domain', () => {
         },
         [],
         INTEGRATION_FEED_CSV_FEED_METADATA,
-        {
-          ...contextAdminUser,
-          serviceInstanceId: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-        },
         trx
       );
 
@@ -151,7 +162,6 @@ describe('Document domain', () => {
       const csvFeedConnection: IntegrationFeedConnection =
         await loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-          contextAdminUser,
           {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
@@ -180,7 +190,6 @@ describe('Document domain', () => {
       const connectorConnection: IntegrationFeedConnection =
         await loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-          contextAdminUser,
           {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
@@ -219,7 +228,6 @@ describe('Document domain', () => {
         const secondContractConnection: IntegrationFeedConnection =
           await loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-            contextAdminUser,
             {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,
@@ -256,7 +264,6 @@ describe('Document domain', () => {
         const allContractsConnection: IntegrationFeedConnection =
           await loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-            contextAdminUser,
             {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,

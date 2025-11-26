@@ -3,14 +3,14 @@ import {
   ServiceDefinitionIdentifier,
 } from '../__generated__/resolvers-types';
 import { OrganizationId } from '../model/kanel/public/Organization';
-import { PortalContext } from '../model/portal-context';
+import { UserLoadUserBy } from '../model/user';
 import { ErrorCode } from '../utils/error/error.code';
 import { ForbiddenAccess } from '../utils/error/error.util';
 import { isUserAllowedOnOrganization } from './auth.helper';
 
 export const securityGuard = {
   assertUserIsAllowedOnOrganization: async (
-    context: PortalContext,
+    user: UserLoadUserBy,
     {
       organizationId,
       requiredCapability,
@@ -20,7 +20,7 @@ export const securityGuard = {
     }
   ) => {
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
+      user,
       {
         organizationId,
         requiredCapability,
@@ -36,7 +36,7 @@ export const securityGuard = {
   },
 
   assertUserCanModifyPlatformService: async (
-    context: PortalContext,
+    user: UserLoadUserBy,
     serviceDefinition: { identifier: string }
   ) => {
     // Verify it's an OpenCTI or OpenAEV platform
@@ -53,8 +53,8 @@ export const securityGuard = {
       throw ForbiddenAccess(ErrorCode.PlatformTypeNotSupported);
     }
 
-    await securityGuard.assertUserIsAllowedOnOrganization(context, {
-      organizationId: context.user.selected_organization_id,
+    await securityGuard.assertUserIsAllowedOnOrganization(user, {
+      organizationId: user.selected_organization_id,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
   },

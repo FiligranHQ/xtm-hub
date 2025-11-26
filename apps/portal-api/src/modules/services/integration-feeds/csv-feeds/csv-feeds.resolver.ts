@@ -25,9 +25,9 @@ import { csvFeedsApp } from './csv-feeds.app';
 
 const resolvers: Resolvers = {
   Mutation: {
-    createCsvFeed: async (_, { input, document }, context) => {
+    createCsvFeed: async (_, { input, document }) => {
       try {
-        return await csvFeedsApp.createCsvFeed(context, input, document);
+        return await csvFeedsApp.createCsvFeed(input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {
@@ -38,7 +38,7 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedInsertionError);
       }
     },
-    updateCsvFeed: async (_, input, context) => {
+    updateCsvFeed: async (_, input) => {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CsvFeed>(
@@ -52,7 +52,6 @@ const resolvers: Resolvers = {
             },
           },
           INTEGRATION_FEED_CSV_FEED_METADATA,
-          context,
           trx
         );
         await trx.commit();
@@ -72,7 +71,6 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const deletedDoc = await deleteDocument<CsvFeed>(
-          context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true,

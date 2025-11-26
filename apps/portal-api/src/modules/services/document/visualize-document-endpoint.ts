@@ -1,6 +1,7 @@
 import cors from 'cors';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
+import { requestContext } from '../../../context/request.context';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
@@ -28,8 +29,8 @@ export const documentVisualizeEndpoint = (app) => {
           req,
           res,
         };
-
-        const [document] = await loadDocumentBy(context, {
+        requestContext.update({ portalContext: context });
+        const [document] = await loadDocumentBy({
           'Document.id': fromGlobalId(req.params.filename).id,
         });
         if (!document) {
@@ -84,7 +85,6 @@ export const documentVisualizeEndpoint = (app) => {
         }
 
         const [document] = await loadDocumentBy(
-          { req, res } as PortalContext,
           {
             'Document.id': fromGlobalId(req.params.documentId).id,
           },

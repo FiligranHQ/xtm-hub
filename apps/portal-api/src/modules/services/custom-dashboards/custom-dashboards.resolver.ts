@@ -33,17 +33,16 @@ const resolvers: Resolvers = {
     labels: ({ id }) =>
       labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
     children_documents: ({ id }) => loadImagesByDocumentId(id),
-    uploader: ({ id }, _, context) =>
-      getUploader(context, id, { unsecured: true }),
-    uploader_organization: ({ id }, _, context) =>
-      getUploaderOrganization(context, id, { unsecured: true }),
+    uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
+    uploader_organization: ({ id }, _) =>
+      getUploaderOrganization(id, { unsecured: true }),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: async ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
   Query: {
-    seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }, context) => {
+    seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }) => {
       const dashboards = await loadSeoDocumentsByServiceSlug(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         serviceSlug,
@@ -53,7 +52,7 @@ const resolvers: Resolvers = {
         dashboard.children_documents = await loadImagesByDocumentId(
           dashboard.id
         );
-        dashboard.uploader = await getUploader(context, dashboard.id, {
+        dashboard.uploader = await getUploader(dashboard.id, {
           unsecured: true,
         });
         dashboard.labels = await labelsDomain.loadLabelsByDocumentId(
@@ -68,29 +67,21 @@ const resolvers: Resolvers = {
     seoCustomDashboardBySlug: async (_, { slug }) => {
       return CustomDashboardsApp.loadSeoCustomDashboard(slug);
     },
-    customDashboards: async (_, input, context) => {
+    customDashboards: async (_, input) => {
       return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-        context,
         input,
         CUSTOM_DASHBOARD_METADATA
       );
     },
-    customDashboard: async (_, { id }, context) =>
-      CustomDashboardsApp.loadCustomDashboard(
-        context,
-        extractId<DocumentId>(id)
-      ),
+    customDashboard: async (_, { id }) =>
+      CustomDashboardsApp.loadCustomDashboard(extractId<DocumentId>(id)),
   },
   Mutation: {
-    createCustomDashboard: async (_, { input, document }, context) => {
+    createCustomDashboard: async (_, { input, document }) => {
       const trx = await dbTx();
       try {
-        return await CustomDashboardsApp.createCustomDashboard(
-          context,
-          input,
-          document
-        );
+        return await CustomDashboardsApp.createCustomDashboard(input, document);
       } catch (error) {
         await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
@@ -105,7 +96,7 @@ const resolvers: Resolvers = {
         );
       }
     },
-    updateCustomDashboard: async (_, input, context) => {
+    updateCustomDashboard: async (_, input) => {
       const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CustomDashboard>(
@@ -113,7 +104,6 @@ const resolvers: Resolvers = {
           extractId<DocumentId>(input.documentId),
           input,
           CUSTOM_DASHBOARD_METADATA,
-          context,
           trx
         );
         await trx.commit();
@@ -136,7 +126,6 @@ const resolvers: Resolvers = {
       const trx = await dbTx();
       try {
         const doc = await deleteDocument<CustomDashboard>(
-          context,
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true,

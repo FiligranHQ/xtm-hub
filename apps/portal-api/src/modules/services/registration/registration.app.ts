@@ -296,7 +296,7 @@ export const registrationApp = {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
 
-    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+    await securityGuard.assertUserIsAllowedOnOrganization(context.user, {
       organizationId: subscription.organization_id,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -391,7 +391,7 @@ export const registrationApp = {
     }
 
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
+      context.user,
       {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
