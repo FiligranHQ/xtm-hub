@@ -1,7 +1,9 @@
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
+import { TrialsManageUsersForm } from '@/components/service/trial-instances/trials-manage-users-form';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
+import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
@@ -41,14 +43,20 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
           </li>
         </ul>
 
-        <Button>
-          <Link
-            target="_blank"
-            rel="noopener noreferrer"
-            href={platform.url}>
-            Access OpenCTI
-          </Link>
-        </Button>
+        <div className="flex flex-col gap-m">
+          <Button>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href={platform.url}>
+              Access OpenCTI
+            </Link>
+          </Button>
+          {platform.deployment_request?.status ===
+            DeploymentRequestStatusEnum.ACTIVE && (
+            <TrialsManageUsersForm platform={platform} />
+          )}
+        </div>
       </section>
       <TrialsLearnMore />
     </>

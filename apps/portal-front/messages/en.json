@@ -689,6 +689,10 @@
         "Title": "No platform available",
         "Content": "No platform available in this region at this moment. Do you want to be notified when we have one available?",
         "Continue": "Notify me"
+      },
+      "ManageUsers": {
+        "Title": "Manage users",
+        "Email": "Email"
       }
     },
     "Vault": {
