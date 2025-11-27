@@ -75,6 +75,32 @@ export const UnregisterPlatform = graphql`
   }
 `;
 
+export const registeredPlatformByServiceInstanceId = graphql`
+  query registeredPlatformByServiceInstanceIdQuery(
+    $input: RegisteredPlatformInput!
+  ) {
+    registeredPlatform(input: $input) {
+      ...registeredPlatformByServiceInstanceId_fragment
+    }
+  }
+`;
+
+export const registeredPlatformByServiceInstanceIdFragment = graphql`
+  fragment registeredPlatformByServiceInstanceId_fragment on RegisteredPlatform {
+    id
+    title
+    contract
+    url
+    subscription {
+      start_date
+      end_date
+    }
+    deployment_request {
+      status
+    }
+  }
+`;
+
 export const registerRegisteredPlatformFragment = graphql`
   fragment registerRegisteredPlatformFragment on RegisteredPlatform {
     id
@@ -95,6 +121,7 @@ export const registerRegisteredPlatformFragment = graphql`
       end_date
       start_date
       service_instance {
+        id
         creation_status
         name
       }

@@ -99,6 +99,10 @@ input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
 }
 
+input RegisteredPlatformInput {
+  service_instance_id: ID!
+}
+
 type Query {
   isPlatformRegistered(
     input: IsPlatformRegisteredInput!
@@ -106,6 +110,7 @@ type Query {
   canUnregisterPlatform(
     input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
+  registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform @auth
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
     @auth
   platformAssociatedOrganization(platformId: String!): Organization @auth

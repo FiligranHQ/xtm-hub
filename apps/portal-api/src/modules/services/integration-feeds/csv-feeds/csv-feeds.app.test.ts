@@ -2,9 +2,11 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dbTx } from '../../../../../knexfile';
 import {
   contextAdminUser,
+  requestContextAdminUser,
   SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../../tests/tests.const';
 import { IntegrationFeedType } from '../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../context/request.context';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import {
   ADMIN_UUID,
@@ -47,11 +49,16 @@ describe('csv feeds app', () => {
       .mockResolvedValue();
     const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
 
-    await csvFeedsApp.createCsvFeed(
-      {
+    const testContext = {
+      user: requestContextAdminUser.user,
+      portalContext: {
         ...contextAdminUser,
         serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
       },
+    };
+    requestContext.set(testContext);
+
+    await csvFeedsApp.createCsvFeed(
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -112,15 +119,11 @@ describe('csv feeds app', () => {
       },
       [],
       INTEGRATION_FEED_CSV_FEED_METADATA,
-      contextAdminUser,
       trx
     );
     await trx.commit();
 
-    const documentLoaded = await csvFeedsApp.loadCsvFeed(
-      contextAdminUser,
-      documentId
-    );
+    const documentLoaded = await csvFeedsApp.loadCsvFeed(documentId);
 
     expect(documentLoaded.download_number).toBe(5);
     expect(documentLoaded.share_number).toBe(12);

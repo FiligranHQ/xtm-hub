@@ -36,6 +36,13 @@ export type PlatformConfiguration = {
   token: string;
 };
 
+export interface DomainRegisteredPlatform {
+  config: PlatformConfiguration;
+  identifier: ServiceDefinitionIdentifier;
+  illustration_document_id: string | null;
+  id: string;
+}
+
 export const registrationDomain = {
   registerNewPlatform: async ({
     serviceDefinitionId,
@@ -50,8 +57,8 @@ export const registrationDomain = {
     platformIdentifier: PlatformIdentifier;
     serviceInstanceCreationStatus?: ServiceInstanceCreationStatus;
   }): Promise<ServiceInstanceId> => {
-    const context = requestContext.require().portalContext;
-    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+    const { user } = requestContext.require();
+    await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -93,8 +100,8 @@ export const registrationDomain = {
     serviceInstanceId: ServiceInstanceId;
     targetOrganizationId: OrganizationId;
   }) => {
-    const { portalContext: context } = requestContext.require();
-    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+    const { user } = requestContext.require();
+    await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -106,12 +113,12 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      const userOrganizations = await loadOrganizationsByUser(context.user.id);
+      const userOrganizations = await loadOrganizationsByUser(user.id);
       if (userOrganizations.length > 2) {
         throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
       }
 
-      await securityGuard.assertUserIsAllowedOnOrganization(context, {
+      await securityGuard.assertUserIsAllowedOnOrganization(user, {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
@@ -129,17 +136,14 @@ export const registrationDomain = {
   },
 
   loadRegisteredPlatforms: async (
-    platformIdentifier?: PlatformIdentifier,
+    query: {
+      platformIdentifier?: PlatformIdentifier;
+      'ServiceInstance.id'?: ServiceInstanceId;
+    } = {},
     opts: QueryOpts = {}
-  ): Promise<
-    {
-      config: PlatformConfiguration;
-      identifier: ServiceDefinitionIdentifier;
-      illustration_document_id: string | null;
-      id: string;
-    }[]
-  > => {
+  ): Promise<DomainRegisteredPlatform[]> => {
     const { user } = requestContext.require();
+    const { platformIdentifier, ...field } = query;
     const userSelectedOrganization = user.selected_organization_id;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
@@ -149,7 +153,7 @@ export const registrationDomain = {
         ]
       : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
-    return await db<ServiceInstance>('ServiceInstance', opts)
+    return db<ServiceInstance>('ServiceInstance', opts)
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',
@@ -177,6 +181,7 @@ export const registrationDomain = {
           'Service_Configuration.service_instance_id'
         );
       })
+      .where(field)
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',

@@ -322,9 +322,9 @@ describe('Registration domain', () => {
     const openAEVToken = uuidv4();
     const openAEVServiceDefinitionId = 'e66a6b50-1f92-4f62-b84c-88ed6b871790';
 
-    let openCtiServiceInstanceId: ServiceInstanceId;
+    let openCTIServiceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
-      openCtiServiceInstanceId = await registrationDomain.registerNewPlatform({
+      openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         serviceDefinitionId,
         configuration: {
@@ -375,9 +375,9 @@ describe('Registration domain', () => {
       ).toBe(true);
     });
     it('should return only the right registered platform if platformIdentifier in input ', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatforms(
-        PlatformIdentifier.Openaev
-      );
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Openaev,
+      });
       expect(
         platforms.every(
           (item) =>
@@ -387,15 +387,15 @@ describe('Registration domain', () => {
     });
     it('should not return inactive platforms ', async () => {
       await serviceContractDomain.updateConfiguration(
-        openCtiServiceInstanceId,
+        openCTIServiceInstanceId,
         {
           status: ServiceConfigurationStatus.Inactive,
         }
       );
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms(
-        PlatformIdentifier.Opencti
-      );
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
       expect(platforms.length).toBe(0);
     });
     it('should return platforms without configuration (not yet auto registered) ', async () => {
@@ -406,14 +406,22 @@ describe('Registration domain', () => {
           platformIdentifier: PlatformIdentifier.Opencti,
         });
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms(
-        PlatformIdentifier.Opencti
-      );
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
       expect(
         platforms.some(
           (item) => item.id === notYetRegisteredPlatformServiceInstanceId
         )
       ).toBe(true);
+    });
+    it('should return only the registered platform linked to the service instance', async () => {
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        'ServiceInstance.id': openCTIServiceInstanceId,
+      });
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
   });
 });

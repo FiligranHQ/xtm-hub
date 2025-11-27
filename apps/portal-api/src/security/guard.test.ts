@@ -28,7 +28,7 @@ describe('Security Guard', () => {
       });
 
       const call = securityGuard.assertUserIsAllowedOnOrganization(
-        contextAdminUser,
+        contextAdminUser.user,
         {
           organizationId: THALES_ORGA_ID,
           requiredCapability: OrganizationCapability.AdministrateOrganization,
@@ -45,7 +45,7 @@ describe('Security Guard', () => {
       });
 
       const call = securityGuard.assertUserIsAllowedOnOrganization(
-        contextAdminUser,
+        contextAdminUser.user,
         {
           organizationId: THALES_ORGA_ID,
           requiredCapability: OrganizationCapability.AdministrateOrganization,
@@ -62,10 +62,13 @@ describe('Security Guard', () => {
         isAllowed: true,
       });
 
-      await securityGuard.assertUserIsAllowedOnOrganization(contextAdminUser, {
-        organizationId: THALES_ORGA_ID,
-        requiredCapability: OrganizationCapability.AdministrateOrganization,
-      });
+      await securityGuard.assertUserIsAllowedOnOrganization(
+        contextAdminUser.user,
+        {
+          organizationId: THALES_ORGA_ID,
+          requiredCapability: OrganizationCapability.AdministrateOrganization,
+        }
+      );
     });
   });
 });

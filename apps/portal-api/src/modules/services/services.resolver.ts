@@ -115,7 +115,7 @@ const resolvers: Resolvers = {
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
       const serviceInstance = await serviceInstanceApp.loadServiceInstance(
-        context,
+        context.user,
         extractId<ServiceInstanceId>(service_instance_id)
       );
 
@@ -155,7 +155,9 @@ const resolvers: Resolvers = {
     seoServiceInstance: async (_, { slug }) => {
       const serviceInstance = await loadSeoServiceInstanceBySlug(slug);
       if (!serviceInstance) {
-        throw NotFoundError(ErrorCode.ServiceNotFound);
+        throw NotFoundError(ErrorCode.ServiceNotFound, {
+          slug,
+        });
       }
       const result: SeoServiceInstance = {
         ...serviceInstance,
@@ -190,10 +192,10 @@ const resolvers: Resolvers = {
       await dispatch('ServiceInstance', 'delete', deletedServiceInstance);
       return deletedServiceInstance;
     },
-    addServicePicture: async (_, payload, context) => {
+    addServicePicture: async (_, payload) => {
       const trx = await dbTx();
       try {
-        const document = await uploadNewFile(context, payload.document, trx);
+        const document = await uploadNewFile(payload.document, trx);
         const update = payload.isLogo
           ? {
               logo_document_id: document.id,
@@ -202,7 +204,6 @@ const resolvers: Resolvers = {
               illustration_document_id: document.id,
             };
         const [updatedServiceInstance] = await db<ServiceInstance>(
-          context,
           'ServiceInstance'
         )
           .where({

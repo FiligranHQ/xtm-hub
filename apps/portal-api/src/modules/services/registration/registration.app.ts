@@ -14,6 +14,7 @@ import {
   RefreshPlatformRegistrationConnectivityStatusInput,
   RefreshUserPlatformTokenResponse,
   RegisteredPlatform,
+  RegisteredPlatformInput,
   RegisteredPlatformsInput,
   RegisterPlatformInput,
   ServiceConfigurationStatus,
@@ -27,6 +28,7 @@ import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
@@ -39,6 +41,7 @@ import {
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
+import { extractId } from '../../../utils/utils';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -57,6 +60,7 @@ import {
   updateServiceInstance,
 } from '../service-instance.domain';
 import {
+  DomainRegisteredPlatform,
   PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
@@ -96,27 +100,26 @@ export const registrationApp = {
     return loadOrganizationBy({ id: subscription.organization_id });
   },
 
+  loadRegisteredPlatform: async (
+    input: RegisteredPlatformInput
+  ): Promise<RegisteredPlatform | null> => {
+    const [platform] = await registrationDomain.loadRegisteredPlatforms({
+      'ServiceInstance.id': extractId<ServiceInstanceId>(
+        input.service_instance_id
+      ),
+    });
+
+    return platform ? mapDomainRegisteredPlatformToGraphQL(platform) : null;
+  },
+
   loadRegisteredPlatforms: async (
     input: RegisteredPlatformsInput
   ): Promise<RegisteredPlatform[]> => {
-    const platforms = await registrationDomain.loadRegisteredPlatforms(
-      input?.identifier
-    );
+    const platforms = await registrationDomain.loadRegisteredPlatforms({
+      platformIdentifier: input?.identifier,
+    });
 
-    return platforms.map((platform) => ({
-      __typename: 'RegisteredPlatform',
-      id: platform.id,
-      platform_id: platform.config?.platform_id ?? platform.id,
-      title: platform.config?.platform_title ?? 'OpenCTI - Free Trial Platform',
-      url: platform.config?.platform_url ?? '',
-      contract: platform.config?.platform_contract ?? PlatformContract.Ee,
-      identifier:
-        platform.identifier ?? ServiceDefinitionIdentifier.OpenctiRegistration,
-      version: platform.config?.platform_version ?? '',
-      illustration_document_id: platform.illustration_document_id
-        ? toGlobalId('Document', platform.illustration_document_id)
-        : null,
-    }));
+    return platforms.map(mapDomainRegisteredPlatformToGraphQL);
   },
 
   /**
@@ -293,7 +296,7 @@ export const registrationApp = {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
 
-    await securityGuard.assertUserIsAllowedOnOrganization(context, {
+    await securityGuard.assertUserIsAllowedOnOrganization(context.user, {
       organizationId: subscription.organization_id,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -388,7 +391,7 @@ export const registrationApp = {
     }
 
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context,
+      context.user,
       {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -481,6 +484,25 @@ export const registrationApp = {
       });
     }
   },
+};
+
+const mapDomainRegisteredPlatformToGraphQL = (
+  platform: DomainRegisteredPlatform
+): RegisteredPlatform => {
+  return {
+    __typename: 'RegisteredPlatform',
+    id: platform.id,
+    platform_id: platform.config?.platform_id ?? platform.id,
+    title: platform.config?.platform_title ?? 'OpenCTI - Free Trial Platform',
+    url: platform.config?.platform_url ?? '',
+    contract: platform.config?.platform_contract ?? PlatformContract.Ee,
+    identifier:
+      platform.identifier ?? ServiceDefinitionIdentifier.OpenctiRegistration,
+    version: platform.config?.platform_version ?? '',
+    illustration_document_id: platform.illustration_document_id
+      ? toGlobalId('Document', platform.illustration_document_id)
+      : null,
+  };
 };
 
 const assertValidDeploymentRequest = (
