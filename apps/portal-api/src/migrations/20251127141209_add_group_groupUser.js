@@ -14,6 +14,7 @@ export async function up(knex) {
         .inTable('ServiceInstance')
         .onDelete('CASCADE')
         .onUpdate('CASCADE');
+      table.unique(['name', 'service_instance_id']);
     })
     .createTable('ServiceGroup_User', function (table) {
       table.uuid('group_id').notNullable();
@@ -33,7 +34,6 @@ export async function up(knex) {
         .onDelete('CASCADE')
         .onUpdate('CASCADE');
 
-      // Composite unique constraint to prevent duplicate user-group pairs
       table.unique(['group_id', 'user_id']);
     });
 }
