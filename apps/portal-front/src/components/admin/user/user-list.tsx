@@ -10,6 +10,7 @@ import {
 import { SearchInput } from '@/components/ui/search-input';
 import useAdminPath from '@/hooks/useAdminPath';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
+import { useUsersList } from '@/hooks/useUsersList';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
@@ -17,11 +18,7 @@ import {
   userList_fragment$data,
   userList_fragment$key,
 } from '@generated/userList_fragment.graphql';
-import { userList_users$key } from '@generated/userList_users.graphql';
-import {
-  userListQuery,
-  userListQuery$variables,
-} from '@generated/userListQuery.graphql';
+import { userListQuery$variables } from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -32,13 +29,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import {
-  graphql,
-  readInlineData,
-  useLazyLoadQuery,
-  useRefetchableFragment,
-  useSubscription,
-} from 'react-relay';
+import { graphql, readInlineData, useSubscription } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
 // Configuration or Preloader Query
@@ -134,25 +125,17 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     organization,
   });
 
-  const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
-    count: pageSize,
-    orderMode: orderMode,
-    orderBy: orderBy,
-    searchTerm: filter.search,
-    filters: filter.organization
-      ? [{ key: 'organization_id', value: [filter.organization] }]
-      : undefined,
-  });
-
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize,
   });
 
-  const [data, refetch] = useRefetchableFragment<
-    userListQuery,
-    userList_users$key
-  >(userListFragment, queryData);
+  const { data, refetch } = useUsersList({
+    pageSize,
+    orderMode,
+    orderBy,
+    filter,
+  });
 
   const connectionID = data?.users?.__id;
   const { setConnectionId } = getUserListContext();
