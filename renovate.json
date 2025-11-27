@@ -10,6 +10,11 @@
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
+      "description": "Major updates wait 1 month before being proposed",
+      "matchUpdateTypes": ["major"],
+      "minimumReleaseAge": "30 days"
+    },
+    {
       "description": "batch on sunday morning, non-major update of dev dependencies",
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
