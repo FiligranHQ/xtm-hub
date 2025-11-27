@@ -1209,6 +1209,7 @@ export type QueryLabelArgs = {
 
 export type QueryLabelsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
+  documentType?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int']['input'];
   orderBy: LabelOrdering;
   orderMode: OrderingMode;

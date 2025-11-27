@@ -12,10 +12,10 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 
-export const getLabels = () => {
+export const getLabels = (documentType?: string) => {
   const queryData = useLazyLoadQuery<labelListQuery>(
     LabelListQuery,
-    { count: 500, orderBy: 'name', orderMode: 'desc' },
+    { count: 500, orderBy: 'name', orderMode: 'desc', documentType },
     { fetchPolicy: 'network-only' }
   );
   const [data] = useRefetchableFragment<labelListQuery, labelList_labels$key>(
