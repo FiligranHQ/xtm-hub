@@ -12,7 +12,10 @@ import {
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  ShareableResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
 import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
 import { csvFeedUpdateMutation } from '@generated/csvFeedUpdateMutation.graphql';
@@ -148,5 +151,6 @@ export function useCsvFeedContext(
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: CsvFeedForm,
+    type: ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
   };
 }

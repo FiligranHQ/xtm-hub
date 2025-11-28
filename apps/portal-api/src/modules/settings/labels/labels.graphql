@@ -37,6 +37,7 @@ type Query {
     orderBy: LabelOrdering!
     orderMode: OrderingMode!
     searchTerm: String
+    documentType: String
   ): LabelConnection
   label(id: ID!): Label @auth
 }

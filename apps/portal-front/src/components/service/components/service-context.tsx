@@ -2,7 +2,10 @@ import {
   ServiceForm,
   ServiceFormValues,
 } from '@/components/service/components/subscribable-services.types';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  ShareableResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import React, { createContext, FunctionComponent, useContext } from 'react';
 
@@ -25,6 +28,7 @@ export interface ServiceContextProps {
     onCompleted: () => void
   ) => Promise<void>;
   ServiceForm: ServiceForm;
+  type: ShareableResourceType;
 }
 
 const ServiceContext = createContext<ServiceContextProps | undefined>(

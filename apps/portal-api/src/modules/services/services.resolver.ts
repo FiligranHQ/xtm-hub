@@ -155,7 +155,9 @@ const resolvers: Resolvers = {
     seoServiceInstance: async (_, { slug }) => {
       const serviceInstance = await loadSeoServiceInstanceBySlug(slug);
       if (!serviceInstance) {
-        throw NotFoundError(ErrorCode.ServiceNotFound);
+        throw NotFoundError(ErrorCode.ServiceNotFound, {
+          slug,
+        });
       }
       const result: SeoServiceInstance = {
         ...serviceInstance,

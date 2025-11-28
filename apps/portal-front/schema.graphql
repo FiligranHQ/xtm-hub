@@ -71,7 +71,7 @@ type Query {
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
-  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String): LabelConnection
+  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): LabelConnection
   label(id: ID!): Label
   settings: Settings!
   subscriptionById(subscription_id: ID): SubscriptionModel
