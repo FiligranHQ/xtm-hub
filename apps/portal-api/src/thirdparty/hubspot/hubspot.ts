@@ -1,6 +1,10 @@
 import config from 'config';
-import { OrganizationCapability } from '../../__generated__/resolvers-types';
+import {
+  OrganizationCapability,
+  PlatformIdentifier,
+} from '../../__generated__/resolvers-types';
 import { UserId } from '../../model/kanel/public/User';
+import { DeploymentRequestDomain } from '../../modules/services/deployments/deployments.domain';
 import { loadUserBy } from '../../modules/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
@@ -63,17 +67,20 @@ export const hubspotLoginHook = async (userId: string) =>
     };
   });
 
-export const hubspotReachOutSalesHook = async (userId: string) =>
+export const hubspotReachOutSalesHook = async () =>
   hubspotHook('reachOutSales', async () => {
-    const user = await loadUserBy({ 'User.id': userId as UserId });
-    const organization = user.organizations.find(
-      (orga) => orga.id === user.selected_organization_id
-    );
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+        PlatformIdentifier.Opencti
+      );
 
     return {
-      email: user.email,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      organization_name: organization.name,
+      email: deploymentRequest.requester_email,
+      firstname: deploymentRequest.requester_first_name,
+      lastname: deploymentRequest.requester_last_name,
+      company: deploymentRequest.organization_name,
+      job_title: deploymentRequest.job_title,
+      message: `Please contact me about my ${deploymentRequest.status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}`,
+      use_case: deploymentRequest.use_case,
     };
   });
