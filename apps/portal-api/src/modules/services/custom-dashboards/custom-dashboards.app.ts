@@ -3,12 +3,12 @@ import { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
-import { createDocumentWithChildren } from '../document/document.domain';
 import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
 } from '../document/document.helper';
 import { Upload } from '../document/document.uploads.helper';
+import { createDocumentWithChildren } from '../document/domain/document.domain';
 import {
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,

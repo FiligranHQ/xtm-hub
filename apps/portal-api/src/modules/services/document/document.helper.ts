@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { dbUnsecure } from '../../../../knexfile';
+import { dbRaw, dbUnsecure } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -19,7 +19,7 @@ import {
   createDocument,
   loadDocumentById,
   loadSeoDocumentBySlug,
-} from './document.domain';
+} from './domain/document.domain';
 
 export const BOOLEAN_METADATA = [
   'verified',
@@ -147,4 +147,34 @@ export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
 ) => {
   const document: T = await loadSeoDocumentBySlug(type, slug, include_metadata);
   return updateDocumentWithCounters(document);
+};
+export const addIncludeMetadataQuery = (
+  qb: Knex.QueryBuilder,
+  include_metadata: string[] = []
+) => {
+  include_metadata.forEach((metaKey, index) => {
+    const metaAlias = `meta${index}`;
+
+    if (BOOLEAN_METADATA.includes(metaKey)) {
+      qb.select(
+        dbRaw(`
+          CASE 
+            WHEN "${metaAlias}"."value" = 'true' THEN true 
+            WHEN "${metaAlias}"."value" = 'false' THEN false 
+            ELSE "${metaAlias}"."value"::boolean 
+          END as ${metaKey}
+        `)
+      );
+    } else {
+      qb.select(`${metaAlias}.value as ${metaKey}`);
+    }
+
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+        `${metaAlias}.key`,
+        '=',
+        metaKey
+      );
+    }).groupBy([metaKey]);
+  });
 };

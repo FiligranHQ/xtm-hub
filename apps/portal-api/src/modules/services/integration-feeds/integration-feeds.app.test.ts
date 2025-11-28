@@ -5,8 +5,8 @@ import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { createDocumentWithChildren } from '../document/document.domain';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { createDocumentWithChildren } from '../document/domain/document.domain';
 import { integrationFeedsApp } from './integration-feeds.app';
 import {
   CsvFeed,

@@ -27,23 +27,23 @@ import {
   loadServiceDefinitionByServiceInstance,
 } from '../service-instance.domain';
 import {
-  createDocument,
-  deleteDocument,
-  getChildrenDocuments,
-  getUploader,
-  getUploaderOrganization,
-  loadDocumentById,
-  loadDocuments,
-  loadIntegrationType,
-  updateDocument,
-} from './document.domain';
-import {
   checkDocumentExists,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
   updateDocumentWithCounters,
 } from './document.helper';
 import { waitForUploads } from './document.uploads.helper';
+import {
+  createDocument,
+  deleteDocument,
+  getChildrenDocuments,
+  getUploader,
+  loadDocumentById,
+  loadDocuments,
+  loadUploaderOrganization,
+  updateDocument,
+} from './domain/document.domain';
+import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -162,7 +162,8 @@ const resolvers: Resolvers = {
       if (TYPE_MAPPINGS[document.type]) {
         return TYPE_MAPPINGS[document.type];
       } else if (document.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
-        const integrationType = await loadIntegrationType(document.id);
+        const integrationType =
+          await DocumentMetadataDomain.loadIntegrationType(document.id);
         const responseType = INTEGRATION_MAPPINGS[integrationType];
         if (responseType) {
           return responseType;
@@ -183,7 +184,7 @@ const resolvers: Resolvers = {
         unsecured: true,
       }),
     uploader_organization: ({ id }, _) =>
-      getUploaderOrganization(id, {
+      loadUploaderOrganization(id, {
         unsecured: true,
       }),
     service_instance: ({ service_instance_id }, _) => {

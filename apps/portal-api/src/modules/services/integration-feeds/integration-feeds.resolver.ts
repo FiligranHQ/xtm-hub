@@ -9,9 +9,9 @@ import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import {
   getUploader,
-  getUploaderOrganization,
   loadImagesByDocumentId,
-} from '../document/document.domain';
+  loadUploaderOrganization,
+} from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { integrationFeedsApp } from './integration-feeds.app';
 import { IntegrationFeed } from './integration-feeds.model';
@@ -31,7 +31,7 @@ const resolvers: Resolvers = {
     children_documents: ({ id }) => loadImagesByDocumentId(id),
     uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
     uploader_organization: ({ id }, _) =>
-      getUploaderOrganization(id, { unsecured: true }),
+      loadUploaderOrganization(id, { unsecured: true }),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>

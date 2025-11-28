@@ -25,7 +25,7 @@ import {
 } from '../../telemetry/telemetry.helper';
 import { loadUserBy } from '../../users/users.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
-import { loadDocumentBy } from './document.domain';
+import { loadDocumentBy } from './domain/document.domain';
 
 const documentDownloadRateLimiter = rateLimit({
   windowMs: 180 * 1000, // 3 minutes
