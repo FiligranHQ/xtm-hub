@@ -49,6 +49,7 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
+  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
   integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
   integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
   publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
@@ -448,6 +449,12 @@ type DocumentConnection {
   totalCount: Int!
   edges: [DocumentEdge!]!
   pageInfo: PageInfo!
+}
+
+type ServiceGroup implements Node {
+  id: ID!
+  name: String!
+  users: [User!]
 }
 
 type ServiceLink implements Node {

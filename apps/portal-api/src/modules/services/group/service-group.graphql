@@ -1,0 +1,9 @@
+type ServiceGroup implements Node {
+  id: ID!
+  name: String!
+  users: [User!]
+}
+
+type Query {
+  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]! @auth
+}

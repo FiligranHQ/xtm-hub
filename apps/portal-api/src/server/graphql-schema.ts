@@ -10,6 +10,7 @@ import customDashboardsResolver from '../modules/services/custom-dashboards/cust
 import ServiceDefinitionResolver from '../modules/services/definition/service-definition.resolver';
 import deploymentResolver from '../modules/services/deployments/deployments.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
+import serviceGroupResolver from '../modules/services/group/service-group.resolver';
 import csvFeedsResolver from '../modules/services/integration-feeds/csv-feeds/csv-feeds.resolver';
 import integrationFeedsResolver from '../modules/services/integration-feeds/integration-feeds.resolver';
 import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
@@ -55,6 +56,7 @@ const resolvers = mergeResolvers([
   deploymentResolver,
   ingestManifestResolver,
   integrationFeedsResolver,
+  serviceGroupResolver,
 ]);
 
 const createSchema = () => {

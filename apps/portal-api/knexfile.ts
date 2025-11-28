@@ -81,7 +81,9 @@ type BaseDatabaseType =
   | 'Document_Metadata'
   | 'Service_Contract'
   | 'Service_Configuration'
-  | 'DeploymentRequest';
+  | 'DeploymentRequest'
+  | 'ServiceGroup'
+  | 'ServiceGroup_User';
 
 export type DatabaseType =
   | BaseDatabaseType
