@@ -7,8 +7,8 @@ import { createDocumentWithChildren } from '../document/document.domain';
 import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
-  Upload,
 } from '../document/document.helper';
+import { Upload } from '../document/document.uploads.helper';
 import {
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,

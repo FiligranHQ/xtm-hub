@@ -8,7 +8,7 @@ import {
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
 import { semanticVersionRegex } from '../../utils/semantic-versioning';
-import { Upload } from '../services/document/document.helper';
+import { Upload } from '../services/document/document.uploads.helper';
 import {
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,

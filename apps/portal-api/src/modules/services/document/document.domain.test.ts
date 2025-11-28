@@ -32,7 +32,7 @@ import {
 } from './document.domain';
 
 import { requestContext } from '../../../context/request.context';
-import * as DocumentHelper from './document.helper';
+import * as DocumentUploadsHelper from './document.uploads.helper';
 
 describe('Document domain', () => {
   const minioFileMock = {
@@ -41,7 +41,7 @@ describe('Document domain', () => {
     fileName: 'filename',
   };
   beforeEach(() => {
-    vi.spyOn(DocumentHelper, 'processUploads').mockResolvedValue([
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
   });

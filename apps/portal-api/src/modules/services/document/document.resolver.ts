@@ -7,6 +7,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
@@ -38,12 +39,11 @@ import {
 } from './document.domain';
 import {
   checkDocumentExists,
-  createFileInMinIO,
   loadUnsecureDocumentsBy,
   normalizeDocumentName,
   updateDocumentWithCounters,
-  waitForUploads,
 } from './document.helper';
+import { waitForUploads } from './document.uploads.helper';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
       try {
         await waitForUploads(document);
         const { minioName, fileName, mimeType } =
-          await createFileInMinIO(document);
+          await MinIOClient.createFile(document);
 
         const addedDocument = await createDocument<Document>(
           {

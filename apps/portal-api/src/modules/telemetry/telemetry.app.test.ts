@@ -23,7 +23,7 @@ import {
 import { DocumentId } from '../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { createDocumentWithChildren } from '../services/document/document.domain';
-import * as DocumentHelper from '../services/document/document.helper';
+import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
@@ -53,7 +53,7 @@ describe('TelemetryApp', () => {
     fileName: 'csvfilename',
   };
   beforeEach(() => {
-    vi.spyOn(DocumentHelper, 'processUploads').mockResolvedValue([
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
   });

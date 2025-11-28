@@ -5,10 +5,8 @@ import { logApp } from '../../../../utils/app-logger.util';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../../telemetry/telemetry.helper';
 import { createDocumentWithChildren } from '../../document/document.domain';
-import {
-  loadDocumentWithCountersById,
-  Upload,
-} from '../../document/document.helper';
+import { loadDocumentWithCountersById } from '../../document/document.helper';
+import { Upload } from '../../document/document.uploads.helper';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,

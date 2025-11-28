@@ -6,7 +6,7 @@ import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { createDocumentWithChildren } from '../document/document.domain';
-import * as DocumentHelper from '../document/document.helper';
+import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { integrationFeedsApp } from './integration-feeds.app';
 import {
   CsvFeed,
@@ -21,7 +21,7 @@ describe('csv feeds app', () => {
     fileName: 'csvfilename',
   };
   beforeEach(() => {
-    vi.spyOn(DocumentHelper, 'processUploads').mockResolvedValue([
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
   });

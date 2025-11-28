@@ -5,10 +5,10 @@ import { requestContext } from '../../../context/request.context';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
-import { downloadFile } from './document-storage';
 import { loadDocumentBy } from './document.domain';
 
 export const documentVisualizeEndpoint = (app) => {
@@ -40,7 +40,9 @@ export const documentVisualizeEndpoint = (app) => {
           res.status(404).json({ message: 'Document not found' });
           throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
         }
-        const stream = (await downloadFile(document.minio_name)) as Readable;
+        const stream = (await MinIOClient.downloadFile(
+          document.minio_name
+        )) as Readable;
 
         res.setHeader('Content-Type', document.mime_type);
         res.setHeader(
@@ -97,7 +99,9 @@ export const documentVisualizeEndpoint = (app) => {
           );
           return res.status(404).json({ message: 'Document not found' });
         }
-        const stream = (await downloadFile(document.minio_name)) as Readable;
+        const stream = (await MinIOClient.downloadFile(
+          document.minio_name
+        )) as Readable;
 
         res.setHeader('Content-Type', document.mime_type);
         res.setHeader(
