@@ -660,7 +660,7 @@ describe('Registration app', () => {
         );
       });
 
-      it('should return not found when platform is not registered and has required version', async () => {
+      it('should return not found when platform is not registered and has version below compatibility version', async () => {
         const result =
           await registrationApp.refreshPlatformRegistrationConnectivityStatus({
             platformId: uuidv4(),
@@ -674,7 +674,7 @@ describe('Registration app', () => {
         );
       });
 
-      it('should return inactive when platform is not registered and has not required version', async () => {
+      it('should return inactive when platform is not registered and has version above compatibility version', async () => {
         const result =
           await registrationApp.refreshPlatformRegistrationConnectivityStatus({
             platformId: uuidv4(),
