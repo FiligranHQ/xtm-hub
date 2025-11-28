@@ -103,7 +103,7 @@ export const TryOpenCTICallout = () => {
     },
     expired: {
       text: () => t('Service.Trials.Expired'),
-      button: () => <ContactUsButton />,
+      button: () => <ContactUsButton variant="default" />,
     },
     active: {
       text: () => (
