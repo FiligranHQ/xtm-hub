@@ -9,6 +9,7 @@ import {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { dispatch, listen } from '../../pub';
+import { hubspotReachOutSalesHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
 
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
@@ -246,6 +247,14 @@ const resolvers: Resolvers = {
     },
     logout: async (_, __, context) => {
       return UsersAuthApp.logout(context);
+    },
+    contactUs: async (_, __, context) => {
+      try {
+        await hubspotReachOutSalesHook(context.user.id);
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(error, UnknownErrorCode.HubspotError);
+      }
     },
   },
   Subscription: {

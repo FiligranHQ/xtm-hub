@@ -667,6 +667,8 @@
       "StartTrial": "Start your free trial",
       "GoToMyTrial": "Go to my trial",
       "ContactUs": "Contact us",
+      "ContactUsSuccessTitle": "Thank you!",
+      "ContactUsSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
       "Form": {
         "Region": "Region",
         "AssociatedEmail": "Associated Email",
