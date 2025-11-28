@@ -10,7 +10,10 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import { IntegrationFeedDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-deployable-filter';
 import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
-import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  ServiceSlug,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 
 export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const localStorageKeyMapping: Record<
@@ -25,7 +28,13 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       ServiceListLocalStorageKey.OpenAEVScenarios,
   };
   const localStorageKey = localStorageKeyMapping[slug];
-
+  const typeFeed: Record<ServiceSlug, ShareableResourceType> = {
+    [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
+      ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
+    [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
+      ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
+    [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
+  };
   const {
     removeLabels,
     removeConnectorTypes,
@@ -34,7 +43,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   } = useServiceListLocalStorage(localStorageKey);
 
   const labelFilter = {
-    node: <ServiceListFilterLabel />,
+    node: <ServiceListFilterLabel type={typeFeed[slug]} />,
     reset: removeLabels,
   };
 
