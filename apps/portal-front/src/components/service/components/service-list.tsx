@@ -39,8 +39,7 @@ const ServiceList = ({
 }: ServiceListProps) => {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
-  const { translationKey, serviceInstance } = useServiceContext();
-
+  const { translationKey, serviceInstance, type } = useServiceContext();
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
     serviceInstance
@@ -54,7 +53,7 @@ const ServiceList = ({
   const filters = {
     ...additionalFilters,
     [ServiceListFilterKey.Label]: {
-      node: <ServiceListFilterLabel />,
+      node: <ServiceListFilterLabel type={type} />,
       reset: removeLabels,
     },
   };
