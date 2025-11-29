@@ -18,7 +18,6 @@ RUN corepack enable && \
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/portal-api/node_modules ./apps/portal-api/node_modules
 COPY apps/portal-api/. ./apps/portal-api/
 COPY .yarnrc.yml package.json yarn.lock ./
 RUN corepack enable
