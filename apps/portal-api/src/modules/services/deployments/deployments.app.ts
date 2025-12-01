@@ -229,7 +229,7 @@ export const DeploymentsApp = {
       const updateData: DeploymentRequestMutator = {
         start_date: input.start_date,
         end_date: input.end_date,
-        product_service_instance_id: input.product_service_instance_id,
+        product_platform_id: input.product_platform_id,
         failure_reason: input.failure_reason,
         actual_state: input.actual_state,
         ordering: input.ordering,
@@ -263,7 +263,7 @@ export const DeploymentsApp = {
           end_date: input.end_date,
           deployment_id: deploymentRequest.id,
           deployment_type: deploymentRequest.type,
-          platform_id: input.product_service_instance_id,
+          platform_id: input.product_platform_id,
         }
       );
 

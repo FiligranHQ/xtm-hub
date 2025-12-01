@@ -123,7 +123,7 @@ describe('assertFreeTrialsLimit', () => {
       hub_status: HubStatus.Pending,
       target_state: PlatformState.Active,
       actual_state: null,
-    } as any);
+    });
     await expect(
       assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
     ).rejects.toThrow(AlreadyExistsErrorCode.FreeTrialAlreadyExists);

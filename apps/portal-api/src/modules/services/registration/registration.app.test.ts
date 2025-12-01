@@ -791,7 +791,7 @@ describe('Registration app', () => {
     it('should throw if wrong platform id is provided', async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequest.id,
-        { product_service_instance_id: uuidv4() }
+        { product_platform_id: uuidv4() }
       );
 
       const call = registrationApp.autoRegisterPlatform(

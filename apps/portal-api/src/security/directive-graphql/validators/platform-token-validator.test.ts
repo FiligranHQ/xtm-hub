@@ -118,7 +118,7 @@ describe('Platform Token Validation', () => {
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
       ).mockResolvedValue({
-        product_service_instance_id: platformId,
+        product_platform_id: platformId,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
@@ -163,7 +163,7 @@ describe('Platform Token Validation', () => {
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
       ).mockResolvedValue({
-        product_service_instance_id: uuidv4(),
+        product_platform_id: uuidv4(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 

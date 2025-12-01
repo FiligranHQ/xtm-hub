@@ -68,7 +68,7 @@ describe('Deployment app', () => {
         actual_state: PlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
-        product_service_instance_id: 'fake product instance id',
+        product_platform_id: 'fake product instance id',
         failure_reason: 'not failed',
       };
 
@@ -88,7 +88,7 @@ describe('Deployment app', () => {
         actual_state: PlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
-        product_service_instance_id: 'fake product instance id',
+        product_platform_id: 'fake product instance id',
         failure_reason: 'not failed',
         organization_name: 'Filigran',
         organization_domains: ['filigran.io', 'internal.com'],

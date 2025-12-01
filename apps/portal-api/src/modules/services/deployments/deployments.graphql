@@ -62,7 +62,7 @@ type PlatformDeploymentRequest {
   requester_email: String!
   requester_first_name: String
   requester_last_name: String
-  product_service_instance_id: String
+  product_platform_id: String
   failure_reason: String
 }
 
@@ -81,7 +81,7 @@ input UpdateDeploymentRequestInput {
   hub_status: HubStatus
   start_date: Date
   end_date: Date
-  product_service_instance_id: String
+  product_platform_id: String
   failure_reason: String
   actual_state: PlatformState
   ordering: Int

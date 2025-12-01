@@ -513,8 +513,8 @@ const assertValidDeploymentRequest = (
     throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
   }
   if (
-    deploymentRequest.product_service_instance_id &&
-    deploymentRequest.product_service_instance_id !== platformId
+    deploymentRequest.product_platform_id &&
+    deploymentRequest.product_platform_id !== platformId
   ) {
     throw new Error(BadRequestErrorCode.InvalidPlatformId);
   }

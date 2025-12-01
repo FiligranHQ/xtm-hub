@@ -1026,7 +1026,7 @@ export type PlatformDeploymentRequest = {
   organization_name: Scalars['String']['output'];
   platform_identifier: PlatformIdentifier;
   platform_token: Scalars['String']['output'];
-  product_service_instance_id?: Maybe<Scalars['String']['output']>;
+  product_platform_id?: Maybe<Scalars['String']['output']>;
   region: PlatformRegion;
   requester_email: Scalars['String']['output'];
   requester_first_name?: Maybe<Scalars['String']['output']>;
@@ -1770,7 +1770,7 @@ export type UpdateDeploymentRequestInput = {
   hub_status?: InputMaybe<HubStatus>;
   id: Scalars['ID']['input'];
   ordering?: InputMaybe<Scalars['Int']['input']>;
-  product_service_instance_id?: InputMaybe<Scalars['String']['input']>;
+  product_platform_id?: InputMaybe<Scalars['String']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;
 };
 
@@ -2751,7 +2751,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  product_service_instance_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  product_platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
   requester_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   requester_first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

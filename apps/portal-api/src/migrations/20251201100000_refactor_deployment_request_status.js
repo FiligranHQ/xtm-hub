@@ -19,6 +19,11 @@ export async function up(knex) {
     table.integer('ordering');
   });
 
+  // Step 1.5: Rename product_service_instance_id to product_platform_id
+  await knex.schema.alterTable('DeploymentRequest', (table) => {
+    table.renameColumn('product_service_instance_id', 'product_platform_id');
+  });
+
   // Step 2: Migrate existing data
   // Get all existing deployment requests ordered by request_date for ordering
   const existingRequests = await knex('DeploymentRequest')
@@ -103,12 +108,17 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
-  // Step 1: Re-add the status column
+  // Step 1: Rename back product_platform_id to product_service_instance_id
+  await knex.schema.alterTable('DeploymentRequest', (table) => {
+    table.renameColumn('product_platform_id', 'product_service_instance_id');
+  });
+
+  // Step 2: Re-add the status column
   await knex.schema.alterTable('DeploymentRequest', (table) => {
     table.string('status');
   });
 
-  // Step 2: Migrate data back from new columns to status
+  // Step 3: Migrate data back from new columns to status
   const existingRequests = await knex('DeploymentRequest').select(
     'id',
     'hub_status',
@@ -143,12 +153,12 @@ export async function down(knex) {
     await knex('DeploymentRequest').where('id', request.id).update({ status });
   }
 
-  // Step 3: Make status non-nullable
+  // Step 4: Make status non-nullable
   await knex.schema.alterTable('DeploymentRequest', (table) => {
     table.string('status').notNullable().alter();
   });
 
-  // Step 4: Drop the new columns
+  // Step 5: Drop the new columns
   await knex.schema.alterTable('DeploymentRequest', (table) => {
     table.dropColumn('hub_status');
     table.dropColumn('target_state');
