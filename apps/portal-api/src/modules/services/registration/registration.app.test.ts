@@ -23,14 +23,15 @@ import {
   THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
 import {
-  DeploymentRequestStatus,
   DeploymentType,
+  HubStatus,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
   PlatformRegion,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
+  PlatformState,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
@@ -763,7 +764,10 @@ describe('Registration app', () => {
           platform_token: uuidv4(),
           region: PlatformRegion.Us,
           request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-          status: DeploymentRequestStatus.Provisioning,
+          hub_status: HubStatus.Approved,
+          target_state: PlatformState.Started,
+          actual_state: PlatformState.Pending,
+          ordering: 1,
           type: DeploymentType.Trial,
           use_case: 'use_case',
           service_instance_id: serviceInstanceId as ServiceInstanceId,
@@ -802,7 +806,11 @@ describe('Registration app', () => {
     it('should throw if deployment status is not authorized', async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequest.id,
-        { status: DeploymentRequestStatus.Pending }
+        {
+          hub_status: HubStatus.Pending,
+          target_state: PlatformState.Pending,
+          actual_state: PlatformState.Pending,
+        }
       );
 
       const call = registrationApp.autoRegisterPlatform(

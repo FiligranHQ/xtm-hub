@@ -6,17 +6,21 @@ import {
   DeploymentRequest,
   DeploymentRequestConnection,
   DeploymentRequestFilterKey,
-  DeploymentRequestStatus,
   DeploymentType,
+  HubStatus,
   PlatformDeploymentRequest,
   PlatformIdentifier,
   PlatformRegion,
+  PlatformState,
   QueryDeploymentRequestsArgs,
   ServiceInstanceCreationStatus,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
+import {
+  DeploymentRequestId,
+  DeploymentRequestMutator,
+} from '../../../model/kanel/public/DeploymentRequest';
 import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
@@ -38,7 +42,11 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
+import {
+  assertFreeTrialsLimit,
+  computeTargetState,
+  isHubStatusTransitionValid,
+} from './deployments.helper';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
@@ -55,11 +63,8 @@ export const DeploymentsApp = {
     }
 
     if (
-      input.status &&
-      ![
-        DeploymentRequestStatus.Pending,
-        DeploymentRequestStatus.Queued,
-      ].includes(input.status)
+      input.hub_status &&
+      ![HubStatus.Pending, HubStatus.Approved].includes(input.hub_status)
     ) {
       throw new Error(BadRequestErrorCode.InvalidStatus);
     }
@@ -74,6 +79,10 @@ export const DeploymentsApp = {
     }
 
     try {
+      const hubStatus = input.hub_status ?? HubStatus.Pending;
+      const targetState = computeTargetState(hubStatus);
+      const ordering = Date.now();
+
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {
           const serviceInstanceId =
@@ -82,9 +91,9 @@ export const DeploymentsApp = {
               organizationId: user.selected_organization_id,
               platformIdentifier: input.platform_identifier,
               serviceInstanceCreationStatus:
-                input.status === DeploymentRequestStatus.Queued
-                  ? ServiceInstanceCreationStatus.Disabled
-                  : ServiceInstanceCreationStatus.Pending,
+                hubStatus === HubStatus.Approved
+                  ? ServiceInstanceCreationStatus.Pending
+                  : ServiceInstanceCreationStatus.Disabled,
             });
 
           return await DeploymentRequestDomain.insertDeploymentRequest({
@@ -92,7 +101,10 @@ export const DeploymentsApp = {
             user_requester_id: user.id,
             organization_requester_id: user.selected_organization_id,
             service_instance_id: serviceInstanceId,
-            status: input.status ?? DeploymentRequestStatus.Pending,
+            hub_status: hubStatus,
+            target_state: targetState,
+            actual_state: PlatformState.Pending,
+            ordering,
             type: input.type,
             platform_identifier: input.platform_identifier,
             region: input.region,
@@ -111,7 +123,11 @@ export const DeploymentsApp = {
           input.platform_identifier,
           {
             region: createdDeploymentRequest.region as PlatformRegion,
-            status: createdDeploymentRequest.status as DeploymentRequestStatus,
+            hub_status: createdDeploymentRequest.hub_status as HubStatus,
+            target_state:
+              createdDeploymentRequest.target_state as PlatformState,
+            actual_state:
+              createdDeploymentRequest.actual_state as PlatformState,
             activity_sector: createdDeploymentRequest.activity_sector,
             job_title: createdDeploymentRequest.job_title,
             use_case: createdDeploymentRequest.use_case,
@@ -128,9 +144,7 @@ export const DeploymentsApp = {
       }
 
       try {
-        if (
-          createdDeploymentRequest.status === DeploymentRequestStatus.Pending
-        ) {
+        if (createdDeploymentRequest.hub_status === HubStatus.Pending) {
           sendMail({
             to: user.email,
             template: 'opencti_free_trial_requested',
@@ -157,7 +171,10 @@ export const DeploymentsApp = {
         use_case: createdDeploymentRequest.use_case,
         start_date: createdDeploymentRequest.start_date,
         end_date: createdDeploymentRequest.end_date,
-        status: createdDeploymentRequest.status as DeploymentRequestStatus,
+        hub_status: createdDeploymentRequest.hub_status as HubStatus,
+        expected_status: createdDeploymentRequest.target_state as PlatformState,
+        actual_status: createdDeploymentRequest.actual_state as PlatformState,
+        ordering: createdDeploymentRequest.ordering,
         __typename: 'DeploymentRequest',
       };
     } catch (error) {
@@ -180,9 +197,10 @@ export const DeploymentsApp = {
     }
 
     if (
-      !isTransitionValid(
-        deploymentRequest.status as DeploymentRequestStatus,
-        input.status
+      input.hub_status &&
+      !isHubStatusTransitionValid(
+        deploymentRequest.hub_status as HubStatus,
+        input.hub_status
       )
     ) {
       throw new Error(
@@ -190,7 +208,7 @@ export const DeploymentsApp = {
       );
     }
     const isActiveInputDataInvalid =
-      input.status == DeploymentRequestStatus.Active &&
+      input.actual_status == PlatformState.Started &&
       (!input.start_date || !input.end_date);
     if (isActiveInputDataInvalid) {
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
@@ -210,15 +228,23 @@ export const DeploymentsApp = {
         );
       }
 
+      const updateData: DeploymentRequestMutator = {
+        start_date: input.start_date,
+        end_date: input.end_date,
+        product_service_instance_id: input.product_service_instance_id,
+        failure_reason: input.failure_reason,
+        actual_state: input.actual_status,
+        ordering: input.ordering,
+      };
+
+      if (input.hub_status) {
+        updateData.hub_status = input.hub_status;
+        updateData.target_state = computeTargetState(input.hub_status);
+      }
+
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
-        {
-          status: input.status,
-          start_date: input.start_date,
-          end_date: input.end_date,
-          product_service_instance_id: input.product_service_instance_id,
-          failure_reason: input.failure_reason,
-        }
+        updateData
       );
     } catch (error) {
       trx.rollback();
@@ -233,7 +259,8 @@ export const DeploymentsApp = {
         organization,
         deploymentRequest.user_requester_id,
         {
-          status: input.status,
+          hub_status: input.hub_status,
+          actual_status: input.actual_status,
           start_date: input.start_date,
           end_date: input.end_date,
           deployment_id: deploymentRequest.id,
@@ -258,13 +285,13 @@ export const DeploymentsApp = {
     args: QueryDeploymentRequestsArgs
   ): Promise<DeploymentRequestConnection> => {
     args.filters = args.filters || [];
-    const hasStatusFilter = args.filters?.some(
-      (filter) => filter?.key === DeploymentRequestFilterKey.Status
+    const hasHubStatusFilter = args.filters?.some(
+      (filter) => filter?.key === DeploymentRequestFilterKey.HubStatus
     );
-    if (!hasStatusFilter) {
+    if (!hasHubStatusFilter) {
       args.filters.push({
-        key: DeploymentRequestFilterKey.Status,
-        value: [DeploymentRequestStatus.Pending],
+        key: DeploymentRequestFilterKey.HubStatus,
+        value: [HubStatus.Pending],
       });
     }
     return DeploymentRequestDomain.loadDeploymentRequests(args);

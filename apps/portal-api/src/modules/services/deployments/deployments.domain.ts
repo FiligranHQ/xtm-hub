@@ -1,10 +1,11 @@
 import { dbUnsecure, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestConnection,
-  DeploymentRequestStatus,
   DeploymentType,
+  HubStatus,
   PlatformIdentifier,
   PlatformRegion,
+  PlatformState,
   QueryDeploymentRequestsArgs,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
@@ -40,7 +41,9 @@ export const DeploymentRequestDomain = {
       platform_identifier: result.platform_identifier as PlatformIdentifier,
       region: result.region as PlatformRegion,
       type: result.type as DeploymentType,
-      status: result.status as DeploymentRequestStatus,
+      hub_status: result.hub_status as HubStatus,
+      target_state: result.target_state as PlatformState,
+      actual_state: result.actual_state as PlatformState,
     };
   },
 
@@ -65,7 +68,7 @@ export const DeploymentRequestDomain = {
       {
         first,
         after,
-        orderBy: 'request_date',
+        orderBy: 'ordering',
         orderMode: 'asc',
         filters,
       },
@@ -84,9 +87,10 @@ export const DeploymentRequestDomain = {
     platformIdentifier: PlatformIdentifier
   ) => {
     return getDeploymentRequestWithUserDataQuery()
-      .whereIn('DeploymentRequest.status', [
-        DeploymentRequestStatus.Active,
-        DeploymentRequestStatus.Expired,
+      .where('DeploymentRequest.hub_status', '=', HubStatus.Approved)
+      .whereIn('DeploymentRequest.actual_state', [
+        PlatformState.Started,
+        PlatformState.Stopped,
       ])
       .where('DeploymentRequest.type', '=', DeploymentType.Trial)
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)

@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { DEFAULT_ADMIN_EMAIL } from '../../../../tests/tests.const';
 import {
-  DeploymentRequestStatus,
   DeploymentType,
+  HubStatus,
   PlatformIdentifier,
   PlatformRegion,
+  PlatformState,
 } from '../../../__generated__/resolvers-types';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
@@ -41,7 +42,9 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
-        status: DeploymentRequestStatus.Pending,
+        hub_status: HubStatus.Pending,
+        expected_status: PlatformState.Pending,
+        actual_status: PlatformState.Pending,
       });
     });
   });
@@ -55,13 +58,14 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
+        hub_status: HubStatus.Approved,
       };
       const initialDeployment = await DeploymentsApp.createDeploymentRequest(
         initialDeploymentData
       );
       const updates = {
         id: initialDeployment.id,
-        status: DeploymentRequestStatus.Provisioning,
+        actual_status: PlatformState.Started,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         product_service_instance_id: 'fake product instance id',
@@ -73,8 +77,19 @@ describe('Deployment app', () => {
         { input: updates }
       );
       expect(updatedDeployment).toMatchObject({
-        ...initialDeploymentData,
-        ...updates,
+        activity_sector: 'cybersecurity',
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: PlatformRegion.Us,
+        type: DeploymentType.Trial,
+        hub_status: HubStatus.Approved,
+        expected_status: PlatformState.Started,
+        actual_status: PlatformState.Started,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        product_service_instance_id: 'fake product instance id',
+        failure_reason: 'not failed',
         organization_name: 'Filigran',
         organization_domains: ['filigran.io', 'internal.com'],
         requester_email: DEFAULT_ADMIN_EMAIL,
@@ -82,7 +97,7 @@ describe('Deployment app', () => {
         requester_last_name: 'lastname',
       });
     });
-    it('should return an error when status transition is not allowed', async () => {
+    it('should return an error when hub status transition is not allowed', async () => {
       const initialDeploymentData = {
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -90,13 +105,14 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
+        hub_status: HubStatus.Approved,
       };
       const initialDeployment = await DeploymentsApp.createDeploymentRequest(
         initialDeploymentData
       );
       const updates = {
         id: initialDeployment.id,
-        status: DeploymentRequestStatus.Queued,
+        hub_status: HubStatus.Pending,
       };
 
       const call = resolver.Mutation.updateDeploymentRequest(undefined, {

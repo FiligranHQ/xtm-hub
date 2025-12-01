@@ -270,14 +270,17 @@ enum DeploymentType {
   trial
 }
 
-enum DeploymentRequestStatus {
-  QUEUED
-  PENDING
-  PROVISIONING
-  ACTIVE
-  EXPIRED
-  FAILED
-  CANCELLED
+enum HubStatus {
+  pending
+  approved
+  denied
+  cancelled
+}
+
+enum PlatformState {
+  pending
+  started
+  stopped
 }
 
 type DeploymentRequest implements Node {
@@ -290,7 +293,10 @@ type DeploymentRequest implements Node {
   use_case: String
   start_date: Date
   end_date: Date
-  status: DeploymentRequestStatus!
+  hub_status: HubStatus!
+  expected_status: PlatformState!
+  actual_status: PlatformState!
+  ordering: Int!
 }
 
 type PlatformDeploymentRequest {
@@ -299,7 +305,10 @@ type PlatformDeploymentRequest {
   region: PlatformRegion!
   type: DeploymentType!
   platform_token: String!
-  status: DeploymentRequestStatus!
+  hub_status: HubStatus!
+  expected_status: PlatformState!
+  actual_status: PlatformState!
+  ordering: Int!
   start_date: Date
   end_date: Date
   job_title: String
@@ -321,22 +330,26 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
-  status: DeploymentRequestStatus
+  hub_status: HubStatus
 }
 
 input UpdateDeploymentRequestInput {
   id: ID!
-  status: DeploymentRequestStatus
+  hub_status: HubStatus
   start_date: Date
   end_date: Date
   product_service_instance_id: String
   failure_reason: String
+  actual_status: PlatformState
+  ordering: Int
 }
 
 enum DeploymentRequestFilterKey {
   region
   type
-  status
+  hub_status
+  expected_status
+  actual_status
   platform_identifier
 }
 
