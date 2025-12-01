@@ -1,4 +1,4 @@
-FROM node:24.9-alpine3.22 AS base
+FROM node:24.11-alpine3.22 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -18,7 +18,6 @@ RUN corepack enable && \
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/portal-api/node_modules ./apps/portal-api/node_modules
 COPY apps/portal-api/. ./apps/portal-api/
 COPY .yarnrc.yml package.json yarn.lock ./
 RUN corepack enable
