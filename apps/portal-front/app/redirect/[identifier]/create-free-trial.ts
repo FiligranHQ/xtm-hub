@@ -1,8 +1,8 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import type { createFreeTrialRegisteredPlatformsStatusAndTypeQuery } from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
 import CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
 import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
+import { HubStatusEnum } from '@generated/models/HubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
@@ -51,11 +51,10 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
     );
 
     const isTrialStarted = [
-      DeploymentRequestStatusEnum.QUEUED,
-      DeploymentRequestStatusEnum.PENDING,
-    ].includes(
-      freeTrials[0]?.deployment_request?.status as DeploymentRequestStatusEnum
-    );
+      HubStatusEnum.QUEUED,
+      HubStatusEnum.PENDING,
+      HubStatusEnum.ACTIVE,
+    ].includes(freeTrials[0]?.deployment_request?.hub_status as HubStatusEnum);
 
     if (isTrialStarted) {
       const instanceUrl = new URL(

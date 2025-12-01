@@ -45,7 +45,7 @@ export const getDisplayDays = (
     return 'Provisioning';
   }
   if (!platform.subscription?.end_date) {
-    return platform.deployment_request?.status;
+    return platform.deployment_request?.hub_status;
   }
   const target = new Date(platform.subscription?.end_date);
   const now = new Date();
