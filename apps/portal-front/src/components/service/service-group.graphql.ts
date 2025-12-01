@@ -1,0 +1,20 @@
+import { graphql } from 'react-relay';
+
+export const serviceGroupFragment = graphql`
+  fragment serviceGroup_fragment on ServiceGroup @inline {
+    id
+    name
+    users {
+      id
+      email
+    }
+  }
+`;
+
+export const ServiceGroupsByServiceInstanceId = graphql`
+  query serviceGroupsByServiceInstanceIdQuery($serviceInstanceId: ID!) {
+    serviceGroups(serviceInstanceId: $serviceInstanceId) {
+      ...serviceGroup_fragment
+    }
+  }
+`;

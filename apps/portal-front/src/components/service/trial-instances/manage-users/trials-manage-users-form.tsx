@@ -1,9 +1,12 @@
-'use client';
 import { UserFragment } from '@/components/admin/user/user-list';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
-import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { serviceGroupFragment } from '@/components/service/service-group.graphql';
 import { useUsersList } from '@/hooks/useUsersList';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import { serviceGroup_fragment$key } from '@generated/serviceGroup_fragment.graphql';
+import ServiceGroupsByServiceInstanceIdQueryGraphql, {
+  serviceGroupsByServiceInstanceIdQuery,
+} from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -16,27 +19,33 @@ import {
 } from 'filigran-ui';
 import { MultiSelectFormField } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { readInlineData } from 'react-relay';
+import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
-
-interface Props {
-  platform: registeredPlatformByServiceInstanceId_fragment$data;
-}
 
 const formSchema = z.object({
   groups: z.array(
     z.object({
+      id: z.string().min(1),
       name: z.string().min(1),
       userIds: z.array(z.string().min(1)),
     })
   ),
 });
 
-export const TrialsManageUsersForm: React.FC<Props> = ({ platform }) => {
+interface Props {
+  onCancel: () => void;
+  platform: registeredPlatformByServiceInstanceId_fragment$data;
+  queryRef: PreloadedQuery<serviceGroupsByServiceInstanceIdQuery>;
+}
+
+export const TrialsManageUsersForm: React.FC<Props> = ({
+  onCancel,
+  platform,
+  queryRef,
+}) => {
   const t = useTranslations();
-  const [openSheet, setOpenSheet] = useState(true);
   const { orderMode, orderBy, pageSize } = useUserListLocalstorage();
   const { data: availableUsers } = useUsersList({
     orderMode,
@@ -44,6 +53,10 @@ export const TrialsManageUsersForm: React.FC<Props> = ({ platform }) => {
     pageSize,
     filter: { organization: platform.subscription?.organization?.id },
   });
+  const data = usePreloadedQuery<serviceGroupsByServiceInstanceIdQuery>(
+    ServiceGroupsByServiceInstanceIdQueryGraphql,
+    queryRef
+  );
 
   const options = useMemo(() => {
     return availableUsers.users.edges.map(({ node }) => {
@@ -59,21 +72,23 @@ export const TrialsManageUsersForm: React.FC<Props> = ({ platform }) => {
   }, [availableUsers.users.edges]);
 
   const groups = useMemo(() => {
-    return [
-      {
-        name: 'Admin',
-        users: [],
-      },
-      {
-        name: 'Analyst',
-        users: [],
-      },
-      {
-        name: 'Reader',
-        users: [],
-      },
-    ];
-  }, []);
+    return data.serviceGroups.map((group) => {
+      const { id, name, users } = readInlineData<serviceGroup_fragment$key>(
+        serviceGroupFragment,
+        group
+      );
+
+      const userIds = (users ?? []).map(
+        ({ email }) => options.find(({ label }) => label === email)?.value
+      );
+
+      return {
+        id,
+        name,
+        userIds,
+      };
+    });
+  }, [data.serviceGroups, options]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -81,7 +96,6 @@ export const TrialsManageUsersForm: React.FC<Props> = ({ platform }) => {
       groups,
     },
   });
-
   const groupFields = useMemo(() => {
     return groups.map((group, index) => (
       <FormField
@@ -108,35 +122,25 @@ export const TrialsManageUsersForm: React.FC<Props> = ({ platform }) => {
   }, [groups, form.control, t, options]);
 
   return (
-    <SheetWithPreventingDialog
-      title={t('Service.Trials.ManageUsers.Title')}
-      setOpen={setOpenSheet}
-      open={openSheet}
-      trigger={
-        <Button variant="outline-primary">
-          {t('Service.Trials.ManageUsers.Title')}
-        </Button>
-      }>
-      <Form {...form}>
-        <form className="w-full space-y-xl">
-          {groupFields}
-          <SheetFooter>
-            <div className="flex gap-s">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => setOpenSheet(false)}>
-                {t('Utils.Cancel')}
-              </Button>
-              <Button
-                disabled={!form.formState.isDirty}
-                type="submit">
-                {t('Utils.Validate')}
-              </Button>
-            </div>
-          </SheetFooter>
-        </form>
-      </Form>
-    </SheetWithPreventingDialog>
+    <Form {...form}>
+      <form className="w-full space-y-xl">
+        {groupFields}
+        <SheetFooter>
+          <div className="flex gap-s">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={onCancel}>
+              {t('Utils.Cancel')}
+            </Button>
+            <Button
+              disabled={!form.formState.isDirty}
+              type="submit">
+              {t('Utils.Validate')}
+            </Button>
+          </div>
+        </SheetFooter>
+      </form>
+    </Form>
   );
 };

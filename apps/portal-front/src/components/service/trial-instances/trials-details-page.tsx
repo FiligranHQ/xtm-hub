@@ -1,6 +1,6 @@
+import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
-import { TrialsManageUsersForm } from '@/components/service/trial-instances/trials-manage-users-form';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
@@ -54,7 +54,7 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
           </Button>
           {platform.deployment_request?.status ===
             DeploymentRequestStatusEnum.ACTIVE && (
-            <TrialsManageUsersForm platform={platform} />
+            <TrialsManageUsersDialog platform={platform} />
           )}
         </div>
       </section>

@@ -94,6 +94,9 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
     subscription {
       start_date
       end_date
+      service_instance {
+        id
+      }
       organization {
         id
       }
