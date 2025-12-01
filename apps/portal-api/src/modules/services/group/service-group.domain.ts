@@ -9,6 +9,9 @@ import ServiceGroupUser, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 
+const DEFAULT_SERVICE_GROUP = ['Admin', 'Analyst', 'Reader'] as const;
+type DefaultServiceGroup = (typeof DEFAULT_SERVICE_GROUP)[number];
+
 export const ServiceGroupDomain = {
   loadGroupsServiceInstanceIds: async (
     groupIds: ServiceGroupId[]
@@ -48,6 +51,23 @@ export const ServiceGroupDomain = {
       .select('User.*');
   },
 
+  loadGroupUsersByServiceAndName: async (
+    serviceInstanceId: ServiceInstanceId,
+    name: DefaultServiceGroup
+  ): Promise<User[]> => {
+    return db<User[]>('ServiceGroup')
+      .leftJoin(
+        'ServiceGroup_User',
+        'ServiceGroup.id',
+        '=',
+        'ServiceGroup_User.group_id'
+      )
+      .innerJoin('User', 'ServiceGroup_User.user_id', '=', 'User.id')
+      .where('ServiceGroup.service_instance_id', '=', serviceInstanceId)
+      .where('ServiceGroup.name', '=', name)
+      .select('User.*');
+  },
+
   addUsersToGroup: async (groupId: ServiceGroupId, userIds: UserId[]) => {
     if (!userIds.length) {
       return;
@@ -67,5 +87,23 @@ export const ServiceGroupDomain = {
     }
 
     await db('ServiceGroup_User').del().whereIn('group_id', groupIds);
+  },
+  initGroupWithAdmin: async (
+    userAdminId: UserId,
+    serviceInstancesId: ServiceInstanceId
+  ) => {
+    const rolesToInsert = DEFAULT_SERVICE_GROUP.map((instance) => ({
+      name: instance,
+      service_instance_id: serviceInstancesId,
+    }));
+    const insertResponse = await db<ServiceGroup>('ServiceGroup')
+      .insert(rolesToInsert)
+      .returning(['id', 'name']);
+    const findAdminGroupId = insertResponse.find(
+      (group) => group.name === 'Admin'
+    );
+    await ServiceGroupDomain.addUsersToGroup(findAdminGroupId.id, [
+      userAdminId,
+    ]);
   },
 };

@@ -220,6 +220,12 @@ export const DeploymentsApp = {
           failure_reason: input.failure_reason,
         }
       );
+
+      if (input.status === DeploymentRequestStatus.Active) {
+        await DeploymentRequestDomain.initialiseServiceGroup(
+          input.id as DeploymentRequestId
+        );
+      }
     } catch (error) {
       trx.rollback();
       throw error;

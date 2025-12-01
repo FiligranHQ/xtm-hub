@@ -12,6 +12,9 @@ import DeploymentRequest, {
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
+import { auth0Client } from '../../../thirdparty/auth0/client';
+import { logApp } from '../../../utils/app-logger.util';
+import { ServiceGroupDomain } from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -112,6 +115,39 @@ export const DeploymentRequestDomain = {
       .update(data)
       .returning('*');
     return deploymentRequest;
+  },
+  initialiseServiceGroup: async (id: DeploymentRequestId) => {
+    const {
+      organization_name,
+      requester_email,
+      product_service_instance_id,
+      user_requester_id,
+      service_instance_id,
+    } = await DeploymentRequestDomain.loadFullDeploymentRequestById(id);
+
+    try {
+      await auth0Client.createAudienceAPI(
+        organization_name,
+        product_service_instance_id
+      );
+    } catch (error) {
+      logApp.warn(`Auth0 Create Audience: ${error}`);
+    }
+
+    const serviceGroup = await ServiceGroupDomain.loadServiceGroups({
+      service_instance_id: service_instance_id,
+    });
+    if (serviceGroup.length === 0) {
+      await ServiceGroupDomain.initGroupWithAdmin(
+        user_requester_id,
+        service_instance_id
+      );
+      await auth0Client.updateUserRBACInstance(requester_email, {
+        [product_service_instance_id]: {
+          groups: ['Admin'],
+        },
+      });
+    }
   },
 };
 
