@@ -26518,22 +26518,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:4.19.4":
-  version: 4.19.4
-  resolution: "tsx@npm:4.19.4"
-  dependencies:
-    esbuild: "npm:~0.25.0"
-    fsevents: "npm:~2.3.3"
-    get-tsconfig: "npm:^4.7.5"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    tsx: dist/cli.mjs
-  checksum: 10c0/f7b8d44362343fbde1f2ecc9832d243a450e1168dd09702a545ebe5f699aa6912e45b431a54b885466db414cceda48e5067b36d182027c43b2c02a4f99d8721e
-  languageName: node
-  linkType: hard
-
 "tsx@npm:4.20.5":
   version: 4.20.5
   resolution: "tsx@npm:4.20.5"
@@ -27992,7 +27976,7 @@ __metadata:
     eslint-config-prettier: "npm:^10.1.5"
     nx: "npm:21.6.9"
     stylus: "github:stylus/stylus#0.64.0"
-    tsx: "npm:4.19.4"
+    tsx: "npm:4.20.6"
     typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
