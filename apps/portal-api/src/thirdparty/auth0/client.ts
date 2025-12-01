@@ -10,9 +10,23 @@ export interface Auth0UpdateUser {
   country?: string;
 }
 
+export interface Auth0UpdateUserRBACInstance {
+  [key: string]: {
+    groups: string[];
+  };
+}
+
 export interface Auth0Client {
   updateUser(user: Auth0UpdateUser): Promise<void>;
   resetPassword(email: string): Promise<void>;
+  createAudienceAPI(
+    organization_name: string,
+    platform_id: string
+  ): Promise<void>;
+  updateUserRBACInstance(
+    email: string,
+    userRBACInstance: Auth0UpdateUserRBACInstance
+  ): Promise<void>;
 }
 
 const isAuth0Enabled = !(

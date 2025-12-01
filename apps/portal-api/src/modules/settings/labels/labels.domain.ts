@@ -1,5 +1,8 @@
 import { db, paginate, QueryOpts } from '../../../../knexfile';
-import { LabelConnection } from '../../../__generated__/resolvers-types';
+import {
+  LabelConnection,
+  QueryLabelsArgs,
+} from '../../../__generated__/resolvers-types';
 import Label, {
   LabelId,
   LabelInitializer,
@@ -20,8 +23,22 @@ export const labelsDomain = {
     return label;
   },
 
-  loadLabels: (opts: Partial<QueryOpts>): Promise<LabelConnection> => {
-    return paginate<Label, LabelConnection>('Label', opts);
+  loadLabels: (opts: Partial<QueryLabelsArgs>): Promise<LabelConnection> => {
+    const labelQuery = db<Label>('Label', opts).modify((queryBuilder) => {
+      if (opts.documentType) {
+        queryBuilder
+          .distinct('Label.*')
+          .innerJoin('Object_Label', 'Label.id', 'Object_Label.label_id')
+          .innerJoin('Document', 'Document.id', 'Object_Label.object_id')
+          .where('Document.type', opts.documentType);
+      }
+    });
+    return paginate<Label, LabelConnection>(
+      'Label',
+      opts,
+      undefined,
+      labelQuery
+    );
   },
 
   loadLabelsByDocumentId: (

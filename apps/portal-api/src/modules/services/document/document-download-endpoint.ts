@@ -13,6 +13,7 @@ import {
   extractPlatformToken,
   validateActivePlatformToken,
 } from '../../../security/directive-graphql/validators/platform-token-validator';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
@@ -24,8 +25,7 @@ import {
 } from '../../telemetry/telemetry.helper';
 import { loadUserBy } from '../../users/users.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
-import { downloadFile } from './document-storage';
-import { loadDocumentBy } from './document.domain';
+import { loadDocumentBy } from './domain/document.domain';
 
 const documentDownloadRateLimiter = rateLimit({
   windowMs: 180 * 1000, // 3 minutes
@@ -111,7 +111,9 @@ export const documentDownloadEndpoint = (app) => {
             throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
           }
 
-          const stream = (await downloadFile(document.minio_name)) as Readable;
+          const stream = (await MinIOClient.downloadFile(
+            document.minio_name
+          )) as Readable;
           if (attach) {
             res.attachment(document.file_name);
           }

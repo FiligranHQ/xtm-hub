@@ -15,9 +15,9 @@ import {
   TelemetryEventService,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { createDocumentWithChildren } from '../document/document.domain';
-import * as DocumentHelper from '../document/document.helper';
 import { deleteDocuments } from '../document/document.helper';
+import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { createDocumentWithChildren } from '../document/domain/document.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
   CUSTOM_DASHBOARD_METADATA,
@@ -32,7 +32,7 @@ describe('custom dashboards app', () => {
     fileName: 'csvfilename',
   };
   beforeEach(() => {
-    vi.spyOn(DocumentHelper, 'processUploads').mockResolvedValue([
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
   });

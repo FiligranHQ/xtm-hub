@@ -19,8 +19,8 @@ import {
   TelemetryEventServiceType,
 } from '../../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../../telemetry/telemetry.types';
-import { createDocumentWithChildren } from '../../document/document.domain';
-import * as DocumentHelper from '../../document/document.helper';
+import * as DocumentUploadsHelper from '../../document/document.uploads.helper';
+import { createDocumentWithChildren } from '../../document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
@@ -35,7 +35,7 @@ describe('csv feeds app', () => {
     fileName: 'csvfilename',
   };
   beforeEach(() => {
-    vi.spyOn(DocumentHelper, 'processUploads').mockResolvedValue([
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
   });

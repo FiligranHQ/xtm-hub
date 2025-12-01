@@ -4,7 +4,6 @@ import portalConfig from '../config';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { RolePortalId } from '../model/kanel/public/RolePortal';
 import { UserId } from '../model/kanel/public/User';
-import { isStorageAlive } from '../modules/services/document/document-storage';
 import {
   ADMIN_UUID,
   CAPABILITY_BYPASS,
@@ -17,6 +16,7 @@ import {
   SYSTEM_USER_EMAIL,
   SYSTEM_USER_UUID,
 } from '../portal.const';
+import { MinIOClient } from '../thirdparty/minio/client';
 import { logApp } from '../utils/app-logger.util';
 import { hashPassword } from '../utils/hash-password.util';
 import {
@@ -169,7 +169,7 @@ const platformInit = async () => {
 };
 
 export const minioInit = async () => {
-  await isStorageAlive();
+  await MinIOClient.initializeBucket();
 };
 
 export default platformInit;

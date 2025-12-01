@@ -14,9 +14,10 @@ import { Callout } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { useContext } from 'react';
+import { ContactUsButton } from './contact-us-button';
 
 // Component
-export const TryOpenCTICallout = ({}) => {
+export const TryOpenCTICallout = () => {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
   const isOpenCTIFreeTrialActivated = useIsFeatureEnabled(
@@ -64,19 +65,6 @@ export const TryOpenCTICallout = ({}) => {
     </Button>
   );
 
-  const contactUsButton = () => (
-    <Button
-      className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
-      asChild>
-      <Link
-        href={trialUrl}
-        target="_blank">
-        {t('Service.Trials.ContactUs')}
-        <ArrowRightAltIcon className="ml-s size-4" />
-      </Link>
-    </Button>
-  );
-
   const LearnMoreLink = () => (
     <Link
       href={`${settings.base_url_front}/app/service/free-trial`}
@@ -115,7 +103,7 @@ export const TryOpenCTICallout = ({}) => {
     },
     expired: {
       text: () => t('Service.Trials.Expired'),
-      button: () => contactUsButton(),
+      button: () => <ContactUsButton variant="default" />,
     },
     active: {
       text: () => (

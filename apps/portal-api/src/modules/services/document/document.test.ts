@@ -17,6 +17,7 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
@@ -29,12 +30,6 @@ import {
   INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds/integration-feeds.model';
-import * as FileStorage from './document-storage';
-import {
-  createDocument,
-  insertDocument,
-  sendFileToS3,
-} from './document.domain';
 import {
   checkDocumentExists,
   deleteDocumentBy,
@@ -44,6 +39,7 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
+import { createDocument, insertDocument } from './domain/document.domain';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
@@ -51,7 +47,7 @@ describe('should call S3 to send file', () => {
       new Date('2023-01-01T00:00:00Z').getTime()
     );
     const mockInsertFileInMinio = vi
-      .spyOn(FileStorage, 'insertFileInMinio')
+      .spyOn(MinIOClient, 'insertFile')
       .mockResolvedValueOnce('mocked response');
 
     const fileMock = {
@@ -61,7 +57,7 @@ describe('should call S3 to send file', () => {
       createReadStream: () => Readable.from(['file content']),
     };
 
-    await sendFileToS3(
+    await MinIOClient.sendFile(
       fileMock,
       'name',
       'ba091095-418f-4b4f-b150-6c9295e232c3',
