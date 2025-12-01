@@ -101,6 +101,7 @@ type Mutation {
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
+  updateServiceGroups(input: UpdateServiceGroupsInput!): Success
   createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
   updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
   deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
@@ -455,6 +456,15 @@ type ServiceGroup implements Node {
   id: ID!
   name: String!
   users: [User!]
+}
+
+input UpdateServiceGroupsInputGroup {
+  id: ID!
+  userIds: [ID!]!
+}
+
+input UpdateServiceGroupsInput {
+  groups: [UpdateServiceGroupsInputGroup!]!
 }
 
 type ServiceLink implements Node {

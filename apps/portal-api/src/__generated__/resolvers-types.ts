@@ -571,6 +571,7 @@ export type Mutation = {
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateOpenAEVScenario: OpenAevScenario;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
+  updateServiceGroups?: Maybe<Success>;
 };
 
 
@@ -876,6 +877,11 @@ export type MutationUpdateOpenAevScenarioArgs = {
 export type MutationUpdatePlatformServiceMetadataArgs = {
   document?: InputMaybe<Scalars['Upload']['input']>;
   input: UpdatePlatformServiceMetadataInput;
+};
+
+
+export type MutationUpdateServiceGroupsArgs = {
+  input: UpdateServiceGroupsInput;
 };
 
 export type Node = {
@@ -1786,6 +1792,15 @@ export type UpdatePlatformServiceMetadataInput = {
   serviceInstanceId: Scalars['ID']['input'];
 };
 
+export type UpdateServiceGroupsInput = {
+  groups: Array<UpdateServiceGroupsInputGroup>;
+};
+
+export type UpdateServiceGroupsInputGroup = {
+  id: Scalars['ID']['input'];
+  userIds: Array<Scalars['ID']['input']>;
+};
+
 export type User = Node & {
   __typename?: 'User';
   capabilities?: Maybe<Array<Capability>>;
@@ -2115,6 +2130,8 @@ export type ResolversTypes = ResolversObject<{
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
+  UpdateServiceGroupsInput: UpdateServiceGroupsInput;
+  UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -2240,6 +2257,8 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
+  UpdateServiceGroupsInput: UpdateServiceGroupsInput;
+  UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   Upload: Scalars['Upload']['output'];
   User: User;
   UserConnection: UserConnection;
@@ -2643,6 +2662,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
+  updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

@@ -89,6 +89,7 @@
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "FREE_TRIAL_ALREADY_EXISTS": "A free trial already exists for your organization",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "You must grant capabilities on organization first",
+      "HUBSPOT_ERROR": "An error occured while contacting us",
       "INCREMENT_SHARE_NUMBER": "Error occurred while incrementing share number",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "INVALID_ACTION_SIZE": "An unknown error occurred",
@@ -97,6 +98,7 @@
       "INVALID_PLATFORM_ID": "An unknown error occurred",
       "INVALID_PLATFORM_IDENTIFIER": "Platform identifier is invalid",
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
+      "INVALID_STATUS": "Invalid status",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
@@ -106,6 +108,7 @@
       "OPENAEV_SCENARIO_INSERTION_ERROR": "An error occurred while creating an OpenAEV Scenario",
       "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "An OpenAEV scenario with the same slug already exists",
       "OPENAEV_SCENARIO_UPDATE_ERROR": "An error occurred while updating an OpenAEV Scenario",
+      "ORGANIZATION_NOT_FOUND": "Organization not found",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "An organization with the same domain already exists",
       "ORGANIZATION_SAME_NAME_EXISTS": "An organization with the same name already exists",
       "PERSONAL_SPACE_MUST_ALREADY_EXIST": "If you want to transfer your personal space, your future account must already exist.",
@@ -129,7 +132,8 @@
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "An error occurred while updating platform service metadata",
       "USER_DISABLED": "User is disabled",
-      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions"
+      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
+      "YOU_CAN_NOT_LOGIN": "You can not login"
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."

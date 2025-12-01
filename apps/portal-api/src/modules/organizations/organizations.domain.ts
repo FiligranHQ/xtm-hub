@@ -11,6 +11,7 @@ import Organization, {
   OrganizationInitializer,
   OrganizationMutator,
 } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../model/kanel/public/User';
 
 export const organizationDomain = {
@@ -18,6 +19,28 @@ export const organizationDomain = {
     return db<Organization>('Organization')
       .where('name', 'ILIKE', name)
       .first('id');
+  },
+
+  loadOrganizationSubscribedToServiceInstance: (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<Organization | null> => {
+    return db<Organization>('ServiceInstance')
+      .leftJoin(
+        'Subscription',
+        'Subscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .leftJoin(
+        'Organization',
+        'Subscription.organization_id',
+        '=',
+        'Organization.id'
+      )
+      .where({
+        'ServiceInstance.id': serviceInstanceId,
+      })
+      .select('Organization.*');
   },
 };
 

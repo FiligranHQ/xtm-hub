@@ -4,6 +4,19 @@ type ServiceGroup implements Node {
   users: [User!]
 }
 
+input UpdateServiceGroupsInputGroup {
+  id: ID!
+  userIds: [ID!]!
+}
+
+input UpdateServiceGroupsInput {
+  groups: [UpdateServiceGroupsInputGroup!]!
+}
+
 type Query {
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]! @auth
+}
+
+type Mutation {
+  updateServiceGroups(input: UpdateServiceGroupsInput!): Success @auth
 }

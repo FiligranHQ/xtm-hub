@@ -89,6 +89,7 @@
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
       "FREE_TRIAL_ALREADY_EXISTS": "Une instance de test existe déjà pour votre organisation",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "Vous devez d'abord accorder des capacités à l'organisation",
+      "HUBSPOT_ERROR": "Une erreur s'est produite lors de la prise de contact",
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du numéro de part",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
@@ -97,6 +98,7 @@
       "INVALID_PLATFORM_ID": "Une erreur inconnue s'est produite",
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
+      "INVALID_STATUS": "Statut invalide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
@@ -106,6 +108,7 @@
       "OPENAEV_SCENARIO_INSERTION_ERROR": "Une erreur s'est produite lors de la création d'un scénario OpenAEV",
       "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "Un scénario OpenAEV avec le même slug existe déjà",
       "OPENAEV_SCENARIO_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour d'un scénario OpenAEV",
+      "ORGANIZATION_NOT_FOUND": "Organisation non trouvée",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
       "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
       "PERSONAL_SPACE_MUST_ALREADY_EXIST": "Si vous voulez transférer votre personal space, votre futur compte doit déjà exister.",
@@ -129,7 +132,8 @@
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
       "USER_DISABLED": "L'utilisateur est désactivé",
-      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes"
+      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
+      "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter"
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
