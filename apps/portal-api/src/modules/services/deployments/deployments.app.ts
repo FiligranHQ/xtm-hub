@@ -283,16 +283,17 @@ export const DeploymentsApp = {
     args: QueryDeploymentRequestsArgs
   ): Promise<DeploymentRequestConnection> => {
     args.filters = args.filters || [];
-    const hasHubStatusFilter = args.filters?.some(
-      (filter) => filter?.key === DeploymentRequestFilterKey.HubStatus
+
+    // By default, only return deployments with sync offset (target_state different from actual_state)
+    const hasStateFilter = args.filters?.some(
+      (filter) =>
+        filter?.key === DeploymentRequestFilterKey.TargetState ||
+        filter?.key === DeploymentRequestFilterKey.ActualState
     );
-    if (!hasHubStatusFilter) {
-      args.filters.push({
-        key: DeploymentRequestFilterKey.HubStatus,
-        value: [HubStatus.Pending],
-      });
-    }
-    return DeploymentRequestDomain.loadDeploymentRequests(args);
+
+    return DeploymentRequestDomain.loadDeploymentRequests(args, {
+      onlyOutOfSync: !hasStateFilter,
+    });
   },
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier

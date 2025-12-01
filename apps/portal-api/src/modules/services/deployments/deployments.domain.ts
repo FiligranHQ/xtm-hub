@@ -61,8 +61,20 @@ export const DeploymentRequestDomain = {
     );
   },
 
-  loadDeploymentRequests: async (opts: QueryDeploymentRequestsArgs) => {
+  loadDeploymentRequests: async (
+    opts: QueryDeploymentRequestsArgs,
+    options?: { onlyOutOfSync?: boolean }
+  ) => {
     const { first, after, filters } = opts;
+    const query = getDeploymentRequestWithUserDataQuery();
+
+    // If onlyOutOfSync, only return deployments with sync offset (target_state different from actual_state)
+    if (options?.onlyOutOfSync) {
+      query.whereRaw(
+        '("DeploymentRequest"."target_state" IS DISTINCT FROM "DeploymentRequest"."actual_state")'
+      );
+    }
+
     return paginate<DeploymentRequest, DeploymentRequestConnection>(
       'DeploymentRequest',
       {
@@ -73,7 +85,7 @@ export const DeploymentRequestDomain = {
         filters,
       },
       undefined,
-      getDeploymentRequestWithUserDataQuery()
+      query
     );
   },
 
