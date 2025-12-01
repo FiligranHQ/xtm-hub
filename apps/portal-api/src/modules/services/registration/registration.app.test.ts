@@ -764,9 +764,9 @@ describe('Registration app', () => {
           platform_token: uuidv4(),
           region: PlatformRegion.Us,
           request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-          hub_status: HubStatus.Approved,
-          target_state: PlatformState.Started,
-          actual_state: PlatformState.Pending,
+          hub_status: HubStatus.Pending,
+          target_state: PlatformState.Active,
+          actual_state: PlatformState.Provisioning,
           ordering: 1,
           type: DeploymentType.Trial,
           use_case: 'use_case',
@@ -807,9 +807,9 @@ describe('Registration app', () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequest.id,
         {
-          hub_status: HubStatus.Pending,
-          target_state: PlatformState.Pending,
-          actual_state: PlatformState.Pending,
+          hub_status: HubStatus.Queued,
+          target_state: undefined,
+          actual_state: undefined,
         }
       );
 

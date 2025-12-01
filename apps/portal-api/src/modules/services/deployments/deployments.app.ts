@@ -44,7 +44,6 @@ import {
 } from '../../telemetry/telemetry.helper';
 import {
   assertFreeTrialsLimit,
-  computeTargetState,
   isHubStatusTransitionValid,
 } from './deployments.helper';
 
@@ -64,7 +63,7 @@ export const DeploymentsApp = {
 
     if (
       input.hub_status &&
-      ![HubStatus.Pending, HubStatus.Approved].includes(input.hub_status)
+      ![HubStatus.Pending, HubStatus.Queued].includes(input.hub_status)
     ) {
       throw new Error(BadRequestErrorCode.InvalidStatus);
     }
@@ -80,7 +79,6 @@ export const DeploymentsApp = {
 
     try {
       const hubStatus = input.hub_status ?? HubStatus.Pending;
-      const targetState = computeTargetState(hubStatus);
       const ordering = Date.now();
 
       const createdDeploymentRequest = await databaseContext.withTransaction(
@@ -91,9 +89,9 @@ export const DeploymentsApp = {
               organizationId: user.selected_organization_id,
               platformIdentifier: input.platform_identifier,
               serviceInstanceCreationStatus:
-                hubStatus === HubStatus.Approved
-                  ? ServiceInstanceCreationStatus.Pending
-                  : ServiceInstanceCreationStatus.Disabled,
+                hubStatus === HubStatus.Queued
+                  ? ServiceInstanceCreationStatus.Disabled
+                  : ServiceInstanceCreationStatus.Pending,
             });
 
           return await DeploymentRequestDomain.insertDeploymentRequest({
@@ -102,8 +100,8 @@ export const DeploymentsApp = {
             organization_requester_id: user.selected_organization_id,
             service_instance_id: serviceInstanceId,
             hub_status: hubStatus,
-            target_state: targetState,
-            actual_state: PlatformState.Pending,
+            target_state: null,
+            actual_state: null,
             ordering,
             type: input.type,
             platform_identifier: input.platform_identifier,
@@ -172,8 +170,8 @@ export const DeploymentsApp = {
         start_date: createdDeploymentRequest.start_date,
         end_date: createdDeploymentRequest.end_date,
         hub_status: createdDeploymentRequest.hub_status as HubStatus,
-        expected_status: createdDeploymentRequest.target_state as PlatformState,
-        actual_status: createdDeploymentRequest.actual_state as PlatformState,
+        target_state: createdDeploymentRequest.target_state as PlatformState,
+        actual_state: createdDeploymentRequest.actual_state as PlatformState,
         ordering: createdDeploymentRequest.ordering,
         __typename: 'DeploymentRequest',
       };
@@ -208,7 +206,7 @@ export const DeploymentsApp = {
       );
     }
     const isActiveInputDataInvalid =
-      input.actual_status == PlatformState.Started &&
+      input.actual_state == PlatformState.Active &&
       (!input.start_date || !input.end_date);
     if (isActiveInputDataInvalid) {
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
@@ -233,13 +231,13 @@ export const DeploymentsApp = {
         end_date: input.end_date,
         product_service_instance_id: input.product_service_instance_id,
         failure_reason: input.failure_reason,
-        actual_state: input.actual_status,
+        actual_state: input.actual_state,
         ordering: input.ordering,
       };
 
       if (input.hub_status) {
         updateData.hub_status = input.hub_status;
-        updateData.target_state = computeTargetState(input.hub_status);
+        // target_state should be set explicitly if needed, not automatically computed
       }
 
       await DeploymentRequestDomain.updateDeploymentRequestById(
@@ -260,7 +258,7 @@ export const DeploymentsApp = {
         deploymentRequest.user_requester_id,
         {
           hub_status: input.hub_status,
-          actual_status: input.actual_status,
+          actual_state: input.actual_state,
           start_date: input.start_date,
           end_date: input.end_date,
           deployment_id: deploymentRequest.id,

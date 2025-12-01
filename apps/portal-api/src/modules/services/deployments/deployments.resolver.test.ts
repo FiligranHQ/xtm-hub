@@ -43,8 +43,8 @@ describe('Deployment app', () => {
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Pending,
-        expected_status: PlatformState.Pending,
-        actual_status: PlatformState.Pending,
+        target_state: null,
+        actual_state: null,
       });
     });
   });
@@ -58,14 +58,14 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
-        hub_status: HubStatus.Approved,
+        hub_status: HubStatus.Pending,
       };
       const initialDeployment = await DeploymentsApp.createDeploymentRequest(
         initialDeploymentData
       );
       const updates = {
         id: initialDeployment.id,
-        actual_status: PlatformState.Started,
+        actual_state: PlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         product_service_instance_id: 'fake product instance id',
@@ -83,9 +83,9 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
-        hub_status: HubStatus.Approved,
-        expected_status: PlatformState.Started,
-        actual_status: PlatformState.Started,
+        hub_status: HubStatus.Pending,
+        target_state: PlatformState.Active,
+        actual_state: PlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         product_service_instance_id: 'fake product instance id',
@@ -105,14 +105,14 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
-        hub_status: HubStatus.Approved,
+        hub_status: HubStatus.Pending,
       };
       const initialDeployment = await DeploymentsApp.createDeploymentRequest(
         initialDeploymentData
       );
       const updates = {
         id: initialDeployment.id,
-        hub_status: HubStatus.Pending,
+        hub_status: HubStatus.Expired,
       };
 
       const call = resolver.Mutation.updateDeploymentRequest(undefined, {

@@ -87,10 +87,9 @@ export const DeploymentRequestDomain = {
     platformIdentifier: PlatformIdentifier
   ) => {
     return getDeploymentRequestWithUserDataQuery()
-      .where('DeploymentRequest.hub_status', '=', HubStatus.Approved)
-      .whereIn('DeploymentRequest.actual_state', [
-        PlatformState.Started,
-        PlatformState.Stopped,
+      .whereIn('DeploymentRequest.hub_status', [
+        HubStatus.Active,
+        HubStatus.Expired,
       ])
       .where('DeploymentRequest.type', '=', DeploymentType.Trial)
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)

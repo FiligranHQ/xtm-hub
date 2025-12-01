@@ -9,16 +9,21 @@ enum DeploymentType {
 }
 
 enum HubStatus {
+  queued
   pending
-  approved
-  denied
-  cancelled
+  active
+  expired
+  failed
+  canceled
 }
 
 enum PlatformState {
   pending
-  started
-  stopped
+  provisioning
+  active
+  removing
+  removed
+  inactive
 }
 
 type DeploymentRequest implements Node {
@@ -32,8 +37,8 @@ type DeploymentRequest implements Node {
   start_date: Date
   end_date: Date
   hub_status: HubStatus!
-  expected_status: PlatformState!
-  actual_status: PlatformState!
+  target_state: PlatformState
+  actual_state: PlatformState
   ordering: Int!
 }
 
@@ -44,8 +49,8 @@ type PlatformDeploymentRequest {
   type: DeploymentType!
   platform_token: String!
   hub_status: HubStatus!
-  expected_status: PlatformState!
-  actual_status: PlatformState!
+  target_state: PlatformState
+  actual_state: PlatformState
   ordering: Int!
   start_date: Date
   end_date: Date
@@ -78,7 +83,7 @@ input UpdateDeploymentRequestInput {
   end_date: Date
   product_service_instance_id: String
   failure_reason: String
-  actual_status: PlatformState
+  actual_state: PlatformState
   ordering: Int
 }
 
@@ -86,8 +91,8 @@ enum DeploymentRequestFilterKey {
   region
   type
   hub_status
-  expected_status
-  actual_status
+  target_state
+  actual_state
   platform_identifier
 }
 

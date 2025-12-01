@@ -91,8 +91,8 @@ async function insertOpenCtiDeploymentRequest(
     region: PlatformRegion.Us,
     request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
     hub_status: HubStatus.Pending,
-    target_state: PlatformState.Pending,
-    actual_state: PlatformState.Pending,
+    target_state: undefined,
+    actual_state: undefined,
     ordering: 1,
     type: DeploymentType.Trial,
     use_case: 'use_case',
@@ -148,8 +148,8 @@ describe('Deployment app', () => {
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: HubStatus.Pending,
-        target_state: PlatformState.Pending,
-        actual_state: PlatformState.Pending,
+        target_state: undefined,
+        actual_state: undefined,
         ordering: expect.any(Number),
         type: DeploymentType.Trial,
         use_case: 'use_case',
@@ -166,7 +166,7 @@ describe('Deployment app', () => {
         ServiceInstanceCreationStatus.Pending
       );
     });
-    it('should create a deployment request with approved status if specified', async () => {
+    it('should create a deployment request with queued status if specified', async () => {
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -174,7 +174,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
-        hub_status: HubStatus.Approved,
+        hub_status: HubStatus.Queued,
       });
 
       const dbDeploymentRequest =
@@ -191,9 +191,9 @@ describe('Deployment app', () => {
         region: PlatformRegion.Us,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        hub_status: HubStatus.Approved,
-        target_state: PlatformState.Started,
-        actual_state: PlatformState.Pending,
+        hub_status: HubStatus.Queued,
+        target_state: undefined,
+        actual_state: undefined,
         ordering: expect.any(Number),
         type: DeploymentType.Trial,
         use_case: 'use_case',
@@ -206,7 +206,7 @@ describe('Deployment app', () => {
         dbDeploymentRequest.service_instance_id
       );
       expect(serviceInstance.creation_status).toBe(
-        ServiceInstanceCreationStatus.Pending
+        ServiceInstanceCreationStatus.Disabled
       );
     });
     it('should throw if an invalid hub_status is specified', async () => {
@@ -217,7 +217,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
-        hub_status: HubStatus.Denied,
+        hub_status: HubStatus.Expired,
       });
       await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
     });
@@ -251,8 +251,8 @@ describe('Deployment app', () => {
           use_case: 'use_case',
           deployment_type: DeploymentType.Trial,
           hub_status: HubStatus.Pending,
-          target_state: PlatformState.Pending,
-          actual_state: PlatformState.Pending,
+          target_state: undefined,
+          actual_state: undefined,
           activity_sector: 'cybersecurity',
           target_product: 'open-cti',
         });
@@ -317,8 +317,8 @@ describe('Deployment app', () => {
 
     it('should return pending deployment requests if nothing specified', async () => {
       await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Approved,
-        actual_state: PlatformState.Stopped,
+        hub_status: HubStatus.Expired,
+        actual_state: undefined,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
@@ -332,8 +332,8 @@ describe('Deployment app', () => {
     it('should return pending deployment requests even if other filters are specified', async () => {
       await insertOpenCtiDeploymentRequest({});
       await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Approved,
-        actual_state: PlatformState.Stopped,
+        hub_status: HubStatus.Expired,
+        actual_state: undefined,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
@@ -355,13 +355,13 @@ describe('Deployment app', () => {
       await insertOpenCtiDeploymentRequest({});
       await insertOpenCtiDeploymentRequest({
         region: PlatformRegion.Europe,
-        hub_status: HubStatus.Approved,
-        actual_state: PlatformState.Started,
+        hub_status: HubStatus.Active,
+        actual_state: PlatformState.Active,
       });
       await insertOpenCtiDeploymentRequest({
         platform_identifier: PlatformIdentifier.Openaev,
-        hub_status: HubStatus.Approved,
-        actual_state: PlatformState.Started,
+        hub_status: HubStatus.Active,
+        actual_state: PlatformState.Active,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
@@ -373,7 +373,7 @@ describe('Deployment app', () => {
           },
           {
             key: DeploymentRequestFilterKey.HubStatus,
-            value: [HubStatus.Approved],
+            value: [HubStatus.Active],
           },
           {
             key: DeploymentRequestFilterKey.PlatformIdentifier,
@@ -390,16 +390,16 @@ describe('Deployment app', () => {
     let initialDeployment: DeploymentRequest;
     beforeEach(async () => {
       initialDeployment = (await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Approved,
-        target_state: PlatformState.Started,
-        actual_state: PlatformState.Pending,
+        hub_status: HubStatus.Pending,
+        target_state: PlatformState.Active,
+        actual_state: PlatformState.Provisioning,
       })) as DeploymentRequest;
     });
 
     it('should update a deployment request', async () => {
       const deployment = await DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
-        actual_status: PlatformState.Started,
+        actual_state: PlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         product_service_instance_id: 'fake product instance id',
@@ -430,9 +430,9 @@ describe('Deployment app', () => {
         region: PlatformRegion.Us,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        hub_status: HubStatus.Approved,
-        target_state: PlatformState.Started,
-        actual_state: PlatformState.Started,
+        hub_status: HubStatus.Pending,
+        target_state: PlatformState.Active,
+        actual_state: PlatformState.Active,
         ordering: expect.any(Number),
         type: DeploymentType.Trial,
         use_case: 'use_case',
@@ -456,7 +456,7 @@ describe('Deployment app', () => {
     it('should should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({
         id: uuidv4(),
-        actual_status: PlatformState.Started,
+        actual_state: PlatformState.Active,
       });
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
@@ -483,7 +483,7 @@ describe('Deployment app', () => {
       async ({ start_date, end_date }) => {
         const call = DeploymentsApp.updateDeploymentRequest({
           id: initialDeployment.id,
-          actual_status: PlatformState.Started,
+          actual_state: PlatformState.Active,
           start_date,
           end_date,
         });
@@ -497,7 +497,7 @@ describe('Deployment app', () => {
       // Act
       const call = DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
-        hub_status: HubStatus.Pending,
+        hub_status: HubStatus.Expired,
       });
       await expect(call).rejects.toThrow(
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
@@ -514,7 +514,7 @@ describe('Deployment app', () => {
 
         await DeploymentsApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
-          actual_status: PlatformState.Started,
+          actual_state: PlatformState.Active,
           start_date,
           end_date,
           product_service_instance_id: 'fake product instance id',
@@ -535,7 +535,7 @@ describe('Deployment app', () => {
           start_date,
           end_date,
           hub_status: undefined,
-          actual_status: PlatformState.Started,
+          actual_state: PlatformState.Active,
         });
       });
 
@@ -550,7 +550,7 @@ describe('Deployment app', () => {
 
         const deployment = await DeploymentsApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
-          actual_status: PlatformState.Started,
+          actual_state: PlatformState.Active,
           start_date,
           end_date,
           product_service_instance_id: 'fake product instance id',

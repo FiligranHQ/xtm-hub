@@ -122,7 +122,7 @@ export interface UpdateDeploymentEvent extends BaseTelemetryEvent {
   end_date: Date;
   platform_id: string;
   hub_status?: HubStatus;
-  actual_status?: PlatformState;
+  actual_state?: PlatformState;
 }
 
 export type TelemetryEvent =

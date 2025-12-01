@@ -7,26 +7,6 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 
-/**
- * Compute the target_state based on hub_status
- *
- * Rules:
- * - If hub_status is 'pending', 'denied', or 'cancelled' → target_state = 'pending'
- * - If hub_status is 'approved' → target_state = 'started' (by default)
- */
-export const computeTargetState = (hubStatus: HubStatus): PlatformState => {
-  switch (hubStatus) {
-    case HubStatus.Pending:
-    case HubStatus.Denied:
-    case HubStatus.Cancelled:
-      return PlatformState.Pending;
-    case HubStatus.Approved:
-      return PlatformState.Started;
-    default:
-      return PlatformState.Pending;
-  }
-};
-
 type HubStatusTransition = {
   from: HubStatus;
   to: HubStatus;
@@ -38,16 +18,25 @@ type PlatformStateTransition = {
 };
 
 const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
-  { from: HubStatus.Pending, to: HubStatus.Approved },
-  { from: HubStatus.Pending, to: HubStatus.Denied },
-  { from: HubStatus.Pending, to: HubStatus.Cancelled },
-  { from: HubStatus.Approved, to: HubStatus.Cancelled },
+  { from: HubStatus.Queued, to: HubStatus.Pending },
+  { from: HubStatus.Queued, to: HubStatus.Canceled },
+  { from: HubStatus.Pending, to: HubStatus.Active },
+  { from: HubStatus.Pending, to: HubStatus.Failed },
+  { from: HubStatus.Pending, to: HubStatus.Canceled },
+  { from: HubStatus.Active, to: HubStatus.Expired },
+  { from: HubStatus.Active, to: HubStatus.Canceled },
+  { from: HubStatus.Failed, to: HubStatus.Pending },
+  { from: HubStatus.Failed, to: HubStatus.Active },
 ];
 
 const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
-  { from: PlatformState.Pending, to: PlatformState.Started },
-  { from: PlatformState.Started, to: PlatformState.Stopped },
-  { from: PlatformState.Stopped, to: PlatformState.Started },
+  { from: PlatformState.Pending, to: PlatformState.Provisioning },
+  { from: PlatformState.Provisioning, to: PlatformState.Active },
+  { from: PlatformState.Provisioning, to: PlatformState.Pending },
+  { from: PlatformState.Active, to: PlatformState.Removing },
+  { from: PlatformState.Active, to: PlatformState.Inactive },
+  { from: PlatformState.Removing, to: PlatformState.Removed },
+  { from: PlatformState.Inactive, to: PlatformState.Active },
 ];
 
 export const isHubStatusTransitionValid = (

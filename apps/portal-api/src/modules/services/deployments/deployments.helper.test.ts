@@ -12,35 +12,21 @@ import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 import {
   assertFreeTrialsLimit,
-  computeTargetState,
   isHubStatusTransitionValid,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 
-describe('computeTargetState', () => {
-  it('should return pending for pending hub status', () => {
-    expect(computeTargetState(HubStatus.Pending)).toBe(PlatformState.Pending);
-  });
-
-  it('should return pending for denied hub status', () => {
-    expect(computeTargetState(HubStatus.Denied)).toBe(PlatformState.Pending);
-  });
-
-  it('should return pending for cancelled hub status', () => {
-    expect(computeTargetState(HubStatus.Cancelled)).toBe(PlatformState.Pending);
-  });
-
-  it('should return started for approved hub status', () => {
-    expect(computeTargetState(HubStatus.Approved)).toBe(PlatformState.Started);
-  });
-});
-
 describe('isHubStatusTransitionValid', () => {
   const validTransitions = [
-    [HubStatus.Pending, HubStatus.Approved],
-    [HubStatus.Pending, HubStatus.Denied],
-    [HubStatus.Pending, HubStatus.Cancelled],
-    [HubStatus.Approved, HubStatus.Cancelled],
+    [HubStatus.Queued, HubStatus.Pending],
+    [HubStatus.Queued, HubStatus.Canceled],
+    [HubStatus.Pending, HubStatus.Active],
+    [HubStatus.Pending, HubStatus.Failed],
+    [HubStatus.Pending, HubStatus.Canceled],
+    [HubStatus.Active, HubStatus.Expired],
+    [HubStatus.Active, HubStatus.Canceled],
+    [HubStatus.Failed, HubStatus.Pending],
+    [HubStatus.Failed, HubStatus.Active],
   ] as const;
 
   it.each(validTransitions)(
@@ -51,10 +37,11 @@ describe('isHubStatusTransitionValid', () => {
   );
 
   const invalidTransitions = [
-    [HubStatus.Approved, HubStatus.Pending],
-    [HubStatus.Denied, HubStatus.Approved],
-    [HubStatus.Cancelled, HubStatus.Approved],
-    [HubStatus.Denied, HubStatus.Pending],
+    [HubStatus.Queued, HubStatus.Active],
+    [HubStatus.Active, HubStatus.Pending],
+    [HubStatus.Expired, HubStatus.Active],
+    [HubStatus.Canceled, HubStatus.Active],
+    [HubStatus.Expired, HubStatus.Pending],
   ] as const;
 
   it.each(invalidTransitions)(
@@ -74,9 +61,13 @@ describe('isHubStatusTransitionValid', () => {
 
 describe('isPlatformStateTransitionValid', () => {
   const validTransitions = [
-    [PlatformState.Pending, PlatformState.Started],
-    [PlatformState.Started, PlatformState.Stopped],
-    [PlatformState.Stopped, PlatformState.Started],
+    [PlatformState.Pending, PlatformState.Provisioning],
+    [PlatformState.Provisioning, PlatformState.Active],
+    [PlatformState.Provisioning, PlatformState.Pending],
+    [PlatformState.Active, PlatformState.Removing],
+    [PlatformState.Active, PlatformState.Inactive],
+    [PlatformState.Removing, PlatformState.Removed],
+    [PlatformState.Inactive, PlatformState.Active],
   ] as const;
 
   it.each(validTransitions)(
@@ -87,9 +78,10 @@ describe('isPlatformStateTransitionValid', () => {
   );
 
   const invalidTransitions = [
-    [PlatformState.Pending, PlatformState.Stopped],
-    [PlatformState.Started, PlatformState.Pending],
-    [PlatformState.Stopped, PlatformState.Pending],
+    [PlatformState.Pending, PlatformState.Active],
+    [PlatformState.Provisioning, PlatformState.Removing],
+    [PlatformState.Active, PlatformState.Pending],
+    [PlatformState.Removed, PlatformState.Active],
   ] as const;
 
   it.each(invalidTransitions)(
@@ -129,13 +121,9 @@ describe('assertFreeTrialsLimit', () => {
       region: PlatformRegion.Europe,
       type: DeploymentType.Trial,
       hub_status: HubStatus.Pending,
-      target_state: PlatformState.Pending,
-      actual_state: PlatformState.Pending,
-    } as ReturnType<
-      typeof DeploymentRequestDomain.loadDeploymentRequestBy
-    > extends Promise<infer T>
-      ? T
-      : never);
+      target_state: PlatformState.Active,
+      actual_state: null,
+    } as any);
     await expect(
       assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
     ).rejects.toThrow(AlreadyExistsErrorCode.FreeTrialAlreadyExists);

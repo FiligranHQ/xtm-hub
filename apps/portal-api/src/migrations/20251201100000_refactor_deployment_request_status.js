@@ -2,9 +2,9 @@
  * Migration: Refactor DeploymentRequest status field
  *
  * This migration replaces the single 'status' column with three new columns:
- * - hub_status: Status from Hub's perspective (pending, approved, denied, cancelled)
- * - target_state: Desired state of the platform (pending, started, stopped)
- * - actual_state: Current actual state of the platform (pending, started, stopped)
+ * - hub_status: Status from Hub's perspective (queued, pending, active, expired, failed, canceled)
+ * - target_state: Desired state of the platform (pending, provisioning, active, removing, removed, inactive, NULL)
+ * - actual_state: Current actual state of the platform (pending, provisioning, active, removing, removed, inactive, NULL)
  * - ordering: For maintaining chronological order
  *
  * @param { import("knex").Knex } knex
@@ -32,47 +32,46 @@ export async function up(knex) {
 
     // Map old status to new fields according to spec
     switch (request.status) {
+      case 'QUEUED':
+        hubStatus = 'queued';
+        targetState = null;
+        actualState = null;
+        break;
       case 'PENDING':
         hubStatus = 'pending';
-        targetState = 'pending';
-        actualState = 'pending';
-        break;
-      case 'QUEUED':
-        hubStatus = 'approved';
-        targetState = 'pending';
-        actualState = 'pending';
+        targetState = 'active';
+        actualState = null;
         break;
       case 'PROVISIONING':
-        hubStatus = 'approved';
-        targetState = 'started';
-        actualState = 'pending';
+        hubStatus = 'pending';
+        targetState = 'active';
+        actualState = 'provisioning';
         break;
       case 'ACTIVE':
-        hubStatus = 'approved';
-        targetState = 'started';
-        actualState = 'started';
+        hubStatus = 'active';
+        targetState = 'active';
+        actualState = 'active';
         break;
       case 'EXPIRED':
-        hubStatus = 'approved';
-        targetState = 'stopped';
-        actualState = 'stopped';
+        hubStatus = 'expired';
+        targetState = 'inactive';
+        actualState = null;
         break;
       case 'FAILED':
-        hubStatus = 'approved';
-        targetState = 'started';
-        actualState = 'pending';
-        // failure_reason should already exist in the table
+        hubStatus = 'failed';
+        targetState = 'active';
+        actualState = 'provisioning';
         break;
       case 'CANCELLED':
-        hubStatus = 'cancelled';
-        targetState = 'pending';
-        actualState = 'pending';
+        hubStatus = 'canceled';
+        targetState = 'active';
+        actualState = null;
         break;
       default:
         // Fallback for any unexpected status
         hubStatus = 'pending';
-        targetState = 'pending';
-        actualState = 'pending';
+        targetState = null;
+        actualState = null;
     }
 
     await knex('DeploymentRequest')
@@ -85,11 +84,9 @@ export async function up(knex) {
       });
   }
 
-  // Step 3: Make new columns non-nullable with default values
+  // Step 3: Make hub_status non-nullable with default value
   await knex.schema.alterTable('DeploymentRequest', (table) => {
     table.string('hub_status').notNullable().defaultTo('pending').alter();
-    table.string('target_state').notNullable().defaultTo('pending').alter();
-    table.string('actual_state').notNullable().defaultTo('pending').alter();
     table.integer('ordering').notNullable().defaultTo(0).alter();
   });
 
@@ -112,40 +109,38 @@ export async function down(knex) {
   });
 
   // Step 2: Migrate data back from new columns to status
-  const existingRequests = await knex('DeploymentRequest')
-    .select('id', 'hub_status', 'target_state', 'actual_state', 'failure_reason');
+  const existingRequests = await knex('DeploymentRequest').select(
+    'id',
+    'hub_status',
+    'target_state',
+    'actual_state'
+  );
 
   for (const request of existingRequests) {
     let status;
 
     // Reverse mapping: hub_status + target_state + actual_state → status
-    if (request.hub_status === 'pending') {
-      status = 'PENDING';
-    } else if (request.hub_status === 'cancelled') {
-      status = 'CANCELLED';
-    } else if (request.hub_status === 'denied') {
-      status = 'CANCELLED'; // Map denied to CANCELLED as there's no DENIED in old enum
-    } else if (request.hub_status === 'approved') {
-      if (request.actual_state === 'started') {
-        status = 'ACTIVE';
-      } else if (request.actual_state === 'stopped') {
-        status = 'EXPIRED';
-      } else if (request.target_state === 'pending') {
-        status = 'QUEUED';
-      } else if (request.target_state === 'started' && request.failure_reason) {
-        status = 'FAILED';
-      } else if (request.target_state === 'started') {
+    if (request.hub_status === 'queued') {
+      status = 'QUEUED';
+    } else if (request.hub_status === 'pending') {
+      if (request.actual_state === 'provisioning') {
         status = 'PROVISIONING';
       } else {
-        status = 'PENDING'; // Fallback
+        status = 'PENDING';
       }
+    } else if (request.hub_status === 'active') {
+      status = 'ACTIVE';
+    } else if (request.hub_status === 'expired') {
+      status = 'EXPIRED';
+    } else if (request.hub_status === 'failed') {
+      status = 'FAILED';
+    } else if (request.hub_status === 'canceled') {
+      status = 'CANCELLED';
     } else {
       status = 'PENDING'; // Fallback
     }
 
-    await knex('DeploymentRequest')
-      .where('id', request.id)
-      .update({ status });
+    await knex('DeploymentRequest').where('id', request.id).update({ status });
   }
 
   // Step 3: Make status non-nullable

@@ -11,7 +11,6 @@ import {
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
-  PlatformState,
   RefreshPlatformRegistrationConnectivityStatusInput,
   RefreshUserPlatformTokenResponse,
   RegisteredPlatform,
@@ -519,12 +518,9 @@ const assertValidDeploymentRequest = (
   ) {
     throw new Error(BadRequestErrorCode.InvalidPlatformId);
   }
-  if (deploymentRequest.hub_status !== HubStatus.Approved) {
-    throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
-  }
   if (
-    ![PlatformState.Started, PlatformState.Pending].includes(
-      deploymentRequest.actual_state as PlatformState
+    ![HubStatus.Active, HubStatus.Pending].includes(
+      deploymentRequest.hub_status as HubStatus
     )
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
