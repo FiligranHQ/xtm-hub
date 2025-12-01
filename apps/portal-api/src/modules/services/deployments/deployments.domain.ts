@@ -80,6 +80,19 @@ export const DeploymentRequestDomain = {
     return query.first();
   },
 
+  loadProvisionedTrialDeploymentRequestByPlatformIdentifier: async (
+    platformIdentifier: PlatformIdentifier
+  ) => {
+    return getDeploymentRequestWithUserDataQuery()
+      .whereIn('DeploymentRequest.status', [
+        DeploymentRequestStatus.Active,
+        DeploymentRequestStatus.Expired,
+      ])
+      .where('DeploymentRequest.type', '=', DeploymentType.Trial)
+      .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
+      .first();
+  },
+
   deleteDeploymentRequestBy: async (
     conditions: DeploymentRequestMutator
   ): Promise<DeploymentRequest> => {

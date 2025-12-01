@@ -667,6 +667,8 @@
       "StartTrial": "Commencez votre essai gratuit",
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "ContactUs": "Contactez nous",
+      "ContactUsSuccessTitle": "Merci !",
+      "ContactUsSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
       "Form": {
         "Region": "Région",
         "AssociatedEmail": "Email associé",

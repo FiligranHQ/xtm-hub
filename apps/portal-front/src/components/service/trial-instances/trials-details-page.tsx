@@ -3,24 +3,19 @@ import { TrialsLearnMore } from '@/components/service/trial-instances/trials-lea
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { Button, GradientButton } from 'filigran-ui/servers';
-import { useTranslations } from 'next-intl';
+import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
 import React from 'react';
+import { ContactUsButton } from './contact-us-button';
 
 interface Props {
   platform: registeredPlatformByServiceInstanceId_fragment$data;
 }
 
 export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
-  const t = useTranslations();
   return (
     <>
-      <TrialsHeader
-        actions={
-          <GradientButton>{t('Service.Trials.ContactUs')}</GradientButton>
-        }
-      />
+      <TrialsHeader actions={<ContactUsButton variant="gradient" />} />
       <section className="flex justify-between p-xl border border-solid border-blue rounded">
         <ul className="text-sm flex flex-col gap-l">
           <li>

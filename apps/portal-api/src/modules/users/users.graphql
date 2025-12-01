@@ -141,6 +141,9 @@ type Mutation {
   # Login
   login(email: String!, password: String): User
   logout: ID! @auth
+
+  # Contact
+  contactUs: Success! @auth
 }
 
 type UserSubscription {
