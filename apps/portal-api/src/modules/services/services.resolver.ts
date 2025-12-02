@@ -1,6 +1,6 @@
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { DatabaseType, db, dbTx } from '../../../knexfile';
+import { DatabaseType, db } from '../../../knexfile';
 import {
   IntegrationFeedType,
   RegisteredPlatform,
@@ -236,8 +236,6 @@ const resolvers: Resolvers = {
       return updatedServiceInstance;
     },
     addServiceInstance: async (_, { input }, context) => {
-      const trx = await dbTx();
-
       try {
         const dataService = {
           id: uuidv4(),
@@ -245,62 +243,63 @@ const resolvers: Resolvers = {
           description: input.service_instance_description,
           creation_status: ServiceInstanceCreationStatus.Pending,
         };
-        const [addedServiceInstance] = await db<ServiceInstance>(
-          context,
-          'ServiceInstance'
-        )
-          .insert(dataService)
-          .returning('*');
 
-        const dataServicePrice = {
-          id: uuidv4() as unknown as ServicePriceId,
-          service_definition_id:
-            addedServiceInstance.id as unknown as ServiceDefinitionId,
-          fee_type: input.fee_type,
-          start_date: new Date(),
-          price: input.price,
-        };
+        return await withTransaction(async () => {
+          const [addedServiceInstance] = await db<ServiceInstance>(
+            context,
+            'ServiceInstance'
+          )
+            .insert(dataService)
+            .returning('*');
 
-        await db<ServicePrice>(context, 'Service_Price')
-          .insert(dataServicePrice)
-          .returning('*');
+          const dataServicePrice = {
+            id: uuidv4() as unknown as ServicePriceId,
+            service_definition_id:
+              addedServiceInstance.id as unknown as ServiceDefinitionId,
+            fee_type: input.fee_type,
+            start_date: new Date(),
+            price: input.price,
+          };
 
-        const dataServiceLink = {
-          id: uuidv4() as unknown as ServiceLinkId,
-          service_instance_id:
-            addedServiceInstance.id as unknown as ServiceInstanceId,
-          url: input.url,
-          name: input.service_instance_name,
-        };
+          await db<ServicePrice>(context, 'Service_Price')
+            .insert(dataServicePrice)
+            .returning('*');
 
-        await db<ServiceLink>(context, 'Service_Link')
-          .insert(dataServiceLink)
-          .returning('*');
-        await dispatch('ServiceInstance', 'add', addedServiceInstance);
+          const dataServiceLink = {
+            id: uuidv4() as unknown as ServiceLinkId,
+            service_instance_id:
+              addedServiceInstance.id as unknown as ServiceInstanceId,
+            url: input.url,
+            name: input.service_instance_name,
+          };
 
-        const dataSubscription = {
-          id: uuidv4() as unknown as SubscriptionId,
-          organization_id: fromGlobalId(input.organization_id).id,
-          service_instance_id: addedServiceInstance.id,
-          start_date: new Date(),
-          end_date: null,
-          status: 'ACCEPTED',
-        };
+          await db<ServiceLink>(context, 'Service_Link')
+            .insert(dataServiceLink)
+            .returning('*');
+          await dispatch('ServiceInstance', 'add', addedServiceInstance);
 
-        const [addedSubscription] = await db<Subscription>(
-          context,
-          'Subscription'
-        )
-          .insert(dataSubscription)
-          .returning('*');
-        addedSubscription.organization = await loadOrganizationBy({
-          id: fromGlobalId(input.organization_id).id as OrganizationId,
+          const dataSubscription = {
+            id: uuidv4() as unknown as SubscriptionId,
+            organization_id: fromGlobalId(input.organization_id).id,
+            service_instance_id: addedServiceInstance.id,
+            start_date: new Date(),
+            end_date: null,
+            status: 'ACCEPTED',
+          };
+
+          const [addedSubscription] = await db<Subscription>(
+            context,
+            'Subscription'
+          )
+            .insert(dataSubscription)
+            .returning('*');
+          addedSubscription.organization = await loadOrganizationBy({
+            id: fromGlobalId(input.organization_id).id as OrganizationId,
+          });
+          addedSubscription.service_instance = addedServiceInstance;
+          return addedSubscription;
         });
-        addedSubscription.service_instance = addedServiceInstance;
-        await trx.commit();
-        return addedSubscription;
       } catch (error) {
-        await trx.rollback();
         logApp.error('Error while adding the new service.', error);
         throw mapToGraphQLError(error);
       }
