@@ -15,10 +15,9 @@ export const getPlatformIdentifier = (type: string): PlatformIdentifierEnum => {
 };
 
 export const buildPlatformHoverLinks = (
-  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
+  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
+  t: ReturnType<typeof useTranslations>
 ): React.ReactNode | undefined => {
-  const t = useTranslations();
-
   return (
     <>
       <Button variant="outline-primary">
