@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { dbTx, dbUnsecure } from '../../knexfile';
+import { dbUnsecure } from '../../knexfile';
+import { withTransaction } from '../context/database.context';
 import { UserInitializer } from '../model/kanel/public/User';
 import UserOrganization from '../model/kanel/public/UserOrganization';
 import { loadOrganizationBy } from '../modules/organizations/organizations.domain';
@@ -22,18 +23,13 @@ import {
 describe('Dev users seeding', () => {
   // Set up required roles before each test
   beforeEach(async () => {
-    const trx = await dbTx();
-    try {
+    await withTransaction(async () => {
       // Ensure required capabilities and roles exist
-      await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
-      await ensureRoleExists(ROLE_ADMIN, trx);
-      await ensureRoleExists(ROLE_USER, trx);
-      await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS, trx);
-      await trx.commit();
-    } catch (error) {
-      await trx.rollback();
-      throw error;
-    }
+      await ensureCapabilityExists(CAPABILITY_BYPASS);
+      await ensureRoleExists(ROLE_ADMIN);
+      await ensureRoleExists(ROLE_USER);
+      await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS);
+    });
   });
 
   // Clean up test data after each test
