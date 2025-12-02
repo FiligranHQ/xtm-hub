@@ -1,7 +1,8 @@
 enum PlatformRegion {
-  europe
-  us
-  apac
+  eu_west
+  us_east
+  apac_au
+  apac_sg
 }
 
 enum DeploymentType {

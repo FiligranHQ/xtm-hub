@@ -1024,9 +1024,9 @@ export type PlatformDeploymentRequest = {
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
+  platform_id?: Maybe<Scalars['String']['output']>;
   platform_identifier: PlatformIdentifier;
   platform_token: Scalars['String']['output'];
-  platform_id?: Maybe<Scalars['String']['output']>;
   region: PlatformRegion;
   requester_email: Scalars['String']['output'];
   requester_first_name?: Maybe<Scalars['String']['output']>;
@@ -1058,9 +1058,10 @@ export type PlatformProvider = {
 };
 
 export enum PlatformRegion {
-  Apac = 'apac',
-  Europe = 'europe',
-  Us = 'us'
+  ApacAu = 'apac_au',
+  ApacSg = 'apac_sg',
+  EuWest = 'eu_west',
+  UsEast = 'us_east'
 }
 
 export enum PlatformRegistrationConnectivityStatus {
@@ -2749,9 +2750,9 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['PlatformRegion'], ParentType, ContextType>;
   requester_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   requester_first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

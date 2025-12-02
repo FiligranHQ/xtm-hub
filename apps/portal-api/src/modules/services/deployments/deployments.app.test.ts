@@ -88,7 +88,7 @@ async function insertOpenCtiDeploymentRequest(
     organization_requester_id: PLATFORM_ORGANIZATION_UUID,
     platform_identifier: PlatformIdentifier.Opencti,
     platform_token: uuidv4(),
-    region: PlatformRegion.Us,
+    region: PlatformRegion.UsEast,
     request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
     hub_status: HubStatus.Pending,
     target_state: PlatformState.Active,
@@ -129,7 +129,7 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         type: DeploymentType.Trial,
       });
 
@@ -144,7 +144,7 @@ describe('Deployment app', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: HubStatus.Pending,
@@ -172,7 +172,7 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Queued,
       });
@@ -188,7 +188,7 @@ describe('Deployment app', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: HubStatus.Queued,
@@ -215,7 +215,7 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Expired,
       });
@@ -232,7 +232,7 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           use_case: 'use_case',
           platform_identifier: PlatformIdentifier.Opencti,
-          region: PlatformRegion.Us,
+          region: PlatformRegion.UsEast,
           type: DeploymentType.Trial,
         });
 
@@ -247,7 +247,7 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           user_id: ADMIN_USER_ID,
           deployment_id: deployment.id,
-          region: PlatformRegion.Us,
+          region: PlatformRegion.UsEast,
           use_case: 'use_case',
           deployment_type: DeploymentType.Trial,
           hub_status: HubStatus.Pending,
@@ -268,7 +268,7 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           use_case: 'use_case',
           platform_identifier: PlatformIdentifier.Opencti,
-          region: PlatformRegion.Us,
+          region: PlatformRegion.UsEast,
           type: DeploymentType.Trial,
         });
 
@@ -282,7 +282,7 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           use_case: 'use_case',
           platform_identifier: PlatformIdentifier.Opencti,
-          region: PlatformRegion.Us,
+          region: PlatformRegion.UsEast,
           type: DeploymentType.Trial,
         });
 
@@ -352,7 +352,7 @@ describe('Deployment app', () => {
         filters: [
           {
             key: DeploymentRequestFilterKey.Region,
-            value: [PlatformRegion.Us],
+            value: [PlatformRegion.UsEast],
           },
         ],
       });
@@ -425,7 +425,7 @@ describe('Deployment app', () => {
     it('should return filtered deployment requests only', async () => {
       await insertOpenCtiDeploymentRequest({});
       await insertOpenCtiDeploymentRequest({
-        region: PlatformRegion.Europe,
+        region: PlatformRegion.EuWest,
         hub_status: HubStatus.Active,
         actual_state: PlatformState.Active,
       });
@@ -440,7 +440,7 @@ describe('Deployment app', () => {
         filters: [
           {
             key: DeploymentRequestFilterKey.Region,
-            value: [PlatformRegion.Us],
+            value: [PlatformRegion.UsEast],
           },
           {
             key: DeploymentRequestFilterKey.HubStatus,
@@ -498,7 +498,7 @@ describe('Deployment app', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: HubStatus.Pending,
@@ -636,28 +636,30 @@ describe('Deployment app', () => {
     it.each([
       {
         description: 'normal case with available slots',
-        maxDeployments: { us: 10, europe: 5 },
+        maxDeployments: { us_east: 10, eu_west: 5 },
         currentDeployments: {
-          [PlatformRegion.Us]: 3,
-          [PlatformRegion.Europe]: 1,
+          [PlatformRegion.UsEast]: 3,
+          [PlatformRegion.EuWest]: 1,
         } as Record<string, number>,
         expected: [
-          { region: PlatformRegion.Us, availableCount: 7 },
-          { region: PlatformRegion.Europe, availableCount: 4 },
-          { region: PlatformRegion.Apac, availableCount: 0 },
+          { region: PlatformRegion.UsEast, availableCount: 7 },
+          { region: PlatformRegion.EuWest, availableCount: 4 },
+          { region: PlatformRegion.ApacAu, availableCount: 0 },
+          { region: PlatformRegion.ApacSg, availableCount: 0 },
         ],
       },
       {
         description: 'over capacity scenario',
-        maxDeployments: { us: 5 },
-        currentDeployments: { [PlatformRegion.Us]: 8 } as Record<
+        maxDeployments: { us_east: 5 },
+        currentDeployments: { [PlatformRegion.UsEast]: 8 } as Record<
           string,
           number
         >,
         expected: [
-          { region: PlatformRegion.Us, availableCount: -3 },
-          { region: PlatformRegion.Europe, availableCount: 0 },
-          { region: PlatformRegion.Apac, availableCount: 0 },
+          { region: PlatformRegion.UsEast, availableCount: -3 },
+          { region: PlatformRegion.EuWest, availableCount: 0 },
+          { region: PlatformRegion.ApacAu, availableCount: 0 },
+          { region: PlatformRegion.ApacSg, availableCount: 0 },
         ],
       },
     ])(

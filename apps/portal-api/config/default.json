@@ -101,8 +101,9 @@
     "cleanup_interval_minutes": 60
   },
   "max_deployments": {
-    "us": 10,
-    "europe": 10,
-    "apac": 10
+    "us_east": 20,
+    "eu_west": 20,
+    "apac_au": 10,
+    "apac_sg": 10
   }
 }

@@ -121,7 +121,7 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                         <SelectItem
                           key={region.value}
                           value={region.value}>
-                          {region.label}
+                          {t(`Region.${region.label}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>

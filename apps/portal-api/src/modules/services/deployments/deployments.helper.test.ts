@@ -118,7 +118,7 @@ describe('assertFreeTrialsLimit', () => {
     ).mockResolvedValue({
       id: uuidv4(),
       platform_identifier: PlatformIdentifier.Opencti,
-      region: PlatformRegion.Europe,
+      region: PlatformRegion.EuWest,
       type: DeploymentType.Trial,
       hub_status: HubStatus.Pending,
       target_state: PlatformState.Active,
