@@ -13,16 +13,18 @@ export const ServiceGroupDomain = {
   loadGroupsServiceInstanceIds: async (
     groupIds: ServiceGroupId[]
   ): Promise<ServiceInstanceId[]> => {
-    return db<ServiceInstanceId[]>('ServiceGroup')
+    const serviceInstances = await db<ServiceInstanceId[]>('ServiceGroup')
       .leftJoin(
         'ServiceInstance',
-        'Group.service_instance_id',
+        'ServiceGroup.service_instance_id',
         '=',
         'ServiceInstance.id'
       )
-      .whereIn('Group.id', groupIds)
+      .whereIn('ServiceGroup.id', groupIds)
       .distinct('ServiceInstance.id')
       .select('ServiceInstance.id');
+
+    return serviceInstances.map(({ id }) => id);
   },
 
   loadServiceGroups: async (

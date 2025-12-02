@@ -40,7 +40,8 @@ export const organizationDomain = {
       .where({
         'ServiceInstance.id': serviceInstanceId,
       })
-      .select('Organization.*');
+      .select('Organization.*')
+      .first();
   },
 };
 

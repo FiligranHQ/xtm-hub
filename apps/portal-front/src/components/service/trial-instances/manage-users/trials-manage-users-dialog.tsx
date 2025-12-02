@@ -6,7 +6,7 @@ import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/
 import { serviceGroupsByServiceInstanceIdQuery } from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
 import { Button } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useQueryLoader } from 'react-relay';
 
 interface Props {
@@ -15,22 +15,34 @@ interface Props {
 
 export const TrialsManageUsersDialog: React.FC<Props> = ({ platform }) => {
   const t = useTranslations();
-  const [openSheet, setOpenSheet] = useState(true);
+  const [openSheet, setOpenSheet] = useState(false);
 
   const [queryRef, loadQuery] =
     useQueryLoader<serviceGroupsByServiceInstanceIdQuery>(
       ServiceGroupsByServiceInstanceId
     );
 
-  useEffect(() => {
+  const loadServiceGroups = useCallback(() => {
     if (!platform?.subscription?.service_instance?.id || !loadQuery) {
       return;
     }
 
-    loadQuery({
-      serviceInstanceId: platform?.subscription?.service_instance?.id,
-    });
+    loadQuery(
+      {
+        serviceInstanceId: platform?.subscription?.service_instance?.id,
+      },
+      { fetchPolicy: 'network-only' }
+    );
   }, [loadQuery, platform?.subscription?.service_instance?.id]);
+
+  const onCompleted = () => {
+    setOpenSheet(false);
+    loadServiceGroups();
+  };
+
+  useEffect(() => {
+    loadServiceGroups();
+  }, [loadServiceGroups]);
 
   return (
     <SheetWithPreventingDialog
@@ -45,6 +57,7 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({ platform }) => {
       {queryRef && (
         <TrialsManageUsersForm
           onCancel={() => setOpenSheet(false)}
+          onCompleted={onCompleted}
           platform={platform}
           queryRef={queryRef}
         />

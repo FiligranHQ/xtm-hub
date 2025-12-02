@@ -7,6 +7,7 @@ import { serviceGroup_fragment$key } from '@generated/serviceGroup_fragment.grap
 import ServiceGroupsByServiceInstanceIdQueryGraphql, {
   serviceGroupsByServiceInstanceIdQuery,
 } from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
+import ServiceGroupsUpdateMutationGraphql from '@generated/serviceGroupsUpdateMutation.graphql';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -16,12 +17,18 @@ import {
   FormItem,
   FormLabel,
   SheetFooter,
+  toast,
 } from 'filigran-ui';
 import { MultiSelectFormField } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
+import {
+  PreloadedQuery,
+  readInlineData,
+  useMutation,
+  usePreloadedQuery,
+} from 'react-relay';
 import { z } from 'zod';
 
 const formSchema = z.object({
@@ -36,6 +43,7 @@ const formSchema = z.object({
 
 interface Props {
   onCancel: () => void;
+  onCompleted: () => void;
   platform: registeredPlatformByServiceInstanceId_fragment$data;
   queryRef: PreloadedQuery<serviceGroupsByServiceInstanceIdQuery>;
 }
@@ -44,6 +52,7 @@ export const TrialsManageUsersForm: React.FC<Props> = ({
   onCancel,
   platform,
   queryRef,
+  onCompleted,
 }) => {
   const t = useTranslations();
   const { orderMode, orderBy, pageSize } = useUserListLocalstorage();
@@ -57,6 +66,33 @@ export const TrialsManageUsersForm: React.FC<Props> = ({
     ServiceGroupsByServiceInstanceIdQueryGraphql,
     queryRef
   );
+
+  const [commitUpdateServiceGroups] = useMutation(
+    ServiceGroupsUpdateMutationGraphql
+  );
+
+  const onSubmit = (input: z.infer<typeof formSchema>) => {
+    commitUpdateServiceGroups({
+      variables: {
+        input: {
+          groups: input.groups.map(({ id, userIds }) => ({ id, userIds })),
+        },
+      },
+      onError(error) {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+      onCompleted() {
+        onCompleted();
+        toast({
+          title: t('Utils.Success'),
+        });
+      },
+    });
+  };
 
   const options = useMemo(() => {
     return availableUsers.users.edges.map(({ node }) => {
@@ -123,7 +159,9 @@ export const TrialsManageUsersForm: React.FC<Props> = ({
 
   return (
     <Form {...form}>
-      <form className="w-full space-y-xl">
+      <form
+        className="w-full space-y-xl"
+        onSubmit={form.handleSubmit(onSubmit)}>
         {groupFields}
         <SheetFooter>
           <div className="flex gap-s">
