@@ -62,8 +62,8 @@ export const validateAndGetRequestedPlatformToken = async (
 
   const isValid =
     deploymentRequest &&
-    (!deploymentRequest.product_platform_id ||
-      deploymentRequest.product_platform_id == extractPlatformId(req));
+    (!deploymentRequest.platform_id ||
+      deploymentRequest.platform_id == extractPlatformId(req));
   if (!isValid) {
     logApp.warn(
       '[validatePlatformToken] No registration matching token, or invalid platformId provided'

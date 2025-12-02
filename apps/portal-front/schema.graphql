@@ -2,9 +2,13 @@ directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
-directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(
+  requires: [Restriction] = []
+) repeatable on OBJECT | FIELD_DEFINITION
 
-directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+directive @service_capa(
+  requires: [ServiceRestriction] = []
+) repeatable on OBJECT | FIELD_DEFINITION
 
 scalar JSON
 
@@ -36,94 +40,288 @@ type Success {
 type Query {
   updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  organizations(
+    first: Int = 50
+    after: ID
+    orderBy: OrganizationOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+  ): OrganizationConnection!
   userOrganizations: [Organization!]!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
   seoCustomDashboardBySlug(slug: String): CustomDashboard
-  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
+  customDashboards(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
-  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): DeploymentRequestConnection!
-  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
+  deploymentRequests(
+    first: Int!
+    after: ID
+    filters: [DeploymentRequestFilter!]
+  ): DeploymentRequestConnection!
+  deploymentRequestsAvailable(
+    platformIdentifier: PlatformIdentifier
+  ): [DeploymentAvailability!]!
   documentExists(documentName: String, service_instance_id: String): Boolean
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  documents(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+    parentsOnly: Boolean
+  ): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
-  integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
+  integrationFeeds(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): IntegrationFeedConnection!
   integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
-  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
+  publicIntegrationFeeds(
+    slug: String!
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): IntegrationFeedConnection!
   publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
   publicIntegrationFeedBySlug(slug: String): IntegrationFeed
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
-  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
+  openAEVScenarios(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
-  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
-  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
-  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
+  openCTIPlatformRegistrationStatus(
+    input: OpenCTIPlatformRegistrationStatusInput!
+  ): OpenCTIPlatformRegistrationStatusResponse!
+    @deprecated(
+      reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint."
+    )
+  isPlatformRegistered(
+    input: IsPlatformRegisteredInput!
+  ): IsPlatformRegisteredResponse!
+  canUnregisterPlatform(
+    input: CanUnregisterPlatformInput!
+  ): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!): Organization
-  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): ServiceConnection!
+  publicServiceInstances(
+    first: Int!
+    after: ID
+    orderBy: ServiceInstanceOrdering!
+    orderMode: OrderingMode!
+  ): ServiceConnection!
+  serviceInstances(
+    first: Int!
+    after: ID
+    orderBy: ServiceInstanceOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+  ): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
-  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
+  subscribedServiceInstancesByIdentifier(
+    identifier: ServiceDefinitionIdentifier!
+  ): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
-  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): LabelConnection
+  labels(
+    first: Int!
+    after: ID
+    orderBy: LabelOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    documentType: String
+  ): LabelConnection
   label(id: ID!): Label
   settings: Settings!
   subscriptionById(subscription_id: ID): SubscriptionModel
-  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
+  userServiceOwned(
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+  ): UserServiceConnection
+  serviceUsers(
+    id: ID!
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+  ): UserServiceConnection
+  userServiceFromSubscription(
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+    subscription_id: ID!
+  ): UserServiceConnection
   me: User
-  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  usersWithCapabilitiesInOrganization(
+    input: UsersWithCapabilitiesInOrganizationInput!
+  ): [User!]!
+  users(
+    first: Int!
+    after: ID
+    orderBy: UserOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+  ): UserConnection!
+  pendingUsers(
+    first: Int!
+    after: ID
+    orderBy: UserOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+  ): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node
 }
 
 type Mutation {
-  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  frontendErrorLog(
+    message: String!
+    codeStack: String
+    componentStack: String
+  ): Boolean
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
-  updateCustomDashboard(documentId: ID!, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
+  createCustomDashboard(
+    input: CreateCustomDashboardInput!
+    document: [Upload!]!
+    serviceInstanceId: String
+  ): CustomDashboard!
+  updateCustomDashboard(
+    documentId: ID!
+    input: UpdateCustomDashboardInput!
+    document: [Upload!]
+    updateDocument: Boolean!
+    images: [String!]
+    serviceInstanceId: String
+  ): CustomDashboard!
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
-  createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
-  updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
-  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
-  editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
-  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
+  createDeploymentRequest(
+    input: CreateDeploymentRequestInput
+  ): DeploymentRequest!
+  updateDeploymentRequest(
+    input: UpdateDeploymentRequestInput!
+  ): PlatformDeploymentRequest!
+  addDocument(
+    document: Upload
+    name: String
+    short_description: String
+    description: String
+    service_instance_id: String
+    parentDocumentId: ID
+    active: Boolean
+    slug: String
+    type: String!
+  ): Document!
+  editDocument(
+    documentId: ID
+    input: EditDocumentInput!
+    service_instance_id: String
+  ): Document!
+  deleteDocument(
+    documentId: ID
+    service_instance_id: String
+    forceDelete: Boolean
+  ): Document!
   incrementShareNumberDocument(documentId: ID): Document!
-  createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
-  updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
+  createCsvFeed(
+    input: CreateCsvFeedInput!
+    document: [Upload!]
+    serviceInstanceId: String!
+  ): CsvFeed!
+  updateCsvFeed(
+    documentId: ID!
+    input: UpdateCsvFeedInput!
+    document: [Upload!]
+    updateDocument: Boolean!
+    images: [String!]
+    serviceInstanceId: String
+  ): CsvFeed!
   deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
-  createOpenAEVScenario(input: CreateOpenAEVScenarioInput!, document: [Upload!]!, serviceInstanceId: String): OpenAEVScenario!
-  updateOpenAEVScenario(documentId: ID!, input: UpdateOpenAEVScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): OpenAEVScenario!
+  createOpenAEVScenario(
+    input: CreateOpenAEVScenarioInput!
+    document: [Upload!]!
+    serviceInstanceId: String
+  ): OpenAEVScenario!
+  updateOpenAEVScenario(
+    documentId: ID!
+    input: UpdateOpenAEVScenarioInput!
+    document: [Upload!]
+    updateDocument: Boolean!
+    images: [String!]
+    serviceInstanceId: String
+  ): OpenAEVScenario!
   deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
-  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatus(
+    input: RefreshPlatformRegistrationConnectivityStatusInput!
+  ): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput!): Success!
   editServiceInstance(id: ID!, name: String!): ServiceInstance
   addServiceInstance(input: AddServiceInput): SubscriptionModel
   deleteServiceInstance(id: ID!): ServiceInstance
-  addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
-  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
+  addServicePicture(
+    serviceInstanceId: ID!
+    document: Upload
+    isLogo: Boolean
+  ): ServiceInstance
+  updatePlatformServiceMetadata(
+    input: UpdatePlatformServiceMetadataInput!
+    document: Upload
+  ): RegisteredPlatform
   addLabel(input: AddLabelInput!): Label!
   editLabel(id: ID!, input: EditLabelInput!): Label!
   deleteLabel(id: ID!): Label!
   addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
+  addSubscriptionInService(
+    service_instance_id: String
+    organization_id: ID
+    capability_ids: [ID]
+    start_date: Date
+    end_date: Date
+  ): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
+  editServiceCapability(
+    input: EditServiceCapabilityInput
+    serviceInstanceId: String
+  ): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
@@ -324,7 +522,7 @@ type PlatformDeploymentRequest {
   requester_email: String!
   requester_first_name: String
   requester_last_name: String
-  product_platform_id: String
+  platform_id: String
   failure_reason: String
 }
 
@@ -343,7 +541,7 @@ input UpdateDeploymentRequestInput {
   hub_status: HubStatus
   start_date: Date
   end_date: Date
-  product_platform_id: String
+  platform_id: String
   failure_reason: String
   actual_state: PlatformState
   ordering: Int

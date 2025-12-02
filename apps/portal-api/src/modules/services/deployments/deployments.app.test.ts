@@ -473,7 +473,7 @@ describe('Deployment app', () => {
         actual_state: PlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
-        product_platform_id: 'fake product instance id',
+        platform_id: 'fake product instance id',
         failure_reason: 'not failed',
       });
 
@@ -509,7 +509,7 @@ describe('Deployment app', () => {
         use_case: 'use_case',
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
-        product_platform_id: 'fake product instance id',
+        platform_id: 'fake product instance id',
         failure_reason: 'not failed',
       });
       expect(serviceInstance.creation_status).toBe(
@@ -588,7 +588,7 @@ describe('Deployment app', () => {
           actual_state: PlatformState.Active,
           start_date,
           end_date,
-          product_platform_id: 'fake product instance id',
+          platform_id: 'fake product instance id',
           failure_reason: 'not failed',
         });
 
@@ -624,7 +624,7 @@ describe('Deployment app', () => {
           actual_state: PlatformState.Active,
           start_date,
           end_date,
-          product_platform_id: 'fake product instance id',
+          platform_id: 'fake product instance id',
           failure_reason: 'not failed',
         });
         expect(deployment).toBeDefined();

@@ -36,7 +36,7 @@ export default interface DeploymentRequest {
 
   platform_token: string | null;
 
-  product_platform_id: string | null;
+  platform_id: string | null;
 
   failure_reason: string | null;
 
@@ -80,7 +80,7 @@ export interface DeploymentRequestInitializer {
 
   platform_token?: string | null;
 
-  product_platform_id?: string | null;
+  platform_id?: string | null;
 
   failure_reason?: string | null;
 
@@ -127,7 +127,7 @@ export interface DeploymentRequestMutator {
 
   platform_token?: string | null;
 
-  product_platform_id?: string | null;
+  platform_id?: string | null;
 
   failure_reason?: string | null;
 

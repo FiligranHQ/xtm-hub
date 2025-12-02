@@ -19,9 +19,9 @@ export async function up(knex) {
     table.integer('ordering');
   });
 
-  // Step 1.5: Rename product_service_instance_id to product_platform_id
+  // Step 1.5: Rename product_service_instance_id to platform_id
   await knex.schema.alterTable('DeploymentRequest', (table) => {
-    table.renameColumn('product_service_instance_id', 'product_platform_id');
+    table.renameColumn('product_service_instance_id', 'platform_id');
   });
 
   // Step 2: Migrate existing data
@@ -108,9 +108,9 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
-  // Step 1: Rename back product_platform_id to product_service_instance_id
+  // Step 1: Rename back platform_id to product_service_instance_id
   await knex.schema.alterTable('DeploymentRequest', (table) => {
-    table.renameColumn('product_platform_id', 'product_service_instance_id');
+    table.renameColumn('platform_id', 'product_service_instance_id');
   });
 
   // Step 2: Re-add the status column
