@@ -79,10 +79,13 @@ export const DeploymentsApp = {
 
     try {
       const hubStatus = input.hub_status ?? HubStatus.Pending;
-      const ordering = Date.now();
 
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {
+          // Calculer ordering = MAX(ordering) + 1
+          const maxOrdering = await DeploymentRequestDomain.getMaxOrdering();
+          const ordering = (maxOrdering ?? 0) + 1;
+
           const serviceInstanceId =
             await registrationDomain.registerNewPlatform({
               serviceDefinitionId: serviceDefinition.id,
@@ -100,7 +103,10 @@ export const DeploymentsApp = {
             organization_requester_id: user.selected_organization_id,
             service_instance_id: serviceInstanceId,
             hub_status: hubStatus,
-            target_state: null,
+            target_state:
+              hubStatus === HubStatus.Queued
+                ? PlatformState.Inactive
+                : PlatformState.Active,
             actual_state: null,
             ordering,
             type: input.type,
@@ -177,6 +183,7 @@ export const DeploymentsApp = {
       };
     } catch (error) {
       logApp.error('unable to create deployment request', error);
+      throw error;
     }
   },
 

@@ -61,6 +61,13 @@ export const DeploymentRequestDomain = {
     );
   },
 
+  getMaxOrdering: async (): Promise<number | null> => {
+    const result = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
+      .max('ordering as max')
+      .first();
+    return result?.max ? parseInt(result.max as string, 10) : null;
+  },
+
   loadDeploymentRequests: async (
     opts: QueryDeploymentRequestsArgs,
     options?: { onlyOutOfSync?: boolean }

@@ -43,7 +43,7 @@ describe('Deployment app', () => {
         region: PlatformRegion.Us,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Pending,
-        target_state: null,
+        target_state: PlatformState.Active,
         actual_state: null,
       });
     });

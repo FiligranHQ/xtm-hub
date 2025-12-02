@@ -91,7 +91,7 @@ async function insertOpenCtiDeploymentRequest(
     region: PlatformRegion.Us,
     request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
     hub_status: HubStatus.Pending,
-    target_state: undefined,
+    target_state: PlatformState.Active,
     actual_state: undefined,
     ordering: 1,
     type: DeploymentType.Trial,
@@ -148,8 +148,8 @@ describe('Deployment app', () => {
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: HubStatus.Pending,
-        target_state: undefined,
-        actual_state: undefined,
+        target_state: PlatformState.Active,
+        actual_state: null,
         ordering: expect.any(Number),
         type: DeploymentType.Trial,
         use_case: 'use_case',
@@ -192,8 +192,8 @@ describe('Deployment app', () => {
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: HubStatus.Queued,
-        target_state: undefined,
-        actual_state: undefined,
+        target_state: PlatformState.Inactive,
+        actual_state: null,
         ordering: expect.any(Number),
         type: DeploymentType.Trial,
         use_case: 'use_case',
@@ -251,8 +251,8 @@ describe('Deployment app', () => {
           use_case: 'use_case',
           deployment_type: DeploymentType.Trial,
           hub_status: HubStatus.Pending,
-          target_state: undefined,
-          actual_state: undefined,
+          target_state: PlatformState.Active,
+          actual_state: null,
           activity_sector: 'cybersecurity',
           target_product: 'open-cti',
         });
@@ -315,25 +315,36 @@ describe('Deployment app', () => {
       });
     });
 
-    it('should return pending deployment requests if nothing specified', async () => {
+    it('should return out-of-sync deployment requests by default', async () => {
       await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Expired,
+        hub_status: HubStatus.Pending,
+        target_state: PlatformState.Active,
         actual_state: undefined,
+      });
+      await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Active,
+        target_state: PlatformState.Active,
+        actual_state: PlatformState.Active,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
         first: 10,
       });
 
-      expect(deployments.totalCount).toBe('0');
-      expect(deployments.edges.length).toBe(0);
+      expect(deployments.totalCount).toBe('1');
+      expect(deployments.edges.length).toBe(1);
+      expect(deployments.edges[0]?.node?.hub_status).toBe(HubStatus.Pending);
     });
 
-    it('should return pending deployment requests even if other filters are specified', async () => {
-      await insertOpenCtiDeploymentRequest({});
+    it('should return out-of-sync deployments even with other filters', async () => {
       await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Expired,
+        target_state: PlatformState.Active,
         actual_state: undefined,
+      });
+      await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Active,
+        target_state: PlatformState.Active,
+        actual_state: PlatformState.Active,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
