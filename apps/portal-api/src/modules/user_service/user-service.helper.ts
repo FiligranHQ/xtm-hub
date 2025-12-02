@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure } from '../../../knexfile';
 import { UserServiceCapability } from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
 import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -138,18 +139,15 @@ export const isUserServiceExist = async (
   return !!existingUserService;
 };
 
-export const createUserServiceAccess = async (
-  trx,
-  {
-    subscription_id,
-    user_id,
-    capabilities,
-  }: {
-    subscription_id: SubscriptionId;
-    user_id: UserId;
-    capabilities: string[];
-  }
-) => {
+export const createUserServiceAccess = async ({
+  subscription_id,
+  user_id,
+  capabilities,
+}: {
+  subscription_id: SubscriptionId;
+  user_id: UserId;
+  capabilities: string[];
+}) => {
   const user_service: UserServiceInitializer = {
     id: uuidv4() as UserServiceId,
     subscription_id,
@@ -169,20 +167,23 @@ export const createUserServiceAccess = async (
   ) {
     throw new Error(ErrorCode.UserIsNotInOrganization);
   }
-  const [addedUserService] = await db<UserService>('User_Service')
-    .insert(user_service)
-    .returning('*');
+  const addedUserService = await withTransaction(async () => {
+    const [addedUserService] = await db<UserService>('User_Service')
+      .insert(user_service)
+      .returning('*');
 
-  await insertCapabilities(trx, capabilities, addedUserService);
-  const user_service_capa: UserServiceCapabilityInitializer = {
-    id: uuidv4() as UserServiceCapabilityId,
-    user_service_id: addedUserService.id,
-    generic_service_capability_id:
-      GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
-  };
-  await db<UserServiceCapability>('UserService_Capability')
-    .insert(user_service_capa)
-    .returning('*');
+    await insertCapabilities(capabilities, addedUserService);
+    const user_service_capa: UserServiceCapabilityInitializer = {
+      id: uuidv4() as UserServiceCapabilityId,
+      user_service_id: addedUserService.id,
+      generic_service_capability_id:
+        GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
+    };
+    await db<UserServiceCapability>('UserService_Capability')
+      .insert(user_service_capa)
+      .returning('*');
+    return addedUserService;
+  });
 
   const user = await loadUserBy({ 'User.id': user_id });
   const serviceInstance = await loadServiceInstanceBy(

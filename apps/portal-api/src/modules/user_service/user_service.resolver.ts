@@ -1,5 +1,5 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db, dbTx } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
@@ -57,7 +57,6 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     addYourselfInUserService: async (_, { input }, context) => {
-      const trx = await dbTx();
       try {
         const [subscription] =
           await loadSubscriptionWithOrganizationAndCapabilitiesBy({
@@ -71,19 +70,12 @@ const resolvers: Resolvers = {
         if (!subscription) {
           throw new Error(ErrorCode.SubscriptionNotFound);
         }
-        return userServiceApp.addUserService(
-          trx,
-          subscription,
-          input.email,
-          []
-        );
+        return userServiceApp.addUserService(subscription, input.email, []);
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
     addUserService: async (_, { input }, context) => {
-      const trx = await dbTx();
       try {
         if (input.email.some((email) => email === context.user.email)) {
           throw new Error(ErrorCode.CantSubscribeYourself);
@@ -96,13 +88,11 @@ const resolvers: Resolvers = {
           throw new Error(ErrorCode.SubscriptionNotFound);
         }
         return userServiceApp.addUserService(
-          trx,
           subscription,
           input.email,
           input.capabilities
         );
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
