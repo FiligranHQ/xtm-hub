@@ -13,9 +13,11 @@ export const ServiceGroupDomain = {
   loadGroupsServiceInstanceIds: async (
     groupIds: ServiceGroupId[]
   ): Promise<ServiceInstanceId[]> => {
-    const serviceInstances = await db<ServiceInstanceId[]>('ServiceGroup')
+    const serviceInstances = await db<{ id: ServiceInstanceId }[]>(
+      'ServiceInstance'
+    )
       .leftJoin(
-        'ServiceInstance',
+        'ServiceGroup',
         'ServiceGroup.service_instance_id',
         '=',
         'ServiceInstance.id'

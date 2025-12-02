@@ -21,21 +21,21 @@ export const organizationDomain = {
       .first('id');
   },
 
-  loadOrganizationSubscribedToServiceInstance: (
+  loadOrganizationSubscribedToServiceInstance: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<Organization | null> => {
-    return db<Organization>('ServiceInstance')
+    return db<Organization>('Organization')
       .leftJoin(
         'Subscription',
-        'Subscription.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      )
-      .leftJoin(
-        'Organization',
         'Subscription.organization_id',
         '=',
         'Organization.id'
+      )
+      .leftJoin(
+        'ServiceInstance',
+        'Subscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
       )
       .where({
         'ServiceInstance.id': serviceInstanceId,

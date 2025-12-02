@@ -3,9 +3,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import {
   ADMIN_USER_ID,
+  FILIGRAN_ORGA_ID,
   FILIGRAN_USER_ID,
   requestContextSimpleUserThales,
   THALES_ADMIN_ORGA_ID,
+  THALES_ORGA_ID,
   THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
 import { ServiceInstanceCreationStatus } from '../../../__generated__/resolvers-types';
@@ -15,6 +17,9 @@ import ServiceGroup, {
 } from '../../../model/kanel/public/ServiceGroup';
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import Subscription, {
+  SubscriptionId,
+} from '../../../model/kanel/public/Subscription';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { ServiceGroupApp } from './service-group.app';
 
@@ -59,6 +64,11 @@ describe('ServiceGroupApp', () => {
     ];
 
     it('should prevent user from updating a group when he does not have the capability', async () => {
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        service_instance_id: serviceInstanceId,
+        organization_id: THALES_ORGA_ID,
+      });
       requestContext.set(requestContextSimpleUserThales);
 
       const call = ServiceGroupApp.updateGroups(payload);
@@ -69,7 +79,12 @@ describe('ServiceGroupApp', () => {
     });
 
     it('should update groups with new user list and remove old ones', async () => {
-      await db('ServiceGroup_User').insert({
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        service_instance_id: serviceInstanceId,
+        organization_id: FILIGRAN_ORGA_ID,
+      });
+      await db<ServiceGroupUser>('ServiceGroup_User').insert({
         group_id: analystGroupId,
         user_id: FILIGRAN_USER_ID,
       });
@@ -83,12 +98,12 @@ describe('ServiceGroupApp', () => {
         .select('*');
 
       expect(admins.length).toBe(2);
-      expect(admins.find(({ user_id }) => user_id === ADMIN_USER_ID)).toBe(
-        true
-      );
+      expect(
+        admins.find(({ user_id }) => user_id === ADMIN_USER_ID)
+      ).toBeTruthy();
       expect(
         admins.find(({ user_id }) => user_id === THALES_ADMIN_ORGA_ID)
-      ).toBe(true);
+      ).toBeTruthy();
 
       const analysts = await db<ServiceGroupUser[]>('ServiceGroup_User')
         .where('group_id', analystGroupId)

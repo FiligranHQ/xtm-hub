@@ -40,7 +40,8 @@ export const SERVICE_OPENCTI_REGISTRATION =
 export const THALES_SIMPLE_USER_ID =
   '154006e2-f24b-42da-b39c-e0fb17bead00' as UserId;
 export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
-export const FILIGRAN_USER_ID = '77b4b845-4ab4-4df8-8e12-0651da813ebb';
+export const FILIGRAN_USER_ID =
+  '77b4b845-4ab4-4df8-8e12-0651da813ebb' as UserId;
 export const INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD =
   '26611d56-e443-45fb-9f6c-cc6b9b8a5de9' as ServiceCapabilityId;
 export const INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE =
