@@ -11,6 +11,7 @@ import {
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -193,30 +194,29 @@ const resolvers: Resolvers = {
       return deletedServiceInstance;
     },
     addServicePicture: async (_, payload) => {
-      const trx = await dbTx();
       try {
-        const document = await uploadNewFile(payload.document, trx);
-        const update = payload.isLogo
-          ? {
-              logo_document_id: document.id,
-            }
-          : {
-              illustration_document_id: document.id,
-            };
-        const [updatedServiceInstance] = await db<ServiceInstance>(
-          'ServiceInstance'
-        )
-          .where({
-            id: extractId<ServiceInstanceId>(payload.serviceInstanceId),
-          })
-          .update(update)
-          .returning('*')
-          .transacting(trx);
-        await trx.commit();
+        const updatedServiceInstance = await withTransaction(async () => {
+          const document = await uploadNewFile(payload.document);
+          const update = payload.isLogo
+            ? {
+                logo_document_id: document.id,
+              }
+            : {
+                illustration_document_id: document.id,
+              };
+          const [updatedServiceInstance] = await db<ServiceInstance>(
+            'ServiceInstance'
+          )
+            .where({
+              id: extractId<ServiceInstanceId>(payload.serviceInstanceId),
+            })
+            .update(update)
+            .returning('*');
+          return updatedServiceInstance;
+        });
         await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
         return updatedServiceInstance;
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(error);
       }
     },

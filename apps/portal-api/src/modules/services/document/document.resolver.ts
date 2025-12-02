@@ -1,5 +1,4 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { dbTx } from '../../../../knexfile';
 import {
   IntegrationFeedType,
   Resolvers,
@@ -48,13 +47,12 @@ import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 const resolvers: Resolvers = {
   Mutation: {
     addDocument: async (_, { document, parentDocumentId, ...payload }) => {
-      const trx = await dbTx();
       try {
         await waitForUploads(document);
         const { minioName, fileName, mimeType } =
           await MinIOClient.createFile(document);
 
-        const addedDocument = await createDocument<Document>(
+        return await createDocument<Document>(
           {
             ...omit(payload, ['service_instance_id']),
             minio_name: minioName,
@@ -64,46 +62,32 @@ const resolvers: Resolvers = {
               ? extractId<DocumentId>(parentDocumentId)
               : null,
           },
-          [],
-          trx
+          []
         );
-        await trx.commit();
-        return addedDocument;
       } catch (error) {
-        await trx.rollback();
         console.error('Error while adding document:', error);
         throw mapToGraphQLError(error, UnknownErrorCode.InsertDocumentError);
       }
     },
     editDocument: async (_, { documentId, input }) => {
-      const trx = await dbTx();
       try {
-        const document = await updateDocument(
+        return await updateDocument(
           extractId<DocumentId>(documentId),
           input,
-          [],
-          trx
+          []
         );
-        await trx.commit();
-        return document;
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(error, UnknownErrorCode.UpdateDocumentError);
       }
     },
     deleteDocument: async (_, { documentId, forceDelete }, context) => {
-      const trx = await dbTx();
       try {
-        const doc = await deleteDocument(
+        return await deleteDocument(
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId,
-          forceDelete,
-          trx
+          forceDelete
         );
-        await trx.commit();
-        return doc;
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(error, UnknownErrorCode.DeleteDocumentError);
       }
     },

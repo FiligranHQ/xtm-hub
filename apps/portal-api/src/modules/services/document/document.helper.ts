@@ -68,7 +68,7 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const uploadNewFile = async (document, trx: Knex.Transaction) => {
+export const uploadNewFile = async (document) => {
   if (!document || !document.file) {
     return;
   }
@@ -91,7 +91,7 @@ export const uploadNewFile = async (document, trx: Knex.Transaction) => {
     type: 'service_picture',
   };
 
-  return createDocument(data, [], trx);
+  return createDocument(data, []);
 };
 
 export const deleteDocuments = async () => {

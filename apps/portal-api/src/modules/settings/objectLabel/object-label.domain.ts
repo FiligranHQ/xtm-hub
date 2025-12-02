@@ -7,10 +7,9 @@ import ObjectLabel, {
 
 export const objectLabelDomain = {
   insertObjectLabel: async (
-    initializer: ObjectLabelInitializer | ObjectLabelInitializer[],
-    trx: Knex.Transaction
+    initializer: ObjectLabelInitializer | ObjectLabelInitializer[]
   ) => {
-    await db<ObjectLabel>('Object_Label').insert(initializer).transacting(trx);
+    await db<ObjectLabel>('Object_Label').insert(initializer);
   },
 
   deleteObjectLabelBy: async (

@@ -36,6 +36,7 @@ import {
 } from '../document.helper';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { withTransaction } from '../../../../context/database.context';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import { labelsApp } from '../../../settings/labels/labels.app';
@@ -64,22 +65,17 @@ type MutationUpdateDocumentArgs =
   | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
 
 export const DocumentDomain = {
-  passOldDocumentsIntoInactive: async (
-    existingDocuments: Document[],
-    trx: Knex.Transaction
-  ) => {
+  passOldDocumentsIntoInactive: async (existingDocuments: Document[]) => {
     const documentIds = existingDocuments.map((doc) => doc.id);
     await dbUnsecure<Document>('Document')
       .whereIn('id', documentIds)
       .update({ active: false })
-      .returning('*')
-      .transacting(trx);
+      .returning('*');
   },
 
   createDocument: async <T extends DocumentModel>(
     documentData: DocumentData<T>,
-    metadataKeys: DocumentMetadataKeys<T>,
-    trx: Knex.Transaction
+    metadataKeys: DocumentMetadataKeys<T>
   ) => {
     const { user, portalContext } = requestContext.require();
     const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
@@ -100,8 +96,7 @@ export const DocumentDomain = {
             portalContext.serviceInstanceId as ServiceInstanceId,
         }),
       })
-      .returning('*')
-      .transacting(trx);
+      .returning('*');
 
     return document;
   },
@@ -111,8 +106,7 @@ export const DocumentDomain = {
       labels?: string[];
       parent_document_id?: string;
     },
-    metadataKeys: DocumentMetadataKeys<T> = [],
-    trx: Knex.Transaction
+    metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<DocumentModel> => {
     const { user } = requestContext.require();
     const insertData = {
@@ -129,80 +123,78 @@ export const DocumentDomain = {
         updated_at: new Date(),
         updater_id: insertData.uploader_id,
       })
-      .returning('*')
-      .transacting(trx);
+      .returning('*');
 
     return document;
   },
 
-  deleteDocuments: async (ids: DocumentId[], trx: Knex.Transaction) => {
+  deleteDocuments: async (ids: DocumentId[]) => {
     await db<Document>('Document')
       .whereIn('Document.id', ids)
-      .delete('Document.*')
-      .transacting(trx);
+      .delete('Document.*');
   },
 };
 
 export const insertDocument = async (
-  documentData: FullDocumentMutator,
-  trx: Knex.Transaction
+  documentData: FullDocumentMutator
 ): Promise<Document> => {
   const existingDocuments = await loadUnsecureDocumentsBy({
     file_name: documentData.file_name,
   });
   if (existingDocuments.length > 0) {
-    void DocumentDomain.passOldDocumentsIntoInactive(existingDocuments, trx);
+    void DocumentDomain.passOldDocumentsIntoInactive(existingDocuments);
   }
 
-  return createDocument<Document>(documentData, [], trx);
+  return createDocument<Document>(documentData, []);
 };
 
 export const upsertDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   input: Partial<T>,
   uploads: Upload[] | Upload,
-  metadataKeys: DocumentMetadataKeys<T>,
-  trx: Knex.Transaction
+  metadataKeys: DocumentMetadataKeys<T>
 ) => {
-  const doc = await upsertDocument<T>(
-    {
-      ...input,
-      type,
-    },
-    metadataKeys,
-    trx
-  );
+  return await withTransaction(async () => {
+    const doc = await upsertDocument<T>(
+      {
+        ...input,
+        type,
+      },
+      metadataKeys
+    );
 
-  await upsertImage(doc, uploads, trx);
-  return doc;
+    await upsertImage(doc, uploads);
+    return doc;
+  });
 };
 
 export const upsertImage = async <T extends DocumentModel>(
   doc: T,
-  upload: Upload[] | Upload,
-  trx: Knex.Transaction
+  upload: Upload[] | Upload
 ) => {
   const files = await processUploads(upload);
-  const deletedDocuments =
-    await DocumentChildrenDomain.deleteChildImagesByParent(doc.id, trx);
 
-  // Create all new image documents
-  await Promise.all(
-    files.map((file) =>
-      createDocument(
-        {
-          type: 'image',
-          parent_document_id: doc.id as DocumentId,
-          file_name: file.fileName,
-          minio_name: file.minioName,
-          mime_type: file.mimeType,
-        },
-        [],
-        trx
+  const deletedDocuments = await withTransaction(async () => {
+    const deletedDocuments =
+      await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
+
+    // Create all new image documents
+    await Promise.all(
+      files.map((file) =>
+        createDocument(
+          {
+            type: 'image',
+            parent_document_id: doc.id as DocumentId,
+            file_name: file.fileName,
+            minio_name: file.minioName,
+            mime_type: file.mimeType,
+          },
+          []
+        )
       )
-    )
-  );
-
+    );
+    return deletedDocuments;
+  });
   // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
   if (deletedDocuments.length > 0) {
     await Promise.all(
@@ -215,169 +207,156 @@ export const upsertImage = async <T extends DocumentModel>(
 
 export const upsertDocument = async <T extends DocumentModel>(
   documentData: DocumentData<T>,
-  metadataKeys: DocumentMetadataKeys<T> = [],
-  trx: Knex.Transaction
+  metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
-  // Prepare the data to insert
-  const document = await DocumentDomain.upsertOnSlug(
-    documentData,
-    metadataKeys,
-    trx
-  );
+  return await withTransaction(async () => {
+    // Prepare the data to insert
+    const document = await DocumentDomain.upsertOnSlug(
+      documentData,
+      metadataKeys
+    );
 
-  const documentWasUpdated = !!document.updated_at;
+    const documentWasUpdated = !!document.updated_at;
 
-  // Handle parent document relationship
-  if (documentData.parent_document_id) {
-    // First, delete existing relationship if it exists (for upsert scenario)
-    if (documentWasUpdated) {
-      await DocumentChildrenDomain.deleteChild(document.id, trx);
-    }
+    // Handle parent document relationship
+    if (documentData.parent_document_id) {
+      // First, delete existing relationship if it exists (for upsert scenario)
+      if (documentWasUpdated) {
+        await DocumentChildrenDomain.deleteChild(document.id);
+      }
 
-    // Insert new relationship
-    await DocumentChildrenDomain.insertChildRelationship(
-      {
+      // Insert new relationship
+      await DocumentChildrenDomain.insertChildRelationship({
         parentDocumentId: documentData.parent_document_id as DocumentId,
         childDocumentId: document.id,
-      },
-      trx
-    );
-  }
+      });
+    }
 
-  if (documentData.labels?.length) {
-    if (documentWasUpdated) {
-      await objectLabelDomain.deleteObjectLabelBy(
-        {
+    if (documentData.labels?.length) {
+      if (documentWasUpdated) {
+        await objectLabelDomain.deleteObjectLabelBy({
           object_id: document.id as unknown as ObjectLabelObjectId,
-        },
-        trx
-      );
+        });
+      }
+      const insertObjectLabel = [];
+      for (const name of documentData.labels) {
+        const label = await labelsApp.loadOrCreateLabel({
+          name,
+        });
+        insertObjectLabel.push({
+          object_id: document.id as unknown as ObjectLabelObjectId,
+          label_id: label.id,
+        });
+      }
+      await objectLabelDomain.insertObjectLabel(insertObjectLabel);
     }
-    const insertObjectLabel = [];
-    for (const name of documentData.labels) {
-      const label = await labelsApp.loadOrCreateLabel({
-        name,
-      });
-      insertObjectLabel.push({
-        object_id: document.id as unknown as ObjectLabelObjectId,
-        label_id: label.id,
-      });
-    }
-    await objectLabelDomain.insertObjectLabel(insertObjectLabel, trx);
-  }
 
-  if (metadataKeys.length > 0) {
-    // If document was updated (not created)
-    if (documentWasUpdated) {
-      // Delete all existing metadata except 'version'
-      await DocumentMetadataDomain.deleteMetadata(
-        { id: document.id, excludedKeys: ['product_version'] },
-        trx
+    if (metadataKeys.length > 0) {
+      // If document was updated (not created)
+      if (documentWasUpdated) {
+        // Delete all existing metadata except 'version'
+        await DocumentMetadataDomain.deleteMetadata({
+          id: document.id,
+          excludedKeys: ['product_version'],
+        });
+        const existingVersion = await DocumentMetadataDomain.loadProductVersion(
+          document.id
+        );
+        if (existingVersion) {
+          document['product_version'] = existingVersion;
+        }
+      }
+
+      // Insert new metadata (excluding version) if documentWasUpdated
+      const metadataKeysWithoutProductVersion = metadataKeys.filter(
+        (key) => key !== 'product_version' || !documentWasUpdated
       );
-      const existingVersion = await DocumentMetadataDomain.loadProductVersion(
-        document.id
+
+      const metadatas = await DocumentMetadataDomain.insertMetadata(
+        document.id,
+        documentData,
+        metadataKeysWithoutProductVersion
       );
-      if (existingVersion) {
-        document['product_version'] = existingVersion;
+
+      for (const metadata of metadatas) {
+        document[metadata.key] = metadata.value;
       }
     }
 
-    // Insert new metadata (excluding version) if documentWasUpdated
-    const metadataKeysWithoutProductVersion = metadataKeys.filter(
-      (key) => key !== 'product_version' || !documentWasUpdated
-    );
-
-    const metadatas = await DocumentMetadataDomain.insertMetadata(
-      document.id,
-      documentData,
-      metadataKeysWithoutProductVersion,
-      trx
-    );
-
-    for (const metadata of metadatas) {
-      document[metadata.key] = metadata.value;
-    }
-  }
-
-  return document as T;
+    return document as T;
+  });
 };
 
 export const createDocument = async <T extends DocumentModel>(
   documentData: DocumentData<T>,
-  metadataKeys: DocumentMetadataKeys<T> = [],
-  trx: Knex.Transaction
+  metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
-  const document = await DocumentDomain.createDocument(
-    documentData,
-    metadataKeys,
-    trx
-  );
+  return await withTransaction(async () => {
+    const document = await DocumentDomain.createDocument(
+      documentData,
+      metadataKeys
+    );
 
-  if (documentData.parent_document_id) {
-    await DocumentChildrenDomain.insertChildRelationship(
-      {
+    if (documentData.parent_document_id) {
+      await DocumentChildrenDomain.insertChildRelationship({
         parentDocumentId: documentData.parent_document_id as DocumentId,
         childDocumentId: document.id,
-      },
-      trx
-    );
-  }
-
-  if (metadataKeys.length) {
-    const metadatas = await DocumentMetadataDomain.insertMetadata(
-      document.id,
-      documentData,
-      metadataKeys,
-      trx
-    );
-
-    for (const metadata of metadatas) {
-      document[metadata.key] = metadata.value;
+      });
     }
-  }
 
-  return document as T;
+    if (metadataKeys.length) {
+      const metadatas = await DocumentMetadataDomain.insertMetadata(
+        document.id,
+        documentData,
+        metadataKeys
+      );
+
+      for (const metadata of metadatas) {
+        document[metadata.key] = metadata.value;
+      }
+    }
+
+    return document as T;
+  });
 };
 
 export const createDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   input: Partial<T>,
   uploads: Upload[] | Upload,
-  metadataKeys: DocumentMetadataKeys<T>,
-  trx: Knex.Transaction
+  metadataKeys: DocumentMetadataKeys<T>
 ) => {
   const files = await processUploads(uploads);
 
   const docFile = files.shift();
-  const doc = await createDocument<T>(
-    {
-      ...input,
-      type,
-      file_name: docFile.fileName,
-      minio_name: docFile.minioName,
-      mime_type: docFile.mimeType,
-    },
-    metadataKeys,
-    trx
-  );
+  return await withTransaction(async () => {
+    const doc = await createDocument<T>(
+      {
+        ...input,
+        type,
+        file_name: docFile.fileName,
+        minio_name: docFile.minioName,
+        mime_type: docFile.mimeType,
+      },
+      metadataKeys
+    );
 
-  await Promise.all(
-    files.map((file) =>
-      createDocument(
-        {
-          type: 'image',
-          parent_document_id: doc.id as DocumentId,
-          file_name: file.fileName,
-          minio_name: file.minioName,
-          mime_type: file.mimeType,
-        },
-        [],
-        trx
+    await Promise.all(
+      files.map((file) =>
+        createDocument(
+          {
+            type: 'image',
+            parent_document_id: doc.id as DocumentId,
+            file_name: file.fileName,
+            minio_name: file.minioName,
+            mime_type: file.mimeType,
+          },
+          []
+        )
       )
-    )
-  );
-
-  return doc;
+    );
+    return doc;
+  });
 };
 
 export const updateDocument = async <T extends DocumentModel>(
@@ -385,8 +364,7 @@ export const updateDocument = async <T extends DocumentModel>(
   documentData: Omit<Partial<T>, 'labels'> & {
     labels?: string[];
   },
-  metadataKeys: DocumentMetadataKeys<T> = [],
-  trx: Knex.Transaction
+  metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
   const { user } = requestContext.require();
   const uploader_organization_id = documentData.uploader_organization_id
@@ -398,59 +376,56 @@ export const updateDocument = async <T extends DocumentModel>(
     documentData.uploader_id && extractedId ? extractedId : user.id
   ) as UserId;
 
-  const [document] = await db<DocumentModel>('Document')
-    .where('id', '=', documentId)
-    .update({
-      ...omit(documentData, ['labels', ...metadataKeys]),
-      uploader_organization_id,
-      uploader_id,
-      updated_at: new Date(),
-      updater_id: user.id,
-    })
-    .returning('*')
-    .transacting(trx);
+  return await withTransaction(async () => {
+    const [document] = await db<DocumentModel>('Document')
+      .where('id', '=', documentId)
+      .update({
+        ...omit(documentData, ['labels', ...metadataKeys]),
+        uploader_organization_id,
+        uploader_id,
+        updated_at: new Date(),
+        updater_id: user.id,
+      })
+      .returning('*');
 
-  // If label is null => that mean we want to update the field to empty
-  if (documentData.labels !== undefined) {
-    await objectLabelDomain.deleteObjectLabelBy(
-      { object_id: documentId as unknown as ObjectLabelObjectId },
-      trx
-    );
+    // If label is null => that mean we want to update the field to empty
+    if (documentData.labels !== undefined) {
+      await objectLabelDomain.deleteObjectLabelBy({
+        object_id: documentId as unknown as ObjectLabelObjectId,
+      });
 
-    if (documentData.labels?.length > 0) {
-      await objectLabelDomain.insertObjectLabel(
-        documentData.labels.map((id) => ({
-          object_id: documentId as unknown as ObjectLabelObjectId,
-          label_id: extractId(id) as LabelId,
-        })),
-        trx
+      if (documentData.labels?.length > 0) {
+        await objectLabelDomain.insertObjectLabel(
+          documentData.labels.map((id) => ({
+            object_id: documentId as unknown as ObjectLabelObjectId,
+            label_id: extractId(id) as LabelId,
+          }))
+        );
+      }
+    }
+
+    if (metadataKeys.length) {
+      await DocumentMetadataDomain.deleteMetadata({ id: documentId });
+      const metadatas = await DocumentMetadataDomain.insertMetadata(
+        document.id,
+        documentData,
+        metadataKeys
       );
+
+      for (const metadata of metadatas) {
+        document[metadata.key] = metadata.value;
+      }
     }
-  }
 
-  if (metadataKeys.length) {
-    await DocumentMetadataDomain.deleteMetadata({ id: documentId }, trx);
-    const metadatas = await DocumentMetadataDomain.insertMetadata(
-      document.id,
-      documentData,
-      metadataKeys,
-      trx
-    );
-
-    for (const metadata of metadatas) {
-      document[metadata.key] = metadata.value;
-    }
-  }
-
-  return document as T;
+    return document as T;
+  });
 };
 
 export const updateDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   id: string,
   mutationArgs: MutationUpdateDocumentArgs,
-  metadataKeys: DocumentMetadataKeys<T>,
-  trx: Knex.Transaction
+  metadataKeys: DocumentMetadataKeys<T>
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
   const { documentFile, newImages, existingImages } =
@@ -469,54 +444,50 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     });
   }
 
-  const updatedDocument = await updateDocument<T>(
-    id as DocumentId,
-    data,
-    metadataKeys,
-    trx
-  );
+  return await withTransaction(async () => {
+    const updatedDocument = await updateDocument<T>(
+      id as DocumentId,
+      data,
+      metadataKeys
+    );
 
-  // Delete the images that are not in the existingImages array
-  const childIds = await db<DocumentChildren>('Document_Children')
-    .where('parent_document_id', '=', id)
-    .whereNotIn('child_document_id', existingImages)
-    .select('child_document_id')
-    .transacting(trx);
-  if (childIds.length > 0) {
-    await db<Document>('Document')
-      .whereIn(
-        'Document.id',
-        childIds.map((childId) => childId.child_document_id)
+    // Delete the images that are not in the existingImages array
+    const childIds = await db<DocumentChildren>('Document_Children')
+      .where('parent_document_id', '=', id)
+      .whereNotIn('child_document_id', existingImages)
+      .select('child_document_id');
+    if (childIds.length > 0) {
+      await db<Document>('Document')
+        .whereIn(
+          'id',
+          childIds.map((childId) => childId.child_document_id)
+        )
+        .delete();
+    }
+
+    // Create new images
+    await Promise.all(
+      newImages.map((image) =>
+        createDocument(
+          {
+            type: 'image',
+            parent_document_id: id,
+            file_name: image.fileName,
+            minio_name: image.minioName,
+            mime_type: image.mimeType,
+          },
+          []
+        )
       )
-      .delete()
-      .transacting(trx);
-  }
-
-  // Create new images
-  await Promise.all(
-    newImages.map((image) =>
-      createDocument(
-        {
-          type: 'image',
-          parent_document_id: id,
-          file_name: image.fileName,
-          minio_name: image.minioName,
-          mime_type: image.mimeType,
-        },
-        [],
-        trx
-      )
-    )
-  );
-
-  return updatedDocument;
+    );
+    return updatedDocument;
+  });
 };
 
 export const deleteDocument = async <T extends DocumentModel>(
   documentId: DocumentId,
   serviceInstanceId: ServiceInstanceId,
-  hardDelete: boolean,
-  trx: Knex.Transaction
+  hardDelete: boolean
 ): Promise<T> => {
   const [documentFromDb] = await loadDocumentBy({
     'Document.id': documentId,
@@ -529,17 +500,15 @@ export const deleteDocument = async <T extends DocumentModel>(
 
   const childIds = await DocumentChildrenDomain.loadChildrenIds(documentId);
   if (hardDelete) {
-    await DocumentChildrenDomain.deleteChildrenByParent(documentId, trx);
-    await DocumentDomain.deleteDocuments([...childIds, documentId], trx);
+    await withTransaction(async () => {
+      await DocumentChildrenDomain.deleteChildrenByParent(documentId);
+      await DocumentDomain.deleteDocuments([...childIds, documentId]);
 
-    // Labels
-    await objectLabelDomain.deleteObjectLabelBy(
-      {
+      // Labels
+      await objectLabelDomain.deleteObjectLabelBy({
         object_id: documentId as unknown as ObjectLabelObjectId,
-      },
-      trx
-    );
-
+      });
+    });
     return documentFromDb as T;
   }
 

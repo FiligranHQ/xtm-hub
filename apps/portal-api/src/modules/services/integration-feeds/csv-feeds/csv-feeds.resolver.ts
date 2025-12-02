@@ -1,4 +1,3 @@
-import { dbTx } from '../../../../../knexfile';
 import {
   IntegrationFeedType,
   Resolvers,
@@ -39,7 +38,6 @@ const resolvers: Resolvers = {
       }
     },
     updateCsvFeed: async (_, input) => {
-      const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CsvFeed>(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
@@ -51,13 +49,10 @@ const resolvers: Resolvers = {
               integration_type: IntegrationFeedType.CsvFeed,
             },
           },
-          INTEGRATION_FEED_CSV_FEED_METADATA,
-          trx
+          INTEGRATION_FEED_CSV_FEED_METADATA
         );
-        await trx.commit();
         return doc;
       } catch (error) {
-        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {
             detail: error,
@@ -68,19 +63,13 @@ const resolvers: Resolvers = {
       }
     },
     deleteCsvFeed: async (_, { id }, context) => {
-      const trx = await dbTx();
       try {
-        const deletedDoc = await deleteDocument<CsvFeed>(
+        return await deleteDocument<CsvFeed>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
-          true,
-          trx
+          true
         );
-        await trx.commit();
-        return deletedDoc;
       } catch (error) {
-        await trx.rollback();
-
         throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedDeletionError);
       }
     },

@@ -1,4 +1,3 @@
-import { dbTx } from '../../../../knexfile';
 import {
   CustomDashboardConnection,
   Resolvers,
@@ -79,11 +78,9 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     createCustomDashboard: async (_, { input, document }) => {
-      const trx = await dbTx();
       try {
         return await CustomDashboardsApp.createCustomDashboard(input, document);
       } catch (error) {
-        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
             detail: error,
@@ -97,19 +94,15 @@ const resolvers: Resolvers = {
       }
     },
     updateCustomDashboard: async (_, input) => {
-      const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<CustomDashboard>(
           OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
-          CUSTOM_DASHBOARD_METADATA,
-          trx
+          CUSTOM_DASHBOARD_METADATA
         );
-        await trx.commit();
         return doc;
       } catch (error) {
-        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
             detail: error,
@@ -123,19 +116,13 @@ const resolvers: Resolvers = {
       }
     },
     deleteCustomDashboard: async (_, { id }, context) => {
-      const trx = await dbTx();
       try {
-        const doc = await deleteDocument<CustomDashboard>(
+        return await deleteDocument<CustomDashboard>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
-          true,
-          trx
+          true
         );
-        await trx.commit();
-        return doc;
       } catch (error) {
-        await trx.rollback();
-
         throw mapToGraphQLError(error, UnknownErrorCode.DeleteDocumentError);
       }
     },

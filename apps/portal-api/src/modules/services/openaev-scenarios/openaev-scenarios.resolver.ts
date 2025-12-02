@@ -1,4 +1,3 @@
-import { dbTx } from '../../../../knexfile';
 import {
   OpenAevScenarioConnection,
   Resolvers,
@@ -90,19 +89,15 @@ const resolvers: Resolvers = {
       }
     },
     updateOpenAEVScenario: async (_, input) => {
-      const trx = await dbTx();
       try {
         const doc = await updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
-          OPENAEV_SCENARIO_METADATA,
-          trx
+          OPENAEV_SCENARIO_METADATA
         );
-        await trx.commit();
         return doc;
       } catch (error) {
-        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
             detail: error,
@@ -115,19 +110,13 @@ const resolvers: Resolvers = {
       }
     },
     deleteOpenAEVScenario: async (_, { id }, context) => {
-      const trx = await dbTx();
       try {
-        const doc = await deleteDocument<OpenAEVScenario>(
+        return await deleteDocument<OpenAEVScenario>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
-          true,
-          trx
+          true
         );
-        await trx.commit();
-        return doc;
       } catch (error) {
-        await trx.rollback();
-
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.OpenAEVScenarioDeleteError

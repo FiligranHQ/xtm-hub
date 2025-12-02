@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { db, dbTx } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import ObjectLabel, {
   ObjectLabelObjectId,
@@ -131,25 +131,15 @@ describe('Labels app', () => {
         color: '#111111',
       });
 
-      const trx = await dbTx();
+      await objectLabelDomain.insertObjectLabel({
+        object_id: uuidv4() as ObjectLabelObjectId,
+        label_id: label1.id,
+      });
 
-      await objectLabelDomain.insertObjectLabel(
-        {
-          object_id: uuidv4() as ObjectLabelObjectId,
-          label_id: label1.id,
-        },
-        trx
-      );
-
-      await objectLabelDomain.insertObjectLabel(
-        {
-          object_id: uuidv4() as ObjectLabelObjectId,
-          label_id: label1.id,
-        },
-        trx
-      );
-
-      await trx.commit();
+      await objectLabelDomain.insertObjectLabel({
+        object_id: uuidv4() as ObjectLabelObjectId,
+        label_id: label1.id,
+      });
 
       await labelsApp.deleteLabelBy({ name: 'Label 1' });
 
