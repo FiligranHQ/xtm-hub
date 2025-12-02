@@ -362,6 +362,66 @@ describe('Deployment app', () => {
       expect(deployments.edges[0]?.node?.hub_status).toBe(HubStatus.Pending);
     });
 
+    it('should filter multiple out-of-sync scenarios correctly', async () => {
+      // Out-of-sync: NULL target vs NULL actual (both NULL = synced, should NOT appear)
+      const synced1 = await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Queued,
+        target_state: undefined,
+        actual_state: undefined,
+      });
+
+      // Out-of-sync: active target vs NULL actual
+      const outOfSync1 = await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Pending,
+        target_state: PlatformState.Active,
+        actual_state: undefined,
+      });
+
+      // Out-of-sync: active target vs provisioning actual
+      const outOfSync2 = await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Pending,
+        target_state: PlatformState.Active,
+        actual_state: PlatformState.Provisioning,
+      });
+
+      // Synced: active target vs active actual
+      const synced2 = await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Active,
+        target_state: PlatformState.Active,
+        actual_state: PlatformState.Active,
+      });
+
+      // Out-of-sync: NULL target vs provisioning actual
+      const outOfSync3 = await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Failed,
+        target_state: undefined,
+        actual_state: PlatformState.Provisioning,
+      });
+
+      // Synced: inactive target vs inactive actual
+      const synced3 = await insertOpenCtiDeploymentRequest({
+        hub_status: HubStatus.Expired,
+        target_state: PlatformState.Inactive,
+        actual_state: PlatformState.Inactive,
+      });
+
+      const deployments = await DeploymentsApp.loadDeploymentRequests({
+        first: 10,
+      });
+
+      expect(deployments.totalCount).toBe('3');
+      expect(deployments.edges.length).toBe(3);
+
+      // Verify only out-of-sync deployments are returned
+      const returnedIds = deployments.edges.map((edge) => edge.node.id);
+      expect(returnedIds).toContain(outOfSync1.id);
+      expect(returnedIds).toContain(outOfSync2.id);
+      expect(returnedIds).toContain(outOfSync3.id);
+      expect(returnedIds).not.toContain(synced1.id);
+      expect(returnedIds).not.toContain(synced2.id);
+      expect(returnedIds).not.toContain(synced3.id);
+    });
+
     it('should return filtered deployment requests only', async () => {
       await insertOpenCtiDeploymentRequest({});
       await insertOpenCtiDeploymentRequest({
