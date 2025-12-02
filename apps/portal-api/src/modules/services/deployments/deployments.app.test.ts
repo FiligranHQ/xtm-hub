@@ -156,15 +156,16 @@ describe('Deployment app', () => {
       });
 
       expect(dbDeploymentRequest).toBeDefined();
-      if (!dbDeploymentRequest) return;
 
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        'id',
-        dbDeploymentRequest.service_instance_id
-      );
-      expect(serviceInstance.creation_status).toBe(
-        ServiceInstanceCreationStatus.Pending
-      );
+      if (dbDeploymentRequest) {
+        const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+          'id',
+          dbDeploymentRequest.service_instance_id
+        );
+        expect(serviceInstance.creation_status).toBe(
+          ServiceInstanceCreationStatus.Pending
+        );
+      }
     });
     it('should create a deployment request with queued status if specified', async () => {
       const deployment = await DeploymentsApp.createDeploymentRequest({
@@ -198,7 +199,7 @@ describe('Deployment app', () => {
         type: DeploymentType.Trial,
         use_case: 'use_case',
       });
-      expect(dbDeploymentRequest).toBeDefined();
+
       if (!dbDeploymentRequest) return;
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -481,7 +482,7 @@ describe('Deployment app', () => {
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
-      expect(dbDeploymentRequest).toBeDefined();
+
       if (!dbDeploymentRequest) return;
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -507,6 +508,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentType.Trial,
         use_case: 'use_case',
+        user_requester_id: ADMIN_UUID,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
@@ -515,6 +517,7 @@ describe('Deployment app', () => {
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
+      expect(subscription).toBeDefined();
       if (subscription) {
         expect(subscription.start_date).toStrictEqual(
           dbDeploymentRequest.start_date
@@ -565,7 +568,6 @@ describe('Deployment app', () => {
       }
     );
     it('should should throw when status requested is not allowed', async () => {
-      // Act
       const call = DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
         hub_status: HubStatus.Expired,

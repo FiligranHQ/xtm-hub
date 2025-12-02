@@ -82,7 +82,6 @@ export const DeploymentsApp = {
 
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {
-          // Calculer ordering = MAX(ordering) + 1
           const maxOrdering = await DeploymentRequestDomain.getMaxOrdering();
           const ordering = (maxOrdering ?? 0) + 1;
 
