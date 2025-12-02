@@ -30,7 +30,7 @@ describe('Deployment app', () => {
             job_title: 'myJob',
             use_case: 'use_case',
             platform_identifier: PlatformIdentifier.Opencti,
-            region: PlatformRegion.Us,
+            region: PlatformRegion.UsEast,
             type: DeploymentType.Trial,
           },
         }
@@ -40,7 +40,7 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Pending,
         target_state: PlatformState.Active,
@@ -56,7 +56,7 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Pending,
       };
@@ -81,7 +81,7 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Pending,
         target_state: PlatformState.Active,
@@ -103,7 +103,7 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
+        region: PlatformRegion.UsEast,
         type: DeploymentType.Trial,
         hub_status: HubStatus.Pending,
       };
@@ -131,9 +131,10 @@ describe('Deployment app', () => {
         });
 
       expect(availableDeployments).toStrictEqual([
-        { region: PlatformRegion.Apac, availableCount: 10 },
-        { region: PlatformRegion.Europe, availableCount: 10 },
-        { region: PlatformRegion.Us, availableCount: 10 },
+        { region: PlatformRegion.ApacAu, availableCount: 10 },
+        { region: PlatformRegion.EuWest, availableCount: 20 },
+        { region: PlatformRegion.UsEast, availableCount: 20 },
+        { region: PlatformRegion.ApacSg, availableCount: 10 },
       ]);
     });
   });
