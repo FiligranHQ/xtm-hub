@@ -6,14 +6,14 @@ import {
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { WithLabels } from '../../../utils/types';
 import {
-  loadParentDocumentsByServiceInstance,
-  loadSeoDocuments,
-  loadSeoDocumentsByServiceSlug,
-} from '../document/document.domain';
-import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
 } from '../document/document.helper';
+import {
+  loadPaginatedSeoDocumentsByServiceSlug,
+  loadParentDocumentsByServiceInstance,
+  loadSeoDocumentsByServiceSlug,
+} from '../document/domain/document.domain';
 import {
   INTEGRATION_FEED_METADATA,
   IntegrationFeed,
@@ -44,7 +44,7 @@ export const integrationFeedsApp = {
     input: QueryPublicIntegrationFeedsArgs
   ) => {
     const { slug, ...opts } = input;
-    return loadSeoDocuments<IntegrationFeedConnection>(
+    return loadPaginatedSeoDocumentsByServiceSlug<IntegrationFeedConnection>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       slug,
       opts,

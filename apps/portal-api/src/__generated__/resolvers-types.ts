@@ -530,6 +530,7 @@ export type Mutation = {
   adminEditUser: User;
   autoRegisterPlatform: Success;
   changeSelectedOrganization?: Maybe<User>;
+  contactUs: Success;
   createCsvFeed: CsvFeed;
   createCustomDashboard: CustomDashboard;
   createDeploymentRequest: DeploymentRequest;
@@ -1057,7 +1058,8 @@ export enum PlatformRegion {
 
 export enum PlatformRegistrationConnectivityStatus {
   Active = 'active',
-  Inactive = 'inactive'
+  Inactive = 'inactive',
+  NotFound = 'not_found'
 }
 
 export enum PlatformRegistrationStatus {
@@ -1209,6 +1211,7 @@ export type QueryLabelArgs = {
 
 export type QueryLabelsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
+  documentType?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int']['input'];
   orderBy: LabelOrdering;
   orderMode: OrderingMode;
@@ -1419,6 +1422,7 @@ export type QueryUsersWithCapabilitiesInOrganizationArgs = {
 
 export type RefreshPlatformRegistrationConnectivityStatusInput = {
   platformId: Scalars['String']['input'];
+  platformIdentifier?: InputMaybe<PlatformIdentifier>;
   platformVersion: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
@@ -2585,6 +2589,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
+  contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;

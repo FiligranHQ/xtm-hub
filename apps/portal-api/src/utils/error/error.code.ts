@@ -31,6 +31,7 @@ export enum BadRequestErrorCode {
   DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
   InvalidStatus = 'INVALID_STATUS',
   InvalidPlatformId = 'INVALID_PLATFORM_ID',
+  InvalidPlatformVersion = 'INVALID_PLATFORM_VERSION',
 }
 
 export enum UnknownErrorCode {
@@ -70,6 +71,7 @@ export enum UnknownErrorCode {
   NoAsyncContextAvailableError = 'NO_ASYNC_CONTEXT_AVAILABLE',
   CreateDeploymentRequestError = 'CREATE_DEPLOYMENT_REQUEST_ERROR',
   DeploymentRequestUnknownError = 'DEPLOYMENT_REQUEST_UNKNOWN_ERROR',
+  HubspotError = 'HUBSPOT_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {

@@ -17,7 +17,8 @@ import { NotFoundError } from '../../utils/error/error.util';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { loadUserServiceBy } from '../user_service/user_service.domain';
-import { Upload, uploadNewFile } from './document/document.helper';
+import { uploadNewFile } from './document/document.helper';
+import { Upload } from './document/document.uploads.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
 import {
   grantServiceAccess,

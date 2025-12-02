@@ -62,7 +62,7 @@ function makeSingleQueryMapEntry<TReturn>({
 export const localeMap: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'OpenctiIntegrationFeeds',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
-  [ServiceSlug.OPEN_AEV_SCENARIOS]: 'ObasScenario',
+  [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {

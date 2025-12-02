@@ -1,6 +1,6 @@
 import { dbTx } from '../../../knexfile';
 import { omit } from '../../utils/utils';
-import { upsertDocumentWithChildren } from '../services/document/document.domain';
+import { upsertDocumentWithChildren } from '../services/document/domain/document.domain';
 import {
   Connector,
   INTEGRATION_FEED_CONNECTOR_METADATA,

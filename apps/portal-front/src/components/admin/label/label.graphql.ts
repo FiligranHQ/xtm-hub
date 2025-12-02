@@ -17,6 +17,7 @@ export const labelListFragment = graphql`
       orderBy: $orderBy
       orderMode: $orderMode
       searchTerm: $searchTerm
+      documentType: $documentType
     ) {
       __id
       totalCount
@@ -36,6 +37,7 @@ export const LabelListQuery = graphql`
     $orderBy: LabelOrdering!
     $orderMode: OrderingMode!
     $searchTerm: String
+    $documentType: String
   ) {
     ...labelList_labels
   }

@@ -12,7 +12,10 @@ import {
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  ShareableResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
@@ -144,5 +147,6 @@ export function useCustomDashboardsContext(
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: CustomDashboardForm,
+    type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
   };
 }

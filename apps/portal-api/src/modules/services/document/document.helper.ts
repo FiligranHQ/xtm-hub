@@ -1,6 +1,5 @@
-import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Knex } from 'knex';
-import { dbUnsecure } from '../../../../knexfile';
+import { dbRaw, dbUnsecure } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -8,9 +7,9 @@ import {
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { WithLabels } from '../../../utils/types';
-import { extractId } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
@@ -20,8 +19,7 @@ import {
   createDocument,
   loadDocumentById,
   loadSeoDocumentBySlug,
-  sendFileToS3,
-} from './document.domain';
+} from './domain/document.domain';
 
 export const BOOLEAN_METADATA = [
   'verified',
@@ -34,12 +32,6 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];
   parent_document_id?: DocumentId;
 };
-
-export interface UpdateDocumentDocuments {
-  documentFile: MinioFile | undefined;
-  newImages: MinioFile[];
-  existingImages: string[];
-}
 
 export const getDocumentName = (documentName: string) => {
   const splitName = documentName.split('.');
@@ -56,77 +48,6 @@ export const normalizeDocumentName = (documentName: string = ''): string => {
     .replace(/[^a-z0-9\-_.]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
-};
-
-export interface MinioFile {
-  minioName: string;
-  fileName: string;
-  mimeType: string;
-}
-
-export interface ExistingFile {
-  id: string;
-  file_name: string;
-  name: string;
-}
-
-export interface Upload {
-  file: FileUpload;
-  promise: Promise<FileUpload>;
-}
-
-export const waitForUploads = async (uploads: Upload[] | Upload) => {
-  if (!Array.isArray(uploads)) {
-    uploads = [uploads];
-  }
-  await Promise.all(uploads.map((upload) => upload.promise));
-};
-
-export const processUploads = async (uploads: Upload[] | Upload) => {
-  if (!Array.isArray(uploads)) {
-    uploads = [uploads];
-  }
-  await waitForUploads(uploads);
-  return Promise.all(uploads.map((doc: Upload) => createFileInMinIO(doc)));
-};
-
-export const processDocumentUpdateUploads = async (
-  document: Upload[] | undefined,
-  updateDocument: boolean,
-  images: string[]
-): Promise<UpdateDocumentDocuments> => {
-  let documentFile: MinioFile;
-  let newImages: MinioFile[] = [];
-  if (document && document.length > 0) {
-    await waitForUploads(document);
-    const files = await Promise.all(
-      document.map((doc: Upload) => createFileInMinIO(doc))
-    );
-    if (updateDocument) {
-      documentFile = files.shift();
-    }
-    newImages = files;
-  }
-
-  return {
-    documentFile,
-    newImages,
-    existingImages: images.map((imageId) => extractId<DocumentId>(imageId)),
-  };
-};
-
-export const createFileInMinIO = async (
-  jsonFile: Upload
-): Promise<MinioFile> => {
-  const { portalContext, user } = requestContext.require();
-  const fileName = normalizeDocumentName(jsonFile.file.filename);
-  const minioName = await sendFileToS3(
-    jsonFile.file,
-    fileName,
-    user.id,
-    portalContext.serviceInstanceId as ServiceInstanceId
-  );
-  return { minioName, fileName, mimeType: jsonFile.file.mimetype };
 };
 
 export const checkDocumentExists = async (
@@ -152,7 +73,7 @@ export const uploadNewFile = async (document, trx: Knex.Transaction) => {
     return;
   }
   const { portalContext, user } = requestContext.require();
-  const minioName = await sendFileToS3(
+  const minioName = await MinIOClient.sendFile(
     document.file,
     document.file.name,
     user.id,
@@ -226,4 +147,34 @@ export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
 ) => {
   const document: T = await loadSeoDocumentBySlug(type, slug, include_metadata);
   return updateDocumentWithCounters(document);
+};
+export const addIncludeMetadataQuery = (
+  qb: Knex.QueryBuilder,
+  include_metadata: string[] = []
+) => {
+  include_metadata.forEach((metaKey, index) => {
+    const metaAlias = `meta${index}`;
+
+    if (BOOLEAN_METADATA.includes(metaKey)) {
+      qb.select(
+        dbRaw(`
+          CASE 
+            WHEN "${metaAlias}"."value" = 'true' THEN true 
+            WHEN "${metaAlias}"."value" = 'false' THEN false 
+            ELSE "${metaAlias}"."value"::boolean 
+          END as ${metaKey}
+        `)
+      );
+    } else {
+      qb.select(`${metaAlias}.value as ${metaKey}`);
+    }
+
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+        `${metaAlias}.key`,
+        '=',
+        metaKey
+      );
+    }).groupBy([metaKey]);
+  });
 };

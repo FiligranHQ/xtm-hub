@@ -14,12 +14,12 @@ import { subscriptionApp } from '../../subcription/subscription.app';
 import {
   deleteDocument,
   getUploader,
-  getUploaderOrganization,
   loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
+  loadUploaderOrganization,
   updateDocumentWithChildren,
-} from '../document/document.domain';
+} from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
@@ -46,7 +46,7 @@ const resolvers: Resolvers = {
     children_documents: ({ id }) => loadImagesByDocumentId(id),
     uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
     uploader_organization: ({ id }, _) =>
-      getUploaderOrganization(id, { unsecured: true }),
+      loadUploaderOrganization(id, { unsecured: true }),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>

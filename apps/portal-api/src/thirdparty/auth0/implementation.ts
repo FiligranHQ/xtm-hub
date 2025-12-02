@@ -1,6 +1,10 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
-import { Auth0Client, Auth0UpdateUser } from './client';
+import {
+  Auth0Client,
+  Auth0UpdateUser,
+  Auth0UpdateUserRBACInstance,
+} from './client';
 
 const CONNECTION_TYPE = 'Username-Password-Authentication';
 
@@ -37,10 +41,45 @@ export const auth0ClientImplementation: Auth0Client = {
       }
     );
   },
+  updateUserRBACInstance: async (
+    email: string,
+    userRBACInstance: Auth0UpdateUserRBACInstance
+  ): Promise<void> => {
+    const users_response = await managementClient.usersByEmail.getByEmail({
+      email,
+    });
+    const auth0_user = users_response.data[0];
+    if (!auth0_user) {
+      throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
+    }
+
+    await managementClient.users.update(
+      { id: auth0_user.user_id },
+      {
+        user_metadata: {
+          ...auth0_user.user_metadata,
+          rbac_instance: {
+            ...(auth0_user.user_metadata?.rbac_instance ?? {}),
+            ...userRBACInstance,
+          },
+        },
+      }
+    );
+  },
   resetPassword: async (email: string): Promise<void> => {
     await authenticationClient.database.changePassword({
       email,
       connection: CONNECTION_TYPE,
+    });
+  },
+  createAudienceAPI: async (
+    organization_name: string,
+    platform_id: string
+  ): Promise<void> => {
+    await managementClient.resourceServers.create({
+      name: `${organization_name}_${platform_id}`,
+      identifier: `https://${platform_id}`,
+      signing_alg: 'RS256',
     });
   },
 };

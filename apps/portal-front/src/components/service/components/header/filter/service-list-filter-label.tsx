@@ -4,14 +4,19 @@ import { useServiceListLocalStorageKeyContext } from '@/components/service/compo
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { MultiSelectFormField } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import { FunctionComponent } from 'react';
 
-export const ServiceListFilterLabel: React.FC = () => {
+interface ServiceListFilterLabelProps {
+  type: string;
+}
+export const ServiceListFilterLabel: FunctionComponent<
+  ServiceListFilterLabelProps
+> = ({ type }) => {
   const t = useTranslations();
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { labels, setLabels } = useServiceListLocalStorage(localStorageKey);
 
-  const labelOptions = getLabels().map(({ name, id }) => ({
+  const labelOptions = getLabels(type).map(({ name, id }) => ({
     label: name,
     value: id,
   }));

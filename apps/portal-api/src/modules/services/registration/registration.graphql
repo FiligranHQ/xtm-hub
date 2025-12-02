@@ -79,12 +79,14 @@ input UnregisterPlatformInput {
 enum PlatformRegistrationConnectivityStatus {
   active
   inactive
+  not_found
 }
 
 input RefreshPlatformRegistrationConnectivityStatusInput {
   platformId: String!
   token: String!
   platformVersion: String!
+  platformIdentifier: PlatformIdentifier
 }
 
 type RefreshPlatformRegistrationConnectivityStatusResponse {

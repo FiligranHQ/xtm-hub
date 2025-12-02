@@ -15,7 +15,7 @@ import { extractId } from '../../../../utils/utils';
 import {
   deleteDocument,
   updateDocumentWithChildren,
-} from '../../document/document.domain';
+} from '../../document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
