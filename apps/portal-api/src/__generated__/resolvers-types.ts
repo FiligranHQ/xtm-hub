@@ -1064,7 +1064,8 @@ export enum PlatformRegion {
 
 export enum PlatformRegistrationConnectivityStatus {
   Active = 'active',
-  Inactive = 'inactive'
+  Inactive = 'inactive',
+  NotFound = 'not_found'
 }
 
 export enum PlatformRegistrationStatus {
@@ -1433,6 +1434,7 @@ export type QueryUsersWithCapabilitiesInOrganizationArgs = {
 
 export type RefreshPlatformRegistrationConnectivityStatusInput = {
   platformId: Scalars['String']['input'];
+  platformIdentifier?: InputMaybe<PlatformIdentifier>;
   platformVersion: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
