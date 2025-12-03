@@ -260,46 +260,61 @@ type ServiceDefinition implements Node {
   service_capability: [ServiceCapability]
 }
 
-enum PlatformRegion {
-  europe
-  us
-  apac
+enum DeploymentRequestPlatformRegion {
+  eu_west
+  us_east
+  apac_au
+  apac_sg
 }
 
-enum DeploymentType {
+enum DeploymentRequestDeploymentType {
   trial
 }
 
-enum DeploymentRequestStatus {
-  QUEUED
-  PENDING
-  PROVISIONING
-  ACTIVE
-  EXPIRED
-  FAILED
-  CANCELLED
+enum DeploymentRequestHubStatus {
+  queued
+  pending
+  active
+  expired
+  failed
+  canceled
+}
+
+enum DeploymentRequestPlatformState {
+  pending
+  provisioning
+  active
+  removing
+  removed
+  inactive
 }
 
 type DeploymentRequest implements Node {
   id: ID!
   platform_identifier: PlatformIdentifier!
-  region: PlatformRegion!
-  type: DeploymentType!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
   job_title: String
   activity_sector: String
   use_case: String
   start_date: Date
   end_date: Date
-  status: DeploymentRequestStatus!
+  hub_status: DeploymentRequestHubStatus!
+  target_state: DeploymentRequestPlatformState
+  actual_state: DeploymentRequestPlatformState
+  ordering: Int!
 }
 
 type PlatformDeploymentRequest {
   id: ID!
   platform_identifier: PlatformIdentifier!
-  region: PlatformRegion!
-  type: DeploymentType!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
   platform_token: String!
-  status: DeploymentRequestStatus!
+  hub_status: DeploymentRequestHubStatus!
+  target_state: DeploymentRequestPlatformState
+  actual_state: DeploymentRequestPlatformState
+  ordering: Int!
   start_date: Date
   end_date: Date
   job_title: String
@@ -310,33 +325,37 @@ type PlatformDeploymentRequest {
   requester_email: String!
   requester_first_name: String
   requester_last_name: String
-  product_service_instance_id: String
+  platform_id: String
   failure_reason: String
 }
 
 input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
-  region: PlatformRegion!
-  type: DeploymentType!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
   job_title: String
   activity_sector: String
   use_case: String
-  status: DeploymentRequestStatus
+  hub_status: DeploymentRequestHubStatus
 }
 
 input UpdateDeploymentRequestInput {
   id: ID!
-  status: DeploymentRequestStatus
+  hub_status: DeploymentRequestHubStatus
   start_date: Date
   end_date: Date
-  product_service_instance_id: String
+  platform_id: String
   failure_reason: String
+  actual_state: DeploymentRequestPlatformState
+  ordering: Int
 }
 
 enum DeploymentRequestFilterKey {
   region
   type
-  status
+  hub_status
+  target_state
+  actual_state
   platform_identifier
 }
 
@@ -357,7 +376,7 @@ type DeploymentRequestConnection {
 }
 
 type DeploymentAvailability {
-  region: PlatformRegion!
+  region: DeploymentRequestPlatformRegion!
   availableCount: Int!
 }
 

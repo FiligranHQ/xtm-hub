@@ -9,7 +9,10 @@ export const CreateDeploymentRequestMutation = graphql`
       region
       type
       platform_identifier
-      status
+      hub_status
+      target_state
+      actual_state
+      ordering
     }
   }
 `;

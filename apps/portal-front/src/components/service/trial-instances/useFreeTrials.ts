@@ -2,7 +2,7 @@ import {
   registerRegisteredPlatformListFragment,
   RegisterRegisteredPlatformsQuery,
 } from '@/components/registration/register/register.graphql';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
@@ -24,7 +24,9 @@ export const useFreeTrial = () => {
   >(registerRegisteredPlatformListFragment, queryData);
 
   const freeTrials = data.registeredPlatforms.filter(
-    (platform) => platform.deployment_request?.type === DeploymentTypeEnum.TRIAL
+    (platform) =>
+      platform.deployment_request?.type ===
+      DeploymentRequestDeploymentTypeEnum.TRIAL
   );
 
   return {

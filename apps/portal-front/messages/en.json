@@ -914,6 +914,12 @@
     "IllustrationImage": "Illustration Image",
     "Updated": "{platformName} has been updated successfully"
   },
+  "Region": {
+    "APAC_AU": "Australia",
+    "APAC_SG": "Singapore",
+    "EU_WEST": "Europe West",
+    "US_EAST": "United States East"
+  },
   "VaultActions": {
     "DocumentAdded": "{file_name} has been added",
     "DocumentDeleted": "{file_name} has been deleted",

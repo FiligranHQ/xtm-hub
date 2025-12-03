@@ -20,8 +20,6 @@ export default interface DeploymentRequest {
 
   service_instance_id: ServiceInstanceId;
 
-  status: string;
-
   type: string;
 
   request_date: Date;
@@ -38,13 +36,21 @@ export default interface DeploymentRequest {
 
   platform_token: string | null;
 
-  product_service_instance_id: string | null;
+  platform_id: string | null;
 
   failure_reason: string | null;
 
   job_title: string | null;
 
   use_case: string | null;
+
+  hub_status: string;
+
+  target_state: string;
+
+  actual_state: string;
+
+  ordering: number;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
@@ -56,8 +62,6 @@ export interface DeploymentRequestInitializer {
   organization_requester_id: OrganizationId;
 
   service_instance_id: ServiceInstanceId;
-
-  status: string;
 
   type: string;
 
@@ -76,13 +80,25 @@ export interface DeploymentRequestInitializer {
 
   platform_token?: string | null;
 
-  product_service_instance_id?: string | null;
+  platform_id?: string | null;
 
   failure_reason?: string | null;
 
   job_title?: string | null;
 
   use_case?: string | null;
+
+  /** Default value: 'pending'::character varying */
+  hub_status?: string;
+
+  /** Default value: 'pending'::character varying */
+  target_state?: string;
+
+  /** Default value: 'pending'::character varying */
+  actual_state?: string;
+
+  /** Default value: 0 */
+  ordering?: number;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
@@ -94,8 +110,6 @@ export interface DeploymentRequestMutator {
   organization_requester_id?: OrganizationId;
 
   service_instance_id?: ServiceInstanceId;
-
-  status?: string;
 
   type?: string;
 
@@ -113,11 +127,19 @@ export interface DeploymentRequestMutator {
 
   platform_token?: string | null;
 
-  product_service_instance_id?: string | null;
+  platform_id?: string | null;
 
   failure_reason?: string | null;
 
   job_title?: string | null;
 
   use_case?: string | null;
+
+  hub_status?: string;
+
+  target_state?: string;
+
+  actual_state?: string;
+
+  ordering?: number;
 }
