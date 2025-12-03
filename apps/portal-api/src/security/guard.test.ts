@@ -1,7 +1,12 @@
 import { MockInstance } from '@vitest/spy';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { contextAdminUser, THALES_ORGA_ID } from '../../tests/tests.const';
+import {
+  contextAdminUser,
+  requestContextThalesUser,
+  THALES_ORGA_ID,
+} from '../../tests/tests.const';
 import { OrganizationCapability } from '../__generated__/resolvers-types';
+import { requestContext } from '../context/request.context';
 import { ErrorCode } from '../utils/error/error.code';
 import * as authHelper from './auth.helper';
 import { securityGuard } from './guard';
@@ -38,7 +43,7 @@ describe('Security Guard', () => {
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
 
-    it('should throw a missing capaibility error when user is not in organization', async () => {
+    it('should throw a missing capability error when user is not in organization', async () => {
       isUserAllowedOnOrganizationSpy.mockResolvedValue({
         isAllowed: false,
         isInOrganization: true,
@@ -69,6 +74,32 @@ describe('Security Guard', () => {
           requiredCapability: OrganizationCapability.AdministrateOrganization,
         }
       );
+    });
+
+    it('should verify user thales capability based on selected_organization_id', async () => {
+      requestContext.set(requestContextThalesUser);
+      await expect(
+        securityGuard.assertUserCapabilities([
+          OrganizationCapability.AdministrateOrganization,
+        ])
+      ).resolves.not.toThrow();
+
+      const call = securityGuard.assertUserCapabilities([
+        OrganizationCapability.ManagePlatformRegistration,
+      ]);
+      await expect(call).rejects.toThrow(
+        ErrorCode.MissingCapabilityOnOrganization
+      );
+    });
+
+    it('should verify user thales capability with specific organization_id', async () => {
+      requestContext.set(requestContextThalesUser);
+      await expect(
+        securityGuard.assertUserCapabilities(
+          [OrganizationCapability.AdministrateOrganization],
+          THALES_ORGA_ID
+        )
+      ).resolves.not.toThrow();
     });
   });
 });

@@ -25,13 +25,11 @@ import { requestContext } from '../context/request.context';
 import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
-import { serviceInstanceSecurityLayer } from './layer/service-instance';
 import { userSecurityLayer } from './layer/user';
 import { userOrganizationSecurityLayer } from './layer/user-organization';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
 import { userOrganizationPendingSecurityLayer } from './layer/user-organization-pending';
 import { userServiceSecurityLayer } from './layer/user-service';
-import { userServiceCapabilitySecurityLayer } from './layer/user-service-capability';
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (
@@ -185,12 +183,10 @@ export const applyDbSecurityLayer = async (
   // Define table-specific security handlers
   const tableSecurityMap: Partial<Record<DatabaseType, SecuryQueryHandlers>> = {
     User: userSecurityLayer,
-    UserService_Capability: userServiceCapabilitySecurityLayer,
     User_Organization: userOrganizationSecurityLayer,
     User_Organization_Pending: userOrganizationPendingSecurityLayer,
     UserOrganization_Capability: userOrganizationCapabilitySecurityLayer,
     User_Service: userServiceSecurityLayer,
-    ServiceInstance: serviceInstanceSecurityLayer,
   };
 
   if (tableSecurityMap[table]) {
@@ -198,6 +194,11 @@ export const applyDbSecurityLayer = async (
       method = 'select';
     }
     if (method && tableSecurityMap[table][method]) {
+      // DEPRECATION WARNING: Security handler exists and needs to be updated
+      logApp.warn(
+        `DEPRECATION: Security handler exists for ${table}.${method} - please migrate to new security system`
+      );
+
       // We could perform the verification earlier, but I want to be able to check everything in development.
       // By default, we're in ADMIN_PLTFM in dev, so this helps ensure the security is properly implemented.
       if (isUserAdminPlatform(context.user) || opts?.unsecured) {
@@ -207,11 +208,7 @@ export const applyDbSecurityLayer = async (
       // QB in promise execute automatically the query but we don't always want to execute the query at this moment
       await tableSecurityMap[table][method](qb, opts);
       return qb;
-    } else {
-      logApp.warn(`No ${method} security handler for ${table}`);
     }
-  } else {
-    logApp.warn(`No security handlers defined for table: ${table}`);
   }
 
   return qb;
