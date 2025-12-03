@@ -45,6 +45,7 @@ import {
 import {
   assertFreeTrialsLimit,
   isHubStatusTransitionValid,
+  isPlatformStateTransitionValid,
 } from './deployments.helper';
 
 export const DeploymentsApp = {
@@ -207,6 +208,19 @@ export const DeploymentsApp = {
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
     }
+
+    if (
+      input.actual_state &&
+      !isPlatformStateTransitionValid(
+        deploymentRequest.actual_state as PlatformState,
+        input.actual_state
+      )
+    ) {
+      throw new Error(
+        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
+      );
+    }
+
     const isActiveInputDataInvalid =
       input.actual_state == PlatformState.Active &&
       (!input.start_date || !input.end_date);
@@ -239,7 +253,6 @@ export const DeploymentsApp = {
 
       if (input.hub_status) {
         updateData.hub_status = input.hub_status;
-        // target_state should be set explicitly if needed, not automatically computed
       }
 
       await DeploymentRequestDomain.updateDeploymentRequestById(
