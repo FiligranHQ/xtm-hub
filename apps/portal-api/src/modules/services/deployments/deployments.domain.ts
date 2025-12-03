@@ -1,4 +1,4 @@
-import { dbUnsecure, paginate } from '../../../../knexfile';
+import { db, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestConnection,
   DeploymentType,
@@ -18,7 +18,7 @@ export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
     deploymentRequest: DeploymentRequestInitializer
   ) => {
-    const [createdDeploymentRequest] = await dbUnsecure<DeploymentRequest>(
+    const [createdDeploymentRequest] = await db<DeploymentRequest>(
       'DeploymentRequest'
     )
       .insert(deploymentRequest)
@@ -27,7 +27,7 @@ export const DeploymentRequestDomain = {
   },
 
   loadDeploymentRequestBy: async (conditions: DeploymentRequestMutator) => {
-    const result = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    const result = await db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .select('*')
       .first();
@@ -50,7 +50,7 @@ export const DeploymentRequestDomain = {
   loadDeploymentRequestCountByRegion: async (
     conditions: DeploymentRequestMutator
   ): Promise<Record<string, number>> => {
-    const results = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    const results = await db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .select('region')
       .count('* as count')
@@ -62,7 +62,7 @@ export const DeploymentRequestDomain = {
   },
 
   getMaxOrdering: async (): Promise<number | null> => {
-    const result = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    const result = await db<DeploymentRequest>('DeploymentRequest')
       .max('ordering as max')
       .first();
     return result?.max ? parseInt(result.max as string, 10) : null;
@@ -118,7 +118,7 @@ export const DeploymentRequestDomain = {
   deleteDeploymentRequestBy: async (
     conditions: DeploymentRequestMutator
   ): Promise<DeploymentRequest> => {
-    return dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    return db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .delete();
   },
@@ -127,9 +127,7 @@ export const DeploymentRequestDomain = {
     id: DeploymentRequestId,
     data: DeploymentRequestMutator
   ): Promise<DeploymentRequest> => {
-    const [deploymentRequest] = await dbUnsecure<DeploymentRequest>(
-      'DeploymentRequest'
-    )
+    const [deploymentRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .where('id', '=', id)
       .update(data)
       .returning('*');
@@ -138,7 +136,7 @@ export const DeploymentRequestDomain = {
 };
 
 const getDeploymentRequestWithUserDataQuery = () => {
-  return dbUnsecure<DeploymentRequest>('DeploymentRequest')
+  return db<DeploymentRequest>('DeploymentRequest')
     .leftJoin(
       'Organization',
       'DeploymentRequest.organization_requester_id',
