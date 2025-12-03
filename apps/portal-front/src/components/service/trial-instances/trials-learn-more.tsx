@@ -83,13 +83,13 @@ export const TrialsLearnMore: React.FC = () => {
             />
           </div>
           <article className="p-xl w-[60%]">
-            <H2>What can you do with OpenCTI trial?</H2>
+            <H2>What can you do with your OpenCTI trial?</H2>
             <P className="mb-l">
               Get 30 days to explore all OpenCTI functionalities and enrich your
               threat intelligence. This includes all OpenCTI Enterprise Edition
               features such as automated playbooks, ability to set-up priority
               intelligence requirements (PIRs), FINTEL, as well as AI-powered
-              files import, report generation and NLP search functionality.
+              files import, report generation, and NLP search functionality.
             </P>
             <P className="mb-l">
               Explore how OpenCTI can support your specific needs—whether threat
@@ -104,7 +104,7 @@ export const TrialsLearnMore: React.FC = () => {
                 href="https://filigran.io/offerings/opencti-enterprise-edition/"
                 className="underline flex gap-s items-center">
                 <ArrowRightAltIcon className="size-3" />
-                Discover all OpenCTI Enterprise Edition Features
+                Discover all OpenCTI Enterprise Edition features
               </Link>
             </P>
           </article>
@@ -120,9 +120,9 @@ export const TrialsLearnMore: React.FC = () => {
             <P>
               Consolidate and enrich threat intelligence from any
               feed—commercial, open-source, internal—into a centralized
-              platform. The system standardizes data using the STIX 2.1
-              framework and leverages 300+ integrations. Save countless analyst
-              hours with AI-assisted import of CTI reports.
+              platform, leveraging 300+ integrations and standardized on the
+              STIX 2.1 framework. Use AI-assisted import of CTI reports to save
+              countless analyst hours.
             </P>
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
@@ -135,9 +135,9 @@ export const TrialsLearnMore: React.FC = () => {
             <P>
               Access powerful dashboard visualizations, knowledge hypergraphs,
               and playbooks to pivot across threat actors using timelines and
-              ATT&CK mappings. Customize your dashboards to meet your specific
-              needs—whether threat hunting or tailored incident response—and
-              make AI your companion at every step.
+              ATT&CK mappings. Tailor your dashboards to meet your threat or
+              incident management needs, and make AI your companion at every
+              step.
             </P>
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
@@ -179,14 +179,11 @@ export const TrialsLearnMore: React.FC = () => {
                 OpenCTI
               </h3>
               <P>
-                Structure and operationalize threat intelligence across
-                technical, operational, and strategic levels, enabling security
-                teams to contextualize attacks and act proactively.
+                <strong>Collect, correlate and leverage</strong>
                 <br />
-                <strong>
-                  Collect, Correlate and Leverage. Know what you need to care
-                  about!
-                </strong>
+                An open-source threat intelligence platform built by
+                practitioners for practitioners - to break data silos and make
+                threat intelligence truly actionable.
               </P>
             </div>
             <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
@@ -200,22 +197,18 @@ export const TrialsLearnMore: React.FC = () => {
                 OpenAEV
               </h3>
               <P>
-                Help identify critical vulnerabilities and strengthen
-                organizational security posture through advanced attack
-                simulations, resilience testing, and crisis management
-                exercises.
+                <strong>Prioritize, test and fix what matters</strong>
                 <br />
-                <strong>
-                  Prioritize, Validate and Fix Improve your security posture
-                  across tools, processes and people!
-                </strong>
+                Proactively defend against threats with Adversarial Exposure
+                Validation (AEV), simulating real-life attack scenarios to
+                optimize security defenses.
               </P>
             </div>
           </div>
           <div className="basis-full">
             <Image
-              width="616"
-              height="346"
+              width="1232"
+              height="692"
               src={`/xtm_schema.png`}
               priority={false}
               loading="lazy"
@@ -248,12 +241,12 @@ export const TrialsLearnMore: React.FC = () => {
           <div className="basis-full">
             <H2>Quick start guide</H2>
             <P className="text-gray mb-l">
-              Explore these resources to get more out of your OpenCTI platform.
+              Get more out of your OpenCTI platform!
             </P>
             <P className="text-gray">
-              From Step by step guides to expert courses and community best
-              practices, these links help your team level up faster and solve
-              real-word use cases.
+              Explore step-by-step guides, expert courses, and community
+              feedback to solve real-world use cases and become a Filigran
+              champion!
             </P>
           </div>
         </div>

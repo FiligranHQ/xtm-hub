@@ -26,13 +26,13 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
           </li>
           {platform.deployment_request?.hub_status && (
             <li>
-              <span className="text-gray/60">Registration status:</span>{' '}
+              <span className="text-gray/60">Status:</span>{' '}
               {formatTitleCase(platform.deployment_request?.hub_status)}
             </li>
           )}
           {platform.subscription?.start_date && (
             <li>
-              <span className="text-gray/60">Registration date:</span>{' '}
+              <span className="text-gray/60">Start date & End date:</span>{' '}
               {formatDate(platform.subscription?.start_date)}{' '}
               {platform.subscription?.end_date &&
                 `- ${formatDate(platform.subscription.end_date)}`}

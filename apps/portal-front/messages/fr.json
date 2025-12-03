@@ -662,10 +662,10 @@
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
       "Explore": "Explorez tout le potentiel d'OpenCTI Enterprise Edition, commencez votre essai gratuit de 30 jours.",
-      "Active": "Votre essai gratuit d'OpenCTI Enterprise Edition est actif",
-      "Provisioning": "Votre essai gratuit d'OpenCTI Enterprise Edition est en cours de provisionnement.",
-      "Requested": "Votre essai gratuit d'OpenCTI Enterprise Edition a été demandé.",
-      "Expired": "Votre essai gratuit d'OpenCTI Enterprise Edition a expiré.",
+      "Active": "Votre essai gratuit d'OpenCTI est actif",
+      "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
+      "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
+      "Expired": "Votre essai gratuit d'OpenCTI a expiré.",
       "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
       "LearnMore": "En savoir plus",
       "StartTrial": "Commencez votre essai gratuit",
@@ -687,7 +687,7 @@
         "New": "Nouveau",
         "Requested": "Demandée",
         "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
-        "FreeTrialDescription": "Explorez une version entièrement fonctionnelle d'OpenCTI pour voir comment vous pouvez rendre vos renseignements sur les menaces opérationnels - de bout en bout !"
+        "FreeTrialDescription": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition pour commencer à rendre opérationnelle votre veille sur les menaces de bout en bout !"
       },
       "CapacityWarning": {
         "Title": "Aucune plateforme disponible",
