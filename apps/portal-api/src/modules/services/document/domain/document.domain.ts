@@ -39,8 +39,13 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { withTransaction } from '../../../../context/database.context';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
+import {
+  restrictDocumentToActive,
+  restrictDocumentToUserOrganization,
+} from '../../../../security/restriction/document';
 import { labelsApp } from '../../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../../settings/objectLabel/object-label.domain';
+import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   processDocumentUpdateUploads,
   processUploads,
@@ -564,9 +569,22 @@ export const loadDocuments = async <
   field: Record<string, unknown>,
   include_metadata?: string[]
 ): Promise<T> => {
+  const { user } = requestContext.require();
+
   const loadDocumentQuery = db<Document>('Document', opts)
     .select(['Document.*'])
+    .tap(restrictDocumentToUserOrganization)
     .where(field);
+
+  if (
+    field['Document.service_instance_id'] &&
+    (await isUserRestrictedToActiveDocument(
+      user,
+      field['Document.service_instance_id'] as ServiceInstanceId
+    ))
+  ) {
+    loadDocumentQuery.tap(restrictDocumentToActive);
+  }
 
   if (opts.parentsOnly) {
     // Using the Document_Children table to filter for parent documents (those that have children)
@@ -631,6 +649,7 @@ export const getChildrenDocuments = async (
   return db<Document>('Document_Children', opts)
     .leftJoin('Document', 'Document.id', 'Document_Children.child_document_id')
     .where('Document_Children.parent_document_id', '=', documentId)
+    .tap(restrictDocumentToUserOrganization)
     .orderBy('created_at', 'asc')
     .select('Document.*')
     .groupBy('Document.id');
