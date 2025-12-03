@@ -332,7 +332,7 @@ describe('Deployment app', () => {
         first: 10,
       });
 
-      expect(deployments.totalCount).toBe(1);
+      expect(deployments.totalCount).toBe('1');
       expect(deployments.edges.length).toBe(1);
       expect(deployments.edges[0]?.node?.hub_status).toBe(HubStatus.Pending);
     });
@@ -454,7 +454,7 @@ describe('Deployment app', () => {
         ],
       });
 
-      expect(deployments.totalCount).toBe(0);
+      expect(deployments.totalCount).toBe('0');
       expect(deployments.edges.length).toBe(0);
     });
   });

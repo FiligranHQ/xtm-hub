@@ -132,9 +132,9 @@ describe('Deployment app', () => {
 
       expect(availableDeployments).toStrictEqual([
         { region: PlatformRegion.ApacAu, availableCount: 10 },
+        { region: PlatformRegion.ApacSg, availableCount: 10 },
         { region: PlatformRegion.EuWest, availableCount: 20 },
         { region: PlatformRegion.UsEast, availableCount: 20 },
-        { region: PlatformRegion.ApacSg, availableCount: 10 },
       ]);
     });
   });

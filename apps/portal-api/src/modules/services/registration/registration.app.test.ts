@@ -762,7 +762,7 @@ describe('Registration app', () => {
           organization_requester_id: PLATFORM_ORGANIZATION_UUID,
           platform_identifier: PlatformIdentifier.Opencti,
           platform_token: uuidv4(),
-          region: PlatformRegion.Us,
+          region: PlatformRegion.UsEast,
           request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
           hub_status: HubStatus.Pending,
           target_state: PlatformState.Active,
