@@ -1,6 +1,7 @@
 import { PlatformRegionEnum } from '@generated/models/PlatformRegion.enum';
 
-export const REGIONS = Object.values(PlatformRegionEnum).map(region => ({
+export const REGIONS_VALUES = Object.values(PlatformRegionEnum);
+export const REGIONS = Object.values(PlatformRegionEnum).map((region) => ({
   value: region,
   label: region.toUpperCase(),
 }));
