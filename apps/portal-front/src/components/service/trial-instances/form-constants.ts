@@ -1,9 +1,9 @@
 import { PlatformRegionEnum } from '@generated/models/PlatformRegion.enum';
 
-export const REGIONS_VALUES = Object.values(PlatformRegionEnum);
-export const REGIONS = REGIONS_VALUES.map((region) => {
-  return { value: region, label: region.toUpperCase() };
-});
+export const REGIONS = Object.values(PlatformRegionEnum).map(region => ({
+  value: region,
+  label: region.toUpperCase(),
+}));
 export const JOB_TITLES = [
   'CEO',
   'CISO/CSO/CIO',
