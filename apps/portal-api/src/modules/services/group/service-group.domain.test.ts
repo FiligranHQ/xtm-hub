@@ -3,7 +3,7 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import {
   ADMIN_USER_ID,
-  THALES_ADMIN_ORGA_ID,
+  THALES_ADMIN_ORGA_USER_ID,
   THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
 import { ServiceInstanceCreationStatus } from '../../../__generated__/resolvers-types';
@@ -89,7 +89,7 @@ describe('ServiceGroupDomain', () => {
           group_id: adminGroupId,
         },
         {
-          user_id: THALES_ADMIN_ORGA_ID,
+          user_id: THALES_ADMIN_ORGA_USER_ID,
           group_id: adminGroupId,
         },
         {
@@ -102,7 +102,7 @@ describe('ServiceGroupDomain', () => {
       expect(adminUsers.length).toBe(2);
       expect(adminUsers.find(({ id }) => id === ADMIN_USER_ID)).toBeTruthy();
       expect(
-        adminUsers.find(({ id }) => id === THALES_ADMIN_ORGA_ID)
+        adminUsers.find(({ id }) => id === THALES_ADMIN_ORGA_USER_ID)
       ).toBeTruthy();
 
       const analystUsers =
@@ -116,7 +116,7 @@ describe('ServiceGroupDomain', () => {
     it('should add users to the service group', async () => {
       await ServiceGroupDomain.addUsersToGroup(adminGroupId, [
         ADMIN_USER_ID,
-        THALES_ADMIN_ORGA_ID,
+        THALES_ADMIN_ORGA_USER_ID,
       ]);
 
       const serviceGroupUsers = await db<ServiceGroupUser[]>(
@@ -131,7 +131,7 @@ describe('ServiceGroupDomain', () => {
       );
       expect(
         serviceGroupUsers.find(
-          ({ user_id }) => user_id === THALES_ADMIN_ORGA_ID
+          ({ user_id }) => user_id === THALES_ADMIN_ORGA_USER_ID
         )
       );
     });

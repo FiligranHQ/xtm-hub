@@ -5,7 +5,7 @@ import {
   ADMIN_USER_ID,
   FILIGRAN_ORGA_ID,
   FILIGRAN_USER_ID,
-  THALES_ADMIN_ORGA_ID,
+  THALES_ADMIN_ORGA_USER_ID,
   THALES_ORGA_ID,
   THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
@@ -74,7 +74,7 @@ describe('ServiceGroupApp', () => {
 
   describe('updateGroups', () => {
     const payload = [
-      { id: adminGroupId, userIds: [ADMIN_USER_ID, THALES_ADMIN_ORGA_ID] },
+      { id: adminGroupId, userIds: [ADMIN_USER_ID, THALES_ADMIN_ORGA_USER_ID] },
       { id: analystGroupId, userIds: [THALES_SIMPLE_USER_ID] },
     ];
 
@@ -83,7 +83,7 @@ describe('ServiceGroupApp', () => {
         ...payload,
         {
           id: adminGroupIdServiceInstance2,
-          userIds: [ADMIN_USER_ID, THALES_ADMIN_ORGA_ID],
+          userIds: [ADMIN_USER_ID, THALES_ADMIN_ORGA_USER_ID],
         },
       ]);
 
@@ -130,7 +130,7 @@ describe('ServiceGroupApp', () => {
         admins.find(({ user_id }) => user_id === ADMIN_USER_ID)
       ).toBeTruthy();
       expect(
-        admins.find(({ user_id }) => user_id === THALES_ADMIN_ORGA_ID)
+        admins.find(({ user_id }) => user_id === THALES_ADMIN_ORGA_USER_ID)
       ).toBeTruthy();
 
       const analysts = await db<ServiceGroupUser[]>('ServiceGroup_User')
