@@ -11,6 +11,7 @@ import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
+import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
 import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
@@ -36,6 +37,7 @@ export const getSubscriptionCapability = async (id) => {
 
 export const getUserService = (id) => {
   return db<UserService>('User_Service')
+    .tap(restrictSubscriptionToUserOrganization)
     .where('User_Service.subscription_id', '=', id)
     .select('User_Service.*');
 };

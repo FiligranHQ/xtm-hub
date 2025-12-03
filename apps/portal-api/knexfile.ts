@@ -41,6 +41,7 @@ declare module 'knex' {
     interface QueryBuilder {
       asConnection<T>(): Promise<T>;
       secureQuery(opt?: SecuryQueryOpts): Knex.QueryBuilder;
+      tap(fn: (qb: this) => this): this;
     }
   }
 }
@@ -105,6 +106,9 @@ const knex = pkg;
 
 pkg.QueryBuilder.extend('secureQuery', function (opts: SecuryQueryOpts) {
   return applyDbSecurityLayer(this, opts);
+});
+pkg.QueryBuilder.extend('tap', function (fn) {
+  return fn(this) || this;
 });
 const config: Knex.Config = {
   ...baseConfig,
