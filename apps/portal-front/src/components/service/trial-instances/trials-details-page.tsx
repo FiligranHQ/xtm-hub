@@ -40,15 +40,16 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
             <span className="text-gray/60">License:</span> Enterprise Edition
           </li>
         </ul>
-
-        <Button>
-          <Link
-            target="_blank"
-            rel="noopener noreferrer"
-            href={platform.url}>
-            Access OpenCTI
-          </Link>
-        </Button>
+        {platform.url && (
+          <Button>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href={platform.url}>
+              Access OpenCTI
+            </Link>
+          </Button>
+        )}
       </section>
       <TrialsLearnMore />
     </>

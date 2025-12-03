@@ -524,7 +524,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     platform_id: platform.config?.platform_id ?? platform.id,
     title: platform.config?.platform_title ?? 'OpenCTI - Free Trial Platform',
     url: platform.config?.platform_url ?? '',
-    contract: platform.config?.platform_contract ?? PlatformContract.Ee,
+    contract: platform.config?.platform_contract ?? PlatformContract.Trial,
     identifier:
       platform.identifier ?? ServiceDefinitionIdentifier.OpenctiRegistration,
     version: platform.config?.platform_version ?? '',
