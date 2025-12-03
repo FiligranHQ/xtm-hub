@@ -13,6 +13,7 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { UserLoadUserBy } from '../../model/user';
+import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
@@ -68,6 +69,7 @@ export const loadUserServiceById = async (userServiceId) => {
 
 export const getSubscription = (id) => {
   return db<Subscription>('User_Service')
+    .tap(restrictSubscriptionToUserOrganization)
     .where('User_Service.id', id)
     .leftJoin(
       'Subscription as sub',

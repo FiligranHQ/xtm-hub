@@ -26,6 +26,7 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { isUserAdminPlatform } from '../../security/access';
+import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
@@ -358,6 +359,7 @@ export const loadServiceWithSubscriptions = async (
         `COALESCE("userServiceCapabilities".capabilities, '[]'::json) as user_service_capability`
       )
     )
+    .tap(restrictSubscriptionToUserOrganization)
     .leftJoin(
       queryUserServiceCapabilities,
       'User_Service.id',
