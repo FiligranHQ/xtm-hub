@@ -156,7 +156,7 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline text-blue"
-                        href={'/app/service/free-trial/mssa'}>
+                        href="https://filigran.io/mssa/">
                         {t('Service.Trials.Form.MSSA')}
                       </Link>
                       <span className="text-destructive">*</span>

@@ -31,6 +31,7 @@ export enum BadRequestErrorCode {
   DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
   InvalidStatus = 'INVALID_STATUS',
   InvalidPlatformId = 'INVALID_PLATFORM_ID',
+  InvalidPlatformVersion = 'INVALID_PLATFORM_VERSION',
 }
 
 export enum UnknownErrorCode {

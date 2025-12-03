@@ -1,4 +1,16 @@
 export const semanticVersionRegex = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+
+export const isSemanticVersionString = (version: string): boolean => {
+  return semanticVersionRegex.test(version);
+};
+
+export const isVersionAtLeast = (
+  givenVersion: string,
+  requiredVersion: string
+): boolean => {
+  return compareSemanticVersions(givenVersion, requiredVersion) >= 0;
+};
+
 export const compareSemanticVersions = (a: string, b: string) => {
   const a1 = a.split('.');
   const b1 = b.split('.');

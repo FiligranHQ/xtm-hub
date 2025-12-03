@@ -1,6 +1,7 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
+import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { serviceContractDomain } from '../../../modules/services/contract/domain';
 import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
@@ -39,8 +40,30 @@ describe('Platform Token Validation', () => {
       const platformToken = uuidv4();
       vi.spyOn(
         serviceContractDomain,
-        'loadActiveConfigurationByPlatformAndToken'
+        'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue(null);
+
+      const req: express.Request = {
+        headers: {
+          [PLATFORM_TOKEN_HEADER]: platformToken,
+          [PLATFORM_ID_HEADER]: platformId,
+        },
+      } as unknown as express.Request;
+
+      const result = await validateActivePlatformToken(req);
+
+      expect(result).toBe(false);
+    });
+    it('should return false when platform is found but inactive', async () => {
+      const platformId = uuidv4();
+      const platformToken = uuidv4();
+      vi.spyOn(
+        serviceContractDomain,
+        'loadConfigurationByPlatformAndToken'
+      ).mockResolvedValue({
+        config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Inactive,
+      } as unknown as ServiceConfiguration);
 
       const req: express.Request = {
         headers: {
@@ -58,9 +81,10 @@ describe('Platform Token Validation', () => {
       const platformToken = uuidv4();
       vi.spyOn(
         serviceContractDomain,
-        'loadActiveConfigurationByPlatformAndToken'
+        'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue({
         config: { platform_id: platformId },
+        status: ServiceConfigurationStatus.Active,
       } as unknown as ServiceConfiguration);
 
       const req: express.Request = {

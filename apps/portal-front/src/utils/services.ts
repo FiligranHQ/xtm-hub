@@ -108,7 +108,6 @@ export const registeredPlatformToServiceInstanceCardData = (
   };
   const platformIdentifier =
     platform.identifier as ServiceDefinitionIdentifierEnum;
-
   const commonValues = {
     id: platform.id,
     service_definition_identifier: platformIdentifier,
@@ -119,7 +118,7 @@ export const registeredPlatformToServiceInstanceCardData = (
     return {
       ...commonValues,
       ...freeTrialStaticData(t),
-      hoverLinks: buildPlatformHoverLinks(platform),
+      hoverLinks: buildPlatformHoverLinks(platform, t),
       displayedServiceStatus: getDisplayDays(platform),
     };
   }

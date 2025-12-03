@@ -1,6 +1,9 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { OrganizationCapability } from '../../../__generated__/resolvers-types';
+import {
+  OrganizationCapability,
+  ServiceConfigurationStatus,
+} from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { PortalContext } from '../../../model/portal-context';
@@ -43,11 +46,12 @@ export const validateActivePlatformToken = async (
   if (!validateExistsToken(req)) return false;
 
   const serviceConfiguration: ServiceConfiguration | null =
-    await serviceContractDomain.loadActiveConfigurationByPlatformAndToken({
+    await serviceContractDomain.loadConfigurationByPlatformAndToken({
       platformId: extractPlatformId(req),
       token: extractPlatformToken(req),
     });
-  return serviceConfiguration !== null;
+
+  return serviceConfiguration?.status === ServiceConfigurationStatus.Active;
 };
 
 export const validateAndGetRequestedPlatformToken = async (
