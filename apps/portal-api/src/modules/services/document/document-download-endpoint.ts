@@ -3,7 +3,6 @@ import { Request } from 'express';
 import rateLimit from 'express-rate-limit';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
-import { dbTx } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -97,7 +96,6 @@ export const documentDownloadEndpoint = (app) => {
 
         logApp.info('Downloading file:', { filename: req.params.filename });
 
-        const trx = await dbTx();
         try {
           const [document] = await loadDocumentBy({
             'Document.id': fromGlobalId(req.params.filename).id as DocumentId,
@@ -117,8 +115,6 @@ export const documentDownloadEndpoint = (app) => {
           if (attach) {
             res.attachment(document.file_name);
           }
-
-          await trx.commit();
 
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
@@ -148,7 +144,6 @@ export const documentDownloadEndpoint = (app) => {
 
           stream.pipe(res);
         } catch (error) {
-          await trx.rollback();
           logApp.error('Error while retrieving document: ', error);
           res.status(404).json({ message: 'Document not found' });
           return;

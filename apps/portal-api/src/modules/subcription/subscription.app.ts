@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { dbTx } from '../../../knexfile';
 import {
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
@@ -65,64 +64,56 @@ export const subscriptionApp = {
       organizationId: user.selected_organization_id,
     });
 
-    const trx = await dbTx();
-    try {
-      const selectedOrganization = await loadOrganizationBy({
-        id: user.selected_organization_id,
-      });
+    const selectedOrganization = await loadOrganizationBy({
+      id: user.selected_organization_id,
+    });
 
-      await createSubscriptionWithAdminAccess({
-        serviceInstanceId,
-        organization: selectedOrganization,
-      });
+    await createSubscriptionWithAdminAccess({
+      serviceInstanceId,
+      organization: selectedOrganization,
+    });
 
-      const [serviceDefinition, serviceInstance] = await Promise.all([
-        loadServiceDefinitionByServiceInstance(serviceInstanceId),
-        loadServiceInstanceById(user.id, serviceInstanceId),
-      ]);
+    const [serviceDefinition, serviceInstance] = await Promise.all([
+      loadServiceDefinitionByServiceInstance(serviceInstanceId),
+      loadServiceInstanceById(user.id, serviceInstanceId),
+    ]);
 
-      await sendMail({
-        to: user.email,
-        template: ServiceIdentifierToMailTemplate.get(
-          serviceDefinition.identifier
-        ),
-        params: {
-          name: user.email,
-          serviceLink: buildServiceLink({
-            serviceDefinitionIdentifier: serviceDefinition.identifier,
-            serviceInstanceId,
-          }),
-          serviceName: serviceInstance.name,
-        },
-      });
+    await sendMail({
+      to: user.email,
+      template: ServiceIdentifierToMailTemplate.get(
+        serviceDefinition.identifier
+      ),
+      params: {
+        name: user.email,
+        serviceLink: buildServiceLink({
+          serviceDefinitionIdentifier: serviceDefinition.identifier,
+          serviceInstanceId,
+        }),
+        serviceName: serviceInstance.name,
+      },
+    });
 
-      // TODO If Service is AUTO_JOIN
-      // await grantServiceAccessUsers(
-      //   context,
-      //   context.user.selected_organization_id as OrganizationId,
-      //   context.user.id,
-      //   filledSubscription.id
-      // );
+    // TODO If Service is AUTO_JOIN
+    // await grantServiceAccessUsers(
+    //   context,
+    //   context.user.selected_organization_id as OrganizationId,
+    //   context.user.id,
+    //   filledSubscription.id
+    // );
 
-      await trx.commit();
+    sendSubscriptionTelemetryEvent(portalContext, {
+      selectedOrganization,
+      serviceDefinitionIdentifier:
+        serviceDefinition.identifier as ServiceDefinitionIdentifier,
+    });
 
-      sendSubscriptionTelemetryEvent(portalContext, {
-        selectedOrganization,
-        serviceDefinitionIdentifier:
-          serviceDefinition.identifier as ServiceDefinitionIdentifier,
-      });
-
-      return {
-        ...serviceInstance,
-        creation_status:
-          serviceInstance.creation_status as ServiceInstanceCreationStatus,
-        join_type: serviceInstance.join_type as ServiceInstanceJoinType,
-        capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
-      };
-    } catch (error) {
-      await trx.rollback();
-      throw error;
-    }
+    return {
+      ...serviceInstance,
+      creation_status:
+        serviceInstance.creation_status as ServiceInstanceCreationStatus,
+      join_type: serviceInstance.join_type as ServiceInstanceJoinType,
+      capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
+    };
   },
 
   subscribeOrganizationToService: async ({

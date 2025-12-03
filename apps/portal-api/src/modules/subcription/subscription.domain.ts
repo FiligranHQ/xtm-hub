@@ -1,4 +1,3 @@
-import { Knex } from 'knex';
 import { db, dbUnsecure } from '../../../knexfile';
 import {
   ServiceCapability,
@@ -133,14 +132,10 @@ export const loadSubscriptionBy = async (
 
 export const updateSubscriptionBy = async (
   field: SubscriptionMutator,
-  data: SubscriptionMutator,
-  trx?: Knex.Transaction
+  data: SubscriptionMutator
 ): Promise<Subscription[]> => {
   return dbUnsecure<Subscription>('Subscription')
     .where(field)
     .update(data)
-    .modify((qb) => {
-      if (trx) qb.transacting(trx);
-    })
     .returning('*');
 };

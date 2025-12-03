@@ -232,20 +232,22 @@ export const registrationApp = {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(platform.id);
 
-    if (serviceConfiguration) {
-      await registrationDomain.refreshExistingPlatform({
-        serviceInstanceId: serviceConfiguration.service_instance_id,
-        targetOrganizationId: organizationId as OrganizationId,
-        configuration,
-      });
-    } else {
-      await registrationDomain.registerNewPlatform({
-        serviceDefinitionId: serviceDefinition.id,
-        organizationId: organizationId as OrganizationId,
-        configuration,
-        platformIdentifier: identifier,
-      });
-    }
+    await withTransaction(async () => {
+      if (serviceConfiguration) {
+        await registrationDomain.refreshExistingPlatform({
+          serviceInstanceId: serviceConfiguration.service_instance_id,
+          targetOrganizationId: organizationId as OrganizationId,
+          configuration,
+        });
+      } else {
+        await registrationDomain.registerNewPlatform({
+          serviceDefinitionId: serviceDefinition.id,
+          organizationId: organizationId as OrganizationId,
+          configuration,
+          platformIdentifier: identifier,
+        });
+      }
+    });
 
     const users = await loadUsersByCapabilitiesInOrganization(organizationId, [
       OrganizationCapability.AdministrateOrganization,
