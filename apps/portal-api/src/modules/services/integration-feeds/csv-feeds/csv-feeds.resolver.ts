@@ -26,7 +26,7 @@ const resolvers: Resolvers = {
   Mutation: {
     createCsvFeed: async (_, { input, document }) => {
       try {
-        return await csvFeedsApp.createCsvFeed(input, document);
+        return csvFeedsApp.createCsvFeed(input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {
@@ -39,7 +39,7 @@ const resolvers: Resolvers = {
     },
     updateCsvFeed: async (_, input) => {
       try {
-        const doc = await updateDocumentWithChildren<CsvFeed>(
+        return updateDocumentWithChildren<CsvFeed>(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           {
@@ -51,7 +51,6 @@ const resolvers: Resolvers = {
           },
           INTEGRATION_FEED_CSV_FEED_METADATA
         );
-        return doc;
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {
@@ -64,7 +63,7 @@ const resolvers: Resolvers = {
     },
     deleteCsvFeed: async (_, { id }, context) => {
       try {
-        return await deleteDocument<CsvFeed>(
+        return deleteDocument<CsvFeed>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true

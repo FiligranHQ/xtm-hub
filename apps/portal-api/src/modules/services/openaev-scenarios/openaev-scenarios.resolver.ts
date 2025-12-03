@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
   },
   Query: {
     seoOpenAEVScenariosByServiceSlug: async (_, { serviceSlug }) => {
-      return await loadSeoDocumentsByServiceSlug(
+      return loadSeoDocumentsByServiceSlug(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
         OPENAEV_SCENARIO_METADATA
@@ -75,7 +75,7 @@ const resolvers: Resolvers = {
   Mutation: {
     createOpenAEVScenario: async (_, { input, document }) => {
       try {
-        return await OpenAEVScenariosApp.createOpenAEVScenario(input, document);
+        return OpenAEVScenariosApp.createOpenAEVScenario(input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
@@ -90,13 +90,12 @@ const resolvers: Resolvers = {
     },
     updateOpenAEVScenario: async (_, input) => {
       try {
-        const doc = await updateDocumentWithChildren<OpenAEVScenario>(
+        return updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           OPENAEV_SCENARIO_METADATA
         );
-        return doc;
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
@@ -111,7 +110,7 @@ const resolvers: Resolvers = {
     },
     deleteOpenAEVScenario: async (_, { id }, context) => {
       try {
-        return await deleteDocument<OpenAEVScenario>(
+        return deleteDocument<OpenAEVScenario>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true

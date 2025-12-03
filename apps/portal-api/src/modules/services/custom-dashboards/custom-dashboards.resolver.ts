@@ -79,7 +79,7 @@ const resolvers: Resolvers = {
   Mutation: {
     createCustomDashboard: async (_, { input, document }) => {
       try {
-        return await CustomDashboardsApp.createCustomDashboard(input, document);
+        return CustomDashboardsApp.createCustomDashboard(input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
@@ -95,13 +95,12 @@ const resolvers: Resolvers = {
     },
     updateCustomDashboard: async (_, input) => {
       try {
-        const doc = await updateDocumentWithChildren<CustomDashboard>(
+        return updateDocumentWithChildren<CustomDashboard>(
           OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
           CUSTOM_DASHBOARD_METADATA
         );
-        return doc;
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
@@ -117,7 +116,7 @@ const resolvers: Resolvers = {
     },
     deleteCustomDashboard: async (_, { id }, context) => {
       try {
-        return await deleteDocument<CustomDashboard>(
+        return deleteDocument<CustomDashboard>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true
