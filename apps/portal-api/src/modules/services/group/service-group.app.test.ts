@@ -5,13 +5,11 @@ import {
   ADMIN_USER_ID,
   FILIGRAN_ORGA_ID,
   FILIGRAN_USER_ID,
-  requestContextSimpleUserThales,
   THALES_ADMIN_ORGA_ID,
   THALES_ORGA_ID,
   THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
 import { ServiceInstanceCreationStatus } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
 import ServiceGroup, {
   ServiceGroupId,
 } from '../../../model/kanel/public/ServiceGroup';
@@ -26,14 +24,26 @@ import { ServiceGroupApp } from './service-group.app';
 describe('ServiceGroupApp', () => {
   const adminGroupId = uuidv4() as ServiceGroupId;
   const analystGroupId = uuidv4() as ServiceGroupId;
+  const adminGroupIdServiceInstance2 = uuidv4() as ServiceGroupId;
 
-  const serviceInstanceId = uuidv4() as ServiceInstanceId;
+  const serviceInstanceId1 = uuidv4() as ServiceInstanceId;
+  const serviceInstanceId2 = uuidv4() as ServiceInstanceId;
 
   beforeAll(async () => {
     await db('ServiceInstance').insert([
       {
-        id: serviceInstanceId,
-        name: 'Service instance',
+        id: serviceInstanceId1,
+        name: 'Service instance 1',
+        description: '',
+        creation_status: ServiceInstanceCreationStatus.Ready,
+        public: false,
+        join_type: 'JOIN_AUTO',
+        tags: [],
+        service_definition_id: '5f769173-5ace-4ef3-b04f-2c95609c5b59',
+      },
+      {
+        id: serviceInstanceId2,
+        name: 'Service instance 2',
         description: '',
         creation_status: ServiceInstanceCreationStatus.Ready,
         public: false,
@@ -47,12 +57,17 @@ describe('ServiceGroupApp', () => {
       {
         id: adminGroupId,
         name: 'Admin',
-        service_instance_id: serviceInstanceId,
+        service_instance_id: serviceInstanceId1,
       },
       {
         id: analystGroupId,
         name: 'Analyst',
-        service_instance_id: serviceInstanceId,
+        service_instance_id: serviceInstanceId1,
+      },
+      {
+        id: adminGroupIdServiceInstance2,
+        name: 'Admin',
+        service_instance_id: serviceInstanceId2,
       },
     ]);
   });
@@ -63,25 +78,38 @@ describe('ServiceGroupApp', () => {
       { id: analystGroupId, userIds: [THALES_SIMPLE_USER_ID] },
     ];
 
-    it('should prevent user from updating a group when he does not have the capability', async () => {
+    it('should prevent user from updating groups in multiple service instances', async () => {
+      const call = ServiceGroupApp.updateGroups([
+        ...payload,
+        {
+          id: adminGroupIdServiceInstance2,
+          userIds: [ADMIN_USER_ID, THALES_ADMIN_ORGA_ID],
+        },
+      ]);
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.ServiceGroupsLinkedToMultipleServiceInstances
+      );
+    });
+
+    it('should prevent user from updating groups in another organization than selected', async () => {
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
-        service_instance_id: serviceInstanceId,
+        service_instance_id: serviceInstanceId1,
         organization_id: THALES_ORGA_ID,
       });
-      requestContext.set(requestContextSimpleUserThales);
 
       const call = ServiceGroupApp.updateGroups(payload);
 
       await expect(call).rejects.toThrow(
-        ErrorCode.MissingCapabilityOnOrganization
+        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
       );
     });
 
     it('should update groups with new user list and remove old ones', async () => {
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
-        service_instance_id: serviceInstanceId,
+        service_instance_id: serviceInstanceId1,
         organization_id: FILIGRAN_ORGA_ID,
       });
       await db<ServiceGroupUser>('ServiceGroup_User').insert({
