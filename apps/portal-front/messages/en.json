@@ -879,7 +879,8 @@
       "Password": "Password",
       "SelectOrganization": "Select an organization",
       "SelectRoles": "Select roles"
-    }
+    },
+    "Capability": "Capability"
   },
   "Utils": {
     "Cancel": "Cancel",

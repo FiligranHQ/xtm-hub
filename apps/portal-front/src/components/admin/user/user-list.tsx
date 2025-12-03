@@ -2,6 +2,9 @@ import { EditUser } from '@/components/admin/user/forms/user-update';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { PortalContext } from '@/components/me/app-portal-context';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -249,7 +252,29 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
             },
           },
         ]
-      : []),
+      : [
+          {
+            accessorKey: 'capability',
+            id: 'capability',
+            header: t('UserListPage.Capability'),
+            cell: ({ row }: { row: { original: userList_fragment$data } }) => {
+              // As non-admin path, we should return only one organization
+              if (row.original.organization_capabilities) {
+                const capabilities = (
+                  row.original.organization_capabilities[0]?.capabilities ?? []
+                ).map(
+                  (capability) =>
+                    ({
+                      id: capability,
+                      name: capability,
+                    }) as BadgeOverflow
+                );
+                return <BadgeOverflowCounter badges={capabilities} />;
+              }
+              return null;
+            },
+          },
+        ]),
   ];
 
   useEffect(() => {
