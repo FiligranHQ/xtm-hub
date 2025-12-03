@@ -58,16 +58,12 @@ const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
 
 const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
   {
-    from: DeploymentRequestPlatformState.Pending,
+    from: null,
     to: DeploymentRequestPlatformState.Provisioning,
   },
   {
     from: DeploymentRequestPlatformState.Provisioning,
     to: DeploymentRequestPlatformState.Active,
-  },
-  {
-    from: DeploymentRequestPlatformState.Provisioning,
-    to: DeploymentRequestPlatformState.Pending,
   },
   {
     from: DeploymentRequestPlatformState.Active,
@@ -98,8 +94,8 @@ export const isHubStatusTransitionValid = (
 };
 
 export const isPlatformStateTransitionValid = (
-  from: DeploymentRequestPlatformState,
-  to: DeploymentRequestPlatformState
+  from: DeploymentRequestPlatformState | null,
+  to: DeploymentRequestPlatformState | null
 ): boolean => {
   return (
     from === to ||

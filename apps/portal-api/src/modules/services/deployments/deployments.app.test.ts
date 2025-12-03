@@ -251,9 +251,7 @@ describe('Deployment app', () => {
           region: DeploymentRequestPlatformRegion.UsEast,
           use_case: 'use_case',
           deployment_type: DeploymentRequestDeploymentType.Trial,
-          hub_status: DeploymentRequestHubStatus.Pending,
-          target_state: DeploymentRequestPlatformState.Active,
-          actual_state: null,
+          status: DeploymentRequestHubStatus.Pending,
           activity_sector: 'cybersecurity',
           target_product: 'open-cti',
         });
@@ -448,7 +446,7 @@ describe('Deployment app', () => {
             value: [DeploymentRequestPlatformRegion.UsEast],
           },
           {
-            key: DeploymentRequestFilterKey.DeploymentRequestHubStatus,
+            key: DeploymentRequestFilterKey.HubStatus,
             value: [DeploymentRequestHubStatus.Active],
           },
           {
@@ -611,8 +609,7 @@ describe('Deployment app', () => {
           platform_id: 'fake product instance id',
           start_date,
           end_date,
-          hub_status: undefined,
-          actual_state: DeploymentRequestPlatformState.Active,
+          status: undefined,
         });
       });
 

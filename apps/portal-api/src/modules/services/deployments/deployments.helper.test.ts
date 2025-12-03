@@ -61,17 +61,10 @@ describe('isHubStatusTransitionValid', () => {
 
 describe('isPlatformStateTransitionValid', () => {
   const validTransitions = [
-    [
-      DeploymentRequestPlatformState.Pending,
-      DeploymentRequestPlatformState.Provisioning,
-    ],
+    [null, DeploymentRequestPlatformState.Provisioning],
     [
       DeploymentRequestPlatformState.Provisioning,
       DeploymentRequestPlatformState.Active,
-    ],
-    [
-      DeploymentRequestPlatformState.Provisioning,
-      DeploymentRequestPlatformState.Pending,
     ],
     [
       DeploymentRequestPlatformState.Active,
@@ -99,18 +92,12 @@ describe('isPlatformStateTransitionValid', () => {
   );
 
   const invalidTransitions = [
-    [
-      DeploymentRequestPlatformState.Pending,
-      DeploymentRequestPlatformState.Active,
-    ],
+    [null, DeploymentRequestPlatformState.Active],
     [
       DeploymentRequestPlatformState.Provisioning,
       DeploymentRequestPlatformState.Removing,
     ],
-    [
-      DeploymentRequestPlatformState.Active,
-      DeploymentRequestPlatformState.Pending,
-    ],
+    [DeploymentRequestPlatformState.Active, null],
     [
       DeploymentRequestPlatformState.Removed,
       DeploymentRequestPlatformState.Active,

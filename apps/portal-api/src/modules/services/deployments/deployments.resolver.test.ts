@@ -51,7 +51,7 @@ describe('Deployment app', () => {
 
   describe('updateDeploymentRequest', () => {
     it('should return the updated deployment request', async () => {
-      const initialDeploymentData = {
+      const initialDeployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
         use_case: 'use_case',
@@ -59,24 +59,52 @@ describe('Deployment app', () => {
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Pending,
-      };
-      const initialDeployment = await DeploymentsApp.createDeploymentRequest(
-        initialDeploymentData
-      );
-      const updates = {
-        id: initialDeployment.id,
-        actual_state: DeploymentRequestPlatformState.Active,
-        start_date: new Date(2025, 1, 3),
-        end_date: new Date(2025, 2, 3),
-        platform_id: 'fake product instance id',
-        failure_reason: 'not failed',
-      };
+      });
+
+      expect(initialDeployment).toMatchObject({
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        start_date: null,
+        end_date: null,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: null,
+      });
 
       const updatedDeployment = await resolver.Mutation.updateDeploymentRequest(
         undefined,
-        { input: updates }
+        {
+          input: {
+            id: initialDeployment.id,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          },
+        }
       );
+
       expect(updatedDeployment).toMatchObject({
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Provisioning,
+        start_date: null,
+        end_date: null,
+      });
+
+      const updatedActiveDeployment =
+        await resolver.Mutation.updateDeploymentRequest(undefined, {
+          input: {
+            id: initialDeployment.id,
+            actual_state: DeploymentRequestPlatformState.Active,
+            start_date: new Date(2025, 1, 3),
+            end_date: new Date(2025, 2, 3),
+            platform_id: 'fake product instance id',
+            failure_reason: 'not failed',
+          },
+        });
+      expect(updatedActiveDeployment).toMatchObject({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
         use_case: 'use_case',
