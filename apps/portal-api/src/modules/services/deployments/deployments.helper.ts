@@ -1,47 +1,95 @@
 import {
-  DeploymentType,
-  HubStatus,
-  PlatformState,
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformState,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 type HubStatusTransition = {
-  from: HubStatus;
-  to: HubStatus;
+  from: DeploymentRequestHubStatus;
+  to: DeploymentRequestHubStatus;
 };
 
 type PlatformStateTransition = {
-  from: PlatformState;
-  to: PlatformState;
+  from: DeploymentRequestPlatformState;
+  to: DeploymentRequestPlatformState;
 };
 
 const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
-  { from: HubStatus.Queued, to: HubStatus.Pending },
-  { from: HubStatus.Queued, to: HubStatus.Canceled },
-  { from: HubStatus.Pending, to: HubStatus.Active },
-  { from: HubStatus.Pending, to: HubStatus.Failed },
-  { from: HubStatus.Pending, to: HubStatus.Canceled },
-  { from: HubStatus.Active, to: HubStatus.Expired },
-  { from: HubStatus.Active, to: HubStatus.Canceled },
-  { from: HubStatus.Failed, to: HubStatus.Pending },
-  { from: HubStatus.Failed, to: HubStatus.Active },
+  {
+    from: DeploymentRequestHubStatus.Queued,
+    to: DeploymentRequestHubStatus.Pending,
+  },
+  {
+    from: DeploymentRequestHubStatus.Queued,
+    to: DeploymentRequestHubStatus.Canceled,
+  },
+  {
+    from: DeploymentRequestHubStatus.Pending,
+    to: DeploymentRequestHubStatus.Active,
+  },
+  {
+    from: DeploymentRequestHubStatus.Pending,
+    to: DeploymentRequestHubStatus.Failed,
+  },
+  {
+    from: DeploymentRequestHubStatus.Pending,
+    to: DeploymentRequestHubStatus.Canceled,
+  },
+  {
+    from: DeploymentRequestHubStatus.Active,
+    to: DeploymentRequestHubStatus.Expired,
+  },
+  {
+    from: DeploymentRequestHubStatus.Active,
+    to: DeploymentRequestHubStatus.Canceled,
+  },
+  {
+    from: DeploymentRequestHubStatus.Failed,
+    to: DeploymentRequestHubStatus.Pending,
+  },
+  {
+    from: DeploymentRequestHubStatus.Failed,
+    to: DeploymentRequestHubStatus.Active,
+  },
 ];
 
 const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
-  { from: PlatformState.Pending, to: PlatformState.Provisioning },
-  { from: PlatformState.Provisioning, to: PlatformState.Active },
-  { from: PlatformState.Provisioning, to: PlatformState.Pending },
-  { from: PlatformState.Active, to: PlatformState.Removing },
-  { from: PlatformState.Active, to: PlatformState.Inactive },
-  { from: PlatformState.Removing, to: PlatformState.Removed },
-  { from: PlatformState.Inactive, to: PlatformState.Active },
+  {
+    from: DeploymentRequestPlatformState.Pending,
+    to: DeploymentRequestPlatformState.Provisioning,
+  },
+  {
+    from: DeploymentRequestPlatformState.Provisioning,
+    to: DeploymentRequestPlatformState.Active,
+  },
+  {
+    from: DeploymentRequestPlatformState.Provisioning,
+    to: DeploymentRequestPlatformState.Pending,
+  },
+  {
+    from: DeploymentRequestPlatformState.Active,
+    to: DeploymentRequestPlatformState.Removing,
+  },
+  {
+    from: DeploymentRequestPlatformState.Active,
+    to: DeploymentRequestPlatformState.Inactive,
+  },
+  {
+    from: DeploymentRequestPlatformState.Removing,
+    to: DeploymentRequestPlatformState.Removed,
+  },
+  {
+    from: DeploymentRequestPlatformState.Inactive,
+    to: DeploymentRequestPlatformState.Active,
+  },
 ];
 
 export const isHubStatusTransitionValid = (
-  from: HubStatus,
-  to: HubStatus
+  from: DeploymentRequestHubStatus,
+  to: DeploymentRequestHubStatus
 ): boolean => {
   return (
     from === to ||
@@ -50,8 +98,8 @@ export const isHubStatusTransitionValid = (
 };
 
 export const isPlatformStateTransitionValid = (
-  from: PlatformState,
-  to: PlatformState
+  from: DeploymentRequestPlatformState,
+  to: DeploymentRequestPlatformState
 ): boolean => {
   return (
     from === to ||
@@ -63,7 +111,7 @@ export const assertFreeTrialsLimit = async (organizationId: OrganizationId) => {
   const freeTrialsRequests =
     await DeploymentRequestDomain.loadDeploymentRequestBy({
       organization_requester_id: organizationId,
-      type: DeploymentType.Trial,
+      type: DeploymentRequestDeploymentType.Trial,
     });
   if (freeTrialsRequests) {
     throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);

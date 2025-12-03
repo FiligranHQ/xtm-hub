@@ -2,7 +2,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterPlatformInput,
-  HubStatus,
+  DeploymentRequestHubStatus,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
   OpenCtiPlatformRegistrationStatusInput,
@@ -548,9 +548,10 @@ const assertValidDeploymentRequest = (
     throw new Error(BadRequestErrorCode.InvalidPlatformId);
   }
   if (
-    ![HubStatus.Active, HubStatus.Pending].includes(
-      deploymentRequest.hub_status as HubStatus
-    )
+    ![
+      DeploymentRequestHubStatus.Active,
+      DeploymentRequestHubStatus.Pending,
+    ].includes(deploymentRequest.hub_status as DeploymentRequestHubStatus)
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
   }

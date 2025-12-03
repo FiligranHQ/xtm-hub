@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
-  DeploymentType,
-  HubStatus,
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformIdentifier,
-  PlatformRegion,
-  PlatformState,
 } from '../../../__generated__/resolvers-types';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
@@ -18,15 +18,15 @@ import {
 
 describe('isHubStatusTransitionValid', () => {
   const validTransitions = [
-    [HubStatus.Queued, HubStatus.Pending],
-    [HubStatus.Queued, HubStatus.Canceled],
-    [HubStatus.Pending, HubStatus.Active],
-    [HubStatus.Pending, HubStatus.Failed],
-    [HubStatus.Pending, HubStatus.Canceled],
-    [HubStatus.Active, HubStatus.Expired],
-    [HubStatus.Active, HubStatus.Canceled],
-    [HubStatus.Failed, HubStatus.Pending],
-    [HubStatus.Failed, HubStatus.Active],
+    [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Pending],
+    [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Canceled],
+    [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Active],
+    [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Failed],
+    [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Canceled],
+    [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Expired],
+    [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Canceled],
+    [DeploymentRequestHubStatus.Failed, DeploymentRequestHubStatus.Pending],
+    [DeploymentRequestHubStatus.Failed, DeploymentRequestHubStatus.Active],
   ] as const;
 
   it.each(validTransitions)(
@@ -37,11 +37,11 @@ describe('isHubStatusTransitionValid', () => {
   );
 
   const invalidTransitions = [
-    [HubStatus.Queued, HubStatus.Active],
-    [HubStatus.Active, HubStatus.Pending],
-    [HubStatus.Expired, HubStatus.Active],
-    [HubStatus.Canceled, HubStatus.Active],
-    [HubStatus.Expired, HubStatus.Pending],
+    [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Active],
+    [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Pending],
+    [DeploymentRequestHubStatus.Expired, DeploymentRequestHubStatus.Active],
+    [DeploymentRequestHubStatus.Canceled, DeploymentRequestHubStatus.Active],
+    [DeploymentRequestHubStatus.Expired, DeploymentRequestHubStatus.Pending],
   ] as const;
 
   it.each(invalidTransitions)(
@@ -52,7 +52,7 @@ describe('isHubStatusTransitionValid', () => {
   );
 
   it('should allow same hub status transitions', () => {
-    const allStatuses = Object.values(HubStatus);
+    const allStatuses = Object.values(DeploymentRequestHubStatus);
     allStatuses.forEach((status) => {
       expect(isHubStatusTransitionValid(status, status)).toBe(true);
     });
@@ -61,13 +61,34 @@ describe('isHubStatusTransitionValid', () => {
 
 describe('isPlatformStateTransitionValid', () => {
   const validTransitions = [
-    [PlatformState.Pending, PlatformState.Provisioning],
-    [PlatformState.Provisioning, PlatformState.Active],
-    [PlatformState.Provisioning, PlatformState.Pending],
-    [PlatformState.Active, PlatformState.Removing],
-    [PlatformState.Active, PlatformState.Inactive],
-    [PlatformState.Removing, PlatformState.Removed],
-    [PlatformState.Inactive, PlatformState.Active],
+    [
+      DeploymentRequestPlatformState.Pending,
+      DeploymentRequestPlatformState.Provisioning,
+    ],
+    [
+      DeploymentRequestPlatformState.Provisioning,
+      DeploymentRequestPlatformState.Active,
+    ],
+    [
+      DeploymentRequestPlatformState.Provisioning,
+      DeploymentRequestPlatformState.Pending,
+    ],
+    [
+      DeploymentRequestPlatformState.Active,
+      DeploymentRequestPlatformState.Removing,
+    ],
+    [
+      DeploymentRequestPlatformState.Active,
+      DeploymentRequestPlatformState.Inactive,
+    ],
+    [
+      DeploymentRequestPlatformState.Removing,
+      DeploymentRequestPlatformState.Removed,
+    ],
+    [
+      DeploymentRequestPlatformState.Inactive,
+      DeploymentRequestPlatformState.Active,
+    ],
   ] as const;
 
   it.each(validTransitions)(
@@ -78,10 +99,22 @@ describe('isPlatformStateTransitionValid', () => {
   );
 
   const invalidTransitions = [
-    [PlatformState.Pending, PlatformState.Active],
-    [PlatformState.Provisioning, PlatformState.Removing],
-    [PlatformState.Active, PlatformState.Pending],
-    [PlatformState.Removed, PlatformState.Active],
+    [
+      DeploymentRequestPlatformState.Pending,
+      DeploymentRequestPlatformState.Active,
+    ],
+    [
+      DeploymentRequestPlatformState.Provisioning,
+      DeploymentRequestPlatformState.Removing,
+    ],
+    [
+      DeploymentRequestPlatformState.Active,
+      DeploymentRequestPlatformState.Pending,
+    ],
+    [
+      DeploymentRequestPlatformState.Removed,
+      DeploymentRequestPlatformState.Active,
+    ],
   ] as const;
 
   it.each(invalidTransitions)(
@@ -92,7 +125,7 @@ describe('isPlatformStateTransitionValid', () => {
   );
 
   it('should allow same platform state transitions', () => {
-    const allStates = Object.values(PlatformState);
+    const allStates = Object.values(DeploymentRequestPlatformState);
     allStates.forEach((state) => {
       expect(isPlatformStateTransitionValid(state, state)).toBe(true);
     });
@@ -118,10 +151,10 @@ describe('assertFreeTrialsLimit', () => {
     ).mockResolvedValue({
       id: uuidv4(),
       platform_identifier: PlatformIdentifier.Opencti,
-      region: PlatformRegion.EuWest,
-      type: DeploymentType.Trial,
-      hub_status: HubStatus.Pending,
-      target_state: PlatformState.Active,
+      region: DeploymentRequestPlatformRegion.EuWest,
+      type: DeploymentRequestDeploymentType.Trial,
+      hub_status: DeploymentRequestHubStatus.Pending,
+      target_state: DeploymentRequestPlatformState.Active,
       actual_state: null,
     });
     await expect(

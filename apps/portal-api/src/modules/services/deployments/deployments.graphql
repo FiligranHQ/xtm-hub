@@ -1,15 +1,15 @@
-enum PlatformRegion {
+enum DeploymentRequestPlatformRegion {
   eu_west
   us_east
   apac_au
   apac_sg
 }
 
-enum DeploymentType {
+enum DeploymentRequestDeploymentType {
   trial
 }
 
-enum HubStatus {
+enum DeploymentRequestHubStatus {
   queued
   pending
   active
@@ -18,7 +18,7 @@ enum HubStatus {
   canceled
 }
 
-enum PlatformState {
+enum DeploymentRequestPlatformState {
   pending
   provisioning
   active
@@ -30,28 +30,28 @@ enum PlatformState {
 type DeploymentRequest implements Node {
   id: ID!
   platform_identifier: PlatformIdentifier!
-  region: PlatformRegion!
-  type: DeploymentType!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
   job_title: String
   activity_sector: String
   use_case: String
   start_date: Date
   end_date: Date
-  hub_status: HubStatus!
-  target_state: PlatformState
-  actual_state: PlatformState
+  hub_status: DeploymentRequestHubStatus!
+  target_state: DeploymentRequestPlatformState
+  actual_state: DeploymentRequestPlatformState
   ordering: Int!
 }
 
 type PlatformDeploymentRequest {
   id: ID!
   platform_identifier: PlatformIdentifier!
-  region: PlatformRegion!
-  type: DeploymentType!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
   platform_token: String!
-  hub_status: HubStatus!
-  target_state: PlatformState
-  actual_state: PlatformState
+  hub_status: DeploymentRequestHubStatus!
+  target_state: DeploymentRequestPlatformState
+  actual_state: DeploymentRequestPlatformState
   ordering: Int!
   start_date: Date
   end_date: Date
@@ -69,22 +69,22 @@ type PlatformDeploymentRequest {
 
 input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
-  region: PlatformRegion!
-  type: DeploymentType!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
   job_title: String
   activity_sector: String
   use_case: String
-  hub_status: HubStatus
+  hub_status: DeploymentRequestHubStatus
 }
 
 input UpdateDeploymentRequestInput {
   id: ID!
-  hub_status: HubStatus
+  hub_status: DeploymentRequestHubStatus
   start_date: Date
   end_date: Date
   platform_id: String
   failure_reason: String
-  actual_state: PlatformState
+  actual_state: DeploymentRequestPlatformState
   ordering: Int
 }
 
@@ -114,7 +114,7 @@ type DeploymentRequestConnection {
 }
 
 type DeploymentAvailability {
-  region: PlatformRegion!
+  region: DeploymentRequestPlatformRegion!
   availableCount: Int!
 }
 

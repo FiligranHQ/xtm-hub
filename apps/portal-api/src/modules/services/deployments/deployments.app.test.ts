@@ -15,12 +15,12 @@ import {
   SERVICE_OPENCTI_REGISTRATION,
 } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
-  DeploymentType,
-  HubStatus,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformIdentifier,
-  PlatformRegion,
-  PlatformState,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
@@ -88,13 +88,13 @@ async function insertOpenCtiDeploymentRequest(
     organization_requester_id: PLATFORM_ORGANIZATION_UUID,
     platform_identifier: PlatformIdentifier.Opencti,
     platform_token: uuidv4(),
-    region: PlatformRegion.UsEast,
+    region: DeploymentRequestPlatformRegion.UsEast,
     request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-    hub_status: HubStatus.Pending,
-    target_state: PlatformState.Active,
+    hub_status: DeploymentRequestHubStatus.Pending,
+    target_state: DeploymentRequestPlatformState.Active,
     actual_state: undefined,
     ordering: 1,
-    type: DeploymentType.Trial,
+    type: DeploymentRequestDeploymentType.Trial,
     use_case: 'use_case',
     service_instance_id: serviceInstanceId as ServiceInstanceId,
     user_requester_id: ADMIN_UUID,
@@ -129,8 +129,8 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.UsEast,
-        type: DeploymentType.Trial,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
       });
 
       const dbDeploymentRequest =
@@ -144,14 +144,14 @@ describe('Deployment app', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
-        region: PlatformRegion.UsEast,
+        region: DeploymentRequestPlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        hub_status: HubStatus.Pending,
-        target_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
         actual_state: null,
         ordering: expect.any(Number),
-        type: DeploymentType.Trial,
+        type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
       });
 
@@ -173,9 +173,9 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.UsEast,
-        type: DeploymentType.Trial,
-        hub_status: HubStatus.Queued,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
 
       const dbDeploymentRequest =
@@ -189,14 +189,14 @@ describe('Deployment app', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
-        region: PlatformRegion.UsEast,
+        region: DeploymentRequestPlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        hub_status: HubStatus.Queued,
-        target_state: PlatformState.Inactive,
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Inactive,
         actual_state: null,
         ordering: expect.any(Number),
-        type: DeploymentType.Trial,
+        type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
       });
 
@@ -216,9 +216,9 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.UsEast,
-        type: DeploymentType.Trial,
-        hub_status: HubStatus.Expired,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Expired,
       });
       await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
     });
@@ -233,8 +233,8 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           use_case: 'use_case',
           platform_identifier: PlatformIdentifier.Opencti,
-          region: PlatformRegion.UsEast,
-          type: DeploymentType.Trial,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
         });
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -248,11 +248,11 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           user_id: ADMIN_USER_ID,
           deployment_id: deployment.id,
-          region: PlatformRegion.UsEast,
+          region: DeploymentRequestPlatformRegion.UsEast,
           use_case: 'use_case',
-          deployment_type: DeploymentType.Trial,
-          hub_status: HubStatus.Pending,
-          target_state: PlatformState.Active,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
           actual_state: null,
           activity_sector: 'cybersecurity',
           target_product: 'open-cti',
@@ -269,8 +269,8 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           use_case: 'use_case',
           platform_identifier: PlatformIdentifier.Opencti,
-          region: PlatformRegion.UsEast,
-          type: DeploymentType.Trial,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
         });
 
         expect(deployment).toBeDefined();
@@ -283,8 +283,8 @@ describe('Deployment app', () => {
           job_title: 'myJob',
           use_case: 'use_case',
           platform_identifier: PlatformIdentifier.Opencti,
-          region: PlatformRegion.UsEast,
-          type: DeploymentType.Trial,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
         });
 
         expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
@@ -318,14 +318,14 @@ describe('Deployment app', () => {
 
     it('should return out-of-sync deployment requests by default', async () => {
       await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Pending,
-        target_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
       await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Active,
-        target_state: PlatformState.Active,
-        actual_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
@@ -334,18 +334,20 @@ describe('Deployment app', () => {
 
       expect(deployments.totalCount).toBe('1');
       expect(deployments.edges.length).toBe(1);
-      expect(deployments.edges[0]?.node?.hub_status).toBe(HubStatus.Pending);
+      expect(deployments.edges[0]?.node?.hub_status).toBe(
+        DeploymentRequestHubStatus.Pending
+      );
     });
 
     it('should return out-of-sync deployments even with other filters', async () => {
       await insertOpenCtiDeploymentRequest({
-        target_state: PlatformState.Active,
+        target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
       await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Active,
-        target_state: PlatformState.Active,
-        actual_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
@@ -353,57 +355,59 @@ describe('Deployment app', () => {
         filters: [
           {
             key: DeploymentRequestFilterKey.Region,
-            value: [PlatformRegion.UsEast],
+            value: [DeploymentRequestPlatformRegion.UsEast],
           },
         ],
       });
 
       expect(deployments.totalCount).toBe('1');
       expect(deployments.edges.length).toBe(1);
-      expect(deployments.edges[0]?.node?.hub_status).toBe(HubStatus.Pending);
+      expect(deployments.edges[0]?.node?.hub_status).toBe(
+        DeploymentRequestHubStatus.Pending
+      );
     });
 
     it('should filter multiple out-of-sync scenarios correctly', async () => {
       // Out-of-sync: NULL target vs NULL actual (both NULL = synced, should NOT appear)
       const synced1 = await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Queued,
+        hub_status: DeploymentRequestHubStatus.Queued,
         target_state: undefined,
         actual_state: undefined,
       });
 
       // Out-of-sync: active target vs NULL actual
       const outOfSync1 = await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Pending,
-        target_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
 
       // Out-of-sync: active target vs provisioning actual
       const outOfSync2 = await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Pending,
-        target_state: PlatformState.Active,
-        actual_state: PlatformState.Provisioning,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Provisioning,
       });
 
       // Synced: active target vs active actual
       const synced2 = await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Active,
-        target_state: PlatformState.Active,
-        actual_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
       });
 
       // Out-of-sync: NULL target vs provisioning actual
       const outOfSync3 = await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Failed,
+        hub_status: DeploymentRequestHubStatus.Failed,
         target_state: undefined,
-        actual_state: PlatformState.Provisioning,
+        actual_state: DeploymentRequestPlatformState.Provisioning,
       });
 
       // Synced: inactive target vs inactive actual
       const synced3 = await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Expired,
-        target_state: PlatformState.Inactive,
-        actual_state: PlatformState.Inactive,
+        hub_status: DeploymentRequestHubStatus.Expired,
+        target_state: DeploymentRequestPlatformState.Inactive,
+        actual_state: DeploymentRequestPlatformState.Inactive,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
@@ -426,14 +430,14 @@ describe('Deployment app', () => {
     it('should return filtered deployment requests only', async () => {
       await insertOpenCtiDeploymentRequest({});
       await insertOpenCtiDeploymentRequest({
-        region: PlatformRegion.EuWest,
-        hub_status: HubStatus.Active,
-        actual_state: PlatformState.Active,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        hub_status: DeploymentRequestHubStatus.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
       });
       await insertOpenCtiDeploymentRequest({
         platform_identifier: PlatformIdentifier.Openaev,
-        hub_status: HubStatus.Active,
-        actual_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
       });
 
       const deployments = await DeploymentsApp.loadDeploymentRequests({
@@ -441,11 +445,11 @@ describe('Deployment app', () => {
         filters: [
           {
             key: DeploymentRequestFilterKey.Region,
-            value: [PlatformRegion.UsEast],
+            value: [DeploymentRequestPlatformRegion.UsEast],
           },
           {
-            key: DeploymentRequestFilterKey.HubStatus,
-            value: [HubStatus.Active],
+            key: DeploymentRequestFilterKey.DeploymentRequestHubStatus,
+            value: [DeploymentRequestHubStatus.Active],
           },
           {
             key: DeploymentRequestFilterKey.PlatformIdentifier,
@@ -462,16 +466,16 @@ describe('Deployment app', () => {
     let initialDeployment: DeploymentRequest;
     beforeEach(async () => {
       initialDeployment = (await insertOpenCtiDeploymentRequest({
-        hub_status: HubStatus.Pending,
-        target_state: PlatformState.Active,
-        actual_state: PlatformState.Provisioning,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Provisioning,
       })) as DeploymentRequest;
     });
 
     it('should update a deployment request', async () => {
       const deployment = await DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
-        actual_state: PlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
@@ -499,14 +503,14 @@ describe('Deployment app', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
-        region: PlatformRegion.UsEast,
+        region: DeploymentRequestPlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        hub_status: HubStatus.Pending,
-        target_state: PlatformState.Active,
-        actual_state: PlatformState.Active,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
         ordering: expect.any(Number),
-        type: DeploymentType.Trial,
+        type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
         user_requester_id: ADMIN_UUID,
         start_date: new Date(2025, 1, 3),
@@ -530,7 +534,7 @@ describe('Deployment app', () => {
     it('should should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({
         id: uuidv4(),
-        actual_state: PlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
       });
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
@@ -557,7 +561,7 @@ describe('Deployment app', () => {
       async ({ start_date, end_date }) => {
         const call = DeploymentsApp.updateDeploymentRequest({
           id: initialDeployment.id,
-          actual_state: PlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
           start_date,
           end_date,
         });
@@ -570,7 +574,7 @@ describe('Deployment app', () => {
     it('should should throw when status requested is not allowed', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
-        hub_status: HubStatus.Expired,
+        hub_status: DeploymentRequestHubStatus.Expired,
       });
       await expect(call).rejects.toThrow(
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
@@ -587,7 +591,7 @@ describe('Deployment app', () => {
 
         await DeploymentsApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
-          actual_state: PlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
           start_date,
           end_date,
           platform_id: 'fake product instance id',
@@ -603,12 +607,12 @@ describe('Deployment app', () => {
           source: TELEMETRY_SOURCE,
           user_id: ADMIN_USER_ID,
           deployment_id: initialDeployment.id,
-          deployment_type: DeploymentType.Trial,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: 'fake product instance id',
           start_date,
           end_date,
           hub_status: undefined,
-          actual_state: PlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
         });
       });
 
@@ -623,7 +627,7 @@ describe('Deployment app', () => {
 
         const deployment = await DeploymentsApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
-          actual_state: PlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
           start_date,
           end_date,
           platform_id: 'fake product instance id',
@@ -640,28 +644,30 @@ describe('Deployment app', () => {
         description: 'normal case with available slots',
         maxDeployments: { us_east: 10, eu_west: 5 },
         currentDeployments: {
-          [PlatformRegion.UsEast]: 3,
-          [PlatformRegion.EuWest]: 1,
+          [DeploymentRequestPlatformRegion.UsEast]: 3,
+          [DeploymentRequestPlatformRegion.EuWest]: 1,
         } as Record<string, number>,
         expected: [
-          { region: PlatformRegion.UsEast, availableCount: 7 },
-          { region: PlatformRegion.EuWest, availableCount: 4 },
-          { region: PlatformRegion.ApacAu, availableCount: 0 },
-          { region: PlatformRegion.ApacSg, availableCount: 0 },
+          { region: DeploymentRequestPlatformRegion.UsEast, availableCount: 7 },
+          { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 4 },
+          { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 0 },
+          { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 0 },
         ],
       },
       {
         description: 'over capacity scenario',
         maxDeployments: { us_east: 5 },
-        currentDeployments: { [PlatformRegion.UsEast]: 8 } as Record<
-          string,
-          number
-        >,
+        currentDeployments: {
+          [DeploymentRequestPlatformRegion.UsEast]: 8,
+        } as Record<string, number>,
         expected: [
-          { region: PlatformRegion.UsEast, availableCount: -3 },
-          { region: PlatformRegion.EuWest, availableCount: 0 },
-          { region: PlatformRegion.ApacAu, availableCount: 0 },
-          { region: PlatformRegion.ApacSg, availableCount: 0 },
+          {
+            region: DeploymentRequestPlatformRegion.UsEast,
+            availableCount: -3,
+          },
+          { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 0 },
+          { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 0 },
+          { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 0 },
         ],
       },
     ])(

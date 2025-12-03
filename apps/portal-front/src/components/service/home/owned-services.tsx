@@ -8,8 +8,8 @@ import {
   registeredPlatformToServiceInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
-import { HubStatusEnum } from '@generated/models/HubStatus.enum';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -57,11 +57,15 @@ const OwnedServices = ({
   ].sort((a, b) => a!.ordering - b!.ordering);
 
   const trialInstances = registeredPlatforms.filter(
-    (service) => service.deployment_request?.type === DeploymentTypeEnum.TRIAL
+    (service) =>
+      service.deployment_request?.type ===
+      DeploymentRequestDeploymentTypeEnum.TRIAL
   );
 
   const isTrialInstanceQueued = trialInstances.some(
-    (service) => service.deployment_request?.hub_status === HubStatusEnum.QUEUED
+    (service) =>
+      service.deployment_request?.hub_status ===
+      DeploymentRequestHubStatusEnum.QUEUED
   );
   const shouldDisplayFreeTrialSkeletton =
     isFreeTrialFeatureEnabled &&

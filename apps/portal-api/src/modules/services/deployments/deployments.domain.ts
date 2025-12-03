@@ -1,11 +1,11 @@
 import { db, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestConnection,
-  DeploymentType,
-  HubStatus,
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformIdentifier,
-  PlatformRegion,
-  PlatformState,
   QueryDeploymentRequestsArgs,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
@@ -39,11 +39,11 @@ export const DeploymentRequestDomain = {
     return {
       ...result,
       platform_identifier: result.platform_identifier as PlatformIdentifier,
-      region: result.region as PlatformRegion,
-      type: result.type as DeploymentType,
-      hub_status: result.hub_status as HubStatus,
-      target_state: result.target_state as PlatformState,
-      actual_state: result.actual_state as PlatformState,
+      region: result.region as DeploymentRequestPlatformRegion,
+      type: result.type as DeploymentRequestDeploymentType,
+      hub_status: result.hub_status as DeploymentRequestHubStatus,
+      target_state: result.target_state as DeploymentRequestPlatformState,
+      actual_state: result.actual_state as DeploymentRequestPlatformState,
     };
   },
 
@@ -55,7 +55,7 @@ export const DeploymentRequestDomain = {
       .select('region')
       .count('* as count')
       .groupBy('region');
-    console.log(results);
+
     return Object.fromEntries(
       results.map((row) => [row.region, parseInt(row.count as string, 10)])
     );
@@ -107,10 +107,14 @@ export const DeploymentRequestDomain = {
   ) => {
     return getDeploymentRequestWithUserDataQuery()
       .whereIn('DeploymentRequest.hub_status', [
-        HubStatus.Active,
-        HubStatus.Expired,
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Expired,
       ])
-      .where('DeploymentRequest.type', '=', DeploymentType.Trial)
+      .where(
+        'DeploymentRequest.type',
+        '=',
+        DeploymentRequestDeploymentType.Trial
+      )
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
       .first();
   },

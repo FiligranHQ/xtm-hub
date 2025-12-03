@@ -4,7 +4,7 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { buildPlatformHoverLinks } from '@/utils/platform';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -25,7 +25,10 @@ export const isExternalService = (
 const isTrial = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ) => {
-  return platform.deployment_request?.type === DeploymentTypeEnum.TRIAL;
+  return (
+    platform.deployment_request?.type ===
+    DeploymentRequestDeploymentTypeEnum.TRIAL
+  );
 };
 
 export const isExpired = (endDate: Date | undefined | null): boolean => {

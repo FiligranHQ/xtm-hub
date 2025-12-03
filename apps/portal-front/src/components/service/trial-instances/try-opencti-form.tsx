@@ -9,7 +9,7 @@ import {
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { HubStatusEnum } from '@generated/models/HubStatus.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import {
   AutoForm,
@@ -39,8 +39,11 @@ export const tryOpenCTIFormSchema = z.object({
     error: 'You must accept the MSSA',
   }),
   hub_status: z
-    .enum([HubStatusEnum.QUEUED, HubStatusEnum.PENDING])
-    .default(HubStatusEnum.PENDING),
+    .enum([
+      DeploymentRequestHubStatusEnum.QUEUED,
+      DeploymentRequestHubStatusEnum.PENDING,
+    ])
+    .default(DeploymentRequestHubStatusEnum.PENDING),
 });
 
 interface TryOpenCTIFormProps {
@@ -82,7 +85,7 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
       setIsDialogOpen(true);
       setPendingValues({
         ...values,
-        hub_status: HubStatusEnum.QUEUED,
+        hub_status: DeploymentRequestHubStatusEnum.QUEUED,
       });
     }
   };

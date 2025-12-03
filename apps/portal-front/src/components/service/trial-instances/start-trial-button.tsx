@@ -19,7 +19,7 @@ import {
   tryOpenCTIFormSchema,
 } from '@/components/service/trial-instances/try-opencti-form';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
@@ -82,7 +82,7 @@ export const StartTrialButton: React.FC<Props> = ({
         input: {
           ...valuesWithoutAcceptTerms,
           platform_identifier: PlatformIdentifierEnum.OPENCTI,
-          type: DeploymentTypeEnum.TRIAL,
+          type: DeploymentRequestDeploymentTypeEnum.TRIAL,
         },
       },
       updater: (store) => {

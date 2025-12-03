@@ -5,13 +5,13 @@ import {
   DeploymentAvailability,
   DeploymentRequest,
   DeploymentRequestConnection,
+  DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
-  DeploymentType,
-  HubStatus,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformDeploymentRequest,
   PlatformIdentifier,
-  PlatformRegion,
-  PlatformState,
   QueryDeploymentRequestsArgs,
   ServiceInstanceCreationStatus,
   UpdateDeploymentRequestInput,
@@ -64,7 +64,10 @@ export const DeploymentsApp = {
 
     if (
       input.hub_status &&
-      ![HubStatus.Pending, HubStatus.Queued].includes(input.hub_status)
+      ![
+        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestHubStatus.Queued,
+      ].includes(input.hub_status)
     ) {
       throw new Error(BadRequestErrorCode.InvalidStatus);
     }
@@ -79,7 +82,7 @@ export const DeploymentsApp = {
     }
 
     try {
-      const hubStatus = input.hub_status ?? HubStatus.Pending;
+      const hubStatus = input.hub_status ?? DeploymentRequestHubStatus.Pending;
 
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {
@@ -92,7 +95,7 @@ export const DeploymentsApp = {
               organizationId: user.selected_organization_id,
               platformIdentifier: input.platform_identifier,
               serviceInstanceCreationStatus:
-                hubStatus === HubStatus.Queued
+                hubStatus === DeploymentRequestHubStatus.Queued
                   ? ServiceInstanceCreationStatus.Disabled
                   : ServiceInstanceCreationStatus.Pending,
             });
@@ -104,9 +107,9 @@ export const DeploymentsApp = {
             service_instance_id: serviceInstanceId,
             hub_status: hubStatus,
             target_state:
-              hubStatus === HubStatus.Queued
-                ? PlatformState.Inactive
-                : PlatformState.Active,
+              hubStatus === DeploymentRequestHubStatus.Queued
+                ? DeploymentRequestPlatformState.Inactive
+                : DeploymentRequestPlatformState.Active,
             actual_state: null,
             ordering,
             type: input.type,
@@ -126,14 +129,17 @@ export const DeploymentsApp = {
           user.id,
           input.platform_identifier,
           {
-            region: createdDeploymentRequest.region as PlatformRegion,
-            status: createdDeploymentRequest.hub_status as HubStatus,
+            region:
+              createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
+            status:
+              createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
             activity_sector: createdDeploymentRequest.activity_sector,
             job_title: createdDeploymentRequest.job_title,
             use_case: createdDeploymentRequest.use_case,
             email: user.email,
             deployment_id: createdDeploymentRequest.id,
-            deployment_type: createdDeploymentRequest.type as DeploymentType,
+            deployment_type:
+              createdDeploymentRequest.type as DeploymentRequestDeploymentType,
           }
         );
         telemetryApp.sendTelemetryEvent(createDeploymentEvent);
@@ -144,7 +150,10 @@ export const DeploymentsApp = {
       }
 
       try {
-        if (createdDeploymentRequest.hub_status === HubStatus.Pending) {
+        if (
+          createdDeploymentRequest.hub_status ===
+          DeploymentRequestHubStatus.Pending
+        ) {
           sendMail({
             to: user.email,
             template: 'opencti_free_trial_requested',
@@ -164,16 +173,20 @@ export const DeploymentsApp = {
         id: createdDeploymentRequest.id,
         platform_identifier:
           createdDeploymentRequest.platform_identifier as PlatformIdentifier,
-        region: createdDeploymentRequest.region as PlatformRegion,
-        type: createdDeploymentRequest.type as DeploymentType,
+        region:
+          createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
+        type: createdDeploymentRequest.type as DeploymentRequestDeploymentType,
         job_title: createdDeploymentRequest.job_title,
         activity_sector: createdDeploymentRequest.activity_sector,
         use_case: createdDeploymentRequest.use_case,
         start_date: createdDeploymentRequest.start_date,
         end_date: createdDeploymentRequest.end_date,
-        hub_status: createdDeploymentRequest.hub_status as HubStatus,
-        target_state: createdDeploymentRequest.target_state as PlatformState,
-        actual_state: createdDeploymentRequest.actual_state as PlatformState,
+        hub_status:
+          createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
+        target_state:
+          createdDeploymentRequest.target_state as DeploymentRequestPlatformState,
+        actual_state:
+          createdDeploymentRequest.actual_state as DeploymentRequestPlatformState,
         ordering: createdDeploymentRequest.ordering,
         __typename: 'DeploymentRequest',
       };
@@ -200,7 +213,7 @@ export const DeploymentsApp = {
     if (
       input.hub_status &&
       !isHubStatusTransitionValid(
-        deploymentRequest.hub_status as HubStatus,
+        deploymentRequest.hub_status as DeploymentRequestHubStatus,
         input.hub_status
       )
     ) {
@@ -212,7 +225,7 @@ export const DeploymentsApp = {
     if (
       input.actual_state &&
       !isPlatformStateTransitionValid(
-        deploymentRequest.actual_state as PlatformState,
+        deploymentRequest.actual_state as DeploymentRequestPlatformState,
         input.actual_state
       )
     ) {
@@ -222,7 +235,7 @@ export const DeploymentsApp = {
     }
 
     const isActiveInputDataInvalid =
-      input.actual_state == PlatformState.Active &&
+      input.actual_state == DeploymentRequestPlatformState.Active &&
       (!input.start_date || !input.end_date);
     if (isActiveInputDataInvalid) {
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
@@ -319,7 +332,7 @@ export const DeploymentsApp = {
         platform_identifier: platformIdentifier,
       });
 
-    const allRegions = Object.values(PlatformRegion); // Assuming you have a Region enum
+    const allRegions = Object.values(DeploymentRequestPlatformRegion); // Assuming you have a Region enum
 
     return allRegions.map((region) => ({
       region,
