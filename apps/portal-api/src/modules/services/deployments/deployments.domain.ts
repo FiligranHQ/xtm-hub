@@ -55,7 +55,7 @@ export const DeploymentRequestDomain = {
       .select('region')
       .count('* as count')
       .groupBy('region');
-
+    console.log(results);
     return Object.fromEntries(
       results.map((row) => [row.region, parseInt(row.count as string, 10)])
     );
