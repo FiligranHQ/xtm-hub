@@ -1,7 +1,4 @@
-import {
-  OrganizationCapability,
-  Success,
-} from '../../../__generated__/resolvers-types';
+import { Success } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import ServiceGroup, {
@@ -9,7 +6,8 @@ import ServiceGroup, {
 } from '../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { securityGuard } from '../../../security/guard';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { organizationDomain } from '../../organizations/organizations.domain';
 import { ServiceGroupDomain } from './service-group.domain';
 
 export const ServiceGroupApp = {
@@ -30,9 +28,22 @@ export const ServiceGroupApp = {
   updateGroups: async (
     groups: { id: ServiceGroupId; userIds: UserId[] }[]
   ): Promise<Success> => {
+    const { user } = requestContext.require();
     const groupIds = groups.map(({ id }) => id);
 
-    await assertUserIsAllowedToUpdateGroups(groupIds);
+    const serviceInstanceIds =
+      await ServiceGroupDomain.loadGroupsServiceInstanceIds(groupIds);
+    if (serviceInstanceIds.length !== 1) {
+      throw new Error(ErrorCode.ServiceGroupsLinkedToMultipleServiceInstances);
+    }
+
+    const serviceGroupsOrganization =
+      await organizationDomain.loadOrganizationSubscribedToServiceInstance(
+        serviceInstanceIds[0]
+      );
+    if (serviceGroupsOrganization.id !== user.selected_organization_id) {
+      throw new Error(ErrorCode.OrganizationDoesNotMatchSelectedOrganization);
+    }
 
     await withTransaction(async () => {
       await ServiceGroupDomain.removeUsersFromGroups(groupIds);
@@ -48,22 +59,4 @@ export const ServiceGroupApp = {
       success: true,
     };
   },
-};
-
-const assertUserIsAllowedToUpdateGroups = async (
-  groupIds: ServiceGroupId[]
-) => {
-  const { user } = requestContext.require();
-  const serviceInstanceIds =
-    await ServiceGroupDomain.loadGroupsServiceInstanceIds(groupIds);
-
-  const securityAssertionPromises = serviceInstanceIds.map(
-    async (serviceInstanceId) =>
-      await securityGuard.assertUserIsAllowedOnServiceInstance(user, {
-        serviceInstanceId,
-        requiredCapability: OrganizationCapability.ManagePlatformRegistration,
-      })
-  );
-
-  await Promise.all(securityAssertionPromises);
 };
