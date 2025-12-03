@@ -2,7 +2,6 @@ import {
   DeploymentType,
   HubStatus,
   PlatformRegion,
-  PlatformState,
 } from '../../__generated__/resolvers-types';
 import {
   TELEMETRY_SOURCE,
@@ -108,9 +107,7 @@ export interface CreateDeploymentEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.CREATE_DEPLOYMENT;
   job_title: string;
   region: PlatformRegion;
-  hub_status: HubStatus;
-  target_state: PlatformState;
-  actual_state: PlatformState;
+  status: HubStatus;
   use_case: string;
   target_product: TelemetryTargetProduct;
 }
@@ -121,8 +118,7 @@ export interface UpdateDeploymentEvent extends BaseTelemetryEvent {
   start_date: Date;
   end_date: Date;
   platform_id: string;
-  hub_status?: HubStatus;
-  actual_state?: PlatformState;
+  status?: HubStatus;
 }
 
 export type TelemetryEvent =

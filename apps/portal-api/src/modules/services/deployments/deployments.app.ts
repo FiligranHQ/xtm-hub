@@ -126,11 +126,7 @@ export const DeploymentsApp = {
           input.platform_identifier,
           {
             region: createdDeploymentRequest.region as PlatformRegion,
-            hub_status: createdDeploymentRequest.hub_status as HubStatus,
-            target_state:
-              createdDeploymentRequest.target_state as PlatformState,
-            actual_state:
-              createdDeploymentRequest.actual_state as PlatformState,
+            status: createdDeploymentRequest.hub_status as HubStatus,
             activity_sector: createdDeploymentRequest.activity_sector,
             job_title: createdDeploymentRequest.job_title,
             use_case: createdDeploymentRequest.use_case,
@@ -263,8 +259,7 @@ export const DeploymentsApp = {
         organization,
         deploymentRequest.user_requester_id,
         {
-          hub_status: input.hub_status,
-          actual_state: input.actual_state,
+          status: input.hub_status,
           start_date: input.start_date,
           end_date: input.end_date,
           deployment_id: deploymentRequest.id,
