@@ -1,4 +1,3 @@
-import { Knex } from 'knex';
 import { db, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Filter,
@@ -95,48 +94,34 @@ export const loadOrganizations = (opts: QueryOrganizationsArgs) => {
 };
 
 export const insertNewOrganization = async (
-  data: OrganizationInitializer,
-  trx?: Knex.Transaction
+  data: OrganizationInitializer
 ): Promise<Organization> => {
-  const query = dbUnsecure<Organization>('Organization')
+  const [createdOrganization] = await dbUnsecure<Organization>('Organization')
     .insert(data)
     .returning('*');
 
-  if (trx) {
-    query.transacting(trx);
-  }
-
-  const [createdOrganization] = await query;
   return createdOrganization;
 };
 
 export const updateOrganizationBy = async (
   field: OrganizationMutator,
-  data: OrganizationMutator,
-  trx?: Knex.Transaction
+  data: OrganizationMutator
 ): Promise<Organization> => {
   const [updatedOrganization] = await dbUnsecure<Organization>('Organization')
     .where(field)
     .update(data)
-    .modify((qb) => {
-      if (trx) qb.transacting(trx);
-    })
     .returning('*');
 
   return updatedOrganization;
 };
 
 export const deleteOrganizationBy = async (
-  conditions: OrganizationMutator,
-  trx?: Knex.Transaction
+  conditions: OrganizationMutator
 ): Promise<Organization> => {
   try {
     const [deletedOrganization] = await dbUnsecure<Organization>('Organization')
       .where(conditions)
       .delete()
-      .modify((qb) => {
-        if (trx) qb.transacting(trx);
-      })
       .returning('*');
     return deletedOrganization;
   } catch (error) {

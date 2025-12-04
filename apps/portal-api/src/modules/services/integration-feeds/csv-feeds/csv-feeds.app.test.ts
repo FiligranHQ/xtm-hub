@@ -1,5 +1,4 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dbTx } from '../../../../../knexfile';
 import {
   contextAdminUser,
   requestContextAdminUser,
@@ -103,7 +102,6 @@ describe('csv feeds app', () => {
       }
     );
 
-    const trx = await dbTx();
     await createDocumentWithChildren<CsvFeed>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       {
@@ -118,10 +116,8 @@ describe('csv feeds app', () => {
         integration_type: IntegrationFeedType.CsvFeed,
       },
       [],
-      INTEGRATION_FEED_CSV_FEED_METADATA,
-      trx
+      INTEGRATION_FEED_CSV_FEED_METADATA
     );
-    await trx.commit();
 
     const documentLoaded = await csvFeedsApp.loadCsvFeed(documentId);
 

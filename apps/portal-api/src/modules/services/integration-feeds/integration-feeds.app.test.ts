@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { dbTx } from '../../../../knexfile';
 import { SERVICE_INTEGRATIONS_FEEDS_ID } from '../../../../tests/tests.const';
 import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -41,7 +40,6 @@ describe('csv feeds app', () => {
       }
     );
 
-    const trx = await dbTx();
     await createDocumentWithChildren<CsvFeed>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       {
@@ -57,10 +55,9 @@ describe('csv feeds app', () => {
         active: true,
       },
       [],
-      INTEGRATION_FEED_CSV_FEED_METADATA,
-      trx
+      INTEGRATION_FEED_CSV_FEED_METADATA
     );
-    await trx.commit();
+
     const documentLoaded =
       await integrationFeedsApp.loadPublicAccessIntegrationFeed('myCsvFeed');
 

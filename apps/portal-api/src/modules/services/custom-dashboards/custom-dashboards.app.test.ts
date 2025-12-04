@@ -1,5 +1,4 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
   requestContextAdminUser,
@@ -98,7 +97,6 @@ describe('custom dashboards app', () => {
       }
     );
 
-    const trx = await dbTx();
     await createDocumentWithChildren<CustomDashboard>(
       OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
@@ -113,10 +111,8 @@ describe('custom dashboards app', () => {
         active: true,
       },
       [],
-      CUSTOM_DASHBOARD_METADATA,
-      trx
+      CUSTOM_DASHBOARD_METADATA
     );
-    await trx.commit();
 
     const documentLoaded =
       await CustomDashboardsApp.loadCustomDashboard(documentId);
@@ -140,7 +136,6 @@ describe('custom dashboards app', () => {
       }
     );
 
-    const trx = await dbTx();
     await createDocumentWithChildren<CustomDashboard>(
       OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
@@ -156,10 +151,8 @@ describe('custom dashboards app', () => {
         active: true,
       },
       [],
-      CUSTOM_DASHBOARD_METADATA,
-      trx
+      CUSTOM_DASHBOARD_METADATA
     );
-    await trx.commit();
 
     const documentLoaded =
       await CustomDashboardsApp.loadSeoCustomDashboard('myCustomDashboard');

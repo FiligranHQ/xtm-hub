@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { dbTx, dbUnsecure } from '../../../knexfile';
+import { dbUnsecure } from '../../../knexfile';
 import { contextAdminUser, SERVICE_VAULT_ID } from '../../../tests/tests.const';
 import {
   PlatformContract,
@@ -158,30 +158,6 @@ describe('Service instance domain', () => {
       expect(result.id).toBe(mockServiceInstanceId);
     });
 
-    it('should update service instance with transaction', async () => {
-      const trx = await dbTx();
-
-      try {
-        const updateData = {
-          name: 'Transaction Updated Name',
-        };
-
-        const result = await updateServiceInstance(
-          mockServiceInstanceId,
-          updateData,
-          trx
-        );
-
-        expect(result).toBeTruthy();
-        expect(result.name).toBe('Transaction Updated Name');
-
-        await trx.commit();
-      } catch (error) {
-        await trx.rollback();
-        throw error;
-      }
-    });
-
     it('should update only provided fields', async () => {
       const updateData = {
         name: 'Only Name Updated',
@@ -254,25 +230,6 @@ describe('Service instance domain', () => {
       expect(config.platform_url).toBe('https://test.com');
     });
 
-    it('should load configuration with transaction and for update lock', async () => {
-      const trx = await dbTx();
-
-      try {
-        const result = await loadPlatformConfigurationByServiceInstanceId(
-          mockServiceInstanceId,
-          trx
-        );
-
-        expect(result).toBeTruthy();
-        expect(result?.service_instance_id).toBe(mockServiceInstanceId);
-
-        await trx.commit();
-      } catch (error) {
-        await trx.rollback();
-        throw error;
-      }
-    });
-
     it('should return null when configuration does not exist', async () => {
       const nonExistentServiceId = uuidv4();
       const result =
@@ -339,32 +296,6 @@ describe('Service instance domain', () => {
       expect(config.platform_url).toBe('https://updated.com');
       expect(config.platform_version).toBe('2.0.0');
       expect(config.platform_contract).toBe(PlatformContract.Ce);
-    });
-
-    it('should update configuration with transaction', async () => {
-      const trx = await dbTx();
-
-      try {
-        const updatedConfig: PlatformConfiguration = {
-          ...originalConfig,
-          platform_title: 'Transaction Updated Title',
-        };
-
-        const result = await updatePlatformConfigurationByServiceInstanceId(
-          mockServiceInstanceId,
-          updatedConfig,
-          trx
-        );
-
-        expect(result).toBeTruthy();
-        const config = result?.config as PlatformConfiguration;
-        expect(config.platform_title).toBe('Transaction Updated Title');
-
-        await trx.commit();
-      } catch (error) {
-        await trx.rollback();
-        throw error;
-      }
     });
 
     it('should return null when configuration does not exist', async () => {

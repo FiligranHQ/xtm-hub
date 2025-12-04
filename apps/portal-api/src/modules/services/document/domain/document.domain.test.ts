@@ -1,7 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { db, dbTx } from '../../../../../knexfile';
+import { db } from '../../../../../knexfile';
 import {
   contextAdminUser,
   requestContextAdminUser,
@@ -62,7 +62,6 @@ describe('Document domain', () => {
         },
       };
       requestContext.set(testContext);
-      const trx = await dbTx();
       await createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
@@ -77,11 +76,8 @@ describe('Document domain', () => {
           integration_type: IntegrationFeedType.CsvFeed,
         },
         [],
-        INTEGRATION_FEED_CSV_FEED_METADATA,
-        trx
+        INTEGRATION_FEED_CSV_FEED_METADATA
       );
-
-      await trx.commit();
 
       await upsertConnectors([
         sampleExtractedManifest[0],
@@ -131,7 +127,7 @@ describe('Document domain', () => {
         },
       };
       requestContext.set(testContext);
-      const trx = await dbTx();
+
       const csvFeed = await createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
@@ -146,11 +142,8 @@ describe('Document domain', () => {
           integration_type: IntegrationFeedType.CsvFeed,
         },
         [],
-        INTEGRATION_FEED_CSV_FEED_METADATA,
-        trx
+        INTEGRATION_FEED_CSV_FEED_METADATA
       );
-
-      await trx.commit();
 
       const [connector] = await upsertConnectors([
         sampleExtractedManifest[0],

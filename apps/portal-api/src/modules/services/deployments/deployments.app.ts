@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { dbTx } from '../../../../knexfile';
 import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
@@ -34,7 +33,10 @@ import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 import config from 'config';
-import { databaseContext } from '../../../context/database.context';
+import {
+  databaseContext,
+  withTransaction,
+} from '../../../context/database.context';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -241,9 +243,7 @@ export const DeploymentsApp = {
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
     }
 
-    const trx = await dbTx();
-    requestContext.update({ trx });
-    try {
+    await withTransaction(async () => {
       const shouldUpdateSubscriptionDates = input.start_date || input.end_date;
       if (shouldUpdateSubscriptionDates) {
         await updateSubscriptionBy(
@@ -278,10 +278,7 @@ export const DeploymentsApp = {
           input.id as DeploymentRequestId
         );
       }
-    } catch (error) {
-      trx.rollback();
-      throw error;
-    }
+    });
 
     try {
       const organization = await loadOrganizationBy({
@@ -306,7 +303,7 @@ export const DeploymentsApp = {
         error,
       });
     }
-    trx.commit();
+
     return DeploymentRequestDomain.loadFullDeploymentRequestById(
       deploymentRequestId
     );

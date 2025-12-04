@@ -1,4 +1,4 @@
-import { Knex } from 'knex';
+import { withTransaction } from '../../context/database.context';
 import Subscription from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
@@ -13,13 +13,12 @@ import {
 
 export const userServiceApp = {
   addUserService: async (
-    trx: Knex.Transaction,
     subscription: Subscription,
     emails: string[],
     capabilities: string[]
   ): Promise<UserService[]> => {
-    try {
-      const userServices: UserService[] = [];
+    const userServices: UserService[] = [];
+    return await withTransaction(async () => {
       for (const email of emails) {
         const user = await getOrCreateUser({
           email: email,
@@ -32,7 +31,7 @@ export const userServiceApp = {
         );
 
         if (!userServiceAlreadyExist) {
-          const createdUserService = await createUserServiceAccess(trx, {
+          const createdUserService = await createUserServiceAccess({
             subscription_id: subscription.id,
             user_id: user.id as UserId,
             capabilities: capabilities,
@@ -40,12 +39,7 @@ export const userServiceApp = {
           userServices.push(createdUserService);
         }
       }
-
-      await trx.commit();
-
       return userServices;
-    } catch {
-      await trx.rollback();
-    }
+    });
   },
 };

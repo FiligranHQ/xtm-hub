@@ -1,23 +1,20 @@
-import { Knex } from 'knex';
 import { db } from '../../../../../knexfile';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { Document } from '../document.helper';
 
 export const DocumentChildrenDomain = {
-  insertChildRelationship: async (
-    {
-      childDocumentId,
-      parentDocumentId,
-    }: { childDocumentId: DocumentId; parentDocumentId: DocumentId },
-    trx: Knex.Transaction
-  ) => {
-    await db<DocumentChildren>('Document_Children')
-      .insert({
-        parent_document_id: parentDocumentId,
-        child_document_id: childDocumentId,
-      })
-      .transacting(trx);
+  insertChildRelationship: async ({
+    childDocumentId,
+    parentDocumentId,
+  }: {
+    childDocumentId: DocumentId;
+    parentDocumentId: DocumentId;
+  }) => {
+    await db<DocumentChildren>('Document_Children').insert({
+      parent_document_id: parentDocumentId,
+      child_document_id: childDocumentId,
+    });
   },
 
   loadChildrenIds: async (
@@ -30,26 +27,20 @@ export const DocumentChildrenDomain = {
     return children.map(({ child_document_id }) => child_document_id);
   },
 
-  deleteChildrenByParent: async (
-    parentDocumentId: DocumentId,
-    trx: Knex.Transaction
-  ) => {
+  deleteChildrenByParent: async (parentDocumentId: DocumentId) => {
     await db<DocumentChildren>('Document_Children')
       .where('parent_document_id', '=', parentDocumentId)
-      .delete('Document_Children.*')
-      .transacting(trx);
+      .delete('Document_Children.*');
   },
 
-  deleteChild: async (childDocumentId: DocumentId, trx: Knex.Transaction) => {
+  deleteChild: async (childDocumentId: DocumentId) => {
     await db<DocumentChildren>('Document_Children')
       .where({ child_document_id: childDocumentId })
-      .delete()
-      .transacting(trx);
+      .delete();
   },
 
   deleteChildImagesByParent: async (
-    parentDocumentId: DocumentId,
-    trx: Knex.Transaction
+    parentDocumentId: DocumentId
   ): Promise<Pick<Document, 'id' | 'minio_name'>[]> => {
     return db('Document')
       .delete()
@@ -59,7 +50,6 @@ export const DocumentChildrenDomain = {
           .where('parent_document_id', parentDocumentId);
       })
       .andWhere('type', 'image')
-      .returning(['id', 'minio_name'])
-      .transacting(trx);
+      .returning(['id', 'minio_name']);
   },
 };

@@ -1,7 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
   requestContextAdminUser,
@@ -84,7 +83,6 @@ describe('should call S3 to send file', () => {
 
 describe('should add new file', () => {
   beforeAll(async () => {
-    const trx = await dbTx();
     await createDocument(
       {
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -95,10 +93,8 @@ describe('should add new file', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
         type: 'vault',
       },
-      [],
-      trx
+      []
     );
-    await trx.commit();
   });
   it('should create Document entry in DB', async () => {
     const data = {
@@ -110,9 +106,7 @@ describe('should add new file', () => {
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
       type: 'vault',
     };
-    const trx = await dbTx();
-    await insertDocument(data, trx);
-    await trx.commit();
+    await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
     expect(inDb).toBeTruthy();
     expect(inDb[0].file_name).toEqual('filename2');
@@ -128,9 +122,7 @@ describe('should add new file', () => {
         'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
       type: 'vault',
     };
-    const trx = await dbTx();
-    await insertDocument(data, trx);
-    await trx.commit();
+    await insertDocument(data);
     const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
     expect(inDb).toBeTruthy();
     expect(inDb.length).toEqual(2);
@@ -145,7 +137,6 @@ describe('should add new file', () => {
 
 describe('Should modify document', () => {
   beforeAll(async () => {
-    const trx = await dbTx();
     await createDocument(
       {
         id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
@@ -159,10 +150,8 @@ describe('Should modify document', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
         type: 'vault',
       },
-      [],
-      trx
+      []
     );
-    await trx.commit();
   });
   it('Should update document description', async () => {
     const response = await documentResolver.Mutation.editDocument(
@@ -217,7 +206,6 @@ describe('should normalize filename', () => {
 
 describe('should check if file already exists', () => {
   beforeAll(async () => {
-    const trx = await dbTx();
     await createDocument(
       {
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -228,10 +216,8 @@ describe('should check if file already exists', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
         type: 'vault',
       },
-      [],
-      trx
+      []
     );
-    await trx.commit();
   });
 
   it.each`
@@ -254,7 +240,6 @@ describe('should check if file already exists', () => {
 
 describe('Documents loading', () => {
   beforeAll(async () => {
-    const trx = await dbTx();
     await createDocument(
       {
         id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
@@ -266,8 +251,7 @@ describe('Documents loading', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
         type: 'vault',
       },
-      [],
-      trx
+      []
     );
     await createDocument(
       {
@@ -280,10 +264,8 @@ describe('Documents loading', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
         type: 'vault',
       },
-      [],
-      trx
+      []
     );
-    await trx.commit();
   });
 
   it('should load all documents', async () => {
@@ -358,7 +340,6 @@ describe('increment shared counter', () => {
       },
     };
     requestContext.set(testContext);
-    const trx = await dbTx();
     await createDocument<CsvFeed>(
       {
         id: documentId as DocumentId,
@@ -371,10 +352,8 @@ describe('increment shared counter', () => {
         type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         integration_type: IntegrationFeedType.CsvFeed,
       },
-      INTEGRATION_FEED_CSV_FEED_METADATA,
-      trx
+      INTEGRATION_FEED_CSV_FEED_METADATA
     );
-    await trx.commit();
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {
         if (

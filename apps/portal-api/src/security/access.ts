@@ -13,7 +13,6 @@ import { TypedNode } from '../pub';
 
 import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { UserLoadUserBy } from '../model/user';
-import { setQueryForDocument } from './document-security-access';
 import {
   meUserSSESecurity,
   userPendingSSESecurity,
@@ -128,20 +127,11 @@ export const applyDbSecurity = <T>(
     return queryContext;
   }
 
-  type AccessibilityChecker = <T>(
-    context: PortalContext,
-    queryContext: Knex.QueryBuilder<T>
-  ) => Knex.QueryBuilder<T>;
-
   type UpdateAccessibilityChecker = <T>(
     context: PortalContext,
     queryContext: Knex.QueryBuilder<T>,
     opts: QueryOpts
   ) => Knex.QueryBuilder<T>;
-
-  if (opts.methodType === 'update') {
-    return queryContext;
-  }
 
   if (opts.methodType === 'del') {
     const updateMapping: Partial<
@@ -156,14 +146,7 @@ export const applyDbSecurity = <T>(
     return selectedFunction(context, queryContext, opts);
   }
 
-  const queryMapping: Partial<Record<DatabaseType, AccessibilityChecker>> = {
-    Document: setQueryForDocument,
-  };
-  const selectedFunction = queryMapping[type] || setQuery;
-  if (!selectedFunction) {
-    throw new Error(`Security behavior must be defined for type ${type}`);
-  }
-  return selectedFunction(context, queryContext);
+  return queryContext;
 };
 
 export const applyDbSecurityLayer = async (
