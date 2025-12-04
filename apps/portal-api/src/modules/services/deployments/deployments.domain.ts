@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import { db, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestConnection,
@@ -144,16 +145,13 @@ export const DeploymentRequestDomain = {
     const {
       organization_name,
       requester_email,
-      product_service_instance_id,
+      platform_id,
       user_requester_id,
       service_instance_id,
     } = await DeploymentRequestDomain.loadFullDeploymentRequestById(id);
 
     try {
-      await auth0Client.createAudienceAPI(
-        organization_name,
-        product_service_instance_id
-      );
+      await auth0Client.createAudienceAPI(organization_name, platform_id);
     } catch (error) {
       logApp.warn(`Auth0 Create Audience: ${error}`);
     }
@@ -167,7 +165,7 @@ export const DeploymentRequestDomain = {
         service_instance_id
       );
       await auth0Client.updateUserRBACInstance(requester_email, {
-        [product_service_instance_id]: {
+        [platform_id]: {
           groups: ['Admin'],
         },
       });
@@ -175,7 +173,15 @@ export const DeploymentRequestDomain = {
   },
 };
 
-const getDeploymentRequestWithUserDataQuery = () => {
+const getDeploymentRequestWithUserDataQuery = (): Knex.QueryBuilder<
+  DeploymentRequest & {
+    organization_name: string;
+    organization_domains: string[];
+    requester_email: string;
+    requester_first_name: string;
+    requester_last_name: string;
+  }
+> => {
   return db<DeploymentRequest>('DeploymentRequest')
     .leftJoin(
       'Organization',
