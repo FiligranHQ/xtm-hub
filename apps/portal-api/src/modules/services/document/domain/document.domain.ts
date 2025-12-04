@@ -485,7 +485,7 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   if (childIds.length > 0) {
     await db<Document>('Document')
       .whereIn(
-        'id',
+        'Document.id',
         childIds.map((childId) => childId.child_document_id)
       )
       .delete()
