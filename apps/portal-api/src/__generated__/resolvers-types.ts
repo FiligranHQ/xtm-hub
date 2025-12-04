@@ -1532,7 +1532,7 @@ export type SeoServiceInstance = Node & {
   name: Scalars['String']['output'];
   service_definition: ServiceDefinition;
   slug?: Maybe<Scalars['String']['output']>;
-  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tags?: Maybe<Array<Maybe<ServiceInstanceTag>>>;
 };
 
 export type ServiceCapability = Node & {
@@ -1600,7 +1600,7 @@ export type ServiceInstance = Node & {
   service_definition?: Maybe<ServiceDefinition>;
   slug?: Maybe<Scalars['String']['output']>;
   subscriptions?: Maybe<Array<Maybe<SubscriptionModel>>>;
-  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tags?: Maybe<Array<Maybe<ServiceInstanceTag>>>;
   user_joined?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -1636,6 +1636,12 @@ export type ServiceInstanceSubscription = {
   delete?: Maybe<ServiceInstance>;
   edit?: Maybe<ServiceInstance>;
 };
+
+export enum ServiceInstanceTag {
+  OpenAev = 'openAEV',
+  OpenCti = 'openCTI',
+  Trial = 'trial'
+}
 
 export type ServiceLink = Node & {
   __typename?: 'ServiceLink';
@@ -2131,6 +2137,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
+  ServiceInstanceTag: ServiceInstanceTag;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
   ServiceRestriction: ServiceRestriction;
   Settings: ResolverTypeWrapper<Settings>;
@@ -2910,7 +2917,7 @@ export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType 
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceInstanceTag']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2963,7 +2970,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   service_definition?: Resolver<Maybe<ResolversTypes['ServiceDefinition']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionModel']>>>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceInstanceTag']>>>, ParentType, ContextType>;
   user_joined?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

@@ -8,6 +8,7 @@ import {
   SeoServiceInstance,
   ServiceInstance,
   ServiceInstanceCreationStatus,
+  ServiceInstanceTag,
   ServiceLink,
   Subscription,
 } from '../../__generated__/resolvers-types';
@@ -174,6 +175,7 @@ const resolvers: Resolvers = {
             serviceInstance.logo_document_id
           ),
         }),
+        tags: serviceInstance.tags as ServiceInstanceTag[],
       };
       return result;
     },
