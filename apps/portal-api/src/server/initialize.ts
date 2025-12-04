@@ -1,6 +1,7 @@
-import { dbTx, dbUnsecure } from '../../knexfile';
+import { dbUnsecure } from '../../knexfile';
 import { User } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
+import { withTransaction } from '../context/database.context';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { RolePortalId } from '../model/kanel/public/RolePortal';
 import { UserId } from '../model/kanel/public/User';
@@ -90,44 +91,31 @@ const initPlatformUser = () =>
   });
 
 const completeUserInitialization = async (user_id, email, data) => {
-  const trx = await dbTx();
-  try {
+  await withTransaction(async () => {
     // Check the platform organization
 
-    await insertPlatformOrganization(trx);
-    await insertUserAdminOrganization(user_id, email, trx);
+    await insertPlatformOrganization();
+    await insertUserAdminOrganization(user_id, email);
 
-    await insertAdminUser(user_id, email, data, trx);
+    await insertAdminUser(user_id, email, data);
 
-    await ensureUserOrganizationExist(user_id, PLATFORM_ORGANIZATION_UUID, trx);
+    await ensureUserOrganizationExist(user_id, PLATFORM_ORGANIZATION_UUID);
     await ensureUserOrganizationExist(
       user_id,
-      user_id as unknown as OrganizationId,
-      trx
+      user_id as unknown as OrganizationId
     );
-
-    await trx.commit();
-  } catch (error) {
-    await trx.rollback();
-    throw error;
-  }
+  });
 };
 
 const initCapabilityAndRole = async () => {
-  const trx = await dbTx();
-  try {
-    await ensureCapabilityExists(CAPABILITY_BYPASS, trx);
-    await ensureRoleExists(ROLE_ADMIN, trx);
-    await ensureRoleExists(ROLE_USER, trx);
-    await ensureRoleExists(ROLE_ADMIN_ORGA, trx);
+  await withTransaction(async () => {
+    await ensureCapabilityExists(CAPABILITY_BYPASS);
+    await ensureRoleExists(ROLE_ADMIN);
+    await ensureRoleExists(ROLE_USER);
+    await ensureRoleExists(ROLE_ADMIN_ORGA);
     // Ensure ROLE_ADMIN has CAPABILITY_BYPASS
-    await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS, trx);
-
-    await trx.commit();
-  } catch (error) {
-    await trx.rollback();
-    throw error;
-  }
+    await ensureRoleHasCapability(ROLE_ADMIN, CAPABILITY_BYPASS);
+  });
 };
 
 const initializeBuiltInAdministrator = async () => {

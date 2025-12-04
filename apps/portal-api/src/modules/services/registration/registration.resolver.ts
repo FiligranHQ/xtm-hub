@@ -1,7 +1,5 @@
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
-import { dbTx } from '../../../../knexfile';
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
@@ -83,18 +81,14 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     registerPlatform: async (_, { input }, context) => {
-      const trx = await dbTx();
-      requestContext.update({ trx });
       try {
         const payload = {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         };
         const token = await registrationApp.registerPlatform(context, payload);
-        await trx.commit();
         return { token };
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.RegisterPlatformUnknownError
@@ -102,14 +96,10 @@ const resolvers: Resolvers = {
       }
     },
     unregisterPlatform: async (_, { input }, context) => {
-      const trx = await dbTx();
-      requestContext.update({ trx });
       try {
         await registrationApp.unregisterPlatform(context, input);
-        await trx.commit();
         return { success: true };
       } catch (error) {
-        await trx.rollback();
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.UnregisterPlatformUnknownError

@@ -14,7 +14,6 @@ import {
 import { LoginEvent, TelemetryEventType } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { dbTx } from '../../../knexfile';
 import {
   IntegrationFeedType,
   PlatformIdentifier,
@@ -135,7 +134,6 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId =
         'c07f6909-f8c5-4f61-b17d-b5b2da9b2799' as DocumentId;
-      const trx = await dbTx();
       await createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
@@ -151,10 +149,8 @@ describe('TelemetryApp', () => {
           active: true,
         },
         [],
-        INTEGRATION_FEED_CSV_FEED_METADATA,
-        trx
+        INTEGRATION_FEED_CSV_FEED_METADATA
       );
-      trx.commit();
 
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
@@ -278,7 +274,6 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId =
         'ddd49f48-1a66-4670-9dab-0d247b613969' as DocumentId;
-      const trx = await dbTx();
       await createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
@@ -294,10 +289,8 @@ describe('TelemetryApp', () => {
           active: true,
         },
         [],
-        INTEGRATION_FEED_CSV_FEED_METADATA,
-        trx
+        INTEGRATION_FEED_CSV_FEED_METADATA
       );
-      trx.commit();
 
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,

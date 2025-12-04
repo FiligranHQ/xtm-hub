@@ -1,5 +1,4 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dbTx } from '../../../../knexfile';
 import {
   contextAdminUser,
   requestContextAdminUser,
@@ -99,7 +98,6 @@ describe('openaev scenarios app', () => {
       }
     );
 
-    const trx = await dbTx();
     await createDocumentWithChildren<OpenAEVScenario>(
       OPENAEV_SCENARIO_DOCUMENT_TYPE,
       {
@@ -114,10 +112,8 @@ describe('openaev scenarios app', () => {
         active: false,
       },
       [],
-      OPENAEV_SCENARIO_METADATA,
-      trx
+      OPENAEV_SCENARIO_METADATA
     );
-    await trx.commit();
 
     const documentLoaded =
       await OpenAEVScenariosApp.loadOpenAEVScenario(documentId);
@@ -141,7 +137,6 @@ describe('openaev scenarios app', () => {
       }
     );
 
-    const trx = await dbTx();
     await createDocumentWithChildren<OpenAEVScenario>(
       OPENAEV_SCENARIO_DOCUMENT_TYPE,
       {
@@ -157,10 +152,8 @@ describe('openaev scenarios app', () => {
         active: true,
       },
       [],
-      OPENAEV_SCENARIO_METADATA,
-      trx
+      OPENAEV_SCENARIO_METADATA
     );
-    await trx.commit();
 
     const documentLoaded =
       await OpenAEVScenariosApp.loadSeoOpenAEVScenario('myOpenAEV-scenario');

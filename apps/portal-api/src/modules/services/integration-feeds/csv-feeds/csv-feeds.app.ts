@@ -1,4 +1,3 @@
-import { dbTx } from '../../../../../knexfile';
 import { IntegrationFeedType } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import { logApp } from '../../../../utils/app-logger.util';
@@ -15,31 +14,23 @@ import {
 
 export const csvFeedsApp = {
   createCsvFeed: async (input: Partial<CsvFeed>, document: Upload[]) => {
-    const trx = await dbTx();
+    const doc = await createDocumentWithChildren<CsvFeed>(
+      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      { ...input, integration_type: IntegrationFeedType.CsvFeed },
+      document,
+      INTEGRATION_FEED_CSV_FEED_METADATA
+    );
+
     try {
-      const doc = await createDocumentWithChildren<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-        { ...input, integration_type: IntegrationFeedType.CsvFeed },
-        document,
-        INTEGRATION_FEED_CSV_FEED_METADATA,
-        trx
-      );
-      await trx.commit();
-
-      try {
-        const createEvent = await buildCreateEvent(doc);
-        telemetryApp.sendTelemetryEvent(createEvent);
-      } catch (error) {
-        logApp.error('Unable to send telemetry event for CSV feed creation', {
-          error,
-        });
-      }
-
-      return doc;
+      const createEvent = await buildCreateEvent(doc);
+      telemetryApp.sendTelemetryEvent(createEvent);
     } catch (error) {
-      await trx.rollback();
-      throw error;
+      logApp.error('Unable to send telemetry event for CSV feed creation', {
+        error,
+      });
     }
+
+    return doc;
   },
 
   loadCsvFeed: async (documentId: DocumentId) => {

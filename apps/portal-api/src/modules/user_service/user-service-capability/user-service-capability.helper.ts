@@ -15,7 +15,6 @@ import { loadServiceCapabilityBy } from '../service-capability/service_capabilit
 import { loadSubscriptionCapabilityBy } from '../service-capability/subscription_capability.helper';
 
 export const insertCapabilities = async (
-  trx,
   capabilities: string[],
   userService: UserService
 ) => {
@@ -51,14 +50,12 @@ export const insertCapabilities = async (
         }
       );
       if (isCapabilityGrantedForOrganization) {
-        await db<UserServiceCapability>('UserService_Capability')
-          .insert({
-            id: uuidv4() as UserServiceCapabilityId,
-            user_service_id: userService.id,
-            subscription_capability_id:
-              subscriptionCapability.id as SubscriptionCapabilityId,
-          })
-          .transacting(trx);
+        await db<UserServiceCapability>('UserService_Capability').insert({
+          id: uuidv4() as UserServiceCapabilityId,
+          user_service_id: userService.id,
+          subscription_capability_id:
+            subscriptionCapability.id as SubscriptionCapabilityId,
+        });
       } else {
         throw new Error(ErrorCode.GrantCapabilitiesOnOrganizationFirst);
       }
