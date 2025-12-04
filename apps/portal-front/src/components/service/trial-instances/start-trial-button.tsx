@@ -5,8 +5,6 @@ import { Button, GradientButton } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
-import GuardCapacityComponent from '@/components/admin-guard';
-
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 
 import {
@@ -19,8 +17,7 @@ import {
   tryOpenCTIFormSchema,
 } from '@/components/service/trial-instances/try-opencti-form';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
 import { toast } from 'filigran-ui/clients';
@@ -82,7 +79,7 @@ export const StartTrialButton: React.FC<Props> = ({
         input: {
           ...valuesWithoutAcceptTerms,
           platform_identifier: PlatformIdentifierEnum.OPENCTI,
-          type: DeploymentTypeEnum.TRIAL,
+          type: DeploymentRequestDeploymentTypeEnum.TRIAL,
         },
       },
       updater: (store) => {
@@ -111,39 +108,32 @@ export const StartTrialButton: React.FC<Props> = ({
     });
   };
   return (
-    <GuardCapacityComponent
-      shouldNotBePersonalSpace
-      capacityRestriction={[
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
-      ]}>
-      <SheetWithPreventingDialog
-        title={t('Service.Trials.StartTrial')}
-        setOpen={setOpenSheet}
-        open={openSheet}
-        trigger={
-          !freeTrial &&
-          (variant === StartTrialButtonVariant.Default ? (
-            <Button
-              onClick={() => setOpenSheet(true)}
-              className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
-              {t('Service.Trials.StartTrial')}
-              <ArrowRightAltIcon className="ml-s size-4" />
-            </Button>
-          ) : (
-            <GradientButton className="flex items-center">
-              {t('Service.Trials.StartTrial')}
-            </GradientButton>
-          ))
-        }>
-        <TryOpenCTIForm
-          handleSubmit={handleSubmit}
-          handleCloseSheet={() => setOpenSheet(false)}
-          deploymentRequestsAvailabilityQueryRef={
-            deploymentRequestsAvailabilityQueryRef
-          }
-        />
-      </SheetWithPreventingDialog>
-    </GuardCapacityComponent>
+    <SheetWithPreventingDialog
+      title={t('Service.Trials.StartTrial')}
+      setOpen={setOpenSheet}
+      open={openSheet}
+      trigger={
+        !freeTrial &&
+        (variant === StartTrialButtonVariant.Default ? (
+          <Button
+            onClick={() => setOpenSheet(true)}
+            className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
+            {t('Service.Trials.StartTrial')}
+            <ArrowRightAltIcon className="ml-s size-4" />
+          </Button>
+        ) : (
+          <GradientButton className="flex items-center">
+            {t('Service.Trials.StartTrial')}
+          </GradientButton>
+        ))
+      }>
+      <TryOpenCTIForm
+        handleSubmit={handleSubmit}
+        handleCloseSheet={() => setOpenSheet(false)}
+        deploymentRequestsAvailabilityQueryRef={
+          deploymentRequestsAvailabilityQueryRef
+        }
+      />
+    </SheetWithPreventingDialog>
   );
 };

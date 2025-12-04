@@ -3,7 +3,7 @@ import { TrialsHeader } from '@/components/service/trial-instances/trials-header
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
@@ -24,10 +24,10 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
             <span className="text-gray/60">Platform name:</span>{' '}
             {platform.title}
           </li>
-          {platform.deployment_request?.status && (
+          {platform.deployment_request?.hub_status && (
             <li>
               <span className="text-gray/60">Registration status:</span>{' '}
-              {formatTitleCase(platform.deployment_request?.status)}
+              {formatTitleCase(platform.deployment_request?.hub_status)}
             </li>
           )}
           {platform.subscription?.start_date && (
@@ -44,16 +44,18 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
         </ul>
 
         <div className="flex flex-col gap-m">
-          <Button>
-            <Link
-              target="_blank"
-              rel="noopener noreferrer"
-              href={platform.url}>
-              Access OpenCTI
-            </Link>
-          </Button>
-          {platform.deployment_request?.status ===
-            DeploymentRequestStatusEnum.ACTIVE && (
+          {platform.url && (
+            <Button>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href={platform.url}>
+                Access OpenCTI
+              </Link>
+            </Button>
+          )}
+          {platform.deployment_request?.hub_status ===
+            DeploymentRequestHubStatusEnum.ACTIVE && (
             <TrialsManageUsersDialog platform={platform} />
           )}
         </div>

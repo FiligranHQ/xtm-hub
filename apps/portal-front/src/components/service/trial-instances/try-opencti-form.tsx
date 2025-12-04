@@ -9,7 +9,7 @@ import {
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import {
   AutoForm,
@@ -38,12 +38,12 @@ export const tryOpenCTIFormSchema = z.object({
   acceptTerms: z.boolean().refine((value) => value === true, {
     error: 'You must accept the MSSA',
   }),
-  status: z
+  hub_status: z
     .enum([
-      DeploymentRequestStatusEnum.QUEUED,
-      DeploymentRequestStatusEnum.PENDING,
+      DeploymentRequestHubStatusEnum.QUEUED,
+      DeploymentRequestHubStatusEnum.PENDING,
     ])
-    .default(DeploymentRequestStatusEnum.PENDING),
+    .default(DeploymentRequestHubStatusEnum.PENDING),
 });
 
 interface TryOpenCTIFormProps {
@@ -85,7 +85,7 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
       setIsDialogOpen(true);
       setPendingValues({
         ...values,
-        status: DeploymentRequestStatusEnum.QUEUED,
+        hub_status: DeploymentRequestHubStatusEnum.QUEUED,
       });
     }
   };
@@ -124,7 +124,7 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                         <SelectItem
                           key={region.value}
                           value={region.value}>
-                          {region.label}
+                          {t(`Region.${region.label}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -169,7 +169,7 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                 </FormItem>
               ),
             },
-            status: {
+            hub_status: {
               fieldType: () => <FormItem hidden />,
             },
           }}>

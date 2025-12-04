@@ -1,5 +1,6 @@
 'use client';
 
+import GuardCapacityComponent from '@/components/admin-guard';
 import {
   StartTrialButton,
   StartTrialButtonVariant,
@@ -8,6 +9,7 @@ import { TrialsHeader } from '@/components/service/trial-instances/trials-header
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
@@ -40,10 +42,17 @@ const Page = ({}) => {
               variant="outline-primary">
               {t('Service.Trials.ContactUs')}
             </Button>
-            <StartTrialButton
-              variant={StartTrialButtonVariant.Gradient}
-              openForm={openTrialForm}
-            />
+            <GuardCapacityComponent
+              shouldNotBePersonalSpace
+              capacityRestriction={[
+                OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+                OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+              ]}>
+              <StartTrialButton
+                variant={StartTrialButtonVariant.Gradient}
+                openForm={openTrialForm}
+              />
+            </GuardCapacityComponent>
           </>
         }
       />

@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { DEFAULT_ADMIN_EMAIL } from '../../../../tests/tests.const';
 import {
-  DeploymentRequestStatus,
-  DeploymentType,
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformIdentifier,
-  PlatformRegion,
 } from '../../../__generated__/resolvers-types';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
@@ -29,8 +30,8 @@ describe('Deployment app', () => {
             job_title: 'myJob',
             use_case: 'use_case',
             platform_identifier: PlatformIdentifier.Opencti,
-            region: PlatformRegion.Us,
-            type: DeploymentType.Trial,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
           },
         }
       );
@@ -39,42 +40,84 @@ describe('Deployment app', () => {
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
-        type: DeploymentType.Trial,
-        status: DeploymentRequestStatus.Pending,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: null,
       });
     });
   });
 
   describe('updateDeploymentRequest', () => {
     it('should return the updated deployment request', async () => {
-      const initialDeploymentData = {
+      const initialDeployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
-        type: DeploymentType.Trial,
-      };
-      const initialDeployment = await DeploymentsApp.createDeploymentRequest(
-        initialDeploymentData
-      );
-      const updates = {
-        id: initialDeployment.id,
-        status: DeploymentRequestStatus.Provisioning,
-        start_date: new Date(2025, 1, 3),
-        end_date: new Date(2025, 2, 3),
-        product_service_instance_id: 'fake product instance id',
-        failure_reason: 'not failed',
-      };
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
+      });
+
+      expect(initialDeployment).toMatchObject({
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        start_date: null,
+        end_date: null,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: null,
+      });
 
       const updatedDeployment = await resolver.Mutation.updateDeploymentRequest(
         undefined,
-        { input: updates }
+        {
+          input: {
+            id: initialDeployment.id,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          },
+        }
       );
+
       expect(updatedDeployment).toMatchObject({
-        ...initialDeploymentData,
-        ...updates,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Provisioning,
+        start_date: null,
+        end_date: null,
+      });
+
+      const updatedActiveDeployment =
+        await resolver.Mutation.updateDeploymentRequest(undefined, {
+          input: {
+            id: initialDeployment.id,
+            actual_state: DeploymentRequestPlatformState.Active,
+            start_date: new Date(2025, 1, 3),
+            end_date: new Date(2025, 2, 3),
+            platform_id: 'fake product instance id',
+            failure_reason: 'not failed',
+          },
+        });
+      expect(updatedActiveDeployment).toMatchObject({
+        activity_sector: 'cybersecurity',
+        job_title: 'myJob',
+        use_case: 'use_case',
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        platform_id: 'fake product instance id',
+        failure_reason: 'not failed',
         organization_name: 'Filigran',
         organization_domains: ['filigran.io', 'internal.com'],
         requester_email: DEFAULT_ADMIN_EMAIL,
@@ -82,21 +125,22 @@ describe('Deployment app', () => {
         requester_last_name: 'lastname',
       });
     });
-    it('should return an error when status transition is not allowed', async () => {
+    it('should return an error when hub status transition is not allowed', async () => {
       const initialDeploymentData = {
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
         use_case: 'use_case',
         platform_identifier: PlatformIdentifier.Opencti,
-        region: PlatformRegion.Us,
-        type: DeploymentType.Trial,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
       };
       const initialDeployment = await DeploymentsApp.createDeploymentRequest(
         initialDeploymentData
       );
       const updates = {
         id: initialDeployment.id,
-        status: DeploymentRequestStatus.Queued,
+        hub_status: DeploymentRequestHubStatus.Expired,
       };
 
       const call = resolver.Mutation.updateDeploymentRequest(undefined, {
@@ -115,9 +159,10 @@ describe('Deployment app', () => {
         });
 
       expect(availableDeployments).toStrictEqual([
-        { region: PlatformRegion.Apac, availableCount: 10 },
-        { region: PlatformRegion.Europe, availableCount: 10 },
-        { region: PlatformRegion.Us, availableCount: 10 },
+        { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 10 },
+        { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 10 },
+        { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 20 },
+        { region: DeploymentRequestPlatformRegion.UsEast, availableCount: 20 },
       ]);
     });
   });

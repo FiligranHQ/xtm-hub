@@ -5,18 +5,22 @@ import {
   DeploymentAvailability,
   DeploymentRequest,
   DeploymentRequestConnection,
+  DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
-  DeploymentRequestStatus,
-  DeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformDeploymentRequest,
   PlatformIdentifier,
-  PlatformRegion,
   QueryDeploymentRequestsArgs,
   ServiceInstanceCreationStatus,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
+import {
+  DeploymentRequestId,
+  DeploymentRequestMutator,
+} from '../../../model/kanel/public/DeploymentRequest';
 import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
@@ -38,7 +42,11 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { assertFreeTrialsLimit, isTransitionValid } from './deployments.helper';
+import {
+  assertFreeTrialsLimit,
+  isHubStatusTransitionValid,
+  isPlatformStateTransitionValid,
+} from './deployments.helper';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
@@ -55,11 +63,11 @@ export const DeploymentsApp = {
     }
 
     if (
-      input.status &&
+      input.hub_status &&
       ![
-        DeploymentRequestStatus.Pending,
-        DeploymentRequestStatus.Queued,
-      ].includes(input.status)
+        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestHubStatus.Queued,
+      ].includes(input.hub_status)
     ) {
       throw new Error(BadRequestErrorCode.InvalidStatus);
     }
@@ -74,15 +82,20 @@ export const DeploymentsApp = {
     }
 
     try {
+      const hubStatus = input.hub_status ?? DeploymentRequestHubStatus.Pending;
+
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {
+          const maxOrdering = await DeploymentRequestDomain.getMaxOrdering();
+          const ordering = (maxOrdering ?? 0) + 1;
+
           const serviceInstanceId =
             await registrationDomain.registerNewPlatform({
               serviceDefinitionId: serviceDefinition.id,
               organizationId: user.selected_organization_id,
               platformIdentifier: input.platform_identifier,
               serviceInstanceCreationStatus:
-                input.status === DeploymentRequestStatus.Queued
+                hubStatus === DeploymentRequestHubStatus.Queued
                   ? ServiceInstanceCreationStatus.Disabled
                   : ServiceInstanceCreationStatus.Pending,
             });
@@ -92,7 +105,13 @@ export const DeploymentsApp = {
             user_requester_id: user.id,
             organization_requester_id: user.selected_organization_id,
             service_instance_id: serviceInstanceId,
-            status: input.status ?? DeploymentRequestStatus.Pending,
+            hub_status: hubStatus,
+            target_state:
+              hubStatus === DeploymentRequestHubStatus.Queued
+                ? DeploymentRequestPlatformState.Inactive
+                : DeploymentRequestPlatformState.Active,
+            actual_state: null,
+            ordering,
             type: input.type,
             platform_identifier: input.platform_identifier,
             region: input.region,
@@ -110,14 +129,17 @@ export const DeploymentsApp = {
           user.id,
           input.platform_identifier,
           {
-            region: createdDeploymentRequest.region as PlatformRegion,
-            status: createdDeploymentRequest.status as DeploymentRequestStatus,
+            region:
+              createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
+            status:
+              createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
             activity_sector: createdDeploymentRequest.activity_sector,
             job_title: createdDeploymentRequest.job_title,
             use_case: createdDeploymentRequest.use_case,
             email: user.email,
             deployment_id: createdDeploymentRequest.id,
-            deployment_type: createdDeploymentRequest.type as DeploymentType,
+            deployment_type:
+              createdDeploymentRequest.type as DeploymentRequestDeploymentType,
           }
         );
         telemetryApp.sendTelemetryEvent(createDeploymentEvent);
@@ -129,7 +151,8 @@ export const DeploymentsApp = {
 
       try {
         if (
-          createdDeploymentRequest.status === DeploymentRequestStatus.Pending
+          createdDeploymentRequest.hub_status ===
+          DeploymentRequestHubStatus.Pending
         ) {
           sendMail({
             to: user.email,
@@ -150,18 +173,26 @@ export const DeploymentsApp = {
         id: createdDeploymentRequest.id,
         platform_identifier:
           createdDeploymentRequest.platform_identifier as PlatformIdentifier,
-        region: createdDeploymentRequest.region as PlatformRegion,
-        type: createdDeploymentRequest.type as DeploymentType,
+        region:
+          createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
+        type: createdDeploymentRequest.type as DeploymentRequestDeploymentType,
         job_title: createdDeploymentRequest.job_title,
         activity_sector: createdDeploymentRequest.activity_sector,
         use_case: createdDeploymentRequest.use_case,
         start_date: createdDeploymentRequest.start_date,
         end_date: createdDeploymentRequest.end_date,
-        status: createdDeploymentRequest.status as DeploymentRequestStatus,
+        hub_status:
+          createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
+        target_state:
+          createdDeploymentRequest.target_state as DeploymentRequestPlatformState,
+        actual_state:
+          createdDeploymentRequest.actual_state as DeploymentRequestPlatformState,
+        ordering: createdDeploymentRequest.ordering,
         __typename: 'DeploymentRequest',
       };
     } catch (error) {
       logApp.error('unable to create deployment request', error);
+      throw error;
     }
   },
 
@@ -180,17 +211,31 @@ export const DeploymentsApp = {
     }
 
     if (
-      !isTransitionValid(
-        deploymentRequest.status as DeploymentRequestStatus,
-        input.status
+      input.hub_status &&
+      !isHubStatusTransitionValid(
+        deploymentRequest.hub_status as DeploymentRequestHubStatus,
+        input.hub_status
       )
     ) {
       throw new Error(
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
     }
+
+    if (
+      input.actual_state &&
+      !isPlatformStateTransitionValid(
+        deploymentRequest.actual_state as DeploymentRequestPlatformState,
+        input.actual_state
+      )
+    ) {
+      throw new Error(
+        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
+      );
+    }
+
     const isActiveInputDataInvalid =
-      input.status == DeploymentRequestStatus.Active &&
+      input.actual_state == DeploymentRequestPlatformState.Active &&
       (!input.start_date || !input.end_date);
     if (isActiveInputDataInvalid) {
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
@@ -210,18 +255,25 @@ export const DeploymentsApp = {
         );
       }
 
+      const updateData: DeploymentRequestMutator = {
+        start_date: input.start_date,
+        end_date: input.end_date,
+        platform_id: input.platform_id,
+        failure_reason: input.failure_reason,
+        actual_state: input.actual_state,
+        ordering: input.ordering,
+      };
+
+      if (input.hub_status) {
+        updateData.hub_status = input.hub_status;
+      }
+
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
-        {
-          status: input.status,
-          start_date: input.start_date,
-          end_date: input.end_date,
-          product_service_instance_id: input.product_service_instance_id,
-          failure_reason: input.failure_reason,
-        }
+        updateData
       );
 
-      if (input.status === DeploymentRequestStatus.Active) {
+      if (input.hub_status === DeploymentRequestHubStatus.Active) {
         await DeploymentRequestDomain.initialiseServiceGroup(
           input.id as DeploymentRequestId
         );
@@ -239,12 +291,12 @@ export const DeploymentsApp = {
         organization,
         deploymentRequest.user_requester_id,
         {
-          status: input.status,
+          status: input.hub_status,
           start_date: input.start_date,
           end_date: input.end_date,
           deployment_id: deploymentRequest.id,
           deployment_type: deploymentRequest.type,
-          platform_id: input.product_service_instance_id,
+          platform_id: input.platform_id,
         }
       );
 
@@ -264,16 +316,17 @@ export const DeploymentsApp = {
     args: QueryDeploymentRequestsArgs
   ): Promise<DeploymentRequestConnection> => {
     args.filters = args.filters || [];
-    const hasStatusFilter = args.filters?.some(
-      (filter) => filter?.key === DeploymentRequestFilterKey.Status
+
+    // By default, only return deployments with sync offset (target_state different from actual_state)
+    const hasStateFilter = args.filters?.some(
+      (filter) =>
+        filter?.key === DeploymentRequestFilterKey.TargetState ||
+        filter?.key === DeploymentRequestFilterKey.ActualState
     );
-    if (!hasStatusFilter) {
-      args.filters.push({
-        key: DeploymentRequestFilterKey.Status,
-        value: [DeploymentRequestStatus.Pending],
-      });
-    }
-    return DeploymentRequestDomain.loadDeploymentRequests(args);
+
+    return DeploymentRequestDomain.loadDeploymentRequests(args, {
+      onlyOutOfSync: !hasStateFilter,
+    });
   },
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier
@@ -285,7 +338,7 @@ export const DeploymentsApp = {
         platform_identifier: platformIdentifier,
       });
 
-    const allRegions = Object.values(PlatformRegion); // Assuming you have a Region enum
+    const allRegions = Object.values(DeploymentRequestPlatformRegion); // Assuming you have a Region enum
 
     return allRegions.map((region) => ({
       region,

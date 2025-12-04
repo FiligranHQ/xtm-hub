@@ -1,7 +1,14 @@
-export const REGIONS_VALUES = ['us', 'europe', 'apac'] as const;
-export const REGIONS = REGIONS_VALUES.map((region) => {
-  return { value: region, label: region.toUpperCase() };
-});
+import { DeploymentRequestPlatformRegionEnum } from '@generated/models/DeploymentRequestPlatformRegion.enum';
+
+export const REGIONS_VALUES = Object.values(
+  DeploymentRequestPlatformRegionEnum
+);
+export const REGIONS = Object.values(DeploymentRequestPlatformRegionEnum).map(
+  (region) => ({
+    value: region,
+    label: region.toUpperCase(),
+  })
+);
 export const JOB_TITLES = [
   'CEO',
   'CISO/CSO/CIO',

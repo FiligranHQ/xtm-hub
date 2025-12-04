@@ -1,8 +1,8 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import type { createFreeTrialRegisteredPlatformsStatusAndTypeQuery } from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
 import CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
@@ -47,14 +47,17 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
     const platforms = response.data.registeredPlatforms || [];
     const freeTrials = platforms.filter(
       (platform) =>
-        platform.deployment_request?.type === DeploymentTypeEnum.TRIAL
+        platform.deployment_request?.type ===
+        DeploymentRequestDeploymentTypeEnum.TRIAL
     );
 
     const isTrialStarted = [
-      DeploymentRequestStatusEnum.QUEUED,
-      DeploymentRequestStatusEnum.PENDING,
+      DeploymentRequestHubStatusEnum.QUEUED,
+      DeploymentRequestHubStatusEnum.PENDING,
+      DeploymentRequestHubStatusEnum.ACTIVE,
     ].includes(
-      freeTrials[0]?.deployment_request?.status as DeploymentRequestStatusEnum
+      freeTrials[0]?.deployment_request
+        ?.hub_status as DeploymentRequestHubStatusEnum
     );
 
     if (isTrialStarted) {
