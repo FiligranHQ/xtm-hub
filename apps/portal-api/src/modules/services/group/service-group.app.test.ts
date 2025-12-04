@@ -9,7 +9,15 @@ import {
   THALES_ORGA_ID,
   THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
-import { ServiceInstanceCreationStatus } from '../../../__generated__/resolvers-types';
+import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestPlatformRegion,
+  PlatformIdentifier,
+  ServiceInstanceCreationStatus,
+} from '../../../__generated__/resolvers-types';
+import DeploymentRequest, {
+  DeploymentRequestId,
+} from '../../../model/kanel/public/DeploymentRequest';
 import ServiceGroup, {
   ServiceGroupId,
 } from '../../../model/kanel/public/ServiceGroup';
@@ -115,6 +123,16 @@ describe('ServiceGroupApp', () => {
       await db<ServiceGroupUser>('ServiceGroup_User').insert({
         group_id: analystGroupId,
         user_id: FILIGRAN_USER_ID,
+      });
+      await db<DeploymentRequest>('DeploymentRequest').insert({
+        id: uuidv4() as DeploymentRequestId,
+        service_instance_id: serviceInstanceId1,
+        platform_id: uuidv4(),
+        user_requester_id: FILIGRAN_USER_ID,
+        organization_requester_id: FILIGRAN_ORGA_ID,
+        type: DeploymentRequestDeploymentType.Trial,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
       });
 
       const result = await ServiceGroupApp.updateGroups(payload);

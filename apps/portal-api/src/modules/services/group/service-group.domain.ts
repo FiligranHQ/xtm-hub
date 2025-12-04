@@ -88,6 +88,21 @@ export const ServiceGroupDomain = {
 
     await db('ServiceGroup_User').del().whereIn('group_id', groupIds);
   },
+
+  loadServiceInstanceGroupUsers: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<ServiceGroupUser[]> => {
+    return db<ServiceGroupUser>('ServiceGroup_User')
+      .leftJoin(
+        'ServiceGroup',
+        'ServiceGroup.id',
+        '=',
+        'ServiceGroup_User.group_id'
+      )
+      .where('ServiceGroup.service_instance_id', '=', serviceInstanceId)
+      .select('ServiceGroup_User.*');
+  },
+
   initGroupWithAdmin: async (
     userAdminId: UserId,
     serviceInstancesId: ServiceInstanceId
