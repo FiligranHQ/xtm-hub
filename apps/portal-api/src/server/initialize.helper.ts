@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
-import { dbTx, dbUnsecure } from '../../knexfile';
+import { dbUnsecure } from '../../knexfile';
 import {
   OrganizationCapability,
   ServiceDefinition,
   ServiceInstance,
 } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
+import { withTransaction } from '../context/database.context';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
@@ -113,40 +114,35 @@ export const ensureServiceCapabilityExists = async (serviceCapability) => {
       .returning('*');
   }
 };
-export const ensureCapabilityExists = async (capability, trx) => {
+export const ensureCapabilityExists = async (capability) => {
   const capabilityPortal = await dbUnsecure('CapabilityPortal');
   if (!capabilityPortal.find((c) => c.id === capability.id)) {
-    await dbUnsecure<RolePortalCapabilityPortal>('CapabilityPortal')
-      .insert(capability)
-      .transacting(trx);
+    await dbUnsecure<RolePortalCapabilityPortal>('CapabilityPortal').insert(
+      capability
+    );
   }
 };
 
-export const ensureUserRoleExist = async (user_id, role_portal_id, trx?) => {
+export const ensureUserRoleExist = async (user_id, role_portal_id) => {
   const userRole = await dbUnsecure('User_RolePortal')
     .where({ user_id, role_portal_id })
     .first();
   if (!userRole) {
-    const query = dbUnsecure('User_RolePortal').insert({
+    await dbUnsecure('User_RolePortal').insert({
       user_id,
       role_portal_id,
     });
-    if (trx) {
-      await query.transacting(trx);
-    } else {
-      await query;
-    }
   }
 };
 
-export const ensureRoleExists = async (role, trx) => {
+export const ensureRoleExists = async (role) => {
   const rolePortal = await dbUnsecure('RolePortal');
   if (!rolePortal.find((r) => r.id === role.id)) {
-    await dbUnsecure<RolePortal>('RolePortal').insert(role).transacting(trx);
+    await dbUnsecure<RolePortal>('RolePortal').insert(role);
   }
 };
 
-export const ensureRoleHasCapability = async (role, capability, trx) => {
+export const ensureRoleHasCapability = async (role, capability) => {
   const roleCapability = await dbUnsecure<RolePortalCapabilityPortal>(
     'RolePortal_CapabilityPortal'
   )
@@ -154,57 +150,51 @@ export const ensureRoleHasCapability = async (role, capability, trx) => {
     .first();
 
   if (!roleCapability) {
-    await dbUnsecure<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal')
-      .insert({
-        capability_portal_id: capability.id,
-        role_portal_id: role.id,
-      })
-      .transacting(trx);
+    await dbUnsecure<RolePortalCapabilityPortal>(
+      'RolePortal_CapabilityPortal'
+    ).insert({
+      capability_portal_id: capability.id,
+      role_portal_id: role.id,
+    });
   }
 };
 
-export const insertPlatformOrganization = async (trx) => {
+export const insertPlatformOrganization = async () => {
   const adminOrganization = await loadOrganizationBy({
     id: PLATFORM_ORGANIZATION_UUID,
   });
 
   if (!adminOrganization) {
-    await insertNewOrganization(
-      {
-        id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
-        name: PLATFORM_NAME,
-        domains: PLATFORM_DOMAIN,
-      },
-      trx
-    );
+    await insertNewOrganization({
+      id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
+      name: PLATFORM_NAME,
+      domains: PLATFORM_DOMAIN,
+    });
   }
 };
 
-export const insertUserAdminOrganization = async (user_id, email, trx) => {
+export const insertUserAdminOrganization = async (user_id, email) => {
   const adminOrganization = await loadOrganizationBy({
     id: user_id as unknown as OrganizationId,
   });
 
   if (!adminOrganization) {
-    await insertNewOrganization(
-      {
-        id: user_id as unknown as OrganizationId,
-        name: email,
-        personal_space: true,
-      },
-      trx
-    );
+    await insertNewOrganization({
+      id: user_id as unknown as OrganizationId,
+      name: email,
+      personal_space: true,
+    });
   }
 };
 
-export const insertAdminUser = async (user_id, email, data, trx) => {
+export const insertAdminUser = async (user_id, email, data) => {
   const userData = {
     id: user_id,
     email,
     selected_organization_id: PLATFORM_ORGANIZATION_UUID,
     ...data,
   };
-  await dbUnsecure<UserInitializer>('User').insert(userData).transacting(trx);
+  await dbUnsecure<UserInitializer>('User').insert(userData);
 };
 
 export const updateUserPassword = async (user_id, data) => {
@@ -216,8 +206,7 @@ export const updateUserPassword = async (user_id, data) => {
 
 export const ensureUserOrganizationExist = async (
   user_id: UserId,
-  organization_id: OrganizationId,
-  trx?
+  organization_id: OrganizationId
 ) => {
   const userOrganization = await dbUnsecure<UserOrganization>(
     'User_Organization'
@@ -226,57 +215,44 @@ export const ensureUserOrganizationExist = async (
     .first();
 
   if (!userOrganization) {
-    const query = dbUnsecure('User_Organization').insert({
+    await dbUnsecure('User_Organization').insert({
       user_id,
       organization_id,
     });
-    if (trx) {
-      await query.transacting(trx);
-    } else {
-      await query;
-    }
   }
 };
 
 export const ensurePersonalSpaceExist = async (
   user_id: UserId,
-  mail: string,
-  trx?
+  mail: string
 ) => {
   const orgId = user_id as unknown as OrganizationId;
 
-  await ensureOrganizationExists(orgId, mail, trx);
-  const userOrg = await ensureUserOrganizationExists(user_id, orgId, trx);
-  await ensureCapabilitiesExist(
-    userOrg.id,
-    [OrganizationCapability.AdministrateOrganization],
-    trx
-  );
+  await ensureOrganizationExists(orgId, mail);
+  const userOrg = await ensureUserOrganizationExists(user_id, orgId);
+  await ensureCapabilitiesExist(userOrg.id, [
+    OrganizationCapability.AdministrateOrganization,
+  ]);
 };
 
 const ensureOrganizationExists = async (
   orgId: OrganizationId,
-  mail: string,
-  trx?
+  mail: string
 ) => {
   const personalSpace = await loadOrganizationBy({ id: orgId });
 
   if (!personalSpace) {
-    await insertNewOrganization(
-      {
-        id: orgId,
-        name: mail,
-        personal_space: true,
-      },
-      trx
-    );
+    await insertNewOrganization({
+      id: orgId,
+      name: mail,
+      personal_space: true,
+    });
   }
 };
 
 const ensureUserOrganizationExists = async (
   user_id: UserId,
-  orgId: OrganizationId,
-  trx?
+  orgId: OrganizationId
 ) => {
   const userOrg = await dbUnsecure<UserOrganization>('User_Organization')
     .where({ user_id, organization_id: orgId })
@@ -287,7 +263,7 @@ const ensureUserOrganizationExists = async (
       .insert({ user_id, organization_id: orgId })
       .returning('id');
 
-    const [insertedRecord] = trx ? await query.transacting(trx) : await query;
+    const [insertedRecord] = await query;
     return { id: insertedRecord.id };
   }
   return userOrg;
@@ -295,8 +271,7 @@ const ensureUserOrganizationExists = async (
 
 const ensureCapabilitiesExist = async (
   userOrgId: UserOrganizationId,
-  capabilities: string[],
-  trx?
+  capabilities: string[]
 ) => {
   for (const capability of capabilities) {
     const existingCapability = await dbUnsecure<UserOrganizationCapability>(
@@ -306,15 +281,9 @@ const ensureCapabilitiesExist = async (
       .first();
 
     if (!existingCapability) {
-      const query = dbUnsecure<UserOrganizationCapability>(
+      await dbUnsecure<UserOrganizationCapability>(
         'UserOrganization_Capability'
       ).insert({ user_organization_id: userOrgId, name: capability });
-
-      if (trx) {
-        await query.transacting(trx);
-      } else {
-        await query;
-      }
     }
   }
 };
@@ -322,10 +291,10 @@ const ensureCapabilitiesExist = async (
 /**
  * Creates or updates a development organization from config
  */
-export const ensureDevOrganizationExists = async (
-  orgConfig: { name: string; domains?: string[] },
-  trx?
-): Promise<Organization> => {
+export const ensureDevOrganizationExists = async (orgConfig: {
+  name: string;
+  domains?: string[];
+}): Promise<Organization> => {
   // Check if organization already exists by name
   const existingOrg = await loadOrganizationBy({
     name: orgConfig.name,
@@ -335,26 +304,21 @@ export const ensureDevOrganizationExists = async (
   if (existingOrg) {
     // Update domains if provided
     if (orgConfig.domains && orgConfig.domains.length > 0) {
-      const updatedOrg = await updateOrganizationBy(
+      return await updateOrganizationBy(
         { id: existingOrg.id },
-        { domains: orgConfig.domains },
-        trx
+        { domains: orgConfig.domains }
       );
-      return updatedOrg;
     }
     return existingOrg;
   }
 
   // Create new organization
-  const newOrg = await insertNewOrganization(
-    {
-      id: uuidv4() as OrganizationId,
-      name: orgConfig.name,
-      domains: orgConfig.domains || [],
-      personal_space: false,
-    },
-    trx
-  );
+  const newOrg = await insertNewOrganization({
+    id: uuidv4() as OrganizationId,
+    name: orgConfig.name,
+    domains: orgConfig.domains || [],
+    personal_space: false,
+  });
 
   return newOrg;
 };
@@ -365,96 +329,86 @@ export const ensureDevOrganizationExists = async (
 export const ensureDevUserExists = async (
   userConfig: DevUser
 ): Promise<void> => {
-  const trx = await dbTx();
-
   try {
-    // Check if user already exists
-    const existingUser = await dbUnsecure<UserInitializer>('User')
-      .where({ email: userConfig.email })
-      .first();
+    await withTransaction(async () => {
+      // Check if user already exists
+      const existingUser = await dbUnsecure<UserInitializer>('User')
+        .where({ email: userConfig.email })
+        .first();
 
-    let userId: UserId;
-    let isNewUser = false;
+      let userId: UserId;
+      let isNewUser = false;
 
-    if (existingUser) {
-      userId = existingUser.id;
-      // Update password
-      const { salt, hash } = hashPassword(userConfig.password);
-      await dbUnsecure<UserInitializer>('User')
-        .where({ id: userId })
-        .update({ salt, password: hash })
-        .transacting(trx);
-
-      logApp.info(`Updated dev user: ${userConfig.email}`);
-    } else {
-      // Create new user
-      userId = uuidv4() as UserId;
-      isNewUser = true;
-
-      const { salt, hash } = hashPassword(userConfig.password);
-      const userData: Partial<UserInitializer> = {
-        id: userId,
-        email: userConfig.email,
-        salt,
-        password: hash,
-        selected_organization_id: PLATFORM_ORGANIZATION_UUID,
-      };
-
-      await dbUnsecure<UserInitializer>('User')
-        .insert(userData)
-        .transacting(trx);
-
-      logApp.info(`Created dev user: ${userConfig.email}`);
-    }
-
-    // Handle organization membership
-    let orgId: OrganizationId;
-
-    if (userConfig.organization) {
-      // Create/update organization and assign user
-      const org = await ensureDevOrganizationExists(
-        {
-          name: userConfig.organization.name,
-          domains: userConfig.organization.domains,
-        },
-        trx
-      );
-      orgId = org.id;
-
-      await ensureUserOrganizationExist(userId, orgId, trx);
-
-      // Set as default organization for new users
-      if (isNewUser) {
+      if (existingUser) {
+        userId = existingUser.id;
+        // Update password
+        const { salt, hash } = hashPassword(userConfig.password);
         await dbUnsecure<UserInitializer>('User')
           .where({ id: userId })
-          .update({ selected_organization_id: orgId })
-          .transacting(trx);
+          .update({ salt, password: hash });
+
+        logApp.info(`Updated dev user: ${userConfig.email}`);
+      } else {
+        // Create new user
+        userId = uuidv4() as UserId;
+        isNewUser = true;
+
+        const { salt, hash } = hashPassword(userConfig.password);
+        const userData: Partial<UserInitializer> = {
+          id: userId,
+          email: userConfig.email,
+          salt,
+          password: hash,
+          selected_organization_id: PLATFORM_ORGANIZATION_UUID,
+        };
+
+        await dbUnsecure<UserInitializer>('User').insert(userData);
+
+        logApp.info(`Created dev user: ${userConfig.email}`);
       }
-    }
 
-    // Always ensure platform organization membership
-    await ensureUserOrganizationExist(userId, PLATFORM_ORGANIZATION_UUID, trx);
+      // Handle organization membership
+      let orgId: OrganizationId;
 
-    // Handle roles
-    const roles = userConfig.roles || ['USER'];
-    for (const roleName of roles) {
-      const roleId = ROLE_MAPPING[roleName];
-      if (!roleId) {
-        logApp.warn(
-          `Role '${roleName}' is not recognized and will be skipped for user ${userConfig.email}`
-        );
-        continue;
+      if (userConfig.organization) {
+        // Create/update organization and assign user
+        const org = await ensureDevOrganizationExists({
+          name: userConfig.organization.name,
+          domains: userConfig.organization.domains,
+        });
+        orgId = org.id;
+
+        await ensureUserOrganizationExist(userId, orgId);
+
+        // Set as default organization for new users
+        if (isNewUser) {
+          await dbUnsecure<UserInitializer>('User')
+            .where({ id: userId })
+            .update({ selected_organization_id: orgId });
+        }
       }
 
-      await ensureUserRoleExist(userId, roleId, trx);
-    }
+      // Always ensure platform organization membership
+      await ensureUserOrganizationExist(userId, PLATFORM_ORGANIZATION_UUID);
 
-    // Always create personal space
-    await ensurePersonalSpaceExist(userId, userConfig.email, trx);
+      // Handle roles
+      const roles = userConfig.roles || ['USER'];
+      for (const roleName of roles) {
+        const roleId = ROLE_MAPPING[roleName];
+        if (!roleId) {
+          logApp.warn(
+            `Role '${roleName}' is not recognized and will be skipped for user ${userConfig.email}`
+          );
+          continue;
+        }
 
-    await trx.commit();
+        await ensureUserRoleExist(userId, roleId);
+      }
+
+      // Always create personal space
+      await ensurePersonalSpaceExist(userId, userConfig.email);
+    });
   } catch (error) {
-    await trx.rollback();
     logApp.error(
       `Failed to initialize dev user ${userConfig.email}: ${error.message}`
     );

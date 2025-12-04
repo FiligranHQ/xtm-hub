@@ -367,16 +367,14 @@ describe('Service Instance app', () => {
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
           mockServiceInstanceId,
-          { name: mockInput.name },
-          expect.any(Function)
+          { name: mockInput.name }
         );
         expect(
           updatePlatformConfigurationByServiceInstanceIdSpy
-        ).toHaveBeenCalledWith(
-          mockServiceInstanceId,
-          { ...mockPlatformConfig, platform_title: mockInput.name },
-          expect.any(Function)
-        );
+        ).toHaveBeenCalledWith(mockServiceInstanceId, {
+          ...mockPlatformConfig,
+          platform_title: mockInput.name,
+        });
         expect(result).toEqual({
           ...updatedServiceInstance,
           identifier: mockServiceDefinition.identifier,
@@ -410,17 +408,13 @@ describe('Service Instance app', () => {
           mockUpload
         );
 
-        expect(uploadNewFileSpy).toHaveBeenCalledWith(
-          mockUpload,
-          expect.any(Function)
-        );
+        expect(uploadNewFileSpy).toHaveBeenCalledWith(mockUpload);
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
           mockServiceInstanceId,
           {
             name: mockInput.name,
             illustration_document_id: mockDocumentId,
-          },
-          expect.any(Function)
+          }
         );
         expect(result).toEqual({
           ...updatedServiceInstance,
@@ -456,8 +450,7 @@ describe('Service Instance app', () => {
 
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
           mockServiceInstanceId,
-          { illustration_document_id: mockDocumentId },
-          expect.any(Function)
+          { illustration_document_id: mockDocumentId }
         );
         expect(
           updatePlatformConfigurationByServiceInstanceIdSpy
@@ -600,8 +593,7 @@ describe('Service Instance app', () => {
         // Only name should be updated, no illustration_document_id
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
           mockServiceInstanceId,
-          { name: mockInput.name },
-          expect.any(Function)
+          { name: mockInput.name }
         );
 
         expect(result).toEqual({

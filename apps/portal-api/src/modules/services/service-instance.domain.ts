@@ -1,5 +1,4 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
@@ -26,6 +25,7 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
 import { isUserAdminPlatform } from '../../security/access';
+import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
@@ -358,6 +358,7 @@ export const loadServiceWithSubscriptions = async (
         `COALESCE("userServiceCapabilities".capabilities, '[]'::json) as user_service_capability`
       )
     )
+    .tap(restrictSubscriptionToUserOrganization)
     .leftJoin(
       queryUserServiceCapabilities,
       'User_Service.id',
@@ -683,51 +684,34 @@ export const insertServiceInstance = async (
 
 export const updateServiceInstance = async (
   id: ServiceInstanceId,
-  data: ServiceInstanceMutator,
-  trx?: Knex.Transaction
+  data: ServiceInstanceMutator
 ) => {
   const query = db<ServiceInstance>('ServiceInstance')
     .where({ id })
     .update(data)
     .returning('*');
 
-  if (trx) {
-    query.transacting(trx);
-  }
-
   const [result] = await query;
   return result;
 };
 
 export const loadPlatformConfigurationByServiceInstanceId = async (
-  serviceInstanceId: string,
-  trx?: Knex.Transaction
+  serviceInstanceId: string
 ): Promise<ServiceConfiguration | null> => {
-  const qb = db('Service_Configuration')
+  return db('Service_Configuration')
     .where('service_instance_id', '=', serviceInstanceId)
     .first()
     .select('*');
-
-  if (trx) {
-    qb.forUpdate().transacting(trx);
-  }
-
-  return qb;
 };
 
 export const updatePlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string,
-  config: PlatformConfiguration,
-  trx?: Knex.Transaction
+  config: PlatformConfiguration
 ): Promise<ServiceConfiguration | null> => {
   const qb = db('Service_Configuration')
     .where('service_instance_id', '=', serviceInstanceId)
     .update({ config })
     .returning('*');
-
-  if (trx) {
-    qb.transacting(trx);
-  }
 
   const [result] = await qb;
   return result;

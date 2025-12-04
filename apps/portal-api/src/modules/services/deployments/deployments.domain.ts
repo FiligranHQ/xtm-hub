@@ -1,10 +1,11 @@
-import { dbUnsecure, paginate } from '../../../../knexfile';
+import { db, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestConnection,
-  DeploymentRequestStatus,
-  DeploymentType,
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformIdentifier,
-  PlatformRegion,
   QueryDeploymentRequestsArgs,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
@@ -17,7 +18,7 @@ export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
     deploymentRequest: DeploymentRequestInitializer
   ) => {
-    const [createdDeploymentRequest] = await dbUnsecure<DeploymentRequest>(
+    const [createdDeploymentRequest] = await db<DeploymentRequest>(
       'DeploymentRequest'
     )
       .insert(deploymentRequest)
@@ -26,7 +27,7 @@ export const DeploymentRequestDomain = {
   },
 
   loadDeploymentRequestBy: async (conditions: DeploymentRequestMutator) => {
-    const result = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    const result = await db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .select('*')
       .first();
@@ -38,16 +39,18 @@ export const DeploymentRequestDomain = {
     return {
       ...result,
       platform_identifier: result.platform_identifier as PlatformIdentifier,
-      region: result.region as PlatformRegion,
-      type: result.type as DeploymentType,
-      status: result.status as DeploymentRequestStatus,
+      region: result.region as DeploymentRequestPlatformRegion,
+      type: result.type as DeploymentRequestDeploymentType,
+      hub_status: result.hub_status as DeploymentRequestHubStatus,
+      target_state: result.target_state as DeploymentRequestPlatformState,
+      actual_state: result.actual_state as DeploymentRequestPlatformState,
     };
   },
 
   loadDeploymentRequestCountByRegion: async (
     conditions: DeploymentRequestMutator
   ): Promise<Record<string, number>> => {
-    const results = await dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    const results = await db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .select('region')
       .count('* as count')
@@ -58,19 +61,38 @@ export const DeploymentRequestDomain = {
     );
   },
 
-  loadDeploymentRequests: async (opts: QueryDeploymentRequestsArgs) => {
+  getMaxOrdering: async (): Promise<number | null> => {
+    const result = await db<DeploymentRequest>('DeploymentRequest')
+      .max('ordering as max')
+      .first();
+    return result?.max ? parseInt(result.max as string, 10) : null;
+  },
+
+  loadDeploymentRequests: async (
+    opts: QueryDeploymentRequestsArgs,
+    options?: { onlyOutOfSync?: boolean }
+  ) => {
     const { first, after, filters } = opts;
+    const query = getDeploymentRequestWithUserDataQuery();
+
+    // If onlyOutOfSync, only return deployments with sync offset (target_state different from actual_state)
+    if (options?.onlyOutOfSync) {
+      query.whereRaw(
+        '("DeploymentRequest"."target_state" IS DISTINCT FROM "DeploymentRequest"."actual_state")'
+      );
+    }
+
     return paginate<DeploymentRequest, DeploymentRequestConnection>(
       'DeploymentRequest',
       {
         first,
         after,
-        orderBy: 'request_date',
+        orderBy: 'ordering',
         orderMode: 'asc',
         filters,
       },
       undefined,
-      getDeploymentRequestWithUserDataQuery()
+      query
     );
   },
 
@@ -84,11 +106,15 @@ export const DeploymentRequestDomain = {
     platformIdentifier: PlatformIdentifier
   ) => {
     return getDeploymentRequestWithUserDataQuery()
-      .whereIn('DeploymentRequest.status', [
-        DeploymentRequestStatus.Active,
-        DeploymentRequestStatus.Expired,
+      .whereIn('DeploymentRequest.hub_status', [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Expired,
       ])
-      .where('DeploymentRequest.type', '=', DeploymentType.Trial)
+      .where(
+        'DeploymentRequest.type',
+        '=',
+        DeploymentRequestDeploymentType.Trial
+      )
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
       .first();
   },
@@ -96,7 +122,7 @@ export const DeploymentRequestDomain = {
   deleteDeploymentRequestBy: async (
     conditions: DeploymentRequestMutator
   ): Promise<DeploymentRequest> => {
-    return dbUnsecure<DeploymentRequest>('DeploymentRequest')
+    return db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .delete();
   },
@@ -105,9 +131,7 @@ export const DeploymentRequestDomain = {
     id: DeploymentRequestId,
     data: DeploymentRequestMutator
   ): Promise<DeploymentRequest> => {
-    const [deploymentRequest] = await dbUnsecure<DeploymentRequest>(
-      'DeploymentRequest'
-    )
+    const [deploymentRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .where('id', '=', id)
       .update(data)
       .returning('*');
@@ -116,7 +140,7 @@ export const DeploymentRequestDomain = {
 };
 
 const getDeploymentRequestWithUserDataQuery = () => {
-  return dbUnsecure<DeploymentRequest>('DeploymentRequest')
+  return db<DeploymentRequest>('DeploymentRequest')
     .leftJoin(
       'Organization',
       'DeploymentRequest.organization_requester_id',

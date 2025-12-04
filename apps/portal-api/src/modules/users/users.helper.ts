@@ -1,12 +1,13 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbTx, dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
   OrganizationCapability,
 } from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
@@ -419,35 +420,29 @@ export const acceptPendingUserWithCapabilities = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
-  const trx = await dbTx();
-  try {
+  const { user, userMapped } = await withTransaction(async () => {
     await createUserOrganizationRelationAndRemovePending({
       user_id,
       organizations_id: [organization_id],
     });
 
-    const { user, userMapped } = await updateUserCapabilities({
+    return await updateUserCapabilities({
       user_id,
       organization_id,
       orgCapabilities,
     });
+  });
 
-    await trx.commit();
+  await dispatch('User', 'edit', user);
+  await dispatch('MeUser', 'edit', userMapped, 'User');
+  const userPendingPayload: GraphqlUser = {
+    ...userMapped,
+    pending_organization_id: organization_id,
+  };
 
-    await dispatch('User', 'edit', user);
-    await dispatch('MeUser', 'edit', userMapped, 'User');
-    const userPendingPayload: GraphqlUser = {
-      ...userMapped,
-      pending_organization_id: organization_id,
-    };
-
-    await dispatch('UserPending', 'delete', userPendingPayload, 'User');
-    await dispatch('User', 'add', user);
-    return user;
-  } catch (e) {
-    trx.rollback();
-    throw e;
-  }
+  await dispatch('UserPending', 'delete', userPendingPayload, 'User');
+  await dispatch('User', 'add', user);
+  return user;
 };
 
 export const updateUserOrgCapabilitiesAndDispatch = async ({
@@ -459,24 +454,16 @@ export const updateUserOrgCapabilitiesAndDispatch = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
-  const trx = await dbTx();
-  try {
-    const { user, userMapped } = await updateUserCapabilities({
-      user_id,
-      organization_id,
-      orgCapabilities,
-    });
+  const { user, userMapped } = await updateUserCapabilities({
+    user_id,
+    organization_id,
+    orgCapabilities,
+  });
 
-    await trx.commit();
+  await dispatch('User', 'edit', user);
+  await dispatch('MeUser', 'edit', userMapped, 'User');
 
-    await dispatch('User', 'edit', user);
-    await dispatch('MeUser', 'edit', userMapped, 'User');
-
-    return user;
-  } catch (e) {
-    trx.rollback();
-    throw e;
-  }
+  return user;
 };
 
 const updateUserCapabilities = async ({
@@ -488,17 +475,20 @@ const updateUserCapabilities = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
-  await updateUserOrgCapabilities({
-    user_id,
-    organization_id,
-    orgCapabilities,
-  });
+  const user = await withTransaction(async () => {
+    await updateUserOrgCapabilities({
+      user_id,
+      organization_id,
+      orgCapabilities,
+    });
 
-  const user = await loadUserDetails({
-    'User.id': user_id,
-  });
+    const user = await loadUserDetails({
+      'User.id': user_id,
+    });
 
-  updateUserSession(user);
+    updateUserSession(user);
+    return user;
+  });
   const userMapped = mapUserToGraphqlUser(user);
   return { user, userMapped };
 };

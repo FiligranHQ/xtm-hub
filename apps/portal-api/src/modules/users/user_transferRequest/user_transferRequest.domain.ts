@@ -1,4 +1,3 @@
-import { Knex } from 'knex';
 import { dbUnsecure } from '../../../../knexfile';
 import UserTransferRequest, {
   UserTransferRequestInitializer,
@@ -7,15 +6,10 @@ import UserTransferRequest, {
 import { addPrefixToObject } from '../../../utils/typescript';
 
 export const insertNewUserTransfer = (
-  data: UserTransferRequestInitializer,
-  trx?: Knex.Transaction
+  data: UserTransferRequestInitializer
 ): Promise<UserTransferRequest[]> => {
   return dbUnsecure<UserTransferRequest>('User_TransferRequest')
     .insert(data)
-    .returning('*')
-    .modify((qb) => {
-      if (trx) qb.transacting(trx);
-    })
     .returning('*');
 };
 

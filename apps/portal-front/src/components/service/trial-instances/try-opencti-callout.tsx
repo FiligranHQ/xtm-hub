@@ -2,12 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 
+import GuardCapacityComponent from '@/components/admin-guard';
 import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
 import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
-import { DeploymentRequestStatusEnum } from '@generated/models/DeploymentRequestStatus.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { ArrowRightAltIcon } from 'filigran-icon';
 import { Callout } from 'filigran-ui';
@@ -81,7 +83,16 @@ export const TryOpenCTICallout = () => {
           <LearnMoreLink />
         </>
       ),
-      button: () => <StartTrialButton />,
+      button: () => (
+        <GuardCapacityComponent
+          shouldNotBePersonalSpace
+          capacityRestriction={[
+            OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+            OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+          ]}>
+          <StartTrialButton />
+        </GuardCapacityComponent>
+      ),
     },
     queued: {
       text: () => (
@@ -121,8 +132,8 @@ export const TryOpenCTICallout = () => {
   const getContentKey = () => {
     if (!freeTrial) return 'noTrial';
     if (
-      freeTrial?.deployment_request?.status ===
-      DeploymentRequestStatusEnum.QUEUED
+      freeTrial?.deployment_request?.hub_status ===
+      DeploymentRequestHubStatusEnum.QUEUED
     ) {
       return 'queued';
     }

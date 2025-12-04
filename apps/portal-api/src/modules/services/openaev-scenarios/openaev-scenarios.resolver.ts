@@ -1,4 +1,3 @@
-import { dbTx } from '../../../../knexfile';
 import {
   OpenAevScenarioConnection,
   Resolvers,
@@ -54,7 +53,7 @@ const resolvers: Resolvers = {
   },
   Query: {
     seoOpenAEVScenariosByServiceSlug: async (_, { serviceSlug }) => {
-      return await loadSeoDocumentsByServiceSlug(
+      return loadSeoDocumentsByServiceSlug(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
         OPENAEV_SCENARIO_METADATA
@@ -76,7 +75,7 @@ const resolvers: Resolvers = {
   Mutation: {
     createOpenAEVScenario: async (_, { input, document }) => {
       try {
-        return await OpenAEVScenariosApp.createOpenAEVScenario(input, document);
+        return OpenAEVScenariosApp.createOpenAEVScenario(input, document);
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
@@ -90,19 +89,14 @@ const resolvers: Resolvers = {
       }
     },
     updateOpenAEVScenario: async (_, input) => {
-      const trx = await dbTx();
       try {
-        const doc = await updateDocumentWithChildren<OpenAEVScenario>(
+        return updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,
-          OPENAEV_SCENARIO_METADATA,
-          trx
+          OPENAEV_SCENARIO_METADATA
         );
-        await trx.commit();
-        return doc;
       } catch (error) {
-        await trx.rollback();
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
             detail: error,
@@ -115,19 +109,13 @@ const resolvers: Resolvers = {
       }
     },
     deleteOpenAEVScenario: async (_, { id }, context) => {
-      const trx = await dbTx();
       try {
-        const doc = await deleteDocument<OpenAEVScenario>(
+        return deleteDocument<OpenAEVScenario>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
-          true,
-          trx
+          true
         );
-        await trx.commit();
-        return doc;
       } catch (error) {
-        await trx.rollback();
-
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.OpenAEVScenarioDeleteError

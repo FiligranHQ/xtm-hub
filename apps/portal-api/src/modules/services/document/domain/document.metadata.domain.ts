@@ -1,4 +1,3 @@
-import { Knex } from 'knex';
 import { db } from '../../../../../knexfile';
 import {
   Document as DocumentResolverType,
@@ -21,8 +20,7 @@ export const DocumentMetadataDomain = {
   insertMetadata: async <T extends DocumentModel>(
     id: DocumentId,
     data: DocumentData<T>,
-    metadataKeys: DocumentMetadataKeys<T>,
-    trx: Knex.Transaction
+    metadataKeys: DocumentMetadataKeys<T>
   ): Promise<DocumentMetadata[]> => {
     if (metadataKeys.length === 0) {
       return [];
@@ -36,8 +34,7 @@ export const DocumentMetadataDomain = {
 
     return db<DocumentMetadata>('Document_Metadata')
       .insert(metadataToInsert)
-      .returning('*')
-      .transacting(trx);
+      .returning('*');
   },
 
   loadProductVersion: async (id: DocumentId): Promise<string | null> => {
@@ -66,10 +63,13 @@ export const DocumentMetadataDomain = {
     return doc?.value ?? null;
   },
 
-  deleteMetadata: async (
-    { id, excludedKeys = [] }: { id: DocumentId; excludedKeys?: string[] },
-    trx: Knex.Transaction
-  ) => {
+  deleteMetadata: async ({
+    id,
+    excludedKeys = [],
+  }: {
+    id: DocumentId;
+    excludedKeys?: string[];
+  }) => {
     const qb = db<DocumentMetadata>('Document_Metadata').where(
       'document_id',
       id
@@ -79,6 +79,6 @@ export const DocumentMetadataDomain = {
       qb.whereNot('key', key);
     });
 
-    await qb.delete().transacting(trx);
+    await qb.delete();
   },
 };

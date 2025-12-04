@@ -23,12 +23,13 @@ import {
   THALES_SIMPLE_USER_ID,
 } from '../../../../tests/tests.const';
 import {
-  DeploymentRequestStatus,
-  DeploymentType,
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestPlatformState,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
-  PlatformRegion,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   ServiceConfigurationStatus,
@@ -799,10 +800,13 @@ describe('Registration app', () => {
           organization_requester_id: PLATFORM_ORGANIZATION_UUID,
           platform_identifier: PlatformIdentifier.Opencti,
           platform_token: uuidv4(),
-          region: PlatformRegion.Us,
+          region: DeploymentRequestPlatformRegion.UsEast,
           request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-          status: DeploymentRequestStatus.Provisioning,
-          type: DeploymentType.Trial,
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+          ordering: 1,
+          type: DeploymentRequestDeploymentType.Trial,
           use_case: 'use_case',
           service_instance_id: serviceInstanceId as ServiceInstanceId,
           user_requester_id: THALES_SIMPLE_USER_ID,
@@ -825,7 +829,7 @@ describe('Registration app', () => {
     it('should throw if wrong platform id is provided', async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequest.id,
-        { product_service_instance_id: uuidv4() }
+        { platform_id: uuidv4() }
       );
 
       const call = registrationApp.autoRegisterPlatform(
@@ -840,7 +844,11 @@ describe('Registration app', () => {
     it('should throw if deployment status is not authorized', async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequest.id,
-        { status: DeploymentRequestStatus.Pending }
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: undefined,
+          actual_state: undefined,
+        }
       );
 
       const call = registrationApp.autoRegisterPlatform(

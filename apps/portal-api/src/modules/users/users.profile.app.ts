@@ -1,4 +1,3 @@
-import { dbTx } from '../../../knexfile';
 import { EditMeUserInput } from '../../__generated__/resolvers-types';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { dispatch } from '../../pub';
@@ -90,7 +89,6 @@ export const usersProfileApp = {
   transferPersonalSpace: async (
     transferPersonalSpaceId: UserTransferRequestId
   ) => {
-    const trx = await dbTx();
     try {
       const userTransferRequest = await loadUserTransfer({
         id: transferPersonalSpaceId,
@@ -125,13 +123,9 @@ export const usersProfileApp = {
 
       await updateSubscriptionBy(
         { organization_id: personalSpaceToTransfer.id },
-        { organization_id: currentToUserSpace.id },
-        trx
+        { organization_id: currentToUserSpace.id }
       );
-
-      await trx.commit();
     } catch (error) {
-      await trx.rollback();
       throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
     }
   },

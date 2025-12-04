@@ -4,7 +4,7 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { buildPlatformHoverLinks } from '@/utils/platform';
-import { DeploymentTypeEnum } from '@generated/models/DeploymentType.enum';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -25,7 +25,10 @@ export const isExternalService = (
 const isTrial = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ) => {
-  return platform.deployment_request?.type === DeploymentTypeEnum.TRIAL;
+  return (
+    platform.deployment_request?.type ===
+    DeploymentRequestDeploymentTypeEnum.TRIAL
+  );
 };
 
 export const isExpired = (endDate: Date | undefined | null): boolean => {
@@ -45,7 +48,7 @@ export const getDisplayDays = (
     return 'Provisioning';
   }
   if (!platform.subscription?.end_date) {
-    return platform.deployment_request?.status;
+    return platform.deployment_request?.hub_status;
   }
   const target = new Date(platform.subscription?.end_date);
   const now = new Date();
@@ -108,7 +111,6 @@ export const registeredPlatformToServiceInstanceCardData = (
   };
   const platformIdentifier =
     platform.identifier as ServiceDefinitionIdentifierEnum;
-
   const commonValues = {
     id: platform.id,
     service_definition_identifier: platformIdentifier,
@@ -119,7 +121,7 @@ export const registeredPlatformToServiceInstanceCardData = (
     return {
       ...commonValues,
       ...freeTrialStaticData(t),
-      hoverLinks: buildPlatformHoverLinks(platform),
+      hoverLinks: buildPlatformHoverLinks(platform, t),
       displayedServiceStatus: getDisplayDays(platform),
     };
   }

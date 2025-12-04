@@ -22,10 +22,10 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
             <span className="text-gray/60">Platform name:</span>{' '}
             {platform.title}
           </li>
-          {platform.deployment_request?.status && (
+          {platform.deployment_request?.hub_status && (
             <li>
               <span className="text-gray/60">Registration status:</span>{' '}
-              {formatTitleCase(platform.deployment_request?.status)}
+              {formatTitleCase(platform.deployment_request?.hub_status)}
             </li>
           )}
           {platform.subscription?.start_date && (
@@ -40,15 +40,16 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
             <span className="text-gray/60">License:</span> Enterprise Edition
           </li>
         </ul>
-
-        <Button>
-          <Link
-            target="_blank"
-            rel="noopener noreferrer"
-            href={platform.url}>
-            Access OpenCTI
-          </Link>
-        </Button>
+        {platform.url && (
+          <Button>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href={platform.url}>
+              Access OpenCTI
+            </Link>
+          </Button>
+        )}
       </section>
       <TrialsLearnMore />
     </>

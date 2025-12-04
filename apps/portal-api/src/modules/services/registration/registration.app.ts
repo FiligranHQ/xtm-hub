@@ -2,7 +2,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CanUnregisterPlatformInput,
-  DeploymentRequestStatus,
+  DeploymentRequestHubStatus,
   IsPlatformRegisteredInput,
   IsPlatformRegisteredResponse,
   OpenCtiPlatformRegistrationStatusInput,
@@ -232,20 +232,22 @@ export const registrationApp = {
     const serviceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(platform.id);
 
-    if (serviceConfiguration) {
-      await registrationDomain.refreshExistingPlatform({
-        serviceInstanceId: serviceConfiguration.service_instance_id,
-        targetOrganizationId: organizationId as OrganizationId,
-        configuration,
-      });
-    } else {
-      await registrationDomain.registerNewPlatform({
-        serviceDefinitionId: serviceDefinition.id,
-        organizationId: organizationId as OrganizationId,
-        configuration,
-        platformIdentifier: identifier,
-      });
-    }
+    await withTransaction(async () => {
+      if (serviceConfiguration) {
+        await registrationDomain.refreshExistingPlatform({
+          serviceInstanceId: serviceConfiguration.service_instance_id,
+          targetOrganizationId: organizationId as OrganizationId,
+          configuration,
+        });
+      } else {
+        await registrationDomain.registerNewPlatform({
+          serviceDefinitionId: serviceDefinition.id,
+          organizationId: organizationId as OrganizationId,
+          configuration,
+          platformIdentifier: identifier,
+        });
+      }
+    });
 
     const users = await loadUsersByCapabilitiesInOrganization(organizationId, [
       OrganizationCapability.AdministrateOrganization,
@@ -524,7 +526,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     platform_id: platform.config?.platform_id ?? platform.id,
     title: platform.config?.platform_title ?? 'OpenCTI - Free Trial Platform',
     url: platform.config?.platform_url ?? '',
-    contract: platform.config?.platform_contract ?? PlatformContract.Ee,
+    contract: platform.config?.platform_contract ?? PlatformContract.Trial,
     identifier:
       platform.identifier ?? ServiceDefinitionIdentifier.OpenctiRegistration,
     version: platform.config?.platform_version ?? '',
@@ -542,16 +544,16 @@ const assertValidDeploymentRequest = (
     throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
   }
   if (
-    deploymentRequest.product_service_instance_id &&
-    deploymentRequest.product_service_instance_id !== platformId
+    deploymentRequest.platform_id &&
+    deploymentRequest.platform_id !== platformId
   ) {
     throw new Error(BadRequestErrorCode.InvalidPlatformId);
   }
   if (
     ![
-      DeploymentRequestStatus.Provisioning,
-      DeploymentRequestStatus.Active,
-    ].includes(deploymentRequest.status as DeploymentRequestStatus)
+      DeploymentRequestHubStatus.Active,
+      DeploymentRequestHubStatus.Pending,
+    ].includes(deploymentRequest.hub_status as DeploymentRequestHubStatus)
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
   }

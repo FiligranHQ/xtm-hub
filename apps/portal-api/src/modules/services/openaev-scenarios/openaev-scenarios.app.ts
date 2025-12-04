@@ -1,4 +1,3 @@
-import { dbTx } from '../../../../knexfile';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -20,34 +19,26 @@ export const OpenAEVScenariosApp = {
     input: Partial<OpenAEVScenario>,
     document: Upload[]
   ) => {
-    const trx = await dbTx();
+    const doc = await createDocumentWithChildren<OpenAEVScenario>(
+      OPENAEV_SCENARIO_DOCUMENT_TYPE,
+      input,
+      document,
+      OPENAEV_SCENARIO_METADATA
+    );
+
     try {
-      const doc = await createDocumentWithChildren<OpenAEVScenario>(
-        OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        input,
-        document,
-        OPENAEV_SCENARIO_METADATA,
-        trx
-      );
-      await trx.commit();
-
-      try {
-        const createEvent = await buildCreateEvent(doc);
-        telemetryApp.sendTelemetryEvent(createEvent);
-      } catch (error) {
-        logApp.error(
-          'Unable to send telemetry event for openAEV scenario creation',
-          {
-            error,
-          }
-        );
-      }
-
-      return doc;
+      const createEvent = await buildCreateEvent(doc);
+      telemetryApp.sendTelemetryEvent(createEvent);
     } catch (error) {
-      await trx.rollback();
-      throw error;
+      logApp.error(
+        'Unable to send telemetry event for openAEV scenario creation',
+        {
+          error,
+        }
+      );
     }
+
+    return doc;
   },
 
   loadOpenAEVScenario: async (documentId: DocumentId) => {
