@@ -328,7 +328,6 @@ export enum DeploymentRequestPlatformRegion {
 export enum DeploymentRequestPlatformState {
   Active = 'active',
   Inactive = 'inactive',
-  Pending = 'pending',
   Provisioning = 'provisioning',
   Removed = 'removed',
   Removing = 'removing'

@@ -19,7 +19,6 @@ enum DeploymentRequestHubStatus {
 }
 
 enum DeploymentRequestPlatformState {
-  pending
   provisioning
   active
   removing
