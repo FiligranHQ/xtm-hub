@@ -662,10 +662,10 @@
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
       "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
-      "Active": "Your OpenCTI Enterprise Edition free trial is active",
-      "Provisioning": "Your OpenCTI Enterprise Edition free trial is currently being provisioned.",
-      "Requested": "Your OpenCTI Enterprise Edition free trial has been requested.",
-      "Expired": "Your OpenCTI Enterprise Edition free trial has expired.",
+      "Active": "Your OpenCTI free trial is active",
+      "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
+      "Requested": "Your OpenCTI free trial has been requested.",
+      "Expired": "Your OpenCTI free trial has expired.",
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "LearnMore": "Learn more",
       "StartTrial": "Start your free trial",
@@ -687,7 +687,7 @@
         "New": "New",
         "Requested": "Requested",
         "Title": "OpenCTI 30-days Free Trial",
-        "FreeTrialDescription": "Explore a fully functional version of OpenCTI to see how you can operationalize your threat intelligence - end-to-end! "
+        "FreeTrialDescription": "Explore all OpenCTI Enterprise Edition functionalities to start operationalizing your threat intelligence end-to-end!"
       },
       "CapacityWarning": {
         "Title": "No platform available",

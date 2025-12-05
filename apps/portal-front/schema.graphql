@@ -16,7 +16,6 @@ enum FilterKey {
   label
   organization_id
   personal_space
-  serviceDefinition_identifier
   integration_type
   integration_subtype
   slug
@@ -66,7 +65,7 @@ type Query {
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!): Organization
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
@@ -823,6 +822,23 @@ enum ServiceInstanceJoinType {
   JOIN_SELF
 }
 
+enum ServiceInstanceTag {
+  openCTI
+  openAEV
+  trial
+  others
+}
+
+enum ServiceInstanceFilterKey {
+  tags
+  service_definition_identifier
+}
+
+input ServiceInstanceFilter {
+  key: ServiceInstanceFilterKey
+  value: [String!]!
+}
+
 type ServiceInstance implements Node {
   id: ID!
   name: String!
@@ -837,7 +853,7 @@ type ServiceInstance implements Node {
   capabilities: [String]!
   public: Boolean
   join_type: ServiceInstanceJoinType
-  tags: [String]
+  tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition
   logo_document_id: ID
   illustration_document_id: ID
@@ -861,7 +877,7 @@ type SeoServiceInstance implements Node {
   slug: String
   description: String
   links: [ServiceLink]
-  tags: [String]
+  tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition!
   logo_document_id: ID
   illustration_document_id: ID
