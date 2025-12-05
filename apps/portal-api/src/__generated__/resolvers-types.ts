@@ -420,7 +420,6 @@ export enum FilterKey {
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',
-  ServiceDefinitionIdentifier = 'serviceDefinition_identifier',
   Slug = 'slug'
 }
 
@@ -1385,7 +1384,7 @@ export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
 
 export type QueryServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
+  filters?: InputMaybe<Array<ServiceInstanceFilter>>;
   first: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
@@ -1532,7 +1531,7 @@ export type SeoServiceInstance = Node & {
   name: Scalars['String']['output'];
   service_definition: ServiceDefinition;
   slug?: Maybe<Scalars['String']['output']>;
-  tags?: Maybe<Array<Maybe<ServiceInstanceTag>>>;
+  tags?: Maybe<Array<ServiceInstanceTag>>;
 };
 
 export type ServiceCapability = Node & {
@@ -1600,7 +1599,7 @@ export type ServiceInstance = Node & {
   service_definition?: Maybe<ServiceDefinition>;
   slug?: Maybe<Scalars['String']['output']>;
   subscriptions?: Maybe<Array<Maybe<SubscriptionModel>>>;
-  tags?: Maybe<Array<Maybe<ServiceInstanceTag>>>;
+  tags?: Maybe<Array<ServiceInstanceTag>>;
   user_joined?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -1616,6 +1615,16 @@ export type ServiceInstanceEdge = {
   cursor: Scalars['String']['output'];
   node?: Maybe<ServiceInstance>;
 };
+
+export type ServiceInstanceFilter = {
+  key?: InputMaybe<ServiceInstanceFilterKey>;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum ServiceInstanceFilterKey {
+  ServiceDefinitionIdentifier = 'service_definition_identifier',
+  Tags = 'tags'
+}
 
 export enum ServiceInstanceJoinType {
   JoinAsk = 'JOIN_ASK',
@@ -2134,6 +2143,8 @@ export type ResolversTypes = ResolversObject<{
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
   ServiceInstanceCreationStatus: ServiceInstanceCreationStatus;
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
+  ServiceInstanceFilter: ServiceInstanceFilter;
+  ServiceInstanceFilterKey: ServiceInstanceFilterKey;
   ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
@@ -2266,6 +2277,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceGroup: ServiceGroup;
   ServiceInstance: ServiceInstance;
   ServiceInstanceEdge: ServiceInstanceEdge;
+  ServiceInstanceFilter: ServiceInstanceFilter;
   ServiceInstanceSubscription: ServiceInstanceSubscription;
   ServiceLink: ServiceLink;
   Settings: Settings;
@@ -2917,7 +2929,7 @@ export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType 
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceInstanceTag']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['ServiceInstanceTag']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2970,7 +2982,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   service_definition?: Resolver<Maybe<ResolversTypes['ServiceDefinition']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionModel']>>>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceInstanceTag']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['ServiceInstanceTag']>>, ParentType, ContextType>;
   user_joined?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

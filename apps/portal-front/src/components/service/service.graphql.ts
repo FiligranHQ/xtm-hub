@@ -141,7 +141,7 @@ export const ServiceListQuery = graphql`
     $cursor: ID
     $orderBy: ServiceInstanceOrdering!
     $orderMode: OrderingMode!
-    $filters: [Filter!]
+    $filters: [ServiceInstanceFilter!]
     $searchTerm: String
   ) {
     ...servicesList_services

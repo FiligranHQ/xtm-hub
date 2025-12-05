@@ -1,14 +1,15 @@
 'use client';
-import {
-  publicServiceListFragment,
-  publicServiceListQuery,
-} from '@/components/service/public-service.graphql';
 import ServiceInstanceCard from '@/components/service/service-instance-card';
+import {
+  ServiceListQuery,
+  servicesListFragment,
+} from '@/components/service/service.graphql';
 import { cn } from '@/lib/utils';
 import { publicServiceInstanceToInstanceCardData } from '@/utils/services';
-import { publicServiceList_services$key } from '@generated/publicServiceList_services.graphql';
-import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
+import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { serviceQuery } from '@generated/serviceQuery.graphql';
+import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import {
   AnalyticsIcon,
   ArrowRightAltIcon,
@@ -45,35 +46,31 @@ const Section = ({
 );
 
 export const TrialsLearnMore: React.FC = () => {
-  const queryData = useLazyLoadQuery<publicServiceQuery>(
-    publicServiceListQuery,
-    {
-      count: 10,
-      orderBy: 'name',
-      orderMode: 'desc',
-    }
-  );
+  const queryData = useLazyLoadQuery<serviceQuery>(ServiceListQuery, {
+    count: 10,
+    orderBy: 'name',
+    orderMode: 'desc',
+    filters: [
+      {
+        key: 'tags',
+        value: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENCTI],
+      },
+    ],
+  });
 
   const [data] = useRefetchableFragment<
-    publicServiceQuery,
-    publicServiceList_services$key
-  >(publicServiceListFragment, queryData);
+    serviceQuery,
+    servicesList_services$key
+  >(servicesListFragment, queryData);
 
-  const documentationService = data.publicServiceInstances.edges.find(
-    (edge) =>
-      edge.node?.name?.toLowerCase().includes('opencti') &&
-      edge.node?.name?.toLowerCase().includes('documentation')
-  )?.node as serviceList_fragment$data;
-  const blogService = data.publicServiceInstances.edges.find(
-    (edge) =>
-      edge.node?.name?.toLowerCase().includes('filigran') &&
-      edge.node?.name?.toLowerCase().includes('blog')
-  )?.node as serviceList_fragment$data;
+  const services = data.serviceInstances.edges.map(
+    (edge) => edge.node
+  ) as serviceList_fragment$data[];
 
   return (
     <>
       <Section className="pt-0">
-        <div className="flex gap-xl items-center">
+        <div className="flex flex-col gap-xl items-center lg:flex-row">
           <div className="w-[413px]">
             <iframe
               width="413"
@@ -82,7 +79,7 @@ export const TrialsLearnMore: React.FC = () => {
               src="https://www.youtube.com/embed/KwF22zye3iI"
             />
           </div>
-          <article className="p-xl w-[60%]">
+          <article className="p-xl w-full md-w-[60%]">
             <H2>What can you do with your OpenCTI trial?</H2>
             <P className="mb-l">
               Get 30 days to explore all OpenCTI functionalities and enrich your
@@ -109,7 +106,7 @@ export const TrialsLearnMore: React.FC = () => {
             </P>
           </article>
         </div>
-        <div className="flex justify-between gap-l">
+        <div className="flex flex-col md:flex-row justify-between gap-l">
           <article className="border border-solid border-b rounded p-6 basis-full">
             <h3 className="flex items-center gap-l text-blue mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
@@ -166,7 +163,7 @@ export const TrialsLearnMore: React.FC = () => {
             threats end-to-end.
           </P>
         </div>
-        <div className="flex gap-xl">
+        <div className="flex flex-col lg:flex-row gap-xl">
           <div className="flex flex-col gap-s basis-full">
             <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
               <h3 className="mb-m flex gap-s">
@@ -178,9 +175,10 @@ export const TrialsLearnMore: React.FC = () => {
                 />
                 OpenCTI
               </h3>
-              <P>
+              <P className="mb-s">
                 <strong>Collect, correlate and leverage</strong>
-                <br />
+              </P>
+              <P>
                 An open-source threat intelligence platform built by
                 practitioners for practitioners - to break data silos and make
                 threat intelligence truly actionable.
@@ -196,16 +194,17 @@ export const TrialsLearnMore: React.FC = () => {
                 />
                 OpenAEV
               </h3>
-              <P>
+              <P className="mb-s">
                 <strong>Prioritize, test and fix what matters</strong>
-                <br />
+              </P>
+              <P>
                 Proactively defend against threats with Adversarial Exposure
                 Validation (AEV), simulating real-life attack scenarios to
                 optimize security defenses.
               </P>
             </div>
           </div>
-          <div className="basis-full">
+          <div className="basis-full m-auto">
             <Image
               width="1232"
               height="692"
@@ -219,26 +218,19 @@ export const TrialsLearnMore: React.FC = () => {
         </div>
       </Section>
       <Section>
-        <div className="flex items-center gap-xl">
+        <div className="flex flex-col lg:flex-row items-center gap-xl">
           <div className="basis-full flex justify-between gap-l">
-            {documentationService && (
+            {services.map((service) => (
               <ServiceInstanceCard
+                key={service.id}
                 className="basis-full max-w-[50%]"
                 serviceInstance={publicServiceInstanceToInstanceCardData(
-                  documentationService
+                  service
                 )}
               />
-            )}
-            {blogService && (
-              <ServiceInstanceCard
-                className="basis-full max-w-[50%]"
-                serviceInstance={publicServiceInstanceToInstanceCardData(
-                  blogService
-                )}
-              />
-            )}
+            ))}
           </div>
-          <div className="basis-full">
+          <div className="order-first lg:order-last basis-full">
             <H2>Quick start guide</H2>
             <P className="text-gray mb-l">
               Get more out of your OpenCTI platform!

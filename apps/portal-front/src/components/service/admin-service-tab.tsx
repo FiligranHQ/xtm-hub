@@ -11,6 +11,7 @@ import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
@@ -154,7 +155,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     refetch({
       filters: [
         {
-          key: 'serviceDefinition_identifier',
+          key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
           value: [selectedValue.value],
         },
       ],
