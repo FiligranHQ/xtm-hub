@@ -98,7 +98,7 @@ describe('openaev scenarios app', () => {
       }
     );
 
-    await DocumentApp.createDocumentWithChildren<OpenAEVScenario>(
+    await DocumentApp.createDocumentWithImageUploadsAndMetadata<OpenAEVScenario>(
       OPENAEV_SCENARIO_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,
@@ -137,7 +137,7 @@ describe('openaev scenarios app', () => {
       }
     );
 
-    await DocumentApp.createDocumentWithChildren<OpenAEVScenario>(
+    await DocumentApp.createDocumentWithImageUploadsAndMetadata<OpenAEVScenario>(
       OPENAEV_SCENARIO_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,

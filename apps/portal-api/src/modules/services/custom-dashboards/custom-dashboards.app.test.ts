@@ -97,7 +97,7 @@ describe('custom dashboards app', () => {
       }
     );
 
-    await DocumentApp.createDocumentWithChildren<CustomDashboard>(
+    await DocumentApp.createDocumentWithImageUploadsAndMetadata<CustomDashboard>(
       OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,
@@ -136,7 +136,7 @@ describe('custom dashboards app', () => {
       }
     );
 
-    await DocumentApp.createDocumentWithChildren<CustomDashboard>(
+    await DocumentApp.createDocumentWithImageUploadsAndMetadata<CustomDashboard>(
       OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,

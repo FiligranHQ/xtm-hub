@@ -14,12 +14,13 @@ import {
 
 export const csvFeedsApp = {
   createCsvFeed: async (input: Partial<CsvFeed>, document: Upload[]) => {
-    const doc = await DocumentApp.createDocumentWithChildren<CsvFeed>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-      { ...input, integration_type: IntegrationFeedType.CsvFeed },
-      document,
-      INTEGRATION_FEED_CSV_FEED_METADATA
-    );
+    const doc =
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
+        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        { ...input, integration_type: IntegrationFeedType.CsvFeed },
+        document,
+        INTEGRATION_FEED_CSV_FEED_METADATA
+      );
 
     try {
       const createEvent = await buildCreateEvent(doc);

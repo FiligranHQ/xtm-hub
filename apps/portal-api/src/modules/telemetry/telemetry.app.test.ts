@@ -134,7 +134,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId =
         'c07f6909-f8c5-4f61-b17d-b5b2da9b2799' as DocumentId;
-      await DocumentApp.createDocumentWithChildren<CsvFeed>(
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: fakeResourceId,
@@ -274,7 +274,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId =
         'ddd49f48-1a66-4670-9dab-0d247b613969' as DocumentId;
-      await DocumentApp.createDocumentWithChildren<CsvFeed>(
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: fakeResourceId,

@@ -40,7 +40,7 @@ describe('csv feeds app', () => {
       }
     );
 
-    await DocumentApp.createDocumentWithChildren<CsvFeed>(
+    await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       {
         id: documentId,

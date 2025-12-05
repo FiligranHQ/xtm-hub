@@ -5,18 +5,47 @@ import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import { processUploads, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import {
-  createDocument,
-  DocumentData,
-  DocumentDomain,
-} from './domain/document.domain';
+import { DocumentData, DocumentDomain } from './domain/document.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
 export const DocumentApp = {
-  createDocumentWithChildren: async <T extends DocumentModel>(
+  createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
+    documentData: DocumentData<T>,
+    metadataKeys: DocumentMetadataKeys<T> = []
+  ): Promise<T> => {
+    return await withTransaction(async () => {
+      const document = await DocumentDomain.createDocument(
+        documentData,
+        metadataKeys
+      );
+
+      if (documentData.parent_document_id) {
+        await DocumentChildrenDomain.insertChildRelationship({
+          parentDocumentId: documentData.parent_document_id,
+          childDocumentId: document.id,
+        });
+      }
+
+      if (metadataKeys.length) {
+        const metadatas = await DocumentMetadataDomain.insertMetadata(
+          document.id,
+          documentData,
+          metadataKeys
+        );
+
+        for (const metadata of metadatas) {
+          document[metadata.key] = metadata.value;
+        }
+      }
+
+      return document as T;
+    });
+  },
+
+  createDocumentWithImageUploadsAndMetadata: async <T extends DocumentModel>(
     type: string,
     input: Partial<T>,
     uploads: Upload[] | Upload,
@@ -26,7 +55,7 @@ export const DocumentApp = {
 
     const docFile = files.shift();
     return await withTransaction(async () => {
-      const doc = await createDocument<T>(
+      const doc = await DocumentApp.createDocumentWithChildrenAndMetadata<T>(
         {
           ...input,
           type,

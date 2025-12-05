@@ -9,9 +9,9 @@ import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { restrictDocumentToUserOrganization } from '../../../../security/restriction/document';
 import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { MinioFile } from '../../../../thirdparty/minio/types';
+import { DocumentApp } from '../document.app';
 import { Document } from '../document.helper';
 import { processUploads, Upload } from '../document.uploads.helper';
-import { createDocument } from './document.domain';
 
 export const DocumentChildrenDomain = {
   insertChildRelationship: async ({
@@ -78,7 +78,7 @@ export const DocumentChildrenDomain = {
   ) => {
     await Promise.all(
       files.map((file) =>
-        createDocument(
+        DocumentApp.createDocumentWithChildrenAndMetadata(
           {
             type: 'image',
             parent_document_id: parentDocumentId,

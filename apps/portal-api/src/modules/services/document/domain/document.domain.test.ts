@@ -60,7 +60,7 @@ describe('Document domain', () => {
         },
       };
       requestContext.set(testContext);
-      await DocumentApp.createDocumentWithChildren<CsvFeed>(
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: documentId,
@@ -126,22 +126,23 @@ describe('Document domain', () => {
       };
       requestContext.set(testContext);
 
-      const csvFeed = await DocumentApp.createDocumentWithChildren<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-        {
-          id: documentId,
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-          name: 'myCsvFeed',
-          slug: 'myCsvFeed',
-          description: 'description',
-          minio_name: 'minioName',
-          file_name: 'csvfilename',
-          active: true,
-          integration_type: IntegrationFeedType.CsvFeed,
-        },
-        [],
-        INTEGRATION_FEED_CSV_FEED_METADATA
-      );
+      const csvFeed =
+        await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
+          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          {
+            id: documentId,
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            name: 'myCsvFeed',
+            slug: 'myCsvFeed',
+            description: 'description',
+            minio_name: 'minioName',
+            file_name: 'csvfilename',
+            active: true,
+            integration_type: IntegrationFeedType.CsvFeed,
+          },
+          [],
+          INTEGRATION_FEED_CSV_FEED_METADATA
+        );
 
       const [connector] = await upsertConnectors([
         sampleExtractedManifest[0],

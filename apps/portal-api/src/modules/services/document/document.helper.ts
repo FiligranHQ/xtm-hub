@@ -14,8 +14,8 @@ import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
 import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
+import { DocumentApp } from './document.app';
 import {
-  createDocument,
   DocumentDomain,
   loadSeoDocumentBySlug,
 } from './domain/document.domain';
@@ -90,7 +90,7 @@ export const uploadNewFile = async (document) => {
     type: 'service_picture',
   };
 
-  return createDocument(data, []);
+  return DocumentApp.createDocumentWithChildrenAndMetadata(data, []);
 };
 
 export const deleteDocuments = async () => {

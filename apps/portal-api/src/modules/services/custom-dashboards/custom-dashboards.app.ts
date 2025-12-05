@@ -19,12 +19,13 @@ export const CustomDashboardsApp = {
     input: Partial<CustomDashboard>,
     document: Upload[]
   ) => {
-    const doc = await DocumentApp.createDocumentWithChildren<CustomDashboard>(
-      OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-      input,
-      document,
-      CUSTOM_DASHBOARD_METADATA
-    );
+    const doc =
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CustomDashboard>(
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        input,
+        document,
+        CUSTOM_DASHBOARD_METADATA
+      );
 
     try {
       const createEvent = await buildCreateEvent(doc);

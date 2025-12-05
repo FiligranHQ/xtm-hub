@@ -1,9 +1,10 @@
+import { DocumentApp } from './document.app';
 import {
   Document,
   FullDocumentMutator,
   loadUnsecureDocumentsBy,
 } from './document.helper';
-import { createDocument, DocumentDomain } from './domain/document.domain';
+import { DocumentDomain } from './domain/document.domain';
 
 export const insertDocument = async (
   documentData: FullDocumentMutator
@@ -15,5 +16,8 @@ export const insertDocument = async (
     void DocumentDomain.passOldDocumentsIntoInactive(existingDocuments);
   }
 
-  return createDocument<Document>(documentData, []);
+  return DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
+    documentData,
+    []
+  );
 };

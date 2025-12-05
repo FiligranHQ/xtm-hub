@@ -19,12 +19,13 @@ export const OpenAEVScenariosApp = {
     input: Partial<OpenAEVScenario>,
     document: Upload[]
   ) => {
-    const doc = await DocumentApp.createDocumentWithChildren<OpenAEVScenario>(
-      OPENAEV_SCENARIO_DOCUMENT_TYPE,
-      input,
-      document,
-      OPENAEV_SCENARIO_METADATA
-    );
+    const doc =
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<OpenAEVScenario>(
+        OPENAEV_SCENARIO_DOCUMENT_TYPE,
+        input,
+        document,
+        OPENAEV_SCENARIO_METADATA
+      );
 
     try {
       const createEvent = await buildCreateEvent(doc);

@@ -25,6 +25,7 @@ import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
 } from '../service-instance.domain';
+import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
   loadUnsecureDocumentsBy,
@@ -34,7 +35,6 @@ import {
 import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import {
-  createDocument,
   deleteDocument,
   DocumentDomain,
   getUploader,
@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
         const { minioName, fileName, mimeType } =
           await MinIOClient.createFile(document);
 
-        return await createDocument<Document>(
+        return await DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
           {
             ...omit(payload, ['service_instance_id']),
             minio_name: minioName,

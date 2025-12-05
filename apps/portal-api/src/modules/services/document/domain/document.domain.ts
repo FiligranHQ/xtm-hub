@@ -149,39 +149,6 @@ export const DocumentDomain = {
   },
 };
 
-export const createDocument = async <T extends DocumentModel>(
-  documentData: DocumentData<T>,
-  metadataKeys: DocumentMetadataKeys<T> = []
-): Promise<T> => {
-  return await withTransaction(async () => {
-    const document = await DocumentDomain.createDocument(
-      documentData,
-      metadataKeys
-    );
-
-    if (documentData.parent_document_id) {
-      await DocumentChildrenDomain.insertChildRelationship({
-        parentDocumentId: documentData.parent_document_id,
-        childDocumentId: document.id,
-      });
-    }
-
-    if (metadataKeys.length) {
-      const metadatas = await DocumentMetadataDomain.insertMetadata(
-        document.id,
-        documentData,
-        metadataKeys
-      );
-
-      for (const metadata of metadatas) {
-        document[metadata.key] = metadata.value;
-      }
-    }
-
-    return document as T;
-  });
-};
-
 export const updateDocument = async <T extends DocumentModel>(
   documentId: DocumentId,
   documentData: Omit<Partial<T>, 'labels'> & {
