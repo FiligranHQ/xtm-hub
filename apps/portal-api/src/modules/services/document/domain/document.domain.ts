@@ -35,7 +35,6 @@ import {
   normalizeDocumentName,
 } from '../document.helper';
 
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { withTransaction } from '../../../../context/database.context';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
@@ -767,22 +766,4 @@ export const loadSeoDocumentsByServiceSlug = (
   addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
 
   return loadDocumentsQuery;
-};
-
-export const loadImagesByDocumentId = async (documentId: string) => {
-  const images = await dbUnsecure<Document>('Document')
-    .select(['Document.id', 'Document.file_name'])
-    .join(
-      'Document_Children',
-      'Document.id',
-      '=',
-      'Document_Children.child_document_id'
-    )
-    .where('Document_Children.parent_document_id', '=', documentId)
-    .where('Document.mime_type', 'like', 'image/%');
-
-  for (const image of images) {
-    image.id = toGlobalId('ShareableResourceImage', image.id);
-  }
-  return images;
 };

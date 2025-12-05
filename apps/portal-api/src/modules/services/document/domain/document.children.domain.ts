@@ -1,4 +1,5 @@
-import { db } from '../../../../../knexfile';
+import { toGlobalId } from 'graphql-relay/node/node.js';
+import { db, dbUnsecure } from '../../../../../knexfile';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { Document } from '../document.helper';
@@ -37,6 +38,24 @@ export const DocumentChildrenDomain = {
     await db<DocumentChildren>('Document_Children')
       .where({ child_document_id: childDocumentId })
       .delete();
+  },
+
+  loadImagesByDocumentId: async (documentId: string) => {
+    const images = await dbUnsecure<Document>('Document')
+      .select(['Document.id', 'Document.file_name'])
+      .join(
+        'Document_Children',
+        'Document.id',
+        '=',
+        'Document_Children.child_document_id'
+      )
+      .where('Document_Children.parent_document_id', '=', documentId)
+      .where('Document.mime_type', 'like', 'image/%');
+
+    for (const image of images) {
+      image.id = toGlobalId('ShareableResourceImage', image.id);
+    }
+    return images;
   },
 
   deleteChildImagesByParent: async (

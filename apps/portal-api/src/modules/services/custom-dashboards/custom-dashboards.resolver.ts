@@ -10,10 +10,10 @@ import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
+import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import {
   deleteDocument,
   getUploader,
-  loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
   loadUploaderOrganization,
@@ -31,7 +31,8 @@ const resolvers: Resolvers = {
   CustomDashboard: {
     labels: ({ id }) =>
       labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
-    children_documents: ({ id }) => loadImagesByDocumentId(id),
+    children_documents: ({ id }) =>
+      DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
     uploader_organization: ({ id }, _) =>
       loadUploaderOrganization(id, { unsecured: true }),
@@ -48,9 +49,8 @@ const resolvers: Resolvers = {
         CUSTOM_DASHBOARD_METADATA
       );
       for (const dashboard of dashboards) {
-        dashboard.children_documents = await loadImagesByDocumentId(
-          dashboard.id
-        );
+        dashboard.children_documents =
+          await DocumentChildrenDomain.loadImagesByDocumentId(dashboard.id);
         dashboard.uploader = await getUploader(dashboard.id, {
           unsecured: true,
         });
