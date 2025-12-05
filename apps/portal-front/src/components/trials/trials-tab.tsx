@@ -25,8 +25,13 @@ import {
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { CheckIndeterminateIcon } from 'filigran-icon';
+import {
+  ArrowUpwardIcon,
+  CheckIndeterminateIcon,
+  CloseIcon,
+} from 'filigran-icon';
 import { DataTable, DataTableHeadBarOptions } from 'filigran-ui';
+import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, Suspense, useMemo, useState } from 'react';
 import {
@@ -178,6 +183,41 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             },
             {
               header: t('TrialsDashboard.Columns.CancellationOwner'),
+            },
+          ]
+        : []),
+      ...(type === TrialsTabType.Running || type === TrialsTabType.Waiting
+        ? [
+            {
+              accessorKey: 'actions',
+              id: 'actions',
+              enableHiding: false,
+              enableSorting: false,
+              enableResizing: false,
+              header: undefined,
+              cell: () => {
+                return (
+                  <>
+                    {(type === TrialsTabType.Running ||
+                      type === TrialsTabType.Waiting) && (
+                      <Button
+                        variant="ghost-destructive"
+                        size="icon"
+                        className="border m-1">
+                        <CloseIcon className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {type === TrialsTabType.Waiting && (
+                      <Button
+                        variant="ghost-primary"
+                        size="icon"
+                        className="border m-1">
+                        <ArrowUpwardIcon className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </>
+                );
+              },
             },
           ]
         : []),
