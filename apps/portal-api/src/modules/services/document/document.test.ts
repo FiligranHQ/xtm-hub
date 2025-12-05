@@ -38,7 +38,8 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
-import { createDocument, insertDocument } from './domain/document.domain';
+import { insertDocument } from './document.test.utils';
+import { createDocument } from './domain/document.domain';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {

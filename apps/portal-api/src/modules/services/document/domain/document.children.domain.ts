@@ -3,7 +3,9 @@ import { db, dbUnsecure, QueryOpts } from '../../../../../knexfile';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { restrictDocumentToUserOrganization } from '../../../../security/restriction/document';
+import { MinioFile } from '../../../../thirdparty/minio/types';
 import { Document } from '../document.helper';
+import { createDocument } from './document.domain';
 
 export const DocumentChildrenDomain = {
   insertChildRelationship: async ({
@@ -20,12 +22,18 @@ export const DocumentChildrenDomain = {
   },
 
   loadChildrenIds: async (
-    parentDocumentId: DocumentId
+    parentDocumentId: DocumentId,
+    excludeChildrenIds: DocumentId[] = []
   ): Promise<DocumentId[]> => {
-    const children: Pick<DocumentChildren, 'child_document_id'>[] =
-      await db<DocumentChildren>('Document_Children')
-        .where('parent_document_id', '=', parentDocumentId)
-        .select('child_document_id');
+    const qb = db<DocumentChildren>('Document_Children')
+      .where('parent_document_id', '=', parentDocumentId)
+      .select('child_document_id');
+
+    if (excludeChildrenIds.length) {
+      qb.whereNotIn('child_document_id', excludeChildrenIds);
+    }
+
+    const children: Pick<DocumentChildren, 'child_document_id'>[] = await qb;
     return children.map(({ child_document_id }) => child_document_id);
   },
 
@@ -56,6 +64,26 @@ export const DocumentChildrenDomain = {
     await db<DocumentChildren>('Document_Children')
       .where({ child_document_id: childDocumentId })
       .delete();
+  },
+
+  createImageDocuments: async (
+    parentDocumentId: DocumentId,
+    files: MinioFile[]
+  ) => {
+    await Promise.all(
+      files.map((file) =>
+        createDocument(
+          {
+            type: 'image',
+            parent_document_id: parentDocumentId,
+            file_name: file.fileName,
+            minio_name: file.minioName,
+            mime_type: file.mimeType,
+          },
+          []
+        )
+      )
+    );
   },
 
   loadImagesByDocumentId: async (documentId: string) => {

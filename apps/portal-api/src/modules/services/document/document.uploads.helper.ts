@@ -12,7 +12,7 @@ export interface Upload {
 export interface UpdateDocumentDocuments {
   documentFile: MinioFile | undefined;
   newImages: MinioFile[];
-  existingImages: string[];
+  existingImageIds: DocumentId[];
 }
 
 export const waitForUploads = async (uploads: Upload[] | Upload) => {
@@ -51,6 +51,6 @@ export const processDocumentUpdateUploads = async (
   return {
     documentFile,
     newImages,
-    existingImages: images.map((imageId) => extractId<DocumentId>(imageId)),
+    existingImageIds: images.map((imageId) => extractId<DocumentId>(imageId)),
   };
 };

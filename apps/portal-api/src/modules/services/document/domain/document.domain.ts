@@ -19,7 +19,6 @@ import {
   DocumentId,
   default as DocumentModel,
 } from '../../../../model/kanel/public/Document';
-import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { LabelId } from '../../../../model/kanel/public/Label';
 import { ObjectLabelObjectId } from '../../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
@@ -30,8 +29,6 @@ import { extractId, omit } from '../../../../utils/utils';
 import {
   addIncludeMetadataQuery,
   Document,
-  FullDocumentMutator,
-  loadUnsecureDocumentsBy,
   normalizeDocumentName,
 } from '../document.helper';
 
@@ -61,7 +58,7 @@ export type DocumentData<T extends DocumentModel> = Omit<
   'labels'
 > & {
   labels?: string[];
-  parent_document_id?: string;
+  parent_document_id?: DocumentId;
 };
 
 type MutationUpdateDocumentArgs =
@@ -148,19 +145,6 @@ export const DocumentDomain = {
   },
 };
 
-export const insertDocument = async (
-  documentData: FullDocumentMutator
-): Promise<Document> => {
-  const existingDocuments = await loadUnsecureDocumentsBy({
-    file_name: documentData.file_name,
-  });
-  if (existingDocuments.length > 0) {
-    void DocumentDomain.passOldDocumentsIntoInactive(existingDocuments);
-  }
-
-  return createDocument<Document>(documentData, []);
-};
-
 export const upsertDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   input: Partial<T>,
@@ -191,21 +175,8 @@ export const upsertImage = async <T extends DocumentModel>(
     const deletedDocuments =
       await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
 
-    // Create all new image documents
-    await Promise.all(
-      files.map((file) =>
-        createDocument(
-          {
-            type: 'image',
-            parent_document_id: doc.id as DocumentId,
-            file_name: file.fileName,
-            minio_name: file.minioName,
-            mime_type: file.mimeType,
-          },
-          []
-        )
-      )
-    );
+    await DocumentChildrenDomain.createImageDocuments(doc.id, files);
+
     return deletedDocuments;
   });
   // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
@@ -240,7 +211,7 @@ export const upsertDocument = async <T extends DocumentModel>(
 
       // Insert new relationship
       await DocumentChildrenDomain.insertChildRelationship({
-        parentDocumentId: documentData.parent_document_id as DocumentId,
+        parentDocumentId: documentData.parent_document_id,
         childDocumentId: document.id,
       });
     }
@@ -312,7 +283,7 @@ export const createDocument = async <T extends DocumentModel>(
 
     if (documentData.parent_document_id) {
       await DocumentChildrenDomain.insertChildRelationship({
-        parentDocumentId: documentData.parent_document_id as DocumentId,
+        parentDocumentId: documentData.parent_document_id,
         childDocumentId: document.id,
       });
     }
@@ -354,20 +325,8 @@ export const createDocumentWithChildren = async <T extends DocumentModel>(
       metadataKeys
     );
 
-    await Promise.all(
-      files.map((file) =>
-        createDocument(
-          {
-            type: 'image',
-            parent_document_id: doc.id as DocumentId,
-            file_name: file.fileName,
-            minio_name: file.minioName,
-            mime_type: file.mimeType,
-          },
-          []
-        )
-      )
-    );
+    await DocumentChildrenDomain.createImageDocuments(doc.id, files);
+
     return doc;
   });
 };
@@ -436,12 +395,12 @@ export const updateDocument = async <T extends DocumentModel>(
 
 export const updateDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
-  id: string,
+  parentDocumentId: DocumentId,
   mutationArgs: MutationUpdateDocumentArgs,
   metadataKeys: DocumentMetadataKeys<T>
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
-  const { documentFile, newImages, existingImages } =
+  const { documentFile, newImages, existingImageIds } =
     await processDocumentUpdateUploads(document, isUpdateDoc, images);
   const data = {
     ...input,
@@ -457,41 +416,25 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     });
   }
 
-  return await withTransaction(async () => {
+  return withTransaction(async () => {
     const updatedDocument = await updateDocument<T>(
-      id as DocumentId,
+      parentDocumentId,
       data,
       metadataKeys
     );
 
     // Delete the images that are not in the existingImages array
-    const childIds = await db<DocumentChildren>('Document_Children')
-      .where('parent_document_id', '=', id)
-      .whereNotIn('child_document_id', existingImages)
-      .select('child_document_id');
+    const childIds = await DocumentChildrenDomain.loadChildrenIds(
+      parentDocumentId,
+      existingImageIds
+    );
     if (childIds.length > 0) {
-      await db<Document>('Document')
-        .whereIn(
-          'id',
-          childIds.map((childId) => childId.child_document_id)
-        )
-        .delete();
+      await db<Document>('Document').whereIn('id', childIds).delete();
     }
 
-    // Create new images
-    await Promise.all(
-      newImages.map((image) =>
-        createDocument(
-          {
-            type: 'image',
-            parent_document_id: id,
-            file_name: image.fileName,
-            minio_name: image.minioName,
-            mime_type: image.mimeType,
-          },
-          []
-        )
-      )
+    await DocumentChildrenDomain.createImageDocuments(
+      parentDocumentId,
+      newImages
     );
     return updatedDocument;
   });
