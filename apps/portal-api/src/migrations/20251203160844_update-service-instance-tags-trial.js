@@ -18,7 +18,7 @@ export async function up(knex) {
     id: serviceInstanceId,
     name: 'OpenCTI 101',
     description:
-      'The fundamental knowledge: discover the essential concepts with basic use cases and workflows.',
+      'The fundamentals: discover the essential concepts with basic use cases and workflows.',
     creation_status: 'READY',
     public: false,
     join_type: 'JOIN_AUTO',
