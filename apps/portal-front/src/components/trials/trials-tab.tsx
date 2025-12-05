@@ -225,8 +225,28 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     [t, type]
   );
 
+  const {
+    pageSize,
+    setPageSize,
+    orderMode,
+    setOrderMode,
+    orderBy,
+    setOrderBy,
+    removeOrder,
+    columnOrder,
+    setColumnOrder,
+    columnVisibility,
+    setColumnVisibility,
+    resetAll,
+  } = useTrialsListLocalstorage(columns);
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize,
+  });
+
   const queryData = useLazyLoadQuery<trialsListQuery>(TrialsListQuery, {
-    count: 100,
+    count: pageSize,
     orderMode: defaultOrderingMode,
     orderBy: defaultOrder,
     filters: [
@@ -247,26 +267,6 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
       ) as trials_fragment$data[],
     [data]
   );
-
-  const {
-    pageSize,
-    setPageSize,
-    orderMode,
-    setOrderMode,
-    orderBy,
-    setOrderBy,
-    removeOrder,
-    columnOrder,
-    setColumnOrder,
-    columnVisibility,
-    setColumnVisibility,
-    resetAll,
-  } = useTrialsListLocalstorage(columns);
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
 
   const handleRefetchData = (
     args?: Partial<TrialsListPaginationQuery$variables>

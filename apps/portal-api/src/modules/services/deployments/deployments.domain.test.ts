@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as dbModule from '../../../../knexfile';
+import { SIMPLE_USER_FILIGRAN_ID } from '../../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
   DeploymentRequestFilterKey,
@@ -7,6 +8,7 @@ import {
   DeploymentRequestOrdering,
   OrderingMode,
 } from '../../../__generated__/resolvers-types';
+import { UserId } from '../../../model/kanel/public/User';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -98,7 +100,10 @@ describe('DeploymentRequestDomain', () => {
       );
     });
     it('should filter deployment requests when searchTerm is specified ', async () => {
-      await insertOpenCtiDeploymentRequest({});
+      const deployment = await insertOpenCtiDeploymentRequest({});
+      await insertOpenCtiDeploymentRequest({
+        user_requester_id: SIMPLE_USER_FILIGRAN_ID as UserId,
+      });
 
       const deploymentRequests =
         await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
@@ -106,11 +111,12 @@ describe('DeploymentRequestDomain', () => {
             first: 10,
             orderBy: DeploymentRequestOrdering.Ordering,
             orderMode: OrderingMode.Asc,
-            searchTerm: 'toto',
+            searchTerm: 'admin',
           }
         );
 
-      expect(deploymentRequests.totalCount).toBe('0');
+      expect(deploymentRequests.totalCount).toBe('1');
+      expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment?.id);
     });
     it('should return ordered deployment requests', async () => {
       const deployment1 = await insertOpenCtiDeploymentRequest({ ordering: 1 });
