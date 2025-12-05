@@ -3,8 +3,12 @@ import {
   OrganizationCapability,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
-import { DeploymentRequestDomain } from '../../modules/services/deployments/deployments.domain';
+import {
+  DeploymentRequestDomain,
+  FullyQualifiedDeploymentRequest,
+} from '../../modules/services/deployments/deployments.domain';
 import { loadUserBy } from '../../modules/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
@@ -69,10 +73,24 @@ export const hubspotLoginHook = async (userId: string) =>
 
 export const hubspotReachOutSalesHook = async () =>
   hubspotHook('reachOutSales', async () => {
-    const deploymentRequest =
-      await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
-        PlatformIdentifier.Opencti
-      );
+    const { user, portalContext } = requestContext.require();
+    const platformToken = portalContext?.req.header('XTM-Hub-Platform-Token');
+
+    let deploymentRequest: FullyQualifiedDeploymentRequest;
+    if (user?.id) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+          PlatformIdentifier.Opencti,
+          user.id
+        );
+    } else if (platformToken) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+          platformToken
+        );
+    } else {
+      throw new Error('Either userId or platformToken must be provided');
+    }
 
     return {
       email: deploymentRequest.requester_email,
@@ -80,7 +98,7 @@ export const hubspotReachOutSalesHook = async () =>
       lastname: deploymentRequest.requester_last_name,
       company: deploymentRequest.organization_name,
       job_title: deploymentRequest.job_title,
-      message: `Please contact me about my ${deploymentRequest.status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}`,
+      message: `Please contact me about my ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}`,
       use_case: deploymentRequest.use_case,
     };
   });

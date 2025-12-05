@@ -107,9 +107,16 @@ export const DeploymentRequestDomain = {
   },
 
   loadProvisionedTrialDeploymentRequestByPlatformIdentifier: async (
-    platformIdentifier: PlatformIdentifier
-  ) => {
+    platformIdentifier: PlatformIdentifier,
+    userId: string
+  ): Promise<FullyQualifiedDeploymentRequest> => {
     return getDeploymentRequestWithUserDataQuery()
+      .leftJoin(
+        'User_Organization',
+        'User_Organization.user_id',
+        '=',
+        'Organization.id'
+      )
       .whereIn('DeploymentRequest.hub_status', [
         DeploymentRequestHubStatus.Active,
         DeploymentRequestHubStatus.Expired,
@@ -120,6 +127,24 @@ export const DeploymentRequestDomain = {
         DeploymentRequestDeploymentType.Trial
       )
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
+      .where('User_Organization.user_id', '=', userId)
+      .first();
+  },
+
+  loadProvisionedTrialDeploymentRequestByPlatformToken: async (
+    platformToken: string
+  ): Promise<FullyQualifiedDeploymentRequest> => {
+    return getDeploymentRequestWithUserDataQuery()
+      .whereIn('DeploymentRequest.hub_status', [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Expired,
+      ])
+      .where(
+        'DeploymentRequest.type',
+        '=',
+        DeploymentRequestDeploymentType.Trial
+      )
+      .where('DeploymentRequest.platform_token', '=', platformToken)
       .first();
   },
 
@@ -173,29 +198,30 @@ export const DeploymentRequestDomain = {
   },
 };
 
-const getDeploymentRequestWithUserDataQuery = (): Knex.QueryBuilder<
-  DeploymentRequest & {
-    organization_name: string;
-    organization_domains: string[];
-    requester_email: string;
-    requester_first_name: string;
-    requester_last_name: string;
-  }
-> => {
-  return db<DeploymentRequest>('DeploymentRequest')
-    .leftJoin(
-      'Organization',
-      'DeploymentRequest.organization_requester_id',
-      '=',
-      'Organization.id'
-    )
-    .leftJoin('User', 'DeploymentRequest.user_requester_id', '=', 'User.id')
-    .select([
-      'DeploymentRequest.*',
-      'Organization.name as organization_name',
-      'Organization.domains as organization_domains',
-      'User.email as requester_email',
-      'User.first_name as requester_first_name',
-      'User.last_name as requester_last_name',
-    ]);
+export type FullyQualifiedDeploymentRequest = DeploymentRequest & {
+  organization_name: string;
+  organization_domains: string[];
+  requester_email: string;
+  requester_first_name: string;
+  requester_last_name: string;
 };
+
+const getDeploymentRequestWithUserDataQuery =
+  (): Knex.QueryBuilder<FullyQualifiedDeploymentRequest> => {
+    return db<DeploymentRequest>('DeploymentRequest')
+      .leftJoin(
+        'Organization',
+        'DeploymentRequest.organization_requester_id',
+        '=',
+        'Organization.id'
+      )
+      .leftJoin('User', 'DeploymentRequest.user_requester_id', '=', 'User.id')
+      .select([
+        'DeploymentRequest.*',
+        'Organization.name as organization_name',
+        'Organization.domains as organization_domains',
+        'User.email as requester_email',
+        'User.first_name as requester_first_name',
+        'User.last_name as requester_last_name',
+      ]);
+  };
