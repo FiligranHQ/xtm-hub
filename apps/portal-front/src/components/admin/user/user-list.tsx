@@ -261,7 +261,10 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
               // As non-admin path, we should return only one organization
               if (row.original.organization_capabilities) {
                 const capabilities = (
-                  row.original.organization_capabilities[0]?.capabilities ?? []
+                  row.original.organization_capabilities.find(
+                    ({ organization }) =>
+                      organization.id === me?.selected_organization_id
+                  )?.capabilities ?? []
                 ).map(
                   (capability) =>
                     ({
