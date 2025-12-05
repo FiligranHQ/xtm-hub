@@ -1,0 +1,23 @@
+type ServiceGroup implements Node {
+  id: ID!
+  name: String!
+  users: [User!]
+}
+
+input UpdateServiceGroupsInputGroup {
+  id: ID!
+  userIds: [ID!]!
+}
+
+input UpdateServiceGroupsInput {
+  groups: [UpdateServiceGroupsInputGroup!]!
+}
+
+type Query {
+  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+}
+
+type Mutation {
+  updateServiceGroups(input: UpdateServiceGroupsInput!): Success @auth
+}

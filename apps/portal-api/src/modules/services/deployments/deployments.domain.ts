@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import { db, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestConnection,
@@ -13,6 +14,9 @@ import DeploymentRequest, {
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
+import { auth0Client } from '../../../thirdparty/auth0/client';
+import { logApp } from '../../../utils/app-logger.util';
+import { ServiceGroupDomain } from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -137,9 +141,47 @@ export const DeploymentRequestDomain = {
       .returning('*');
     return deploymentRequest;
   },
+  initialiseServiceGroup: async (id: DeploymentRequestId) => {
+    const {
+      organization_name,
+      requester_email,
+      platform_id,
+      user_requester_id,
+      service_instance_id,
+    } = await DeploymentRequestDomain.loadFullDeploymentRequestById(id);
+
+    try {
+      await auth0Client.createAudienceAPI(organization_name, platform_id);
+    } catch (error) {
+      logApp.warn(`Auth0 Create Audience: ${error}`);
+    }
+
+    const serviceGroup = await ServiceGroupDomain.loadServiceGroups({
+      service_instance_id: service_instance_id,
+    });
+    if (serviceGroup.length === 0) {
+      await ServiceGroupDomain.initGroupWithAdmin(
+        user_requester_id,
+        service_instance_id
+      );
+      await auth0Client.updateUserRBACInstance(requester_email, {
+        [platform_id]: {
+          groups: ['Admin'],
+        },
+      });
+    }
+  },
 };
 
-const getDeploymentRequestWithUserDataQuery = () => {
+const getDeploymentRequestWithUserDataQuery = (): Knex.QueryBuilder<
+  DeploymentRequest & {
+    organization_name: string;
+    organization_domains: string[];
+    requester_email: string;
+    requester_first_name: string;
+    requester_last_name: string;
+  }
+> => {
   return db<DeploymentRequest>('DeploymentRequest')
     .leftJoin(
       'Organization',

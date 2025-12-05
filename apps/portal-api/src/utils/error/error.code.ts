@@ -3,7 +3,6 @@ export enum ForbiddenErrorCode {
   RegistrationOnAnotherOrganizationForbidden = 'REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN',
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
   AlreadySubscribed = 'ALREADY_SUBSCRIBED',
-  AlreadySubscribedOrganizationError = 'ALREADY_SUBSCRIBED_ORGANIZATION_ERROR',
   EditCapabilitiesCantRemoveLastManageAccess = 'EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS',
   GrantCapabilitiesOnOrganizationFirst = 'GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST',
   CantSubscribeYourself = 'CANT_SUBSCRIBE_YOURSELF',
@@ -15,7 +14,6 @@ export enum ForbiddenErrorCode {
   CantRemoveYourselfFromOrgaError = 'CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR',
   YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
-  PersonalSpaceMustAlreadyExist = 'PERSONAL_SPACE_MUST_ALREADY_EXIST',
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
 }
@@ -32,6 +30,8 @@ export enum BadRequestErrorCode {
   InvalidStatus = 'INVALID_STATUS',
   InvalidPlatformId = 'INVALID_PLATFORM_ID',
   InvalidPlatformVersion = 'INVALID_PLATFORM_VERSION',
+  ServiceGroupsLinkedToMultipleServiceInstances = 'SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES',
+  OrganizationDoesNotMatchSelectedOrganization = 'ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION',
 }
 
 export enum UnknownErrorCode {

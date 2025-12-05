@@ -51,6 +51,7 @@ import {
   TelemetryOrganizationType,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { ServiceGroupDomain } from '../group/service-group.domain';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import {
   deleteServiceInstanceBy,
@@ -528,6 +529,47 @@ describe('Deployment app', () => {
           dbDeploymentRequest.end_date
         );
       }
+    });
+
+    it(' with Active status, it should create ServiceGroup with admin', async () => {
+      const deployment = await DeploymentsApp.updateDeploymentRequest({
+        id: initialDeployment?.id as string,
+        hub_status: DeploymentRequestHubStatus.Active,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        platform_id: 'fake product instance id',
+        failure_reason: 'not failed',
+      });
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      const getUserGroup = await ServiceGroupDomain.loadServiceGroups({
+        service_instance_id: dbDeploymentRequest.service_instance_id,
+      });
+      expect(getUserGroup.length).toBe(3);
+      const userAdminGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest.service_instance_id,
+          'Admin'
+        );
+      expect(userAdminGroup.length).toBe(1);
+      expect(
+        userAdminGroup.find(({ email }) => email === DEFAULT_ADMIN_EMAIL)
+      ).toBeTruthy();
+      const userAnalystGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest.service_instance_id,
+          'Analyst'
+        );
+      expect(userAnalystGroup.length).toBe(0);
+      const userReaderGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest.service_instance_id,
+          'Reader'
+        );
+
+      expect(userReaderGroup.length).toBe(0);
     });
     it('should should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({
