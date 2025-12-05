@@ -5,6 +5,8 @@ import {
   DeploymentRequestFilter,
   Filter,
   FilterKey,
+  ServiceInstanceFilter,
+  ServiceInstanceFilterKey,
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
@@ -16,15 +18,10 @@ import { logApp } from './src/utils/app-logger.util';
 import { compareSemanticVersions } from './src/utils/semantic-versioning';
 import { extractId } from './src/utils/utils';
 
+type Filters = Filter[] | DeploymentRequestFilter[] | ServiceInstanceFilter[];
+
 export interface SecuryQueryOpts {
-  [key: string]:
-    | string
-    | number
-    | boolean
-    | string[]
-    | MethodType
-    | Filter[]
-    | DeploymentRequestFilter[];
+  [key: string]: string | number | boolean | string[] | MethodType | Filters;
 }
 
 export interface KnexQueryBuilder extends Knex.QueryBuilder {
@@ -98,7 +95,7 @@ interface Pagination {
   after?: string;
   orderMode?: string;
   orderBy?: string;
-  filters?: Filter[] | DeploymentRequestFilter[];
+  filters?: Filters;
   searchTerm?: string;
 }
 
@@ -150,7 +147,7 @@ export interface QueryOpts {
   methodType?: MethodType;
   capabilities?: string[];
   searchTerm?: string;
-  filters?: Filter[] | DeploymentRequestFilter[];
+  filters?: Filters;
   columns?: string[];
 }
 
@@ -264,7 +261,20 @@ const filterHandlers: Record<string, FilterHandler> = {
       .whereIn('ol.label_id', value.map(extractId));
   },
 
-  [FilterKey.ServiceDefinitionIdentifier]: (queryContext, type, value) => {
+  [ServiceInstanceFilterKey.Tags]: (queryContext, type, value) => {
+    if (value.length === 0) return;
+
+    const formattedValue = value.map((value) => `'${value}'`).join(',');
+    queryContext.whereRaw(
+      `"ServiceInstance"."tags"::text[] @> array[${formattedValue}]`
+    );
+  },
+
+  [ServiceInstanceFilterKey.ServiceDefinitionIdentifier]: (
+    queryContext,
+    type,
+    value
+  ) => {
     if (value.length === 0) return;
 
     queryContext

@@ -18,6 +18,23 @@ enum ServiceInstanceJoinType {
   JOIN_SELF
 }
 
+enum ServiceInstanceTag {
+  openCTI
+  openAEV
+  trial
+  others
+}
+
+enum ServiceInstanceFilterKey {
+  tags
+  service_definition_identifier
+}
+
+input ServiceInstanceFilter {
+  key: ServiceInstanceFilterKey
+  value: [String!]!
+}
+
 type ServiceInstance implements Node {
   id: ID!
   name: String!
@@ -32,7 +49,7 @@ type ServiceInstance implements Node {
   capabilities: [String]!
   public: Boolean
   join_type: ServiceInstanceJoinType
-  tags: [String]
+  tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition
   logo_document_id: ID
   illustration_document_id: ID
@@ -55,7 +72,7 @@ type SeoServiceInstance implements Node {
   slug: String
   description: String
   links: [ServiceLink]
-  tags: [String]
+  tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition!
   logo_document_id: ID
   illustration_document_id: ID
@@ -108,7 +125,7 @@ type Query {
     orderBy: ServiceInstanceOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-    filters: [Filter!]
+    filters: [ServiceInstanceFilter!]
   ): ServiceConnection! @auth(requires: [BYPASS])
   serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
   serviceInstanceByIdWithSubscriptions(
