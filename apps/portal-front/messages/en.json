@@ -213,7 +213,8 @@
     "Services": "Services",
     "Settings": "Settings",
     "SettingsLabel": "Settings menu",
-    "Users": "Users"
+    "Users": "Users",
+    "Trials": "Trials dashboard"
   },
   "MenuUser": {
     "Profile": "Profile",
@@ -265,6 +266,31 @@
     "PersonalSpace": "Personal space",
     "SelectOrganization": "Select an organization",
     "SelectedOrganization": "SelectedOrganization"
+  },
+  "TrialsDashboard": {
+    "Columns": {
+      "Email": "Email",
+      "Organization": "Organization",
+      "StartDate": "Start Date",
+      "EndDate": "End Date",
+      "RemainingDays": "Days remaining",
+      "Status": "Status",
+      "Region": "Region",
+      "RequestDate": "Requested Date",
+      "Priority": "Priority",
+      "CancellationDate": "Cancellation Date",
+      "CancellationOwner": "Cancellation Owner"
+    },
+    "TabTitle": {
+      "Cancelled": "Cancelled",
+      "Expired": "Expired",
+      "Running": "Running",
+      "Waiting": "Waiting"
+    },
+    "Actions": {
+      "SearchTrials": "Search by email or organization"
+    },
+    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
   },
   "Parameters": {
     "Version": "Version"

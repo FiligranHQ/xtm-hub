@@ -43,8 +43,9 @@ type Query {
   seoCustomDashboardBySlug(slug: String): CustomDashboard
   customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
-  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): DeploymentRequestConnection!
+  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
+  deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   documentExists(documentName: String, service_instance_id: String): Boolean
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
@@ -303,6 +304,9 @@ type DeploymentRequest implements Node {
   target_state: DeploymentRequestPlatformState
   actual_state: DeploymentRequestPlatformState
   ordering: Int!
+  requester_email: String
+  organization_name: String
+  request_date: Date!
 }
 
 type PlatformDeploymentRequest {
@@ -366,6 +370,11 @@ input DeploymentRequestFilter {
 
 type DeploymentRequestEdge {
   cursor: String!
+  node: DeploymentRequest!
+}
+
+type PlatformDeploymentRequestEdge {
+  cursor: String!
   node: PlatformDeploymentRequest!
 }
 
@@ -375,9 +384,26 @@ type DeploymentRequestConnection {
   pageInfo: PageInfo!
 }
 
+type PlatformDeploymentRequestConnection {
+  totalCount: Int!
+  edges: [PlatformDeploymentRequestEdge!]!
+  pageInfo: PageInfo!
+}
+
 type DeploymentAvailability {
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
+}
+
+enum DeploymentRequestOrdering {
+  requester_email
+  organization_name
+  start_date
+  end_date
+  hub_status
+  region
+  ordering
+  request_date
 }
 
 type ShareableResource {
