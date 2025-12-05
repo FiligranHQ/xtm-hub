@@ -2,12 +2,12 @@ import { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
+import { DocumentApp } from '../document/document.app';
 import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
 } from '../document/document.helper';
 import { Upload } from '../document/document.uploads.helper';
-import { createDocumentWithChildren } from '../document/domain/document.domain';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA,
@@ -19,7 +19,7 @@ export const OpenAEVScenariosApp = {
     input: Partial<OpenAEVScenario>,
     document: Upload[]
   ) => {
-    const doc = await createDocumentWithChildren<OpenAEVScenario>(
+    const doc = await DocumentApp.createDocumentWithChildren<OpenAEVScenario>(
       OPENAEV_SCENARIO_DOCUMENT_TYPE,
       input,
       document,

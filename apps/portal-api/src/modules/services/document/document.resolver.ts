@@ -36,8 +36,8 @@ import { DocumentChildrenDomain } from './domain/document.children.domain';
 import {
   createDocument,
   deleteDocument,
+  DocumentDomain,
   getUploader,
-  loadDocumentById,
   loadDocuments,
   loadUploaderOrganization,
   updateDocument,
@@ -229,7 +229,9 @@ const resolvers: Resolvers = {
       }
     },
     document: async (_, { documentId }) =>
-      loadDocumentById(extractId<DocumentId>(documentId)),
+      DocumentDomain.loadDocumentWithMetadataById(
+        extractId<DocumentId>(documentId)
+      ),
   },
 };
 

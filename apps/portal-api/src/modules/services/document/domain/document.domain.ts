@@ -25,11 +25,7 @@ import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstanc
 import User, { UserId } from '../../../../model/kanel/public/User';
 import { formatRawObject } from '../../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../../utils/utils';
-import {
-  addIncludeMetadataQuery,
-  Document,
-  normalizeDocumentName,
-} from '../document.helper';
+import { Document, normalizeDocumentName } from '../document.helper';
 
 import { withTransaction } from '../../../../context/database.context';
 import { requestContext } from '../../../../context/request.context';
@@ -40,11 +36,7 @@ import {
 } from '../../../../security/restriction/document';
 import { objectLabelDomain } from '../../../settings/objectLabel/object-label.domain';
 import { isUserRestrictedToActiveDocument } from '../document.security';
-import {
-  processDocumentUpdateUploads,
-  processUploads,
-  Upload,
-} from '../document.uploads.helper';
+import { processDocumentUpdateUploads } from '../document.uploads.helper';
 import { DocumentChildrenDomain } from './document.children.domain';
 import {
   DocumentMetadataDomain,
@@ -107,6 +99,20 @@ export const DocumentDomain = {
     return db<DocumentModel>('Document', opts)
       .where(field)
       .select('Document.*');
+  },
+
+  loadDocumentWithMetadataById: async <T extends Document>(
+    id: string,
+    include_metadata: string[] = []
+  ): Promise<T> => {
+    const docQuery = db<T>('Document')
+      .where('Document.id', '=', id)
+      .select('Document.*')
+      .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
+
+    return docQuery.first();
   },
 
   upsertOnSlug: async <T extends DocumentModel>(
@@ -173,33 +179,6 @@ export const createDocument = async <T extends DocumentModel>(
     }
 
     return document as T;
-  });
-};
-
-export const createDocumentWithChildren = async <T extends DocumentModel>(
-  type: string,
-  input: Partial<T>,
-  uploads: Upload[] | Upload,
-  metadataKeys: DocumentMetadataKeys<T>
-) => {
-  const files = await processUploads(uploads);
-
-  const docFile = files.shift();
-  return await withTransaction(async () => {
-    const doc = await createDocument<T>(
-      {
-        ...input,
-        type,
-        file_name: docFile.fileName,
-        minio_name: docFile.minioName,
-        mime_type: docFile.mimeType,
-      },
-      metadataKeys
-    );
-
-    await DocumentChildrenDomain.createImageDocuments(doc.id, files);
-
-    return doc;
   });
 };
 
@@ -453,7 +432,10 @@ export const loadDocuments = async <
 
   loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
 
-  addIncludeMetadataQuery(loadDocumentQuery, include_metadata);
+  DocumentMetadataDomain.addIncludeMetadataQuery(
+    loadDocumentQuery,
+    include_metadata
+  );
 
   return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
 };
@@ -485,20 +467,6 @@ export const loadUploaderOrganization = async (
   return organization;
 };
 
-export const loadDocumentById = async <T extends Document>(
-  id: string,
-  include_metadata: string[] = []
-): Promise<T> => {
-  const docQuery = db<T>('Document')
-    .where('Document.id', '=', id)
-    .select('Document.*')
-    .groupBy(['Document.id']);
-
-  addIncludeMetadataQuery(docQuery, include_metadata);
-
-  return docQuery.first();
-};
-
 export const loadSeoDocumentBySlug = async (
   type: string,
   slug: string,
@@ -516,7 +484,7 @@ export const loadSeoDocumentBySlug = async (
     })
     .groupBy(['Document.id']);
 
-  addIncludeMetadataQuery(docQuery, include_metadata);
+  DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
 
   return docQuery.first();
 };
@@ -567,7 +535,10 @@ export const loadSeoDocumentsByServiceSlug = (
     ])
     .groupBy(['Document.id']);
 
-  addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
+  DocumentMetadataDomain.addIncludeMetadataQuery(
+    loadDocumentsQuery,
+    include_metadata
+  );
 
   return loadDocumentsQuery;
 };

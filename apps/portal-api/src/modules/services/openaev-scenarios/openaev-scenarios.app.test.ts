@@ -14,9 +14,9 @@ import {
   TelemetryEventService,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { DocumentApp } from '../document/document.app';
 import { deleteDocuments } from '../document/document.helper';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
-import { createDocumentWithChildren } from '../document/domain/document.domain';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
@@ -98,7 +98,7 @@ describe('openaev scenarios app', () => {
       }
     );
 
-    await createDocumentWithChildren<OpenAEVScenario>(
+    await DocumentApp.createDocumentWithChildren<OpenAEVScenario>(
       OPENAEV_SCENARIO_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,
@@ -137,7 +137,7 @@ describe('openaev scenarios app', () => {
       }
     );
 
-    await createDocumentWithChildren<OpenAEVScenario>(
+    await DocumentApp.createDocumentWithChildren<OpenAEVScenario>(
       OPENAEV_SCENARIO_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,

@@ -26,12 +26,10 @@ import {
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../../integration-feeds/integration-feeds.model';
-import {
-  createDocumentWithChildren,
-  loadParentDocumentsByServiceInstance,
-} from './document.domain';
+import { loadParentDocumentsByServiceInstance } from './document.domain';
 
 import { requestContext } from '../../../../context/request.context';
+import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 
 describe('Document domain', () => {
@@ -62,7 +60,7 @@ describe('Document domain', () => {
         },
       };
       requestContext.set(testContext);
-      await createDocumentWithChildren<CsvFeed>(
+      await DocumentApp.createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: documentId,
@@ -128,7 +126,7 @@ describe('Document domain', () => {
       };
       requestContext.set(testContext);
 
-      const csvFeed = await createDocumentWithChildren<CsvFeed>(
+      const csvFeed = await DocumentApp.createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: documentId,

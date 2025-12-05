@@ -21,8 +21,8 @@ import {
 } from '../../__generated__/resolvers-types';
 import { DocumentId } from '../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { DocumentApp } from '../services/document/document.app';
 import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
-import { createDocumentWithChildren } from '../services/document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
@@ -134,7 +134,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId =
         'c07f6909-f8c5-4f61-b17d-b5b2da9b2799' as DocumentId;
-      await createDocumentWithChildren<CsvFeed>(
+      await DocumentApp.createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: fakeResourceId,
@@ -274,7 +274,7 @@ describe('TelemetryApp', () => {
 
       const fakeResourceId =
         'ddd49f48-1a66-4670-9dab-0d247b613969' as DocumentId;
-      await createDocumentWithChildren<CsvFeed>(
+      await DocumentApp.createDocumentWithChildren<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: fakeResourceId,

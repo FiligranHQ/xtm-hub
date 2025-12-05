@@ -3,15 +3,46 @@ import { default as DocumentModel } from '../../../model/kanel/public/Document';
 import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
-import { Upload } from './document.uploads.helper';
+import { processUploads, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import { DocumentData, DocumentDomain } from './domain/document.domain';
+import {
+  createDocument,
+  DocumentData,
+  DocumentDomain,
+} from './domain/document.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
 export const DocumentApp = {
+  createDocumentWithChildren: async <T extends DocumentModel>(
+    type: string,
+    input: Partial<T>,
+    uploads: Upload[] | Upload,
+    metadataKeys: DocumentMetadataKeys<T>
+  ) => {
+    const files = await processUploads(uploads);
+
+    const docFile = files.shift();
+    return await withTransaction(async () => {
+      const doc = await createDocument<T>(
+        {
+          ...input,
+          type,
+          file_name: docFile.fileName,
+          minio_name: docFile.minioName,
+          mime_type: docFile.mimeType,
+        },
+        metadataKeys
+      );
+
+      await DocumentChildrenDomain.createImageDocuments(doc.id, files);
+
+      return doc;
+    });
+  },
+
   upsertDocumentWithChildren: async <T extends DocumentModel>(
     type: string,
     input: Partial<T>,

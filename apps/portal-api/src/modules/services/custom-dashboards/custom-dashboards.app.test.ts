@@ -14,9 +14,9 @@ import {
   TelemetryEventService,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { DocumentApp } from '../document/document.app';
 import { deleteDocuments } from '../document/document.helper';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
-import { createDocumentWithChildren } from '../document/domain/document.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
   CUSTOM_DASHBOARD_METADATA,
@@ -97,7 +97,7 @@ describe('custom dashboards app', () => {
       }
     );
 
-    await createDocumentWithChildren<CustomDashboard>(
+    await DocumentApp.createDocumentWithChildren<CustomDashboard>(
       OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,
@@ -136,7 +136,7 @@ describe('custom dashboards app', () => {
       }
     );
 
-    await createDocumentWithChildren<CustomDashboard>(
+    await DocumentApp.createDocumentWithChildren<CustomDashboard>(
       OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       {
         id: documentId as DocumentId,
