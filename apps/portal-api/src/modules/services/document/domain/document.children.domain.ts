@@ -1,10 +1,16 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbUnsecure, QueryOpts } from '../../../../../knexfile';
-import { DocumentId } from '../../../../model/kanel/public/Document';
+import { withTransaction } from '../../../../context/database.context';
+import {
+  DocumentId,
+  default as DocumentModel,
+} from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { restrictDocumentToUserOrganization } from '../../../../security/restriction/document';
+import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { MinioFile } from '../../../../thirdparty/minio/types';
 import { Document } from '../document.helper';
+import { processUploads, Upload } from '../document.uploads.helper';
 import { createDocument } from './document.domain';
 
 export const DocumentChildrenDomain = {
@@ -102,6 +108,30 @@ export const DocumentChildrenDomain = {
       image.id = toGlobalId('ShareableResourceImage', image.id);
     }
     return images;
+  },
+
+  upsertImages: async <T extends DocumentModel>(
+    doc: T,
+    upload: Upload[] | Upload
+  ) => {
+    const files = await processUploads(upload);
+
+    const deletedDocuments = await withTransaction(async () => {
+      const deletedDocuments =
+        await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
+
+      await DocumentChildrenDomain.createImageDocuments(doc.id, files);
+
+      return deletedDocuments;
+    });
+    // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
+    if (deletedDocuments.length > 0) {
+      await Promise.all(
+        deletedDocuments.map((doc) => {
+          return MinIOClient.deleteFile(doc.minio_name);
+        })
+      );
+    }
   },
 
   deleteChildImagesByParent: async (

@@ -23,7 +23,6 @@ import { LabelId } from '../../../../model/kanel/public/Label';
 import { ObjectLabelObjectId } from '../../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../../model/kanel/public/User';
-import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { formatRawObject } from '../../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../../utils/utils';
 import {
@@ -39,7 +38,6 @@ import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
 } from '../../../../security/restriction/document';
-import { labelsApp } from '../../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../../settings/objectLabel/object-label.domain';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
@@ -143,132 +141,6 @@ export const DocumentDomain = {
       .whereIn('Document.id', ids)
       .delete('Document.*');
   },
-};
-
-export const upsertDocumentWithChildren = async <T extends DocumentModel>(
-  type: string,
-  input: Partial<T>,
-  uploads: Upload[] | Upload,
-  metadataKeys: DocumentMetadataKeys<T>
-) => {
-  return await withTransaction(async () => {
-    const doc = await upsertDocument<T>(
-      {
-        ...input,
-        type,
-      },
-      metadataKeys
-    );
-
-    await upsertImage(doc, uploads);
-    return doc;
-  });
-};
-
-export const upsertImage = async <T extends DocumentModel>(
-  doc: T,
-  upload: Upload[] | Upload
-) => {
-  const files = await processUploads(upload);
-
-  const deletedDocuments = await withTransaction(async () => {
-    const deletedDocuments =
-      await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
-
-    await DocumentChildrenDomain.createImageDocuments(doc.id, files);
-
-    return deletedDocuments;
-  });
-  // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
-  if (deletedDocuments.length > 0) {
-    await Promise.all(
-      deletedDocuments.map((doc) => {
-        return MinIOClient.deleteFile(doc.minio_name);
-      })
-    );
-  }
-};
-
-export const upsertDocument = async <T extends DocumentModel>(
-  documentData: DocumentData<T>,
-  metadataKeys: DocumentMetadataKeys<T> = []
-): Promise<T> => {
-  return await withTransaction(async () => {
-    // Prepare the data to insert
-    const document = await DocumentDomain.upsertOnSlug(
-      documentData,
-      metadataKeys
-    );
-
-    const documentWasUpdated = !!document.updated_at;
-
-    // Handle parent document relationship
-    if (documentData.parent_document_id) {
-      // First, delete existing relationship if it exists (for upsert scenario)
-      if (documentWasUpdated) {
-        await DocumentChildrenDomain.deleteChild(document.id);
-      }
-
-      // Insert new relationship
-      await DocumentChildrenDomain.insertChildRelationship({
-        parentDocumentId: documentData.parent_document_id,
-        childDocumentId: document.id,
-      });
-    }
-
-    if (documentData.labels?.length) {
-      if (documentWasUpdated) {
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: document.id as unknown as ObjectLabelObjectId,
-        });
-      }
-      const insertObjectLabel = [];
-      for (const name of documentData.labels) {
-        const label = await labelsApp.loadOrCreateLabel({
-          name,
-        });
-        insertObjectLabel.push({
-          object_id: document.id as unknown as ObjectLabelObjectId,
-          label_id: label.id,
-        });
-      }
-      await objectLabelDomain.insertObjectLabel(insertObjectLabel);
-    }
-
-    if (metadataKeys.length > 0) {
-      // If document was updated (not created)
-      if (documentWasUpdated) {
-        // Delete all existing metadata except 'version'
-        await DocumentMetadataDomain.deleteMetadata({
-          id: document.id,
-          excludedKeys: ['product_version'],
-        });
-        const existingVersion = await DocumentMetadataDomain.loadProductVersion(
-          document.id
-        );
-        if (existingVersion) {
-          document['product_version'] = existingVersion;
-        }
-      }
-
-      // Insert new metadata (excluding version) if documentWasUpdated
-      const metadataKeysWithoutProductVersion = metadataKeys.filter(
-        (key) => key !== 'product_version' || !documentWasUpdated
-      );
-
-      const metadatas = await DocumentMetadataDomain.insertMetadata(
-        document.id,
-        documentData,
-        metadataKeysWithoutProductVersion
-      );
-
-      for (const metadata of metadatas) {
-        document[metadata.key] = metadata.value;
-      }
-    }
-
-    return document as T;
-  });
 };
 
 export const createDocument = async <T extends DocumentModel>(
