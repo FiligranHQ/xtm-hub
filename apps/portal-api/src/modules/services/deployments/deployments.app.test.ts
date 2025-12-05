@@ -12,7 +12,6 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
-  SERVICE_OPENCTI_REGISTRATION,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -25,11 +24,8 @@ import {
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
-  DeploymentRequestInitializer,
 } from '../../../model/kanel/public/DeploymentRequest';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../../model/kanel/public/ServiceInstance';
+import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import {
   ADMIN_UUID,
   PLATFORM_NAME,
@@ -41,10 +37,7 @@ import {
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import {
-  deleteSubscriptionUnsecure,
-  insertUnsecureSubscription,
-} from '../../subcription/subscription.helper';
+import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
@@ -52,59 +45,14 @@ import {
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
-import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
+
 import {
   deleteServiceInstanceBy,
-  insertServiceInstance,
   loadServiceInstanceBy,
 } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
-
-async function insertOpenCtiDeploymentRequest(
-  deploymentRequest: Partial<DeploymentRequestInitializer>
-) {
-  const serviceInstanceId = uuidv4() as ServiceInstanceId;
-  await insertServiceInstance({
-    id: serviceInstanceId,
-    name: 'serviceInstance1',
-    description: '',
-    creation_status: ServiceInstanceCreationStatus.Pending,
-    public: false,
-    join_type: 'JOIN_AUTO',
-    tags: [
-      serviceInstanceTagMappedByPlatformIdentifier[PlatformIdentifier.Opencti],
-    ],
-    service_definition_id: SERVICE_OPENCTI_REGISTRATION,
-  });
-  await insertUnsecureSubscription({
-    id: uuidv4(),
-    organization_id: PLATFORM_ORGANIZATION_UUID,
-    service_instance_id: serviceInstanceId,
-  });
-  const defaultDeploymentRequestValues = {
-    activity_sector: 'cybersecurity',
-    id: uuidv4() as DeploymentRequestId,
-    job_title: 'myJob',
-    organization_requester_id: PLATFORM_ORGANIZATION_UUID,
-    platform_identifier: PlatformIdentifier.Opencti,
-    platform_token: uuidv4(),
-    region: DeploymentRequestPlatformRegion.UsEast,
-    request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-    hub_status: DeploymentRequestHubStatus.Pending,
-    target_state: DeploymentRequestPlatformState.Active,
-    actual_state: undefined,
-    ordering: 1,
-    type: DeploymentRequestDeploymentType.Trial,
-    use_case: 'use_case',
-    service_instance_id: serviceInstanceId as ServiceInstanceId,
-    user_requester_id: ADMIN_UUID,
-  };
-  return await DeploymentRequestDomain.insertDeploymentRequest({
-    ...defaultDeploymentRequestValues,
-    ...deploymentRequest,
-  });
-}
+import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
 
 describe('Deployment app', () => {
   const telemetrySpy = vi
@@ -300,7 +248,7 @@ describe('Deployment app', () => {
     it('should return created deployment requests', async () => {
       const deploymentRequest = await insertOpenCtiDeploymentRequest({});
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -327,7 +275,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -349,7 +297,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
           {
@@ -409,7 +357,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Inactive,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -439,7 +387,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
           {

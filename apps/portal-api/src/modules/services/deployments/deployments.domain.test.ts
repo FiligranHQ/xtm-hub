@@ -1,6 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as dbModule from '../../../../knexfile';
+import {
+  DeploymentRequestConnection,
+  DeploymentRequestFilterKey,
+  DeploymentRequestHubStatus,
+  DeploymentRequestOrdering,
+  OrderingMode,
+} from '../../../__generated__/resolvers-types';
+import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
+import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
+import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
 
 describe('DeploymentRequestDomain', () => {
   describe('loadDeploymentRequestCountByRegion', () => {
@@ -51,6 +61,73 @@ describe('DeploymentRequestDomain', () => {
         await DeploymentRequestDomain.loadDeploymentRequestCountByRegion({});
 
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('loadDeploymentRequest', () => {
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await deleteServiceInstanceBy({});
+      await deleteSubscriptionUnsecure({});
+    });
+
+    it('should return filtered deployment requests', async () => {
+      await insertOpenCtiDeploymentRequest({});
+      await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            filters: [
+              {
+                key: DeploymentRequestFilterKey.HubStatus,
+                value: [DeploymentRequestHubStatus.Active],
+              },
+            ],
+          }
+        );
+
+      expect(deploymentRequests.totalCount).toBe('1');
+      expect(deploymentRequests.edges[0]?.node?.hub_status).toBe(
+        DeploymentRequestHubStatus.Active
+      );
+    });
+    it('should filter deployment requests when searchTerm is specified ', async () => {
+      await insertOpenCtiDeploymentRequest({});
+
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchTerm: 'toto',
+          }
+        );
+
+      expect(deploymentRequests.totalCount).toBe('0');
+    });
+    it('should return ordered deployment requests', async () => {
+      const deployment1 = await insertOpenCtiDeploymentRequest({ ordering: 1 });
+      const deployment2 = await insertOpenCtiDeploymentRequest({ ordering: 2 });
+
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+          }
+        );
+
+      expect(deploymentRequests.totalCount).toBe('2');
+      expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment1?.id);
+      expect(deploymentRequests.edges[1]?.node?.id).toBe(deployment2?.id);
     });
   });
 });

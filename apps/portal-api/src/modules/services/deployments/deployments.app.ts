@@ -3,13 +3,15 @@ import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
   DeploymentRequest,
-  DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
+  DeploymentRequestOrdering,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  OrderingMode,
   PlatformDeploymentRequest,
+  PlatformDeploymentRequestConnection,
   PlatformIdentifier,
   QueryDeploymentRequestsArgs,
   ServiceInstanceCreationStatus,
@@ -171,27 +173,9 @@ export const DeploymentsApp = {
         });
       }
 
-      return {
+      return DeploymentRequestDomain.loadDeploymentRequestBy({
         id: createdDeploymentRequest.id,
-        platform_identifier:
-          createdDeploymentRequest.platform_identifier as PlatformIdentifier,
-        region:
-          createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
-        type: createdDeploymentRequest.type as DeploymentRequestDeploymentType,
-        job_title: createdDeploymentRequest.job_title,
-        activity_sector: createdDeploymentRequest.activity_sector,
-        use_case: createdDeploymentRequest.use_case,
-        start_date: createdDeploymentRequest.start_date,
-        end_date: createdDeploymentRequest.end_date,
-        hub_status:
-          createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-        target_state:
-          createdDeploymentRequest.target_state as DeploymentRequestPlatformState,
-        actual_state:
-          createdDeploymentRequest.actual_state as DeploymentRequestPlatformState,
-        ordering: createdDeploymentRequest.ordering,
-        __typename: 'DeploymentRequest',
-      };
+      });
     } catch (error) {
       logApp.error('unable to create deployment request', error);
       throw error;
@@ -309,9 +293,9 @@ export const DeploymentsApp = {
     );
   },
 
-  loadDeploymentRequests: async (
+  loadPlatformDeploymentRequests: async (
     args: QueryDeploymentRequestsArgs
-  ): Promise<DeploymentRequestConnection> => {
+  ): Promise<PlatformDeploymentRequestConnection> => {
     args.filters = args.filters || [];
 
     // By default, only return deployments with sync offset (target_state different from actual_state)
@@ -321,9 +305,16 @@ export const DeploymentsApp = {
         filter?.key === DeploymentRequestFilterKey.ActualState
     );
 
-    return DeploymentRequestDomain.loadDeploymentRequests(args, {
-      onlyOutOfSync: !hasStateFilter,
-    });
+    return DeploymentRequestDomain.loadDeploymentRequests<PlatformDeploymentRequestConnection>(
+      {
+        ...args,
+        orderBy: DeploymentRequestOrdering.Ordering,
+        orderMode: OrderingMode.Asc,
+      },
+      {
+        onlyOutOfSync: !hasStateFilter,
+      }
+    );
   },
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier
