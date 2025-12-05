@@ -1649,6 +1649,7 @@ export type ServiceInstanceSubscription = {
 export enum ServiceInstanceTag {
   OpenAev = 'openAEV',
   OpenCti = 'openCTI',
+  Others = 'others',
   Trial = 'trial'
 }
 

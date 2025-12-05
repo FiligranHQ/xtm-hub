@@ -32,10 +32,14 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
           )}
           {platform.subscription?.start_date && (
             <li>
-              <span className="text-gray/60">Start date & End date:</span>{' '}
-              {formatDate(platform.subscription?.start_date)}{' '}
-              {platform.subscription?.end_date &&
-                `- ${formatDate(platform.subscription.end_date)}`}
+              <span className="text-gray/60">Start date:</span>{' '}
+              {formatDate(platform.subscription?.start_date)}
+            </li>
+          )}
+          {platform.subscription?.end_date && (
+            <li>
+              <span className="text-gray/60">End date:</span>{' '}
+              {formatDate(platform.subscription?.end_date)}
             </li>
           )}
           <li>

@@ -22,6 +22,7 @@ enum ServiceInstanceTag {
   openCTI
   openAEV
   trial
+  others
 }
 
 enum ServiceInstanceFilterKey {
