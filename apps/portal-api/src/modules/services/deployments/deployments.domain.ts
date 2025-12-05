@@ -107,6 +107,12 @@ export const DeploymentRequestDomain = {
     userId: string
   ) => {
     return getDeploymentRequestWithUserDataQuery()
+      .leftJoin(
+        'User_Organization',
+        'User_Organization.user_id',
+        '=',
+        'Organization.id'
+      )
       .whereIn('DeploymentRequest.hub_status', [
         DeploymentRequestHubStatus.Active,
         DeploymentRequestHubStatus.Expired,
@@ -117,7 +123,7 @@ export const DeploymentRequestDomain = {
         DeploymentRequestDeploymentType.Trial
       )
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
-      .where('DeploymentRequest.user_requester_id', '=', userId)
+      .where('User_Organization.user_id', '=', userId)
       .first();
   },
 
