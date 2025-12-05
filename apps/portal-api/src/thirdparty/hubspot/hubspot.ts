@@ -67,12 +67,29 @@ export const hubspotLoginHook = async (userId: string) =>
     };
   });
 
-export const hubspotReachOutSalesHook = async () =>
+export const hubspotReachOutSalesHook = async ({
+  platformToken,
+  userId,
+}: {
+  platformToken?: string;
+  userId?: string;
+}) =>
   hubspotHook('reachOutSales', async () => {
-    const deploymentRequest =
-      await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
-        PlatformIdentifier.Opencti
-      );
+    let deploymentRequest;
+    if (userId) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+          PlatformIdentifier.Opencti,
+          userId
+        );
+    } else if (platformToken) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+          platformToken
+        );
+    } else {
+      throw new Error('Either userId or platformToken must be provided');
+    }
 
     return {
       email: deploymentRequest.requester_email,
@@ -80,7 +97,7 @@ export const hubspotReachOutSalesHook = async () =>
       lastname: deploymentRequest.requester_last_name,
       company: deploymentRequest.organization_name,
       job_title: deploymentRequest.job_title,
-      message: `Please contact me about my ${deploymentRequest.status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}`,
+      message: `Please contact me about my ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}`,
       use_case: deploymentRequest.use_case,
     };
   });

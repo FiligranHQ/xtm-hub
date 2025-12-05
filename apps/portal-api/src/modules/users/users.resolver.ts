@@ -13,6 +13,7 @@ import { hubspotReachOutSalesHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
 
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
+import { PortalContext } from '../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../utils/error/error.util';
@@ -248,9 +249,12 @@ const resolvers: Resolvers = {
     logout: async (_, __, context) => {
       return UsersAuthApp.logout(context);
     },
-    contactUs: async () => {
+    contactUs: async (_, __, context: PortalContext) => {
       try {
-        await hubspotReachOutSalesHook();
+        await hubspotReachOutSalesHook({
+          platformToken: context.req.header('XTM-Hub-Platform-Token'),
+          userId: context.user?.id,
+        });
         return { success: true };
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.HubspotError);

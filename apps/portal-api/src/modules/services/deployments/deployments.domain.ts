@@ -103,7 +103,8 @@ export const DeploymentRequestDomain = {
   },
 
   loadProvisionedTrialDeploymentRequestByPlatformIdentifier: async (
-    platformIdentifier: PlatformIdentifier
+    platformIdentifier: PlatformIdentifier,
+    userId: string
   ) => {
     return getDeploymentRequestWithUserDataQuery()
       .whereIn('DeploymentRequest.hub_status', [
@@ -116,6 +117,24 @@ export const DeploymentRequestDomain = {
         DeploymentRequestDeploymentType.Trial
       )
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
+      .where('DeploymentRequest.user_requester_id', '=', userId)
+      .first();
+  },
+
+  loadProvisionedTrialDeploymentRequestByPlatformToken: async (
+    platformToken: string
+  ) => {
+    return getDeploymentRequestWithUserDataQuery()
+      .whereIn('DeploymentRequest.hub_status', [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Expired,
+      ])
+      .where(
+        'DeploymentRequest.type',
+        '=',
+        DeploymentRequestDeploymentType.Trial
+      )
+      .where('DeploymentRequest.platform_token', '=', platformToken)
       .first();
   },
 
