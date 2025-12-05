@@ -32,10 +32,10 @@ import {
   updateDocumentWithCounters,
 } from './document.helper';
 import { waitForUploads } from './document.uploads.helper';
+import { DocumentChildrenDomain } from './domain/document.children.domain';
 import {
   createDocument,
   deleteDocument,
-  getChildrenDocuments,
   getUploader,
   loadDocumentById,
   loadDocuments,
@@ -160,7 +160,7 @@ const resolvers: Resolvers = {
     },
 
     children_documents: ({ id }, _) =>
-      getChildrenDocuments(id, {
+      DocumentChildrenDomain.loadChildrenDocuments(id, {
         unsecured: true,
       }),
     uploader: ({ id }, _) =>

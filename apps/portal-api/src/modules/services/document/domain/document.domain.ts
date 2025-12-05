@@ -643,19 +643,6 @@ export const loadDocuments = async <
   return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
 };
 
-export const getChildrenDocuments = async (
-  documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<Document[]> => {
-  return db<Document>('Document_Children', opts)
-    .leftJoin('Document', 'Document.id', 'Document_Children.child_document_id')
-    .where('Document_Children.parent_document_id', '=', documentId)
-    .tap(restrictDocumentToUserOrganization)
-    .orderBy('created_at', 'asc')
-    .select('Document.*')
-    .groupBy('Document.id');
-};
-
 export const getUploader = async (
   documentId: string,
   opts: Partial<QueryOpts> = {}
