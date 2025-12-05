@@ -1,22 +1,17 @@
 import config from 'config';
 import {
-  DeploymentRequest,
   OrganizationCapability,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
-import { DeploymentRequestDomain } from '../../modules/services/deployments/deployments.domain';
+import {
+  DeploymentRequestDomain,
+  FullyQualifiedDeploymentRequest,
+} from '../../modules/services/deployments/deployments.domain';
 import { loadUserBy } from '../../modules/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
-
-type FullyQualifiedDeploymentRequest = DeploymentRequest & {
-  requester_email: string;
-  requester_first_name: string;
-  requester_last_name: string;
-  organization_name: string;
-};
 
 async function hubspotHook(
   type: string,
