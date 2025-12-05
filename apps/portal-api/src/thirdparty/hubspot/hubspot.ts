@@ -1,13 +1,22 @@
 import config from 'config';
 import {
+  DeploymentRequest,
   OrganizationCapability,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
 import { DeploymentRequestDomain } from '../../modules/services/deployments/deployments.domain';
 import { loadUserBy } from '../../modules/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
+
+type FullyQualifiedDeploymentRequest = DeploymentRequest & {
+  requester_email: string;
+  requester_first_name: string;
+  requester_last_name: string;
+  organization_name: string;
+};
 
 async function hubspotHook(
   type: string,
@@ -67,20 +76,17 @@ export const hubspotLoginHook = async (userId: string) =>
     };
   });
 
-export const hubspotReachOutSalesHook = async ({
-  platformToken,
-  userId,
-}: {
-  platformToken?: string;
-  userId?: string;
-}) =>
+export const hubspotReachOutSalesHook = async () =>
   hubspotHook('reachOutSales', async () => {
-    let deploymentRequest;
-    if (userId) {
+    const { user, portalContext } = requestContext.require();
+    const platformToken = portalContext?.req.header('XTM-Hub-Platform-Token');
+
+    let deploymentRequest: FullyQualifiedDeploymentRequest;
+    if (user?.id) {
       deploymentRequest =
         await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
           PlatformIdentifier.Opencti,
-          userId
+          user.id
         );
     } else if (platformToken) {
       deploymentRequest =
