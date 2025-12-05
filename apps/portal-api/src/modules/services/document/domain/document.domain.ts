@@ -105,6 +105,15 @@ export const DocumentDomain = {
     return document;
   },
 
+  loadDocumentBy: async (
+    field: Record<string, unknown>,
+    opts = {}
+  ): Promise<DocumentModel[]> => {
+    return db<DocumentModel>('Document', opts)
+      .where(field)
+      .select('Document.*');
+  },
+
   upsertOnSlug: async <T extends DocumentModel>(
     documentData: Omit<Partial<T>, 'labels'> & {
       labels?: string[];
@@ -493,7 +502,7 @@ export const deleteDocument = async <T extends DocumentModel>(
   serviceInstanceId: ServiceInstanceId,
   hardDelete: boolean
 ): Promise<T> => {
-  const [documentFromDb] = await loadDocumentBy({
+  const [documentFromDb] = await DocumentDomain.loadDocumentBy({
     'Document.id': documentId,
     'Document.service_instance_id': serviceInstanceId,
   });
@@ -632,13 +641,6 @@ export const loadDocuments = async <
   addIncludeMetadataQuery(loadDocumentQuery, include_metadata);
 
   return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
-};
-
-export const loadDocumentBy = async (
-  field: Record<string, unknown>,
-  opts = {}
-): Promise<DocumentModel[]> => {
-  return db<DocumentModel>('Document', opts).where(field).select('Document.*');
 };
 
 export const getChildrenDocuments = async (

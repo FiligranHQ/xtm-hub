@@ -9,7 +9,7 @@ import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
-import { loadDocumentBy } from './domain/document.domain';
+import { DocumentDomain } from './domain/document.domain';
 
 export const documentVisualizeEndpoint = (app) => {
   app.get(
@@ -30,7 +30,7 @@ export const documentVisualizeEndpoint = (app) => {
           res,
         };
         requestContext.update({ portalContext: context });
-        const [document] = await loadDocumentBy({
+        const [document] = await DocumentDomain.loadDocumentBy({
           'Document.id': fromGlobalId(req.params.filename).id,
         });
         if (!document) {
@@ -86,7 +86,7 @@ export const documentVisualizeEndpoint = (app) => {
             .json({ message: 'Service definition not found' });
         }
 
-        const [document] = await loadDocumentBy(
+        const [document] = await DocumentDomain.loadDocumentBy(
           {
             'Document.id': fromGlobalId(req.params.documentId).id,
           },
