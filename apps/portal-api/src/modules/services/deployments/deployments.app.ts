@@ -272,6 +272,12 @@ export const DeploymentsApp = {
         deploymentRequestId,
         updateData
       );
+
+      if (input.hub_status === DeploymentRequestHubStatus.Active) {
+        await DeploymentRequestDomain.initialiseServiceGroup(
+          input.id as DeploymentRequestId
+        );
+      }
     });
 
     try {

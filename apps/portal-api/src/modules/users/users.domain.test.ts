@@ -4,7 +4,7 @@ import {
   DEFAULT_ADMIN_EMAIL,
   requestContextSimpleUserThales,
   THALES_ADMIN_ORGA_EMAIL,
-  THALES_ADMIN_ORGA_ID,
+  THALES_ADMIN_ORGA_USER_ID,
   THALES_ORGA_ID,
   THALES_SIMPLE_USER_ID,
 } from '../../../tests/tests.const';
@@ -31,7 +31,7 @@ describe('Users domain', () => {
   it('should throw FORBIDDEN_ACCESS when Simple User calls EditUser', async () => {
     try {
       requestContext.set(requestContextSimpleUserThales);
-      await updateUser(THALES_ADMIN_ORGA_ID as UserId, {
+      await updateUser(THALES_ADMIN_ORGA_USER_ID, {
         email: THALES_ADMIN_ORGA_EMAIL,
       });
     } catch (error) {

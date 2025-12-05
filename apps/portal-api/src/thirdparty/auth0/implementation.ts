@@ -78,7 +78,7 @@ export const auth0ClientImplementation: Auth0Client = {
   ): Promise<void> => {
     await managementClient.resourceServers.create({
       name: `${organization_name}_${platform_id}`,
-      identifier: `https://${platform_id}`,
+      identifier: platform_id,
       signing_alg: 'RS256',
     });
   },

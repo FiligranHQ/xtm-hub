@@ -1,13 +1,7 @@
-import {
-  UserFragment,
-  userListFragment,
-  UserListQuery,
-} from '@/components/admin/user/user-list';
+import { UserFragment } from '@/components/admin/user/user-list';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
-import { userList_users$key } from '@generated/userList_users.graphql';
-import { userListQuery } from '@generated/userListQuery.graphql';
 import { CheckIcon, CloseIcon, KeyboardArrowDownIcon } from 'filigran-icon';
 import {
   Command,
@@ -36,11 +30,8 @@ import React, {
   useState,
 } from 'react';
 
-import {
-  readInlineData,
-  useLazyLoadQuery,
-  useRefetchableFragment,
-} from 'react-relay';
+import { useUsersList } from '@/hooks/useUsersList';
+import { readInlineData } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
 interface SelectUsersFormFieldProps
@@ -114,16 +105,15 @@ const SelectUsersFormField = React.forwardRef<
   const { orderMode, orderBy } = useUserListLocalstorage();
   const filterRef = useRef({ search: '' });
 
-  const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
-    count: 50,
-    orderMode,
+  const { data, refetch } = useUsersList({
     orderBy,
-    searchTerm: filterRef.current.search,
+    orderMode,
+    pageSize: 50,
+    filter: {
+      search: filterRef.current.search,
+    },
   });
-  const [data, refetch] = useRefetchableFragment<
-    userListQuery,
-    userList_users$key
-  >(userListFragment, queryData);
+
   const users = useMemo(
     () =>
       data?.users?.edges?.map((edge) => {

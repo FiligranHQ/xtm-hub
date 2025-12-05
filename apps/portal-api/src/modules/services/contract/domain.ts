@@ -40,7 +40,7 @@ export const serviceContractDomain = {
   }: {
     platformId: string;
     token: string;
-  }): Promise<ServiceConfiguration | null> => {
+  }): Promise<ServiceConfiguration | undefined> => {
     return db('Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platformId)
       .whereRaw("config->>'token' = ?", token)

@@ -12,20 +12,19 @@ import * as authHelper from './auth.helper';
 import { securityGuard } from './guard';
 
 describe('Security Guard', () => {
+  let isUserAllowedOnOrganizationSpy: MockInstance;
+  beforeEach(() => {
+    isUserAllowedOnOrganizationSpy = vi.spyOn(
+      authHelper,
+      'isUserAllowedOnOrganization'
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('assertUserIsAllowedOnOrganization', () => {
-    let isUserAllowedOnOrganizationSpy: MockInstance;
-
-    beforeEach(() => {
-      isUserAllowedOnOrganizationSpy = vi.spyOn(
-        authHelper,
-        'isUserAllowedOnOrganization'
-      );
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it('should throw a user not in organization error when user is not in organization', async () => {
       isUserAllowedOnOrganizationSpy.mockResolvedValue({
         isAllowed: false,

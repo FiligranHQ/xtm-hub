@@ -24,7 +24,7 @@ import {
   getOrganizations,
   getRolesPortal,
   loadPendingUsers,
-  loadUsers,
+  loadUserConnection,
   loadUsersByCapabilitiesInOrganization,
   resetPassword,
   userHasOrganizationWithSubscription,
@@ -58,7 +58,7 @@ const resolvers: Resolvers = {
       _,
       { first, after, orderMode, orderBy, searchTerm, filters }
     ) => {
-      return loadUsers({
+      return loadUserConnection({
         first,
         after,
         orderMode,

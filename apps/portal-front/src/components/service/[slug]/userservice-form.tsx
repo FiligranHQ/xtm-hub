@@ -1,8 +1,4 @@
-import {
-  UserFragment,
-  userListFragment,
-  UserListQuery,
-} from '@/components/admin/user/user-list';
+import { UserFragment } from '@/components/admin/user/user-list';
 import { FunctionComponent, useContext, useState } from 'react';
 
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
@@ -11,13 +7,12 @@ import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
+import { useUsersList } from '@/hooks/useUsersList';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
 import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
-import { userList_users$key } from '@generated/userList_users.graphql';
-import { userListQuery } from '@generated/userListQuery.graphql';
 import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
 import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,12 +37,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  readInlineData,
-  useLazyLoadQuery,
-  useMutation,
-  useRefetchableFragment,
-} from 'react-relay';
+import { readInlineData, useMutation } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
@@ -245,21 +235,6 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
     DEBOUNCE_TIME
   );
 
-  const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
-    count: pageSize,
-    orderMode,
-    orderBy,
-    searchTerm: filter.search,
-    filters: filter.organization
-      ? [{ key: 'organization_id', value: [filter.organization] }]
-      : undefined,
-  });
-
-  const [data] = useRefetchableFragment<userListQuery, userList_users$key>(
-    userListFragment,
-    queryData
-  );
-
   const isCapabilityDisabled = (id: string) => {
     if (id === GenericCapabilityName.MANAGE_ACCESS) {
       return false;
@@ -269,6 +244,8 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
       (subscriptionCapa) => id === subscriptionCapa?.service_capability?.id
     );
   };
+
+  const { data } = useUsersList({ pageSize, orderMode, orderBy, filter });
 
   const tagsAutocomplete = data?.users?.edges
     ?.filter((edge) => {

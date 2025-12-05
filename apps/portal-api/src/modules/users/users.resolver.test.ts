@@ -22,7 +22,7 @@ import {
   SERVICE_VAULT_ID,
   SIMPLE_USER_FILIGRAN_ID,
   THALES_ADMIN_ORGA_EMAIL,
-  THALES_ADMIN_ORGA_ID,
+  THALES_ADMIN_ORGA_USER_ID,
   THALES_ORGA_ID,
 } from '../../../tests/tests.const';
 import {
@@ -639,7 +639,7 @@ describe('User mutation resolver', () => {
         await usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: THALES_ADMIN_ORGA_ID,
+            id: THALES_ADMIN_ORGA_USER_ID,
             input: {
               organization_capabilities:
                 thalesUser.organization_capabilities.map(
@@ -662,7 +662,7 @@ describe('User mutation resolver', () => {
         const call = usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: THALES_ADMIN_ORGA_ID,
+            id: THALES_ADMIN_ORGA_USER_ID,
             input: {
               organization_capabilities: [
                 {
@@ -692,7 +692,7 @@ describe('User mutation resolver', () => {
       await usersResolver.Mutation.adminEditUser(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_ID,
+          id: THALES_ADMIN_ORGA_USER_ID,
           input: {
             organization_capabilities: thalesUser.organization_capabilities.map(
               (organizationCapabilities) => ({
@@ -725,7 +725,7 @@ describe('User mutation resolver', () => {
       const call = usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_ID,
+          id: THALES_ADMIN_ORGA_USER_ID,
           input: { capabilities: [] },
         },
         testContext,
@@ -754,7 +754,7 @@ describe('User mutation resolver', () => {
       await usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_ID,
+          id: THALES_ADMIN_ORGA_USER_ID,
           input: {
             capabilities: [
               'MANAGE_PLATFORM_REGISTRATION',
@@ -773,7 +773,7 @@ describe('User mutation resolver', () => {
       await usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_ID,
+          id: THALES_ADMIN_ORGA_USER_ID,
           input: {
             capabilities: ['ADMINISTRATE_ORGANIZATION'],
           },

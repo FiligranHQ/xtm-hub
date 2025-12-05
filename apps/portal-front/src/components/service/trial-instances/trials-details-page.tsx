@@ -1,7 +1,9 @@
+import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
@@ -40,16 +42,23 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
             <span className="text-gray/60">License:</span> Enterprise Edition
           </li>
         </ul>
-        {platform.url && (
-          <Button>
-            <Link
-              target="_blank"
-              rel="noopener noreferrer"
-              href={platform.url}>
-              Access OpenCTI
-            </Link>
-          </Button>
-        )}
+
+        <div className="flex flex-col gap-m">
+          {platform.url && (
+            <Button>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href={platform.url}>
+                Access OpenCTI
+              </Link>
+            </Button>
+          )}
+          {platform.deployment_request?.hub_status ===
+            DeploymentRequestHubStatusEnum.ACTIVE && (
+            <TrialsManageUsersDialog platform={platform} />
+          )}
+        </div>
       </section>
       <TrialsLearnMore />
     </>

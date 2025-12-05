@@ -41,7 +41,7 @@ describe('Platform Token Validation', () => {
       vi.spyOn(
         serviceContractDomain,
         'loadConfigurationByPlatformAndToken'
-      ).mockResolvedValue(null);
+      ).mockResolvedValue(undefined);
 
       const req: express.Request = {
         headers: {

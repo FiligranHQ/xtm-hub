@@ -9,11 +9,11 @@ import registeredPlatformByServiceInstanceIdQueryGraphql, {
 } from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
 import { notFound } from 'next/navigation';
 
-interface ServiceCustomDashboardsPageProps {
+interface ServiceOpenCTIRegistrationPageProps {
   params: Promise<{ serviceInstanceId: string }>;
 }
 
-const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
+const Page = async ({ params }: ServiceOpenCTIRegistrationPageProps) => {
   const { serviceInstanceId } = await params;
   const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
 
