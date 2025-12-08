@@ -593,6 +593,7 @@ export type Mutation = {
   registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
+  reorderDeploymentRequestInQueue?: Maybe<Success>;
   requestTransferPersonalSpace: Success;
   resetPassword: Success;
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
@@ -853,6 +854,11 @@ export type MutationRemovePendingUserFromOrganizationArgs = {
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['ID']['input'];
   user_id: Scalars['ID']['input'];
+};
+
+
+export type MutationReorderDeploymentRequestInQueueArgs = {
+  input: ReorderDeploymentRequestInQueueInput;
 };
 
 
@@ -1535,6 +1541,16 @@ export type RegistrationResponse = {
   token: Scalars['String']['output'];
 };
 
+export enum ReorderDeploymentRequestInQueueDirection {
+  Top = 'top',
+  Up = 'up'
+}
+
+export type ReorderDeploymentRequestInQueueInput = {
+  direction: ReorderDeploymentRequestInQueueDirection;
+  id: Scalars['ID']['input'];
+};
+
 export enum Restriction {
   AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
   Bypass = 'BYPASS',
@@ -2172,6 +2188,8 @@ export type ResolversTypes = ResolversObject<{
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
+  ReorderDeploymentRequestInQueueDirection: ReorderDeploymentRequestInQueueDirection;
+  ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
   SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
@@ -2312,6 +2330,7 @@ export type ResolversParentTypes = ResolversObject<{
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: RegistrationResponse;
+  ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   RolePortal: RolePortal;
   SendTelemetryMutation: SendTelemetryMutation;
   SeoServiceInstance: SeoServiceInstance;
@@ -2742,6 +2761,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
+  reorderDeploymentRequestInQueue?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationReorderDeploymentRequestInQueueArgs, 'input'>>;
   requestTransferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationRequestTransferPersonalSpaceArgs>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;

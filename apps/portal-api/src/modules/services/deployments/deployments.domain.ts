@@ -8,6 +8,7 @@ import {
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
@@ -15,6 +16,7 @@ import DeploymentRequest, {
 } from '../../../model/kanel/public/DeploymentRequest';
 import { auth0Client } from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
@@ -53,11 +55,12 @@ export const DeploymentRequestDomain = {
   loadDeploymentRequestCountByRegion: async (
     conditions: DeploymentRequestMutator
   ): Promise<Record<string, number>> => {
-    const results = await db<DeploymentRequest>('DeploymentRequest')
-      .where(conditions)
-      .select('region')
-      .count('* as count')
-      .groupBy('region');
+    const results: { region: string; count: string }[] =
+      await db<DeploymentRequest>('DeploymentRequest')
+        .where(conditions)
+        .select('region')
+        .count('* as count')
+        .groupBy('region');
 
     return Object.fromEntries(
       results.map((row) => [row.region, parseInt(row.count as string, 10)])
@@ -192,6 +195,49 @@ export const DeploymentRequestDomain = {
         },
       });
     }
+  },
+
+  reorderDeploymentRequestUp: async (deploymentRequest: DeploymentRequest) => {
+    const previousDeploymentRequest = await db<DeploymentRequest>(
+      'DeploymentRequest'
+    )
+      .where('ordering', '<', deploymentRequest.ordering)
+      .select('*')
+      .first();
+
+    const isDeploymentRequestFirst = !previousDeploymentRequest;
+    if (isDeploymentRequestFirst) {
+      return;
+    }
+
+    await withTransaction(async () => {
+      await db<DeploymentRequest>('DeploymentRequest')
+        .update({ ordering: deploymentRequest.ordering })
+        .where({ id: previousDeploymentRequest.id });
+      await db<DeploymentRequest>('DeploymentRequest')
+        .update({ ordering: previousDeploymentRequest.ordering })
+        .where({ id: deploymentRequest.id });
+    });
+  },
+
+  reorderDeploymentRequestToTop: async ({ id }: DeploymentRequest) => {
+    const topDeploymentRequest = await db<DeploymentRequest>(
+      'DeploymentRequest'
+    )
+      .orderBy('ordering', 'asc')
+      .first();
+    if (!topDeploymentRequest) {
+      throw new Error(ErrorCode.DeploymentRequestNotFound);
+    }
+
+    const isDeploymentRequestAlreadyOnTop = topDeploymentRequest.id === id;
+    if (isDeploymentRequestAlreadyOnTop) {
+      return;
+    }
+
+    await DeploymentRequestDomain.updateDeploymentRequestById(id, {
+      ordering: topDeploymentRequest.ordering - 1,
+    });
   },
 };
 

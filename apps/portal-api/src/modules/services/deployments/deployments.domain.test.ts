@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as dbModule from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import { SIMPLE_USER_FILIGRAN_ID } from '../../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
@@ -8,6 +9,7 @@ import {
   DeploymentRequestOrdering,
   OrderingMode,
 } from '../../../__generated__/resolvers-types';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../../model/kanel/public/User';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
@@ -15,6 +17,9 @@ import { DeploymentRequestDomain } from './deployments.domain';
 import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
 
 describe('DeploymentRequestDomain', () => {
+  beforeEach(async () => {
+    await db<DeploymentRequest>('DeploymentRequest').del();
+  });
   describe('loadDeploymentRequestCountByRegion', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let mockDb: any;
@@ -134,6 +139,124 @@ describe('DeploymentRequestDomain', () => {
       expect(deploymentRequests.totalCount).toBe('2');
       expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment1?.id);
       expect(deploymentRequests.edges[1]?.node?.id).toBe(deployment2?.id);
+    });
+  });
+
+  describe('reorderDeploymentRequestUp', () => {
+    it('should do nothing when deployment request is the top one', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 1,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 2,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(
+        topDeploymentRequest!
+      );
+      const resultDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: topDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      expect(resultDeploymentRequest).toBeDefined();
+      expect(resultDeploymentRequest!.ordering).toBe(1);
+    });
+
+    it('should swap deployment request with the previous one', async () => {
+      const previousDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 10,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(
+        selectedDeploymentRequest!
+      );
+      const resultPreviousDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: previousDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: selectedDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      expect(resultPreviousDeploymentRequest).toBeDefined();
+      expect(resultPreviousDeploymentRequest!.ordering).toBe(10);
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(3);
+    });
+  });
+
+  describe('reorderDeploymentRequestToTop', async () => {
+    it('should do nothing when deployment request is the top one', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 1,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 2,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+        topDeploymentRequest!
+      );
+      const resultDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: topDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      expect(resultDeploymentRequest).toBeDefined();
+      expect(resultDeploymentRequest!.ordering).toBe(1);
+    });
+
+    it('should move deployment request to top', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 5,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 6,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+        selectedDeploymentRequest!
+      );
+      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: selectedDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      const resultTopDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: topDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(2);
+
+      expect(resultTopDeploymentRequest).toBeDefined();
+      expect(resultTopDeploymentRequest!.ordering).toBe(3);
     });
   });
 });
