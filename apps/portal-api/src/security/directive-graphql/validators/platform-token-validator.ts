@@ -8,7 +8,10 @@ import { requestContext } from '../../../context/request.context';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
-import { loadOrganizationBy } from '../../../modules/organizations/organizations.domain';
+import {
+  loadOrganizationBy,
+  organizationDomain,
+} from '../../../modules/organizations/organizations.domain';
 import { serviceContractDomain } from '../../../modules/services/contract/domain';
 import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
@@ -77,6 +80,34 @@ export const validateAndGetRequestedPlatformToken = async (
   return isValid ? deploymentRequest : null;
 };
 
+const loadOrganizationFromPlatformIdAndTokenHeaders = async (
+  req: express.Request
+) => {
+  if (!validateExistsToken(req)) {
+    throw new Error('Invalid platform token provided');
+  }
+
+  const deploymentRequest = await validateAndGetRequestedPlatformToken(req);
+  if (deploymentRequest) {
+    return loadOrganizationBy({
+      id: deploymentRequest.organization_requester_id,
+    });
+  }
+
+  const serviceConfiguration =
+    await serviceContractDomain.loadConfigurationByPlatformAndToken({
+      platformId: extractPlatformId(req),
+      token: extractPlatformToken(req),
+    });
+  if (serviceConfiguration) {
+    return organizationDomain.loadOrganizationSubscribedToServiceInstance(
+      serviceConfiguration.service_instance_id
+    );
+  }
+
+  throw new Error('Invalid token provided');
+};
+
 export const createPlatformTokenResolver = (originalResolve) => {
   return async function secureResolver(
     source,
@@ -84,26 +115,14 @@ export const createPlatformTokenResolver = (originalResolve) => {
     portalContext: PortalContext,
     info
   ) {
-    const isActivePlatformToken = await validateActivePlatformToken(
+    const organization = await loadOrganizationFromPlatformIdAndTokenHeaders(
       portalContext.req
     );
-
-    const deploymentRequest = await validateAndGetRequestedPlatformToken(
-      portalContext.req
-    );
-
-    if (!isActivePlatformToken || !deploymentRequest) {
-      throw new Error('Invalid token provided');
-    }
-
-    const organization = await loadOrganizationBy({
-      id: deploymentRequest.organization_requester_id,
-    });
 
     const platformUser = {
       id: PLATFORM_USER_UUID,
       email: PLATFORM_USER_EMAIL,
-      selected_organization_id: deploymentRequest.organization_requester_id,
+      selected_organization_id: organization.id,
       organizations: [organization],
       capabilities: [],
       roles_portal: [],

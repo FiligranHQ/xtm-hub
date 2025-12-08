@@ -8,6 +8,7 @@ import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { FeatureFlag } from '@/utils/constant';
+import { daysUntil } from '@/utils/date';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -30,11 +31,8 @@ export const TryOpenCTICallout = () => {
   const { freeTrial } = useFreeTrial();
 
   const target = new Date(freeTrial?.subscription?.end_date);
-  const now = new Date();
 
-  const diffInMs = target.getTime() - now.getTime();
-
-  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInDays = daysUntil(target);
 
   const GRADIENT_CLASSES = {
     default: 'from-blue to-turquoise-300 bg-gradient-to-r',

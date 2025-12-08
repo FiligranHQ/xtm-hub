@@ -18,8 +18,8 @@ import {
   TelemetryEventServiceType,
 } from '../../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../../telemetry/telemetry.types';
+import { DocumentApp } from '../../document/document.app';
 import * as DocumentUploadsHelper from '../../document/document.uploads.helper';
-import { createDocumentWithChildren } from '../../document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
@@ -102,7 +102,7 @@ describe('csv feeds app', () => {
       }
     );
 
-    await createDocumentWithChildren<CsvFeed>(
+    await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       {
         id: documentId,

@@ -58,7 +58,6 @@
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
       "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
-      "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "Cette organisation est déjà abonnée à ce service",
       "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors du désenregistrement de la plate-forme",
       "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "Vous ne pouvez pas ajouter un utilisateur à votre espace personnel",
@@ -89,6 +88,7 @@
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
       "FREE_TRIAL_ALREADY_EXISTS": "Une instance de test existe déjà pour votre organisation",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "Vous devez d'abord accorder des capacités à l'organisation",
+      "HUBSPOT_ERROR": "Une erreur s'est produite lors de la prise de contact",
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du numéro de part",
       "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
       "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
@@ -96,7 +96,9 @@
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
       "INVALID_PLATFORM_ID": "Une erreur inconnue s'est produite",
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
+      "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
+      "INVALID_STATUS": "Statut invalide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
@@ -108,7 +110,7 @@
       "OPENAEV_SCENARIO_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour d'un scénario OpenAEV",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
       "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
-      "PERSONAL_SPACE_MUST_ALREADY_EXIST": "Si vous voulez transférer votre personal space, votre futur compte doit déjà exister.",
+      "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "Vous n'êtes pas autorisé à faire ceci",
       "PLATFORM_NOT_REGISTERED": "La plateforme n'est pas enregistrée",
       "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plate-forme de l'utilisateur",
@@ -119,6 +121,7 @@
       "SERVICE_CONFIGURATION_NOT_FOUND": "La configuration du service n'a pas été trouvée",
       "SERVICE_CONTRACT_NOT_FOUND": "Le contrat de service n'a pas été trouvé",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
+      "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
       "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
       "SERVICE_NOT_FOUND": "Le service n'a pas été trouvé",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
@@ -129,7 +132,8 @@
       "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
       "USER_DISABLED": "L'utilisateur est désactivé",
-      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes"
+      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
+      "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter"
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -209,7 +213,8 @@
     "Services": "Services",
     "Settings": "Réglages",
     "SettingsLabel": "Menu des paramètres",
-    "Users": "Utilisateurs"
+    "Users": "Utilisateurs",
+    "Trials": "Tableau de bord des essais"
   },
   "MenuUser": {
     "Profile": "Profile",
@@ -261,6 +266,31 @@
     "PersonalSpace": "Espace personnel",
     "SelectOrganization": "Choisir une organisation",
     "SelectedOrganization": "Organisation choisie"
+  },
+  "TrialsDashboard": {
+    "Columns": {
+      "Email": "Courriel",
+      "Organization": "Organisation",
+      "StartDate": "Date de début",
+      "EndDate": "Date de fin",
+      "RemainingDays": "Jours restants",
+      "Status": "Statut",
+      "Region": "Région",
+      "RequestDate": "Date de la demande",
+      "Priority": "Priorité",
+      "CancellationDate": "Date d'annulation",
+      "CancellationOwner": "Propriétaire de l'annulation"
+    },
+    "TabTitle": {
+      "Cancelled": "Annulé",
+      "Expired": "Expiré",
+      "Running": "En cours d'exécution",
+      "Waiting": "En attente"
+    },
+    "Actions": {
+      "SearchTrials": "Recherche par email ou par organisation"
+    },
+    "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai"
   },
   "Parameters": {
     "Version": "Version"
@@ -658,10 +688,10 @@
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
       "Explore": "Explorez tout le potentiel d'OpenCTI Enterprise Edition, commencez votre essai gratuit de 30 jours.",
-      "Active": "Votre essai gratuit d'OpenCTI Enterprise Edition est actif",
-      "Provisioning": "Votre essai gratuit d'OpenCTI Enterprise Edition est en cours de provisionnement.",
-      "Requested": "Votre essai gratuit d'OpenCTI Enterprise Edition a été demandé.",
-      "Expired": "Votre essai gratuit d'OpenCTI Enterprise Edition a expiré.",
+      "Active": "Votre essai gratuit d'OpenCTI est actif",
+      "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
+      "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
+      "Expired": "Votre essai gratuit d'OpenCTI a expiré.",
       "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
       "LearnMore": "En savoir plus",
       "StartTrial": "Commencez votre essai gratuit",
@@ -683,12 +713,16 @@
         "New": "Nouveau",
         "Requested": "Demandée",
         "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
-        "FreeTrialDescription": "Explorez une version entièrement fonctionnelle d'OpenCTI pour voir comment vous pouvez rendre vos renseignements sur les menaces opérationnels - de bout en bout !"
+        "FreeTrialDescription": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition pour commencer à rendre opérationnelle votre veille sur les menaces de bout en bout !"
       },
       "CapacityWarning": {
         "Title": "Aucune plateforme disponible",
         "Content": "Aucune plateforme n'est disponible dans cette région pour le moment. Souhaitez-vous être averti lorsque nous en aurons une de disponible ?",
         "Continue": "Me prévenir"
+      },
+      "ManageUsers": {
+        "Title": "Gérer les utilisateurs",
+        "Email": "Courriel"
       }
     },
     "Vault": {
@@ -871,7 +905,8 @@
       "Password": "Mot de passe",
       "SelectOrganization": "Sélectionner une organisation",
       "SelectRoles": "Sélectionner rôles"
-    }
+    },
+    "Capability": "Capacité"
   },
   "Utils": {
     "Cancel": "Annuler",

@@ -24,7 +24,7 @@ const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
   },
   {
     from: DeploymentRequestHubStatus.Queued,
-    to: DeploymentRequestHubStatus.Canceled,
+    to: DeploymentRequestHubStatus.Cancelled,
   },
   {
     from: DeploymentRequestHubStatus.Pending,
@@ -36,7 +36,7 @@ const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
   },
   {
     from: DeploymentRequestHubStatus.Pending,
-    to: DeploymentRequestHubStatus.Canceled,
+    to: DeploymentRequestHubStatus.Cancelled,
   },
   {
     from: DeploymentRequestHubStatus.Active,
@@ -44,7 +44,7 @@ const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
   },
   {
     from: DeploymentRequestHubStatus.Active,
-    to: DeploymentRequestHubStatus.Canceled,
+    to: DeploymentRequestHubStatus.Cancelled,
   },
   {
     from: DeploymentRequestHubStatus.Failed,

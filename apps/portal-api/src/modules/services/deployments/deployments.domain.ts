@@ -1,18 +1,21 @@
+import { Knex } from 'knex';
 import { db, paginate } from '../../../../knexfile';
 import {
-  DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   PlatformIdentifier,
-  QueryDeploymentRequestsArgs,
+  QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
+import { auth0Client } from '../../../thirdparty/auth0/client';
+import { logApp } from '../../../utils/app-logger.util';
+import { ServiceGroupDomain } from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -68,11 +71,10 @@ export const DeploymentRequestDomain = {
     return result?.max ? parseInt(result.max as string, 10) : null;
   },
 
-  loadDeploymentRequests: async (
-    opts: QueryDeploymentRequestsArgs,
+  loadDeploymentRequests: async <T>(
+    opts: QueryDeploymentRequestsListArgs,
     options?: { onlyOutOfSync?: boolean }
   ) => {
-    const { first, after, filters } = opts;
     const query = getDeploymentRequestWithUserDataQuery();
 
     // If onlyOutOfSync, only return deployments with sync offset (target_state different from actual_state)
@@ -82,15 +84,14 @@ export const DeploymentRequestDomain = {
       );
     }
 
-    return paginate<DeploymentRequest, DeploymentRequestConnection>(
+    if (opts.searchTerm) {
+      query.orWhereILike(`User.email`, `%${opts.searchTerm}%`);
+      query.orWhereILike(`Organization.name`, `%${opts.searchTerm}%`);
+    }
+
+    return paginate<DeploymentRequest, T>(
       'DeploymentRequest',
-      {
-        first,
-        after,
-        orderBy: 'ordering',
-        orderMode: 'asc',
-        filters,
-      },
+      opts,
       undefined,
       query
     );
@@ -103,9 +104,16 @@ export const DeploymentRequestDomain = {
   },
 
   loadProvisionedTrialDeploymentRequestByPlatformIdentifier: async (
-    platformIdentifier: PlatformIdentifier
-  ) => {
+    platformIdentifier: PlatformIdentifier,
+    userId: string
+  ): Promise<FullyQualifiedDeploymentRequest> => {
     return getDeploymentRequestWithUserDataQuery()
+      .leftJoin(
+        'User_Organization',
+        'User_Organization.user_id',
+        '=',
+        'Organization.id'
+      )
       .whereIn('DeploymentRequest.hub_status', [
         DeploymentRequestHubStatus.Active,
         DeploymentRequestHubStatus.Expired,
@@ -116,6 +124,24 @@ export const DeploymentRequestDomain = {
         DeploymentRequestDeploymentType.Trial
       )
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
+      .where('User_Organization.user_id', '=', userId)
+      .first();
+  },
+
+  loadProvisionedTrialDeploymentRequestByPlatformToken: async (
+    platformToken: string
+  ): Promise<FullyQualifiedDeploymentRequest> => {
+    return getDeploymentRequestWithUserDataQuery()
+      .whereIn('DeploymentRequest.hub_status', [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Expired,
+      ])
+      .where(
+        'DeploymentRequest.type',
+        '=',
+        DeploymentRequestDeploymentType.Trial
+      )
+      .where('DeploymentRequest.platform_token', '=', platformToken)
       .first();
   },
 
@@ -137,23 +163,62 @@ export const DeploymentRequestDomain = {
       .returning('*');
     return deploymentRequest;
   },
+  initialiseServiceGroup: async (id: DeploymentRequestId) => {
+    const {
+      organization_name,
+      requester_email,
+      platform_id,
+      user_requester_id,
+      service_instance_id,
+    } = await DeploymentRequestDomain.loadFullDeploymentRequestById(id);
+
+    try {
+      await auth0Client.createAudienceAPI(organization_name, platform_id);
+    } catch (error) {
+      logApp.warn(`Auth0 Create Audience: ${error}`);
+    }
+
+    const serviceGroup = await ServiceGroupDomain.loadServiceGroups({
+      service_instance_id: service_instance_id,
+    });
+    if (serviceGroup.length === 0) {
+      await ServiceGroupDomain.initGroupWithAdmin(
+        user_requester_id,
+        service_instance_id
+      );
+      await auth0Client.updateUserRBACInstance(requester_email, {
+        [platform_id]: {
+          groups: ['Admin'],
+        },
+      });
+    }
+  },
 };
 
-const getDeploymentRequestWithUserDataQuery = () => {
-  return db<DeploymentRequest>('DeploymentRequest')
-    .leftJoin(
-      'Organization',
-      'DeploymentRequest.organization_requester_id',
-      '=',
-      'Organization.id'
-    )
-    .leftJoin('User', 'DeploymentRequest.user_requester_id', '=', 'User.id')
-    .select([
-      'DeploymentRequest.*',
-      'Organization.name as organization_name',
-      'Organization.domains as organization_domains',
-      'User.email as requester_email',
-      'User.first_name as requester_first_name',
-      'User.last_name as requester_last_name',
-    ]);
+export type FullyQualifiedDeploymentRequest = DeploymentRequest & {
+  organization_name: string;
+  organization_domains: string[];
+  requester_email: string;
+  requester_first_name: string;
+  requester_last_name: string;
 };
+
+const getDeploymentRequestWithUserDataQuery =
+  (): Knex.QueryBuilder<FullyQualifiedDeploymentRequest> => {
+    return db<DeploymentRequest>('DeploymentRequest')
+      .leftJoin(
+        'Organization',
+        'DeploymentRequest.organization_requester_id',
+        '=',
+        'Organization.id'
+      )
+      .leftJoin('User', 'DeploymentRequest.user_requester_id', '=', 'User.id')
+      .select([
+        'DeploymentRequest.*',
+        'Organization.name as organization_name',
+        'Organization.domains as organization_domains',
+        'User.email as requester_email',
+        'User.first_name as requester_first_name',
+        'User.last_name as requester_last_name',
+      ]);
+  };

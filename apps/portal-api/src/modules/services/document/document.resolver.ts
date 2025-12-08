@@ -25,6 +25,7 @@ import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
 } from '../service-instance.domain';
+import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
   loadUnsecureDocumentsBy,
@@ -32,12 +33,11 @@ import {
   updateDocumentWithCounters,
 } from './document.helper';
 import { waitForUploads } from './document.uploads.helper';
+import { DocumentChildrenDomain } from './domain/document.children.domain';
 import {
-  createDocument,
   deleteDocument,
-  getChildrenDocuments,
+  DocumentDomain,
   getUploader,
-  loadDocumentById,
   loadDocuments,
   loadUploaderOrganization,
   updateDocument,
@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
         const { minioName, fileName, mimeType } =
           await MinIOClient.createFile(document);
 
-        return await createDocument<Document>(
+        return await DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
           {
             ...omit(payload, ['service_instance_id']),
             minio_name: minioName,
@@ -160,7 +160,7 @@ const resolvers: Resolvers = {
     },
 
     children_documents: ({ id }, _) =>
-      getChildrenDocuments(id, {
+      DocumentChildrenDomain.loadChildrenDocuments(id, {
         unsecured: true,
       }),
     uploader: ({ id }, _) =>
@@ -229,7 +229,9 @@ const resolvers: Resolvers = {
       }
     },
     document: async (_, { documentId }) =>
-      loadDocumentById(extractId<DocumentId>(documentId)),
+      DocumentDomain.loadDocumentWithMetadataById(
+        extractId<DocumentId>(documentId)
+      ),
   },
 };
 

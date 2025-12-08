@@ -10,6 +10,7 @@ import Organization, {
   OrganizationInitializer,
   OrganizationMutator,
 } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../model/kanel/public/User';
 
 export const organizationDomain = {
@@ -17,6 +18,29 @@ export const organizationDomain = {
     return db<Organization>('Organization')
       .where('name', 'ILIKE', name)
       .first('id');
+  },
+
+  loadOrganizationSubscribedToServiceInstance: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<Organization | null> => {
+    return db<Organization>('Organization')
+      .leftJoin(
+        'Subscription',
+        'Subscription.organization_id',
+        '=',
+        'Organization.id'
+      )
+      .leftJoin(
+        'ServiceInstance',
+        'Subscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .where({
+        'ServiceInstance.id': serviceInstanceId,
+      })
+      .select('Organization.*')
+      .first();
   },
 };
 

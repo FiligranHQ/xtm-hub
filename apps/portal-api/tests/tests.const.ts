@@ -16,15 +16,17 @@ import {
 export const DEFAULT_ADMIN_EMAIL = 'admin@filigran.io';
 export const DEFAULT_ADMIN_PASSWORD = 'admin';
 export const SIMPLE_USER_FILIGRAN_ID = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
-export const ADMIN_USER_ID = 'ba091095-418f-4b4f-b150-6c9295e232c3';
+export const ADMIN_USER_ID = 'ba091095-418f-4b4f-b150-6c9295e232c3' as UserId;
 export const DEFAULT_ORG = 'Filigran';
 export const FILIGRAN_ORGA_ID =
   'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId;
 
 export const THALES_ORGA_ID =
   '681fb117-e2c3-46d3-945a-0e921b5d4b6c' as OrganizationId;
-export const THALES_ADMIN_ORGA_ID =
+export const THALES_ADMIN_ORGA_PERSONAL_SPACE_ID =
   '015c0488-848d-4c89-95e3-8a243971f594' as OrganizationId;
+export const THALES_ADMIN_ORGA_USER_ID =
+  THALES_ADMIN_ORGA_PERSONAL_SPACE_ID as unknown as UserId;
 export const THALES_ADMIN_ORGA_EMAIL = 'admin@thales.com';
 export const SERVICE_MALWARE_ID = '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4';
 export const SERVICE_VAULT_ID =
@@ -40,7 +42,8 @@ export const SERVICE_OPENCTI_REGISTRATION =
 export const THALES_SIMPLE_USER_ID =
   '154006e2-f24b-42da-b39c-e0fb17bead00' as UserId;
 export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
-export const FILIGRAN_USER_ID = '77b4b845-4ab4-4df8-8e12-0651da813ebb';
+export const FILIGRAN_USER_ID =
+  '77b4b845-4ab4-4df8-8e12-0651da813ebb' as UserId;
 export const INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD =
   '26611d56-e443-45fb-9f6c-cc6b9b8a5de9' as ServiceCapabilityId;
 export const INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE =
@@ -80,7 +83,7 @@ export const requestContextAdminUser = {
 
 export const contextAdminOrgaThales: PortalContext = {
   user: {
-    id: THALES_ADMIN_ORGA_ID,
+    id: THALES_ADMIN_ORGA_USER_ID,
     email: THALES_ADMIN_ORGA_EMAIL,
     password: null,
     salt: null,
@@ -96,7 +99,7 @@ export const contextAdminOrgaThales: PortalContext = {
         domains: ['thales.com'],
       },
       {
-        id: THALES_ADMIN_ORGA_ID,
+        id: THALES_ADMIN_ORGA_PERSONAL_SPACE_ID,
         name: THALES_ADMIN_ORGA_EMAIL,
         personal_space: true,
         domains: [],
@@ -111,7 +114,7 @@ export const contextAdminOrgaThales: PortalContext = {
       },
       {
         id: 13,
-        organization: THALES_ADMIN_ORGA_ID,
+        organization: THALES_ADMIN_ORGA_PERSONAL_SPACE_ID,
         capabilities: ['ADMINISTRATE_ORGANIZATION'],
       },
     ],
@@ -141,7 +144,7 @@ export const contextSimpleUserThales: PortalContext = {
         domains: ['thales.com'],
       },
       {
-        id: THALES_ADMIN_ORGA_ID,
+        id: THALES_ADMIN_ORGA_PERSONAL_SPACE_ID,
         name: THALES_SIMPLE_USER_EMAIL,
         personal_space: true,
         domains: [],

@@ -5,7 +5,9 @@ import type { ServiceCapabilityId } from './ServiceCapability';
 import type { SubscriptionId } from './Subscription';
 
 /** Identifier type for public.Subscription_Capability */
-export type SubscriptionCapabilityId = string & { __brand: 'public.Subscription_Capability' };
+export type SubscriptionCapabilityId = string & {
+  __brand: 'public.Subscription_Capability';
+};
 
 /** Represents the table public.Subscription_Capability */
 export default interface SubscriptionCapability {

@@ -1,5 +1,5 @@
 import { omit } from '../../utils/utils';
-import { upsertDocumentWithChildren } from '../services/document/domain/document.domain';
+import { DocumentApp } from '../services/document/document.app';
 import {
   Connector,
   INTEGRATION_FEED_CONNECTOR_METADATA,
@@ -19,7 +19,7 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         connector.logo,
         `${connector.name}-logo.png`
       );
-      const doc = await upsertDocumentWithChildren<Connector>(
+      const doc = await DocumentApp.upsertDocumentWithChildren<Connector>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         { ...omit(connector, ['logo']) } as Connector,
         uploadLogo,

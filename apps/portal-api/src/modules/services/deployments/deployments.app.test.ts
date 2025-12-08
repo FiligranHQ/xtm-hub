@@ -12,7 +12,6 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
-  SERVICE_OPENCTI_REGISTRATION,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -25,11 +24,8 @@ import {
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
-  DeploymentRequestInitializer,
 } from '../../../model/kanel/public/DeploymentRequest';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../../model/kanel/public/ServiceInstance';
+import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import {
   ADMIN_UUID,
   PLATFORM_NAME,
@@ -41,69 +37,22 @@ import {
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import {
-  deleteSubscriptionUnsecure,
-  insertUnsecureSubscription,
-} from '../../subcription/subscription.helper';
+import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
   TelemetryOrganizationType,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
+import { ServiceGroupDomain } from '../group/service-group.domain';
+
 import {
   deleteServiceInstanceBy,
-  insertServiceInstance,
   loadServiceInstanceBy,
 } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
-
-async function insertOpenCtiDeploymentRequest(
-  deploymentRequest: Partial<DeploymentRequestInitializer>
-) {
-  const serviceInstanceId = uuidv4() as ServiceInstanceId;
-  await insertServiceInstance({
-    id: serviceInstanceId,
-    name: 'serviceInstance1',
-    description: '',
-    creation_status: ServiceInstanceCreationStatus.Pending,
-    public: false,
-    join_type: 'JOIN_AUTO',
-    tags: [
-      serviceInstanceTagMappedByPlatformIdentifier[PlatformIdentifier.Opencti],
-    ],
-    service_definition_id: SERVICE_OPENCTI_REGISTRATION,
-  });
-  await insertUnsecureSubscription({
-    id: uuidv4(),
-    organization_id: PLATFORM_ORGANIZATION_UUID,
-    service_instance_id: serviceInstanceId,
-  });
-  const defaultDeploymentRequestValues = {
-    activity_sector: 'cybersecurity',
-    id: uuidv4() as DeploymentRequestId,
-    job_title: 'myJob',
-    organization_requester_id: PLATFORM_ORGANIZATION_UUID,
-    platform_identifier: PlatformIdentifier.Opencti,
-    platform_token: uuidv4(),
-    region: DeploymentRequestPlatformRegion.UsEast,
-    request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
-    hub_status: DeploymentRequestHubStatus.Pending,
-    target_state: DeploymentRequestPlatformState.Active,
-    actual_state: undefined,
-    ordering: 1,
-    type: DeploymentRequestDeploymentType.Trial,
-    use_case: 'use_case',
-    service_instance_id: serviceInstanceId as ServiceInstanceId,
-    user_requester_id: ADMIN_UUID,
-  };
-  return await DeploymentRequestDomain.insertDeploymentRequest({
-    ...defaultDeploymentRequestValues,
-    ...deploymentRequest,
-  });
-}
+import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
 
 describe('Deployment app', () => {
   const telemetrySpy = vi
@@ -299,7 +248,7 @@ describe('Deployment app', () => {
     it('should return created deployment requests', async () => {
       const deploymentRequest = await insertOpenCtiDeploymentRequest({});
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -326,7 +275,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -348,7 +297,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
           {
@@ -408,7 +357,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Inactive,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -438,7 +387,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadDeploymentRequests({
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
           {
@@ -528,6 +477,47 @@ describe('Deployment app', () => {
           dbDeploymentRequest.end_date
         );
       }
+    });
+
+    it(' with Active status, it should create ServiceGroup with admin', async () => {
+      const deployment = await DeploymentsApp.updateDeploymentRequest({
+        id: initialDeployment?.id as string,
+        hub_status: DeploymentRequestHubStatus.Active,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        platform_id: 'fake product instance id',
+        failure_reason: 'not failed',
+      });
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      const getUserGroup = await ServiceGroupDomain.loadServiceGroups({
+        service_instance_id: dbDeploymentRequest.service_instance_id,
+      });
+      expect(getUserGroup.length).toBe(3);
+      const userAdminGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest.service_instance_id,
+          'Admin'
+        );
+      expect(userAdminGroup.length).toBe(1);
+      expect(
+        userAdminGroup.find(({ email }) => email === DEFAULT_ADMIN_EMAIL)
+      ).toBeTruthy();
+      const userAnalystGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest.service_instance_id,
+          'Analyst'
+        );
+      expect(userAnalystGroup.length).toBe(0);
+      const userReaderGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest.service_instance_id,
+          'Reader'
+        );
+
+      expect(userReaderGroup.length).toBe(0);
     });
     it('should should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({

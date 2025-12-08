@@ -26,6 +26,12 @@ import { isAdmin } from '../role-portal/role-portal.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildLoginEvent } from '../telemetry/telemetry.helper';
 
+export const UsersDomain = {
+  loadUsers: async (userIds: UserId[]): Promise<User[]> => {
+    return db<User[]>('User').whereIn('id', userIds);
+  },
+};
+
 export const loadUnsecureUser = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<User[]> => {
@@ -247,7 +253,7 @@ export const loadUsersByCapabilitiesInOrganization = async (
   return users;
 };
 
-export const loadUsers = (opts: QueryUsersArgs) => {
+export const loadUserConnection = (opts: QueryUsersArgs) => {
   const { filters } = opts;
   const loadUserQuery = db<UserGenerated>('User', opts);
 

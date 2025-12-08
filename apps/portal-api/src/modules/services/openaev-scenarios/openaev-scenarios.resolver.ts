@@ -10,10 +10,10 @@ import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
+import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import {
   deleteDocument,
   getUploader,
-  loadImagesByDocumentId,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
   loadUploaderOrganization,
@@ -29,7 +29,8 @@ import {
 
 const resolvers: Resolvers = {
   SeoOpenAEVScenario: {
-    children_documents: ({ id }) => loadImagesByDocumentId(id),
+    children_documents: ({ id }) =>
+      DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) =>
       getUploader(id, {
         unsecured: true,
@@ -42,7 +43,8 @@ const resolvers: Resolvers = {
   OpenAEVScenario: {
     labels: ({ id }) =>
       labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
-    children_documents: ({ id }) => loadImagesByDocumentId(id),
+    children_documents: ({ id }) =>
+      DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
     uploader_organization: ({ id }, _) =>
       loadUploaderOrganization(id, { unsecured: true }),

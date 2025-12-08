@@ -18,7 +18,7 @@ interface BadgeOverflowCounterProps {
 export interface BadgeOverflow {
   id: string;
   name: string;
-  color: string;
+  color?: string;
 }
 
 const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({

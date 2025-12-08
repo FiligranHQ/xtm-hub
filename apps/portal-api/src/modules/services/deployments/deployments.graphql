@@ -15,7 +15,7 @@ enum DeploymentRequestHubStatus {
   active
   expired
   failed
-  canceled
+  cancelled
 }
 
 enum DeploymentRequestPlatformState {
@@ -40,6 +40,9 @@ type DeploymentRequest implements Node {
   target_state: DeploymentRequestPlatformState
   actual_state: DeploymentRequestPlatformState
   ordering: Int!
+  requester_email: String
+  organization_name: String
+  request_date: Date!
 }
 
 type PlatformDeploymentRequest {
@@ -103,6 +106,10 @@ input DeploymentRequestFilter {
 
 type DeploymentRequestEdge {
   cursor: String!
+  node: DeploymentRequest!
+}
+type PlatformDeploymentRequestEdge {
+  cursor: String!
   node: PlatformDeploymentRequest!
 }
 
@@ -112,9 +119,26 @@ type DeploymentRequestConnection {
   pageInfo: PageInfo!
 }
 
+type PlatformDeploymentRequestConnection {
+  totalCount: Int!
+  edges: [PlatformDeploymentRequestEdge!]!
+  pageInfo: PageInfo!
+}
+
 type DeploymentAvailability {
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
+}
+
+enum DeploymentRequestOrdering {
+  requester_email
+  organization_name
+  start_date
+  end_date
+  hub_status
+  region
+  ordering
+  request_date
 }
 
 extend type Query {
@@ -122,11 +146,19 @@ extend type Query {
     first: Int!
     after: ID
     filters: [DeploymentRequestFilter!]
-  ): DeploymentRequestConnection! @system_token
+  ): PlatformDeploymentRequestConnection! @system_token
   deploymentRequestsAvailable(
     platformIdentifier: PlatformIdentifier
   ): [DeploymentAvailability!]!
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+  deploymentRequestsList(
+    first: Int!
+    after: ID
+    filters: [DeploymentRequestFilter!]
+    orderBy: DeploymentRequestOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+  ): DeploymentRequestConnection! @auth(requires: [BYPASS])
 }
 
 extend type Mutation {

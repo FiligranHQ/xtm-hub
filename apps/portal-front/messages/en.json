@@ -58,7 +58,6 @@
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "ADDING_USER_ERROR": "Error occurred while creating user",
       "ALREADY_SUBSCRIBED": "You have already subscribed to this service",
-      "ALREADY_SUBSCRIBED_ORGANIZATION_ERROR": "You have already subscribed this organization to this service",
       "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
       "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
@@ -89,6 +88,7 @@
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "FREE_TRIAL_ALREADY_EXISTS": "A free trial already exists for your organization",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "You must grant capabilities on organization first",
+      "HUBSPOT_ERROR": "An error occured while contacting us",
       "INCREMENT_SHARE_NUMBER": "Error occurred while incrementing share number",
       "INSERT_DOCUMENT_ERROR": "Error while inserting document",
       "INVALID_ACTION_SIZE": "An unknown error occurred",
@@ -96,7 +96,9 @@
       "INVALID_IMAGE_URL": "The image URL is not valid",
       "INVALID_PLATFORM_ID": "An unknown error occurred",
       "INVALID_PLATFORM_IDENTIFIER": "Platform identifier is invalid",
+      "INVALID_PLATFORM_VERSION": "Invalid platform version",
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
+      "INVALID_STATUS": "Invalid status",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
@@ -108,7 +110,7 @@
       "OPENAEV_SCENARIO_UPDATE_ERROR": "An error occurred while updating an OpenAEV Scenario",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "An organization with the same domain already exists",
       "ORGANIZATION_SAME_NAME_EXISTS": "An organization with the same name already exists",
-      "PERSONAL_SPACE_MUST_ALREADY_EXIST": "If you want to transfer your personal space, your future account must already exist.",
+      "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "You are not allowed to do this",
       "PLATFORM_NOT_REGISTERED": "The platform is not registered",
       "PLATFORM_TYPE_NOT_SUPPORTED": "The platform type is not supported",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "An unknown error occurred while refreshing user platform token",
@@ -119,6 +121,7 @@
       "SERVICE_CONFIGURATION_NOT_FOUND": "Service configuration was not found",
       "SERVICE_CONTRACT_NOT_FOUND": "Service contract was not found",
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
+      "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
       "SERVICE_NOT_FOUND": "Service was not found",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
@@ -129,7 +132,8 @@
       "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "An error occurred while updating platform service metadata",
       "USER_DISABLED": "User is disabled",
-      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions"
+      "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
+      "YOU_CAN_NOT_LOGIN": "You can not login"
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -209,7 +213,8 @@
     "Services": "Services",
     "Settings": "Settings",
     "SettingsLabel": "Settings menu",
-    "Users": "Users"
+    "Users": "Users",
+    "Trials": "Trials dashboard"
   },
   "MenuUser": {
     "Profile": "Profile",
@@ -261,6 +266,31 @@
     "PersonalSpace": "Personal space",
     "SelectOrganization": "Select an organization",
     "SelectedOrganization": "SelectedOrganization"
+  },
+  "TrialsDashboard": {
+    "Columns": {
+      "Email": "Email",
+      "Organization": "Organization",
+      "StartDate": "Start Date",
+      "EndDate": "End Date",
+      "RemainingDays": "Days remaining",
+      "Status": "Status",
+      "Region": "Region",
+      "RequestDate": "Requested Date",
+      "Priority": "Priority",
+      "CancellationDate": "Cancellation Date",
+      "CancellationOwner": "Cancellation Owner"
+    },
+    "TabTitle": {
+      "Cancelled": "Cancelled",
+      "Expired": "Expired",
+      "Running": "Running",
+      "Waiting": "Waiting"
+    },
+    "Actions": {
+      "SearchTrials": "Search by email or organization"
+    },
+    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
   },
   "Parameters": {
     "Version": "Version"
@@ -658,10 +688,10 @@
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
       "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
-      "Active": "Your OpenCTI Enterprise Edition free trial is active",
-      "Provisioning": "Your OpenCTI Enterprise Edition free trial is currently being provisioned.",
-      "Requested": "Your OpenCTI Enterprise Edition free trial has been requested.",
-      "Expired": "Your OpenCTI Enterprise Edition free trial has expired.",
+      "Active": "Your OpenCTI free trial is active",
+      "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
+      "Requested": "Your OpenCTI free trial has been requested.",
+      "Expired": "Your OpenCTI free trial has expired.",
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "LearnMore": "Learn more",
       "StartTrial": "Start your free trial",
@@ -683,12 +713,16 @@
         "New": "New",
         "Requested": "Requested",
         "Title": "OpenCTI 30-days Free Trial",
-        "FreeTrialDescription": "Explore a fully functional version of OpenCTI to see how you can operationalize your threat intelligence - end-to-end! "
+        "FreeTrialDescription": "Explore all OpenCTI Enterprise Edition functionalities to start operationalizing your threat intelligence end-to-end!"
       },
       "CapacityWarning": {
         "Title": "No platform available",
         "Content": "No platform available in this region at this moment. Do you want to be notified when we have one available?",
         "Continue": "Notify me"
+      },
+      "ManageUsers": {
+        "Title": "Manage users",
+        "Email": "Email"
       }
     },
     "Vault": {
@@ -871,7 +905,8 @@
       "Password": "Password",
       "SelectOrganization": "Select an organization",
       "SelectRoles": "Select roles"
-    }
+    },
+    "Capability": "Capability"
   },
   "Utils": {
     "Cancel": "Cancel",

@@ -28,6 +28,14 @@ const DATE_STYLE_FORMAT: DateStyleFunctionMap = {
   },
 };
 
+export const daysUntil = (targetDate: Date) => {
+  const now = new Date();
+
+  const diffInMs = targetDate.getTime() - now.getTime();
+
+  return Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+};
+
 export const formatDate = (
   date?: Date | string,
   dateStyle: FormatDateStyle = 'DATE_NUMERIC'

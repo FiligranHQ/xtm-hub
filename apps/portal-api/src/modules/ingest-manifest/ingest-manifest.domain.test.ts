@@ -6,7 +6,7 @@ import {
   SYSTEM_USER_UUID,
 } from '../../portal.const';
 import { minioInit } from '../../server/initialize';
-import { loadImagesByDocumentId } from '../services/document/domain/document.domain';
+import { DocumentChildrenDomain } from '../services/document/domain/document.children.domain';
 import {
   Connector,
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
@@ -123,7 +123,9 @@ describe('upsertConnectors', () => {
         expect(labelNames).toContain('integration');
       });
       it('should have related logo', async () => {
-        const images = await loadImagesByDocumentId(contractOne.id);
+        const images = await DocumentChildrenDomain.loadImagesByDocumentId(
+          contractOne.id
+        );
         expect(images).toHaveLength(1);
         expect(images[0].file_name).toBe('contract-one-logo.png');
       });
@@ -247,7 +249,9 @@ describe('upsertConnectors', () => {
 
     it('should have updated logo', async () => {
       for (const doc of secondResult) {
-        const images = await loadImagesByDocumentId(doc.id);
+        const images = await DocumentChildrenDomain.loadImagesByDocumentId(
+          doc.id
+        );
         // Verify that we still have only one image after updating
         expect(images).toHaveLength(1);
         expect(images[0].file_name).toBe(`${doc.slug}-logo.png`);

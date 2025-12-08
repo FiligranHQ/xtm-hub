@@ -270,8 +270,11 @@ export type DeploymentRequest = Node & {
   id: Scalars['ID']['output'];
   job_title?: Maybe<Scalars['String']['output']>;
   ordering: Scalars['Int']['output'];
+  organization_name?: Maybe<Scalars['String']['output']>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
+  request_date: Scalars['Date']['output'];
+  requester_email?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
   target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
@@ -292,7 +295,7 @@ export enum DeploymentRequestDeploymentType {
 export type DeploymentRequestEdge = {
   __typename?: 'DeploymentRequestEdge';
   cursor: Scalars['String']['output'];
-  node: PlatformDeploymentRequest;
+  node: DeploymentRequest;
 };
 
 export type DeploymentRequestFilter = {
@@ -311,11 +314,22 @@ export enum DeploymentRequestFilterKey {
 
 export enum DeploymentRequestHubStatus {
   Active = 'active',
-  Canceled = 'canceled',
+  Cancelled = 'cancelled',
   Expired = 'expired',
   Failed = 'failed',
   Pending = 'pending',
   Queued = 'queued'
+}
+
+export enum DeploymentRequestOrdering {
+  EndDate = 'end_date',
+  HubStatus = 'hub_status',
+  Ordering = 'ordering',
+  OrganizationName = 'organization_name',
+  Region = 'region',
+  RequestDate = 'request_date',
+  RequesterEmail = 'requester_email',
+  StartDate = 'start_date'
 }
 
 export enum DeploymentRequestPlatformRegion {
@@ -420,7 +434,6 @@ export enum FilterKey {
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',
-  ServiceDefinitionIdentifier = 'serviceDefinition_identifier',
   Slug = 'slug'
 }
 
@@ -590,6 +603,7 @@ export type Mutation = {
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateOpenAEVScenario: OpenAevScenario;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
+  updateServiceGroups?: Maybe<Success>;
 };
 
 
@@ -897,6 +911,11 @@ export type MutationUpdatePlatformServiceMetadataArgs = {
   input: UpdatePlatformServiceMetadataInput;
 };
 
+
+export type MutationUpdateServiceGroupsArgs = {
+  input: UpdateServiceGroupsInput;
+};
+
 export type Node = {
   id: Scalars['ID']['output'];
 };
@@ -1052,6 +1071,19 @@ export type PlatformDeploymentRequest = {
   use_case?: Maybe<Scalars['String']['output']>;
 };
 
+export type PlatformDeploymentRequestConnection = {
+  __typename?: 'PlatformDeploymentRequestConnection';
+  edges: Array<PlatformDeploymentRequestEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PlatformDeploymentRequestEdge = {
+  __typename?: 'PlatformDeploymentRequestEdge';
+  cursor: Scalars['String']['output'];
+  node: PlatformDeploymentRequest;
+};
+
 export enum PlatformIdentifier {
   Openaev = 'openaev',
   Opencti = 'opencti'
@@ -1089,8 +1121,9 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   customDashboard?: Maybe<CustomDashboard>;
   customDashboards: CustomDashboardConnection;
-  deploymentRequests: DeploymentRequestConnection;
+  deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
+  deploymentRequestsList: DeploymentRequestConnection;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
@@ -1123,6 +1156,7 @@ export type Query = {
   seoOpenAEVScenariosByServiceSlug?: Maybe<Array<Maybe<OpenAevScenario>>>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstances: Array<SeoServiceInstance>;
+  serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
   serviceInstanceByIdWithSubscriptions?: Maybe<ServiceInstance>;
   serviceInstances: ServiceConnection;
@@ -1171,6 +1205,16 @@ export type QueryDeploymentRequestsArgs = {
 
 export type QueryDeploymentRequestsAvailableArgs = {
   platformIdentifier?: InputMaybe<PlatformIdentifier>;
+};
+
+
+export type QueryDeploymentRequestsListArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<DeploymentRequestFilter>>;
+  first: Scalars['Int']['input'];
+  orderBy: DeploymentRequestOrdering;
+  orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1361,6 +1405,11 @@ export type QuerySeoServiceInstanceArgs = {
 };
 
 
+export type QueryServiceGroupsArgs = {
+  serviceInstanceId: Scalars['ID']['input'];
+};
+
+
 export type QueryServiceInstanceByIdArgs = {
   service_instance_id?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -1373,7 +1422,7 @@ export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
 
 export type QueryServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
+  filters?: InputMaybe<Array<ServiceInstanceFilter>>;
   first: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
@@ -1520,7 +1569,7 @@ export type SeoServiceInstance = Node & {
   name: Scalars['String']['output'];
   service_definition: ServiceDefinition;
   slug?: Maybe<Scalars['String']['output']>;
-  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tags?: Maybe<Array<ServiceInstanceTag>>;
 };
 
 export type ServiceCapability = Node & {
@@ -1563,6 +1612,13 @@ export enum ServiceDefinitionIdentifier {
   Vault = 'vault'
 }
 
+export type ServiceGroup = Node & {
+  __typename?: 'ServiceGroup';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<User>>;
+};
+
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
   capabilities: Array<Maybe<Scalars['String']['output']>>;
@@ -1581,7 +1637,7 @@ export type ServiceInstance = Node & {
   service_definition?: Maybe<ServiceDefinition>;
   slug?: Maybe<Scalars['String']['output']>;
   subscriptions?: Maybe<Array<Maybe<SubscriptionModel>>>;
-  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tags?: Maybe<Array<ServiceInstanceTag>>;
   user_joined?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -1597,6 +1653,16 @@ export type ServiceInstanceEdge = {
   cursor: Scalars['String']['output'];
   node?: Maybe<ServiceInstance>;
 };
+
+export type ServiceInstanceFilter = {
+  key?: InputMaybe<ServiceInstanceFilterKey>;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum ServiceInstanceFilterKey {
+  ServiceDefinitionIdentifier = 'service_definition_identifier',
+  Tags = 'tags'
+}
 
 export enum ServiceInstanceJoinType {
   JoinAsk = 'JOIN_ASK',
@@ -1617,6 +1683,13 @@ export type ServiceInstanceSubscription = {
   delete?: Maybe<ServiceInstance>;
   edit?: Maybe<ServiceInstance>;
 };
+
+export enum ServiceInstanceTag {
+  OpenAev = 'openAEV',
+  OpenCti = 'openCTI',
+  Others = 'others',
+  Trial = 'trial'
+}
 
 export type ServiceLink = Node & {
   __typename?: 'ServiceLink';
@@ -1791,6 +1864,15 @@ export type UpdateOpenAevScenarioInput = {
 export type UpdatePlatformServiceMetadataInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId: Scalars['ID']['input'];
+};
+
+export type UpdateServiceGroupsInput = {
+  groups: Array<UpdateServiceGroupsInputGroup>;
+};
+
+export type UpdateServiceGroupsInputGroup = {
+  id: Scalars['ID']['input'];
+  userIds: Array<Scalars['ID']['input']>;
 };
 
 export type User = Node & {
@@ -1989,7 +2071,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( OpenAevScenario );
   IntegrationFeed: ( Connector ) | ( CsvFeed );
-  Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2023,6 +2105,7 @@ export type ResolversTypes = ResolversObject<{
   DeploymentRequestFilter: DeploymentRequestFilter;
   DeploymentRequestFilterKey: DeploymentRequestFilterKey;
   DeploymentRequestHubStatus: DeploymentRequestHubStatus;
+  DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
@@ -2073,6 +2156,8 @@ export type ResolversTypes = ResolversObject<{
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PlatformContract: PlatformContract;
   PlatformDeploymentRequest: ResolverTypeWrapper<PlatformDeploymentRequest>;
+  PlatformDeploymentRequestConnection: ResolverTypeWrapper<PlatformDeploymentRequestConnection>;
+  PlatformDeploymentRequestEdge: ResolverTypeWrapper<PlatformDeploymentRequestEdge>;
   PlatformIdentifier: PlatformIdentifier;
   PlatformInput: PlatformInput;
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
@@ -2096,12 +2181,16 @@ export type ResolversTypes = ResolversObject<{
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
+  ServiceGroup: ResolverTypeWrapper<ServiceGroup>;
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
   ServiceInstanceCreationStatus: ServiceInstanceCreationStatus;
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
+  ServiceInstanceFilter: ServiceInstanceFilter;
+  ServiceInstanceFilterKey: ServiceInstanceFilterKey;
   ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
+  ServiceInstanceTag: ServiceInstanceTag;
   ServiceLink: ResolverTypeWrapper<ServiceLink>;
   ServiceRestriction: ServiceRestriction;
   Settings: ResolverTypeWrapper<Settings>;
@@ -2122,6 +2211,8 @@ export type ResolversTypes = ResolversObject<{
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
+  UpdateServiceGroupsInput: UpdateServiceGroupsInput;
+  UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -2208,6 +2299,8 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
   PlatformDeploymentRequest: PlatformDeploymentRequest;
+  PlatformDeploymentRequestConnection: PlatformDeploymentRequestConnection;
+  PlatformDeploymentRequestEdge: PlatformDeploymentRequestEdge;
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
   Query: {};
@@ -2225,8 +2318,10 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceCapability: ServiceCapability;
   ServiceConnection: ServiceConnection;
   ServiceDefinition: ServiceDefinition;
+  ServiceGroup: ServiceGroup;
   ServiceInstance: ServiceInstance;
   ServiceInstanceEdge: ServiceInstanceEdge;
+  ServiceInstanceFilter: ServiceInstanceFilter;
   ServiceInstanceSubscription: ServiceInstanceSubscription;
   ServiceLink: ServiceLink;
   Settings: Settings;
@@ -2246,6 +2341,8 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
+  UpdateServiceGroupsInput: UpdateServiceGroupsInput;
+  UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   Upload: Scalars['Upload']['output'];
   User: User;
   UserConnection: UserConnection;
@@ -2441,8 +2538,11 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;
+  request_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  requester_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
@@ -2459,7 +2559,7 @@ export type DeploymentRequestConnectionResolvers<ContextType = PortalContext, Pa
 
 export type DeploymentRequestEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequestEdge'] = ResolversParentTypes['DeploymentRequestEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2652,10 +2752,11 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
+  updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IsPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IsPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2765,6 +2866,19 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PlatformDeploymentRequestConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformDeploymentRequestConnection'] = ResolversParentTypes['PlatformDeploymentRequestConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['PlatformDeploymentRequestEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PlatformDeploymentRequestEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformDeploymentRequestEdge'] = ResolversParentTypes['PlatformDeploymentRequestEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PlatformProviderResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformProvider'] = ResolversParentTypes['PlatformProvider']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   provider?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2776,8 +2890,9 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
   customDashboards?: Resolver<ResolversTypes['CustomDashboardConnection'], ParentType, ContextType, RequireFields<QueryCustomDashboardsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  deploymentRequests?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
+  deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
+  deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2809,6 +2924,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   seoOpenAEVScenariosByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['OpenAEVScenario']>>>, ParentType, ContextType, Partial<QuerySeoOpenAevScenariosByServiceSlugArgs>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
+  serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
   serviceInstanceByIdWithSubscriptions?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdWithSubscriptionsArgs>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2874,7 +2990,7 @@ export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType 
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['ServiceInstanceTag']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2903,6 +3019,13 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ServiceGroupResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceGroup'] = ResolversParentTypes['ServiceGroup']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstance'] = ResolversParentTypes['ServiceInstance']> = ResolversObject<{
   capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
   creation_status?: Resolver<Maybe<ResolversTypes['ServiceInstanceCreationStatus']>, ParentType, ContextType>;
@@ -2920,7 +3043,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   service_definition?: Resolver<Maybe<ResolversTypes['ServiceDefinition']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscriptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionModel']>>>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['ServiceInstanceTag']>>, ParentType, ContextType>;
   user_joined?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -3157,6 +3280,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformDeploymentRequest?: PlatformDeploymentRequestResolvers<ContextType>;
+  PlatformDeploymentRequestConnection?: PlatformDeploymentRequestConnectionResolvers<ContextType>;
+  PlatformDeploymentRequestEdge?: PlatformDeploymentRequestEdgeResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
@@ -3169,6 +3294,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceDefinition?: ServiceDefinitionResolvers<ContextType>;
+  ServiceGroup?: ServiceGroupResolvers<ContextType>;
   ServiceInstance?: ServiceInstanceResolvers<ContextType>;
   ServiceInstanceEdge?: ServiceInstanceEdgeResolvers<ContextType>;
   ServiceInstanceSubscription?: ServiceInstanceSubscriptionResolvers<ContextType>;

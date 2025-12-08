@@ -3,9 +3,9 @@ import { DocumentId } from '../../../../model/kanel/public/Document';
 import { logApp } from '../../../../utils/app-logger.util';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../../telemetry/telemetry.helper';
+import { DocumentApp } from '../../document/document.app';
 import { loadDocumentWithCountersById } from '../../document/document.helper';
 import { Upload } from '../../document/document.uploads.helper';
-import { createDocumentWithChildren } from '../../document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
@@ -14,12 +14,13 @@ import {
 
 export const csvFeedsApp = {
   createCsvFeed: async (input: Partial<CsvFeed>, document: Upload[]) => {
-    const doc = await createDocumentWithChildren<CsvFeed>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-      { ...input, integration_type: IntegrationFeedType.CsvFeed },
-      document,
-      INTEGRATION_FEED_CSV_FEED_METADATA
-    );
+    const doc =
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
+        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        { ...input, integration_type: IntegrationFeedType.CsvFeed },
+        document,
+        INTEGRATION_FEED_CSV_FEED_METADATA
+      );
 
     try {
       const createEvent = await buildCreateEvent(doc);

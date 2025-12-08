@@ -19,23 +19,14 @@ import {
   DocumentId,
   default as DocumentModel,
 } from '../../../../model/kanel/public/Document';
-import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { LabelId } from '../../../../model/kanel/public/Label';
 import { ObjectLabelObjectId } from '../../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../../model/kanel/public/User';
-import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { formatRawObject } from '../../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../../utils/utils';
-import {
-  addIncludeMetadataQuery,
-  Document,
-  FullDocumentMutator,
-  loadUnsecureDocumentsBy,
-  normalizeDocumentName,
-} from '../document.helper';
+import { Document, normalizeDocumentName } from '../document.helper';
 
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { withTransaction } from '../../../../context/database.context';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
@@ -43,14 +34,9 @@ import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
 } from '../../../../security/restriction/document';
-import { labelsApp } from '../../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../../settings/objectLabel/object-label.domain';
 import { isUserRestrictedToActiveDocument } from '../document.security';
-import {
-  processDocumentUpdateUploads,
-  processUploads,
-  Upload,
-} from '../document.uploads.helper';
+import { processDocumentUpdateUploads } from '../document.uploads.helper';
 import { DocumentChildrenDomain } from './document.children.domain';
 import {
   DocumentMetadataDomain,
@@ -62,7 +48,7 @@ export type DocumentData<T extends DocumentModel> = Omit<
   'labels'
 > & {
   labels?: string[];
-  parent_document_id?: string;
+  parent_document_id?: DocumentId;
 };
 
 type MutationUpdateDocumentArgs =
@@ -106,6 +92,29 @@ export const DocumentDomain = {
     return document;
   },
 
+  loadDocumentBy: async (
+    field: Record<string, unknown>,
+    opts = {}
+  ): Promise<DocumentModel[]> => {
+    return db<DocumentModel>('Document', opts)
+      .where(field)
+      .select('Document.*');
+  },
+
+  loadDocumentWithMetadataById: async <T extends Document>(
+    id: string,
+    include_metadata: string[] = []
+  ): Promise<T> => {
+    const docQuery = db<T>('Document')
+      .where('Document.id', '=', id)
+      .select('Document.*')
+      .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
+
+    return docQuery.first();
+  },
+
   upsertOnSlug: async <T extends DocumentModel>(
     documentData: Omit<Partial<T>, 'labels'> & {
       labels?: string[];
@@ -134,234 +143,8 @@ export const DocumentDomain = {
   },
 
   deleteDocuments: async (ids: DocumentId[]) => {
-    await db<Document>('Document')
-      .whereIn('Document.id', ids)
-      .delete('Document.*');
+    await db<Document>('Document').whereIn('id', ids).delete();
   },
-};
-
-export const insertDocument = async (
-  documentData: FullDocumentMutator
-): Promise<Document> => {
-  const existingDocuments = await loadUnsecureDocumentsBy({
-    file_name: documentData.file_name,
-  });
-  if (existingDocuments.length > 0) {
-    void DocumentDomain.passOldDocumentsIntoInactive(existingDocuments);
-  }
-
-  return createDocument<Document>(documentData, []);
-};
-
-export const upsertDocumentWithChildren = async <T extends DocumentModel>(
-  type: string,
-  input: Partial<T>,
-  uploads: Upload[] | Upload,
-  metadataKeys: DocumentMetadataKeys<T>
-) => {
-  return await withTransaction(async () => {
-    const doc = await upsertDocument<T>(
-      {
-        ...input,
-        type,
-      },
-      metadataKeys
-    );
-
-    await upsertImage(doc, uploads);
-    return doc;
-  });
-};
-
-export const upsertImage = async <T extends DocumentModel>(
-  doc: T,
-  upload: Upload[] | Upload
-) => {
-  const files = await processUploads(upload);
-
-  const deletedDocuments = await withTransaction(async () => {
-    const deletedDocuments =
-      await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
-
-    // Create all new image documents
-    await Promise.all(
-      files.map((file) =>
-        createDocument(
-          {
-            type: 'image',
-            parent_document_id: doc.id as DocumentId,
-            file_name: file.fileName,
-            minio_name: file.minioName,
-            mime_type: file.mimeType,
-          },
-          []
-        )
-      )
-    );
-    return deletedDocuments;
-  });
-  // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
-  if (deletedDocuments.length > 0) {
-    await Promise.all(
-      deletedDocuments.map((doc) => {
-        return MinIOClient.deleteFile(doc.minio_name);
-      })
-    );
-  }
-};
-
-export const upsertDocument = async <T extends DocumentModel>(
-  documentData: DocumentData<T>,
-  metadataKeys: DocumentMetadataKeys<T> = []
-): Promise<T> => {
-  return await withTransaction(async () => {
-    // Prepare the data to insert
-    const document = await DocumentDomain.upsertOnSlug(
-      documentData,
-      metadataKeys
-    );
-
-    const documentWasUpdated = !!document.updated_at;
-
-    // Handle parent document relationship
-    if (documentData.parent_document_id) {
-      // First, delete existing relationship if it exists (for upsert scenario)
-      if (documentWasUpdated) {
-        await DocumentChildrenDomain.deleteChild(document.id);
-      }
-
-      // Insert new relationship
-      await DocumentChildrenDomain.insertChildRelationship({
-        parentDocumentId: documentData.parent_document_id as DocumentId,
-        childDocumentId: document.id,
-      });
-    }
-
-    if (documentData.labels?.length) {
-      if (documentWasUpdated) {
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: document.id as unknown as ObjectLabelObjectId,
-        });
-      }
-      const insertObjectLabel = [];
-      for (const name of documentData.labels) {
-        const label = await labelsApp.loadOrCreateLabel({
-          name,
-        });
-        insertObjectLabel.push({
-          object_id: document.id as unknown as ObjectLabelObjectId,
-          label_id: label.id,
-        });
-      }
-      await objectLabelDomain.insertObjectLabel(insertObjectLabel);
-    }
-
-    if (metadataKeys.length > 0) {
-      // If document was updated (not created)
-      if (documentWasUpdated) {
-        // Delete all existing metadata except 'version'
-        await DocumentMetadataDomain.deleteMetadata({
-          id: document.id,
-          excludedKeys: ['product_version'],
-        });
-        const existingVersion = await DocumentMetadataDomain.loadProductVersion(
-          document.id
-        );
-        if (existingVersion) {
-          document['product_version'] = existingVersion;
-        }
-      }
-
-      // Insert new metadata (excluding version) if documentWasUpdated
-      const metadataKeysWithoutProductVersion = metadataKeys.filter(
-        (key) => key !== 'product_version' || !documentWasUpdated
-      );
-
-      const metadatas = await DocumentMetadataDomain.insertMetadata(
-        document.id,
-        documentData,
-        metadataKeysWithoutProductVersion
-      );
-
-      for (const metadata of metadatas) {
-        document[metadata.key] = metadata.value;
-      }
-    }
-
-    return document as T;
-  });
-};
-
-export const createDocument = async <T extends DocumentModel>(
-  documentData: DocumentData<T>,
-  metadataKeys: DocumentMetadataKeys<T> = []
-): Promise<T> => {
-  return await withTransaction(async () => {
-    const document = await DocumentDomain.createDocument(
-      documentData,
-      metadataKeys
-    );
-
-    if (documentData.parent_document_id) {
-      await DocumentChildrenDomain.insertChildRelationship({
-        parentDocumentId: documentData.parent_document_id as DocumentId,
-        childDocumentId: document.id,
-      });
-    }
-
-    if (metadataKeys.length) {
-      const metadatas = await DocumentMetadataDomain.insertMetadata(
-        document.id,
-        documentData,
-        metadataKeys
-      );
-
-      for (const metadata of metadatas) {
-        document[metadata.key] = metadata.value;
-      }
-    }
-
-    return document as T;
-  });
-};
-
-export const createDocumentWithChildren = async <T extends DocumentModel>(
-  type: string,
-  input: Partial<T>,
-  uploads: Upload[] | Upload,
-  metadataKeys: DocumentMetadataKeys<T>
-) => {
-  const files = await processUploads(uploads);
-
-  const docFile = files.shift();
-  return await withTransaction(async () => {
-    const doc = await createDocument<T>(
-      {
-        ...input,
-        type,
-        file_name: docFile.fileName,
-        minio_name: docFile.minioName,
-        mime_type: docFile.mimeType,
-      },
-      metadataKeys
-    );
-
-    await Promise.all(
-      files.map((file) =>
-        createDocument(
-          {
-            type: 'image',
-            parent_document_id: doc.id as DocumentId,
-            file_name: file.fileName,
-            minio_name: file.minioName,
-            mime_type: file.mimeType,
-          },
-          []
-        )
-      )
-    );
-    return doc;
-  });
 };
 
 export const updateDocument = async <T extends DocumentModel>(
@@ -428,12 +211,12 @@ export const updateDocument = async <T extends DocumentModel>(
 
 export const updateDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
-  id: string,
+  parentDocumentId: DocumentId,
   mutationArgs: MutationUpdateDocumentArgs,
   metadataKeys: DocumentMetadataKeys<T>
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
-  const { documentFile, newImages, existingImages } =
+  const { documentFile, newImages, existingImageIds } =
     await processDocumentUpdateUploads(document, isUpdateDoc, images);
   const data = {
     ...input,
@@ -449,41 +232,25 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     });
   }
 
-  return await withTransaction(async () => {
+  return withTransaction(async () => {
     const updatedDocument = await updateDocument<T>(
-      id as DocumentId,
+      parentDocumentId,
       data,
       metadataKeys
     );
 
     // Delete the images that are not in the existingImages array
-    const childIds = await db<DocumentChildren>('Document_Children')
-      .where('parent_document_id', '=', id)
-      .whereNotIn('child_document_id', existingImages)
-      .select('child_document_id');
+    const childIds = await DocumentChildrenDomain.loadChildrenIds(
+      parentDocumentId,
+      existingImageIds
+    );
     if (childIds.length > 0) {
-      await db<Document>('Document')
-        .whereIn(
-          'id',
-          childIds.map((childId) => childId.child_document_id)
-        )
-        .delete();
+      await DocumentDomain.deleteDocuments(childIds);
     }
 
-    // Create new images
-    await Promise.all(
-      newImages.map((image) =>
-        createDocument(
-          {
-            type: 'image',
-            parent_document_id: id,
-            file_name: image.fileName,
-            minio_name: image.minioName,
-            mime_type: image.mimeType,
-          },
-          []
-        )
-      )
+    await DocumentChildrenDomain.createImageDocuments(
+      parentDocumentId,
+      newImages
     );
     return updatedDocument;
   });
@@ -494,7 +261,7 @@ export const deleteDocument = async <T extends DocumentModel>(
   serviceInstanceId: ServiceInstanceId,
   hardDelete: boolean
 ): Promise<T> => {
-  const [documentFromDb] = await loadDocumentBy({
+  const [documentFromDb] = await DocumentDomain.loadDocumentBy({
     'Document.id': documentId,
     'Document.service_instance_id': serviceInstanceId,
   });
@@ -630,29 +397,12 @@ export const loadDocuments = async <
 
   loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
 
-  addIncludeMetadataQuery(loadDocumentQuery, include_metadata);
+  DocumentMetadataDomain.addIncludeMetadataQuery(
+    loadDocumentQuery,
+    include_metadata
+  );
 
   return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
-};
-
-export const loadDocumentBy = async (
-  field: Record<string, unknown>,
-  opts = {}
-): Promise<DocumentModel[]> => {
-  return db<DocumentModel>('Document', opts).where(field).select('Document.*');
-};
-
-export const getChildrenDocuments = async (
-  documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<Document[]> => {
-  return db<Document>('Document_Children', opts)
-    .leftJoin('Document', 'Document.id', 'Document_Children.child_document_id')
-    .where('Document_Children.parent_document_id', '=', documentId)
-    .tap(restrictDocumentToUserOrganization)
-    .orderBy('created_at', 'asc')
-    .select('Document.*')
-    .groupBy('Document.id');
 };
 
 export const getUploader = async (
@@ -682,20 +432,6 @@ export const loadUploaderOrganization = async (
   return organization;
 };
 
-export const loadDocumentById = async <T extends Document>(
-  id: string,
-  include_metadata: string[] = []
-): Promise<T> => {
-  const docQuery = db<T>('Document')
-    .where('Document.id', '=', id)
-    .select('Document.*')
-    .groupBy(['Document.id']);
-
-  addIncludeMetadataQuery(docQuery, include_metadata);
-
-  return docQuery.first();
-};
-
 export const loadSeoDocumentBySlug = async (
   type: string,
   slug: string,
@@ -713,7 +449,7 @@ export const loadSeoDocumentBySlug = async (
     })
     .groupBy(['Document.id']);
 
-  addIncludeMetadataQuery(docQuery, include_metadata);
+  DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
 
   return docQuery.first();
 };
@@ -764,25 +500,10 @@ export const loadSeoDocumentsByServiceSlug = (
     ])
     .groupBy(['Document.id']);
 
-  addIncludeMetadataQuery(loadDocumentsQuery, include_metadata);
+  DocumentMetadataDomain.addIncludeMetadataQuery(
+    loadDocumentsQuery,
+    include_metadata
+  );
 
   return loadDocumentsQuery;
-};
-
-export const loadImagesByDocumentId = async (documentId: string) => {
-  const images = await dbUnsecure<Document>('Document')
-    .select(['Document.id', 'Document.file_name'])
-    .join(
-      'Document_Children',
-      'Document.id',
-      '=',
-      'Document_Children.child_document_id'
-    )
-    .where('Document_Children.parent_document_id', '=', documentId)
-    .where('Document.mime_type', 'like', 'image/%');
-
-  for (const image of images) {
-    image.id = toGlobalId('ShareableResourceImage', image.id);
-  }
-  return images;
 };

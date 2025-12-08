@@ -99,7 +99,7 @@ export const Profile: React.FC = () => {
         variantName={'destructive'}
         onOpenChange={setIsDialogOpen}
         onClickContinue={confirmEdition}>
-        {t('ProfilePage.InstancesEditionDialog.ConfirmSentence')}
+        {t('ProfilePage.PlatformsEditionDialog.ConfirmSentence')}
       </AlertDialogComponent>
     </>
   );

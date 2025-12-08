@@ -1,4 +1,5 @@
-import { db } from '../../../../../knexfile';
+import { Knex } from 'knex';
+import { db, dbRaw } from '../../../../../knexfile';
 import {
   Document as DocumentResolverType,
   IntegrationFeedType,
@@ -10,6 +11,7 @@ import {
 import DocumentMetadata, {
   DocumentMetadataKey,
 } from '../../../../model/kanel/public/DocumentMetadata';
+import { BOOLEAN_METADATA } from '../document.helper';
 import { DocumentData } from './document.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
@@ -80,5 +82,36 @@ export const DocumentMetadataDomain = {
     });
 
     await qb.delete();
+  },
+
+  addIncludeMetadataQuery: (
+    qb: Knex.QueryBuilder,
+    include_metadata: string[] = []
+  ) => {
+    include_metadata.forEach((metaKey, index) => {
+      const metaAlias = `meta${index}`;
+
+      if (BOOLEAN_METADATA.includes(metaKey)) {
+        qb.select(
+          dbRaw(`
+          CASE 
+            WHEN "${metaAlias}"."value" = 'true' THEN true 
+            WHEN "${metaAlias}"."value" = 'false' THEN false 
+            ELSE "${metaAlias}"."value"::boolean 
+          END as ${metaKey}
+        `)
+        );
+      } else {
+        qb.select(`${metaAlias}.value as ${metaKey}`);
+      }
+
+      qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+          `${metaAlias}.key`,
+          '=',
+          metaKey
+        );
+      }).groupBy([metaKey]);
+    });
   },
 };
