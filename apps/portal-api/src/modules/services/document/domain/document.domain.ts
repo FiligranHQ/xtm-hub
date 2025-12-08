@@ -143,9 +143,7 @@ export const DocumentDomain = {
   },
 
   deleteDocuments: async (ids: DocumentId[]) => {
-    await db<Document>('Document')
-      .whereIn('Document.id', ids)
-      .delete('Document.*');
+    await db<Document>('Document').whereIn('id', ids).delete();
   },
 };
 
@@ -247,7 +245,7 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
       existingImageIds
     );
     if (childIds.length > 0) {
-      await db<Document>('Document').whereIn('id', childIds).delete();
+      await DocumentDomain.deleteDocuments(childIds);
     }
 
     await DocumentChildrenDomain.createImageDocuments(
