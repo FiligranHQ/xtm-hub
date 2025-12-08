@@ -54,7 +54,7 @@ const trialsTabConfig: Record<
   }
 > = {
   [TrialsTabType.Cancelled]: {
-    statuses: [DeploymentRequestHubStatusEnum.CANCELED],
+    statuses: [DeploymentRequestHubStatusEnum.CANCELLED],
   },
   [TrialsTabType.Expired]: {
     statuses: [DeploymentRequestHubStatusEnum.EXPIRED],

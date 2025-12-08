@@ -314,7 +314,7 @@ export enum DeploymentRequestFilterKey {
 
 export enum DeploymentRequestHubStatus {
   Active = 'active',
-  Canceled = 'canceled',
+  Cancelled = 'cancelled',
   Expired = 'expired',
   Failed = 'failed',
   Pending = 'pending',

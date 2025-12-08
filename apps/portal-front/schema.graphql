@@ -279,7 +279,7 @@ enum DeploymentRequestHubStatus {
   active
   expired
   failed
-  canceled
+  cancelled
 }
 
 enum DeploymentRequestPlatformState {
