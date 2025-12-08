@@ -98,7 +98,7 @@ describe('Deployment app', () => {
         service_instance_id: expect.any(String),
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
-        actual_state: null,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
@@ -142,8 +142,8 @@ describe('Deployment app', () => {
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Inactive,
-        actual_state: null,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
@@ -353,8 +353,8 @@ describe('Deployment app', () => {
       // Synced: inactive target vs inactive actual
       const synced3 = await insertOpenCtiDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Expired,
-        target_state: DeploymentRequestPlatformState.Inactive,
-        actual_state: DeploymentRequestPlatformState.Inactive,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
       });
 
       const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
@@ -453,7 +453,7 @@ describe('Deployment app', () => {
         region: DeploymentRequestPlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        hub_status: DeploymentRequestHubStatus.Pending,
+        hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
         ordering: expect.any(Number),
@@ -482,7 +482,7 @@ describe('Deployment app', () => {
     it(' with Active status, it should create ServiceGroup with admin', async () => {
       const deployment = await DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
-        hub_status: DeploymentRequestHubStatus.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
@@ -519,7 +519,7 @@ describe('Deployment app', () => {
 
       expect(userReaderGroup.length).toBe(0);
     });
-    it('should should throw if deployment request does not exist', async () => {
+    it('should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({
         id: uuidv4(),
         actual_state: DeploymentRequestPlatformState.Active,
@@ -559,15 +559,6 @@ describe('Deployment app', () => {
         );
       }
     );
-    it('should should throw when status requested is not allowed', async () => {
-      const call = DeploymentsApp.updateDeploymentRequest({
-        id: initialDeployment?.id as string,
-        hub_status: DeploymentRequestHubStatus.Expired,
-      });
-      await expect(call).rejects.toThrow(
-        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
-      );
-    });
     describe('telemetry', () => {
       it('should send a telemetry event', async () => {
         vi.useFakeTimers();
@@ -599,7 +590,7 @@ describe('Deployment app', () => {
           platform_id: 'fake product instance id',
           start_date,
           end_date,
-          status: undefined,
+          status: DeploymentRequestHubStatus.Active,
         });
       });
 

@@ -44,7 +44,7 @@ describe('Deployment app', () => {
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
-        actual_state: null,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
       });
     });
   });
@@ -69,7 +69,7 @@ describe('Deployment app', () => {
         end_date: null,
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
-        actual_state: null,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
       });
 
       const updatedDeployment = await resolver.Mutation.updateDeploymentRequest(
@@ -97,7 +97,7 @@ describe('Deployment app', () => {
         await resolver.Mutation.updateDeploymentRequest(undefined, {
           input: {
             id: initialDeployment.id,
-            actual_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
             start_date: new Date(2025, 1, 3),
             end_date: new Date(2025, 2, 3),
             platform_id: 'fake product instance id',
@@ -113,7 +113,7 @@ describe('Deployment app', () => {
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Provisioning,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
@@ -125,7 +125,7 @@ describe('Deployment app', () => {
         requester_last_name: 'lastname',
       });
     });
-    it('should return an error when hub status transition is not allowed', async () => {
+    it('should return an error when status transition is not allowed', async () => {
       const initialDeploymentData = {
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -140,12 +140,13 @@ describe('Deployment app', () => {
       );
       const updates = {
         id: initialDeployment.id,
-        hub_status: DeploymentRequestHubStatus.Expired,
+        actual_state: DeploymentRequestPlatformState.Removed,
       };
 
       const call = resolver.Mutation.updateDeploymentRequest(undefined, {
         input: updates,
       });
+
       await expect(call).rejects.toThrow(
         ErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
