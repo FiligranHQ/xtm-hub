@@ -4,8 +4,8 @@ import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { DocumentApp } from '../document/document.app';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
-import { createDocumentWithChildren } from '../document/domain/document.domain';
 import { integrationFeedsApp } from './integration-feeds.app';
 import {
   CsvFeed,
@@ -40,7 +40,7 @@ describe('csv feeds app', () => {
       }
     );
 
-    await createDocumentWithChildren<CsvFeed>(
+    await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       {
         id: documentId,

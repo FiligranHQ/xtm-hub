@@ -29,6 +29,7 @@ import {
   INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../integration-feeds/integration-feeds.model';
+import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
   deleteDocumentBy,
@@ -38,7 +39,7 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
-import { createDocument, insertDocument } from './domain/document.domain';
+import { insertDocument } from './document.test.utils';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
@@ -83,7 +84,7 @@ describe('should call S3 to send file', () => {
 
 describe('should add new file', () => {
   beforeAll(async () => {
-    await createDocument(
+    await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
         description: 'description',
@@ -137,7 +138,7 @@ describe('should add new file', () => {
 
 describe('Should modify document', () => {
   beforeAll(async () => {
-    await createDocument(
+    await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
         uploader_id: toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3'),
@@ -206,7 +207,7 @@ describe('should normalize filename', () => {
 
 describe('should check if file already exists', () => {
   beforeAll(async () => {
-    await createDocument(
+    await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
         description: 'description',
@@ -240,7 +241,7 @@ describe('should check if file already exists', () => {
 
 describe('Documents loading', () => {
   beforeAll(async () => {
-    await createDocument(
+    await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -253,7 +254,7 @@ describe('Documents loading', () => {
       },
       []
     );
-    await createDocument(
+    await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         id: '96847916-2f35-4402-8e64-888c5d5e8b7a' as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -340,7 +341,7 @@ describe('increment shared counter', () => {
       },
     };
     requestContext.set(testContext);
-    await createDocument<CsvFeed>(
+    await DocumentApp.createDocumentWithChildrenAndMetadata<CsvFeed>(
       {
         id: documentId as DocumentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',

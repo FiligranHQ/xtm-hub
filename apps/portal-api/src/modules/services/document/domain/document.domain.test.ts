@@ -26,12 +26,10 @@ import {
   INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
 } from '../../integration-feeds/integration-feeds.model';
-import {
-  createDocumentWithChildren,
-  loadParentDocumentsByServiceInstance,
-} from './document.domain';
+import { loadParentDocumentsByServiceInstance } from './document.domain';
 
 import { requestContext } from '../../../../context/request.context';
+import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 
 describe('Document domain', () => {
@@ -62,7 +60,7 @@ describe('Document domain', () => {
         },
       };
       requestContext.set(testContext);
-      await createDocumentWithChildren<CsvFeed>(
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
           id: documentId,
@@ -128,22 +126,23 @@ describe('Document domain', () => {
       };
       requestContext.set(testContext);
 
-      const csvFeed = await createDocumentWithChildren<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-        {
-          id: documentId,
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-          name: 'myCsvFeed',
-          slug: 'myCsvFeed',
-          description: 'description',
-          minio_name: 'minioName',
-          file_name: 'csvfilename',
-          active: true,
-          integration_type: IntegrationFeedType.CsvFeed,
-        },
-        [],
-        INTEGRATION_FEED_CSV_FEED_METADATA
-      );
+      const csvFeed =
+        await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
+          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          {
+            id: documentId,
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            name: 'myCsvFeed',
+            slug: 'myCsvFeed',
+            description: 'description',
+            minio_name: 'minioName',
+            file_name: 'csvfilename',
+            active: true,
+            integration_type: IntegrationFeedType.CsvFeed,
+          },
+          [],
+          INTEGRATION_FEED_CSV_FEED_METADATA
+        );
 
       const [connector] = await upsertConnectors([
         sampleExtractedManifest[0],

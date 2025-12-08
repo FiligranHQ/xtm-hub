@@ -7,9 +7,9 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
+import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import {
   getUploader,
-  loadImagesByDocumentId,
   loadUploaderOrganization,
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
@@ -28,7 +28,8 @@ const resolvers: Resolvers = {
     },
     labels: ({ id }) =>
       labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
-    children_documents: ({ id }) => loadImagesByDocumentId(id),
+    children_documents: ({ id }) =>
+      DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
     uploader_organization: ({ id }, _) =>
       loadUploaderOrganization(id, { unsecured: true }),

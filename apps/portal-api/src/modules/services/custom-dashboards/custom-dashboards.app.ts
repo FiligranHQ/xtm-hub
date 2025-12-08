@@ -2,12 +2,12 @@ import { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
+import { DocumentApp } from '../document/document.app';
 import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
 } from '../document/document.helper';
 import { Upload } from '../document/document.uploads.helper';
-import { createDocumentWithChildren } from '../document/domain/document.domain';
 import {
   CUSTOM_DASHBOARD_METADATA,
   CustomDashboard,
@@ -19,12 +19,13 @@ export const CustomDashboardsApp = {
     input: Partial<CustomDashboard>,
     document: Upload[]
   ) => {
-    const doc = await createDocumentWithChildren<CustomDashboard>(
-      OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-      input,
-      document,
-      CUSTOM_DASHBOARD_METADATA
-    );
+    const doc =
+      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CustomDashboard>(
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        input,
+        document,
+        CUSTOM_DASHBOARD_METADATA
+      );
 
     try {
       const createEvent = await buildCreateEvent(doc);
