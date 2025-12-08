@@ -1,4 +1,5 @@
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
+import { daysUntil } from '@/utils/date';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
@@ -51,11 +52,8 @@ export const getDisplayDays = (
     return platform.deployment_request?.hub_status;
   }
   const target = new Date(platform.subscription?.end_date);
-  const now = new Date();
 
-  const diffInMs = target.getTime() - now.getTime();
-
-  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInDays = daysUntil(target);
   if (diffInDays <= 0) {
     return 'Expired';
   }

@@ -19,12 +19,12 @@ import {
 describe('isHubStatusTransitionValid', () => {
   const validTransitions = [
     [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Pending],
-    [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Canceled],
+    [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Cancelled],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Active],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Failed],
-    [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Canceled],
+    [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Cancelled],
     [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Expired],
-    [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Canceled],
+    [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Cancelled],
     [DeploymentRequestHubStatus.Failed, DeploymentRequestHubStatus.Pending],
     [DeploymentRequestHubStatus.Failed, DeploymentRequestHubStatus.Active],
   ] as const;
@@ -40,7 +40,7 @@ describe('isHubStatusTransitionValid', () => {
     [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Active],
     [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Pending],
     [DeploymentRequestHubStatus.Expired, DeploymentRequestHubStatus.Active],
-    [DeploymentRequestHubStatus.Canceled, DeploymentRequestHubStatus.Active],
+    [DeploymentRequestHubStatus.Cancelled, DeploymentRequestHubStatus.Active],
     [DeploymentRequestHubStatus.Expired, DeploymentRequestHubStatus.Pending],
   ] as const;
 

@@ -1,13 +1,12 @@
 import { Knex } from 'knex';
 import { db, paginate } from '../../../../knexfile';
 import {
-  DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   PlatformIdentifier,
-  QueryDeploymentRequestsArgs,
+  QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
@@ -72,11 +71,10 @@ export const DeploymentRequestDomain = {
     return result?.max ? parseInt(result.max as string, 10) : null;
   },
 
-  loadDeploymentRequests: async (
-    opts: QueryDeploymentRequestsArgs,
+  loadDeploymentRequests: async <T>(
+    opts: QueryDeploymentRequestsListArgs,
     options?: { onlyOutOfSync?: boolean }
   ) => {
-    const { first, after, filters } = opts;
     const query = getDeploymentRequestWithUserDataQuery();
 
     // If onlyOutOfSync, only return deployments with sync offset (target_state different from actual_state)
@@ -86,15 +84,14 @@ export const DeploymentRequestDomain = {
       );
     }
 
-    return paginate<DeploymentRequest, DeploymentRequestConnection>(
+    if (opts.searchTerm) {
+      query.orWhereILike(`User.email`, `%${opts.searchTerm}%`);
+      query.orWhereILike(`Organization.name`, `%${opts.searchTerm}%`);
+    }
+
+    return paginate<DeploymentRequest, T>(
       'DeploymentRequest',
-      {
-        first,
-        after,
-        orderBy: 'ordering',
-        orderMode: 'asc',
-        filters,
-      },
+      opts,
       undefined,
       query
     );
