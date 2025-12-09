@@ -22,8 +22,20 @@ describe('isHubStatusTransitionValid', () => {
     [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Pending],
     [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Cancelled],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Active],
+    [
+      DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
+    ],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Failed],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Cancelled],
+    [
+      DeploymentRequestHubStatus.Provisioning,
+      DeploymentRequestHubStatus.Active,
+    ],
+    [
+      DeploymentRequestHubStatus.Provisioning,
+      DeploymentRequestHubStatus.Cancelled,
+    ],
     [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Expired],
     [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Cancelled],
     [DeploymentRequestHubStatus.Failed, DeploymentRequestHubStatus.Pending],
@@ -252,12 +264,12 @@ describe('computeHubStatus', () => {
       [
         DeploymentRequestHubStatus.Pending,
         DeploymentRequestPlatformState.Provisioning,
-        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestHubStatus.Provisioning,
       ],
       [
         DeploymentRequestHubStatus.Failed,
         DeploymentRequestPlatformState.Provisioning,
-        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestHubStatus.Provisioning,
       ],
       [
         DeploymentRequestHubStatus.Failed,

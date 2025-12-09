@@ -103,8 +103,6 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
     }
     deployment_request {
       hub_status
-      target_state
-      actual_state
     }
   }
 `;
@@ -123,8 +121,6 @@ export const registerRegisteredPlatformFragment = graphql`
       activity_sector
       job_title
       hub_status
-      target_state
-      actual_state
     }
     subscription {
       status
