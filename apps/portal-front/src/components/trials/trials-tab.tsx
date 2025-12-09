@@ -4,6 +4,7 @@ import {
   trialsFragment,
   trialsListFragment,
   TrialsListQuery,
+  TrialsReorderRequestInQueueMutation,
 } from '@/components/trials/trials.graphql';
 import {
   handleSortingChange,
@@ -18,25 +19,44 @@ import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPagina
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
 import { trialsList$key } from '@generated/trialsList.graphql';
 import { trialsListQuery } from '@generated/trialsListQuery.graphql';
+import { trialsReorderRequestInQueueMutation } from '@generated/trialsReorderRequestInQueueMutation.graphql';
 import {
   trials_fragment$data,
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import {
-  ArrowUpwardIcon,
+  ArrowShapeUpIcon,
+  ArrowShapeUpStackIcon,
   CheckIndeterminateIcon,
   CloseIcon,
 } from 'filigran-icon';
-import { DataTable, DataTableHeadBarOptions } from 'filigran-ui';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'filigran-ui';
+import { toast } from 'filigran-ui/clients';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, Suspense, useMemo, useState } from 'react';
+import {
+  FunctionComponent,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   readInlineData,
   useLazyLoadQuery,
+  useMutation,
   useRefetchableFragment,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
@@ -81,6 +101,41 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     DeploymentRequestOrderingEnum.REQUEST_DATE;
   const defaultOrderingMode =
     trialsTabConfig[type].defaultOrderingMode ?? OrderingModeEnum.DESC;
+  const [shouldRefreshAfterReorder, setShouldRefreshAfterReorder] =
+    useState(false);
+
+  const [commitReorderRequestInQueue] =
+    useMutation<trialsReorderRequestInQueueMutation>(
+      TrialsReorderRequestInQueueMutation
+    );
+
+  const onReorderClick = useCallback(
+    (id: string, direction: ReorderDeploymentRequestInQueueDirectionEnum) => {
+      commitReorderRequestInQueue({
+        variables: {
+          input: {
+            id,
+            direction,
+          },
+        },
+        onCompleted: () => {
+          toast({
+            title: t('Utils.Success'),
+            description: t('TrialsDashboard.Toast.TrialsReordered'),
+          });
+          setShouldRefreshAfterReorder(true);
+        },
+        onError: (error) => {
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: <>{t(`Error.Server.${error.message}`)}</>,
+          });
+        },
+      });
+    },
+    [commitReorderRequestInQueue, t]
+  );
 
   const columns: ColumnDef<trials_fragment$data>[] = useMemo(
     () => [
@@ -88,7 +143,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
         ? [
             {
               accessorKey: 'ordering',
-              id: 'priority',
+              id: 'ordering',
               header: t('TrialsDashboard.Columns.Priority'),
             },
           ]
@@ -195,7 +250,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
               enableSorting: false,
               enableResizing: false,
               header: undefined,
-              cell: () => {
+              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
                   <>
                     {(type === TrialsTabType.Running ||
@@ -208,12 +263,51 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                       </Button>
                     )}
                     {type === TrialsTabType.Waiting && (
-                      <Button
-                        variant="ghost-primary"
-                        size="icon"
-                        className="border m-1">
-                        <ArrowUpwardIcon className="h-4 w-4" />
-                      </Button>
+                      <>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost-primary"
+                                size="icon"
+                                className="border m-1"
+                                onClick={() =>
+                                  onReorderClick(
+                                    row.original.id,
+                                    ReorderDeploymentRequestInQueueDirectionEnum.TOP
+                                  )
+                                }>
+                                <ArrowShapeUpStackIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-gray-50">
+                              {t('TrialsDashboard.Actions.MoveToTop')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost-primary"
+                                size="icon"
+                                className="border m-1"
+                                onClick={() =>
+                                  onReorderClick(
+                                    row.original.id,
+                                    ReorderDeploymentRequestInQueueDirectionEnum.UP
+                                  )
+                                }>
+                                <ArrowShapeUpIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-gray-50">
+                              {t('TrialsDashboard.Actions.MoveUp')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </>
                     )}
                   </>
                 );
@@ -222,7 +316,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
           ]
         : []),
     ],
-    [t, type]
+    [t, type, onReorderClick]
   );
 
   const {
@@ -268,20 +362,33 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     [data]
   );
 
-  const handleRefetchData = (
-    args?: Partial<TrialsListPaginationQuery$variables>
-  ) => {
-    const sorting = mapToSortingTableValue(orderBy, orderMode);
-    refetch({
-      count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      orderBy,
-      orderMode,
-      searchTerm: undefined,
-      ...transformSortingValueToParams(sorting),
-      ...args,
-    });
-  };
+  const handleRefetchData = useCallback(
+    (args?: Partial<TrialsListPaginationQuery$variables>) => {
+      const sorting = mapToSortingTableValue(orderBy, orderMode);
+      refetch(
+        {
+          count: pagination.pageSize,
+          cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+          orderBy,
+          orderMode,
+          searchTerm: undefined,
+          ...transformSortingValueToParams(sorting),
+          ...args,
+        },
+        { fetchPolicy: 'store-and-network' }
+      );
+    },
+    [orderBy, orderMode, pagination.pageIndex, pagination.pageSize, refetch]
+  );
+
+  useEffect(() => {
+    if (!shouldRefreshAfterReorder) {
+      return;
+    }
+
+    setShouldRefreshAfterReorder(false);
+    handleRefetchData();
+  }, [shouldRefreshAfterReorder, handleRefetchData]);
 
   const onSortingChange = (updater: unknown) => {
     handleSortingChange<DeploymentRequestOrderingEnum>({
