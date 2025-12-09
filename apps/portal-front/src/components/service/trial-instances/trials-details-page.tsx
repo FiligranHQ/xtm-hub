@@ -52,23 +52,23 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
             <span className="text-gray/60">License:</span> Enterprise Edition
           </li>
         </ul>
+        {platform.deployment_request?.hub_status ===
+          DeploymentRequestHubStatusEnum.ACTIVE && (
+          <div className="flex flex-col gap-m">
+            {platform.url && (
+              <Button>
+                <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={platform.url}>
+                  Access OpenCTI
+                </Link>
+              </Button>
+            )}
 
-        <div className="flex flex-col gap-m">
-          {platform.url && (
-            <Button>
-              <Link
-                target="_blank"
-                rel="noopener noreferrer"
-                href={platform.url}>
-                Access OpenCTI
-              </Link>
-            </Button>
-          )}
-          {platform.deployment_request?.hub_status ===
-            DeploymentRequestHubStatusEnum.ACTIVE && (
             <TrialsManageUsersDialog platform={platform} />
-          )}
-        </div>
+          </div>
+        )}
       </section>
       <TrialsLearnMore />
     </>
