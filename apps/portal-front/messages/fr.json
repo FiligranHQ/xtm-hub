@@ -288,6 +288,9 @@
       "Running": "En cours d'exécution",
       "Waiting": "En attente"
     },
+    "Toast": {
+      "TrialsReordered": "Les demandes ont été réorganisées"
+    },
     "Actions": {
       "SearchTrials": "Recherche par email ou par organisation",
       "MoveToTop": "Aller au début",
