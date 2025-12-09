@@ -33,15 +33,17 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
           {platform.subscription?.start_date && (
             <li>
               <span className="text-gray/60">Start date:</span>{' '}
-              {formatDate(platform.subscription?.start_date)}
+              {platform.subscription?.end_date
+                ? formatDate(platform.subscription?.start_date)
+                : '-'}
             </li>
           )}
-          {platform.subscription?.end_date && (
-            <li>
-              <span className="text-gray/60">End date:</span>{' '}
-              {formatDate(platform.subscription?.end_date)}
-            </li>
-          )}
+          <li>
+            <span className="text-gray/60">End date:</span>{' '}
+            {platform.subscription?.end_date
+              ? formatDate(platform.subscription?.end_date)
+              : '-'}
+          </li>
           {platform.deployment_request?.region && (
             <li>
               <span className="text-gray/60">Region:</span>{' '}
@@ -53,9 +55,9 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
           </li>
         </ul>
         {platform.deployment_request?.hub_status ===
-          DeploymentRequestHubStatusEnum.ACTIVE && (
-          <div className="flex flex-col gap-m">
-            {platform.url && (
+          DeploymentRequestHubStatusEnum.ACTIVE &&
+          platform.url && (
+            <div className="flex flex-col gap-m">
               <Button>
                 <Link
                   target="_blank"
@@ -64,11 +66,10 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
                   Access OpenCTI
                 </Link>
               </Button>
-            )}
 
-            <TrialsManageUsersDialog platform={platform} />
-          </div>
-        )}
+              <TrialsManageUsersDialog platform={platform} />
+            </div>
+          )}
       </section>
       <TrialsLearnMore />
     </>
