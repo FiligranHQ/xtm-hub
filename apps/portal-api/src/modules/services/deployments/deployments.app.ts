@@ -48,6 +48,7 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
+import { loadUnsecureUser } from '../../users/users.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
@@ -156,18 +157,19 @@ export const DeploymentsApp = {
       }
 
       try {
-        if (
+        const mailTemplate =
           createdDeploymentRequest.hub_status ===
           DeploymentRequestHubStatus.Pending
-        ) {
-          sendMail({
-            to: user.email,
-            template: 'opencti_free_trial_requested',
-            params: {
-              firstName: formatName(user.first_name ?? ''),
-            },
-          });
-        }
+            ? 'opencti_free_trial_requested'
+            : 'opencti_free_trial_queued';
+
+        sendMail({
+          to: user.email,
+          template: mailTemplate,
+          params: {
+            firstName: formatName(user.first_name ?? ''),
+          },
+        });
       } catch (error) {
         logApp.error('Unable to send mail', {
           error,
@@ -288,6 +290,30 @@ export const DeploymentsApp = {
     } catch (error) {
       logApp.error('Unable to send telemetry event', {
         error,
+      });
+    }
+
+    try {
+      if (
+        newStatus === DeploymentRequestHubStatus.Provisioning &&
+        newStatus !== deploymentRequest.hub_status
+      ) {
+        const [user] = await loadUnsecureUser({
+          id: deploymentRequest.user_requester_id,
+        });
+
+        sendMail({
+          to: user.email,
+          template: 'opencti_free_trial_provisioning',
+          params: {
+            firstName: formatName(user.first_name ?? ''),
+          },
+        });
+      }
+    } catch (error) {
+      logApp.error('Unable to send mail', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
       });
     }
 

@@ -10,8 +10,6 @@ export const CreateDeploymentRequestMutation = graphql`
       type
       platform_identifier
       hub_status
-      target_state
-      actual_state
       ordering
     }
   }

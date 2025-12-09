@@ -244,6 +244,25 @@ describe('Deployment app', () => {
           },
         });
       });
+      it('should send a mail if status is queued', async () => {
+        await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          hub_status: DeploymentRequestHubStatus.Queued,
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'admin@filigran.io',
+          template: 'opencti_free_trial_queued',
+          params: {
+            firstName: 'Firstname',
+          },
+        });
+      });
     });
   });
   describe('loadDeploymentRequests', () => {
@@ -614,6 +633,30 @@ describe('Deployment app', () => {
           failure_reason: 'not failed',
         });
         expect(deployment).toBeDefined();
+      });
+    });
+    describe('mail', () => {
+      it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'admin@filigran.io',
+          template: 'opencti_free_trial_provisioning',
+          params: {
+            firstName: 'Firstname',
+          },
+        });
+
+        mockSendMail.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+
+        expect(mockSendMail).not.toHaveBeenCalled();
       });
     });
   });

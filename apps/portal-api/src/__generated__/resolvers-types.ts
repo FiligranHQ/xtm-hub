@@ -264,7 +264,6 @@ export type DeploymentAvailability = {
 export type DeploymentRequest = Node & {
   __typename?: 'DeploymentRequest';
   activity_sector?: Maybe<Scalars['String']['output']>;
-  actual_state?: Maybe<DeploymentRequestPlatformState>;
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
@@ -276,7 +275,6 @@ export type DeploymentRequest = Node & {
   request_date: Scalars['Date']['output'];
   requester_email?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
-  target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
   use_case?: Maybe<Scalars['String']['output']>;
 };
@@ -318,6 +316,7 @@ export enum DeploymentRequestHubStatus {
   Expired = 'expired',
   Failed = 'failed',
   Pending = 'pending',
+  Provisioning = 'provisioning',
   Queued = 'queued'
 }
 
@@ -2550,7 +2549,6 @@ export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentT
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
   activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  actual_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2562,7 +2560,6 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   request_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   requester_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
   use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
