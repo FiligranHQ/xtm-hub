@@ -351,6 +351,10 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.DeploymentRequestNotFound);
     }
 
+    if (DeploymentRequestHubStatus.Queued !== deploymentRequest.hub_status) {
+      throw new Error(ErrorCode.DeploymentRequestHubStatusNotQueued);
+    }
+
     switch (direction) {
       case ReorderDeploymentRequestInQueueDirection.Top:
         await DeploymentRequestDomain.reorderDeploymentRequestToTop(

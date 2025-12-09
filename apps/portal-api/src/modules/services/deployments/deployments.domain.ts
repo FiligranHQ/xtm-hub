@@ -202,7 +202,9 @@ export const DeploymentRequestDomain = {
       'DeploymentRequest'
     )
       .where('ordering', '<', deploymentRequest.ordering)
+      .andWhere('hub_status', '=', DeploymentRequestHubStatus.Queued)
       .select('*')
+      .orderBy('ordering', 'desc')
       .first();
 
     const isDeploymentRequestFirst = !previousDeploymentRequest;
@@ -214,6 +216,7 @@ export const DeploymentRequestDomain = {
       await db<DeploymentRequest>('DeploymentRequest')
         .update({ ordering: deploymentRequest.ordering })
         .where({ id: previousDeploymentRequest.id });
+
       await db<DeploymentRequest>('DeploymentRequest')
         .update({ ordering: previousDeploymentRequest.ordering })
         .where({ id: deploymentRequest.id });
@@ -224,6 +227,7 @@ export const DeploymentRequestDomain = {
     const topDeploymentRequest = await db<DeploymentRequest>(
       'DeploymentRequest'
     )
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
       .orderBy('ordering', 'asc')
       .first();
     if (!topDeploymentRequest) {
@@ -235,8 +239,13 @@ export const DeploymentRequestDomain = {
       return;
     }
 
-    await DeploymentRequestDomain.updateDeploymentRequestById(id, {
-      ordering: topDeploymentRequest.ordering - 1,
+    await withTransaction(async () => {
+      await db<DeploymentRequest>('DeploymentRequest')
+        .increment('ordering', 1)
+        .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
+      await DeploymentRequestDomain.updateDeploymentRequestById(id, {
+        ordering: 1,
+      });
     });
   },
 };

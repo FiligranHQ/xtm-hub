@@ -166,11 +166,17 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should swap deployment request with the previous one', async () => {
+      await insertOpenCtiDeploymentRequest({
+        ordering: 2,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
       const previousDeploymentRequest = await insertOpenCtiDeploymentRequest({
         ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
       const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
-        ordering: 10,
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
 
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
@@ -191,10 +197,44 @@ describe('DeploymentRequestDomain', () => {
         .first();
 
       expect(resultPreviousDeploymentRequest).toBeDefined();
-      expect(resultPreviousDeploymentRequest!.ordering).toBe(10);
+      expect(resultPreviousDeploymentRequest!.ordering).toBe(4);
 
       expect(resultSelectedDeploymentRequest).toBeDefined();
       expect(resultSelectedDeploymentRequest!.ordering).toBe(3);
+    });
+
+    it('should only reorder queued deployment requests', async () => {
+      const previousDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(
+        selectedDeploymentRequest!
+      );
+      const resultPreviousDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: previousDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: selectedDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      expect(resultPreviousDeploymentRequest).toBeDefined();
+      expect(resultPreviousDeploymentRequest!.ordering).toBe(3);
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(4);
     });
   });
 
@@ -202,9 +242,11 @@ describe('DeploymentRequestDomain', () => {
     it('should do nothing when deployment request is the top one', async () => {
       const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
         ordering: 1,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
       await insertOpenCtiDeploymentRequest({
         ordering: 2,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
 
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
@@ -221,18 +263,22 @@ describe('DeploymentRequestDomain', () => {
       expect(resultDeploymentRequest!.ordering).toBe(1);
     });
 
-    it('should move deployment request to top', async () => {
+    it('should reorder deployment request to top', async () => {
       const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
         ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
       await insertOpenCtiDeploymentRequest({
         ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
       await insertOpenCtiDeploymentRequest({
         ordering: 5,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
       const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
         ordering: 6,
+        hub_status: DeploymentRequestHubStatus.Queued,
       });
 
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
@@ -253,10 +299,62 @@ describe('DeploymentRequestDomain', () => {
         .first();
 
       expect(resultSelectedDeploymentRequest).toBeDefined();
-      expect(resultSelectedDeploymentRequest!.ordering).toBe(2);
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(1);
 
       expect(resultTopDeploymentRequest).toBeDefined();
-      expect(resultTopDeploymentRequest!.ordering).toBe(3);
+      expect(resultTopDeploymentRequest!.ordering).toBe(4);
+    });
+
+    it('should only reorder queued deployment requests', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      const secondDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 5,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 6,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+        selectedDeploymentRequest!
+      );
+      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: selectedDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      const resultSecondDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: secondDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      const resultTopDeploymentRequest = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      )
+        .where({ id: topDeploymentRequest!.id })
+        .select('*')
+        .first();
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(1);
+
+      expect(resultSecondDeploymentRequest).toBeDefined();
+      expect(resultSecondDeploymentRequest!.ordering).toBe(
+        secondDeploymentRequest!.ordering
+      );
+
+      expect(resultTopDeploymentRequest).toBeDefined();
+      expect(resultTopDeploymentRequest!.ordering).toBe(4);
     });
   });
 });
