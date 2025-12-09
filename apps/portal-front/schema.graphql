@@ -284,11 +284,11 @@ enum DeploymentRequestHubStatus {
 }
 
 enum DeploymentRequestPlatformState {
+  unprovisioned
   provisioning
   active
   removing
   removed
-  inactive
 }
 
 type DeploymentRequest implements Node {
@@ -346,7 +346,6 @@ input CreateDeploymentRequestInput {
 
 input UpdateDeploymentRequestInput {
   id: ID!
-  hub_status: DeploymentRequestHubStatus
   start_date: Date
   end_date: Date
   platform_id: String
