@@ -154,12 +154,10 @@ describe('DeploymentRequestDomain', () => {
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
         topDeploymentRequest!
       );
-      const resultDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: topDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
 
       expect(resultDeploymentRequest).toBeDefined();
       expect(resultDeploymentRequest!.ordering).toBe(1);
@@ -182,20 +180,14 @@ describe('DeploymentRequestDomain', () => {
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
         selectedDeploymentRequest!
       );
-      const resultPreviousDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: previousDeploymentRequest!.id })
-        .select('*')
-        .first();
-
-      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: selectedDeploymentRequest!.id })
-        .select('*')
-        .first();
-
+      const resultPreviousDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: previousDeploymentRequest!.id,
+        });
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
       expect(resultPreviousDeploymentRequest).toBeDefined();
       expect(resultPreviousDeploymentRequest!.ordering).toBe(4);
 
@@ -216,19 +208,14 @@ describe('DeploymentRequestDomain', () => {
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
         selectedDeploymentRequest!
       );
-      const resultPreviousDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: previousDeploymentRequest!.id })
-        .select('*')
-        .first();
-
-      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: selectedDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultPreviousDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: previousDeploymentRequest!.id,
+        });
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
 
       expect(resultPreviousDeploymentRequest).toBeDefined();
       expect(resultPreviousDeploymentRequest!.ordering).toBe(3);
@@ -252,12 +239,10 @@ describe('DeploymentRequestDomain', () => {
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
         topDeploymentRequest!
       );
-      const resultDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: topDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
 
       expect(resultDeploymentRequest).toBeDefined();
       expect(resultDeploymentRequest!.ordering).toBe(1);
@@ -284,19 +269,15 @@ describe('DeploymentRequestDomain', () => {
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
         selectedDeploymentRequest!
       );
-      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: selectedDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
 
-      const resultTopDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: topDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultTopDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
 
       expect(resultSelectedDeploymentRequest).toBeDefined();
       expect(resultSelectedDeploymentRequest!.ordering).toBe(1);
@@ -324,26 +305,20 @@ describe('DeploymentRequestDomain', () => {
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
         selectedDeploymentRequest!
       );
-      const resultSelectedDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: selectedDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
 
-      const resultSecondDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: secondDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultSecondDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: secondDeploymentRequest!.id,
+        });
 
-      const resultTopDeploymentRequest = await db<DeploymentRequest>(
-        'DeploymentRequest'
-      )
-        .where({ id: topDeploymentRequest!.id })
-        .select('*')
-        .first();
+      const resultTopDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
 
       expect(resultSelectedDeploymentRequest).toBeDefined();
       expect(resultSelectedDeploymentRequest!.ordering).toBe(1);
