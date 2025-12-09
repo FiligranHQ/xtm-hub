@@ -103,6 +103,7 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
     }
     deployment_request {
       hub_status
+      region
     }
   }
 `;

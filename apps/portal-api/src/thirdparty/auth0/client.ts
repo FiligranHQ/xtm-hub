@@ -30,7 +30,9 @@ export interface Auth0Client {
 }
 
 const isAuth0Enabled = !(
-  process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
+  process.env.VITEST_MODE ||
+  process.env.NODE_ENV === 'test' ||
+  process.env.LOCAL_DEV
 );
 if (!isAuth0Enabled) {
   logApp.warn('auth0 disabled, using client mock');

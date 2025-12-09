@@ -42,6 +42,12 @@ export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
               {formatDate(platform.subscription?.end_date)}
             </li>
           )}
+          {platform.deployment_request?.region && (
+            <li>
+              <span className="text-gray/60">Region:</span>{' '}
+              {platform.deployment_request.region.toUpperCase()}
+            </li>
+          )}
           <li>
             <span className="text-gray/60">License:</span> Enterprise Edition
           </li>
