@@ -39,6 +39,18 @@ const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
     to: DeploymentRequestHubStatus.Cancelled,
   },
   {
+    from: DeploymentRequestHubStatus.Pending,
+    to: DeploymentRequestHubStatus.Provisioning,
+  },
+  {
+    from: DeploymentRequestHubStatus.Provisioning,
+    to: DeploymentRequestHubStatus.Active,
+  },
+  {
+    from: DeploymentRequestHubStatus.Provisioning,
+    to: DeploymentRequestHubStatus.Cancelled,
+  },
+  {
     from: DeploymentRequestHubStatus.Active,
     to: DeploymentRequestHubStatus.Expired,
   },
@@ -49,6 +61,10 @@ const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
   {
     from: DeploymentRequestHubStatus.Failed,
     to: DeploymentRequestHubStatus.Pending,
+  },
+  {
+    from: DeploymentRequestHubStatus.Failed,
+    to: DeploymentRequestHubStatus.Provisioning,
   },
   {
     from: DeploymentRequestHubStatus.Failed,
@@ -132,7 +148,7 @@ export const computeHubStatus = (
       newHubStatus = DeploymentRequestHubStatus.Active;
       break;
     case DeploymentRequestPlatformState.Provisioning:
-      newHubStatus = DeploymentRequestHubStatus.Pending;
+      newHubStatus = DeploymentRequestHubStatus.Provisioning;
       break;
     case DeploymentRequestPlatformState.Removing:
     case DeploymentRequestPlatformState.Removed:

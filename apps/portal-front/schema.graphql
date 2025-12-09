@@ -276,6 +276,7 @@ enum DeploymentRequestDeploymentType {
 enum DeploymentRequestHubStatus {
   queued
   pending
+  provisioning
   active
   expired
   failed
@@ -301,8 +302,6 @@ type DeploymentRequest implements Node {
   start_date: Date
   end_date: Date
   hub_status: DeploymentRequestHubStatus!
-  target_state: DeploymentRequestPlatformState
-  actual_state: DeploymentRequestPlatformState
   ordering: Int!
   requester_email: String
   organization_name: String
