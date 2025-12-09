@@ -5,11 +5,11 @@ import { ArrowRightAltIcon } from 'filigran-icon';
 import { toast } from 'filigran-ui';
 import { Button, GradientButton } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 interface ContactUsButtonProps {
-  variant: 'default' | 'gradient';
+  variant: 'default' | 'gradient' | 'outline-primary';
 }
 
 export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
@@ -33,23 +33,42 @@ export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
     });
   };
 
-  return (
-    <>
-      {(variant === 'default' && (
-        <Button
-          onClick={handleContactUs}
-          className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
-          disabled={isInFlight}>
-          {t('Service.Trials.ContactUs')}
-          <ArrowRightAltIcon className="ml-s size-4" />
-        </Button>
-      )) || (
+  const contactUsButton = useMemo(() => {
+    if ('gradient' === variant) {
+      return (
         <GradientButton
           onClick={handleContactUs}
           disabled={isInFlight}>
           {t('Service.Trials.ContactUs')}
         </GradientButton>
-      )}
+      );
+    }
+
+    if ('outline-primary' === variant) {
+      return (
+        <Button
+          onClick={handleContactUs}
+          variant="outline-primary"
+          disabled={isInFlight}>
+          {t('Service.Trials.ContactUs')}
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        onClick={handleContactUs}
+        className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
+        disabled={isInFlight}>
+        {t('Service.Trials.ContactUs')}
+        <ArrowRightAltIcon className="ml-s size-4" />
+      </Button>
+    );
+  }, [variant, handleContactUs, isInFlight, t]);
+
+  return (
+    <>
+      {contactUsButton}
       <DialogInformative
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
