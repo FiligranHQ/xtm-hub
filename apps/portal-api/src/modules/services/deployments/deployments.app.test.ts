@@ -687,9 +687,32 @@ describe('Deployment app', () => {
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
     });
 
+    it('should throw when deployment request is not in queue', async () => {
+      const deploymentRequest = {
+        id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Active,
+      } as Awaited<
+        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+      >;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(deploymentRequest);
+
+      const call = DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: deploymentRequest!.id,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.DeploymentRequestHubStatusNotQueued
+      );
+    });
+
     it('should reorder deployment request to top when direction is top', async () => {
       const deploymentRequest = {
         id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Queued,
       } as Awaited<
         ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
       >;
@@ -716,6 +739,7 @@ describe('Deployment app', () => {
     it('should reorder deployment request up when direction is up', async () => {
       const deploymentRequest = {
         id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Queued,
       } as Awaited<
         ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
       >;
