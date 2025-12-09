@@ -48,7 +48,7 @@ import {
 } from '../../telemetry/telemetry.helper';
 import {
   assertFreeTrialsLimit,
-  isHubStatusTransitionValid,
+  computeHubStatus,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 
@@ -112,9 +112,9 @@ export const DeploymentsApp = {
             hub_status: hubStatus,
             target_state:
               hubStatus === DeploymentRequestHubStatus.Queued
-                ? DeploymentRequestPlatformState.Inactive
+                ? DeploymentRequestPlatformState.Unprovisioned
                 : DeploymentRequestPlatformState.Active,
-            actual_state: null,
+            actual_state: DeploymentRequestPlatformState.Unprovisioned,
             ordering,
             type: input.type,
             platform_identifier: input.platform_identifier,
@@ -197,18 +197,6 @@ export const DeploymentsApp = {
     }
 
     if (
-      input.hub_status &&
-      !isHubStatusTransitionValid(
-        deploymentRequest.hub_status as DeploymentRequestHubStatus,
-        input.hub_status
-      )
-    ) {
-      throw new Error(
-        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
-      );
-    }
-
-    if (
       input.actual_state &&
       !isPlatformStateTransitionValid(
         deploymentRequest.actual_state as DeploymentRequestPlatformState,
@@ -225,6 +213,22 @@ export const DeploymentsApp = {
       (!input.start_date || !input.end_date);
     if (isActiveInputDataInvalid) {
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
+    }
+
+    let newStatus = computeHubStatus(
+      deploymentRequest.hub_status,
+      input.actual_state
+    );
+    // if no status is computed, it means it the transition is invalid.
+    // Let's just keep the same hub_status and log an error to investigate.
+    if (!newStatus) {
+      logApp.error('Invalid deployment request hub status update', {
+        deploymentRequest: deploymentRequest.id,
+        new_hub_status: newStatus,
+        previous_hub_status: deploymentRequest.hub_status,
+        actual_state: input.actual_state,
+      });
+      newStatus = deploymentRequest.hub_status;
     }
 
     await withTransaction(async () => {
@@ -246,18 +250,15 @@ export const DeploymentsApp = {
         failure_reason: input.failure_reason,
         actual_state: input.actual_state,
         ordering: input.ordering,
+        hub_status: newStatus,
       };
-
-      if (input.hub_status) {
-        updateData.hub_status = input.hub_status;
-      }
 
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
         updateData
       );
 
-      if (input.hub_status === DeploymentRequestHubStatus.Active) {
+      if (newStatus === DeploymentRequestHubStatus.Active) {
         await DeploymentRequestDomain.initialiseServiceGroup(
           input.id as DeploymentRequestId
         );
@@ -272,7 +273,7 @@ export const DeploymentsApp = {
         organization,
         deploymentRequest.user_requester_id,
         {
-          status: input.hub_status,
+          status: newStatus,
           start_date: input.start_date,
           end_date: input.end_date,
           deployment_id: deploymentRequest.id,

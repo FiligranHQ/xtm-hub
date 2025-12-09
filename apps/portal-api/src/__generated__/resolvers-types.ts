@@ -341,10 +341,10 @@ export enum DeploymentRequestPlatformRegion {
 
 export enum DeploymentRequestPlatformState {
   Active = 'active',
-  Inactive = 'inactive',
   Provisioning = 'provisioning',
   Removed = 'removed',
-  Removing = 'removing'
+  Removing = 'removing',
+  Unprovisioned = 'unprovisioned'
 }
 
 export type Document = {
@@ -1842,7 +1842,6 @@ export type UpdateDeploymentRequestInput = {
   actual_state?: InputMaybe<DeploymentRequestPlatformState>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
   failure_reason?: InputMaybe<Scalars['String']['input']>;
-  hub_status?: InputMaybe<DeploymentRequestHubStatus>;
   id: Scalars['ID']['input'];
   ordering?: InputMaybe<Scalars['Int']['input']>;
   platform_id?: InputMaybe<Scalars['String']['input']>;

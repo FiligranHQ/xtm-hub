@@ -58,8 +58,12 @@ const VALID_HUB_STATUS_TRANSITIONS: HubStatusTransition[] = [
 
 const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
   {
-    from: null,
+    from: DeploymentRequestPlatformState.Unprovisioned,
     to: DeploymentRequestPlatformState.Provisioning,
+  },
+  {
+    from: DeploymentRequestPlatformState.Unprovisioned,
+    to: DeploymentRequestPlatformState.Active,
   },
   {
     from: DeploymentRequestPlatformState.Provisioning,
@@ -70,16 +74,8 @@ const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
     to: DeploymentRequestPlatformState.Removing,
   },
   {
-    from: DeploymentRequestPlatformState.Active,
-    to: DeploymentRequestPlatformState.Inactive,
-  },
-  {
     from: DeploymentRequestPlatformState.Removing,
     to: DeploymentRequestPlatformState.Removed,
-  },
-  {
-    from: DeploymentRequestPlatformState.Inactive,
-    to: DeploymentRequestPlatformState.Active,
   },
 ];
 
@@ -112,4 +108,47 @@ export const assertFreeTrialsLimit = async (organizationId: OrganizationId) => {
   if (freeTrialsRequests) {
     throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
   }
+};
+
+export const computeHubStatus = (
+  currentHubStatus: DeploymentRequestHubStatus,
+  actualState: DeploymentRequestPlatformState | null | undefined
+) => {
+  if (!actualState) {
+    return currentHubStatus;
+  }
+
+  if (
+    currentHubStatus === DeploymentRequestHubStatus.Queued ||
+    actualState === DeploymentRequestPlatformState.Unprovisioned
+  ) {
+    return null;
+  }
+
+  let newHubStatus = currentHubStatus;
+
+  switch (actualState) {
+    case DeploymentRequestPlatformState.Active:
+      newHubStatus = DeploymentRequestHubStatus.Active;
+      break;
+    case DeploymentRequestPlatformState.Provisioning:
+      newHubStatus = DeploymentRequestHubStatus.Pending;
+      break;
+    case DeploymentRequestPlatformState.Removing:
+    case DeploymentRequestPlatformState.Removed:
+      if (
+        currentHubStatus !== DeploymentRequestHubStatus.Expired &&
+        currentHubStatus !== DeploymentRequestHubStatus.Cancelled
+      ) {
+        return null;
+      }
+      newHubStatus = currentHubStatus;
+      break;
+  }
+
+  if (!isHubStatusTransitionValid(currentHubStatus, newHubStatus)) {
+    return null;
+  }
+
+  return newHubStatus;
 };
