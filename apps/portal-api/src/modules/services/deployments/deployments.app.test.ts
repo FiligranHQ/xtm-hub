@@ -633,6 +633,30 @@ describe('Deployment app', () => {
         expect(deployment).toBeDefined();
       });
     });
+    describe('mail', () => {
+      it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'admin@filigran.io',
+          template: 'opencti_free_trial_provisioning',
+          params: {
+            firstName: 'Firstname',
+          },
+        });
+
+        mockSendMail.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+
+        expect(mockSendMail).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('loadAvailableDeploymentRequests', () => {

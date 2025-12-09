@@ -35,6 +35,10 @@ export interface OpenCTIFreeTrialQueuedModel {
   firstName: string;
 }
 
+export interface OpenCTIFreeTrialProvisioningModel {
+  firstName: string;
+}
+
 export interface PlatformUnregisteredModel {
   adminName: string;
 }
@@ -69,6 +73,7 @@ export type MailTemplates = {
   opencti_free_trial_registered: OpenCTIFreeTrialRegistered;
   opencti_free_trial_requested: OpenCTIFreeTrialRequestedModel;
   opencti_free_trial_queued: OpenCTIFreeTrialQueuedModel;
+  opencti_free_trial_provisioning: OpenCTIFreeTrialProvisioningModel;
 };
 
 export const templateSubjects: {
@@ -98,4 +103,6 @@ export const templateSubjects: {
   opencti_free_trial_registered: () => `Welcome to your OpenCTI free trial!`,
   opencti_free_trial_requested: () => `Your OpenCTI Free Trial Request`,
   opencti_free_trial_queued: () => `Your OpenCTI Free Trial Request`,
+  opencti_free_trial_provisioning: () =>
+    `Your OpenCTI Platform Is Being Provisioned`,
 };
