@@ -154,18 +154,19 @@ export const DeploymentsApp = {
       }
 
       try {
-        if (
+        const mailTemplate =
           createdDeploymentRequest.hub_status ===
           DeploymentRequestHubStatus.Pending
-        ) {
-          sendMail({
-            to: user.email,
-            template: 'opencti_free_trial_requested',
-            params: {
-              firstName: formatName(user.first_name ?? ''),
-            },
-          });
-        }
+            ? 'opencti_free_trial_requested'
+            : 'opencti_free_trial_queued';
+
+        sendMail({
+          to: user.email,
+          template: mailTemplate,
+          params: {
+            firstName: formatName(user.first_name ?? ''),
+          },
+        });
       } catch (error) {
         logApp.error('Unable to send mail', {
           error,

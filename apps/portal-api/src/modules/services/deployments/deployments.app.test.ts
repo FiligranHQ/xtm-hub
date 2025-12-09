@@ -242,6 +242,25 @@ describe('Deployment app', () => {
           },
         });
       });
+      it('should send a mail if status is queued', async () => {
+        await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          hub_status: DeploymentRequestHubStatus.Queued,
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'admin@filigran.io',
+          template: 'opencti_free_trial_queued',
+          params: {
+            firstName: 'Firstname',
+          },
+        });
+      });
     });
   });
   describe('loadDeploymentRequests', () => {
