@@ -141,7 +141,12 @@ export const TryOpenCTICallout = () => {
       ServiceInstanceCreationStatusEnum.PENDING
     )
       return 'provisioning';
-    if (diffInDays <= 0) return 'expired';
+    if (
+      diffInDays <= 0 ||
+      freeTrial?.deployment_request?.hub_status ===
+        DeploymentRequestHubStatusEnum.EXPIRED
+    )
+      return 'expired';
     return 'active';
   };
 
