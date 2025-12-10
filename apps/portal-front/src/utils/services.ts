@@ -6,6 +6,7 @@ import {
 } from '@/utils/path/constant';
 import { buildPlatformHoverLinks } from '@/utils/platform';
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -41,6 +42,12 @@ export const getDisplayDays = (
 ) => {
   if (!isTrial(platform)) {
     return undefined;
+  }
+  if (
+    platform.deployment_request?.hub_status ===
+    DeploymentRequestHubStatusEnum.QUEUED
+  ) {
+    return 'Requested';
   }
   if (
     platform.subscription?.service_instance?.creation_status ===
@@ -80,16 +87,13 @@ const freeTrialStaticData = (t: ReturnType<typeof useTranslations>) => {
 };
 
 export const freeTrialSkeletonToServiceInstanceCardData = (
-  isTrialInstanceQueued: boolean,
   serviceDefinitionIdentifier: ServiceDefinitionIdentifierEnum,
   t: ReturnType<typeof useTranslations>
 ) => {
   return {
     ...freeTrialStaticData(t),
     id: 'freeTrial',
-    displayedServiceStatus: isTrialInstanceQueued
-      ? t('Service.Trials.Display.Requested')
-      : t('Service.Trials.Display.New'),
+    displayedServiceStatus: t('Service.Trials.Display.New'),
     service_definition_identifier: serviceDefinitionIdentifier,
     url: '/app/service/free-trial',
   };

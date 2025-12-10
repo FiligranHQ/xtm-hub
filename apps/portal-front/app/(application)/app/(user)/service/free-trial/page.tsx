@@ -1,5 +1,3 @@
-'use client';
-
 import GuardCapacityComponent from '@/components/admin-guard';
 import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
 import {
@@ -11,11 +9,16 @@ import { TrialsLearnMore } from '@/components/service/trial-instances/trials-lea
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { useSearchParams } from 'next/navigation';
+import React from 'react';
 
-const Page = () => {
-  const searchParams = useSearchParams();
-  const openTrialForm = searchParams.has('openForm');
+interface Props {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+const Page: React.FC<Props> = async ({ searchParams }) => {
+  const openTrialFormSearchParams = (await searchParams).openForm;
+  const openTrialForm =
+    !!openTrialFormSearchParams && !Array.isArray(openTrialFormSearchParams);
 
   const breadcrumbs = [
     {
