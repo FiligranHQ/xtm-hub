@@ -17,23 +17,22 @@ export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
   const [commitContactUsMutation, isInFlight] = useMutation(ContactUsMutation);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleContactUs = () => {
-    commitContactUsMutation({
-      variables: {},
-      onError(error) {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-      onCompleted() {
-        setIsDialogOpen(true);
-      },
-    });
-  };
-
   const contactUsButton = useMemo(() => {
+    const handleContactUs = () => {
+      commitContactUsMutation({
+        variables: {},
+        onError(error) {
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: t(`Error.Server.${error.message}`),
+          });
+        },
+        onCompleted() {
+          setIsDialogOpen(true);
+        },
+      });
+    };
     if ('gradient' === variant) {
       return (
         <GradientButton
@@ -64,7 +63,7 @@ export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
         <ArrowRightAltIcon className="ml-s size-4" />
       </Button>
     );
-  }, [variant, handleContactUs, isInFlight, t]);
+  }, [variant, commitContactUsMutation, isInFlight, t]);
 
   return (
     <>
