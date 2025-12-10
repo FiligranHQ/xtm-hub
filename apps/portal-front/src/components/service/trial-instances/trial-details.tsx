@@ -1,12 +1,17 @@
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
+import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
+import { toast } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
+import { useMutation } from 'react-relay';
 
 interface Props {
   platform: registeredPlatformByServiceInstanceId_fragment$data;
@@ -14,6 +19,58 @@ interface Props {
 
 export const TrialDetails: React.FC<Props> = ({ platform }) => {
   const t = useTranslations();
+
+  const [cancelDeploymentRequestMutation] =
+    useMutation<trialInstancesCancelDeploymentRequestMutation>(
+      CancelDeploymentRequestMutation
+    );
+
+  const cancelTrial = () => {
+    cancelDeploymentRequestMutation({
+      variables: {
+        deploymentRequestId: platform.deployment_request!.id,
+      },
+
+      onCompleted: (response) => {
+        if (response.cancelDeploymentRequest?.counts_in_orga_quota) {
+          toast({
+            title: t('Utils.Success'),
+            description: t(
+              'Service.Trials.Cancellation.Toast.NoNewTrialPossible'
+            ),
+          });
+        } else {
+          toast({
+            title: t('Utils.Success'),
+            description: t(
+              'Service.Trials.Cancellation.Toast.NewTrialPossible'
+            ),
+          });
+        }
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+    });
+  };
+
+  const isCancellable =
+    platform.deployment_request &&
+    ![
+      DeploymentRequestHubStatusEnum.EXPIRED,
+      DeploymentRequestHubStatusEnum.CANCELLED,
+    ].includes(
+      platform.deployment_request?.hub_status as DeploymentRequestHubStatusEnum
+    );
+
+  const isCancellationDefinitive =
+    DeploymentRequestHubStatusEnum.ACTIVE ===
+    (platform.deployment_request?.hub_status as DeploymentRequestHubStatusEnum);
+
   return (
     <section className="flex justify-between p-xl border border-solid border-blue rounded">
       <ul className="text-sm flex flex-col gap-l">
@@ -27,6 +84,22 @@ export const TrialDetails: React.FC<Props> = ({ platform }) => {
           <li>
             <span className="text-gray/60">Status:</span>{' '}
             {formatTitleCase(platform.deployment_request?.hub_status)}
+            {isCancellable && (
+              <AlertDialogComponent
+                AlertTitle={t('Service.Trials.Cancellation.Confirmation.Title')}
+                triggerElement={
+                  <Button variant="link-destructive">Cancel</Button>
+                }
+                onClickContinue={() => cancelTrial()}>
+                {isCancellationDefinitive
+                  ? t(
+                      'Service.Trials.Cancellation.Confirmation.NoNewTrialPossible'
+                    )
+                  : t(
+                      'Service.Trials.Cancellation.Confirmation.NewTrialPossible'
+                    )}
+              </AlertDialogComponent>
+            )}
           </li>
         )}
         <li>

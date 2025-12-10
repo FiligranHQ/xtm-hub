@@ -114,6 +114,10 @@ export const TryOpenCTICallout = () => {
       text: () => t('Service.Trials.Expired'),
       button: () => <ContactUsButton variant="default" />,
     },
+    cancelled: {
+      text: () => t('Service.Trials.Cancelled'),
+      button: () => <ContactUsButton variant="default" />,
+    },
     active: {
       text: () => (
         <>
@@ -134,6 +138,13 @@ export const TryOpenCTICallout = () => {
       DeploymentRequestHubStatusEnum.QUEUED
     ) {
       return 'queued';
+    }
+
+    if (
+      freeTrial?.deployment_request?.hub_status ===
+      DeploymentRequestHubStatusEnum.CANCELLED
+    ) {
+      return 'cancelled';
     }
 
     if (

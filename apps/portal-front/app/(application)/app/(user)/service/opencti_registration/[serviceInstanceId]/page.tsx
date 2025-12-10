@@ -1,25 +1,30 @@
+'use client';
+
+import {
+  registeredPlatformByServiceInstanceId,
+  registeredPlatformByServiceInstanceIdFragment,
+} from '@/components/registration/register/register.graphql';
 import { TrialsDetailsPage } from '@/components/service/trial-instances/trials-details-page';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { APP_PATH } from '@/utils/path/constant';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import registeredPlatformByServiceInstanceIdQueryGraphql, {
-  registeredPlatformByServiceInstanceIdQuery,
-} from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
+import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
 import { notFound } from 'next/navigation';
+import { use } from 'react';
+import { useFragment, useLazyLoadQuery } from 'react-relay';
 
 interface ServiceOpenCTIRegistrationPageProps {
   params: Promise<{ serviceInstanceId: string }>;
 }
 
-const Page = async ({ params }: ServiceOpenCTIRegistrationPageProps) => {
-  const { serviceInstanceId } = await params;
+const Page = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
+  const { serviceInstanceId } = use(params);
   const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
 
-  const response =
-    await serverFetchGraphQL<registeredPlatformByServiceInstanceIdQuery>(
-      registeredPlatformByServiceInstanceIdQueryGraphql,
+  const queryData =
+    useLazyLoadQuery<registeredPlatformByServiceInstanceIdQuery>(
+      registeredPlatformByServiceInstanceId,
       {
         input: {
           service_instance_id: decodedServiceInstanceId,
@@ -27,8 +32,10 @@ const Page = async ({ params }: ServiceOpenCTIRegistrationPageProps) => {
       }
     );
 
-  const data = response.data
-    .registeredPlatform as unknown as registeredPlatformByServiceInstanceId_fragment$data;
+  const data = useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
+    registeredPlatformByServiceInstanceIdFragment,
+    queryData.registeredPlatform
+  );
 
   if (!data || data.contract !== PlatformContractEnum.TRIAL) {
     notFound();

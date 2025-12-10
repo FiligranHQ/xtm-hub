@@ -699,6 +699,7 @@
       "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
       "Requested": "Your OpenCTI free trial has been requested.",
       "Expired": "Your OpenCTI free trial has expired.",
+      "Cancelled": "Your OpenCTI free trial has been cancelled.",
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "LearnMore": "Learn more",
       "StartTrial": "Start your free trial",
@@ -706,6 +707,17 @@
       "ContactUs": "Contact us",
       "ContactUsSuccessTitle": "Thank you!",
       "ContactUsSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
+      "Cancellation": {
+        "Toast": {
+          "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",
+          "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully."
+        },
+        "Confirmation": {
+          "Title": "Trial Cancellation",
+          "NoNewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ? Please note that new openCTI trials can’t be requested after this action.",
+          "NewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ?"
+        }
+      },
       "Form": {
         "Region": "Region",
         "AssociatedEmail": "Associated Email",
