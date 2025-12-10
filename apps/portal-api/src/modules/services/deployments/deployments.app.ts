@@ -63,8 +63,21 @@ export const DeploymentsApp = {
     });
 
     if (chosenOrganization.personal_space) {
-      logApp.warn('You cannot request Free Trial in your personal space');
+      logApp.warn('Free trial requests are not allowed in personal spaces');
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
+    }
+
+    const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
+      .split(',')
+      .map((d) => d.trim());
+    const organizationIsBlacklisted = chosenOrganization.domains.some(
+      (domain) => domainsBlacklist.includes(domain)
+    );
+    if (organizationIsBlacklisted) {
+      logApp.warn(
+        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
+      );
+      throw new Error(ErrorCode.CantRequestFreeTrial);
     }
 
     if (

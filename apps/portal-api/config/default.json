@@ -105,5 +105,6 @@
     "eu_west": 20,
     "apac_au": 10,
     "apac_sg": 10
-  }
+  },
+  "domains_blacklist": ""
 }
