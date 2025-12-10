@@ -2,7 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as dbModule from '../../../../knexfile';
 import { db } from '../../../../knexfile';
-import { SIMPLE_USER_FILIGRAN_ID } from '../../../../tests/tests.const';
+import {
+  SIMPLE_USER_FILIGRAN_ID,
+  THALES_SIMPLE_USER_ID,
+} from '../../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
@@ -14,9 +17,6 @@ import {
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../../model/kanel/public/User';
-import UserOrganization, {
-  UserOrganizationInitializer,
-} from '../../../model/kanel/public/UserOrganization';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
@@ -151,7 +151,6 @@ describe('DeploymentRequestDomain', () => {
 
   describe('loadProvisionedTrialDeploymentRequestByPlatformIdentifier', () => {
     afterEach(async () => {
-      await db<UserOrganization>('User_Organization').delete();
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await deleteServiceInstanceBy({});
       await deleteSubscriptionUnsecure({});
@@ -167,11 +166,6 @@ describe('DeploymentRequestDomain', () => {
         type: DeploymentRequestDeploymentType.Trial,
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
       });
-
-      await db<UserOrganization>('User_Organization').insert({
-        user_id: userId,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-      } as UserOrganizationInitializer);
 
       const result =
         await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
@@ -196,11 +190,6 @@ describe('DeploymentRequestDomain', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
       });
 
-      await db<UserOrganization>('User_Organization').insert({
-        user_id: userId,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-      } as UserOrganizationInitializer);
-
       const result =
         await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
           platformIdentifier,
@@ -223,11 +212,6 @@ describe('DeploymentRequestDomain', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
       });
 
-      await db<UserOrganization>('User_Organization').insert({
-        user_id: userId,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-      } as UserOrganizationInitializer);
-
       const result =
         await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
           platformIdentifier,
@@ -239,8 +223,8 @@ describe('DeploymentRequestDomain', () => {
 
     it('should not return deployment request when user is not member of the organization', async () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
-      const userId = ADMIN_UUID as UserId;
-      const anotherUserId = SIMPLE_USER_FILIGRAN_ID as UserId;
+      // THALES_SIMPLE_USER_ID is in Thales org, not in Filigran org (PLATFORM_ORGANIZATION_UUID)
+      const userNotInOrganization = THALES_SIMPLE_USER_ID;
 
       await insertOpenCtiDeploymentRequest({
         platform_identifier: platformIdentifier,
@@ -249,38 +233,10 @@ describe('DeploymentRequestDomain', () => {
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
       });
 
-      // Insert User_Organization for another user
-      await db<UserOrganization>('User_Organization').insert({
-        user_id: anotherUserId,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-      } as UserOrganizationInitializer);
-
       const result =
         await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
           platformIdentifier,
-          userId
-        );
-
-      expect(result).toBeUndefined();
-    });
-
-    it('should not return deployment request when user is not in organization', async () => {
-      const platformIdentifier = PlatformIdentifier.Opencti;
-      const userId = SIMPLE_USER_FILIGRAN_ID as UserId;
-
-      await insertOpenCtiDeploymentRequest({
-        platform_identifier: platformIdentifier,
-        hub_status: DeploymentRequestHubStatus.Active,
-        type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
-      });
-
-      // No User_Organization entry for this user
-
-      const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
-          platformIdentifier,
-          userId
+          userNotInOrganization
         );
 
       expect(result).toBeUndefined();
@@ -296,11 +252,6 @@ describe('DeploymentRequestDomain', () => {
         type: DeploymentRequestDeploymentType.Trial,
         organization_requester_id: PLATFORM_ORGANIZATION_UUID,
       });
-
-      await db<UserOrganization>('User_Organization').insert({
-        user_id: userId,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-      } as UserOrganizationInitializer);
 
       const result =
         await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
@@ -391,6 +342,9 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeUndefined();
+    });
+  });
+
   describe('reorderDeploymentRequestUp', () => {
     it('should do nothing when deployment request is the top one', async () => {
       const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
