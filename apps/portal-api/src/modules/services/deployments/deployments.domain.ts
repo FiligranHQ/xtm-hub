@@ -109,11 +109,11 @@ export const DeploymentRequestDomain = {
   loadProvisionedTrialDeploymentRequestByPlatformIdentifier: async (
     platformIdentifier: PlatformIdentifier,
     userId: string
-  ): Promise<FullyQualifiedDeploymentRequest> => {
+  ): Promise<FullyQualifiedDeploymentRequest | undefined> => {
     return getDeploymentRequestWithUserDataQuery()
       .leftJoin(
         'User_Organization',
-        'User_Organization.user_id',
+        'User_Organization.organization_id',
         '=',
         'Organization.id'
       )
