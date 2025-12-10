@@ -12,6 +12,7 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
+  requestContextThalesUser,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -36,6 +37,7 @@ import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
   ErrorCode,
+  ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -48,6 +50,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
+import { requestContext } from '../../../context/request.context';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -894,6 +897,65 @@ describe('Deployment app', () => {
       expect(result.success).toBeTruthy();
       expect(reorderDeploymentRequestUpSpy).toHaveBeenCalledWith(
         deploymentRequest
+      );
+    });
+  });
+  describe('cancelDeploymentRequest', () => {
+    it.each`
+      hub_status                                 | actual_state                                    | counts_in_orga_quota
+      ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}
+      ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+    `(
+      'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
+      async ({ hub_status, actual_state, counts_in_orga_quota }) => {
+        const initialDeployment = (await insertOpenCtiDeploymentRequest({
+          hub_status,
+          actual_state,
+        })) as DeploymentRequest;
+
+        const deployment = await DeploymentsApp.cancelDeploymentRequest(
+          initialDeployment.id
+        );
+
+        expect(deployment).toMatchObject({
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+          target_state: DeploymentRequestPlatformState.Removed,
+          counts_in_orga_quota,
+          cancellation_date: expect.any(Date),
+          cancellation_user_id: ADMIN_USER_ID,
+        });
+
+        const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+          'id',
+          initialDeployment.service_instance_id
+        );
+        expect(serviceInstance.creation_status).toBe(
+          counts_in_orga_quota
+            ? ServiceInstanceCreationStatus.Pending
+            : ServiceInstanceCreationStatus.Disabled
+        );
+      }
+    );
+    it('should throw if deployment request does not exist', async () => {
+      const call = DeploymentsApp.cancelDeploymentRequest(
+        uuidv4() as DeploymentRequestId
+      );
+      await expect(call).rejects.toThrow(
+        NotFoundErrorCode.DeploymentRequestNotFound
+      );
+    });
+
+    it('should throw if user is not in organization', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      requestContext.set(requestContextThalesUser);
+      const call = DeploymentsApp.cancelDeploymentRequest(deployment.id);
+      await expect(call).rejects.toThrow(
+        ForbiddenErrorCode.UserIsNotInOrganization
       );
     });
   });

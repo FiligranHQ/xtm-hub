@@ -28,6 +28,7 @@ import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
+  ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
@@ -49,6 +50,7 @@ import {
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
 import { loadUnsecureUser } from '../../users/users.domain';
+import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
@@ -419,5 +421,52 @@ export const DeploymentsApp = {
     return {
       success: true,
     };
+  },
+
+  cancelDeploymentRequest: async (
+    deploymentRequestId: DeploymentRequestId
+  ): Promise<DeploymentRequest> => {
+    const { user } = requestContext.require();
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        id: deploymentRequestId,
+      });
+
+    if (!deploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
+    if (
+      user.selected_organization_id !==
+      deploymentRequest.organization_requester_id
+    ) {
+      throw new Error(ForbiddenErrorCode.UserIsNotInOrganization);
+    }
+
+    const countsInOrgaQuota = ![
+      DeploymentRequestPlatformState.Unprovisioned,
+      DeploymentRequestPlatformState.Provisioning,
+    ].includes(deploymentRequest.actual_state);
+
+    await withTransaction(async () => {
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequestId,
+        {
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+          target_state: DeploymentRequestPlatformState.Removed,
+          cancellation_date: new Date(),
+          cancellation_user_id: user.id,
+          counts_in_orga_quota: countsInOrgaQuota,
+        }
+      );
+      if (!countsInOrgaQuota) {
+        await updateServiceInstance(deploymentRequest.service_instance_id, {
+          creation_status: ServiceInstanceCreationStatus.Disabled,
+        });
+      }
+    });
+    return DeploymentRequestDomain.loadDeploymentRequestBy({
+      id: deploymentRequestId,
+    });
   },
 };

@@ -46,11 +46,17 @@ export default interface DeploymentRequest {
 
   hub_status: string;
 
-  target_state: string;
+  target_state: string | null;
 
-  actual_state: string;
+  actual_state: string | null;
 
   ordering: number;
+
+  counts_in_orga_quota: boolean;
+
+  cancellation_user_id: string | null;
+
+  cancellation_date: Date | null;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
@@ -91,14 +97,19 @@ export interface DeploymentRequestInitializer {
   /** Default value: 'pending'::character varying */
   hub_status?: string;
 
-  /** Default value: 'pending'::character varying */
-  target_state?: string;
+  target_state?: string | null;
 
-  /** Default value: 'pending'::character varying */
-  actual_state?: string;
+  actual_state?: string | null;
 
   /** Default value: 0 */
   ordering?: number;
+
+  /** Default value: true */
+  counts_in_orga_quota?: boolean;
+
+  cancellation_user_id?: string | null;
+
+  cancellation_date?: Date | null;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
@@ -137,9 +148,15 @@ export interface DeploymentRequestMutator {
 
   hub_status?: string;
 
-  target_state?: string;
+  target_state?: string | null;
 
-  actual_state?: string;
+  actual_state?: string | null;
 
   ordering?: number;
+
+  counts_in_orga_quota?: boolean;
+
+  cancellation_user_id?: string | null;
+
+  cancellation_date?: Date | null;
 }

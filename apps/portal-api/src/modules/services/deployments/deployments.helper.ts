@@ -120,6 +120,7 @@ export const assertFreeTrialsLimit = async (organizationId: OrganizationId) => {
     await DeploymentRequestDomain.loadDeploymentRequestBy({
       organization_requester_id: organizationId,
       type: DeploymentRequestDeploymentType.Trial,
+      counts_in_orga_quota: true,
     });
   if (freeTrialsRequests) {
     throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);

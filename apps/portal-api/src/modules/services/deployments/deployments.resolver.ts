@@ -77,6 +77,18 @@ const resolvers: Resolvers = {
         );
       }
     },
+    cancelDeploymentRequest: async (_, { deploymentRequestId }) => {
+      try {
+        return await DeploymentsApp.cancelDeploymentRequest(
+          extractId<DeploymentRequestId>(deploymentRequestId)
+        );
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
     reorderDeploymentRequestInQueue: async (_, { input }) => {
       try {
         return await DeploymentsApp.reorderDeploymentRequestInQueue({

@@ -42,6 +42,7 @@ type DeploymentRequest implements Node {
   requester_email: String
   organization_name: String
   request_date: Date!
+  counts_in_orga_quota: Boolean!
 }
 
 type PlatformDeploymentRequest {
@@ -180,4 +181,6 @@ extend type Mutation {
   reorderDeploymentRequestInQueue(
     input: ReorderDeploymentRequestInQueueInput!
   ): Success @auth(requires: [BYPASS])
+  cancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
+    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
