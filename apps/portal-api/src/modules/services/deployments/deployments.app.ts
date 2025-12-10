@@ -208,6 +208,9 @@ export const DeploymentsApp = {
       });
 
     if (!deploymentRequest) {
+      logApp.error(
+        `Deployment request not found with id ${deploymentRequestId}`
+      );
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
@@ -218,6 +221,9 @@ export const DeploymentsApp = {
         input.actual_state
       )
     ) {
+      logApp.error(
+        `Invalid deployment request status update from ${deploymentRequest.actual_state} to ${input.actual_state}`
+      );
       throw new Error(
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
@@ -227,6 +233,9 @@ export const DeploymentsApp = {
       input.actual_state == DeploymentRequestPlatformState.Active &&
       (!input.start_date || !input.end_date);
     if (isActiveInputDataInvalid) {
+      logApp.error(
+        `Missing start or end date for active deployment request with id ${deploymentRequestId}`
+      );
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
     }
 
