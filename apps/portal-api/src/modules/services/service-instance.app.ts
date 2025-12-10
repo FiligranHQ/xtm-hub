@@ -148,7 +148,7 @@ export const serviceInstanceApp = {
     tags: ServiceInstanceTag[]
   ): Promise<ServiceInstance[]> => {
     const serviceInstances =
-      await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTags(
+      await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
         ServiceDefinitionIdentifier.Link,
         tags
       );

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import { contextAdminUser, SERVICE_VAULT_ID } from '../../../tests/tests.const';
 import {
   PlatformContract,
@@ -8,7 +8,13 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
+import Subscription, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
 import { PlatformConfiguration } from './registration/registration.domain';
 import {
   loadLinks,
@@ -23,7 +29,7 @@ describe('Service instance domain', () => {
   describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
     it('should return service instances linked to service definition and with tags', async () => {
       const serviceInstances =
-        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTags(
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
           ServiceDefinitionIdentifier.Link,
           [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
         );
@@ -42,9 +48,50 @@ describe('Service instance domain', () => {
       ).toBeDefined();
     });
 
+    it('should not return service instance linked to a subscription', async () => {
+      const linkServiceDefinition = await db<ServiceDefinition>(
+        'ServiceDefinition'
+      )
+        .where('identifier', '=', ServiceDefinitionIdentifier.Link)
+        .select('*')
+        .first();
+
+      expect(linkServiceDefinition).toBeDefined();
+
+      const [subscribedServiceInstance] = await db<ServiceInstance>(
+        'ServiceInstance'
+      )
+        .insert({
+          id: uuidv4() as ServiceInstanceId,
+          name: 'ServiceInstance 1',
+          tags: [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial],
+          service_definition_id: linkServiceDefinition!.id,
+        })
+        .returning('*');
+      expect(subscribedServiceInstance).toBeDefined();
+
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        service_instance_id: subscribedServiceInstance!.id,
+      });
+
+      const serviceInstances =
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+          ServiceDefinitionIdentifier.Link,
+          [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
+        );
+
+      expect(
+        serviceInstances.find(
+          (serviceInstance) =>
+            serviceInstance.id === subscribedServiceInstance!.id
+        )
+      ).not.toBeDefined();
+    });
+
     it('should return an empty array when no service instance has tags', async () => {
       const serviceInstances =
-        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTags(
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
           ServiceDefinitionIdentifier.Link,
           ['test' as ServiceInstanceTag]
         );

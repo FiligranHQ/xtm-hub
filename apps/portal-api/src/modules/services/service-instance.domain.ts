@@ -38,7 +38,7 @@ import { insertServiceCapability } from './instances/service-capabilities/servic
 import { PlatformConfiguration } from './registration/registration.domain';
 
 export const ServiceInstanceDomain = {
-  loadServiceInstancesByServiceDefinitionAndTags: async (
+  loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription: async (
     serviceDefinitionIdentifier: ServiceDefinitionIdentifier,
     tags: ServiceInstanceTag[]
   ): Promise<ServiceInstance[]> => {
@@ -50,7 +50,16 @@ export const ServiceInstanceDomain = {
         '=',
         'ServiceInstance.service_definition_id'
       )
-      .whereRaw(`"ServiceInstance"."tags"::text[] @> array[${formattedTags}]`)
+      .leftJoin(
+        'Subscription',
+        'Subscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .whereNull('Subscription.id')
+      .andWhereRaw(
+        `"ServiceInstance"."tags"::text[] @> array[${formattedTags}]`
+      )
       .andWhere(
         'ServiceDefinition.identifier',
         '=',

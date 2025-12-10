@@ -22,6 +22,12 @@ export default defineConfig([
     '**/src/utils/error/error.util.ts',
   ]),
   {
+    files: ['**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+  {
     rules: {
       '@typescript-eslint/ban-ts-ignore': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
