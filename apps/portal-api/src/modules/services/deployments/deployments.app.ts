@@ -14,7 +14,9 @@ import {
   PlatformDeploymentRequestConnection,
   PlatformIdentifier,
   QueryDeploymentRequestsArgs,
+  ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
+  Success,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -356,6 +358,7 @@ export const DeploymentsApp = {
       }
     );
   },
+
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier
   ): Promise<DeploymentAvailability[]> => {
@@ -373,5 +376,41 @@ export const DeploymentsApp = {
       availableCount:
         (max_deployments[region] || 0) - (deploymentsByRegion[region] || 0),
     }));
+  },
+
+  reorderDeploymentRequestInQueue: async ({
+    id,
+    direction,
+  }: {
+    id: DeploymentRequestId;
+    direction: ReorderDeploymentRequestInQueueDirection;
+  }): Promise<Success> => {
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+    if (!deploymentRequest) {
+      throw new Error(ErrorCode.DeploymentRequestNotFound);
+    }
+
+    if (DeploymentRequestHubStatus.Queued !== deploymentRequest.hub_status) {
+      throw new Error(ErrorCode.DeploymentRequestHubStatusNotQueued);
+    }
+
+    switch (direction) {
+      case ReorderDeploymentRequestInQueueDirection.Top:
+        await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+          deploymentRequest
+        );
+        break;
+
+      case ReorderDeploymentRequestInQueueDirection.Up:
+        await DeploymentRequestDomain.reorderDeploymentRequestUp(
+          deploymentRequest
+        );
+        break;
+    }
+
+    return {
+      success: true,
+    };
   },
 };

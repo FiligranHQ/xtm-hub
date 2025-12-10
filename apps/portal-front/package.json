@@ -27,7 +27,7 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "extract-files": "13.0.0",
-    "filigran-icon": "0.20.0",
+    "filigran-icon": "0.21.0",
     "filigran-ui": "0.41.0",
     "graphql": "16.11.0",
     "graphql-sse": "2.5.4",

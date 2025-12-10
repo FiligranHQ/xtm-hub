@@ -139,6 +139,16 @@ enum DeploymentRequestOrdering {
   request_date
 }
 
+enum ReorderDeploymentRequestInQueueDirection {
+  top
+  up
+}
+
+input ReorderDeploymentRequestInQueueInput {
+  id: ID!
+  direction: ReorderDeploymentRequestInQueueDirection!
+}
+
 extend type Query {
   deploymentRequests(
     first: Int!
@@ -167,4 +177,7 @@ extend type Mutation {
   updateDeploymentRequest(
     input: UpdateDeploymentRequestInput!
   ): PlatformDeploymentRequest! @system_token
+  reorderDeploymentRequestInQueue(
+    input: ReorderDeploymentRequestInQueueInput!
+  ): Success @auth(requires: [BYPASS])
 }
