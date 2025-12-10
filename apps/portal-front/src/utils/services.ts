@@ -46,7 +46,7 @@ export const getDisplayDays = (
     platform.subscription?.service_instance?.creation_status ===
     ServiceInstanceCreationStatusEnum.PENDING
   ) {
-    return 'Pending';
+    return 'Provisioning';
   }
   if (!platform.subscription?.end_date) {
     return platform.deployment_request?.hub_status;
