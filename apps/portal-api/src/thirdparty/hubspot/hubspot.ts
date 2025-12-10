@@ -18,8 +18,6 @@ async function hubspotHook(
   buildPayload: () => Promise<Record<string, unknown>>
 ) {
   try {
-    const env = config.get<string>('environment');
-    if (env !== 'production') return;
     const webHookUrl = config.get<string>('hubspot_webhook_url');
     if (isValidUrl(webHookUrl)) {
       // 3 seconds timeout
