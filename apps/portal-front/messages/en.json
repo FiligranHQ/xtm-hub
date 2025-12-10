@@ -77,6 +77,7 @@
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION_ERROR": "Error while deleting organization",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
+      "DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED": "You can only reorder queued deployment requests.",
       "DEPLOYMENT_REQUEST_NOT_FOUND": "An unknown error occurred",
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "An unknown error occurred",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "An unknown error occurred",
@@ -288,8 +289,13 @@
       "Running": "Running",
       "Waiting": "Waiting"
     },
+    "Toast": {
+      "TrialsReordered": "Trial requests were reordered"
+    },
     "Actions": {
-      "SearchTrials": "Search by email or organization"
+      "SearchTrials": "Search by email or organization",
+      "MoveToTop": "Move to top",
+      "MoveUp": "Move up"
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
   },

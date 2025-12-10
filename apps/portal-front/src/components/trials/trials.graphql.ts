@@ -48,3 +48,13 @@ export const TrialsListQuery = graphql`
     ...trialsList
   }
 `;
+
+export const TrialsReorderRequestInQueueMutation = graphql`
+  mutation trialsReorderRequestInQueueMutation(
+    $input: ReorderDeploymentRequestInQueueInput!
+  ) {
+    reorderDeploymentRequestInQueue(input: $input) {
+      success
+    }
+  }
+`;

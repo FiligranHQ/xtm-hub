@@ -12,6 +12,7 @@ import {
   OrderingMode,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationInitializer,
@@ -23,6 +24,9 @@ import { DeploymentRequestDomain } from './deployments.domain';
 import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
 
 describe('DeploymentRequestDomain', () => {
+  beforeEach(async () => {
+    await db<DeploymentRequest>('DeploymentRequest').del();
+  });
   describe('loadDeploymentRequestCountByRegion', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let mockDb: any;
@@ -387,6 +391,194 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeUndefined();
+  describe('reorderDeploymentRequestUp', () => {
+    it('should do nothing when deployment request is the top one', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 1,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 2,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(
+        topDeploymentRequest!
+      );
+      const resultDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
+
+      expect(resultDeploymentRequest).toBeDefined();
+      expect(resultDeploymentRequest!.ordering).toBe(1);
+    });
+
+    it('should swap deployment request with the previous one', async () => {
+      await insertOpenCtiDeploymentRequest({
+        ordering: 2,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      const previousDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(
+        selectedDeploymentRequest!
+      );
+      const resultPreviousDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: previousDeploymentRequest!.id,
+        });
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
+      expect(resultPreviousDeploymentRequest).toBeDefined();
+      expect(resultPreviousDeploymentRequest!.ordering).toBe(4);
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(3);
+    });
+
+    it('should only reorder queued deployment requests', async () => {
+      const previousDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(
+        selectedDeploymentRequest!
+      );
+      const resultPreviousDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: previousDeploymentRequest!.id,
+        });
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
+
+      expect(resultPreviousDeploymentRequest).toBeDefined();
+      expect(resultPreviousDeploymentRequest!.ordering).toBe(3);
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(4);
+    });
+  });
+
+  describe('reorderDeploymentRequestToTop', async () => {
+    it('should do nothing when deployment request is the top one', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 1,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 2,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+        topDeploymentRequest!
+      );
+      const resultDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
+
+      expect(resultDeploymentRequest).toBeDefined();
+      expect(resultDeploymentRequest!.ordering).toBe(1);
+    });
+
+    it('should reorder deployment request to top', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 5,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 6,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+        selectedDeploymentRequest!
+      );
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
+
+      const resultTopDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(1);
+
+      expect(resultTopDeploymentRequest).toBeDefined();
+      expect(resultTopDeploymentRequest!.ordering).toBe(4);
+    });
+
+    it('should only reorder queued deployment requests', async () => {
+      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      const secondDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+      });
+      await insertOpenCtiDeploymentRequest({
+        ordering: 5,
+      });
+      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        ordering: 6,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+        selectedDeploymentRequest!
+      );
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
+
+      const resultSecondDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: secondDeploymentRequest!.id,
+        });
+
+      const resultTopDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(1);
+
+      expect(resultSecondDeploymentRequest).toBeDefined();
+      expect(resultSecondDeploymentRequest!.ordering).toBe(
+        secondDeploymentRequest!.ordering
+      );
+
+      expect(resultTopDeploymentRequest).toBeDefined();
+      expect(resultTopDeploymentRequest!.ordering).toBe(4);
     });
   });
 });
