@@ -34,7 +34,7 @@ import {
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
-  ForbiddenErrorCode,
+  ErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -197,9 +197,7 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        await expect(call).rejects.toThrow(
-          ForbiddenErrorCode.CantRequestFreeTrial
-        );
+        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
       });
 
       it('should allow deployment when organization domain is not blacklisted', async () => {
@@ -261,9 +259,7 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        await expect(call).rejects.toThrow(
-          ForbiddenErrorCode.CantRequestFreeTrial
-        );
+        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
       });
     });
 

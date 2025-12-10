@@ -17,8 +17,7 @@ export const useFreeTrial = () => {
 
   const isBlacklisted = (settings?.domains_blacklist ?? '')
     .split(',')
-    .map((domain) => domain.trim())
-    .some((domain) => me?.email?.includes(domain));
+    .some((domain) => me?.email?.includes(domain.trim()));
 
   const queryData = useLazyLoadQuery<registerRegisteredPlatformsQuery>(
     RegisterRegisteredPlatformsQuery,
