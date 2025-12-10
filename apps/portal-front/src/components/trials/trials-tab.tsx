@@ -449,8 +449,8 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                 <DataTableHeadBarOptions />
               </div>
             </div>
-            <div className="border border-solid border-orange rounded text-orange flex gap-xs p-xs text-sm mt-4">
-              <CheckIndeterminateIcon className="shrink-0 h-4 w-4" />
+            <div className="border border-solid border-orange rounded text-orange flex items-center gap-xs p-s text-sm mt-4">
+              <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
               {t('TrialsDashboard.WarningCancellation')}
             </div>
           </div>
