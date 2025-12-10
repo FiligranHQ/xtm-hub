@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useMutation } from 'react-relay';
 
 interface ContactUsButtonProps {
-  variant: 'default' | 'gradient';
+  variant: 'default' | 'outline-primary' | 'gradient';
 }
 
 export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
@@ -33,23 +33,42 @@ export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
     });
   };
 
+  const VariantButton = () => {
+    switch (variant) {
+      case 'outline-primary':
+        return (
+          <Button
+            variant="outline-primary"
+            onClick={handleContactUs}
+            disabled={isInFlight}>
+            {t('Service.Trials.ContactUs')}
+          </Button>
+        );
+      case 'gradient':
+        return (
+          <GradientButton
+            onClick={handleContactUs}
+            disabled={isInFlight}>
+            {t('Service.Trials.ContactUs')}
+          </GradientButton>
+        );
+      case 'default':
+      default:
+        return (
+          <Button
+            onClick={handleContactUs}
+            className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
+            disabled={isInFlight}>
+            {t('Service.Trials.ContactUs')}
+            <ArrowRightAltIcon className="ml-s size-4" />
+          </Button>
+        );
+    }
+  };
+
   return (
     <>
-      {(variant === 'default' && (
-        <Button
-          onClick={handleContactUs}
-          className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
-          disabled={isInFlight}>
-          {t('Service.Trials.ContactUs')}
-          <ArrowRightAltIcon className="ml-s size-4" />
-        </Button>
-      )) || (
-        <GradientButton
-          onClick={handleContactUs}
-          disabled={isInFlight}>
-          {t('Service.Trials.ContactUs')}
-        </GradientButton>
-      )}
+      <VariantButton />
       <DialogInformative
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
