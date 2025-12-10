@@ -6,6 +6,7 @@ import {
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { PlatformConfiguration } from './registration/registration.domain';
@@ -13,11 +14,45 @@ import {
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
 } from './service-instance.domain';
 
 describe('Service instance domain', () => {
+  describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
+    it('should return service instances linked to service definition and with tags', async () => {
+      const serviceInstances =
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTags(
+          ServiceDefinitionIdentifier.Link,
+          [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
+        );
+
+      expect(serviceInstances.length).toBe(3);
+      expect(
+        serviceInstances.find(({ name }) => name === 'Filigran Blog')
+      ).toBeDefined();
+
+      expect(
+        serviceInstances.find(({ name }) => name === 'OpenCTI 101')
+      ).toBeDefined();
+
+      expect(
+        serviceInstances.find(({ name }) => name === 'OpenCTI Demo')
+      ).toBeDefined();
+    });
+
+    it('should return an empty array when no service instance has tags', async () => {
+      const serviceInstances =
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTags(
+          ServiceDefinitionIdentifier.Link,
+          ['test' as ServiceInstanceTag]
+        );
+
+      expect(serviceInstances.length).toBe(0);
+    });
+  });
+
   describe('loadLinks', () => {
     it('should return the service link when the service instance exists and has links', async () => {
       const links = await loadLinks(SERVICE_VAULT_ID);
@@ -153,9 +188,9 @@ describe('Service instance domain', () => {
       );
 
       expect(result).toBeTruthy();
-      expect(result.name).toBe('Updated Name');
-      expect(result.description).toBe('Updated Description');
-      expect(result.id).toBe(mockServiceInstanceId);
+      expect(result?.name).toBe('Updated Name');
+      expect(result?.description).toBe('Updated Description');
+      expect(result?.id).toBe(mockServiceInstanceId);
     });
 
     it('should update only provided fields', async () => {
@@ -168,8 +203,8 @@ describe('Service instance domain', () => {
         updateData
       );
 
-      expect(result.name).toBe('Only Name Updated');
-      expect(result.description).toBe('Original Description'); // Should remain unchanged
+      expect(result?.name).toBe('Only Name Updated');
+      expect(result?.description).toBe('Original Description'); // Should remain unchanged
     });
 
     it('should return undefined when service instance does not exist', async () => {

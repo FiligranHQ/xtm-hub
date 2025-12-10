@@ -6,6 +6,7 @@ import {
   ServiceConnection,
   ServiceDefinition,
   ServiceDefinitionIdentifier,
+  ServiceInstanceTag,
   ServiceLink,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
@@ -35,6 +36,29 @@ import { insertUserService } from '../user_service/user_service.domain';
 import { loadUserBy } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
+
+export const ServiceInstanceDomain = {
+  loadServiceInstancesByServiceDefinitionAndTags: async (
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier,
+    tags: ServiceInstanceTag[]
+  ): Promise<ServiceInstance[]> => {
+    const formattedTags = tags.map((tag) => `'${tag}'`).join(',');
+    return db<ServiceInstance>('ServiceInstance')
+      .leftJoin(
+        'ServiceDefinition',
+        'ServiceDefinition.id',
+        '=',
+        'ServiceInstance.service_definition_id'
+      )
+      .whereRaw(`"ServiceInstance"."tags"::text[] @> array[${formattedTags}]`)
+      .andWhere(
+        'ServiceDefinition.identifier',
+        '=',
+        serviceDefinitionIdentifier
+      )
+      .select('ServiceInstance.*');
+  },
+};
 
 export const loadSubscribedServiceInstancesByIdentifier = async (
   user_id: UserId,
