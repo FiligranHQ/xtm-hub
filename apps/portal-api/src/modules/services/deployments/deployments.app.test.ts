@@ -34,6 +34,7 @@ import {
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
+  ErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -171,6 +172,97 @@ describe('Deployment app', () => {
       });
       await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
     });
+
+    describe('domains blacklist', () => {
+      const originalConfigGet = config.get;
+
+      afterEach(() => {
+        vi.mocked(config.get).mockImplementation(originalConfigGet);
+      });
+
+      it('should throw error when organization domain is blacklisted', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return 'filigran.io,blocked.net';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const call = DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+      });
+
+      it('should allow deployment when organization domain is not blacklisted', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return 'blocked.com,forbidden.net';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const deployment = await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        expect(deployment).toBeDefined();
+        expect(deployment.id).toBeDefined();
+      });
+
+      it('should allow deployment when blacklist is empty', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return '';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const deployment = await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        expect(deployment).toBeDefined();
+        expect(deployment.id).toBeDefined();
+      });
+
+      it('should handle blacklist with spaces correctly', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return 'filigran.io , blocked.net , test.org';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const call = DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+      });
+    });
+
     describe('telemetry', () => {
       it('should send a telemetry event', async () => {
         vi.useFakeTimers();

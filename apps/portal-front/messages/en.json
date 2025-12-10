@@ -63,6 +63,7 @@
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
+      "CANT_REQUEST_FREE_TRIAL": "You cannot request a free trial",
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "You cannot request a free trial in your personal space",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
