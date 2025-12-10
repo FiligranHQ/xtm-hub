@@ -5,8 +5,10 @@ import {
   QueryDeploymentRequestsListArgs,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
+import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { extractId } from '../../../utils/utils';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
 
@@ -73,6 +75,16 @@ const resolvers: Resolvers = {
           error,
           UnknownErrorCode.DeploymentRequestUnknownError
         );
+      }
+    },
+    reorderDeploymentRequestInQueue: async (_, { input }) => {
+      try {
+        return await DeploymentsApp.reorderDeploymentRequestInQueue({
+          ...input,
+          id: extractId<DeploymentRequestId>(input.id),
+        });
+      } catch (error) {
+        throw mapToGraphQLError(error);
       }
     },
   },
