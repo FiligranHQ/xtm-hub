@@ -27,15 +27,16 @@ export const buildPlatformHoverLinks = (
         </Link>
       </Button>
       {platform.deployment_request?.hub_status ===
-        DeploymentRequestHubStatusEnum.ACTIVE && (
-        <Button>
-          <Link
-            target="_blank"
-            href={platform.url}>
-            {t('Service.RegisteredPlatforms.GoToMyPlatform')}
-          </Link>
-        </Button>
-      )}
+        DeploymentRequestHubStatusEnum.ACTIVE &&
+        platform.url && (
+          <Button>
+            <Link
+              target="_blank"
+              href={platform.url}>
+              {t('Service.RegisteredPlatforms.GoToMyPlatform')}
+            </Link>
+          </Button>
+        )}
     </>
   );
 };

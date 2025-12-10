@@ -1,6 +1,5 @@
-'use client';
-
 import GuardCapacityComponent from '@/components/admin-guard';
+import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
 import {
   StartTrialButton,
   StartTrialButtonVariant,
@@ -10,14 +9,16 @@ import { TrialsLearnMore } from '@/components/service/trial-instances/trials-lea
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { Button } from 'filigran-ui/servers';
-import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
+import React from 'react';
 
-const Page = ({}) => {
-  const t = useTranslations();
-  const searchParams = useSearchParams();
-  const openTrialForm = searchParams.has('openForm');
+interface Props {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+const Page: React.FC<Props> = async ({ searchParams }) => {
+  const openTrialFormSearchParams = (await searchParams).openForm;
+  const openTrialForm =
+    !!openTrialFormSearchParams && !Array.isArray(openTrialFormSearchParams);
 
   const breadcrumbs = [
     {
@@ -37,11 +38,7 @@ const Page = ({}) => {
       <TrialsHeader
         actions={
           <>
-            <Button
-              onClick={() => console.warn('Contact Us')}
-              variant="outline-primary">
-              {t('Service.Trials.ContactUs')}
-            </Button>
+            <ContactUsButton variant="outline-primary" />
             <GuardCapacityComponent
               shouldNotBePersonalSpace
               capacityRestriction={[
