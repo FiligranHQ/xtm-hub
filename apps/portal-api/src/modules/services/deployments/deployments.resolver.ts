@@ -5,6 +5,7 @@ import {
   QueryDeploymentRequestsListArgs,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { DeploymentsApp } from './deployments.app';
@@ -50,6 +51,24 @@ const resolvers: Resolvers = {
           error,
           UnknownErrorCode.DeploymentRequestUnknownError
         );
+      }
+    },
+
+    organizationDeploymentRequest: async (
+      _,
+      { platformIdentifier, hubStatus, type }
+    ) => {
+      const { portalContext } = requestContext.require();
+      try {
+        return await DeploymentRequestDomain.loadDeploymentRequestBy({
+          organization_requester_id:
+            portalContext.user.selected_organization_id,
+          platform_identifier: platformIdentifier,
+          hub_status: hubStatus,
+          type,
+        });
+      } catch (error) {
+        throw mapToGraphQLError(error);
       }
     },
   },
