@@ -48,19 +48,3 @@ export const TrialsListQuery = graphql`
     ...trialsList
   }
 `;
-
-export const TrialsOrganizationDeploymentRequestQuery = graphql`
-  query trialsOrganizationDeploymentRequestQuery(
-    $hubStatus: DeploymentRequestHubStatus!
-    $platformIdentifier: PlatformIdentifier!
-    $type: DeploymentRequestDeploymentType!
-  ) {
-    organizationDeploymentRequest(
-      hubStatus: $hubStatus
-      platformIdentifier: $platformIdentifier
-      type: $type
-    ) {
-      ...trials_fragment
-    }
-  }
-`;

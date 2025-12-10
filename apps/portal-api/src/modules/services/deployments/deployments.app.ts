@@ -113,9 +113,7 @@ export const DeploymentsApp = {
               organizationId: user.selected_organization_id,
               platformIdentifier: input.platform_identifier,
               serviceInstanceCreationStatus:
-                hubStatus === DeploymentRequestHubStatus.Queued
-                  ? ServiceInstanceCreationStatus.Disabled
-                  : ServiceInstanceCreationStatus.Pending,
+                ServiceInstanceCreationStatus.Pending,
             });
 
           return await DeploymentRequestDomain.insertDeploymentRequest({

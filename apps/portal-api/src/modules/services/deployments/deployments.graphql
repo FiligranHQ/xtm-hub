@@ -149,12 +149,6 @@ extend type Query {
     platformIdentifier: PlatformIdentifier
   ): [DeploymentAvailability!]!
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
-  organizationDeploymentRequest(
-    hubStatus: DeploymentRequestHubStatus!
-    platformIdentifier: PlatformIdentifier!
-    type: DeploymentRequestDeploymentType!
-  ): DeploymentRequest
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   deploymentRequestsList(
     first: Int!
     after: ID

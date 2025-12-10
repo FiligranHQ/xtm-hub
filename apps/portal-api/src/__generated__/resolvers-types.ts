@@ -1138,7 +1138,6 @@ export type Query = {
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
-  organizationDeploymentRequest?: Maybe<DeploymentRequest>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
@@ -1308,13 +1307,6 @@ export type QueryOpenCtiPlatformRegistrationStatusArgs = {
 
 export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QueryOrganizationDeploymentRequestArgs = {
-  hubStatus: DeploymentRequestHubStatus;
-  platformIdentifier: PlatformIdentifier;
-  type: DeploymentRequestDeploymentType;
 };
 
 
@@ -2912,7 +2904,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   openAEVScenarios?: Resolver<ResolversTypes['OpenAEVScenarioConnection'], ParentType, ContextType, RequireFields<QueryOpenAevScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
-  organizationDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<QueryOrganizationDeploymentRequestArgs, 'hubStatus' | 'platformIdentifier' | 'type'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;

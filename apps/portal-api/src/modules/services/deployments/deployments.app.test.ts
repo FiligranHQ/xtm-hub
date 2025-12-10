@@ -157,7 +157,7 @@ describe('Deployment app', () => {
         dbDeploymentRequest.service_instance_id
       );
       expect(serviceInstance.creation_status).toBe(
-        ServiceInstanceCreationStatus.Disabled
+        ServiceInstanceCreationStatus.Pending
       );
     });
     it('should throw if an invalid hub_status is specified', async () => {
