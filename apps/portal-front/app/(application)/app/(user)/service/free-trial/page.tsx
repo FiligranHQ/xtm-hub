@@ -6,6 +6,7 @@ import {
   StartTrialButton,
   StartTrialButtonVariant,
 } from '@/components/service/trial-instances/start-trial-button';
+import { TrialDetails } from '@/components/service/trial-instances/trial-details';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
@@ -50,6 +51,7 @@ const Page = ({}) => {
           </>
         }
       />
+      <TrialDetails platformTitle={'Hello'} />
       <TrialsLearnMore />
     </>
   );

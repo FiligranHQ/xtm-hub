@@ -1,8 +1,7 @@
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
+import { TrialDetails } from '@/components/service/trial-instances/trial-details';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
-import { formatDate } from '@/utils/date';
-import { formatTitleCase } from '@/utils/format/case';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { Button } from 'filigran-ui/servers';
@@ -15,62 +14,36 @@ interface Props {
 }
 
 export const TrialsDetailsPage: React.FC<Props> = ({ platform }) => {
+  const shouldDisplayPlatformActions =
+    platform.deployment_request?.hub_status ===
+      DeploymentRequestHubStatusEnum.ACTIVE && platform.url;
+
+  const actions = shouldDisplayPlatformActions ? (
+    <div className="flex flex-col gap-m">
+      <Button>
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          href={platform.url}>
+          Access OpenCTI
+        </Link>
+      </Button>
+
+      <TrialsManageUsersDialog platform={platform} />
+    </div>
+  ) : null;
+
   return (
     <>
       <TrialsHeader actions={<ContactUsButton variant="gradient" />} />
-      <section className="flex justify-between p-xl border border-solid border-blue rounded">
-        <ul className="text-sm flex flex-col gap-l">
-          <li>
-            <span className="text-gray/60">Platform name:</span>{' '}
-            {platform.title}
-          </li>
-          {platform.deployment_request?.hub_status && (
-            <li>
-              <span className="text-gray/60">Status:</span>{' '}
-              {formatTitleCase(platform.deployment_request?.hub_status)}
-            </li>
-          )}
-          {platform.subscription?.start_date && (
-            <li>
-              <span className="text-gray/60">Start date:</span>{' '}
-              {platform.subscription?.end_date
-                ? formatDate(platform.subscription?.start_date)
-                : '-'}
-            </li>
-          )}
-          <li>
-            <span className="text-gray/60">End date:</span>{' '}
-            {platform.subscription?.end_date
-              ? formatDate(platform.subscription?.end_date)
-              : '-'}
-          </li>
-          {platform.deployment_request?.region && (
-            <li>
-              <span className="text-gray/60">Region:</span>{' '}
-              {platform.deployment_request.region.toUpperCase()}
-            </li>
-          )}
-          <li>
-            <span className="text-gray/60">License:</span> Enterprise Edition
-          </li>
-        </ul>
-        {platform.deployment_request?.hub_status ===
-          DeploymentRequestHubStatusEnum.ACTIVE &&
-          platform.url && (
-            <div className="flex flex-col gap-m">
-              <Button>
-                <Link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={platform.url}>
-                  Access OpenCTI
-                </Link>
-              </Button>
-
-              <TrialsManageUsersDialog platform={platform} />
-            </div>
-          )}
-      </section>
+      <TrialDetails
+        platformTitle={platform.title}
+        hubStatus={platform.deployment_request?.hub_status}
+        startDate={platform.subscription?.start_date}
+        endDate={platform.subscription?.end_date}
+        region={platform.deployment_request?.region}
+        actions={actions}
+      />
       <TrialsLearnMore />
     </>
   );
