@@ -77,6 +77,7 @@
       "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
       "DELETE_ORGANIZATION_ERROR": "Erreur lors de la suppression de l'organisation",
       "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
+      "DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED": "Vous ne pouvez réorganiser que les demandes de déploiement en file d'attente.",
       "DEPLOYMENT_REQUEST_NOT_FOUND": "Une erreur inconnue s'est produite",
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "Une erreur inconnue s'est produite",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
@@ -288,8 +289,13 @@
       "Running": "En cours d'exécution",
       "Waiting": "En attente"
     },
+    "Toast": {
+      "TrialsReordered": "Les demandes ont été réorganisées"
+    },
     "Actions": {
-      "SearchTrials": "Recherche par email ou par organisation"
+      "SearchTrials": "Recherche par email ou par organisation",
+      "MoveToTop": "Aller au début",
+      "MoveUp": "Remonter"
     },
     "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai"
   },

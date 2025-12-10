@@ -20,6 +20,7 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   PlatformIdentifier,
+  ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
@@ -803,5 +804,97 @@ describe('Deployment app', () => {
         expect(result).toHaveLength(expected.length);
       }
     );
+  });
+
+  describe('reorderDeploymentRequestInQueue', () => {
+    it('should throw when deployment request is not found', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(null);
+
+      const call = DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: uuidv4() as DeploymentRequestId,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+
+    it('should throw when deployment request is not in queue', async () => {
+      const deploymentRequest = {
+        id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Active,
+      } as Awaited<
+        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+      >;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(deploymentRequest);
+
+      const call = DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: deploymentRequest!.id,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.DeploymentRequestHubStatusNotQueued
+      );
+    });
+
+    it('should reorder deployment request to top when direction is top', async () => {
+      const deploymentRequest = {
+        id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      } as Awaited<
+        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+      >;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(deploymentRequest);
+
+      const reorderDeploymentRequestToTopSpy = vi
+        .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestToTop')
+        .mockResolvedValue();
+
+      const result = await DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: uuidv4() as DeploymentRequestId,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      expect(result.success).toBeTruthy();
+      expect(reorderDeploymentRequestToTopSpy).toHaveBeenCalledWith(
+        deploymentRequest
+      );
+    });
+
+    it('should reorder deployment request up when direction is up', async () => {
+      const deploymentRequest = {
+        id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      } as Awaited<
+        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+      >;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(deploymentRequest);
+
+      const reorderDeploymentRequestUpSpy = vi
+        .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestUp')
+        .mockResolvedValue();
+
+      const result = await DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: uuidv4() as DeploymentRequestId,
+        direction: ReorderDeploymentRequestInQueueDirection.Up,
+      });
+
+      expect(result.success).toBeTruthy();
+      expect(reorderDeploymentRequestUpSpy).toHaveBeenCalledWith(
+        deploymentRequest
+      );
+    });
   });
 });
