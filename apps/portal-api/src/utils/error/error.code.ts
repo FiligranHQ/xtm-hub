@@ -15,6 +15,7 @@ export enum ForbiddenErrorCode {
   YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
+  CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
 }
 
