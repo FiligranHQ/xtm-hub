@@ -1,16 +1,23 @@
+import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as dbModule from '../../../../knexfile';
 import { db } from '../../../../knexfile';
-import { SIMPLE_USER_FILIGRAN_ID } from '../../../../tests/tests.const';
+import {
+  SIMPLE_USER_FILIGRAN_ID,
+  THALES_SIMPLE_USER_ID,
+} from '../../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
+  DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
   DeploymentRequestOrdering,
   OrderingMode,
+  PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../../model/kanel/public/User';
+import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -139,6 +146,202 @@ describe('DeploymentRequestDomain', () => {
       expect(deploymentRequests.totalCount).toBe('2');
       expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment1?.id);
       expect(deploymentRequests.edges[1]?.node?.id).toBe(deployment2?.id);
+    });
+  });
+
+  describe('loadProvisionedTrialDeploymentRequestByPlatformIdentifier', () => {
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await deleteServiceInstanceBy({});
+      await deleteSubscriptionUnsecure({});
+    });
+
+    it('should return deployment request when Active trial deployment exists for user', async () => {
+      const platformIdentifier = PlatformIdentifier.Opencti;
+      const userId = ADMIN_UUID as UserId;
+
+      const deployment = await insertOpenCtiDeploymentRequest({
+        platform_identifier: platformIdentifier,
+        hub_status: DeploymentRequestHubStatus.Active,
+        type: DeploymentRequestDeploymentType.Trial,
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+          platformIdentifier,
+          userId
+        );
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(deployment.id);
+      expect(result?.platform_identifier).toBe(platformIdentifier);
+      expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Active);
+    });
+
+    it('should return deployment request when Expired trial deployment exists for user', async () => {
+      const platformIdentifier = PlatformIdentifier.Opencti;
+      const userId = ADMIN_UUID as UserId;
+
+      const deployment = await insertOpenCtiDeploymentRequest({
+        platform_identifier: platformIdentifier,
+        hub_status: DeploymentRequestHubStatus.Expired,
+        type: DeploymentRequestDeploymentType.Trial,
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+          platformIdentifier,
+          userId
+        );
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(deployment.id);
+      expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
+    });
+
+    it('should not return deployment request when hub_status is Pending', async () => {
+      const platformIdentifier = PlatformIdentifier.Opencti;
+      const userId = ADMIN_UUID as UserId;
+
+      await insertOpenCtiDeploymentRequest({
+        platform_identifier: platformIdentifier,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        type: DeploymentRequestDeploymentType.Trial,
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+          platformIdentifier,
+          userId
+        );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should not return deployment request when user is not member of the organization', async () => {
+      const platformIdentifier = PlatformIdentifier.Opencti;
+      // THALES_SIMPLE_USER_ID is in Thales org, not in Filigran org (PLATFORM_ORGANIZATION_UUID)
+      const userNotInOrganization = THALES_SIMPLE_USER_ID;
+
+      await insertOpenCtiDeploymentRequest({
+        platform_identifier: platformIdentifier,
+        hub_status: DeploymentRequestHubStatus.Active,
+        type: DeploymentRequestDeploymentType.Trial,
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+          platformIdentifier,
+          userNotInOrganization
+        );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should not return deployment request when platform_identifier does not match', async () => {
+      const platformIdentifier = PlatformIdentifier.Opencti;
+      const userId = ADMIN_UUID as UserId;
+
+      await insertOpenCtiDeploymentRequest({
+        platform_identifier: PlatformIdentifier.Openaev,
+        hub_status: DeploymentRequestHubStatus.Active,
+        type: DeploymentRequestDeploymentType.Trial,
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+          platformIdentifier,
+          userId
+        );
+
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('loadProvisionedTrialDeploymentRequestByPlatformToken', () => {
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await deleteServiceInstanceBy({});
+      await deleteSubscriptionUnsecure({});
+    });
+
+    it('should return deployment request when Active trial deployment exists with matching token', async () => {
+      const platformToken = uuidv4();
+
+      const deployment = await insertOpenCtiDeploymentRequest({
+        platform_token: platformToken,
+        hub_status: DeploymentRequestHubStatus.Active,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+          platformToken
+        );
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(deployment.id);
+      expect(result?.platform_token).toBe(platformToken);
+      expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Active);
+    });
+
+    it('should return deployment request when Expired trial deployment exists with matching token', async () => {
+      const platformToken = uuidv4();
+
+      const deployment = await insertOpenCtiDeploymentRequest({
+        platform_token: platformToken,
+        hub_status: DeploymentRequestHubStatus.Expired,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+          platformToken
+        );
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(deployment.id);
+      expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
+    });
+
+    it('should not return deployment request when hub_status is Pending', async () => {
+      const platformToken = uuidv4();
+
+      await insertOpenCtiDeploymentRequest({
+        platform_token: platformToken,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+          platformToken
+        );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when platform_token does not exist', async () => {
+      const platformToken = uuidv4();
+      const nonExistentToken = 'non-existent-token';
+
+      await insertOpenCtiDeploymentRequest({
+        platform_token: platformToken,
+        hub_status: DeploymentRequestHubStatus.Active,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+          nonExistentToken
+        );
+
+      expect(result).toBeUndefined();
     });
   });
 

@@ -6,7 +6,7 @@ export const removeEmptyGroups = (
   const filtered: Auth0UpdateUserRBACInstance = {};
 
   for (const [key, value] of Object.entries(instance)) {
-    if (value.groups.length > 0) {
+    if (value.groups && value.groups.length > 0) {
       filtered[key] = value;
     }
   }
