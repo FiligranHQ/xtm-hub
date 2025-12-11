@@ -469,8 +469,39 @@ export const DeploymentsApp = {
         });
       }
     });
-    return DeploymentRequestDomain.loadDeploymentRequestBy({
-      id: deploymentRequestId,
-    });
+
+    const updatedDeploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        id: deploymentRequestId,
+      });
+
+    try {
+      const organization = await loadOrganizationBy({
+        id: updatedDeploymentRequest.organization_requester_id,
+      });
+      const updateDeploymentEvent = buildUpdateDeploymentEvent(
+        organization,
+        user.id,
+        {
+          status: updatedDeploymentRequest.hub_status,
+          start_date: updatedDeploymentRequest.start_date,
+          end_date: updatedDeploymentRequest.end_date,
+          deployment_id: updatedDeploymentRequest.id,
+          deployment_type: updatedDeploymentRequest.type,
+          platform_id: updatedDeploymentRequest.platform_id,
+        }
+      );
+
+      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    } catch (error) {
+      logApp.error(
+        'Unable to send telemetry event when cancelling deployment request',
+        {
+          error,
+        }
+      );
+    }
+
+    return updatedDeploymentRequest;
   },
 };

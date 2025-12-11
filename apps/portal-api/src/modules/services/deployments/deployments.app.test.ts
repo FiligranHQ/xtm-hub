@@ -978,5 +978,32 @@ describe('Deployment app', () => {
       );
       expect(response).toBeTruthy();
     });
+    it('should send a telemetry event', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+
+      await DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: PLATFORM_NAME,
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_USER_ID,
+        deployment_id: deployment.id,
+        deployment_type: DeploymentRequestDeploymentType.Trial,
+        status: DeploymentRequestHubStatus.Cancelled,
+        start_date: null,
+        end_date: null,
+        platform_id: null,
+      });
+    });
   });
 });
