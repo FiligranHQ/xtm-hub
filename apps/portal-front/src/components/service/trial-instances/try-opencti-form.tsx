@@ -9,7 +9,6 @@ import {
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import {
   AutoForm,
@@ -38,12 +37,6 @@ export const tryOpenCTIFormSchema = z.object({
   acceptTerms: z.boolean().refine((value) => value === true, {
     error: 'You must accept the MSSA',
   }),
-  hub_status: z
-    .enum([
-      DeploymentRequestHubStatusEnum.QUEUED,
-      DeploymentRequestHubStatusEnum.PENDING,
-    ])
-    .default(DeploymentRequestHubStatusEnum.PENDING),
 });
 
 interface TryOpenCTIFormProps {
@@ -65,34 +58,30 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
       deploymentRequestsAvailabilityQueryRef
     );
 
-  const [pendingValues, setPendingValues] =
-    useState<z.infer<typeof tryOpenCTIFormSchema>>();
+  const [values, setValues] = useState<z.infer<typeof tryOpenCTIFormSchema>>();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const onSubmit = (values: z.infer<typeof tryOpenCTIFormSchema>) => {
+  const onSubmit = (newValues: z.infer<typeof tryOpenCTIFormSchema>) => {
     const availabilityForRegion =
       deploymentRequestsAvailability.deploymentRequestsAvailable.filter(
-        (avl) => avl.region === values.region
+        (avl) => avl.region === newValues.region
       );
 
     const isRegionAvailable =
       availabilityForRegion[0]?.availableCount &&
       availabilityForRegion[0]?.availableCount > 0;
     if (isRegionAvailable) {
-      handleSubmit({ ...values });
+      handleSubmit({ ...newValues });
     } else {
       setIsDialogOpen(true);
-      setPendingValues({
-        ...values,
-        hub_status: DeploymentRequestHubStatusEnum.QUEUED,
-      });
+      setValues(newValues);
     }
   };
 
   const confirmSubmit = () => {
     setIsDialogOpen(false);
-    handleSubmit(pendingValues!);
+    handleSubmit(values!);
   };
   return (
     <>
@@ -168,9 +157,6 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                   <FormMessage className="text-sm text-destructive" />
                 </FormItem>
               ),
-            },
-            hub_status: {
-              fieldType: () => <FormItem hidden />,
             },
           }}>
           <div className="flex justify-end gap-s">

@@ -85,15 +85,6 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
 
-    if (
-      input.hub_status &&
-      ![
-        DeploymentRequestHubStatus.Pending,
-        DeploymentRequestHubStatus.Queued,
-      ].includes(input.hub_status)
-    ) {
-      throw new Error(BadRequestErrorCode.InvalidStatus);
-    }
     await assertFreeTrialsLimit(user.selected_organization_id);
 
     const serviceDefinition =
@@ -105,7 +96,13 @@ export const DeploymentsApp = {
     }
 
     try {
-      const hubStatus = input.hub_status ?? DeploymentRequestHubStatus.Pending;
+      const { isPlaceAvailable } = await DeploymentsQuotasDomain.reservePlace(
+        input.platform_identifier,
+        input.region
+      );
+      const hubStatus = isPlaceAvailable
+        ? DeploymentRequestHubStatus.Pending
+        : DeploymentRequestHubStatus.Queued;
 
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {

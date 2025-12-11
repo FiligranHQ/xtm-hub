@@ -141,7 +141,6 @@ export type CreateCustomDashboardInput = {
 
 export type CreateDeploymentRequestInput = {
   activity_sector?: InputMaybe<Scalars['String']['input']>;
-  hub_status?: InputMaybe<DeploymentRequestHubStatus>;
   job_title?: InputMaybe<Scalars['String']['input']>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;

@@ -81,6 +81,9 @@ describe('Deployment app', () => {
 
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
+      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: true,
+      });
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -124,7 +127,10 @@ describe('Deployment app', () => {
         );
       }
     });
-    it('should create a deployment request with queued status if specified', async () => {
+    it('should create a deployment request with queued status when there is no space available', async () => {
+      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: false,
+      });
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -132,7 +138,6 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        hub_status: DeploymentRequestHubStatus.Queued,
       });
 
       const dbDeploymentRequest =
@@ -166,18 +171,6 @@ describe('Deployment app', () => {
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
-    });
-    it('should throw if an invalid hub_status is specified', async () => {
-      const call = DeploymentsApp.createDeploymentRequest({
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-        hub_status: DeploymentRequestHubStatus.Expired,
-      });
-      await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
     });
 
     describe('domains blacklist', () => {
@@ -341,12 +334,14 @@ describe('Deployment app', () => {
           },
         });
       });
-      it('should send a mail if status is queued', async () => {
+      it('should send a mail if there is no space available', async () => {
+        vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+          isPlaceAvailable: false,
+        });
         await DeploymentsApp.createDeploymentRequest({
           activity_sector: 'cybersecurity',
           job_title: 'myJob',
           use_case: 'use_case',
-          hub_status: DeploymentRequestHubStatus.Queued,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,

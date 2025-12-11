@@ -28,7 +28,6 @@ export enum BadRequestErrorCode {
   InvalidEmail = 'INVALID_EMAIL',
   MissingStartOrEndDate = 'MISSING_START_OR_END_DATE',
   DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
-  InvalidStatus = 'INVALID_STATUS',
   InvalidPlatformId = 'INVALID_PLATFORM_ID',
   InvalidPlatformVersion = 'INVALID_PLATFORM_VERSION',
   ServiceGroupsLinkedToMultipleServiceInstances = 'SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES',
