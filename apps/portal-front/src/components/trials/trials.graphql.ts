@@ -58,3 +58,14 @@ export const TrialsReorderRequestInQueueMutation = graphql`
     }
   }
 `;
+
+export const TrialsAdminCancelDeploymentRequestMutation = graphql`
+  mutation trialsAdminCancelDeploymentRequestMutation(
+    $deploymentRequestId: ID!
+    $removeConnections: [ID!]!
+  ) {
+    adminCancelDeploymentRequest(deploymentRequestId: $deploymentRequestId) {
+      id @deleteEdge(connections: $removeConnections)
+    }
+  }
+`;

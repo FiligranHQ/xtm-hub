@@ -902,21 +902,26 @@ describe('Deployment app', () => {
   });
   describe('cancelDeploymentRequest', () => {
     it.each`
-      hub_status                                 | actual_state                                    | counts_in_orga_quota
-      ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}
-      ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
-      ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
-      ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+      isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota
+      ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
     `(
       'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
-      async ({ hub_status, actual_state, counts_in_orga_quota }) => {
+      async ({ isAdmin, hub_status, actual_state, counts_in_orga_quota }) => {
         const initialDeployment = (await insertOpenCtiDeploymentRequest({
           hub_status,
           actual_state,
         })) as DeploymentRequest;
 
         const deployment = await DeploymentsApp.cancelDeploymentRequest(
-          initialDeployment.id
+          initialDeployment.id,
+          isAdmin
         );
 
         expect(deployment).toMatchObject({
@@ -940,23 +945,37 @@ describe('Deployment app', () => {
     );
     it('should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.cancelDeploymentRequest(
-        uuidv4() as DeploymentRequestId
+        uuidv4() as DeploymentRequestId,
+        false
       );
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
       );
     });
 
-    it('should throw if user is not in organization', async () => {
+    it('should throw if user is not in organization and not isAdmin', async () => {
       const deployment = (await insertOpenCtiDeploymentRequest(
         {}
       )) as DeploymentRequest;
 
       requestContext.set(requestContextThalesUser);
-      const call = DeploymentsApp.cancelDeploymentRequest(deployment.id);
+      const call = DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.UserIsNotInOrganization
       );
+    });
+
+    it('should not throw if user is not in organization and isAdmin', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      requestContext.set(requestContextThalesUser);
+      const response = await DeploymentsApp.cancelDeploymentRequest(
+        deployment.id,
+        true
+      );
+      expect(response).toBeTruthy();
     });
   });
 });

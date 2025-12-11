@@ -710,12 +710,14 @@
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",
-          "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully."
+          "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully.",
+          "Admin": "The OpenCTI free trial was cancelled successfully."
         },
         "Confirmation": {
           "Title": "Trial Cancellation",
           "NoNewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ? Please note that new openCTI trials can’t be requested after this action.",
-          "NewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ?"
+          "NewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ?",
+          "Admin": "Are you sure you want to cancel OpenCTI free trial from {organizationName} ?"
         }
       },
       "Form": {

@@ -424,7 +424,8 @@ export const DeploymentsApp = {
   },
 
   cancelDeploymentRequest: async (
-    deploymentRequestId: DeploymentRequestId
+    deploymentRequestId: DeploymentRequestId,
+    isAdmin: boolean
   ): Promise<DeploymentRequest> => {
     const { user } = requestContext.require();
     const deploymentRequest =
@@ -437,16 +438,19 @@ export const DeploymentsApp = {
     }
 
     if (
+      !isAdmin &&
       user.selected_organization_id !==
-      deploymentRequest.organization_requester_id
+        deploymentRequest.organization_requester_id
     ) {
       throw new Error(ForbiddenErrorCode.UserIsNotInOrganization);
     }
 
-    const countsInOrgaQuota = ![
-      DeploymentRequestPlatformState.Unprovisioned,
-      DeploymentRequestPlatformState.Provisioning,
-    ].includes(deploymentRequest.actual_state);
+    const countsInOrgaQuota =
+      isAdmin ||
+      ![
+        DeploymentRequestPlatformState.Unprovisioned,
+        DeploymentRequestPlatformState.Provisioning,
+      ].includes(deploymentRequest.actual_state);
 
     await withTransaction(async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(

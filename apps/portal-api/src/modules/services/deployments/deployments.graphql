@@ -183,4 +183,6 @@ extend type Mutation {
   ): Success @auth(requires: [BYPASS])
   cancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+  adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
+    @auth(requires: [BYPASS])
 }

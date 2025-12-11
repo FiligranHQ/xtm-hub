@@ -80,7 +80,8 @@ const resolvers: Resolvers = {
     cancelDeploymentRequest: async (_, { deploymentRequestId }) => {
       try {
         return await DeploymentsApp.cancelDeploymentRequest(
-          extractId<DeploymentRequestId>(deploymentRequestId)
+          extractId<DeploymentRequestId>(deploymentRequestId),
+          false
         );
       } catch (error) {
         throw mapToGraphQLError(
@@ -89,6 +90,20 @@ const resolvers: Resolvers = {
         );
       }
     },
+    adminCancelDeploymentRequest: async (_, { deploymentRequestId }) => {
+      try {
+        return await DeploymentsApp.cancelDeploymentRequest(
+          extractId<DeploymentRequestId>(deploymentRequestId),
+          true
+        );
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
+
     reorderDeploymentRequestInQueue: async (_, { input }) => {
       try {
         return await DeploymentsApp.reorderDeploymentRequestInQueue({

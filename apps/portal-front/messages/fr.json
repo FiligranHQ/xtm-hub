@@ -710,12 +710,14 @@
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
-          "NewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès."
+          "NewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès.",
+          "Admin": "L'essai gratuit d'OpenCTI a été annulé avec succès."
         },
         "Confirmation": {
           "Title": "Annulation de l'essai",
           "NoNewTrialPossible": "Etes-vous sûr de vouloir annuler votre essai gratuit d'OpenCTI ? Veuillez noter que de nouveaux essais OpenCTI ne peuvent pas être demandés après cette action.",
-          "NewTrialPossible": "Etes-vous sûr de vouloir annuler votre essai gratuit d'OpenCTI ?"
+          "NewTrialPossible": "Etes-vous sûr de vouloir annuler votre essai gratuit d'OpenCTI ?",
+          "Admin": "Etes-vous sûr de vouloir annuler la version d'évaluation gratuite d'OpenCTI à partir de {organizationName} ? ?"
         }
       },
       "Form": {

@@ -559,6 +559,7 @@ export type Mutation = {
   addUserService?: Maybe<Array<Maybe<UserService>>>;
   addYourselfInUserService?: Maybe<Array<Maybe<UserService>>>;
   adminAddUser?: Maybe<User>;
+  adminCancelDeploymentRequest?: Maybe<DeploymentRequest>;
   adminEditUser: User;
   autoRegisterPlatform: Success;
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
@@ -675,6 +676,11 @@ export type MutationAddYourselfInUserServiceArgs = {
 
 export type MutationAdminAddUserArgs = {
   input: AdminAddUserInput;
+};
+
+
+export type MutationAdminCancelDeploymentRequestArgs = {
+  deploymentRequestId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -2738,6 +2744,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
   addYourselfInUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddYourselfInUserServiceArgs, 'input'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
+  adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationAdminCancelDeploymentRequestArgs>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationCancelDeploymentRequestArgs>>;
