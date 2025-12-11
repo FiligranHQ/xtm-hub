@@ -39,4 +39,27 @@ export const DeploymentsQuotasDomain = {
       };
     });
   },
+
+  freePlace: async (
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion
+  ): Promise<void> => {
+    await withTransaction(async () => {
+      const quota = await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+        .where({
+          region: region,
+          platform_identifier: platformIdentifier,
+        })
+        .select('*')
+        .forUpdate()
+        .first();
+      if (!quota) {
+        throw new Error(ErrorCode.DeploymentRequestQuotaNotFound);
+      }
+
+      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+        .update({ availability: quota.availability + 1 })
+        .where({ id: quota.id });
+    });
+  },
 };

@@ -79,4 +79,35 @@ describe('DeploymentsQuotasDomain', () => {
       expect(updatedRequestQuota!.availability).toBe(0);
     });
   });
+
+  describe('freePlace', () => {
+    it('should throw when quota is not found', async () => {
+      const call = DeploymentsQuotasDomain.freePlace(
+        'test' as PlatformIdentifier,
+        DeploymentRequestPlatformRegion.EuWest
+      );
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.DeploymentRequestQuotaNotFound
+      );
+    });
+
+    it('should free a place', async () => {
+      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+        .update({ availability: 0 })
+        .where({ region, platform_identifier: platformIdentifier });
+
+      await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+
+      const updatedRequestQuota = await db<DeploymentRequestQuota>(
+        'DeploymentRequestQuota'
+      )
+        .select('*')
+        .where({ region, platform_identifier: platformIdentifier })
+        .first();
+
+      expect(updatedRequestQuota).toBeDefined();
+      expect(updatedRequestQuota!.availability).toBe(1);
+    });
+  });
 });
