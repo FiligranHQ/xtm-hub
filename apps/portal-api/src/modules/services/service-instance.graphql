@@ -127,6 +127,8 @@ type Query {
     searchTerm: String
     filters: [ServiceInstanceFilter!]
   ): ServiceConnection! @auth(requires: [BYPASS])
+  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [ServiceInstance!]!
+    @auth
   serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
   serviceInstanceByIdWithSubscriptions(
     service_instance_id: ID

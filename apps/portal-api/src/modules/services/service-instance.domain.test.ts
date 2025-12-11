@@ -1,23 +1,105 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { dbUnsecure } from '../../../knexfile';
+import { db, dbUnsecure } from '../../../knexfile';
 import { contextAdminUser, SERVICE_VAULT_ID } from '../../../tests/tests.const';
 import {
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
+import Subscription, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
 import { PlatformConfiguration } from './registration/registration.domain';
 import {
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
 } from './service-instance.domain';
 
 describe('Service instance domain', () => {
+  describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
+    it('should return service instances linked to service definition and with tags', async () => {
+      const serviceInstances =
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+          ServiceDefinitionIdentifier.Link,
+          [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
+        );
+
+      expect(serviceInstances.length).toBe(3);
+      expect(
+        serviceInstances.find(({ name }) => name === 'Filigran Blog')
+      ).toBeDefined();
+
+      expect(
+        serviceInstances.find(({ name }) => name === 'OpenCTI 101')
+      ).toBeDefined();
+
+      expect(
+        serviceInstances.find(({ name }) => name === 'OpenCTI Demo')
+      ).toBeDefined();
+    });
+
+    it('should not return service instance linked to a subscription', async () => {
+      const linkServiceDefinition = await db<ServiceDefinition>(
+        'ServiceDefinition'
+      )
+        .where('identifier', '=', ServiceDefinitionIdentifier.Link)
+        .select('*')
+        .first();
+
+      expect(linkServiceDefinition).toBeDefined();
+
+      const [subscribedServiceInstance] = await db<ServiceInstance>(
+        'ServiceInstance'
+      )
+        .insert({
+          id: uuidv4() as ServiceInstanceId,
+          name: 'ServiceInstance 1',
+          tags: [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial],
+          service_definition_id: linkServiceDefinition!.id,
+        })
+        .returning('*');
+      expect(subscribedServiceInstance).toBeDefined();
+
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        service_instance_id: subscribedServiceInstance!.id,
+      });
+
+      const serviceInstances =
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+          ServiceDefinitionIdentifier.Link,
+          [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
+        );
+
+      expect(
+        serviceInstances.find(
+          (serviceInstance) =>
+            serviceInstance.id === subscribedServiceInstance!.id
+        )
+      ).not.toBeDefined();
+    });
+
+    it('should return an empty array when no service instance has tags', async () => {
+      const serviceInstances =
+        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+          ServiceDefinitionIdentifier.Link,
+          ['test' as ServiceInstanceTag]
+        );
+
+      expect(serviceInstances.length).toBe(0);
+    });
+  });
+
   describe('loadLinks', () => {
     it('should return the service link when the service instance exists and has links', async () => {
       const links = await loadLinks(SERVICE_VAULT_ID);
@@ -153,9 +235,9 @@ describe('Service instance domain', () => {
       );
 
       expect(result).toBeTruthy();
-      expect(result.name).toBe('Updated Name');
-      expect(result.description).toBe('Updated Description');
-      expect(result.id).toBe(mockServiceInstanceId);
+      expect(result?.name).toBe('Updated Name');
+      expect(result?.description).toBe('Updated Description');
+      expect(result?.id).toBe(mockServiceInstanceId);
     });
 
     it('should update only provided fields', async () => {
@@ -168,8 +250,8 @@ describe('Service instance domain', () => {
         updateData
       );
 
-      expect(result.name).toBe('Only Name Updated');
-      expect(result.description).toBe('Original Description'); // Should remain unchanged
+      expect(result?.name).toBe('Only Name Updated');
+      expect(result?.description).toBe('Original Description'); // Should remain unchanged
     });
 
     it('should return undefined when service instance does not exist', async () => {

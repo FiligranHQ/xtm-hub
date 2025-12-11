@@ -1,7 +1,11 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
   RegisteredPlatform,
+  ServiceDefinitionIdentifier,
   ServiceInstance,
+  ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
+  ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
@@ -26,6 +30,7 @@ import {
   loadPlatformServiceInstance,
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
+  ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
 } from './service-instance.domain';
@@ -137,5 +142,24 @@ export const serviceInstanceApp = {
       ...updatedServiceInstance,
       identifier: serviceDefinition.identifier,
     };
+  },
+
+  loadLinkServiceInstancesByTags: async (
+    tags: ServiceInstanceTag[]
+  ): Promise<ServiceInstance[]> => {
+    const serviceInstances =
+      await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+        ServiceDefinitionIdentifier.Link,
+        tags
+      );
+
+    return serviceInstances.map((serviceInstance) => ({
+      ...serviceInstance,
+      capabilities: [],
+      creation_status:
+        serviceInstance.creation_status as ServiceInstanceCreationStatus,
+      join_type: serviceInstance.join_type as ServiceInstanceJoinType,
+      tags: serviceInstance.tags as ServiceInstanceTag[],
+    }));
   },
 };
