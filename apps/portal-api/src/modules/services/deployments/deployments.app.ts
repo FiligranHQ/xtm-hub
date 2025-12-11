@@ -372,19 +372,13 @@ export const DeploymentsApp = {
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier
   ): Promise<DeploymentAvailability[]> => {
-    const max_deployments =
-      config.get<Record<string, number>>('max_deployments');
-    const deploymentsByRegion =
-      await DeploymentRequestDomain.loadDeploymentRequestCountByRegion({
-        platform_identifier: platformIdentifier,
-      });
+    const quotas = await DeploymentsQuotasDomain.loadQuotas({
+      platform_identifier: platformIdentifier,
+    });
 
-    const allRegions = Object.values(DeploymentRequestPlatformRegion); // Assuming you have a Region enum
-
-    return allRegions.map((region) => ({
-      region,
-      availableCount:
-        (max_deployments[region] || 0) - (deploymentsByRegion[region] || 0),
+    return quotas.map((quota) => ({
+      region: quota.region as DeploymentRequestPlatformRegion,
+      availableCount: quota.availability,
     }));
   },
 

@@ -759,60 +759,6 @@ describe('Deployment app', () => {
     });
   });
 
-  describe('loadAvailableDeploymentRequests', () => {
-    it.each([
-      {
-        description: 'normal case with available slots',
-        maxDeployments: { us_east: 10, eu_west: 5 },
-        currentDeployments: {
-          [DeploymentRequestPlatformRegion.UsEast]: 3,
-          [DeploymentRequestPlatformRegion.EuWest]: 1,
-        } as Record<string, number>,
-        expected: [
-          { region: DeploymentRequestPlatformRegion.UsEast, availableCount: 7 },
-          { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 4 },
-          { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 0 },
-          { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 0 },
-        ],
-      },
-      {
-        description: 'over capacity scenario',
-        maxDeployments: { us_east: 5 },
-        currentDeployments: {
-          [DeploymentRequestPlatformRegion.UsEast]: 8,
-        } as Record<string, number>,
-        expected: [
-          {
-            region: DeploymentRequestPlatformRegion.UsEast,
-            availableCount: -3,
-          },
-          { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 0 },
-          { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 0 },
-          { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 0 },
-        ],
-      },
-    ])(
-      'should handle $description',
-      async ({ maxDeployments, currentDeployments, expected }) => {
-        // Arrange
-        vi.spyOn(config, 'get').mockReturnValue(maxDeployments);
-        vi.spyOn(
-          DeploymentRequestDomain,
-          'loadDeploymentRequestCountByRegion'
-        ).mockResolvedValue(currentDeployments);
-
-        // Act
-        const result = await DeploymentsApp.loadAvailableDeploymentRequests(
-          PlatformIdentifier.Opencti
-        );
-
-        // Assert
-        expect(result).toEqual(expect.arrayContaining(expected));
-        expect(result).toHaveLength(expected.length);
-      }
-    );
-  });
-
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(

@@ -100,11 +100,5 @@
     "type": "postgresql",
     "cleanup_interval_minutes": 60
   },
-  "max_deployments": {
-    "us_east": 20,
-    "eu_west": 20,
-    "apac_au": 10,
-    "apac_sg": 10
-  },
   "domains_blacklist": ""
 }

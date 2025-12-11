@@ -4,7 +4,9 @@ import {
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
-import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
+import DeploymentRequestQuota, {
+  DeploymentRequestQuotaMutator,
+} from '../../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../../utils/error/error.code';
 
 export const DeploymentsQuotasDomain = {
@@ -100,5 +102,11 @@ export const DeploymentsQuotasDomain = {
         newAvailability,
       };
     });
+  },
+
+  loadQuotas: async (field: DeploymentRequestQuotaMutator) => {
+    return db<DeploymentRequestQuota[]>('DeploymentRequestQuota')
+      .where(field)
+      .select('*');
   },
 };

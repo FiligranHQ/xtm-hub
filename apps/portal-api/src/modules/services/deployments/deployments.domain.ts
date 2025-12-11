@@ -52,21 +52,6 @@ export const DeploymentRequestDomain = {
     };
   },
 
-  loadDeploymentRequestCountByRegion: async (
-    conditions: DeploymentRequestMutator
-  ): Promise<Record<string, number>> => {
-    const results: { region: string; count: string }[] =
-      await db<DeploymentRequest>('DeploymentRequest')
-        .where(conditions)
-        .select('region')
-        .count('* as count')
-        .groupBy('region');
-
-    return Object.fromEntries(
-      results.map((row) => [row.region, parseInt(row.count as string, 10)])
-    );
-  },
-
   getMaxOrdering: async (): Promise<number | null> => {
     const result = await db<DeploymentRequest>('DeploymentRequest')
       .max('ordering as max')
