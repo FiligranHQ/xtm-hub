@@ -43,6 +43,8 @@ type DeploymentRequest implements Node {
   organization_name: String
   request_date: Date!
   counts_in_orga_quota: Boolean!
+  cancellation_date: Date
+  cancellation_user_email: String
 }
 
 type PlatformDeploymentRequest {

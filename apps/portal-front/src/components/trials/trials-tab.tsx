@@ -280,9 +280,25 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
         ? [
             {
               header: t('TrialsDashboard.Columns.CancellationDate'),
+              accessorKey: 'cancellation_date',
+              id: 'cancellation_date',
+              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                return (
+                  <span className="truncate">
+                    {row.original.cancellation_date
+                      ? formatDate(
+                          row.original.cancellation_date,
+                          'DATETIME_NUMERIC'
+                        )
+                      : '-'}
+                  </span>
+                );
+              },
             },
             {
               header: t('TrialsDashboard.Columns.CancellationOwner'),
+              accessorKey: 'cancellation_user_email',
+              id: 'cancellation_user_email',
             },
           ]
         : []),

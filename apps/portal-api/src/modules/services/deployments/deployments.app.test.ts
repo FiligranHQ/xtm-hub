@@ -375,6 +375,7 @@ describe('Deployment app', () => {
         requester_email: DEFAULT_ADMIN_EMAIL,
         requester_first_name: 'firstname',
         requester_last_name: 'lastname',
+        cancellation_user_email: null,
       });
     });
 
