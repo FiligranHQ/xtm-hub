@@ -1,6 +1,6 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
-import { removeEmptyGroups } from './auth0.util';
+import { buildUserMetadataUpdate } from './auth0.util';
 import {
   Auth0Client,
   Auth0UpdateUser,
@@ -56,15 +56,7 @@ export const auth0ClientImplementation: Auth0Client = {
 
     await managementClient.users.update(
       { id: auth0_user.user_id },
-      {
-        user_metadata: removeEmptyGroups({
-          ...auth0_user.user_metadata,
-          rbac_instance: {
-            ...(auth0_user.user_metadata?.rbac_instance ?? {}),
-            ...userRBACInstance,
-          },
-        }),
-      }
+      buildUserMetadataUpdate(auth0_user, userRBACInstance)
     );
   },
   resetPassword: async (email: string): Promise<void> => {

@@ -1,5 +1,6 @@
+import { GetUsers200ResponseOneOfInner } from 'auth0';
 import { describe, expect, it } from 'vitest';
-import { removeEmptyGroups } from './auth0.util';
+import { buildUserMetadataUpdate, removeEmptyGroups } from './auth0.util';
 import { Auth0UpdateUserRBACInstance } from './client';
 
 describe('removeEmptyGroups', () => {
@@ -56,5 +57,79 @@ describe('removeEmptyGroups', () => {
 
     const result = removeEmptyGroups(input);
     expect(result).toEqual({});
+  });
+  it('should not crash for any value and still filter correctly', () => {
+    const input = {
+      user1: { groups: ['admin'] },
+      user2: { groups: 'not-an-array' },
+      user3: { groups: true },
+      user4: { groups: { someObject: true } },
+      user5: { groups: 123 },
+      user6: { groups: ['viewer'] },
+    };
+
+    const expected: Auth0UpdateUserRBACInstance = {
+      user1: { groups: ['admin'] },
+      user6: { groups: ['viewer'] },
+    };
+
+    // Should not throw an error
+    expect(() => removeEmptyGroups(input)).not.toThrow();
+
+    // Should filter out non-array groups
+    const result = removeEmptyGroups(input);
+    expect(result).toEqual(expected);
+  });
+});
+
+describe('buildUserMetadataUpdate', () => {
+  it('should merge rbac_instance correctly', () => {
+    const auth0_user = {
+      user_id: 'auth0|123',
+      user_metadata: {
+        company_name: 'Filigran',
+        country: 'France',
+        rbac_instance: {
+          platform_1: { groups: ['User'] },
+        },
+      },
+    } as unknown as GetUsers200ResponseOneOfInner;
+
+    const userRBACInstance = {
+      platform_2: { groups: ['Admin'] },
+    };
+
+    const result = buildUserMetadataUpdate(auth0_user, userRBACInstance);
+
+    expect(result).toEqual({
+      user_metadata: {
+        company_name: 'Filigran',
+        country: 'France',
+        rbac_instance: {
+          platform_1: { groups: ['User'] },
+          platform_2: { groups: ['Admin'] },
+        },
+      },
+    });
+  });
+  it('should init rbac_instance correctly', () => {
+    const auth0_user = {
+      user_id: 'auth0|123',
+      user_metadata: {},
+    } as GetUsers200ResponseOneOfInner;
+
+    const userRBACInstance = {
+      platform_2: { groups: ['Admin'] },
+    };
+
+    const result = buildUserMetadataUpdate(auth0_user, userRBACInstance);
+
+    expect(result).toEqual({
+      user_metadata: {
+        rbac_instance: {
+          platform_2: { groups: ['Admin'] },
+        },
+      },
+    });
   });
 });
