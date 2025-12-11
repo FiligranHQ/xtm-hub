@@ -510,7 +510,7 @@ export const DeploymentsApp = {
         to: requester.email,
         template: 'opencti_free_trial_cancelled',
         params: {
-          firstName: formatName(user.first_name ?? ''),
+          firstName: formatName(requester.first_name ?? ''),
         },
       });
     } catch (error) {

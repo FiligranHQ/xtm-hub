@@ -1018,7 +1018,7 @@ describe('Deployment app', () => {
         to: 'admin@thales.com',
         template: 'opencti_free_trial_cancelled',
         params: {
-          firstName: 'Firstname',
+          firstName: '',
         },
       });
     });
