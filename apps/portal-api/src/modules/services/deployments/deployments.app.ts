@@ -502,6 +502,24 @@ export const DeploymentsApp = {
       );
     }
 
+    try {
+      const [requester] = await loadUnsecureUser({
+        id: updatedDeploymentRequest.user_requester_id,
+      });
+      sendMail({
+        to: requester.email,
+        template: 'opencti_free_trial_cancelled',
+        params: {
+          firstName: formatName(user.first_name ?? ''),
+        },
+      });
+    } catch (error) {
+      logApp.error('Unable to send mail for trial cancellation', {
+        error,
+        deploymentRequestId: updatedDeploymentRequest.id,
+      });
+    }
+
     return updatedDeploymentRequest;
   },
 };

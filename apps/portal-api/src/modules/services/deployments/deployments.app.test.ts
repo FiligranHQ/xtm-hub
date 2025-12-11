@@ -13,6 +13,7 @@ import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
   requestContextThalesUser,
+  THALES_ADMIN_ORGA_USER_ID,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -1003,6 +1004,22 @@ describe('Deployment app', () => {
         start_date: null,
         end_date: null,
         platform_id: null,
+      });
+    });
+
+    it('should send a mail to the trial requester', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest({
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+      })) as DeploymentRequest;
+
+      await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
+
+      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        to: 'admin@thales.com',
+        template: 'opencti_free_trial_cancelled',
+        params: {
+          firstName: 'Firstname',
+        },
       });
     });
   });
