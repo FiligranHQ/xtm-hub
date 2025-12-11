@@ -51,6 +51,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
+import { MockInstance } from '@vitest/spy';
 import { requestContext } from '../../../context/request.context';
 import {
   deleteServiceInstanceBy,
@@ -58,6 +59,7 @@ import {
 } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
+import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
 import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
 
 describe('Deployment app', () => {
@@ -1021,6 +1023,99 @@ describe('Deployment app', () => {
           firstName: '',
         },
       });
+    });
+  });
+
+  describe('updateDeploymentQuotaCapacity', () => {
+    let updateQuotaCapacitySpy: MockInstance;
+    let setPendingRequestsAsQueuedSpy: MockInstance;
+    let setQueuedRequestsAsPendingSpy: MockInstance;
+    beforeEach(() => {
+      updateQuotaCapacitySpy = vi.spyOn(
+        DeploymentsQuotasDomain,
+        'updateQuotaCapacity'
+      );
+
+      setPendingRequestsAsQueuedSpy = vi
+        .spyOn(DeploymentRequestDomain, 'setPendingRequestsAsQueued')
+        .mockResolvedValue();
+
+      setQueuedRequestsAsPendingSpy = vi
+        .spyOn(DeploymentRequestDomain, 'setQueuedRequestsAsPending')
+        .mockResolvedValue();
+    });
+    it('should move all requests to queued when there is a negative availability', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: -1,
+        newAvailability: -1,
+      });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(undefined);
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
+    });
+
+    it('should move all requests to queued when there is a zero availability', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: -1,
+        newAvailability: 0,
+      });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(undefined);
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
+    });
+
+    it('should move a limited number of requests to queued when there is less space more than 0', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: -1,
+        newAvailability: 1,
+      });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(1);
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
+    });
+
+    it('should move requests to pending when there is more space than before', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({ availabilityDifference: 1 });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
+      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(1);
+    });
+
+    it('should do nothing when there space did not change', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({ availabilityDifference: 0 });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
     });
   });
 });

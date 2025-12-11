@@ -114,6 +114,14 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+
+    updateDeploymentQuotaCapacity: async (_, { input }) => {
+      try {
+        return await DeploymentsApp.updateDeploymentQuotaCapacity(input);
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
   },
 };
 

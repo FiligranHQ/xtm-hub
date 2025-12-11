@@ -56,6 +56,7 @@ import {
   computeHubStatus,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
+import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
@@ -416,6 +417,39 @@ export const DeploymentsApp = {
           deploymentRequest
         );
         break;
+    }
+
+    return {
+      success: true,
+    };
+  },
+
+  updateDeploymentQuotaCapacity: async ({
+    platformIdentifier,
+    region,
+    newCapacity,
+  }: {
+    platformIdentifier: PlatformIdentifier;
+    region: DeploymentRequestPlatformRegion;
+    newCapacity: number;
+  }): Promise<{ success: boolean }> => {
+    const { availabilityDifference, newAvailability } =
+      await DeploymentsQuotasDomain.updateQuotaCapacity({
+        platformIdentifier,
+        region,
+        newCapacity,
+      });
+
+    if (availabilityDifference < 0) {
+      const shouldMoveAllRequest = newAvailability <= 0;
+      const requestsToMove = shouldMoveAllRequest
+        ? undefined
+        : -availabilityDifference;
+      await DeploymentRequestDomain.setPendingRequestsAsQueued(requestsToMove);
+    } else if (availabilityDifference > 0) {
+      await DeploymentRequestDomain.setQueuedRequestsAsPending(
+        availabilityDifference
+      );
     }
 
     return {

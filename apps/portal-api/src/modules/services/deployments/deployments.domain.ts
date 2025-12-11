@@ -166,6 +166,57 @@ export const DeploymentRequestDomain = {
       .returning('*');
     return deploymentRequest;
   },
+
+  setPendingRequestsAsQueued: async (requestsToMoveCount?: number) => {
+    const requestsQuery = db<DeploymentRequest[]>('DeploymentRequest')
+      .select('*')
+      .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
+      .orderBy('ordering', 'asc');
+
+    if (requestsToMoveCount) {
+      requestsQuery.limit(requestsToMoveCount);
+    }
+
+    const requests = await requestsQuery;
+    if (!requests.length) {
+      return;
+    }
+
+    await db<DeploymentRequest>('DeploymentRequest')
+      .increment('ordering', requests.length)
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
+
+    const updates = requests.map(async (request, index) => {
+      await db<DeploymentRequest>('DeploymentRequest')
+        .update({
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: DeploymentRequestPlatformState.Removed,
+          ordering: index + 1,
+        })
+        .where({ id: request.id });
+    });
+
+    await Promise.all(updates);
+  },
+
+  setQueuedRequestsAsPending: async (requestsToMoveCount: number) => {
+    const requests = await db<DeploymentRequest[]>('DeploymentRequest')
+      .select('*')
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
+      .orderBy('ordering', 'asc')
+      .limit(requestsToMoveCount);
+
+    await db<DeploymentRequest>('DeploymentRequest')
+      .update({
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      })
+      .whereIn(
+        'id',
+        requests.map(({ id }) => id)
+      );
+  },
+
   initialiseServiceGroup: async (id: DeploymentRequestId) => {
     const {
       organization_name,
