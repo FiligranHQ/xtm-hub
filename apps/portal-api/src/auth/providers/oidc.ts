@@ -41,7 +41,7 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
       options,
       async (_, tokenSet, userinfo, done) => {
         const roles = extractRole(
-          userinfo['https://xtm-hub-development/roles']
+          userinfo['https://xtm-hub-development/roles'] as string[]
         );
 
         const {

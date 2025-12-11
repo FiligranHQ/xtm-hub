@@ -4,7 +4,7 @@ import {
   parseKeyValueArrayToObjectReverse,
 } from '../utils/utils';
 
-export const extractRole = (roles): string[] => {
+export const extractRole = (roles: string[] = []): string[] => {
   const roleMapping = getRoleMapping();
   return roles.map((role) => roleMapping[role]).filter((role) => !!role);
 };

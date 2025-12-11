@@ -1,3 +1,4 @@
+import { GetUsers200ResponseOneOfInner } from 'auth0';
 import { Auth0UpdateUserRBACInstance } from './client';
 
 export const removeEmptyGroups = (
@@ -6,10 +7,29 @@ export const removeEmptyGroups = (
   const filtered: Auth0UpdateUserRBACInstance = {};
 
   for (const [key, value] of Object.entries(instance)) {
-    if (value.groups && value.groups.length > 0) {
+    if (
+      value?.groups &&
+      Array.isArray(value.groups) &&
+      value.groups.length > 0
+    ) {
       filtered[key] = value;
     }
   }
 
   return filtered;
+};
+
+export const buildUserMetadataUpdate = (
+  auth0_user: GetUsers200ResponseOneOfInner,
+  userRBACInstance: Auth0UpdateUserRBACInstance
+) => {
+  return {
+    user_metadata: {
+      ...auth0_user.user_metadata,
+      rbac_instance: removeEmptyGroups({
+        ...(auth0_user.user_metadata?.rbac_instance ?? {}),
+        ...userRBACInstance,
+      }),
+    },
+  };
 };
