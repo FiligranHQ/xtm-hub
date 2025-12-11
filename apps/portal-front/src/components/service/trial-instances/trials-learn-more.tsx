@@ -1,15 +1,13 @@
-'use client';
+'use server';
 import ServiceInstanceCard from '@/components/service/service-instance-card';
-import {
-  ServiceListQuery,
-  servicesListFragment,
-} from '@/components/service/service.graphql';
 import { cn } from '@/lib/utils';
+import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { publicServiceInstanceToInstanceCardData } from '@/utils/services';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
+import ServiceLinksByTagsQueryGraphql, {
+  serviceLinksByTagsQuery,
+} from '@generated/serviceLinksByTagsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { serviceQuery } from '@generated/serviceQuery.graphql';
-import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import {
   AnalyticsIcon,
   ArrowRightAltIcon,
@@ -19,7 +17,6 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-blue text-2xl mb-l">{children}</h2>
@@ -45,27 +42,16 @@ const Section = ({
   </section>
 );
 
-export const TrialsLearnMore: React.FC = () => {
-  const queryData = useLazyLoadQuery<serviceQuery>(ServiceListQuery, {
-    count: 10,
-    orderBy: 'name',
-    orderMode: 'desc',
-    filters: [
-      {
-        key: 'tags',
-        value: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENCTI],
-      },
-    ],
-  });
+export const TrialsLearnMore: React.FC = async () => {
+  const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
+    ServiceLinksByTagsQueryGraphql,
+    {
+      tags: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENCTI],
+    }
+  );
 
-  const [data] = useRefetchableFragment<
-    serviceQuery,
-    servicesList_services$key
-  >(servicesListFragment, queryData);
-
-  const services = data.serviceInstances.edges.map(
-    (edge) => edge.node
-  ) as serviceList_fragment$data[];
+  const services = response.data
+    .serviceInstanceLinksByTags as unknown as serviceList_fragment$data[];
 
   return (
     <>

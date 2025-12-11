@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { contextAdminUser } from '../../../tests/tests.const';
 import {
   PlatformContract,
+  ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
@@ -601,6 +602,29 @@ describe('Service Instance app', () => {
           identifier: mockServiceDefinition.identifier,
         });
       });
+    });
+  });
+
+  describe('loadLinkServiceInstancesByTags', () => {
+    it('should load service instances links with tags', async () => {
+      const serviceInstances =
+        await serviceInstanceApp.loadLinkServiceInstancesByTags([
+          ServiceInstanceTag.OpenCti,
+          ServiceInstanceTag.Trial,
+        ]);
+
+      expect(serviceInstances.length).toBe(3);
+      expect(
+        serviceInstances.find(({ name }) => name === 'Filigran Blog')
+      ).toBeDefined();
+
+      expect(
+        serviceInstances.find(({ name }) => name === 'OpenCTI 101')
+      ).toBeDefined();
+
+      expect(
+        serviceInstances.find(({ name }) => name === 'OpenCTI Demo')
+      ).toBeDefined();
     });
   });
 });

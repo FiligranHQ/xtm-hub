@@ -20,6 +20,7 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   PlatformIdentifier,
+  ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
@@ -34,6 +35,7 @@ import {
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
+  ErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -98,7 +100,7 @@ describe('Deployment app', () => {
         service_instance_id: expect.any(String),
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
-        actual_state: null,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
@@ -142,8 +144,8 @@ describe('Deployment app', () => {
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
         hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Inactive,
-        actual_state: null,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
@@ -156,7 +158,7 @@ describe('Deployment app', () => {
         dbDeploymentRequest.service_instance_id
       );
       expect(serviceInstance.creation_status).toBe(
-        ServiceInstanceCreationStatus.Disabled
+        ServiceInstanceCreationStatus.Pending
       );
     });
     it('should throw if an invalid hub_status is specified', async () => {
@@ -171,6 +173,97 @@ describe('Deployment app', () => {
       });
       await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
     });
+
+    describe('domains blacklist', () => {
+      const originalConfigGet = config.get;
+
+      afterEach(() => {
+        vi.mocked(config.get).mockImplementation(originalConfigGet);
+      });
+
+      it('should throw error when organization domain is blacklisted', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return 'filigran.io,blocked.net';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const call = DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+      });
+
+      it('should allow deployment when organization domain is not blacklisted', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return 'blocked.com,forbidden.net';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const deployment = await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        expect(deployment).toBeDefined();
+        expect(deployment.id).toBeDefined();
+      });
+
+      it('should allow deployment when blacklist is empty', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return '';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const deployment = await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        expect(deployment).toBeDefined();
+        expect(deployment.id).toBeDefined();
+      });
+
+      it('should handle blacklist with spaces correctly', async () => {
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'domains_blacklist') {
+            return 'filigran.io , blocked.net , test.org';
+          }
+          return originalConfigGet.call(config, key);
+        });
+
+        const call = DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+      });
+    });
+
     describe('telemetry', () => {
       it('should send a telemetry event', async () => {
         vi.useFakeTimers();
@@ -237,6 +330,25 @@ describe('Deployment app', () => {
         expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_requested',
+          params: {
+            firstName: 'Firstname',
+          },
+        });
+      });
+      it('should send a mail if status is queued', async () => {
+        await DeploymentsApp.createDeploymentRequest({
+          activity_sector: 'cybersecurity',
+          job_title: 'myJob',
+          use_case: 'use_case',
+          hub_status: DeploymentRequestHubStatus.Queued,
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.UsEast,
+          type: DeploymentRequestDeploymentType.Trial,
+        });
+
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'admin@filigran.io',
+          template: 'opencti_free_trial_queued',
           params: {
             firstName: 'Firstname',
           },
@@ -353,8 +465,8 @@ describe('Deployment app', () => {
       // Synced: inactive target vs inactive actual
       const synced3 = await insertOpenCtiDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Expired,
-        target_state: DeploymentRequestPlatformState.Inactive,
-        actual_state: DeploymentRequestPlatformState.Inactive,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+        actual_state: DeploymentRequestPlatformState.Unprovisioned,
       });
 
       const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
@@ -453,7 +565,7 @@ describe('Deployment app', () => {
         region: DeploymentRequestPlatformRegion.UsEast,
         request_date: expect.any(Date),
         service_instance_id: expect.any(String),
-        hub_status: DeploymentRequestHubStatus.Pending,
+        hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
         ordering: expect.any(Number),
@@ -482,7 +594,7 @@ describe('Deployment app', () => {
     it(' with Active status, it should create ServiceGroup with admin', async () => {
       const deployment = await DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
-        hub_status: DeploymentRequestHubStatus.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
@@ -519,7 +631,7 @@ describe('Deployment app', () => {
 
       expect(userReaderGroup.length).toBe(0);
     });
-    it('should should throw if deployment request does not exist', async () => {
+    it('should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({
         id: uuidv4(),
         actual_state: DeploymentRequestPlatformState.Active,
@@ -559,15 +671,6 @@ describe('Deployment app', () => {
         );
       }
     );
-    it('should should throw when status requested is not allowed', async () => {
-      const call = DeploymentsApp.updateDeploymentRequest({
-        id: initialDeployment?.id as string,
-        hub_status: DeploymentRequestHubStatus.Expired,
-      });
-      await expect(call).rejects.toThrow(
-        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
-      );
-    });
     describe('telemetry', () => {
       it('should send a telemetry event', async () => {
         vi.useFakeTimers();
@@ -599,7 +702,7 @@ describe('Deployment app', () => {
           platform_id: 'fake product instance id',
           start_date,
           end_date,
-          status: undefined,
+          status: DeploymentRequestHubStatus.Active,
         });
       });
 
@@ -621,6 +724,30 @@ describe('Deployment app', () => {
           failure_reason: 'not failed',
         });
         expect(deployment).toBeDefined();
+      });
+    });
+    describe('mail', () => {
+      it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+          to: 'admin@filigran.io',
+          template: 'opencti_free_trial_provisioning',
+          params: {
+            firstName: 'Firstname',
+          },
+        });
+
+        mockSendMail.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+
+        expect(mockSendMail).not.toHaveBeenCalled();
       });
     });
   });
@@ -677,5 +804,97 @@ describe('Deployment app', () => {
         expect(result).toHaveLength(expected.length);
       }
     );
+  });
+
+  describe('reorderDeploymentRequestInQueue', () => {
+    it('should throw when deployment request is not found', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(null);
+
+      const call = DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: uuidv4() as DeploymentRequestId,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+
+    it('should throw when deployment request is not in queue', async () => {
+      const deploymentRequest = {
+        id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Active,
+      } as Awaited<
+        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+      >;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(deploymentRequest);
+
+      const call = DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: deploymentRequest!.id,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.DeploymentRequestHubStatusNotQueued
+      );
+    });
+
+    it('should reorder deployment request to top when direction is top', async () => {
+      const deploymentRequest = {
+        id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      } as Awaited<
+        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+      >;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(deploymentRequest);
+
+      const reorderDeploymentRequestToTopSpy = vi
+        .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestToTop')
+        .mockResolvedValue();
+
+      const result = await DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: uuidv4() as DeploymentRequestId,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      expect(result.success).toBeTruthy();
+      expect(reorderDeploymentRequestToTopSpy).toHaveBeenCalledWith(
+        deploymentRequest
+      );
+    });
+
+    it('should reorder deployment request up when direction is up', async () => {
+      const deploymentRequest = {
+        id: uuidv4() as DeploymentRequestId,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      } as Awaited<
+        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+      >;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(deploymentRequest);
+
+      const reorderDeploymentRequestUpSpy = vi
+        .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestUp')
+        .mockResolvedValue();
+
+      const result = await DeploymentsApp.reorderDeploymentRequestInQueue({
+        id: uuidv4() as DeploymentRequestId,
+        direction: ReorderDeploymentRequestInQueueDirection.Up,
+      });
+
+      expect(result.success).toBeTruthy();
+      expect(reorderDeploymentRequestUpSpy).toHaveBeenCalledWith(
+        deploymentRequest
+      );
+    });
   });
 });

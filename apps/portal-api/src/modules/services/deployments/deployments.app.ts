@@ -14,7 +14,9 @@ import {
   PlatformDeploymentRequestConnection,
   PlatformIdentifier,
   QueryDeploymentRequestsArgs,
+  ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
+  Success,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -46,9 +48,10 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
+import { loadUnsecureUser } from '../../users/users.domain';
 import {
   assertFreeTrialsLimit,
-  isHubStatusTransitionValid,
+  computeHubStatus,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 
@@ -62,8 +65,21 @@ export const DeploymentsApp = {
     });
 
     if (chosenOrganization.personal_space) {
-      logApp.warn('You cannot request Free Trial in your personal space');
+      logApp.warn('Free trial requests are not allowed in personal spaces');
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
+    }
+
+    const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
+      .split(',')
+      .map((d) => d.trim());
+    const organizationIsBlacklisted = chosenOrganization.domains.some(
+      (domain) => domainsBlacklist.includes(domain)
+    );
+    if (organizationIsBlacklisted) {
+      logApp.warn(
+        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
+      );
+      throw new Error(ErrorCode.CantRequestFreeTrial);
     }
 
     if (
@@ -99,9 +115,7 @@ export const DeploymentsApp = {
               organizationId: user.selected_organization_id,
               platformIdentifier: input.platform_identifier,
               serviceInstanceCreationStatus:
-                hubStatus === DeploymentRequestHubStatus.Queued
-                  ? ServiceInstanceCreationStatus.Disabled
-                  : ServiceInstanceCreationStatus.Pending,
+                ServiceInstanceCreationStatus.Pending,
             });
 
           return await DeploymentRequestDomain.insertDeploymentRequest({
@@ -112,9 +126,9 @@ export const DeploymentsApp = {
             hub_status: hubStatus,
             target_state:
               hubStatus === DeploymentRequestHubStatus.Queued
-                ? DeploymentRequestPlatformState.Inactive
+                ? DeploymentRequestPlatformState.Unprovisioned
                 : DeploymentRequestPlatformState.Active,
-            actual_state: null,
+            actual_state: DeploymentRequestPlatformState.Unprovisioned,
             ordering,
             type: input.type,
             platform_identifier: input.platform_identifier,
@@ -154,18 +168,19 @@ export const DeploymentsApp = {
       }
 
       try {
-        if (
+        const mailTemplate =
           createdDeploymentRequest.hub_status ===
           DeploymentRequestHubStatus.Pending
-        ) {
-          sendMail({
-            to: user.email,
-            template: 'opencti_free_trial_requested',
-            params: {
-              firstName: formatName(user.first_name ?? ''),
-            },
-          });
-        }
+            ? 'opencti_free_trial_requested'
+            : 'opencti_free_trial_queued';
+
+        sendMail({
+          to: user.email,
+          template: mailTemplate,
+          params: {
+            firstName: formatName(user.first_name ?? ''),
+          },
+        });
       } catch (error) {
         logApp.error('Unable to send mail', {
           error,
@@ -193,19 +208,10 @@ export const DeploymentsApp = {
       });
 
     if (!deploymentRequest) {
-      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-    }
-
-    if (
-      input.hub_status &&
-      !isHubStatusTransitionValid(
-        deploymentRequest.hub_status as DeploymentRequestHubStatus,
-        input.hub_status
-      )
-    ) {
-      throw new Error(
-        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
+      logApp.error(
+        `Deployment request not found with id ${deploymentRequestId}`
       );
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
     if (
@@ -215,6 +221,9 @@ export const DeploymentsApp = {
         input.actual_state
       )
     ) {
+      logApp.error(
+        `Invalid deployment request status update from ${deploymentRequest.actual_state} to ${input.actual_state}`
+      );
       throw new Error(
         BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
       );
@@ -224,7 +233,26 @@ export const DeploymentsApp = {
       input.actual_state == DeploymentRequestPlatformState.Active &&
       (!input.start_date || !input.end_date);
     if (isActiveInputDataInvalid) {
+      logApp.error(
+        `Missing start or end date for active deployment request with id ${deploymentRequestId}`
+      );
       throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
+    }
+
+    let newStatus = computeHubStatus(
+      deploymentRequest.hub_status,
+      input.actual_state
+    );
+    // if no status is computed, it means it the transition is invalid.
+    // Let's just keep the same hub_status and log an error to investigate.
+    if (!newStatus) {
+      logApp.error('Invalid deployment request hub status update', {
+        deploymentRequest: deploymentRequest.id,
+        new_hub_status: newStatus,
+        previous_hub_status: deploymentRequest.hub_status,
+        actual_state: input.actual_state,
+      });
+      newStatus = deploymentRequest.hub_status;
     }
 
     await withTransaction(async () => {
@@ -246,18 +274,15 @@ export const DeploymentsApp = {
         failure_reason: input.failure_reason,
         actual_state: input.actual_state,
         ordering: input.ordering,
+        hub_status: newStatus,
       };
-
-      if (input.hub_status) {
-        updateData.hub_status = input.hub_status;
-      }
 
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
         updateData
       );
 
-      if (input.hub_status === DeploymentRequestHubStatus.Active) {
+      if (newStatus === DeploymentRequestHubStatus.Active) {
         await DeploymentRequestDomain.initialiseServiceGroup(
           input.id as DeploymentRequestId
         );
@@ -272,7 +297,7 @@ export const DeploymentsApp = {
         organization,
         deploymentRequest.user_requester_id,
         {
-          status: input.hub_status,
+          status: newStatus,
           start_date: input.start_date,
           end_date: input.end_date,
           deployment_id: deploymentRequest.id,
@@ -285,6 +310,30 @@ export const DeploymentsApp = {
     } catch (error) {
       logApp.error('Unable to send telemetry event', {
         error,
+      });
+    }
+
+    try {
+      if (
+        newStatus === DeploymentRequestHubStatus.Provisioning &&
+        newStatus !== deploymentRequest.hub_status
+      ) {
+        const [user] = await loadUnsecureUser({
+          id: deploymentRequest.user_requester_id,
+        });
+
+        sendMail({
+          to: user.email,
+          template: 'opencti_free_trial_provisioning',
+          params: {
+            firstName: formatName(user.first_name ?? ''),
+          },
+        });
+      }
+    } catch (error) {
+      logApp.error('Unable to send mail', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
       });
     }
 
@@ -316,6 +365,7 @@ export const DeploymentsApp = {
       }
     );
   },
+
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier
   ): Promise<DeploymentAvailability[]> => {
@@ -333,5 +383,41 @@ export const DeploymentsApp = {
       availableCount:
         (max_deployments[region] || 0) - (deploymentsByRegion[region] || 0),
     }));
+  },
+
+  reorderDeploymentRequestInQueue: async ({
+    id,
+    direction,
+  }: {
+    id: DeploymentRequestId;
+    direction: ReorderDeploymentRequestInQueueDirection;
+  }): Promise<Success> => {
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+    if (!deploymentRequest) {
+      throw new Error(ErrorCode.DeploymentRequestNotFound);
+    }
+
+    if (DeploymentRequestHubStatus.Queued !== deploymentRequest.hub_status) {
+      throw new Error(ErrorCode.DeploymentRequestHubStatusNotQueued);
+    }
+
+    switch (direction) {
+      case ReorderDeploymentRequestInQueueDirection.Top:
+        await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+          deploymentRequest
+        );
+        break;
+
+      case ReorderDeploymentRequestInQueueDirection.Up:
+        await DeploymentRequestDomain.reorderDeploymentRequestUp(
+          deploymentRequest
+        );
+        break;
+    }
+
+    return {
+      success: true,
+    };
   },
 };

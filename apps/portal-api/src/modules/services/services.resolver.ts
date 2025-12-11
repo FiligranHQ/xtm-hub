@@ -115,6 +115,9 @@ const resolvers: Resolvers = {
         opt
       );
     },
+    serviceInstanceLinksByTags: async (_, { tags }) => {
+      return serviceInstanceApp.loadLinkServiceInstancesByTags(tags);
+    },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
       const serviceInstance = await serviceInstanceApp.loadServiceInstance(
         context.user,

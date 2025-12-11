@@ -18,8 +18,6 @@ async function hubspotHook(
   buildPayload: () => Promise<Record<string, unknown>>
 ) {
   try {
-    const env = config.get<string>('environment');
-    if (env !== 'production') return;
     const webHookUrl = config.get<string>('hubspot_webhook_url');
     if (isValidUrl(webHookUrl)) {
       // 3 seconds timeout
@@ -83,6 +81,20 @@ export const hubspotReachOutSalesHook = async () =>
           PlatformIdentifier.Opencti,
           user.id
         );
+      if (!deploymentRequest) {
+        return {
+          email: user.email,
+          firstname: user.first_name,
+          lastname: user.last_name,
+          company:
+            user.organizations.find(
+              (org) => org.id === user.selected_organization_id
+            )?.name || '',
+          job_title: '',
+          message: `Please contact me about the OpenCTI free trial`,
+          use_case: '',
+        };
+      }
     } else if (platformToken) {
       deploymentRequest =
         await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(

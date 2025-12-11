@@ -51,7 +51,18 @@ export const StartTrialButton: React.FC<Props> = ({
   const t = useTranslations();
   const environment = useRelayEnvironment();
 
-  const { freeTrial } = useFreeTrial();
+  const { freeTrial, isBlacklisted } = useFreeTrial();
+
+  if (isBlacklisted) {
+    return (
+      <Button
+        className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
+        disabled>
+        {t('Service.Trials.StartTrial')}
+        <ArrowRightAltIcon className="ml-s size-4" />
+      </Button>
+    );
+  }
 
   const [openSheet, setOpenSheet] = useState(openForm);
   const [commitCreateDeploymentRequestMutationMutation] =

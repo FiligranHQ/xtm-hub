@@ -15,6 +15,7 @@ export enum ForbiddenErrorCode {
   YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
+  CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
 }
 
@@ -32,6 +33,7 @@ export enum BadRequestErrorCode {
   InvalidPlatformVersion = 'INVALID_PLATFORM_VERSION',
   ServiceGroupsLinkedToMultipleServiceInstances = 'SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES',
   OrganizationDoesNotMatchSelectedOrganization = 'ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION',
+  DeploymentRequestHubStatusNotQueued = 'DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED',
 }
 
 export enum UnknownErrorCode {

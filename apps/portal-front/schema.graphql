@@ -67,6 +67,7 @@ type Query {
   platformAssociatedOrganization(platformId: String!): Organization
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
+  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [ServiceInstance!]!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
@@ -97,6 +98,7 @@ type Mutation {
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
+  reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -276,6 +278,7 @@ enum DeploymentRequestDeploymentType {
 enum DeploymentRequestHubStatus {
   queued
   pending
+  provisioning
   active
   expired
   failed
@@ -283,11 +286,11 @@ enum DeploymentRequestHubStatus {
 }
 
 enum DeploymentRequestPlatformState {
+  unprovisioned
   provisioning
   active
   removing
   removed
-  inactive
 }
 
 type DeploymentRequest implements Node {
@@ -301,8 +304,6 @@ type DeploymentRequest implements Node {
   start_date: Date
   end_date: Date
   hub_status: DeploymentRequestHubStatus!
-  target_state: DeploymentRequestPlatformState
-  actual_state: DeploymentRequestPlatformState
   ordering: Int!
   requester_email: String
   organization_name: String
@@ -345,7 +346,6 @@ input CreateDeploymentRequestInput {
 
 input UpdateDeploymentRequestInput {
   id: ID!
-  hub_status: DeploymentRequestHubStatus
   start_date: Date
   end_date: Date
   platform_id: String
@@ -404,6 +404,16 @@ enum DeploymentRequestOrdering {
   region
   ordering
   request_date
+}
+
+enum ReorderDeploymentRequestInQueueDirection {
+  top
+  up
+}
+
+input ReorderDeploymentRequestInQueueInput {
+  id: ID!
+  direction: ReorderDeploymentRequestInQueueDirection!
 }
 
 type ShareableResource {
@@ -995,6 +1005,7 @@ type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
+  domains_blacklist: String!
 }
 
 enum SubscriptionOrdering {

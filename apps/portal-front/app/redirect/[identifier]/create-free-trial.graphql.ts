@@ -10,8 +10,6 @@ const CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery = graphql`
       deployment_request {
         type
         hub_status
-        target_state
-        actual_state
       }
     }
   }

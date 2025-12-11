@@ -12,6 +12,7 @@ import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 import {
   assertFreeTrialsLimit,
+  computeHubStatus,
   isHubStatusTransitionValid,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
@@ -21,8 +22,20 @@ describe('isHubStatusTransitionValid', () => {
     [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Pending],
     [DeploymentRequestHubStatus.Queued, DeploymentRequestHubStatus.Cancelled],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Active],
+    [
+      DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
+    ],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Failed],
     [DeploymentRequestHubStatus.Pending, DeploymentRequestHubStatus.Cancelled],
+    [
+      DeploymentRequestHubStatus.Provisioning,
+      DeploymentRequestHubStatus.Active,
+    ],
+    [
+      DeploymentRequestHubStatus.Provisioning,
+      DeploymentRequestHubStatus.Cancelled,
+    ],
     [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Expired],
     [DeploymentRequestHubStatus.Active, DeploymentRequestHubStatus.Cancelled],
     [DeploymentRequestHubStatus.Failed, DeploymentRequestHubStatus.Pending],
@@ -61,7 +74,10 @@ describe('isHubStatusTransitionValid', () => {
 
 describe('isPlatformStateTransitionValid', () => {
   const validTransitions = [
-    [null, DeploymentRequestPlatformState.Provisioning],
+    [
+      DeploymentRequestPlatformState.Unprovisioned,
+      DeploymentRequestPlatformState.Provisioning,
+    ],
     [
       DeploymentRequestPlatformState.Provisioning,
       DeploymentRequestPlatformState.Active,
@@ -71,16 +87,8 @@ describe('isPlatformStateTransitionValid', () => {
       DeploymentRequestPlatformState.Removing,
     ],
     [
-      DeploymentRequestPlatformState.Active,
-      DeploymentRequestPlatformState.Inactive,
-    ],
-    [
       DeploymentRequestPlatformState.Removing,
       DeploymentRequestPlatformState.Removed,
-    ],
-    [
-      DeploymentRequestPlatformState.Inactive,
-      DeploymentRequestPlatformState.Active,
     ],
   ] as const;
 
@@ -142,10 +150,163 @@ describe('assertFreeTrialsLimit', () => {
       type: DeploymentRequestDeploymentType.Trial,
       hub_status: DeploymentRequestHubStatus.Pending,
       target_state: DeploymentRequestPlatformState.Active,
-      actual_state: null,
+      actual_state: DeploymentRequestPlatformState.Active,
     });
     await expect(
       assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
     ).rejects.toThrow(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
+  });
+});
+
+describe('computeHubStatus', () => {
+  describe('when actualState is null/undefined', () => {
+    it.each([
+      [DeploymentRequestHubStatus.Pending, undefined],
+      [DeploymentRequestHubStatus.Active, null],
+      [DeploymentRequestHubStatus.Expired, undefined],
+      [DeploymentRequestHubStatus.Cancelled, null],
+    ])(
+      'should return %s when actualState is %s',
+      (currentStatus, actualState) => {
+        const result = computeHubStatus(currentStatus, actualState);
+        expect(result).toBe(currentStatus);
+      }
+    );
+  });
+
+  describe('validation errors', () => {
+    it('should throw error when current status is Queued', () => {
+      const result = computeHubStatus(
+        DeploymentRequestHubStatus.Queued,
+        DeploymentRequestPlatformState.Provisioning
+      );
+      expect(result).toBeNull();
+    });
+
+    it.each([
+      [DeploymentRequestHubStatus.Pending],
+      [DeploymentRequestHubStatus.Active],
+      [DeploymentRequestHubStatus.Failed],
+      [DeploymentRequestHubStatus.Expired],
+      [DeploymentRequestHubStatus.Cancelled],
+    ])(
+      'should throw error when platform state is Unprovisioned from %s',
+      (currentStatus) => {
+        const result = computeHubStatus(
+          currentStatus,
+          DeploymentRequestPlatformState.Unprovisioned
+        );
+        expect(result).toBeNull();
+      }
+    );
+
+    it.each([
+      [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestPlatformState.Provisioning,
+      ],
+      [
+        DeploymentRequestHubStatus.Expired,
+        DeploymentRequestPlatformState.Active,
+      ],
+      [
+        DeploymentRequestHubStatus.Expired,
+        DeploymentRequestPlatformState.Provisioning,
+      ],
+      [
+        DeploymentRequestHubStatus.Cancelled,
+        DeploymentRequestPlatformState.Active,
+      ],
+      [
+        DeploymentRequestHubStatus.Cancelled,
+        DeploymentRequestPlatformState.Provisioning,
+      ],
+      [
+        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestPlatformState.Removing,
+      ],
+      [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestPlatformState.Removing,
+      ],
+      [
+        DeploymentRequestHubStatus.Failed,
+        DeploymentRequestPlatformState.Removing,
+      ],
+      [
+        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestPlatformState.Removed,
+      ],
+      [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestPlatformState.Removed,
+      ],
+      [
+        DeploymentRequestHubStatus.Failed,
+        DeploymentRequestPlatformState.Removed,
+      ],
+    ])(
+      'should throw error for invalid transition from %s with platform state %s',
+      (currentStatus, platformState) => {
+        const result = computeHubStatus(currentStatus, platformState);
+        expect(result).toBeNull();
+      }
+    );
+  });
+
+  describe('valid state transitions', () => {
+    it.each([
+      [
+        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestPlatformState.Active,
+        DeploymentRequestHubStatus.Active,
+      ],
+      [
+        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestPlatformState.Provisioning,
+        DeploymentRequestHubStatus.Provisioning,
+      ],
+      [
+        DeploymentRequestHubStatus.Failed,
+        DeploymentRequestPlatformState.Provisioning,
+        DeploymentRequestHubStatus.Provisioning,
+      ],
+      [
+        DeploymentRequestHubStatus.Failed,
+        DeploymentRequestPlatformState.Active,
+        DeploymentRequestHubStatus.Active,
+      ],
+      [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestPlatformState.Active,
+        DeploymentRequestHubStatus.Active,
+      ],
+      [
+        DeploymentRequestHubStatus.Cancelled,
+        DeploymentRequestPlatformState.Removing,
+        DeploymentRequestHubStatus.Cancelled,
+      ],
+      [
+        DeploymentRequestHubStatus.Cancelled,
+        DeploymentRequestPlatformState.Removed,
+        DeploymentRequestHubStatus.Cancelled,
+      ],
+      [
+        DeploymentRequestHubStatus.Expired,
+        DeploymentRequestPlatformState.Removing,
+        DeploymentRequestHubStatus.Expired,
+      ],
+      [
+        DeploymentRequestHubStatus.Expired,
+        DeploymentRequestPlatformState.Removed,
+        DeploymentRequestHubStatus.Expired,
+      ],
+    ])(
+      'should transition from %s with platform state %s to %s',
+      (currentStatus, platformState, expectedStatus) => {
+        const result = computeHubStatus(currentStatus, platformState);
+        expect(result).toBe(expectedStatus);
+      }
+    );
   });
 });

@@ -553,6 +553,7 @@ const assertValidDeploymentRequest = (
     ![
       DeploymentRequestHubStatus.Active,
       DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
     ].includes(deploymentRequest.hub_status as DeploymentRequestHubStatus)
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);

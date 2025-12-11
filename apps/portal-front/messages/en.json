@@ -63,6 +63,7 @@
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "You cannot remove yourself from organization",
+      "CANT_REQUEST_FREE_TRIAL": "You cannot request a free trial",
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "You cannot request a free trial in your personal space",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
@@ -76,6 +77,7 @@
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION_ERROR": "Error while deleting organization",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
+      "DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED": "You can only reorder queued deployment requests.",
       "DEPLOYMENT_REQUEST_NOT_FOUND": "An unknown error occurred",
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "An unknown error occurred",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "An unknown error occurred",
@@ -287,8 +289,13 @@
       "Running": "Running",
       "Waiting": "Waiting"
     },
+    "Toast": {
+      "TrialsReordered": "Trial requests were reordered"
+    },
     "Actions": {
-      "SearchTrials": "Search by email or organization"
+      "SearchTrials": "Search by email or organization",
+      "MoveToTop": "Move to top",
+      "MoveUp": "Move up"
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
   },

@@ -264,7 +264,6 @@ export type DeploymentAvailability = {
 export type DeploymentRequest = Node & {
   __typename?: 'DeploymentRequest';
   activity_sector?: Maybe<Scalars['String']['output']>;
-  actual_state?: Maybe<DeploymentRequestPlatformState>;
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
@@ -276,7 +275,6 @@ export type DeploymentRequest = Node & {
   request_date: Scalars['Date']['output'];
   requester_email?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
-  target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
   use_case?: Maybe<Scalars['String']['output']>;
 };
@@ -318,6 +316,7 @@ export enum DeploymentRequestHubStatus {
   Expired = 'expired',
   Failed = 'failed',
   Pending = 'pending',
+  Provisioning = 'provisioning',
   Queued = 'queued'
 }
 
@@ -341,10 +340,10 @@ export enum DeploymentRequestPlatformRegion {
 
 export enum DeploymentRequestPlatformState {
   Active = 'active',
-  Inactive = 'inactive',
   Provisioning = 'provisioning',
   Removed = 'removed',
-  Removing = 'removing'
+  Removing = 'removing',
+  Unprovisioned = 'unprovisioned'
 }
 
 export type Document = {
@@ -593,6 +592,7 @@ export type Mutation = {
   registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
+  reorderDeploymentRequestInQueue?: Maybe<Success>;
   requestTransferPersonalSpace: Success;
   resetPassword: Success;
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
@@ -853,6 +853,11 @@ export type MutationRemovePendingUserFromOrganizationArgs = {
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['ID']['input'];
   user_id: Scalars['ID']['input'];
+};
+
+
+export type MutationReorderDeploymentRequestInQueueArgs = {
+  input: ReorderDeploymentRequestInQueueInput;
 };
 
 
@@ -1159,6 +1164,7 @@ export type Query = {
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
   serviceInstanceByIdWithSubscriptions?: Maybe<ServiceInstance>;
+  serviceInstanceLinksByTags: Array<ServiceInstance>;
   serviceInstances: ServiceConnection;
   serviceUsers?: Maybe<UserServiceConnection>;
   settings: Settings;
@@ -1420,6 +1426,11 @@ export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
 };
 
 
+export type QueryServiceInstanceLinksByTagsArgs = {
+  tags: Array<ServiceInstanceTag>;
+};
+
+
 export type QueryServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<ServiceInstanceFilter>>;
@@ -1533,6 +1544,16 @@ export type RegisteredPlatformsInput = {
 export type RegistrationResponse = {
   __typename?: 'RegistrationResponse';
   token: Scalars['String']['output'];
+};
+
+export enum ReorderDeploymentRequestInQueueDirection {
+  Top = 'top',
+  Up = 'up'
+}
+
+export type ReorderDeploymentRequestInQueueInput = {
+  direction: ReorderDeploymentRequestInQueueDirection;
+  id: Scalars['ID']['input'];
 };
 
 export enum Restriction {
@@ -1709,6 +1730,7 @@ export enum ServiceRestriction {
 export type Settings = {
   __typename?: 'Settings';
   base_url_front: Scalars['String']['output'];
+  domains_blacklist: Scalars['String']['output'];
   environment: Scalars['String']['output'];
   platform_feature_flags: Array<Scalars['String']['output']>;
   platform_providers: Array<PlatformProvider>;
@@ -1842,7 +1864,6 @@ export type UpdateDeploymentRequestInput = {
   actual_state?: InputMaybe<DeploymentRequestPlatformState>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
   failure_reason?: InputMaybe<Scalars['String']['input']>;
-  hub_status?: InputMaybe<DeploymentRequestHubStatus>;
   id: Scalars['ID']['input'];
   ordering?: InputMaybe<Scalars['Int']['input']>;
   platform_id?: InputMaybe<Scalars['String']['input']>;
@@ -2172,6 +2193,8 @@ export type ResolversTypes = ResolversObject<{
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
+  ReorderDeploymentRequestInQueueDirection: ReorderDeploymentRequestInQueueDirection;
+  ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
   SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
@@ -2312,6 +2335,7 @@ export type ResolversParentTypes = ResolversObject<{
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
   RegistrationResponse: RegistrationResponse;
+  ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   RolePortal: RolePortal;
   SendTelemetryMutation: SendTelemetryMutation;
   SeoServiceInstance: SeoServiceInstance;
@@ -2532,7 +2556,6 @@ export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentT
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
   activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  actual_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2544,7 +2567,6 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   request_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   requester_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
   use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2742,6 +2764,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
+  reorderDeploymentRequestInQueue?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationReorderDeploymentRequestInQueueArgs, 'input'>>;
   requestTransferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationRequestTransferPersonalSpaceArgs>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
@@ -2927,6 +2950,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
   serviceInstanceByIdWithSubscriptions?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdWithSubscriptionsArgs>>;
+  serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   serviceUsers?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryServiceUsersArgs, 'first' | 'id' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
@@ -3071,6 +3095,7 @@ export type ServiceLinkResolvers<ContextType = PortalContext, ParentType extends
 
 export type SettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
   base_url_front?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  domains_blacklist?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_feature_flags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;

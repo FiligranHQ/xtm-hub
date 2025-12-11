@@ -1,6 +1,6 @@
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
-import { DeploymentRequestPlatformStateEnum } from '@generated/models/DeploymentRequestPlatformState.enum';
+import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { Button } from 'filigran-ui/servers';
@@ -26,16 +26,17 @@ export const buildPlatformHoverLinks = (
           {t('Service.RegisteredPlatforms.PlatformDetails')}
         </Link>
       </Button>
-      {platform.deployment_request?.actual_state ===
-        DeploymentRequestPlatformStateEnum.ACTIVE && (
-        <Button>
-          <Link
-            target="_blank"
-            href={platform.url}>
-            {t('Service.RegisteredPlatforms.GoToMyPlatform')}
-          </Link>
-        </Button>
-      )}
+      {platform.deployment_request?.hub_status ===
+        DeploymentRequestHubStatusEnum.ACTIVE &&
+        platform.url && (
+          <Button>
+            <Link
+              target="_blank"
+              href={platform.url}>
+              {t('Service.RegisteredPlatforms.GoToMyPlatform')}
+            </Link>
+          </Button>
+        )}
     </>
   );
 };
