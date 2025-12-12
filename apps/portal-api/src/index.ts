@@ -18,6 +18,7 @@ import { dbMigration } from '../knexfile';
 import { initAuthPlatform } from './auth/auth-platform';
 import portalConfig from './config';
 import { requestContext } from './context/request.context';
+import { initCronJobs } from './crons';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
@@ -33,7 +34,6 @@ import { logApp } from './utils/app-logger.util';
 import { startSessionCleanup } from './utils/session-cleanup';
 import { extractId } from './utils/utils';
 const { json } = pkg;
-
 // region GraphQL server initialization
 export const PORTAL_COOKIE_NAME = 'cloud-portal';
 export const PORTAL_COOKIE_SECRET = 'cloud-portal-cookie-key';
@@ -269,6 +269,8 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: portalConfig.port }, resolve)
   );
+
+  initCronJobs();
 }
 
 logApp.info(

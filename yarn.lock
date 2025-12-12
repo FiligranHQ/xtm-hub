@@ -11031,6 +11031,7 @@ __metadata:
     knex: "npm:3.1.0"
     lint-staged: "npm:15.5.2"
     migrate: "npm:^2.1.0"
+    node-cron: "npm:4.2.1"
     nodemailer: "npm:7.0.11"
     openid-client: "npm:5.7.1"
     passport: "npm:0.7.0"
@@ -20951,6 +20952,13 @@ __metadata:
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10c0/fb32a206276d608037fa1bcd7e9921e177fe992fc610d098aa3128baca3c0050fc1e014fa007e9b3874cf865ddb4f5bd9f43ccb7cbbbe4efaff6a83e920b17e9
+  languageName: node
+  linkType: hard
+
+"node-cron@npm:4.2.1":
+  version: 4.2.1
+  resolution: "node-cron@npm:4.2.1"
+  checksum: 10c0/804df01df230e96fd2f8ffcde004f4d5af953bccdf3ccf993dc450526dd65f553a2f2ad4bc0faf55c90c38cbc99c9ddbb88ee16cba3fc6bc74e606da6efb249e
   languageName: node
   linkType: hard
 
