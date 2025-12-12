@@ -15,9 +15,11 @@ export const useFreeTrial = () => {
   const { me } = useContext(PortalContext);
   const { settings } = useContext(SettingsContext);
 
-  const isBlacklisted = (settings?.domains_blacklist ?? '')
-    .split(',')
-    .some((domain) => me?.email?.includes(domain.trim()));
+  const isBlacklisted =
+    settings?.domains_blacklist &&
+    settings?.domains_blacklist
+      .split(',')
+      .some((domain) => me?.email?.includes(domain.trim()));
 
   const queryData = useLazyLoadQuery<registerRegisteredPlatformsQuery>(
     RegisterRegisteredPlatformsQuery,
@@ -36,7 +38,8 @@ export const useFreeTrial = () => {
   const freeTrials = data.registeredPlatforms.filter(
     (platform) =>
       platform.deployment_request?.type ===
-      DeploymentRequestDeploymentTypeEnum.TRIAL
+        DeploymentRequestDeploymentTypeEnum.TRIAL &&
+      platform.deployment_request.counts_in_orga_quota
   );
 
   return {

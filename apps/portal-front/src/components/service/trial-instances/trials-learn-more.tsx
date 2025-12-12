@@ -47,7 +47,8 @@ export const TrialsLearnMore: React.FC = async () => {
     ServiceLinksByTagsQueryGraphql,
     {
       tags: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENCTI],
-    }
+    },
+    { cache: undefined, next: { revalidate: 3600 } }
   );
 
   const services = response.data

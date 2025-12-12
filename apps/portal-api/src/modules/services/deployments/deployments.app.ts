@@ -28,6 +28,7 @@ import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
+  ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
@@ -49,6 +50,7 @@ import {
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
 import { loadUnsecureUser } from '../../users/users.domain';
+import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
@@ -419,5 +421,105 @@ export const DeploymentsApp = {
     return {
       success: true,
     };
+  },
+
+  cancelDeploymentRequest: async (
+    deploymentRequestId: DeploymentRequestId,
+    isAdmin: boolean
+  ): Promise<DeploymentRequest> => {
+    const { user } = requestContext.require();
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        id: deploymentRequestId,
+      });
+
+    if (!deploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
+    if (
+      !isAdmin &&
+      user.selected_organization_id !==
+        deploymentRequest.organization_requester_id
+    ) {
+      throw new Error(ForbiddenErrorCode.UserIsNotInOrganization);
+    }
+
+    const countsInOrgaQuota =
+      isAdmin ||
+      ![
+        DeploymentRequestPlatformState.Unprovisioned,
+        DeploymentRequestPlatformState.Provisioning,
+      ].includes(deploymentRequest.actual_state);
+
+    await withTransaction(async () => {
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequestId,
+        {
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+          target_state: DeploymentRequestPlatformState.Removed,
+          cancellation_date: new Date(),
+          cancellation_user_id: user.id,
+          counts_in_orga_quota: countsInOrgaQuota,
+        }
+      );
+      if (!countsInOrgaQuota) {
+        await updateServiceInstance(deploymentRequest.service_instance_id, {
+          creation_status: ServiceInstanceCreationStatus.Disabled,
+        });
+      }
+    });
+
+    const updatedDeploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        id: deploymentRequestId,
+      });
+
+    try {
+      const organization = await loadOrganizationBy({
+        id: updatedDeploymentRequest.organization_requester_id,
+      });
+      const updateDeploymentEvent = buildUpdateDeploymentEvent(
+        organization,
+        user.id,
+        {
+          status: updatedDeploymentRequest.hub_status,
+          start_date: updatedDeploymentRequest.start_date,
+          end_date: updatedDeploymentRequest.end_date,
+          deployment_id: updatedDeploymentRequest.id,
+          deployment_type: updatedDeploymentRequest.type,
+          platform_id: updatedDeploymentRequest.platform_id,
+        }
+      );
+
+      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    } catch (error) {
+      logApp.error(
+        'Unable to send telemetry event when cancelling deployment request',
+        {
+          error,
+        }
+      );
+    }
+
+    try {
+      const [requester] = await loadUnsecureUser({
+        id: updatedDeploymentRequest.user_requester_id,
+      });
+      sendMail({
+        to: requester.email,
+        template: 'opencti_free_trial_cancelled',
+        params: {
+          firstName: formatName(requester.first_name ?? ''),
+        },
+      });
+    } catch (error) {
+      logApp.error('Unable to send mail for trial cancellation', {
+        error,
+        deploymentRequestId: updatedDeploymentRequest.id,
+      });
+    }
+
+    return updatedDeploymentRequest;
   },
 };

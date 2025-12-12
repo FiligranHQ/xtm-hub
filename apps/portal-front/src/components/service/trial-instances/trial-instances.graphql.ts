@@ -10,7 +10,6 @@ export const CreateDeploymentRequestMutation = graphql`
       type
       platform_identifier
       hub_status
-      ordering
     }
   }
 `;
@@ -22,6 +21,21 @@ export const DeploymentRequestsAvailableQuery = graphql`
     deploymentRequestsAvailable(platformIdentifier: $platformIdentifier) {
       region
       availableCount
+    }
+  }
+`;
+
+export const CancelDeploymentRequestMutation = graphql`
+  mutation trialInstancesCancelDeploymentRequestMutation(
+    $deploymentRequestId: ID!
+  ) {
+    cancelDeploymentRequest(deploymentRequestId: $deploymentRequestId) {
+      id
+      region
+      type
+      platform_identifier
+      hub_status
+      counts_in_orga_quota
     }
   }
 `;

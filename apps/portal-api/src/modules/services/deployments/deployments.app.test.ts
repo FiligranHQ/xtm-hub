@@ -12,6 +12,8 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
+  requestContextThalesUser,
+  THALES_ADMIN_ORGA_USER_ID,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -36,6 +38,7 @@ import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
   ErrorCode,
+  ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -48,6 +51,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
+import { requestContext } from '../../../context/request.context';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -372,6 +376,7 @@ describe('Deployment app', () => {
         requester_email: DEFAULT_ADMIN_EMAIL,
         requester_first_name: 'firstname',
         requester_last_name: 'lastname',
+        cancellation_user_email: null,
       });
     });
 
@@ -895,6 +900,127 @@ describe('Deployment app', () => {
       expect(reorderDeploymentRequestUpSpy).toHaveBeenCalledWith(
         deploymentRequest
       );
+    });
+  });
+  describe('cancelDeploymentRequest', () => {
+    it.each`
+      isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota
+      ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+    `(
+      'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
+      async ({ isAdmin, hub_status, actual_state, counts_in_orga_quota }) => {
+        const initialDeployment = (await insertOpenCtiDeploymentRequest({
+          hub_status,
+          actual_state,
+        })) as DeploymentRequest;
+
+        const deployment = await DeploymentsApp.cancelDeploymentRequest(
+          initialDeployment.id,
+          isAdmin
+        );
+
+        expect(deployment).toMatchObject({
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+          target_state: DeploymentRequestPlatformState.Removed,
+          counts_in_orga_quota,
+          cancellation_date: expect.any(Date),
+          cancellation_user_id: ADMIN_USER_ID,
+        });
+
+        const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+          'id',
+          initialDeployment.service_instance_id
+        );
+        expect(serviceInstance.creation_status).toBe(
+          counts_in_orga_quota
+            ? ServiceInstanceCreationStatus.Pending
+            : ServiceInstanceCreationStatus.Disabled
+        );
+      }
+    );
+    it('should throw if deployment request does not exist', async () => {
+      const call = DeploymentsApp.cancelDeploymentRequest(
+        uuidv4() as DeploymentRequestId,
+        false
+      );
+      await expect(call).rejects.toThrow(
+        NotFoundErrorCode.DeploymentRequestNotFound
+      );
+    });
+
+    it('should throw if user is not in organization and not isAdmin', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      requestContext.set(requestContextThalesUser);
+      const call = DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+      await expect(call).rejects.toThrow(
+        ForbiddenErrorCode.UserIsNotInOrganization
+      );
+    });
+
+    it('should not throw if user is not in organization and isAdmin', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      requestContext.set(requestContextThalesUser);
+      const response = await DeploymentsApp.cancelDeploymentRequest(
+        deployment.id,
+        true
+      );
+      expect(response).toBeTruthy();
+    });
+    it('should send a telemetry event', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+
+      await DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: PLATFORM_NAME,
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_USER_ID,
+        deployment_id: deployment.id,
+        deployment_type: DeploymentRequestDeploymentType.Trial,
+        status: DeploymentRequestHubStatus.Cancelled,
+        start_date: null,
+        end_date: null,
+        platform_id: null,
+      });
+    });
+
+    it('should send a mail to the trial requester', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest({
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+      })) as DeploymentRequest;
+
+      await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
+
+      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        to: 'admin@thales.com',
+        template: 'opencti_free_trial_cancelled',
+        params: {
+          firstName: '',
+        },
+      });
     });
   });
 });

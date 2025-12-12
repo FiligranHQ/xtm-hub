@@ -99,6 +99,8 @@ type Mutation {
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
   reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success
+  cancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
+  adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -308,6 +310,9 @@ type DeploymentRequest implements Node {
   requester_email: String
   organization_name: String
   request_date: Date!
+  counts_in_orga_quota: Boolean!
+  cancellation_date: Date
+  cancellation_user_email: String
 }
 
 type PlatformDeploymentRequest {

@@ -268,6 +268,12 @@ const getDeploymentRequestWithUserDataQuery =
         'Organization.id'
       )
       .leftJoin('User', 'DeploymentRequest.user_requester_id', '=', 'User.id')
+      .leftJoin(
+        'User as CancellationUser',
+        'DeploymentRequest.cancellation_user_id',
+        '=',
+        'CancellationUser.id'
+      )
       .select([
         'DeploymentRequest.*',
         'Organization.name as organization_name',
@@ -275,5 +281,6 @@ const getDeploymentRequestWithUserDataQuery =
         'User.email as requester_email',
         'User.first_name as requester_first_name',
         'User.last_name as requester_last_name',
+        'CancellationUser.email as cancellation_user_email',
       ]);
   };
