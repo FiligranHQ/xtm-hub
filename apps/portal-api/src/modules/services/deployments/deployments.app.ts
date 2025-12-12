@@ -20,7 +20,7 @@ import {
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import {
+import DeploymentRequestModel, {
   DeploymentRequestId,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -42,6 +42,7 @@ import {
   databaseContext,
   withTransaction,
 } from '../../../context/database.context';
+import { SYSTEM_USER_UUID } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -521,5 +522,71 @@ export const DeploymentsApp = {
     }
 
     return updatedDeploymentRequest;
+  },
+
+  expireTrials: async () => {
+    const expiredTrials: DeploymentRequestModel[] =
+      await DeploymentRequestDomain.loadExpiredTrials();
+
+    for (const trial of expiredTrials) {
+      logApp.info('expiring trial', { deploymentRequestId: trial.id });
+
+      try {
+        const updatedDeploymentRequest =
+          await DeploymentRequestDomain.updateDeploymentRequestById(trial.id, {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            target_state: DeploymentRequestPlatformState.Removed,
+          });
+
+        try {
+          const organization = await loadOrganizationBy({
+            id: updatedDeploymentRequest.organization_requester_id,
+          });
+          const updateDeploymentEvent = buildUpdateDeploymentEvent(
+            organization,
+            SYSTEM_USER_UUID,
+            {
+              status:
+                updatedDeploymentRequest.hub_status as DeploymentRequestHubStatus,
+              start_date: updatedDeploymentRequest.start_date,
+              end_date: updatedDeploymentRequest.end_date,
+              deployment_id: updatedDeploymentRequest.id,
+              deployment_type:
+                updatedDeploymentRequest.type as DeploymentRequestDeploymentType,
+              platform_id: updatedDeploymentRequest.platform_id,
+            }
+          );
+
+          telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+        } catch (error) {
+          logApp.error('Unable to send telemetry event when expiring trials', {
+            error,
+          });
+        }
+
+        try {
+          const [requester] = await loadUnsecureUser({
+            id: trial.user_requester_id,
+          });
+          sendMail({
+            to: requester.email,
+            template: 'opencti_free_trial_expired',
+            params: {
+              firstName: formatName(requester.first_name ?? ''),
+            },
+          });
+        } catch (error) {
+          logApp.error('Unable to send mail for trial expiration', {
+            error,
+            deploymentRequestId: trial.id,
+          });
+        }
+      } catch (error) {
+        logApp.error('Error during trial expiration', {
+          error,
+          deploymentRequestId: trial.id,
+        });
+      }
+    }
   },
 };

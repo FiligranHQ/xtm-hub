@@ -12,8 +12,9 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
-  requestContextThalesUser,
   THALES_ADMIN_ORGA_USER_ID,
+  THALES_ORGA_ID,
+  requestContextThalesUser
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -33,6 +34,7 @@ import {
   ADMIN_UUID,
   PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_UUID,
 } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
@@ -1020,6 +1022,140 @@ describe('Deployment app', () => {
         params: {
           firstName: '',
         },
+      });
+    });
+  });
+
+  describe('expireTrials', () => {
+    it('should expire past trials only', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+
+      const expiredTrial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestHubStatus.Active,
+        end_date: new Date(Date.UTC(2025, 1, 1)),
+      });
+      const nonExpiredTrial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestHubStatus.Active,
+        end_date: new Date(Date.UTC(2025, 1, 5)),
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      const expiredDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: expiredTrial?.id as DeploymentRequestId,
+        });
+      const nonExpiredDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: nonExpiredTrial?.id as DeploymentRequestId,
+        });
+
+      expect(expiredDeploymentRequest).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        target_state: DeploymentRequestPlatformState.Removed,
+      });
+
+      expect(nonExpiredDeploymentRequest).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+    });
+
+    it.each`
+      hub_status                                 | target_state
+      ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Active}
+      ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Active}
+      ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${DeploymentRequestHubStatus.Cancelled}    | ${DeploymentRequestPlatformState.Removed}
+      ${DeploymentRequestHubStatus.Expired}      | ${DeploymentRequestPlatformState.Removed}
+    `(
+      `should not expire trials in status $hub_status`,
+      async ({ hub_status, target_state }) => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+        const expiredDate = new Date(Date.UTC(2025, 1, 1));
+        const trial = await insertOpenCtiDeploymentRequest({
+          hub_status: hub_status,
+          target_state: target_state,
+          end_date: expiredDate,
+        });
+
+        await DeploymentsApp.expireTrials();
+
+        const expiredDeploymentRequest =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: trial?.id as DeploymentRequestId,
+          });
+
+        expect(expiredDeploymentRequest).toMatchObject({
+          hub_status: hub_status,
+          target_state: target_state,
+        });
+      }
+    );
+    it('should send a mail to the requester', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const expiredDate = new Date(Date.UTC(2025, 1, 1));
+
+      await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        end_date: expiredDate,
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        to: 'admin@thales.com',
+        template: 'opencti_free_trial_expired',
+        params: {
+          firstName: '',
+        },
+      });
+    });
+
+    it('should send a telemetry event', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const start_date = new Date(2024, 12, 1);
+      const end_date = new Date(2025, 1, 1);
+
+      const trial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        start_date,
+        end_date,
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+        organization_requester_id: THALES_ORGA_ID,
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+        organization_id: THALES_ORGA_ID,
+        organization_name: 'Thales',
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
+        source: TELEMETRY_SOURCE,
+        user_id: SYSTEM_USER_UUID,
+        deployment_id: trial?.id,
+        deployment_type: DeploymentRequestDeploymentType.Trial,
+        platform_id: null,
+        start_date,
+        end_date,
+        status: DeploymentRequestHubStatus.Expired,
       });
     });
   });
