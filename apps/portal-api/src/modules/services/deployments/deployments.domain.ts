@@ -148,7 +148,7 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
-  loadExpiredTrials: async (): Promise<DeploymentRequest[]> => {
+  loadTrialsToExpire: async (): Promise<DeploymentRequest[]> => {
     return db<DeploymentRequest[]>('DeploymentRequest')
       .where('type', '=', DeploymentRequestDeploymentType.Trial)
       .where('end_date', '<', new Date())

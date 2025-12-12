@@ -526,7 +526,7 @@ export const DeploymentsApp = {
 
   expireTrials: async () => {
     const expiredTrials: DeploymentRequestModel[] =
-      await DeploymentRequestDomain.loadExpiredTrials();
+      await DeploymentRequestDomain.loadTrialsToExpire();
 
     for (const trial of expiredTrials) {
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
