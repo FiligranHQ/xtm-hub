@@ -14,7 +14,7 @@ import {
   DEFAULT_ADMIN_EMAIL,
   THALES_ADMIN_ORGA_USER_ID,
   THALES_ORGA_ID,
-  requestContextThalesUser
+  requestContextThalesUser,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
