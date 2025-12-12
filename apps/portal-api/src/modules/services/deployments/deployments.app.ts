@@ -96,16 +96,16 @@ export const DeploymentsApp = {
     }
 
     try {
-      const { isPlaceAvailable } = await DeploymentsQuotasDomain.reservePlace(
-        input.platform_identifier,
-        input.region
-      );
-      const hubStatus = isPlaceAvailable
-        ? DeploymentRequestHubStatus.Pending
-        : DeploymentRequestHubStatus.Queued;
-
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {
+          const { isPlaceAvailable } =
+            await DeploymentsQuotasDomain.reservePlace(
+              input.platform_identifier,
+              input.region
+            );
+          const hubStatus = isPlaceAvailable
+            ? DeploymentRequestHubStatus.Pending
+            : DeploymentRequestHubStatus.Queued;
           const maxOrdering = await DeploymentRequestDomain.getMaxOrdering();
           const ordering = (maxOrdering ?? 0) + 1;
 

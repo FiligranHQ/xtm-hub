@@ -15,18 +15,7 @@ export const DeploymentsQuotasDomain = {
     region: DeploymentRequestPlatformRegion
   ): Promise<{ isPlaceAvailable: boolean }> => {
     return withTransaction(async () => {
-      const quota = await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .where({
-          region: region,
-          platform_identifier: platformIdentifier,
-        })
-        .select('*')
-        .forUpdate()
-        .first();
-      if (!quota) {
-        throw new Error(ErrorCode.DeploymentRequestQuotaNotFound);
-      }
-
+      const quota = await lockQuota(platformIdentifier, region);
       if (quota.availability <= 0) {
         return {
           isPlaceAvailable: false,
@@ -47,17 +36,7 @@ export const DeploymentsQuotasDomain = {
     region: DeploymentRequestPlatformRegion
   ): Promise<void> => {
     await withTransaction(async () => {
-      const quota = await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .where({
-          region: region,
-          platform_identifier: platformIdentifier,
-        })
-        .select('*')
-        .forUpdate()
-        .first();
-      if (!quota) {
-        throw new Error(ErrorCode.DeploymentRequestQuotaNotFound);
-      }
+      const quota = await lockQuota(platformIdentifier, region);
 
       await db<DeploymentRequestQuota>('DeploymentRequestQuota')
         .update({ availability: quota.availability + 1 })
@@ -75,18 +54,7 @@ export const DeploymentsQuotasDomain = {
     newCapacity: number;
   }): Promise<{ availabilityDifference: number; newAvailability: number }> => {
     return withTransaction(async () => {
-      const quota = await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .where({
-          region: region,
-          platform_identifier: platformIdentifier,
-        })
-        .select('*')
-        .forUpdate()
-        .first();
-
-      if (!quota) {
-        throw new Error(ErrorCode.DeploymentRequestQuotaNotFound);
-      }
+      const quota = await lockQuota(platformIdentifier, region);
 
       const difference = newCapacity - quota.capacity;
       const newAvailability = quota.availability + difference;
@@ -109,4 +77,23 @@ export const DeploymentsQuotasDomain = {
       .where(field)
       .select('*');
   },
+};
+
+const lockQuota = async (
+  platformIdentifier: PlatformIdentifier,
+  region: DeploymentRequestPlatformRegion
+): Promise<DeploymentRequestQuota> => {
+  const quota = await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+    .where({
+      region: region,
+      platform_identifier: platformIdentifier,
+    })
+    .select('*')
+    .forUpdate()
+    .first();
+  if (!quota) {
+    throw new Error(ErrorCode.DeploymentRequestQuotaNotFound);
+  }
+
+  return quota;
 };

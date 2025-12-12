@@ -1070,53 +1070,26 @@ describe('Deployment app', () => {
     });
 
     describe('not counted in quotas', () => {
-      it('should not free place when request hub status is cancelled', async () => {
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
-          hub_status: DeploymentRequestHubStatus.Cancelled,
-        });
+      it.each`
+        hub_status
+        ${DeploymentRequestHubStatus.Cancelled}
+        ${DeploymentRequestHubStatus.Expired}
+        ${DeploymentRequestHubStatus.Failed}
+        ${DeploymentRequestHubStatus.Queued}
+      `(
+        'should not free place when request hub status is $hub_status',
+        async ({ hub_status }) => {
+          const deploymentRequest = await insertOpenCtiDeploymentRequest({
+            hub_status,
+          });
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest as GraphQLDeploymentRequest
-        );
+          await DeploymentsApp.releaseDeploymentRequestPlace(
+            deploymentRequest as GraphQLDeploymentRequest
+          );
 
-        expect(freePlaceSpy).not.toHaveBeenCalled();
-      });
-
-      it('should not free place when request hub status is expired', async () => {
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
-          hub_status: DeploymentRequestHubStatus.Expired,
-        });
-
-        await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest as GraphQLDeploymentRequest
-        );
-
-        expect(freePlaceSpy).not.toHaveBeenCalled();
-      });
-
-      it('should not free place when request hub status is failed', async () => {
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
-          hub_status: DeploymentRequestHubStatus.Failed,
-        });
-
-        await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest as GraphQLDeploymentRequest
-        );
-
-        expect(freePlaceSpy).not.toHaveBeenCalled();
-      });
-
-      it('should not free place when request hub status is queued', async () => {
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
-          hub_status: DeploymentRequestHubStatus.Queued,
-        });
-
-        await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest as GraphQLDeploymentRequest
-        );
-
-        expect(freePlaceSpy).not.toHaveBeenCalled();
-      });
+          expect(freePlaceSpy).not.toHaveBeenCalled();
+        }
+      );
     });
 
     it('should free place and set one queued request as pending', async () => {

@@ -61,7 +61,7 @@ describe('DeploymentsQuotasDomain', () => {
 
       expect(result.isPlaceAvailable).toBe(true);
     });
-    it('should reserve a place when availability is greate than 0', async () => {
+    it('should reserve a place when availability is greater than 0', async () => {
       await db<DeploymentRequestQuota>('DeploymentRequestQuota')
         .update({ availability: 1 })
         .where({ region, platform_identifier: platformIdentifier });
