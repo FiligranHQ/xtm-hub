@@ -1,25 +1,30 @@
+import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
-import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { toast } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
-import { useMutation } from 'react-relay';
+import { useFragment, useMutation } from 'react-relay';
 
 interface Props {
-  platform: registeredPlatformByServiceInstanceId_fragment$data;
+  registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;
 }
 
-export const TrialDetails: React.FC<Props> = ({ platform }) => {
+export const TrialDetails: React.FC<Props> = ({ registeredPlatform }) => {
   const t = useTranslations();
-
+  const platform =
+    useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
+      registeredPlatformByServiceInstanceIdFragment,
+      registeredPlatform
+    );
   const [cancelDeploymentRequestMutation] =
     useMutation<trialInstancesCancelDeploymentRequestMutation>(
       CancelDeploymentRequestMutation
