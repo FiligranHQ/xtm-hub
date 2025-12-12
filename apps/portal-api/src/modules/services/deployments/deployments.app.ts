@@ -493,6 +493,7 @@ export const DeploymentsApp = {
           creation_status: ServiceInstanceCreationStatus.Disabled,
         });
       }
+      await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest);
     });
 
     const updatedDeploymentRequest =
@@ -546,5 +547,58 @@ export const DeploymentsApp = {
     }
 
     return updatedDeploymentRequest;
+  },
+
+  releaseDeploymentRequestPlace: async (
+    deploymentRequest: DeploymentRequest
+  ) => {
+    const isRequestCountedInQuotas = [
+      DeploymentRequestHubStatus.Active,
+      DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
+    ].includes(deploymentRequest.hub_status);
+    if (!isRequestCountedInQuotas) {
+      return;
+    }
+
+    await DeploymentsQuotasDomain.freePlace(
+      deploymentRequest.platform_identifier,
+      deploymentRequest.region
+    );
+    const [updatedDeploymentRequest] =
+      await DeploymentRequestDomain.setQueuedRequestsAsPending(1);
+    if (!updatedDeploymentRequest) {
+      return;
+    }
+
+    const { user } = requestContext.require();
+    try {
+      const organization = await loadOrganizationBy({
+        id: updatedDeploymentRequest.organization_requester_id,
+      });
+      const updateDeploymentEvent = buildUpdateDeploymentEvent(
+        organization,
+        user.id,
+        {
+          status:
+            updatedDeploymentRequest.hub_status as DeploymentRequestHubStatus,
+          start_date: updatedDeploymentRequest.start_date,
+          end_date: updatedDeploymentRequest.end_date,
+          deployment_id: updatedDeploymentRequest.id,
+          deployment_type:
+            updatedDeploymentRequest.type as DeploymentRequestDeploymentType,
+          platform_id: updatedDeploymentRequest.platform_id,
+        }
+      );
+
+      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    } catch (error) {
+      logApp.error(
+        'Unable to send telemetry event when cancelling deployment request',
+        {
+          error,
+        }
+      );
+    }
   },
 };

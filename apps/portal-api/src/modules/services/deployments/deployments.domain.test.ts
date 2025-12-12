@@ -639,7 +639,17 @@ describe('DeploymentRequestDomain', () => {
         target_state: DeploymentRequestPlatformState.Unprovisioned,
       });
 
-      await DeploymentRequestDomain.setQueuedRequestsAsPending(1);
+      const updatedDeploymentRequests =
+        await DeploymentRequestDomain.setQueuedRequestsAsPending(1);
+
+      expect(updatedDeploymentRequests.length).toBe(1);
+      expect(updatedDeploymentRequests[0]!.id).toBe(deploymentRequest1!.id);
+      expect(updatedDeploymentRequests[0]!.hub_status).toBe(
+        DeploymentRequestHubStatus.Pending
+      );
+      expect(updatedDeploymentRequests[0]!.target_state).toBe(
+        DeploymentRequestHubStatus.Active
+      );
 
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,

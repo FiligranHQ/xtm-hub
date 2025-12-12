@@ -184,14 +184,16 @@ export const DeploymentRequestDomain = {
     await Promise.all(updates);
   },
 
-  setQueuedRequestsAsPending: async (requestsToMoveCount: number) => {
+  setQueuedRequestsAsPending: async (
+    requestsToMoveCount: number
+  ): Promise<DeploymentRequest[]> => {
     const requests = await db<DeploymentRequest[]>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
       .orderBy('ordering', 'asc')
       .limit(requestsToMoveCount);
 
-    await db<DeploymentRequest>('DeploymentRequest')
+    return db<DeploymentRequest>('DeploymentRequest')
       .update({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
@@ -199,7 +201,8 @@ export const DeploymentRequestDomain = {
       .whereIn(
         'id',
         requests.map(({ id }) => id)
-      );
+      )
+      .returning('*');
   },
 
   initialiseServiceGroup: async (id: DeploymentRequestId) => {
