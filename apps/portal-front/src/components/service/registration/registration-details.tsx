@@ -130,7 +130,6 @@ export const RegistrationDetails: React.FC<Props> = ({
           </>
         ) : (
           <>
-            {' '}
             <li>
               <span className="text-gray/60">Registered on:</span>{' '}
               {platform.subscription?.start_date

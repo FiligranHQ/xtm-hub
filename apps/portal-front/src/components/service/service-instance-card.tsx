@@ -13,7 +13,7 @@ import { AspectRatio, Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 
 export type PlatformHoverAction = {
   id: string;
@@ -59,35 +59,36 @@ const ServiceInstanceCard: React.FunctionComponent<
   // Check if user can update platform
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
 
-  const handleUpdatePlatform = () => setOpenPlatformSheet(true);
-
-  const renderHoverButton = (action: PlatformHoverAction) => {
-    if (action.id === 'platform-update') {
-      // Button that opens the sheet
-      return (
-        <Button
-          key={action.id}
-          {...(action.variant ? { variant: action.variant } : {})}
-          onClick={handleUpdatePlatform}>
-          {action.label}
-        </Button>
-      );
-    }
-    if (action.href) {
-      return (
-        <Button
-          key={action.id}
-          {...(action.variant ? { variant: action.variant } : {})}>
-          <Link
-            href={action.href}
-            target={action.target}>
+  const renderHoverButton = useCallback(
+    (action: PlatformHoverAction) => {
+      if (action.id === 'platform-update') {
+        // Button that opens the sheet
+        return (
+          <Button
+            key={action.id}
+            {...(action.variant ? { variant: action.variant } : {})}
+            onClick={() => setOpenPlatformSheet(true)}>
             {action.label}
-          </Link>
-        </Button>
-      );
-    }
-    return <></>;
-  };
+          </Button>
+        );
+      }
+      if (action.href) {
+        return (
+          <Button
+            key={action.id}
+            {...(action.variant ? { variant: action.variant } : {})}>
+            <Link
+              href={action.href}
+              target={action.target}>
+              {action.label}
+            </Link>
+          </Button>
+        );
+      }
+      return <></>;
+    },
+    [setOpenPlatformSheet]
+  );
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
