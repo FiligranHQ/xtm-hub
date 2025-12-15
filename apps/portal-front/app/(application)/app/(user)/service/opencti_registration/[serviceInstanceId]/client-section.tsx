@@ -1,9 +1,10 @@
 'use client';
 
 import { registeredPlatformByServiceInstanceId } from '@/components/registration/register/register.graphql';
+import { RegistrationDetails } from '@/components/service/registration/registration-details';
 import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
-import { TrialDetails } from '@/components/service/trial-instances/trial-details';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
+import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
@@ -27,10 +28,7 @@ const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
       }
     );
 
-  if (
-    !queryData.registeredPlatform ||
-    queryData.registeredPlatform.contract !== PlatformContractEnum.TRIAL
-  ) {
+  if (!queryData.registeredPlatform) {
     notFound();
   }
 
@@ -45,15 +43,17 @@ const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
     },
   ];
 
+  const isTrial =
+    queryData.registeredPlatform.contract === PlatformContractEnum.TRIAL;
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      {queryData.registeredPlatform.contract === PlatformContractEnum.TRIAL && (
-        <>
-          <TrialsHeader actions={<ContactUsButton variant="gradient" />} />
-          <TrialDetails registeredPlatform={queryData.registeredPlatform} />
-        </>
+      {isTrial && (
+        <TrialsHeader actions={<ContactUsButton variant="gradient" />} />
       )}
+      <RegistrationDetails registeredPlatform={queryData.registeredPlatform} />
+      {isTrial && <TrialsLearnMore />}
     </>
   );
 };

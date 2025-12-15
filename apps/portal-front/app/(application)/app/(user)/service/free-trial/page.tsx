@@ -1,11 +1,11 @@
 import GuardCapacityComponent from '@/components/admin-guard';
+import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
 import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
 import {
   StartTrialButton,
   StartTrialButtonVariant,
 } from '@/components/service/trial-instances/start-trial-button';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
-import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -53,7 +53,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
           </>
         }
       />
-      <TrialsLearnMore />
+      <RegistrationLearnMore />
     </>
   );
 };

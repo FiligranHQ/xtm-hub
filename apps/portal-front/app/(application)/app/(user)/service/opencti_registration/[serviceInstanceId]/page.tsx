@@ -1,4 +1,4 @@
-import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
+import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
 import ClientSection from './client-section';
 
 export interface ServiceOpenCTIRegistrationPageProps {
@@ -8,7 +8,7 @@ const Page = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
   return (
     <>
       <ClientSection params={params} />
-      <TrialsLearnMore />
+      <RegistrationLearnMore />
     </>
   );
 };
