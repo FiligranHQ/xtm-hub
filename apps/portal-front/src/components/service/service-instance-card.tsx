@@ -174,7 +174,9 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div className="min-h-40 flex flex-col p-l gap-l flex-1 bg-page-background group-hover:bg-hover">
           <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
             {rightAction || serviceInstance.hoverLinks ? (
-              <h2>{serviceInstance.name}</h2>
+              <h2>
+                {serviceInstance.cardTitleOverride || serviceInstance.name}
+              </h2>
             ) : (
               <Link
                 href={
