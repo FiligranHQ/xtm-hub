@@ -80,6 +80,7 @@ type BaseDatabaseType =
   | 'Service_Contract'
   | 'Service_Configuration'
   | 'DeploymentRequest'
+  | 'DeploymentRequestQuota'
   | 'ServiceGroup'
   | 'ServiceGroup_User';
 
