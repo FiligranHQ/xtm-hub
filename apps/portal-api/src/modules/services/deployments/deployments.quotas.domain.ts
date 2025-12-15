@@ -44,34 +44,6 @@ export const DeploymentsQuotasDomain = {
     });
   },
 
-  updateQuotaCapacity: async ({
-    platformIdentifier,
-    region,
-    newCapacity,
-  }: {
-    platformIdentifier: PlatformIdentifier;
-    region: DeploymentRequestPlatformRegion;
-    newCapacity: number;
-  }): Promise<{ availabilityDifference: number; newAvailability: number }> => {
-    return withTransaction(async () => {
-      const quota = await lockQuota(platformIdentifier, region);
-
-      const difference = newCapacity - quota.capacity;
-      const newAvailability = quota.availability + difference;
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({
-          capacity: newCapacity,
-          availability: quota.availability + difference,
-        })
-        .where({ id: quota.id });
-
-      return {
-        availabilityDifference: difference,
-        newAvailability,
-      };
-    });
-  },
-
   loadQuotas: async (field: DeploymentRequestQuotaMutator) => {
     return db<DeploymentRequestQuota[]>('DeploymentRequestQuota')
       .where(field)

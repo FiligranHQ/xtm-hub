@@ -152,46 +152,6 @@ export const DeploymentRequestDomain = {
     return deploymentRequest;
   },
 
-  setPendingRequestsAsQueued: async (
-    platformIdentifier: PlatformIdentifier,
-    region: DeploymentRequestPlatformRegion,
-    requestsToMoveCount?: number
-  ): Promise<DeploymentRequest[]> => {
-    const requestsQuery = db<DeploymentRequest[]>('DeploymentRequest')
-      .select('*')
-      .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
-      .andWhere('platform_identifier', '=', platformIdentifier)
-      .andWhere('region', '=', region)
-      .orderBy('ordering', 'asc');
-
-    if (requestsToMoveCount) {
-      requestsQuery.limit(requestsToMoveCount);
-    }
-
-    const requests = await requestsQuery;
-    if (!requests.length) {
-      return [];
-    }
-
-    await db<DeploymentRequest>('DeploymentRequest')
-      .increment('ordering', requests.length)
-      .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
-
-    const updates = requests.map(async (request, index) => {
-      const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
-        .update({
-          hub_status: DeploymentRequestHubStatus.Queued,
-          target_state: DeploymentRequestPlatformState.Removed,
-          ordering: index + 1,
-        })
-        .where({ id: request.id })
-        .returning('*');
-      return updatedRequest;
-    });
-
-    return Promise.all(updates);
-  },
-
   setQueuedRequestsAsPending: async (
     platformIdentifier: PlatformIdentifier,
     region: DeploymentRequestPlatformRegion,

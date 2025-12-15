@@ -101,7 +101,6 @@ type Mutation {
   reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
   cancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
-  updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
@@ -419,12 +418,6 @@ enum ReorderDeploymentRequestInQueueDirection {
 input ReorderDeploymentRequestInQueueInput {
   id: ID!
   direction: ReorderDeploymentRequestInQueueDirection!
-}
-
-input UpdateDeploymentQuotaCapacityInput {
-  platformIdentifier: PlatformIdentifier!
-  region: DeploymentRequestPlatformRegion!
-  newCapacity: Int!
 }
 
 type ShareableResource {
