@@ -71,3 +71,22 @@ export const TrialsAdminCancelDeploymentRequestMutation = graphql`
     }
   }
 `;
+
+export const TrialsDeploymentAvailabilityFragment = graphql`
+  fragment trialsDeploymentAvailabilityFragment on DeploymentAvailability
+  @relay(plural: true) {
+    region
+    availableCount
+    capacity
+  }
+`;
+
+export const TrialsDeploymentRequestsAvailableQuery = graphql`
+  query trialsDeploymentRequestsAvailableQuery(
+    $platformIdentifier: PlatformIdentifier
+  ) {
+    deploymentRequestsAvailable(platformIdentifier: $platformIdentifier) {
+      ...trialsDeploymentAvailabilityFragment
+    }
+  }
+`;

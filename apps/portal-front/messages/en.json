@@ -281,13 +281,17 @@
       "RequestDate": "Requested Date",
       "Priority": "Priority",
       "CancellationDate": "Cancellation Date",
-      "CancellationOwner": "Cancellation Owner"
+      "CancellationOwner": "Cancellation Owner",
+      "Available": "Available",
+      "Taken": "Taken",
+      "Total": "Total"
     },
     "TabTitle": {
       "Cancelled": "Cancelled",
       "Expired": "Expired",
       "Running": "Running",
-      "Waiting": "Waiting"
+      "Waiting": "Waiting",
+      "Quotas": "Quotas"
     },
     "Toast": {
       "TrialsReordered": "Trial requests were reordered"
@@ -309,6 +313,10 @@
       "Description": "You are about to refuse this person from your organization. There is no way of going back. Are you sure ?",
       "Title": "Are you sure?"
     }
+  },
+  "PlatformIdentifier": {
+    "openaev": "OpenAEV",
+    "opencti": "OpenCTI"
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {
