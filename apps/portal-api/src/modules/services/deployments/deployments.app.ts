@@ -362,6 +362,7 @@ export const DeploymentsApp = {
     return quotas.map((quota) => ({
       region: quota.region as DeploymentRequestPlatformRegion,
       availableCount: quota.availability,
+      capacity: quota.capacity,
     }));
   },
 

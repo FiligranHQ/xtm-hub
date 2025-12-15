@@ -281,13 +281,17 @@
       "RequestDate": "Date de la demande",
       "Priority": "Priorité",
       "CancellationDate": "Date d'annulation",
-      "CancellationOwner": "Propriétaire de l'annulation"
+      "CancellationOwner": "Propriétaire de l'annulation",
+      "Available": "Disponible",
+      "Taken": "Pris",
+      "Total": "Total"
     },
     "TabTitle": {
       "Cancelled": "Annulé",
       "Expired": "Expiré",
       "Running": "En cours d'exécution",
-      "Waiting": "En attente"
+      "Waiting": "En attente",
+      "Quotas": "Quotas"
     },
     "Toast": {
       "TrialsReordered": "Les demandes ont été réorganisées"
@@ -309,6 +313,10 @@
       "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
       "Title": "Êtes-vous sûr?"
     }
+  },
+  "PlatformIdentifier": {
+    "openaev": "OpenAEV",
+    "opencti": "OpenCTI"
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {
