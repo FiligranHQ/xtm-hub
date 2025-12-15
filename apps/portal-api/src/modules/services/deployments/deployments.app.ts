@@ -489,30 +489,26 @@ export const DeploymentsApp = {
       return;
     }
 
-    await DeploymentsQuotasDomain.freePlace(
-      deploymentRequest.platform_identifier,
-      deploymentRequest.region
-    );
     const [updatedDeploymentRequest] =
       await DeploymentRequestDomain.setQueuedRequestsAsPending(
         deploymentRequest.platform_identifier,
         deploymentRequest.region,
         1
       );
-    if (!updatedDeploymentRequest) {
+    if (updatedDeploymentRequest) {
+      const { user } = requestContext.require();
+
+      await sendUpdateDeploymentTelemetryEvent(
+        updatedDeploymentRequest,
+        user.id
+      );
       return;
     }
 
-    const { isPlaceAvailable } = await DeploymentsQuotasDomain.reservePlace(
-      updatedDeploymentRequest.platform_identifier as PlatformIdentifier,
-      updatedDeploymentRequest.region as DeploymentRequestPlatformRegion
+    await DeploymentsQuotasDomain.freePlace(
+      deploymentRequest.platform_identifier,
+      deploymentRequest.region
     );
-    if (!isPlaceAvailable) {
-      throw new Error(ErrorCode.DeploymentRequestQuotaNoPlaceAvailable);
-    }
-
-    const { user } = requestContext.require();
-    await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
   },
 };
 

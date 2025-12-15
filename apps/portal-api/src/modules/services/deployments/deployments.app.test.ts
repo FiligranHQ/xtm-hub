@@ -864,7 +864,9 @@ describe('Deployment app', () => {
           hub_status,
           actual_state,
         })) as DeploymentRequest;
-
+        const freePlaceSpy = vi
+          .spyOn(DeploymentsQuotasDomain, 'freePlace')
+          .mockResolvedValue();
         const deployment = await DeploymentsApp.cancelDeploymentRequest(
           initialDeployment.id,
           isAdmin
@@ -887,6 +889,21 @@ describe('Deployment app', () => {
             ? ServiceInstanceCreationStatus.Pending
             : ServiceInstanceCreationStatus.Disabled
         );
+
+        if (
+          [
+            DeploymentRequestHubStatus.Active,
+            DeploymentRequestHubStatus.Pending,
+            DeploymentRequestHubStatus.Provisioning,
+          ].includes(hub_status)
+        ) {
+          expect(freePlaceSpy).toHaveBeenCalledWith(
+            initialDeployment.platform_identifier,
+            initialDeployment.region
+          );
+        } else {
+          expect(freePlaceSpy).not.toHaveBeenCalled();
+        }
       }
     );
     it('should throw if deployment request does not exist', async () => {
@@ -999,11 +1016,36 @@ describe('Deployment app', () => {
       );
     });
 
-    it('should free place and set one queued request as pending', async () => {
-      const setQueuedRequestsAsPendingSpy = vi.spyOn(
+    it('should set one queued request as pending and not free place', async () => {
+      const deploymentRequestToRelease = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+      const queuedDeploymentRequest = {
+        ...deploymentRequestToRelease!,
+        hub_status: DeploymentRequestHubStatus.Pending,
+      };
+      const setQueuedRequestsAsPendingSpy = vi
+        .spyOn(DeploymentRequestDomain, 'setQueuedRequestsAsPending')
+        .mockResolvedValue([queuedDeploymentRequest]);
+
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        deploymentRequestToRelease as GraphQLDeploymentRequest
+      );
+
+      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
+        deploymentRequestToRelease!.platform_identifier,
+        deploymentRequestToRelease!.region,
+        1
+      );
+      expect(freePlaceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should free place when deployment request was not moved to pending', async () => {
+      vi.spyOn(
         DeploymentRequestDomain,
         'setQueuedRequestsAsPending'
-      );
+      ).mockResolvedValue([]);
+
       const deploymentRequest = await insertOpenCtiDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
       });
@@ -1016,73 +1058,70 @@ describe('Deployment app', () => {
         deploymentRequest!.platform_identifier,
         deploymentRequest!.region
       );
-      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
-        deploymentRequest!.platform_identifier,
-        deploymentRequest!.region,
-        1
-      );
     });
 
-    it('should not send telemetry event when deployment request was not moved to pending', async () => {
-      vi.spyOn(
-        DeploymentRequestDomain,
-        'setQueuedRequestsAsPending'
-      ).mockResolvedValue([]);
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
+    describe('telemetry', () => {
+      it('should not send telemetry event when deployment request was not moved to pending', async () => {
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'setQueuedRequestsAsPending'
+        ).mockResolvedValue([]);
+
+        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+
+        await DeploymentsApp.releaseDeploymentRequestPlace(
+          deploymentRequest as GraphQLDeploymentRequest
+        );
+
+        expect(telemetrySpy).not.toHaveBeenCalled();
       });
 
-      await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequest as GraphQLDeploymentRequest
-      );
+      it('should send telemetry event when deployment request was moved to pending', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
 
-      expect(telemetrySpy).not.toHaveBeenCalled();
-    });
+        const queuedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+          hub_status: DeploymentRequestHubStatus.Queued,
+          activity_sector: 'cybersecurity',
+          region: DeploymentRequestPlatformRegion.UsEast,
+          platform_id: uuidv4(),
+        });
 
-    it('should send telemetry event when deployment request was moved to pending', async () => {
-      vi.useFakeTimers();
-      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-      vi.setSystemTime(date);
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'setQueuedRequestsAsPending'
+        ).mockResolvedValue([
+          {
+            ...queuedDeploymentRequest!,
+            hub_status: DeploymentRequestHubStatus!.Pending,
+          },
+        ]);
+        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
 
-      const queuedDeploymentRequest = await insertOpenCtiDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Queued,
-        activity_sector: 'cybersecurity',
-        region: DeploymentRequestPlatformRegion.UsEast,
-        platform_id: uuidv4(),
-      });
+        await DeploymentsApp.releaseDeploymentRequestPlace(
+          deploymentRequest as GraphQLDeploymentRequest
+        );
 
-      vi.spyOn(
-        DeploymentRequestDomain,
-        'setQueuedRequestsAsPending'
-      ).mockResolvedValue([
-        {
-          ...queuedDeploymentRequest!,
-          hub_status: DeploymentRequestHubStatus!.Pending,
-          platform_id: 'fake product instance id',
-        },
-      ]);
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
-
-      await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequest as GraphQLDeploymentRequest
-      );
-
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        '@timestamp': '2025-02-03T13:12:15.000Z',
-        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-        organization_name: PLATFORM_NAME,
-        organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        source: TELEMETRY_SOURCE,
-        user_id: ADMIN_USER_ID,
-        deployment_id: queuedDeploymentRequest!.id,
-        deployment_type: DeploymentRequestDeploymentType.Trial,
-        platform_id: 'fake product instance id',
-        start_date: null,
-        end_date: null,
-        status: DeploymentRequestHubStatus.Pending,
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          user_id: ADMIN_USER_ID,
+          deployment_id: queuedDeploymentRequest!.id,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
+          platform_id: queuedDeploymentRequest.platform_id,
+          start_date: null,
+          end_date: null,
+          status: DeploymentRequestHubStatus.Pending,
+        });
       });
     });
   });
