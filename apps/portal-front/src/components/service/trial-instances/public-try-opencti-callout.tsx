@@ -11,7 +11,7 @@ export function PublicTryOpenCTICallout() {
       variant="destructive"
       className="rounded-none from-blue to-turquoise-300 bg-gradient-to-r text-black justify-center uppercase">
       <div>
-        {t('Service.Trials.Explore')} <b>{t('Service.Trials.FreeTrial')}</b>
+        {t('Service.Trials.Explore')}
         <Link
           href={`/redirect/free-trial`}
           className="ml-xs underline">
