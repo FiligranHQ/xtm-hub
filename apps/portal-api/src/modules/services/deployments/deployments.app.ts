@@ -491,31 +491,12 @@ export const DeploymentsApp = {
             target_state: DeploymentRequestPlatformState.Removed,
           });
 
-        try {
-          const organization = await loadOrganizationBy({
-            id: updatedDeploymentRequest.organization_requester_id,
-          });
-          const updateDeploymentEvent = buildUpdateDeploymentEvent(
-            organization,
-            SYSTEM_USER_UUID,
-            {
-              status:
-                updatedDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-              start_date: updatedDeploymentRequest.start_date,
-              end_date: updatedDeploymentRequest.end_date,
-              deployment_id: updatedDeploymentRequest.id,
-              deployment_type:
-                updatedDeploymentRequest.type as DeploymentRequestDeploymentType,
-              platform_id: updatedDeploymentRequest.platform_id,
-            }
-          );
+        await DeploymentsApp.releaseDeploymentRequestPlace(trial);
 
-          telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-        } catch (error) {
-          logApp.error('Unable to send telemetry event when expiring trials', {
-            error,
-          });
-        }
+        await sendUpdateDeploymentTelemetryEvent(
+          updatedDeploymentRequest,
+          SYSTEM_USER_UUID
+        );
 
         try {
           const [requester] = await loadUnsecureUser({
@@ -544,21 +525,26 @@ export const DeploymentsApp = {
   },
 
   releaseDeploymentRequestPlace: async (
-    deploymentRequest: DeploymentRequest
+    deploymentRequest: DeploymentRequestModel
   ) => {
     const isRequestCountedInQuotas = [
       DeploymentRequestHubStatus.Active,
       DeploymentRequestHubStatus.Pending,
       DeploymentRequestHubStatus.Provisioning,
-    ].includes(deploymentRequest.hub_status);
+    ].includes(deploymentRequest.hub_status as DeploymentRequestHubStatus);
     if (!isRequestCountedInQuotas) {
       return;
     }
 
+    const { platform_identifier, region } = deploymentRequest as {
+      platform_identifier: PlatformIdentifier;
+      region: DeploymentRequestPlatformRegion;
+    };
+
     const [updatedDeploymentRequest] =
       await DeploymentRequestDomain.setQueuedRequestsAsPending(
-        deploymentRequest.platform_identifier,
-        deploymentRequest.region,
+        platform_identifier,
+        region,
         1
       );
     if (updatedDeploymentRequest) {
@@ -571,10 +557,7 @@ export const DeploymentsApp = {
       return;
     }
 
-    await DeploymentsQuotasDomain.freePlace(
-      deploymentRequest.platform_identifier,
-      deploymentRequest.region
-    );
+    await DeploymentsQuotasDomain.freePlace(platform_identifier, region);
   },
 };
 

@@ -22,7 +22,6 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
-  DeploymentRequest as GraphQLDeploymentRequest,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -988,6 +987,13 @@ describe('Deployment app', () => {
   });
 
   describe('expireTrials', () => {
+    let freePlaceSpy: MockInstance;
+    beforeEach(() => {
+      freePlaceSpy = vi
+        .spyOn(DeploymentsQuotasDomain, 'freePlace')
+        .mockResolvedValue();
+    });
+
     it('should expire past trials only', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
@@ -1026,6 +1032,8 @@ describe('Deployment app', () => {
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
       });
+
+      expect(freePlaceSpy).toHaveBeenCalledTimes(1);
     });
 
     it.each`
@@ -1144,7 +1152,7 @@ describe('Deployment app', () => {
           });
 
           await DeploymentsApp.releaseDeploymentRequestPlace(
-            deploymentRequest as GraphQLDeploymentRequest
+            deploymentRequest!
           );
 
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -1165,7 +1173,7 @@ describe('Deployment app', () => {
         .mockResolvedValue([queuedDeploymentRequest]);
 
       await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequestToRelease as GraphQLDeploymentRequest
+        deploymentRequestToRelease!
       );
 
       expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
@@ -1186,9 +1194,7 @@ describe('Deployment app', () => {
         hub_status: DeploymentRequestHubStatus.Active,
       });
 
-      await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequest as GraphQLDeploymentRequest
-      );
+      await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest!);
 
       expect(freePlaceSpy).toHaveBeenCalledWith(
         deploymentRequest!.platform_identifier,
@@ -1207,9 +1213,7 @@ describe('Deployment app', () => {
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest as GraphQLDeploymentRequest
-        );
+        await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest!);
 
         expect(telemetrySpy).not.toHaveBeenCalled();
       });
@@ -1239,9 +1243,7 @@ describe('Deployment app', () => {
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest as GraphQLDeploymentRequest
-        );
+        await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest!);
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -1253,7 +1255,7 @@ describe('Deployment app', () => {
           user_id: ADMIN_USER_ID,
           deployment_id: queuedDeploymentRequest!.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,
-          platform_id: queuedDeploymentRequest.platform_id,
+          platform_id: queuedDeploymentRequest!.platform_id,
           start_date: null,
           end_date: null,
           status: DeploymentRequestHubStatus.Pending,

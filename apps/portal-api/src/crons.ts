@@ -16,5 +16,7 @@ const expireTrials = async (): Promise<void> => {
 
 export const initCronJobs = () => {
   logApp.info('Initializing cron jobs');
-  cron.schedule('0 2 * * *', expireTrials);
+  // cron.schedule('0 2 * * *', expireTrials);
+  // For test purposes
+  cron.schedule('* * * * *', expireTrials);
 };
