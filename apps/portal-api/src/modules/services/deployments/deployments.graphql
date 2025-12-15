@@ -78,7 +78,6 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
-  hub_status: DeploymentRequestHubStatus
 }
 
 input UpdateDeploymentRequestInput {
@@ -152,6 +151,12 @@ input ReorderDeploymentRequestInQueueInput {
   direction: ReorderDeploymentRequestInQueueDirection!
 }
 
+input UpdateDeploymentQuotaCapacityInput {
+  platformIdentifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  newCapacity: Int!
+}
+
 extend type Query {
   deploymentRequests(
     first: Int!
@@ -182,9 +187,12 @@ extend type Mutation {
   ): PlatformDeploymentRequest! @system_token
   reorderDeploymentRequestInQueue(
     input: ReorderDeploymentRequestInQueueInput!
-  ): Success @auth(requires: [BYPASS])
+  ): Success! @auth(requires: [BYPASS])
   cancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
     @auth(requires: [BYPASS])
+  updateDeploymentQuotaCapacity(
+    input: UpdateDeploymentQuotaCapacityInput!
+  ): Success! @auth(requires: [BYPASS])
 }

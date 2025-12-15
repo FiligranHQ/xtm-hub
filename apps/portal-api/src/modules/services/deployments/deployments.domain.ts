@@ -52,21 +52,6 @@ export const DeploymentRequestDomain = {
     };
   },
 
-  loadDeploymentRequestCountByRegion: async (
-    conditions: DeploymentRequestMutator
-  ): Promise<Record<string, number>> => {
-    const results: { region: string; count: string }[] =
-      await db<DeploymentRequest>('DeploymentRequest')
-        .where(conditions)
-        .select('region')
-        .count('* as count')
-        .groupBy('region');
-
-    return Object.fromEntries(
-      results.map((row) => [row.region, parseInt(row.count as string, 10)])
-    );
-  },
-
   getMaxOrdering: async (): Promise<number | null> => {
     const result = await db<DeploymentRequest>('DeploymentRequest')
       .max('ordering as max')
@@ -166,6 +151,72 @@ export const DeploymentRequestDomain = {
       .returning('*');
     return deploymentRequest;
   },
+
+  setPendingRequestsAsQueued: async (
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion,
+    requestsToMoveCount?: number
+  ): Promise<DeploymentRequest[]> => {
+    const requestsQuery = db<DeploymentRequest[]>('DeploymentRequest')
+      .select('*')
+      .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
+      .andWhere('platform_identifier', '=', platformIdentifier)
+      .andWhere('region', '=', region)
+      .orderBy('ordering', 'asc');
+
+    if (requestsToMoveCount) {
+      requestsQuery.limit(requestsToMoveCount);
+    }
+
+    const requests = await requestsQuery;
+    if (!requests.length) {
+      return [];
+    }
+
+    await db<DeploymentRequest>('DeploymentRequest')
+      .increment('ordering', requests.length)
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
+
+    const updates = requests.map(async (request, index) => {
+      const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
+        .update({
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: DeploymentRequestPlatformState.Removed,
+          ordering: index + 1,
+        })
+        .where({ id: request.id })
+        .returning('*');
+      return updatedRequest;
+    });
+
+    return Promise.all(updates);
+  },
+
+  setQueuedRequestsAsPending: async (
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion,
+    requestsToMoveCount: number
+  ): Promise<DeploymentRequest[]> => {
+    const requests = await db<DeploymentRequest[]>('DeploymentRequest')
+      .select('*')
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
+      .andWhere('platform_identifier', '=', platformIdentifier)
+      .andWhere('region', '=', region)
+      .orderBy('ordering', 'asc')
+      .limit(requestsToMoveCount);
+
+    return db<DeploymentRequest>('DeploymentRequest')
+      .update({
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      })
+      .whereIn(
+        'id',
+        requests.map(({ id }) => id)
+      )
+      .returning('*');
+  },
+
   initialiseServiceGroup: async (id: DeploymentRequestId) => {
     const {
       organization_name,

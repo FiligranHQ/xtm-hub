@@ -21,6 +21,7 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequest as GraphQLDeploymentRequest,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -51,6 +52,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
+import { MockInstance } from '@vitest/spy';
 import { requestContext } from '../../../context/request.context';
 import {
   deleteServiceInstanceBy,
@@ -58,6 +60,7 @@ import {
 } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
+import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
 import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
 
 describe('Deployment app', () => {
@@ -79,6 +82,9 @@ describe('Deployment app', () => {
 
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
+      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: true,
+      });
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -122,7 +128,10 @@ describe('Deployment app', () => {
         );
       }
     });
-    it('should create a deployment request with queued status if specified', async () => {
+    it('should create a deployment request with queued status when there is no space available', async () => {
+      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: false,
+      });
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
@@ -130,7 +139,6 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        hub_status: DeploymentRequestHubStatus.Queued,
       });
 
       const dbDeploymentRequest =
@@ -164,18 +172,6 @@ describe('Deployment app', () => {
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
-    });
-    it('should throw if an invalid hub_status is specified', async () => {
-      const call = DeploymentsApp.createDeploymentRequest({
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-        hub_status: DeploymentRequestHubStatus.Expired,
-      });
-      await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidStatus);
     });
 
     describe('domains blacklist', () => {
@@ -339,12 +335,14 @@ describe('Deployment app', () => {
           },
         });
       });
-      it('should send a mail if status is queued', async () => {
+      it('should send a mail if there is no space available', async () => {
+        vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+          isPlaceAvailable: false,
+        });
         await DeploymentsApp.createDeploymentRequest({
           activity_sector: 'cybersecurity',
           job_title: 'myJob',
           use_case: 'use_case',
-          hub_status: DeploymentRequestHubStatus.Queued,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
@@ -757,60 +755,6 @@ describe('Deployment app', () => {
     });
   });
 
-  describe('loadAvailableDeploymentRequests', () => {
-    it.each([
-      {
-        description: 'normal case with available slots',
-        maxDeployments: { us_east: 10, eu_west: 5 },
-        currentDeployments: {
-          [DeploymentRequestPlatformRegion.UsEast]: 3,
-          [DeploymentRequestPlatformRegion.EuWest]: 1,
-        } as Record<string, number>,
-        expected: [
-          { region: DeploymentRequestPlatformRegion.UsEast, availableCount: 7 },
-          { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 4 },
-          { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 0 },
-          { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 0 },
-        ],
-      },
-      {
-        description: 'over capacity scenario',
-        maxDeployments: { us_east: 5 },
-        currentDeployments: {
-          [DeploymentRequestPlatformRegion.UsEast]: 8,
-        } as Record<string, number>,
-        expected: [
-          {
-            region: DeploymentRequestPlatformRegion.UsEast,
-            availableCount: -3,
-          },
-          { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 0 },
-          { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 0 },
-          { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 0 },
-        ],
-      },
-    ])(
-      'should handle $description',
-      async ({ maxDeployments, currentDeployments, expected }) => {
-        // Arrange
-        vi.spyOn(config, 'get').mockReturnValue(maxDeployments);
-        vi.spyOn(
-          DeploymentRequestDomain,
-          'loadDeploymentRequestCountByRegion'
-        ).mockResolvedValue(currentDeployments);
-
-        // Act
-        const result = await DeploymentsApp.loadAvailableDeploymentRequests(
-          PlatformIdentifier.Opencti
-        );
-
-        // Assert
-        expect(result).toEqual(expect.arrayContaining(expected));
-        expect(result).toHaveLength(expected.length);
-      }
-    );
-  });
-
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(
@@ -1020,6 +964,287 @@ describe('Deployment app', () => {
         params: {
           firstName: '',
         },
+      });
+    });
+  });
+
+  describe('updateDeploymentQuotaCapacity', () => {
+    const platformIdentifier = PlatformIdentifier.Opencti;
+    const region = DeploymentRequestPlatformRegion.UsEast;
+    let reservePlaceSpy: MockInstance;
+    let updateQuotaCapacitySpy: MockInstance;
+    let setPendingRequestsAsQueuedSpy: MockInstance;
+    let setQueuedRequestsAsPendingSpy: MockInstance;
+    beforeEach(() => {
+      updateQuotaCapacitySpy = vi.spyOn(
+        DeploymentsQuotasDomain,
+        'updateQuotaCapacity'
+      );
+
+      setPendingRequestsAsQueuedSpy = vi
+        .spyOn(DeploymentRequestDomain, 'setPendingRequestsAsQueued')
+        .mockResolvedValue([]);
+
+      setQueuedRequestsAsPendingSpy = vi
+        .spyOn(DeploymentRequestDomain, 'setQueuedRequestsAsPending')
+        .mockResolvedValue([]);
+
+      reservePlaceSpy = vi
+        .spyOn(DeploymentsQuotasDomain, 'reservePlace')
+        .mockResolvedValue({ isPlaceAvailable: true });
+    });
+    it('should move all requests to queued when there is a negative availability', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: -1,
+        newAvailability: -1,
+      });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier,
+        region,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(
+        platformIdentifier,
+        region,
+        undefined
+      );
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
+      expect(reservePlaceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should move all requests to queued when there is a zero availability', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: -1,
+        newAvailability: 0,
+      });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier,
+        region,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(
+        platformIdentifier,
+        region,
+        undefined
+      );
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
+      expect(reservePlaceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should move a limited number of requests to queued when there is less space more than 0', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: -1,
+        newAvailability: 1,
+      });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier,
+        region,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(
+        platformIdentifier,
+        region,
+        1
+      );
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
+      expect(reservePlaceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should move requests to pending when there is more space than before', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: 1,
+        newAvailability: 1,
+      });
+
+      setQueuedRequestsAsPendingSpy.mockResolvedValue([{}]);
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier,
+        region,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
+      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
+        platformIdentifier,
+        region,
+        1
+      );
+      expect(reservePlaceSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should send telemetry event when deployment request is moved to queued', async () => {
+      throw new Error('not implemented');
+    });
+
+    it('should send telemetry event when deployment request is moved to pending', async () => {
+      throw new Error('not implemented');
+    });
+
+    it('should throw when the is no space when reserving a place', async () => {
+      reservePlaceSpy.mockResolvedValue({ isPlaceAvailable: false });
+      updateQuotaCapacitySpy.mockResolvedValue({
+        availabilityDifference: 1,
+        newAvailability: 1,
+      });
+
+      setQueuedRequestsAsPendingSpy.mockResolvedValue([{}]);
+
+      const call = DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier,
+        region,
+        newCapacity: 10,
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.DeploymentRequestQuotaNoPlaceAvailable
+      );
+
+      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
+      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
+        platformIdentifier,
+        region,
+        1
+      );
+      expect(reservePlaceSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should do nothing when there space did not change', async () => {
+      updateQuotaCapacitySpy.mockResolvedValue({ availabilityDifference: 0 });
+
+      await DeploymentsApp.updateDeploymentQuotaCapacity({
+        platformIdentifier,
+        region,
+        newCapacity: 10,
+      });
+
+      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
+      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
+      expect(reservePlaceSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('releaseDeploymentRequestPlace', () => {
+    let freePlaceSpy: MockInstance;
+    beforeEach(() => {
+      freePlaceSpy = vi
+        .spyOn(DeploymentsQuotasDomain, 'freePlace')
+        .mockResolvedValue();
+    });
+
+    describe('not counted in quotas', () => {
+      it.each`
+        hub_status
+        ${DeploymentRequestHubStatus.Cancelled}
+        ${DeploymentRequestHubStatus.Expired}
+        ${DeploymentRequestHubStatus.Failed}
+        ${DeploymentRequestHubStatus.Queued}
+      `(
+        'should not free place when request hub status is $hub_status',
+        async ({ hub_status }) => {
+          const deploymentRequest = await insertOpenCtiDeploymentRequest({
+            hub_status,
+          });
+
+          await DeploymentsApp.releaseDeploymentRequestPlace(
+            deploymentRequest as GraphQLDeploymentRequest
+          );
+
+          expect(freePlaceSpy).not.toHaveBeenCalled();
+        }
+      );
+    });
+
+    it('should free place and set one queued request as pending', async () => {
+      const setQueuedRequestsAsPendingSpy = vi.spyOn(
+        DeploymentRequestDomain,
+        'setQueuedRequestsAsPending'
+      );
+      const deploymentRequest = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        deploymentRequest as GraphQLDeploymentRequest
+      );
+
+      expect(freePlaceSpy).toHaveBeenCalledWith(
+        deploymentRequest!.platform_identifier,
+        deploymentRequest!.region
+      );
+      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
+        deploymentRequest!.platform_identifier,
+        deploymentRequest!.region,
+        1
+      );
+    });
+
+    it('should not send telemetry event when deployment request was not moved to pending', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'setQueuedRequestsAsPending'
+      ).mockResolvedValue([]);
+      const deploymentRequest = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        deploymentRequest as GraphQLDeploymentRequest
+      );
+
+      expect(telemetrySpy).not.toHaveBeenCalled();
+    });
+
+    it('should send telemetry event when deployment request was moved to pending', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+
+      const queuedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Queued,
+        activity_sector: 'cybersecurity',
+        region: DeploymentRequestPlatformRegion.UsEast,
+        platform_id: uuidv4(),
+      });
+
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'setQueuedRequestsAsPending'
+      ).mockResolvedValue([
+        {
+          ...queuedDeploymentRequest!,
+          hub_status: DeploymentRequestHubStatus!.Pending,
+          platform_id: 'fake product instance id',
+        },
+      ]);
+      const deploymentRequest = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        deploymentRequest as GraphQLDeploymentRequest
+      );
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: PLATFORM_NAME,
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_USER_ID,
+        deployment_id: queuedDeploymentRequest!.id,
+        deployment_type: DeploymentRequestDeploymentType.Trial,
+        platform_id: 'fake product instance id',
+        start_date: null,
+        end_date: null,
+        status: DeploymentRequestHubStatus.Pending,
       });
     });
   });

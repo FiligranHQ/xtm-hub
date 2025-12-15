@@ -17,6 +17,7 @@ export enum ForbiddenErrorCode {
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
+  DeploymentRequestQuotaNoPlaceAvailable = 'DEPLOYMENT_REQUEST_QUOTA_NO_PLACE_AVAILABLE',
 }
 
 export enum BadRequestErrorCode {
@@ -28,7 +29,6 @@ export enum BadRequestErrorCode {
   InvalidEmail = 'INVALID_EMAIL',
   MissingStartOrEndDate = 'MISSING_START_OR_END_DATE',
   DeploymentRequestStatusUpdateNotAllowed = 'DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED',
-  InvalidStatus = 'INVALID_STATUS',
   InvalidPlatformId = 'INVALID_PLATFORM_ID',
   InvalidPlatformVersion = 'INVALID_PLATFORM_VERSION',
   ServiceGroupsLinkedToMultipleServiceInstances = 'SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES',
@@ -93,6 +93,7 @@ export enum NotFoundErrorCode {
   ServiceNotFound = 'SERVICE_NOT_FOUND',
   ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
   DeploymentRequestNotFound = 'DEPLOYMENT_REQUEST_NOT_FOUND',
+  DeploymentRequestQuotaNotFound = 'DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND',
 }
 
 export const ErrorCode = {
