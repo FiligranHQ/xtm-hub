@@ -152,10 +152,16 @@ export const DeploymentRequestDomain = {
     return deploymentRequest;
   },
 
-  setPendingRequestsAsQueued: async (requestsToMoveCount?: number) => {
+  setPendingRequestsAsQueued: async (
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion,
+    requestsToMoveCount?: number
+  ): Promise<DeploymentRequest[]> => {
     const requestsQuery = db<DeploymentRequest[]>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
+      .andWhere('platform_identifier', '=', platformIdentifier)
+      .andWhere('region', '=', region)
       .orderBy('ordering', 'asc');
 
     if (requestsToMoveCount) {
@@ -164,7 +170,7 @@ export const DeploymentRequestDomain = {
 
     const requests = await requestsQuery;
     if (!requests.length) {
-      return;
+      return [];
     }
 
     await db<DeploymentRequest>('DeploymentRequest')
@@ -172,24 +178,30 @@ export const DeploymentRequestDomain = {
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
 
     const updates = requests.map(async (request, index) => {
-      await db<DeploymentRequest>('DeploymentRequest')
+      const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
         .update({
           hub_status: DeploymentRequestHubStatus.Queued,
           target_state: DeploymentRequestPlatformState.Removed,
           ordering: index + 1,
         })
-        .where({ id: request.id });
+        .where({ id: request.id })
+        .returning('*');
+      return updatedRequest;
     });
 
-    await Promise.all(updates);
+    return Promise.all(updates);
   },
 
   setQueuedRequestsAsPending: async (
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion,
     requestsToMoveCount: number
   ): Promise<DeploymentRequest[]> => {
     const requests = await db<DeploymentRequest[]>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
+      .andWhere('platform_identifier', '=', platformIdentifier)
+      .andWhere('region', '=', region)
       .orderBy('ordering', 'asc')
       .limit(requestsToMoveCount);
 

@@ -17,6 +17,7 @@ export enum ForbiddenErrorCode {
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
+  DeploymentRequestQuotaNoPlaceAvailable = 'DEPLOYMENT_REQUEST_QUOTA_NO_PLACE_AVAILABLE',
 }
 
 export enum BadRequestErrorCode {

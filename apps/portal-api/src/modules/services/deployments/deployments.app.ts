@@ -21,6 +21,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import {
+  default as DBDeploymentRequest,
   DeploymentRequestId,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -42,6 +43,7 @@ import {
   databaseContext,
   withTransaction,
 } from '../../../context/database.context';
+import { UserId } from '../../../model/kanel/public/User';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -289,29 +291,15 @@ export const DeploymentsApp = {
       }
     });
 
-    try {
-      const organization = await loadOrganizationBy({
-        id: deploymentRequest.organization_requester_id,
-      });
-      const updateDeploymentEvent = buildUpdateDeploymentEvent(
-        organization,
-        deploymentRequest.user_requester_id,
-        {
-          status: newStatus,
-          start_date: input.start_date,
-          end_date: input.end_date,
-          deployment_id: deploymentRequest.id,
-          deployment_type: deploymentRequest.type,
-          platform_id: input.platform_id,
-        }
+    const updatedDeploymentRequest =
+      await DeploymentRequestDomain.loadFullDeploymentRequestById(
+        deploymentRequestId
       );
 
-      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-    } catch (error) {
-      logApp.error('Unable to send telemetry event', {
-        error,
-      });
-    }
+    await sendUpdateDeploymentTelemetryEvent(
+      updatedDeploymentRequest,
+      updatedDeploymentRequest.user_requester_id
+    );
 
     try {
       if (
@@ -337,9 +325,7 @@ export const DeploymentsApp = {
       });
     }
 
-    return DeploymentRequestDomain.loadFullDeploymentRequestById(
-      deploymentRequestId
-    );
+    return updatedDeploymentRequest;
   },
 
   loadPlatformDeploymentRequests: async (
@@ -424,24 +410,59 @@ export const DeploymentsApp = {
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
-    const { availabilityDifference, newAvailability } =
-      await DeploymentsQuotasDomain.updateQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity,
-      });
+    const { user } = requestContext.require();
+    await withTransaction(async () => {
+      const { availabilityDifference, newAvailability } =
+        await DeploymentsQuotasDomain.updateQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity,
+        });
 
-    if (availabilityDifference < 0) {
-      const shouldMoveAllRequest = newAvailability <= 0;
-      const requestsToMove = shouldMoveAllRequest
-        ? undefined
-        : -availabilityDifference;
-      await DeploymentRequestDomain.setPendingRequestsAsQueued(requestsToMove);
-    } else if (availabilityDifference > 0) {
-      await DeploymentRequestDomain.setQueuedRequestsAsPending(
-        availabilityDifference
-      );
-    }
+      if (availabilityDifference < 0) {
+        const shouldMoveAllRequest = newAvailability <= 0;
+        const requestsToMove = shouldMoveAllRequest
+          ? undefined
+          : -availabilityDifference;
+        const updatedRequests =
+          await DeploymentRequestDomain.setPendingRequestsAsQueued(
+            platformIdentifier,
+            region,
+            requestsToMove
+          );
+        for (const request of updatedRequests) {
+          void sendUpdateDeploymentTelemetryEvent(
+            request,
+            user.id,
+            DeploymentRequestHubStatus.Queued
+          );
+        }
+      } else if (availabilityDifference > 0 && newAvailability > 0) {
+        const updatedRequests =
+          await DeploymentRequestDomain.setQueuedRequestsAsPending(
+            platformIdentifier,
+            region,
+            availabilityDifference
+          );
+        for (const request of updatedRequests) {
+          const { isPlaceAvailable } =
+            await DeploymentsQuotasDomain.reservePlace(
+              platformIdentifier,
+              region
+            );
+
+          if (!isPlaceAvailable) {
+            throw new Error(ErrorCode.DeploymentRequestQuotaNoPlaceAvailable);
+          }
+
+          void sendUpdateDeploymentTelemetryEvent(
+            request,
+            user.id,
+            DeploymentRequestHubStatus.Pending
+          );
+        }
+      }
+    });
 
     return {
       success: true,
@@ -501,32 +522,7 @@ export const DeploymentsApp = {
         id: deploymentRequestId,
       });
 
-    try {
-      const organization = await loadOrganizationBy({
-        id: updatedDeploymentRequest.organization_requester_id,
-      });
-      const updateDeploymentEvent = buildUpdateDeploymentEvent(
-        organization,
-        user.id,
-        {
-          status: updatedDeploymentRequest.hub_status,
-          start_date: updatedDeploymentRequest.start_date,
-          end_date: updatedDeploymentRequest.end_date,
-          deployment_id: updatedDeploymentRequest.id,
-          deployment_type: updatedDeploymentRequest.type,
-          platform_id: updatedDeploymentRequest.platform_id,
-        }
-      );
-
-      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-    } catch (error) {
-      logApp.error(
-        'Unable to send telemetry event when cancelling deployment request',
-        {
-          error,
-        }
-      );
-    }
+    void sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
       const [requester] = await loadUnsecureUser({
@@ -566,39 +562,60 @@ export const DeploymentsApp = {
       deploymentRequest.region
     );
     const [updatedDeploymentRequest] =
-      await DeploymentRequestDomain.setQueuedRequestsAsPending(1);
+      await DeploymentRequestDomain.setQueuedRequestsAsPending(
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region,
+        1
+      );
     if (!updatedDeploymentRequest) {
       return;
     }
 
-    const { user } = requestContext.require();
-    try {
-      const organization = await loadOrganizationBy({
-        id: updatedDeploymentRequest.organization_requester_id,
-      });
-      const updateDeploymentEvent = buildUpdateDeploymentEvent(
-        organization,
-        user.id,
-        {
-          status:
-            updatedDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-          start_date: updatedDeploymentRequest.start_date,
-          end_date: updatedDeploymentRequest.end_date,
-          deployment_id: updatedDeploymentRequest.id,
-          deployment_type:
-            updatedDeploymentRequest.type as DeploymentRequestDeploymentType,
-          platform_id: updatedDeploymentRequest.platform_id,
-        }
-      );
-
-      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-    } catch (error) {
-      logApp.error(
-        'Unable to send telemetry event when cancelling deployment request',
-        {
-          error,
-        }
-      );
+    const { isPlaceAvailable } = await DeploymentsQuotasDomain.reservePlace(
+      updatedDeploymentRequest.platform_identifier as PlatformIdentifier,
+      updatedDeploymentRequest.region as DeploymentRequestPlatformRegion
+    );
+    if (!isPlaceAvailable) {
+      throw new Error(ErrorCode.DeploymentRequestQuotaNoPlaceAvailable);
     }
+
+    const { user } = requestContext.require();
+    await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
   },
+};
+
+const sendUpdateDeploymentTelemetryEvent = async (
+  deploymentRequest: DBDeploymentRequest,
+  userId: UserId,
+  hubStatus?: DeploymentRequestHubStatus
+) => {
+  try {
+    const organization = await loadOrganizationBy({
+      id: deploymentRequest.organization_requester_id,
+    });
+    const updateDeploymentEvent = buildUpdateDeploymentEvent(
+      organization,
+      userId,
+      {
+        status:
+          hubStatus ??
+          (deploymentRequest.hub_status as DeploymentRequestHubStatus),
+        start_date: deploymentRequest.start_date,
+        end_date: deploymentRequest.end_date,
+        deployment_id: deploymentRequest.id,
+        deployment_type:
+          deploymentRequest.type as DeploymentRequestDeploymentType,
+        platform_id: deploymentRequest.platform_id,
+      }
+    );
+
+    void telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+  } catch (error) {
+    logApp.error(
+      `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,
+      {
+        error,
+      }
+    );
+  }
 };
