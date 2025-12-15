@@ -80,6 +80,8 @@ export const registeredPlatformByServiceInstanceId = graphql`
     $input: RegisteredPlatformInput!
   ) {
     registeredPlatform(input: $input) {
+      title
+      contract
       ...registeredPlatformByServiceInstanceId_fragment
     }
   }
@@ -102,8 +104,10 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
       }
     }
     deployment_request {
+      id
       hub_status
       region
+      counts_in_orga_quota
     }
   }
 `;
@@ -118,10 +122,12 @@ export const registerRegisteredPlatformFragment = graphql`
     identifier
     illustration_document_id
     deployment_request {
+      id
       type
       activity_sector
       job_title
       hub_status
+      counts_in_orga_quota
     }
     subscription {
       status

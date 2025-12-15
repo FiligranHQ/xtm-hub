@@ -58,7 +58,8 @@ const OwnedServices = ({
   const trialInstances = registeredPlatforms.filter(
     (service) =>
       service.deployment_request?.type ===
-      DeploymentRequestDeploymentTypeEnum.TRIAL
+        DeploymentRequestDeploymentTypeEnum.TRIAL &&
+      service.deployment_request.counts_in_orga_quota
   );
 
   const shouldDisplayFreeTrialSkeleton =

@@ -43,6 +43,19 @@ export const getDisplayDays = (
   if (!isTrial(platform)) {
     return undefined;
   }
+
+  if (
+    !platform.subscription?.end_date ||
+    [
+      DeploymentRequestHubStatusEnum.EXPIRED,
+      DeploymentRequestHubStatusEnum.CANCELLED,
+    ].includes(
+      platform.deployment_request?.hub_status as DeploymentRequestHubStatusEnum
+    )
+  ) {
+    return platform.deployment_request?.hub_status;
+  }
+
   if (
     platform.deployment_request?.hub_status ===
     DeploymentRequestHubStatusEnum.QUEUED
@@ -55,9 +68,7 @@ export const getDisplayDays = (
   ) {
     return 'Provisioning';
   }
-  if (!platform.subscription?.end_date) {
-    return platform.deployment_request?.hub_status;
-  }
+
   const target = new Date(platform.subscription?.end_date);
 
   const diffInDays = daysUntil(target);
@@ -117,7 +128,14 @@ export const registeredPlatformToServiceInstanceCardData = (
     id: platform.id,
     service_definition_identifier: platformIdentifier,
     url: platform.url,
-    disableCard: isExpired(platform.subscription?.end_date),
+    disableCard:
+      [
+        DeploymentRequestHubStatusEnum.EXPIRED,
+        DeploymentRequestHubStatusEnum.CANCELLED,
+      ].includes(
+        platform.deployment_request
+          ?.hub_status as DeploymentRequestHubStatusEnum
+      ) || isExpired(platform.subscription?.end_date),
   };
   if (isTrial(platform)) {
     return {

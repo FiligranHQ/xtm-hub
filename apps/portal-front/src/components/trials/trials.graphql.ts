@@ -11,6 +11,8 @@ export const trialsFragment = graphql`
     requester_email
     organization_name
     ordering
+    cancellation_date
+    cancellation_user_email
   }
 `;
 
@@ -55,6 +57,17 @@ export const TrialsReorderRequestInQueueMutation = graphql`
   ) {
     reorderDeploymentRequestInQueue(input: $input) {
       success
+    }
+  }
+`;
+
+export const TrialsAdminCancelDeploymentRequestMutation = graphql`
+  mutation trialsAdminCancelDeploymentRequestMutation(
+    $deploymentRequestId: ID!
+    $removeConnections: [ID!]!
+  ) {
+    adminCancelDeploymentRequest(deploymentRequestId: $deploymentRequestId) {
+      id @deleteEdge(connections: $removeConnections)
     }
   }
 `;

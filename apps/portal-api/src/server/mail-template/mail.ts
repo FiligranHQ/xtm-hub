@@ -28,14 +28,7 @@ export interface OpenCTIFreeTrialRegistered {
   firstName: string;
   platformUrl: string;
 }
-export interface OpenCTIFreeTrialRequestedModel {
-  firstName: string;
-}
-export interface OpenCTIFreeTrialQueuedModel {
-  firstName: string;
-}
-
-export interface OpenCTIFreeTrialProvisioningModel {
+export interface OpenCTIFreeTrialGenericModel {
   firstName: string;
 }
 
@@ -71,9 +64,11 @@ export type MailTemplates = {
   openaev_platform_registered: PlatformRegisteredModel;
   openaev_platform_unregistered: PlatformUnregisteredModel;
   opencti_free_trial_registered: OpenCTIFreeTrialRegistered;
-  opencti_free_trial_requested: OpenCTIFreeTrialRequestedModel;
-  opencti_free_trial_queued: OpenCTIFreeTrialQueuedModel;
-  opencti_free_trial_provisioning: OpenCTIFreeTrialProvisioningModel;
+  opencti_free_trial_requested: OpenCTIFreeTrialGenericModel;
+  opencti_free_trial_queued: OpenCTIFreeTrialGenericModel;
+  opencti_free_trial_provisioning: OpenCTIFreeTrialGenericModel;
+  opencti_free_trial_cancelled: OpenCTIFreeTrialGenericModel;
+  opencti_free_trial_expired: OpenCTIFreeTrialGenericModel;
 };
 
 export const templateSubjects: {
@@ -105,4 +100,6 @@ export const templateSubjects: {
   opencti_free_trial_queued: () => `Your OpenCTI Free Trial Request`,
   opencti_free_trial_provisioning: () =>
     `Your OpenCTI Platform Is Being Provisioned`,
+  opencti_free_trial_cancelled: () => 'Your OpenCTI Trial Has Been Cancelled',
+  opencti_free_trial_expired: () => 'Your OpenCTI Free Trial Has Expired',
 };

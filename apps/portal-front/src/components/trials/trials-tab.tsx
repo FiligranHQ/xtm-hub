@@ -1,11 +1,13 @@
 import { useTrialsListLocalstorage } from '@/components/trials/trial-list-localstorage';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import {
+  TrialsAdminCancelDeploymentRequestMutation,
   trialsFragment,
   trialsListFragment,
   TrialsListQuery,
   TrialsReorderRequestInQueueMutation,
 } from '@/components/trials/trials.graphql';
+import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -20,6 +22,7 @@ import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequ
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
+import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
 import { trialsList$key } from '@generated/trialsList.graphql';
 import { trialsListQuery } from '@generated/trialsListQuery.graphql';
 import { trialsReorderRequestInQueueMutation } from '@generated/trialsReorderRequestInQueueMutation.graphql';
@@ -92,6 +95,8 @@ const trialsTabConfig: Record<
   },
 };
 
+const connectionIDs = new Map<TrialsTabType, string>();
+
 const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   const t = useTranslations();
 
@@ -107,6 +112,10 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   const [commitReorderRequestInQueue] =
     useMutation<trialsReorderRequestInQueueMutation>(
       TrialsReorderRequestInQueueMutation
+    );
+  const [cancelDeploymentRequestMutation] =
+    useMutation<trialsAdminCancelDeploymentRequestMutation>(
+      TrialsAdminCancelDeploymentRequestMutation
     );
 
   const onReorderClick = useCallback(
@@ -135,6 +144,42 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
       });
     },
     [commitReorderRequestInQueue, t]
+  );
+
+  const onCancelClick = useCallback(
+    (deploymentRequestId: string) => {
+      cancelDeploymentRequestMutation({
+        variables: {
+          deploymentRequestId: deploymentRequestId,
+          removeConnections: [currentConnectionID],
+        },
+        updater: (store) => {
+          const cancelledConnectionID = connectionIDs.get(
+            TrialsTabType.Cancelled
+          );
+          if (cancelledConnectionID) {
+            const cancelledConnection = store.get(cancelledConnectionID);
+            if (cancelledConnection) {
+              cancelledConnection.invalidateRecord();
+            }
+          }
+        },
+        onCompleted: () => {
+          toast({
+            title: t('Utils.Success'),
+            description: t('Service.Trials.Cancellation.Toast.Admin'),
+          });
+        },
+        onError: (error) => {
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: t(`Error.Server.${error.message}`),
+          });
+        },
+      });
+    },
+    [cancelDeploymentRequestMutation, t]
   );
 
   const columns: ColumnDef<trials_fragment$data>[] = useMemo(
@@ -235,9 +280,25 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
         ? [
             {
               header: t('TrialsDashboard.Columns.CancellationDate'),
+              accessorKey: 'cancellation_date',
+              id: 'cancellation_date',
+              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                return (
+                  <span className="truncate">
+                    {row.original.cancellation_date
+                      ? formatDate(
+                          row.original.cancellation_date,
+                          'DATETIME_NUMERIC'
+                        )
+                      : '-'}
+                  </span>
+                );
+              },
             },
             {
               header: t('TrialsDashboard.Columns.CancellationOwner'),
+              accessorKey: 'cancellation_user_email',
+              id: 'cancellation_user_email',
             },
           ]
         : []),
@@ -255,12 +316,25 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                   <>
                     {(type === TrialsTabType.Running ||
                       type === TrialsTabType.Waiting) && (
-                      <Button
-                        variant="ghost-destructive"
-                        size="icon"
-                        className="border m-1">
-                        <CloseIcon className="h-4 w-4" />
-                      </Button>
+                      <AlertDialogComponent
+                        AlertTitle={t(
+                          'Service.Trials.Cancellation.Confirmation.Title'
+                        )}
+                        actionButtonText={t('MenuActions.Delete')}
+                        triggerElement={
+                          <Button
+                            variant="ghost-destructive"
+                            size="icon"
+                            className="border m-1">
+                            <CloseIcon className="h-4 w-4" />
+                          </Button>
+                        }
+                        onClickContinue={() => onCancelClick(row.original.id)}>
+                        {t('Service.Trials.Cancellation.Confirmation.Admin', {
+                          organizationName:
+                            row.original.organization_name ?? '',
+                        })}
+                      </AlertDialogComponent>
                     )}
                     {type === TrialsTabType.Waiting && (
                       <>
@@ -316,7 +390,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
           ]
         : []),
     ],
-    [t, type, onReorderClick]
+    [type, t, onCancelClick, onReorderClick]
   );
 
   const {
@@ -353,6 +427,14 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     trialsListQuery,
     trialsList$key
   >(trialsListFragment, queryData);
+
+  const currentConnectionID = data?.deploymentRequestsList?.__id;
+
+  useEffect(() => {
+    if (currentConnectionID) {
+      connectionIDs.set(type, currentConnectionID);
+    }
+  }, [currentConnectionID, type]);
 
   const trialsDataTable = useMemo<trials_fragment$data[]>(
     () =>

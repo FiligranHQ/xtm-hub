@@ -12,6 +12,9 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
+  THALES_ADMIN_ORGA_USER_ID,
+  THALES_ORGA_ID,
+  requestContextThalesUser,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -31,11 +34,13 @@ import {
   ADMIN_UUID,
   PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_UUID,
 } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
   ErrorCode,
+  ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -48,6 +53,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
+import { requestContext } from '../../../context/request.context';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -372,6 +378,7 @@ describe('Deployment app', () => {
         requester_email: DEFAULT_ADMIN_EMAIL,
         requester_first_name: 'firstname',
         requester_last_name: 'lastname',
+        cancellation_user_email: null,
       });
     });
 
@@ -895,6 +902,261 @@ describe('Deployment app', () => {
       expect(reorderDeploymentRequestUpSpy).toHaveBeenCalledWith(
         deploymentRequest
       );
+    });
+  });
+  describe('cancelDeploymentRequest', () => {
+    it.each`
+      isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota
+      ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
+      ${false} | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
+      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+    `(
+      'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
+      async ({ isAdmin, hub_status, actual_state, counts_in_orga_quota }) => {
+        const initialDeployment = (await insertOpenCtiDeploymentRequest({
+          hub_status,
+          actual_state,
+        })) as DeploymentRequest;
+
+        const deployment = await DeploymentsApp.cancelDeploymentRequest(
+          initialDeployment.id,
+          isAdmin
+        );
+
+        expect(deployment).toMatchObject({
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+          target_state: DeploymentRequestPlatformState.Removed,
+          counts_in_orga_quota,
+          cancellation_date: expect.any(Date),
+          cancellation_user_id: ADMIN_USER_ID,
+        });
+
+        const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+          'id',
+          initialDeployment.service_instance_id
+        );
+        expect(serviceInstance.creation_status).toBe(
+          counts_in_orga_quota
+            ? ServiceInstanceCreationStatus.Pending
+            : ServiceInstanceCreationStatus.Disabled
+        );
+      }
+    );
+    it('should throw if deployment request does not exist', async () => {
+      const call = DeploymentsApp.cancelDeploymentRequest(
+        uuidv4() as DeploymentRequestId,
+        false
+      );
+      await expect(call).rejects.toThrow(
+        NotFoundErrorCode.DeploymentRequestNotFound
+      );
+    });
+
+    it('should throw if user is not in organization and not isAdmin', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      requestContext.set(requestContextThalesUser);
+      const call = DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+      await expect(call).rejects.toThrow(
+        ForbiddenErrorCode.UserIsNotInOrganization
+      );
+    });
+
+    it('should not throw if user is not in organization and isAdmin', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      requestContext.set(requestContextThalesUser);
+      const response = await DeploymentsApp.cancelDeploymentRequest(
+        deployment.id,
+        true
+      );
+      expect(response).toBeTruthy();
+    });
+    it('should send a telemetry event', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest(
+        {}
+      )) as DeploymentRequest;
+
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+
+      await DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_name: PLATFORM_NAME,
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
+        source: TELEMETRY_SOURCE,
+        user_id: ADMIN_USER_ID,
+        deployment_id: deployment.id,
+        deployment_type: DeploymentRequestDeploymentType.Trial,
+        status: DeploymentRequestHubStatus.Cancelled,
+        start_date: null,
+        end_date: null,
+        platform_id: null,
+      });
+    });
+
+    it('should send a mail to the trial requester', async () => {
+      const deployment = (await insertOpenCtiDeploymentRequest({
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+      })) as DeploymentRequest;
+
+      await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
+
+      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        to: 'admin@thales.com',
+        template: 'opencti_free_trial_cancelled',
+        params: {
+          firstName: '',
+        },
+      });
+    });
+  });
+
+  describe('expireTrials', () => {
+    it('should expire past trials only', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+
+      const expiredTrial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestHubStatus.Active,
+        end_date: new Date(Date.UTC(2025, 1, 1)),
+      });
+      const nonExpiredTrial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestHubStatus.Active,
+        end_date: new Date(Date.UTC(2025, 1, 5)),
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      const expiredDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: expiredTrial?.id as DeploymentRequestId,
+        });
+      const nonExpiredDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: nonExpiredTrial?.id as DeploymentRequestId,
+        });
+
+      expect(expiredDeploymentRequest).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        target_state: DeploymentRequestPlatformState.Removed,
+      });
+
+      expect(nonExpiredDeploymentRequest).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+    });
+
+    it.each`
+      hub_status                                 | target_state
+      ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Active}
+      ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Active}
+      ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${DeploymentRequestHubStatus.Cancelled}    | ${DeploymentRequestPlatformState.Removed}
+      ${DeploymentRequestHubStatus.Expired}      | ${DeploymentRequestPlatformState.Removed}
+    `(
+      `should not expire trials in status $hub_status`,
+      async ({ hub_status, target_state }) => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+        const expiredDate = new Date(Date.UTC(2025, 1, 1));
+        const trial = await insertOpenCtiDeploymentRequest({
+          hub_status: hub_status,
+          target_state: target_state,
+          end_date: expiredDate,
+        });
+
+        await DeploymentsApp.expireTrials();
+
+        const expiredDeploymentRequest =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: trial?.id as DeploymentRequestId,
+          });
+
+        expect(expiredDeploymentRequest).toMatchObject({
+          hub_status: hub_status,
+          target_state: target_state,
+        });
+      }
+    );
+    it('should send a mail to the requester', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const expiredDate = new Date(Date.UTC(2025, 1, 1));
+
+      await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        end_date: expiredDate,
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        to: 'admin@thales.com',
+        template: 'opencti_free_trial_expired',
+        params: {
+          firstName: '',
+        },
+      });
+    });
+
+    it('should send a telemetry event', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const start_date = new Date(2024, 12, 1);
+      const end_date = new Date(2025, 1, 1);
+
+      const trial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        start_date,
+        end_date,
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+        organization_requester_id: THALES_ORGA_ID,
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+        organization_id: THALES_ORGA_ID,
+        organization_name: 'Thales',
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
+        source: TELEMETRY_SOURCE,
+        user_id: SYSTEM_USER_UUID,
+        deployment_id: trial?.id,
+        deployment_type: DeploymentRequestDeploymentType.Trial,
+        platform_id: null,
+        start_date,
+        end_date,
+        status: DeploymentRequestHubStatus.Expired,
+      });
     });
   });
 });
