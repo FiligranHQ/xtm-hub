@@ -1152,7 +1152,9 @@ describe('Deployment app', () => {
           });
 
           await DeploymentsApp.releaseDeploymentRequestPlace(
-            deploymentRequest!
+            deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+            deploymentRequest!.platform_identifier as PlatformIdentifier,
+            deploymentRequest!.region as DeploymentRequestPlatformRegion
           );
 
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -1173,7 +1175,9 @@ describe('Deployment app', () => {
         .mockResolvedValue([queuedDeploymentRequest]);
 
       await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequestToRelease!
+        deploymentRequestToRelease!.hub_status as DeploymentRequestHubStatus,
+        deploymentRequestToRelease!.platform_identifier as PlatformIdentifier,
+        deploymentRequestToRelease!.region as DeploymentRequestPlatformRegion
       );
 
       expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
@@ -1194,7 +1198,11 @@ describe('Deployment app', () => {
         hub_status: DeploymentRequestHubStatus.Active,
       });
 
-      await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest!);
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+        deploymentRequest!.platform_identifier as PlatformIdentifier,
+        deploymentRequest!.region as DeploymentRequestPlatformRegion
+      );
 
       expect(freePlaceSpy).toHaveBeenCalledWith(
         deploymentRequest!.platform_identifier,
@@ -1213,7 +1221,11 @@ describe('Deployment app', () => {
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest!);
+        await DeploymentsApp.releaseDeploymentRequestPlace(
+          deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+          deploymentRequest!.platform_identifier as PlatformIdentifier,
+          deploymentRequest!.region as DeploymentRequestPlatformRegion
+        );
 
         expect(telemetrySpy).not.toHaveBeenCalled();
       });
@@ -1243,7 +1255,11 @@ describe('Deployment app', () => {
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest!);
+        await DeploymentsApp.releaseDeploymentRequestPlace(
+          deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+          deploymentRequest!.platform_identifier as PlatformIdentifier,
+          deploymentRequest!.region as DeploymentRequestPlatformRegion
+        );
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',

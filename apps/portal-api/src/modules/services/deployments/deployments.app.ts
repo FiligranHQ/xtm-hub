@@ -415,6 +415,8 @@ export const DeploymentsApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
+    const previousHubStatus = deploymentRequest.hub_status;
+
     if (
       !isAdmin &&
       user.selected_organization_id !==
@@ -446,7 +448,11 @@ export const DeploymentsApp = {
           creation_status: ServiceInstanceCreationStatus.Disabled,
         });
       }
-      await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest);
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        previousHubStatus,
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      );
     });
 
     const updatedDeploymentRequest =
@@ -482,21 +488,31 @@ export const DeploymentsApp = {
       await DeploymentRequestDomain.loadTrialsToExpire();
 
     for (const trial of expiredTrials) {
+      const previousHubStatus = trial.hub_status as DeploymentRequestHubStatus;
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
       try {
-        const updatedDeploymentRequest =
-          await DeploymentRequestDomain.updateDeploymentRequestById(trial.id, {
-            hub_status: DeploymentRequestHubStatus.Expired,
-            target_state: DeploymentRequestPlatformState.Removed,
-          });
+        await withTransaction(async () => {
+          const updatedDeploymentRequest =
+            await DeploymentRequestDomain.updateDeploymentRequestById(
+              trial.id,
+              {
+                hub_status: DeploymentRequestHubStatus.Expired,
+                target_state: DeploymentRequestPlatformState.Removed,
+              }
+            );
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(trial);
+          await DeploymentsApp.releaseDeploymentRequestPlace(
+            previousHubStatus,
+            trial.platform_identifier as PlatformIdentifier,
+            trial.region as DeploymentRequestPlatformRegion
+          );
 
-        await sendUpdateDeploymentTelemetryEvent(
-          updatedDeploymentRequest,
-          SYSTEM_USER_UUID
-        );
+          await sendUpdateDeploymentTelemetryEvent(
+            updatedDeploymentRequest,
+            SYSTEM_USER_UUID
+          );
+        });
 
         try {
           const [requester] = await loadUnsecureUser({
@@ -525,25 +541,22 @@ export const DeploymentsApp = {
   },
 
   releaseDeploymentRequestPlace: async (
-    deploymentRequest: DeploymentRequestModel
+    previousHubStatus: DeploymentRequestHubStatus,
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion
   ) => {
     const isRequestCountedInQuotas = [
       DeploymentRequestHubStatus.Active,
       DeploymentRequestHubStatus.Pending,
       DeploymentRequestHubStatus.Provisioning,
-    ].includes(deploymentRequest.hub_status as DeploymentRequestHubStatus);
+    ].includes(previousHubStatus);
     if (!isRequestCountedInQuotas) {
       return;
     }
 
-    const { platform_identifier, region } = deploymentRequest as {
-      platform_identifier: PlatformIdentifier;
-      region: DeploymentRequestPlatformRegion;
-    };
-
     const [updatedDeploymentRequest] =
       await DeploymentRequestDomain.setQueuedRequestsAsPending(
-        platform_identifier,
+        platformIdentifier,
         region,
         1
       );
@@ -557,7 +570,7 @@ export const DeploymentsApp = {
       return;
     }
 
-    await DeploymentsQuotasDomain.freePlace(platform_identifier, region);
+    await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
   },
 };
 
