@@ -39,7 +39,7 @@ export const RegistrationLearnMore: React.FC = async () => {
   const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
     ServiceLinksByTagsQueryGraphql,
     {
-      tags: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENCTI],
+      tags: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENAEV],
     },
     { cache: undefined, next: { revalidate: 3600 } }
   );
@@ -129,7 +129,7 @@ export const RegistrationLearnMore: React.FC = async () => {
           <div className="order-first lg:order-last basis-full">
             <H2>Quick start guide</H2>
             <P className="text-gray mb-l">
-              Get more out of your OpenCTI platform!
+              Get more out of your OpenAEV platform!
             </P>
             <P className="text-gray">
               Explore step-by-step guides, expert courses, and community
