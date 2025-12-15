@@ -20,8 +20,7 @@ import {
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import {
-  default as DBDeploymentRequest,
+import DeploymentRequestModel, {
   DeploymentRequestId,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -44,6 +43,7 @@ import {
   withTransaction,
 } from '../../../context/database.context';
 import { UserId } from '../../../model/kanel/public/User';
+import { SYSTEM_USER_UUID } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -362,6 +362,7 @@ export const DeploymentsApp = {
     return quotas.map((quota) => ({
       region: quota.region as DeploymentRequestPlatformRegion,
       availableCount: quota.availability,
+      capacity: quota.capacity,
     }));
   },
 
@@ -483,6 +484,8 @@ export const DeploymentsApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
+    const previousHubStatus = deploymentRequest.hub_status;
+
     if (
       !isAdmin &&
       user.selected_organization_id !==
@@ -498,12 +501,18 @@ export const DeploymentsApp = {
         DeploymentRequestPlatformState.Provisioning,
       ].includes(deploymentRequest.actual_state);
 
+    const target_state =
+      deploymentRequest.actual_state ===
+      DeploymentRequestPlatformState.Unprovisioned
+        ? DeploymentRequestPlatformState.Unprovisioned
+        : DeploymentRequestPlatformState.Removed;
+
     await withTransaction(async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
         {
           hub_status: DeploymentRequestHubStatus.Cancelled,
-          target_state: DeploymentRequestPlatformState.Removed,
+          target_state: target_state,
           cancellation_date: new Date(),
           cancellation_user_id: user.id,
           counts_in_orga_quota: countsInOrgaQuota,
@@ -514,7 +523,11 @@ export const DeploymentsApp = {
           creation_status: ServiceInstanceCreationStatus.Disabled,
         });
       }
-      await DeploymentsApp.releaseDeploymentRequestPlace(deploymentRequest);
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        previousHubStatus,
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      );
     });
 
     const updatedDeploymentRequest =
@@ -545,47 +558,99 @@ export const DeploymentsApp = {
     return updatedDeploymentRequest;
   },
 
+  expireTrials: async () => {
+    const expiredTrials: DeploymentRequestModel[] =
+      await DeploymentRequestDomain.loadTrialsToExpire();
+
+    for (const trial of expiredTrials) {
+      const previousHubStatus = trial.hub_status as DeploymentRequestHubStatus;
+      logApp.info('expiring trial', { deploymentRequestId: trial.id });
+
+      try {
+        await withTransaction(async () => {
+          const updatedDeploymentRequest =
+            await DeploymentRequestDomain.updateDeploymentRequestById(
+              trial.id,
+              {
+                hub_status: DeploymentRequestHubStatus.Expired,
+                target_state: DeploymentRequestPlatformState.Removed,
+              }
+            );
+
+          await DeploymentsApp.releaseDeploymentRequestPlace(
+            previousHubStatus,
+            trial.platform_identifier as PlatformIdentifier,
+            trial.region as DeploymentRequestPlatformRegion
+          );
+
+          await sendUpdateDeploymentTelemetryEvent(
+            updatedDeploymentRequest,
+            SYSTEM_USER_UUID
+          );
+        });
+
+        try {
+          const [requester] = await loadUnsecureUser({
+            id: trial.user_requester_id,
+          });
+          sendMail({
+            to: requester.email,
+            template: 'opencti_free_trial_expired',
+            params: {
+              firstName: formatName(requester.first_name ?? ''),
+            },
+          });
+        } catch (error) {
+          logApp.error('Unable to send mail for trial expiration', {
+            error,
+            deploymentRequestId: trial.id,
+          });
+        }
+      } catch (error) {
+        logApp.error('Error during trial expiration', {
+          error,
+          deploymentRequestId: trial.id,
+        });
+      }
+    }
+  },
+
   releaseDeploymentRequestPlace: async (
-    deploymentRequest: DeploymentRequest
+    previousHubStatus: DeploymentRequestHubStatus,
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion
   ) => {
     const isRequestCountedInQuotas = [
       DeploymentRequestHubStatus.Active,
       DeploymentRequestHubStatus.Pending,
       DeploymentRequestHubStatus.Provisioning,
-    ].includes(deploymentRequest.hub_status);
+    ].includes(previousHubStatus);
     if (!isRequestCountedInQuotas) {
       return;
     }
 
-    await DeploymentsQuotasDomain.freePlace(
-      deploymentRequest.platform_identifier,
-      deploymentRequest.region
-    );
     const [updatedDeploymentRequest] =
       await DeploymentRequestDomain.setQueuedRequestsAsPending(
-        deploymentRequest.platform_identifier,
-        deploymentRequest.region,
+        platformIdentifier,
+        region,
         1
       );
-    if (!updatedDeploymentRequest) {
+    if (updatedDeploymentRequest) {
+      const { user } = requestContext.require();
+
+      await sendUpdateDeploymentTelemetryEvent(
+        updatedDeploymentRequest,
+        user.id
+      );
       return;
     }
 
-    const { isPlaceAvailable } = await DeploymentsQuotasDomain.reservePlace(
-      updatedDeploymentRequest.platform_identifier as PlatformIdentifier,
-      updatedDeploymentRequest.region as DeploymentRequestPlatformRegion
-    );
-    if (!isPlaceAvailable) {
-      throw new Error(ErrorCode.DeploymentRequestQuotaNoPlaceAvailable);
-    }
-
-    const { user } = requestContext.require();
-    await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
+    await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
   },
 };
 
 const sendUpdateDeploymentTelemetryEvent = async (
-  deploymentRequest: DBDeploymentRequest,
+  deploymentRequest: DeploymentRequestModel,
   userId: UserId,
   hubStatus?: DeploymentRequestHubStatus
 ) => {

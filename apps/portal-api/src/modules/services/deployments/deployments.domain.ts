@@ -133,6 +133,14 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
+  loadTrialsToExpire: async (): Promise<DeploymentRequest[]> => {
+    return db<DeploymentRequest[]>('DeploymentRequest')
+      .where('type', '=', DeploymentRequestDeploymentType.Trial)
+      .where('end_date', '<', new Date())
+      .where('hub_status', '=', DeploymentRequestHubStatus.Active)
+      .select('*');
+  },
+
   deleteDeploymentRequestBy: async (
     conditions: DeploymentRequestMutator
   ): Promise<DeploymentRequest> => {
@@ -150,6 +158,31 @@ export const DeploymentRequestDomain = {
       .update(data)
       .returning('*');
     return deploymentRequest;
+  },
+
+  setQueuedRequestsAsPending: async (
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion,
+    requestsToMoveCount: number
+  ): Promise<DeploymentRequest[]> => {
+    const requests = await db<DeploymentRequest[]>('DeploymentRequest')
+      .select('*')
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
+      .andWhere('platform_identifier', '=', platformIdentifier)
+      .andWhere('region', '=', region)
+      .orderBy('ordering', 'asc')
+      .limit(requestsToMoveCount);
+
+    return db<DeploymentRequest>('DeploymentRequest')
+      .update({
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      })
+      .whereIn(
+        'id',
+        requests.map(({ id }) => id)
+      )
+      .returning('*');
   },
 
   setPendingRequestsAsQueued: async (
@@ -190,31 +223,6 @@ export const DeploymentRequestDomain = {
     });
 
     return Promise.all(updates);
-  },
-
-  setQueuedRequestsAsPending: async (
-    platformIdentifier: PlatformIdentifier,
-    region: DeploymentRequestPlatformRegion,
-    requestsToMoveCount: number
-  ): Promise<DeploymentRequest[]> => {
-    const requests = await db<DeploymentRequest[]>('DeploymentRequest')
-      .select('*')
-      .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
-      .andWhere('platform_identifier', '=', platformIdentifier)
-      .andWhere('region', '=', region)
-      .orderBy('ordering', 'asc')
-      .limit(requestsToMoveCount);
-
-    return db<DeploymentRequest>('DeploymentRequest')
-      .update({
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-      })
-      .whereIn(
-        'id',
-        requests.map(({ id }) => id)
-      )
-      .returning('*');
   },
 
   initialiseServiceGroup: async (id: DeploymentRequestId) => {

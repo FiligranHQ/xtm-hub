@@ -179,10 +179,26 @@ describe('Deployment app', () => {
         });
 
       expect(availableDeployments).toStrictEqual([
-        { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 10 },
-        { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 10 },
-        { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 20 },
-        { region: DeploymentRequestPlatformRegion.UsEast, availableCount: 20 },
+        {
+          region: DeploymentRequestPlatformRegion.ApacAu,
+          availableCount: 10,
+          capacity: 10,
+        },
+        {
+          region: DeploymentRequestPlatformRegion.ApacSg,
+          availableCount: 10,
+          capacity: 10,
+        },
+        {
+          region: DeploymentRequestPlatformRegion.EuWest,
+          availableCount: 20,
+          capacity: 20,
+        },
+        {
+          region: DeploymentRequestPlatformRegion.UsEast,
+          availableCount: 20,
+          capacity: 20,
+        },
       ]);
     });
   });

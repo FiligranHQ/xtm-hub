@@ -128,6 +128,7 @@ type PlatformDeploymentRequestConnection {
 type DeploymentAvailability {
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
+  capacity: Int!
 }
 
 enum DeploymentRequestOrdering {

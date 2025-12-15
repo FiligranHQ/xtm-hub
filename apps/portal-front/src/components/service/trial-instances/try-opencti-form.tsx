@@ -34,9 +34,12 @@ export const tryOpenCTIFormSchema = z.object({
   job_title: z.enum(JOB_TITLES),
   activity_sector: z.enum(ACTIVITIES_SECTOR),
   use_case: z.enum(USE_CASES),
-  acceptTerms: z.boolean().refine((value) => value === true, {
-    error: 'You must accept the MSSA',
-  }),
+  acceptTerms: z
+    .boolean()
+    .default(false)
+    .refine((value) => value === true, {
+      error: 'Please accept the MSSA to continue.',
+    }),
 });
 
 interface TryOpenCTIFormProps {

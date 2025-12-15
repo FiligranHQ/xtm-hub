@@ -488,7 +488,6 @@ describe('DeploymentRequestDomain', () => {
       expect(resultTopDeploymentRequest!.ordering).toBe(4);
     });
   });
-
   describe('setPendingRequestsAsQueued', () => {
     let platformIdentifier: PlatformIdentifier;
     let region: DeploymentRequestPlatformRegion;

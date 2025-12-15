@@ -12,8 +12,9 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
-  requestContextThalesUser,
   THALES_ADMIN_ORGA_USER_ID,
+  THALES_ORGA_ID,
+  requestContextThalesUser,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -21,7 +22,6 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
-  DeploymentRequest as GraphQLDeploymentRequest,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -34,6 +34,7 @@ import {
   ADMIN_UUID,
   PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_UUID,
 } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
@@ -848,23 +849,31 @@ describe('Deployment app', () => {
   });
   describe('cancelDeploymentRequest', () => {
     it.each`
-      isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota
-      ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}
-      ${false} | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
-      ${false} | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
-      ${false} | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+      isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota | target_state
+      ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}             | ${DeploymentRequestPlatformState.Removed}
+      ${false} | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}             | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${false} | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}             | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${false} | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
+      ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}              | ${DeploymentRequestPlatformState.Removed}
+      ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
     `(
       'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
-      async ({ isAdmin, hub_status, actual_state, counts_in_orga_quota }) => {
+      async ({
+        isAdmin,
+        hub_status,
+        actual_state,
+        counts_in_orga_quota,
+        target_state,
+      }) => {
         const initialDeployment = (await insertOpenCtiDeploymentRequest({
           hub_status,
           actual_state,
         })) as DeploymentRequest;
-
+        const freePlaceSpy = vi
+          .spyOn(DeploymentsQuotasDomain, 'freePlace')
+          .mockResolvedValue();
         const deployment = await DeploymentsApp.cancelDeploymentRequest(
           initialDeployment.id,
           isAdmin
@@ -872,7 +881,7 @@ describe('Deployment app', () => {
 
         expect(deployment).toMatchObject({
           hub_status: DeploymentRequestHubStatus.Cancelled,
-          target_state: DeploymentRequestPlatformState.Removed,
+          target_state: target_state,
           counts_in_orga_quota,
           cancellation_date: expect.any(Date),
           cancellation_user_id: ADMIN_USER_ID,
@@ -887,6 +896,21 @@ describe('Deployment app', () => {
             ? ServiceInstanceCreationStatus.Pending
             : ServiceInstanceCreationStatus.Disabled
         );
+
+        if (
+          [
+            DeploymentRequestHubStatus.Active,
+            DeploymentRequestHubStatus.Pending,
+            DeploymentRequestHubStatus.Provisioning,
+          ].includes(hub_status)
+        ) {
+          expect(freePlaceSpy).toHaveBeenCalledWith(
+            initialDeployment.platform_identifier,
+            initialDeployment.region
+          );
+        } else {
+          expect(freePlaceSpy).not.toHaveBeenCalled();
+        }
       }
     );
     it('should throw if deployment request does not exist', async () => {
@@ -1130,6 +1154,149 @@ describe('Deployment app', () => {
     });
   });
 
+  describe('expireTrials', () => {
+    let freePlaceSpy: MockInstance;
+    beforeEach(() => {
+      freePlaceSpy = vi
+        .spyOn(DeploymentsQuotasDomain, 'freePlace')
+        .mockResolvedValue();
+    });
+
+    it('should expire past trials only', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+
+      const expiredTrial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestHubStatus.Active,
+        end_date: new Date(Date.UTC(2025, 1, 1)),
+      });
+      const nonExpiredTrial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestHubStatus.Active,
+        end_date: new Date(Date.UTC(2025, 1, 5)),
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      const expiredDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: expiredTrial?.id as DeploymentRequestId,
+        });
+      const nonExpiredDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: nonExpiredTrial?.id as DeploymentRequestId,
+        });
+
+      expect(expiredDeploymentRequest).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        target_state: DeploymentRequestPlatformState.Removed,
+      });
+
+      expect(nonExpiredDeploymentRequest).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+
+      expect(freePlaceSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it.each`
+      hub_status                                 | target_state
+      ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Active}
+      ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Active}
+      ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${DeploymentRequestHubStatus.Cancelled}    | ${DeploymentRequestPlatformState.Removed}
+      ${DeploymentRequestHubStatus.Expired}      | ${DeploymentRequestPlatformState.Removed}
+    `(
+      `should not expire trials in status $hub_status`,
+      async ({ hub_status, target_state }) => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+        const expiredDate = new Date(Date.UTC(2025, 1, 1));
+        const trial = await insertOpenCtiDeploymentRequest({
+          hub_status: hub_status,
+          target_state: target_state,
+          end_date: expiredDate,
+        });
+
+        await DeploymentsApp.expireTrials();
+
+        const expiredDeploymentRequest =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: trial?.id as DeploymentRequestId,
+          });
+
+        expect(expiredDeploymentRequest).toMatchObject({
+          hub_status: hub_status,
+          target_state: target_state,
+        });
+      }
+    );
+    it('should send a mail to the requester', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const expiredDate = new Date(Date.UTC(2025, 1, 1));
+
+      await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        end_date: expiredDate,
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        to: 'admin@thales.com',
+        template: 'opencti_free_trial_expired',
+        params: {
+          firstName: '',
+        },
+      });
+    });
+
+    it('should send a telemetry event', async () => {
+      vi.useFakeTimers();
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const start_date = new Date(2024, 12, 1);
+      const end_date = new Date(2025, 1, 1);
+
+      const trial = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        target_state: DeploymentRequestPlatformState.Active,
+        start_date,
+        end_date,
+        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+        organization_requester_id: THALES_ORGA_ID,
+      });
+
+      await DeploymentsApp.expireTrials();
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+        organization_id: THALES_ORGA_ID,
+        organization_name: 'Thales',
+        organization_type: TelemetryOrganizationType.PROFESSIONAL,
+        source: TELEMETRY_SOURCE,
+        user_id: SYSTEM_USER_UUID,
+        deployment_id: trial?.id,
+        deployment_type: DeploymentRequestDeploymentType.Trial,
+        platform_id: null,
+        start_date,
+        end_date,
+        status: DeploymentRequestHubStatus.Expired,
+      });
+    });
+  });
+
   describe('releaseDeploymentRequestPlace', () => {
     let freePlaceSpy: MockInstance;
     beforeEach(() => {
@@ -1153,7 +1320,9 @@ describe('Deployment app', () => {
           });
 
           await DeploymentsApp.releaseDeploymentRequestPlace(
-            deploymentRequest as GraphQLDeploymentRequest
+            deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+            deploymentRequest!.platform_identifier as PlatformIdentifier,
+            deploymentRequest!.region as DeploymentRequestPlatformRegion
           );
 
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -1161,90 +1330,120 @@ describe('Deployment app', () => {
       );
     });
 
-    it('should free place and set one queued request as pending', async () => {
-      const setQueuedRequestsAsPendingSpy = vi.spyOn(
+    it('should set one queued request as pending and not free place', async () => {
+      const deploymentRequestToRelease = await insertOpenCtiDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+      const queuedDeploymentRequest = {
+        ...deploymentRequestToRelease!,
+        hub_status: DeploymentRequestHubStatus.Pending,
+      };
+      const setQueuedRequestsAsPendingSpy = vi
+        .spyOn(DeploymentRequestDomain, 'setQueuedRequestsAsPending')
+        .mockResolvedValue([queuedDeploymentRequest]);
+
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        deploymentRequestToRelease!.hub_status as DeploymentRequestHubStatus,
+        deploymentRequestToRelease!.platform_identifier as PlatformIdentifier,
+        deploymentRequestToRelease!.region as DeploymentRequestPlatformRegion
+      );
+
+      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
+        deploymentRequestToRelease!.platform_identifier,
+        deploymentRequestToRelease!.region,
+        1
+      );
+      expect(freePlaceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should free place when deployment request was not moved to pending', async () => {
+      vi.spyOn(
         DeploymentRequestDomain,
         'setQueuedRequestsAsPending'
-      );
+      ).mockResolvedValue([]);
+
       const deploymentRequest = await insertOpenCtiDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
       });
 
       await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequest as GraphQLDeploymentRequest
+        deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+        deploymentRequest!.platform_identifier as PlatformIdentifier,
+        deploymentRequest!.region as DeploymentRequestPlatformRegion
       );
 
       expect(freePlaceSpy).toHaveBeenCalledWith(
         deploymentRequest!.platform_identifier,
         deploymentRequest!.region
       );
-      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
-        deploymentRequest!.platform_identifier,
-        deploymentRequest!.region,
-        1
-      );
     });
 
-    it('should not send telemetry event when deployment request was not moved to pending', async () => {
-      vi.spyOn(
-        DeploymentRequestDomain,
-        'setQueuedRequestsAsPending'
-      ).mockResolvedValue([]);
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
+    describe('telemetry', () => {
+      it('should not send telemetry event when deployment request was not moved to pending', async () => {
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'setQueuedRequestsAsPending'
+        ).mockResolvedValue([]);
+
+        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+
+        await DeploymentsApp.releaseDeploymentRequestPlace(
+          deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+          deploymentRequest!.platform_identifier as PlatformIdentifier,
+          deploymentRequest!.region as DeploymentRequestPlatformRegion
+        );
+
+        expect(telemetrySpy).not.toHaveBeenCalled();
       });
 
-      await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequest as GraphQLDeploymentRequest
-      );
+      it('should send telemetry event when deployment request was moved to pending', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
 
-      expect(telemetrySpy).not.toHaveBeenCalled();
-    });
+        const queuedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+          hub_status: DeploymentRequestHubStatus.Queued,
+          activity_sector: 'cybersecurity',
+          region: DeploymentRequestPlatformRegion.UsEast,
+          platform_id: uuidv4(),
+        });
 
-    it('should send telemetry event when deployment request was moved to pending', async () => {
-      vi.useFakeTimers();
-      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-      vi.setSystemTime(date);
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'setQueuedRequestsAsPending'
+        ).mockResolvedValue([
+          {
+            ...queuedDeploymentRequest!,
+            hub_status: DeploymentRequestHubStatus!.Pending,
+          },
+        ]);
+        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
 
-      const queuedDeploymentRequest = await insertOpenCtiDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Queued,
-        activity_sector: 'cybersecurity',
-        region: DeploymentRequestPlatformRegion.UsEast,
-        platform_id: uuidv4(),
-      });
+        await DeploymentsApp.releaseDeploymentRequestPlace(
+          deploymentRequest!.hub_status as DeploymentRequestHubStatus,
+          deploymentRequest!.platform_identifier as PlatformIdentifier,
+          deploymentRequest!.region as DeploymentRequestPlatformRegion
+        );
 
-      vi.spyOn(
-        DeploymentRequestDomain,
-        'setQueuedRequestsAsPending'
-      ).mockResolvedValue([
-        {
-          ...queuedDeploymentRequest!,
-          hub_status: DeploymentRequestHubStatus!.Pending,
-          platform_id: 'fake product instance id',
-        },
-      ]);
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
-
-      await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequest as GraphQLDeploymentRequest
-      );
-
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        '@timestamp': '2025-02-03T13:12:15.000Z',
-        event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-        organization_name: PLATFORM_NAME,
-        organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        source: TELEMETRY_SOURCE,
-        user_id: ADMIN_USER_ID,
-        deployment_id: queuedDeploymentRequest!.id,
-        deployment_type: DeploymentRequestDeploymentType.Trial,
-        platform_id: 'fake product instance id',
-        start_date: null,
-        end_date: null,
-        status: DeploymentRequestHubStatus.Pending,
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          user_id: ADMIN_USER_ID,
+          deployment_id: queuedDeploymentRequest!.id,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
+          platform_id: queuedDeploymentRequest!.platform_id,
+          start_date: null,
+          end_date: null,
+          status: DeploymentRequestHubStatus.Pending,
+        });
       });
     });
   });

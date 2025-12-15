@@ -11,6 +11,7 @@ export async function up(knex) {
     table.integer('availability');
 
     table.unique(['region', 'platform_identifier']);
+    table.check('?? <= ??', ['availability', 'capacity']);
   });
 
   const values = [
