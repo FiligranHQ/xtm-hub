@@ -133,6 +133,14 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
+  loadTrialsToExpire: async (): Promise<DeploymentRequest[]> => {
+    return db<DeploymentRequest[]>('DeploymentRequest')
+      .where('type', '=', DeploymentRequestDeploymentType.Trial)
+      .where('end_date', '<', new Date())
+      .where('hub_status', '=', DeploymentRequestHubStatus.Active)
+      .select('*');
+  },
+
   deleteDeploymentRequestBy: async (
     conditions: DeploymentRequestMutator
   ): Promise<DeploymentRequest> => {
