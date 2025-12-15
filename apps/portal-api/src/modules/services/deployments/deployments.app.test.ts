@@ -849,18 +849,24 @@ describe('Deployment app', () => {
   });
   describe('cancelDeploymentRequest', () => {
     it.each`
-      isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota
-      ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}
-      ${false} | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
-      ${false} | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}
-      ${false} | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}
-      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}
+      isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota | target_state
+      ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}             | ${DeploymentRequestPlatformState.Removed}
+      ${false} | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}             | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${false} | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${false}             | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${false} | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
+      ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}              | ${DeploymentRequestPlatformState.Removed}
+      ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
+      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
     `(
       'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
-      async ({ isAdmin, hub_status, actual_state, counts_in_orga_quota }) => {
+      async ({
+        isAdmin,
+        hub_status,
+        actual_state,
+        counts_in_orga_quota,
+        target_state,
+      }) => {
         const initialDeployment = (await insertOpenCtiDeploymentRequest({
           hub_status,
           actual_state,
@@ -875,7 +881,7 @@ describe('Deployment app', () => {
 
         expect(deployment).toMatchObject({
           hub_status: DeploymentRequestHubStatus.Cancelled,
-          target_state: DeploymentRequestPlatformState.Removed,
+          target_state: target_state,
           counts_in_orga_quota,
           cancellation_date: expect.any(Date),
           cancellation_user_id: ADMIN_USER_ID,
