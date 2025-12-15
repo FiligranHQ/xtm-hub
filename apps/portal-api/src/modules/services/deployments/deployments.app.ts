@@ -453,12 +453,18 @@ export const DeploymentsApp = {
         DeploymentRequestPlatformState.Provisioning,
       ].includes(deploymentRequest.actual_state);
 
+    const target_state =
+      deploymentRequest.actual_state ===
+      DeploymentRequestPlatformState.Unprovisioned
+        ? DeploymentRequestPlatformState.Unprovisioned
+        : DeploymentRequestPlatformState.Removed;
+
     await withTransaction(async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
         {
           hub_status: DeploymentRequestHubStatus.Cancelled,
-          target_state: DeploymentRequestPlatformState.Removed,
+          target_state: target_state,
           cancellation_date: new Date(),
           cancellation_user_id: user.id,
           counts_in_orga_quota: countsInOrgaQuota,
