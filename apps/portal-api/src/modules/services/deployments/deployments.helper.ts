@@ -86,8 +86,20 @@ const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
     to: DeploymentRequestPlatformState.Active,
   },
   {
+    from: DeploymentRequestPlatformState.Provisioning,
+    to: DeploymentRequestPlatformState.Removing,
+  },
+  {
+    from: DeploymentRequestPlatformState.Provisioning,
+    to: DeploymentRequestPlatformState.Removed,
+  },
+  {
     from: DeploymentRequestPlatformState.Active,
     to: DeploymentRequestPlatformState.Removing,
+  },
+  {
+    from: DeploymentRequestPlatformState.Active,
+    to: DeploymentRequestPlatformState.Removed,
   },
   {
     from: DeploymentRequestPlatformState.Removing,
