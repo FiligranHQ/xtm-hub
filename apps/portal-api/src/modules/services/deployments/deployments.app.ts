@@ -411,63 +411,40 @@ export const DeploymentsApp = {
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
-    const { user } = requestContext.require();
     await withTransaction(async () => {
-      const { availabilityDifference, newAvailability } =
+      const { newAvailability } =
         await DeploymentsQuotasDomain.updateQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity,
         });
 
-      if (availabilityDifference < 0) {
-        const shouldMoveAllRequest = newAvailability <= 0;
-        const requestsToMove = shouldMoveAllRequest
-          ? undefined
-          : -availabilityDifference;
-        const updatedRequests =
-          await DeploymentRequestDomain.setPendingRequestsAsQueued(
-            platformIdentifier,
-            region,
-            requestsToMove
-          );
-        for (const request of updatedRequests) {
-          void sendUpdateDeploymentTelemetryEvent(
-            request,
-            user.id,
-            DeploymentRequestHubStatus.Queued
-          );
-        }
-      } else if (availabilityDifference > 0 && newAvailability > 0) {
-        const updatedRequests =
-          await DeploymentRequestDomain.setQueuedRequestsAsPending(
-            platformIdentifier,
-            region,
-            availabilityDifference
-          );
-        for (const request of updatedRequests) {
-          const { isPlaceAvailable } =
-            await DeploymentsQuotasDomain.reservePlace(
+      if (newAvailability < 0) {
+        await DeploymentRequestDomain.setPendingRequestsAsQueued(
+          platformIdentifier,
+          region
+        );
+      } else if (newAvailability > 0) {
+        for (let i = 0; i < newAvailability; i++) {
+          const [updatedRequests] =
+            await DeploymentRequestDomain.setQueuedRequestsAsPending(
               platformIdentifier,
-              region
+              region,
+              1
             );
-
-          if (!isPlaceAvailable) {
-            throw new Error(ErrorCode.DeploymentRequestQuotaNoPlaceAvailable);
+          if (!updatedRequests) {
+            break;
           }
 
-          void sendUpdateDeploymentTelemetryEvent(
-            request,
-            user.id,
-            DeploymentRequestHubStatus.Pending
+          await DeploymentsQuotasDomain.reservePlace(
+            platformIdentifier,
+            region
           );
         }
       }
     });
 
-    return {
-      success: true,
-    };
+    return { success: true };
   },
 
   cancelDeploymentRequest: async (

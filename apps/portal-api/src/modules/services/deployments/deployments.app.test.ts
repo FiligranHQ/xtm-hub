@@ -12,9 +12,9 @@ import {
 import {
   ADMIN_USER_ID,
   DEFAULT_ADMIN_EMAIL,
+  requestContextThalesUser,
   THALES_ADMIN_ORGA_USER_ID,
   THALES_ORGA_ID,
-  requestContextThalesUser,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -54,7 +54,9 @@ import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
+import { db } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
+import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -62,7 +64,10 @@ import {
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
-import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
+import {
+  assertDeploymentRequestProperties,
+  insertOpenCtiDeploymentRequest,
+} from './deployments.test.utils';
 
 describe('Deployment app', () => {
   const telemetrySpy = vi
@@ -482,12 +487,12 @@ describe('Deployment app', () => {
 
       // Verify only out-of-sync deployments are returned
       const returnedIds = deployments.edges.map((edge) => edge.node.id);
-      expect(returnedIds).toContain(outOfSync1.id);
-      expect(returnedIds).toContain(outOfSync2.id);
-      expect(returnedIds).toContain(outOfSync3.id);
-      expect(returnedIds).not.toContain(synced1.id);
-      expect(returnedIds).not.toContain(synced2.id);
-      expect(returnedIds).not.toContain(synced3.id);
+      expect(returnedIds).toContain(outOfSync1!.id);
+      expect(returnedIds).toContain(outOfSync2!.id);
+      expect(returnedIds).toContain(outOfSync3!.id);
+      expect(returnedIds).not.toContain(synced1!.id);
+      expect(returnedIds).not.toContain(synced2!.id);
+      expect(returnedIds).not.toContain(synced3!.id);
     });
 
     it('should return filtered deployment requests only', async () => {
@@ -609,12 +614,12 @@ describe('Deployment app', () => {
           id: deployment.id as DeploymentRequestId,
         });
       const getUserGroup = await ServiceGroupDomain.loadServiceGroups({
-        service_instance_id: dbDeploymentRequest.service_instance_id,
+        service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
       expect(getUserGroup.length).toBe(3);
       const userAdminGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest.service_instance_id,
+          dbDeploymentRequest!.service_instance_id,
           'Admin'
         );
       expect(userAdminGroup.length).toBe(1);
@@ -623,13 +628,13 @@ describe('Deployment app', () => {
       ).toBeTruthy();
       const userAnalystGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest.service_instance_id,
+          dbDeploymentRequest!.service_instance_id,
           'Analyst'
         );
       expect(userAnalystGroup.length).toBe(0);
       const userReaderGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest.service_instance_id,
+          dbDeploymentRequest!.service_instance_id,
           'Reader'
         );
 
@@ -994,163 +999,239 @@ describe('Deployment app', () => {
 
   describe('updateDeploymentQuotaCapacity', () => {
     const platformIdentifier = PlatformIdentifier.Opencti;
-    const region = DeploymentRequestPlatformRegion.UsEast;
-    let reservePlaceSpy: MockInstance;
-    let updateQuotaCapacitySpy: MockInstance;
-    let setPendingRequestsAsQueuedSpy: MockInstance;
-    let setQueuedRequestsAsPendingSpy: MockInstance;
-    beforeEach(() => {
-      updateQuotaCapacitySpy = vi.spyOn(
-        DeploymentsQuotasDomain,
-        'updateQuotaCapacity'
-      );
-
-      setPendingRequestsAsQueuedSpy = vi
-        .spyOn(DeploymentRequestDomain, 'setPendingRequestsAsQueued')
-        .mockResolvedValue([]);
-
-      setQueuedRequestsAsPendingSpy = vi
-        .spyOn(DeploymentRequestDomain, 'setQueuedRequestsAsPending')
-        .mockResolvedValue([]);
-
-      reservePlaceSpy = vi
-        .spyOn(DeploymentsQuotasDomain, 'reservePlace')
-        .mockResolvedValue({ isPlaceAvailable: true });
-    });
-    it('should move all requests to queued when there is a negative availability', async () => {
-      updateQuotaCapacitySpy.mockResolvedValue({
-        availabilityDifference: -1,
-        newAvailability: -1,
-      });
-
-      await DeploymentsApp.updateDeploymentQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity: 10,
-      });
-
-      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(
-        platformIdentifier,
-        region,
-        undefined
-      );
-      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
-      expect(reservePlaceSpy).not.toHaveBeenCalled();
+    const region = DeploymentRequestPlatformRegion.EuWest;
+    beforeEach(async () => {
+      await db<DeploymentRequest>('DeploymentRequest').del();
     });
 
-    it('should move all requests to queued when there is a zero availability', async () => {
-      updateQuotaCapacitySpy.mockResolvedValue({
-        availabilityDifference: -1,
-        newAvailability: 0,
+    const insertRequest = async (
+      hubStatus: DeploymentRequestHubStatus
+    ): Promise<DeploymentRequest> => {
+      return (await insertOpenCtiDeploymentRequest({
+        platform_identifier: platformIdentifier,
+        region,
+        hub_status: hubStatus,
+      }))!;
+    };
+
+    const initQuota = async ({
+      capacity,
+      availability,
+    }: {
+      capacity: number;
+      availability: number;
+    }) => {
+      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+        .update({
+          capacity,
+          availability,
+        })
+        .where({
+          platform_identifier: platformIdentifier,
+          region,
+        });
+    };
+
+    const assertQuota = async ({
+      capacity,
+      availability,
+    }: {
+      capacity: number;
+      availability: number;
+    }) => {
+      const newQuota = await db<DeploymentRequestQuota>(
+        'DeploymentRequestQuota'
+      )
+        .select('*')
+        .where({
+          platform_identifier: platformIdentifier,
+          region,
+        })
+        .first();
+
+      expect(newQuota).toBeDefined();
+      expect(newQuota!.capacity).toBe(capacity);
+      expect(newQuota!.availability).toBe(availability);
+    };
+
+    describe('increase capacity', () => {
+      it('should move queued request to pending when there is space available', async () => {
+        await initQuota({ capacity: 2, availability: 0 });
+        const { id: activeRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: pendingRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+        const { id: queuedRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Queued
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 3,
+        });
+
+        await assertQuota({ capacity: 3, availability: 0 });
+
+        await assertDeploymentRequestProperties(activeRequestId, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(pendingRequestId, {
+          hub_status: DeploymentRequestHubStatus.Pending,
+        });
+        await assertDeploymentRequestProperties(queuedRequestId, {
+          hub_status: DeploymentRequestHubStatus.Pending,
+        });
       });
 
-      await DeploymentsApp.updateDeploymentQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity: 10,
+      it('should not move queued request to pending when there is just enough space for active', async () => {
+        await initQuota({ capacity: 1, availability: -1 });
+        const { id: activeRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: activeRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: queuedRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Queued
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 2,
+        });
+
+        await assertQuota({ capacity: 2, availability: 0 });
+
+        await assertDeploymentRequestProperties(activeRequestId1, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(activeRequestId2, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(queuedRequestId, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        });
       });
 
-      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(
-        platformIdentifier,
-        region,
-        undefined
-      );
-      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
-      expect(reservePlaceSpy).not.toHaveBeenCalled();
+      it('should not move queued request to pending when there is not more space available', async () => {
+        await initQuota({ capacity: 1, availability: -2 });
+        const { id: activeRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: activeRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: activeRequestId3 } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: queuedRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Queued
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 2,
+        });
+
+        await assertQuota({ capacity: 2, availability: -1 });
+
+        await assertDeploymentRequestProperties(activeRequestId1, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(activeRequestId2, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(activeRequestId3, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(queuedRequestId, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        });
+      });
     });
+    describe('decrease capacity', () => {
+      it('should move all pending requests to queue when new availability is negative', async () => {
+        await initQuota({ capacity: 2, availability: 0 });
+        const { id: activeRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: pendingRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+        const { id: queuedRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Queued
+        );
 
-    it('should move a limited number of requests to queued when there is less space more than 0', async () => {
-      updateQuotaCapacitySpy.mockResolvedValue({
-        availabilityDifference: -1,
-        newAvailability: 1,
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 1,
+        });
+
+        await assertQuota({ capacity: 1, availability: -1 });
+
+        await assertDeploymentRequestProperties(activeRequestId, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(pendingRequestId, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        });
+        await assertDeploymentRequestProperties(queuedRequestId, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        });
       });
+      it('should not move pending requests to queue when new availability is equal to zero', async () => {
+        await initQuota({ capacity: 3, availability: 1 });
+        const { id: activeRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: pendingRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
 
-      await DeploymentsApp.updateDeploymentQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity: 10,
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 2,
+        });
+
+        await assertQuota({ capacity: 2, availability: 0 });
+
+        await assertDeploymentRequestProperties(activeRequestId, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(pendingRequestId, {
+          hub_status: DeploymentRequestHubStatus.Pending,
+        });
       });
+      it('should not move pending requests to queue when new availability is positive', async () => {
+        await initQuota({ capacity: 4, availability: 2 });
+        const { id: activeRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: pendingRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 3,
+        });
 
-      expect(setPendingRequestsAsQueuedSpy).toHaveBeenCalledWith(
-        platformIdentifier,
-        region,
-        1
-      );
-      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
-      expect(reservePlaceSpy).not.toHaveBeenCalled();
-    });
+        await assertQuota({ capacity: 3, availability: 1 });
 
-    it('should move requests to pending when there is more space than before', async () => {
-      updateQuotaCapacitySpy.mockResolvedValue({
-        availabilityDifference: 1,
-        newAvailability: 1,
+        await assertDeploymentRequestProperties(activeRequestId, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(pendingRequestId, {
+          hub_status: DeploymentRequestHubStatus.Pending,
+        });
       });
-
-      setQueuedRequestsAsPendingSpy.mockResolvedValue([{}]);
-
-      await DeploymentsApp.updateDeploymentQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity: 10,
-      });
-
-      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
-      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
-        platformIdentifier,
-        region,
-        1
-      );
-      expect(reservePlaceSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should send telemetry event when deployment request is moved to queued', async () => {
-      throw new Error('not implemented');
-    });
-
-    it('should send telemetry event when deployment request is moved to pending', async () => {
-      throw new Error('not implemented');
-    });
-
-    it('should throw when the is no space when reserving a place', async () => {
-      reservePlaceSpy.mockResolvedValue({ isPlaceAvailable: false });
-      updateQuotaCapacitySpy.mockResolvedValue({
-        availabilityDifference: 1,
-        newAvailability: 1,
-      });
-
-      setQueuedRequestsAsPendingSpy.mockResolvedValue([{}]);
-
-      const call = DeploymentsApp.updateDeploymentQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity: 10,
-      });
-
-      await expect(call).rejects.toThrow(
-        ErrorCode.DeploymentRequestQuotaNoPlaceAvailable
-      );
-
-      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
-      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
-        platformIdentifier,
-        region,
-        1
-      );
-      expect(reservePlaceSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should do nothing when there space did not change', async () => {
-      updateQuotaCapacitySpy.mockResolvedValue({ availabilityDifference: 0 });
-
-      await DeploymentsApp.updateDeploymentQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity: 10,
-      });
-
-      expect(setPendingRequestsAsQueuedSpy).not.toHaveBeenCalled();
-      expect(setQueuedRequestsAsPendingSpy).not.toHaveBeenCalled();
-      expect(reservePlaceSpy).not.toHaveBeenCalled();
     });
   });
 

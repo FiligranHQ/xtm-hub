@@ -63,3 +63,35 @@ export async function insertOpenCtiDeploymentRequest(
     ...deploymentRequest,
   });
 }
+
+export const assertDeploymentRequestProperties = async (
+  id: DeploymentRequestId,
+  {
+    hub_status,
+    target_state,
+    ordering,
+  }: {
+    hub_status?: DeploymentRequestHubStatus;
+    target_state?: DeploymentRequestPlatformState;
+    ordering?: number;
+  }
+) => {
+  const deploymentRequest =
+    await DeploymentRequestDomain.loadDeploymentRequestBy({
+      id,
+    });
+
+  expect(deploymentRequest).toBeDefined();
+
+  if (hub_status) {
+    expect(deploymentRequest!.hub_status).toBe(hub_status);
+  }
+
+  if (target_state) {
+    expect(deploymentRequest!.target_state).toBe(target_state);
+  }
+
+  if (ordering) {
+    expect(deploymentRequest!.ordering).toBe(ordering);
+  }
+};

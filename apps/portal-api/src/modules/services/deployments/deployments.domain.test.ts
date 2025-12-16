@@ -24,7 +24,10 @@ import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
-import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
+import {
+  assertDeploymentRequestProperties,
+  insertOpenCtiDeploymentRequest,
+} from './deployments.test.utils';
 
 describe('DeploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -127,7 +130,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.platform_identifier).toBe(platformIdentifier);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Active);
     });
@@ -150,7 +153,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
     });
 
@@ -238,7 +241,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.platform_token).toBe(platformToken);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Active);
     });
@@ -258,7 +261,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
     });
 
@@ -764,36 +767,4 @@ describe('DeploymentRequestDomain', () => {
       });
     });
   });
-
-  const assertDeploymentRequestProperties = async (
-    id: DeploymentRequestId,
-    {
-      hub_status,
-      target_state,
-      ordering,
-    }: {
-      hub_status?: DeploymentRequestHubStatus;
-      target_state?: DeploymentRequestPlatformState;
-      ordering?: number;
-    }
-  ) => {
-    const deploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({
-        id,
-      });
-
-    expect(deploymentRequest).toBeDefined();
-
-    if (hub_status) {
-      expect(deploymentRequest!.hub_status).toBe(hub_status);
-    }
-
-    if (target_state) {
-      expect(deploymentRequest!.target_state).toBe(target_state);
-    }
-
-    if (ordering) {
-      expect(deploymentRequest!.ordering).toBe(ordering);
-    }
-  };
 });
