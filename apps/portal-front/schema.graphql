@@ -98,7 +98,7 @@ type Mutation {
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
-  reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success
+  reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
   cancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
@@ -346,7 +346,6 @@ input CreateDeploymentRequestInput {
   job_title: String
   activity_sector: String
   use_case: String
-  hub_status: DeploymentRequestHubStatus
 }
 
 input UpdateDeploymentRequestInput {
@@ -398,6 +397,7 @@ type PlatformDeploymentRequestConnection {
 type DeploymentAvailability {
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
+  capacity: Int!
 }
 
 enum DeploymentRequestOrdering {

@@ -1,9 +1,7 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import useAdminByPass from '@/hooks/useAdminByPass';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
-import { FeatureFlag } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { SettingsIcon } from 'filigran-icon';
@@ -107,10 +105,7 @@ const ClosedMenuAdmin = () => {
   );
 };
 
-const adminLinksData = (
-  t: UseTranslationsProps,
-  isFreeTrialFeatureEnabled: boolean
-) => [
+const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/parameters`,
     label: t('MenuLinks.Parameters'),
@@ -135,38 +130,29 @@ const adminLinksData = (
     href: `/${APP_PATH}/admin/service`,
     label: t('MenuLinks.Services'),
   },
-  ...(isFreeTrialFeatureEnabled
-    ? [
-        {
-          href: `/${APP_PATH}/admin/trials`,
-          label: t('MenuLinks.Trials'),
-        },
-      ]
-    : []),
+  {
+    href: `/${APP_PATH}/admin/trials`,
+    label: t('MenuLinks.Trials'),
+  },
 ];
 
 const AdminLinks = ({ className }: { className?: string }) => {
   const t = useTranslations();
-  const isFreeTrialFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.OPEN_CTI_FREE_TRIAL
-  );
   return (
     <>
-      {adminLinksData(t, isFreeTrialFeatureEnabled).map(
-        ({ href, label, restriction = [] }) => (
-          <GuardCapacityComponent
-            key={href}
-            capacityRestriction={[...restriction]}>
-            <li>
-              <AdminButton
-                className={className}
-                href={href}
-                label={label}
-              />
-            </li>
-          </GuardCapacityComponent>
-        )
-      )}
+      {adminLinksData(t).map(({ href, label, restriction = [] }) => (
+        <GuardCapacityComponent
+          key={href}
+          capacityRestriction={[...restriction]}>
+          <li>
+            <AdminButton
+              className={className}
+              href={href}
+              label={label}
+            />
+          </li>
+        </GuardCapacityComponent>
+      ))}
     </>
   );
 };

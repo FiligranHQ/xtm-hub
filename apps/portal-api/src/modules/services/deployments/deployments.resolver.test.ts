@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
+import { db } from '../../../../knexfile';
 import { DEFAULT_ADMIN_EMAIL } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -7,6 +8,7 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
+import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
@@ -154,16 +156,49 @@ describe('Deployment app', () => {
   });
   describe('deploymentRequestsAvailable', () => {
     it('should return the available deployment request', async () => {
+      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+        .update({
+          availability: 10,
+        })
+        .whereIn('region', [
+          DeploymentRequestPlatformRegion.ApacAu,
+          DeploymentRequestPlatformRegion.ApacSg,
+        ]);
+
+      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+        .update({
+          availability: 20,
+        })
+        .whereIn('region', [
+          DeploymentRequestPlatformRegion.EuWest,
+          DeploymentRequestPlatformRegion.UsEast,
+        ]);
       const availableDeployments =
         await resolver.Query.deploymentRequestsAvailable(undefined, {
           platformIdentifier: PlatformIdentifier.Opencti,
         });
 
       expect(availableDeployments).toStrictEqual([
-        { region: DeploymentRequestPlatformRegion.ApacAu, availableCount: 10 },
-        { region: DeploymentRequestPlatformRegion.ApacSg, availableCount: 10 },
-        { region: DeploymentRequestPlatformRegion.EuWest, availableCount: 20 },
-        { region: DeploymentRequestPlatformRegion.UsEast, availableCount: 20 },
+        {
+          region: DeploymentRequestPlatformRegion.ApacAu,
+          availableCount: 10,
+          capacity: 10,
+        },
+        {
+          region: DeploymentRequestPlatformRegion.ApacSg,
+          availableCount: 10,
+          capacity: 10,
+        },
+        {
+          region: DeploymentRequestPlatformRegion.EuWest,
+          availableCount: 20,
+          capacity: 20,
+        },
+        {
+          region: DeploymentRequestPlatformRegion.UsEast,
+          availableCount: 20,
+          capacity: 20,
+        },
       ]);
     });
   });

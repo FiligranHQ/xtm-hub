@@ -79,6 +79,7 @@
       "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
       "DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED": "Vous ne pouvez réorganiser que les demandes de déploiement en file d'attente.",
       "DEPLOYMENT_REQUEST_NOT_FOUND": "Une erreur inconnue s'est produite",
+      "DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND": "Le quota de la demande de déploiement n'a pas été trouvé.",
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "Une erreur inconnue s'est produite",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
@@ -100,7 +101,6 @@
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
-      "INVALID_STATUS": "Statut invalide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
@@ -281,13 +281,17 @@
       "RequestDate": "Date de la demande",
       "Priority": "Priorité",
       "CancellationDate": "Date d'annulation",
-      "CancellationOwner": "Propriétaire de l'annulation"
+      "CancellationOwner": "Propriétaire de l'annulation",
+      "Available": "Disponible",
+      "Taken": "Pris",
+      "Total": "Total"
     },
     "TabTitle": {
       "Cancelled": "Annulé",
       "Expired": "Expiré",
       "Running": "En cours d'exécution",
-      "Waiting": "En attente"
+      "Waiting": "En attente",
+      "Quotas": "Quotas"
     },
     "Toast": {
       "TrialsReordered": "Les demandes ont été réorganisées"
@@ -309,6 +313,10 @@
       "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
       "Title": "Êtes-vous sûr?"
     }
+  },
+  "PlatformIdentifier": {
+    "openaev": "OpenAEV",
+    "opencti": "OpenCTI"
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {

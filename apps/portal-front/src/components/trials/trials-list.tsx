@@ -1,6 +1,7 @@
 'use client';
 
-import TrialsTab from '@/components/trials/trials-tab';
+import { TrialsTabQuotas } from '@/components/trials/tab/quotas/trials-tab-quotas';
+import TrialsTab from '@/components/trials/tab/trials-tab';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -25,6 +26,9 @@ const TrialsList: FunctionComponent = () => {
           <TabsTrigger value="waiting">
             {t('TrialsDashboard.TabTitle.Waiting')}
           </TabsTrigger>
+          <TabsTrigger value="quotas">
+            {t('TrialsDashboard.TabTitle.Quotas')}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="cancelled">
           <TrialsTab type={TrialsTabType.Cancelled}></TrialsTab>
@@ -37,6 +41,9 @@ const TrialsList: FunctionComponent = () => {
         </TabsContent>
         <TabsContent value="waiting">
           <TrialsTab type={TrialsTabType.Waiting}></TrialsTab>
+        </TabsContent>
+        <TabsContent value="quotas">
+          <TrialsTabQuotas />
         </TabsContent>
       </Tabs>
     </>

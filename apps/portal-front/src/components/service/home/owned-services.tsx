@@ -1,7 +1,5 @@
 'use client';
 
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
@@ -29,9 +27,6 @@ const OwnedServices = ({
   publicServices,
   registeredPlatforms,
 }: OwnedServicesProps) => {
-  const isFreeTrialFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.OPEN_CTI_FREE_TRIAL
-  );
   const t = useTranslations();
   // Merge and sort by ordering property
   const sortedServices = [
@@ -62,8 +57,7 @@ const OwnedServices = ({
       service.deployment_request.counts_in_orga_quota
   );
 
-  const shouldDisplayFreeTrialSkeleton =
-    isFreeTrialFeatureEnabled && trialInstances.length === 0;
+  const shouldDisplayFreeTrialSkeleton = trialInstances.length === 0;
 
   const freeTrialServiceInstanceDataCard =
     freeTrialSkeletonToServiceInstanceCardData(

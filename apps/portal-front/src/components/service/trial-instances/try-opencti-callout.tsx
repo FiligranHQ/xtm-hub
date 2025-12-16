@@ -6,8 +6,6 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
 import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { SettingsContext } from '@/components/settings/env-portal-context';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { daysUntil } from '@/utils/date';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -23,10 +21,8 @@ import { ContactUsButton } from './contact-us-button';
 export const TryOpenCTICallout = () => {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
-  const isOpenCTIFreeTrialActivated = useIsFeatureEnabled(
-    FeatureFlag.OPEN_CTI_FREE_TRIAL
-  );
-  if (!settings || !isOpenCTIFreeTrialActivated) return null;
+
+  if (!settings) return null;
 
   const { freeTrial } = useFreeTrial();
 

@@ -42,6 +42,7 @@ import {
   databaseContext,
   withTransaction,
 } from '../../../context/database.context';
+import { UserId } from '../../../model/kanel/public/User';
 import { SYSTEM_USER_UUID } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
@@ -57,6 +58,7 @@ import {
   computeHubStatus,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
+import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
@@ -85,15 +87,6 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
 
-    if (
-      input.hub_status &&
-      ![
-        DeploymentRequestHubStatus.Pending,
-        DeploymentRequestHubStatus.Queued,
-      ].includes(input.hub_status)
-    ) {
-      throw new Error(BadRequestErrorCode.InvalidStatus);
-    }
     await assertFreeTrialsLimit(user.selected_organization_id);
 
     const serviceDefinition =
@@ -105,10 +98,16 @@ export const DeploymentsApp = {
     }
 
     try {
-      const hubStatus = input.hub_status ?? DeploymentRequestHubStatus.Pending;
-
       const createdDeploymentRequest = await databaseContext.withTransaction(
         async () => {
+          const { isPlaceAvailable } =
+            await DeploymentsQuotasDomain.reservePlace(
+              input.platform_identifier,
+              input.region
+            );
+          const hubStatus = isPlaceAvailable
+            ? DeploymentRequestHubStatus.Pending
+            : DeploymentRequestHubStatus.Queued;
           const maxOrdering = await DeploymentRequestDomain.getMaxOrdering();
           const ordering = (maxOrdering ?? 0) + 1;
 
@@ -292,29 +291,15 @@ export const DeploymentsApp = {
       }
     });
 
-    try {
-      const organization = await loadOrganizationBy({
-        id: deploymentRequest.organization_requester_id,
-      });
-      const updateDeploymentEvent = buildUpdateDeploymentEvent(
-        organization,
-        deploymentRequest.user_requester_id,
-        {
-          status: newStatus,
-          start_date: input.start_date,
-          end_date: input.end_date,
-          deployment_id: deploymentRequest.id,
-          deployment_type: deploymentRequest.type,
-          platform_id: input.platform_id,
-        }
+    const updatedDeploymentRequest =
+      await DeploymentRequestDomain.loadFullDeploymentRequestById(
+        deploymentRequestId
       );
 
-      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-    } catch (error) {
-      logApp.error('Unable to send telemetry event', {
-        error,
-      });
-    }
+    await sendUpdateDeploymentTelemetryEvent(
+      updatedDeploymentRequest,
+      updatedDeploymentRequest.user_requester_id
+    );
 
     try {
       if (
@@ -340,9 +325,7 @@ export const DeploymentsApp = {
       });
     }
 
-    return DeploymentRequestDomain.loadFullDeploymentRequestById(
-      deploymentRequestId
-    );
+    return updatedDeploymentRequest;
   },
 
   loadPlatformDeploymentRequests: async (
@@ -372,19 +355,14 @@ export const DeploymentsApp = {
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier
   ): Promise<DeploymentAvailability[]> => {
-    const max_deployments =
-      config.get<Record<string, number>>('max_deployments');
-    const deploymentsByRegion =
-      await DeploymentRequestDomain.loadDeploymentRequestCountByRegion({
-        platform_identifier: platformIdentifier,
-      });
+    const quotas = await DeploymentsQuotasDomain.loadQuotas({
+      platform_identifier: platformIdentifier,
+    });
 
-    const allRegions = Object.values(DeploymentRequestPlatformRegion); // Assuming you have a Region enum
-
-    return allRegions.map((region) => ({
-      region,
-      availableCount:
-        (max_deployments[region] || 0) - (deploymentsByRegion[region] || 0),
+    return quotas.map((quota) => ({
+      region: quota.region as DeploymentRequestPlatformRegion,
+      availableCount: quota.availability,
+      capacity: quota.capacity,
     }));
   },
 
@@ -438,6 +416,8 @@ export const DeploymentsApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
+    const previousHubStatus = deploymentRequest.hub_status;
+
     if (
       !isAdmin &&
       user.selected_organization_id !==
@@ -453,12 +433,18 @@ export const DeploymentsApp = {
         DeploymentRequestPlatformState.Provisioning,
       ].includes(deploymentRequest.actual_state);
 
+    const target_state =
+      deploymentRequest.actual_state ===
+      DeploymentRequestPlatformState.Unprovisioned
+        ? DeploymentRequestPlatformState.Unprovisioned
+        : DeploymentRequestPlatformState.Removed;
+
     await withTransaction(async () => {
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
         {
           hub_status: DeploymentRequestHubStatus.Cancelled,
-          target_state: DeploymentRequestPlatformState.Removed,
+          target_state: target_state,
           cancellation_date: new Date(),
           cancellation_user_id: user.id,
           counts_in_orga_quota: countsInOrgaQuota,
@@ -469,6 +455,11 @@ export const DeploymentsApp = {
           creation_status: ServiceInstanceCreationStatus.Disabled,
         });
       }
+      await DeploymentsApp.releaseDeploymentRequestPlace(
+        previousHubStatus,
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      );
     });
 
     const updatedDeploymentRequest =
@@ -476,32 +467,7 @@ export const DeploymentsApp = {
         id: deploymentRequestId,
       });
 
-    try {
-      const organization = await loadOrganizationBy({
-        id: updatedDeploymentRequest.organization_requester_id,
-      });
-      const updateDeploymentEvent = buildUpdateDeploymentEvent(
-        organization,
-        user.id,
-        {
-          status: updatedDeploymentRequest.hub_status,
-          start_date: updatedDeploymentRequest.start_date,
-          end_date: updatedDeploymentRequest.end_date,
-          deployment_id: updatedDeploymentRequest.id,
-          deployment_type: updatedDeploymentRequest.type,
-          platform_id: updatedDeploymentRequest.platform_id,
-        }
-      );
-
-      telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-    } catch (error) {
-      logApp.error(
-        'Unable to send telemetry event when cancelling deployment request',
-        {
-          error,
-        }
-      );
-    }
+    void sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
       const [requester] = await loadUnsecureUser({
@@ -529,40 +495,31 @@ export const DeploymentsApp = {
       await DeploymentRequestDomain.loadTrialsToExpire();
 
     for (const trial of expiredTrials) {
+      const previousHubStatus = trial.hub_status as DeploymentRequestHubStatus;
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
       try {
-        const updatedDeploymentRequest =
-          await DeploymentRequestDomain.updateDeploymentRequestById(trial.id, {
-            hub_status: DeploymentRequestHubStatus.Expired,
-            target_state: DeploymentRequestPlatformState.Removed,
-          });
+        await withTransaction(async () => {
+          const updatedDeploymentRequest =
+            await DeploymentRequestDomain.updateDeploymentRequestById(
+              trial.id,
+              {
+                hub_status: DeploymentRequestHubStatus.Expired,
+                target_state: DeploymentRequestPlatformState.Removed,
+              }
+            );
 
-        try {
-          const organization = await loadOrganizationBy({
-            id: updatedDeploymentRequest.organization_requester_id,
-          });
-          const updateDeploymentEvent = buildUpdateDeploymentEvent(
-            organization,
-            SYSTEM_USER_UUID,
-            {
-              status:
-                updatedDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-              start_date: updatedDeploymentRequest.start_date,
-              end_date: updatedDeploymentRequest.end_date,
-              deployment_id: updatedDeploymentRequest.id,
-              deployment_type:
-                updatedDeploymentRequest.type as DeploymentRequestDeploymentType,
-              platform_id: updatedDeploymentRequest.platform_id,
-            }
+          await DeploymentsApp.releaseDeploymentRequestPlace(
+            previousHubStatus,
+            trial.platform_identifier as PlatformIdentifier,
+            trial.region as DeploymentRequestPlatformRegion
           );
 
-          telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-        } catch (error) {
-          logApp.error('Unable to send telemetry event when expiring trials', {
-            error,
-          });
-        }
+          await sendUpdateDeploymentTelemetryEvent(
+            updatedDeploymentRequest,
+            SYSTEM_USER_UUID
+          );
+        });
 
         try {
           const [requester] = await loadUnsecureUser({
@@ -589,4 +546,73 @@ export const DeploymentsApp = {
       }
     }
   },
+
+  releaseDeploymentRequestPlace: async (
+    previousHubStatus: DeploymentRequestHubStatus,
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion
+  ) => {
+    const isRequestCountedInQuotas = [
+      DeploymentRequestHubStatus.Active,
+      DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
+    ].includes(previousHubStatus);
+    if (!isRequestCountedInQuotas) {
+      return;
+    }
+
+    const [updatedDeploymentRequest] =
+      await DeploymentRequestDomain.setQueuedRequestsAsPending(
+        platformIdentifier,
+        region,
+        1
+      );
+    if (updatedDeploymentRequest) {
+      const { user } = requestContext.require();
+
+      await sendUpdateDeploymentTelemetryEvent(
+        updatedDeploymentRequest,
+        user.id
+      );
+      return;
+    }
+
+    await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+  },
+};
+
+const sendUpdateDeploymentTelemetryEvent = async (
+  deploymentRequest: DeploymentRequestModel,
+  userId: UserId,
+  hubStatus?: DeploymentRequestHubStatus
+) => {
+  try {
+    const organization = await loadOrganizationBy({
+      id: deploymentRequest.organization_requester_id,
+    });
+    const updateDeploymentEvent = buildUpdateDeploymentEvent(
+      organization,
+      userId,
+      {
+        status:
+          hubStatus ??
+          (deploymentRequest.hub_status as DeploymentRequestHubStatus),
+        start_date: deploymentRequest.start_date,
+        end_date: deploymentRequest.end_date,
+        deployment_id: deploymentRequest.id,
+        deployment_type:
+          deploymentRequest.type as DeploymentRequestDeploymentType,
+        platform_id: deploymentRequest.platform_id,
+      }
+    );
+
+    void telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+  } catch (error) {
+    logApp.error(
+      `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,
+      {
+        error,
+      }
+    );
+  }
 };
