@@ -18,7 +18,7 @@ export async function up(knex) {
     id: serviceInstanceId,
     name: 'OpenAEV 101',
     description:
-      'The fundamentals: discover the essential concepts with basic use cases and workflows.',
+      "Discover how to deploy and use OpenAEV, Filigran's platform for realistic cyber-threat simulation, to build hands-on adversary emulation exercises.",
     creation_status: 'READY',
     public: false,
     join_type: 'JOIN_AUTO',
