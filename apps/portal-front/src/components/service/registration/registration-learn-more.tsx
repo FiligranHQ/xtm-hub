@@ -138,7 +138,7 @@ export const RegistrationLearnMore = async ({
               Get more out of your{' '}
               {serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
                 ? 'OpenCTI'
-                : 'OpenAEV'}
+                : 'OpenAEV'}{' '}
               platform!
             </P>
             <P className="text-gray">
