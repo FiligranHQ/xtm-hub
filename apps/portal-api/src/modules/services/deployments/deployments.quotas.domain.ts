@@ -14,34 +14,37 @@ export const DeploymentsQuotasDomain = {
     platformIdentifier: PlatformIdentifier,
     region: DeploymentRequestPlatformRegion
   ): Promise<{ isPlaceAvailable: boolean }> => {
-    return withTransaction(async () => {
-      const quota = await lockQuota(platformIdentifier, region);
-      if (quota.availability <= 0) {
+    return DeploymentsQuotasDomain.withLockedQuotaTransaction(
+      { platformIdentifier, region },
+      async (quota) => {
+        if (quota.availability <= 0) {
+          return {
+            isPlaceAvailable: false,
+          };
+        }
+
+        await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+          .update({ availability: quota.availability - 1 })
+          .where({ id: quota.id });
         return {
-          isPlaceAvailable: false,
+          isPlaceAvailable: true,
         };
       }
-
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ availability: quota.availability - 1 })
-        .where({ id: quota.id });
-      return {
-        isPlaceAvailable: true,
-      };
-    });
+    );
   },
 
   freePlace: async (
     platformIdentifier: PlatformIdentifier,
     region: DeploymentRequestPlatformRegion
   ): Promise<void> => {
-    await withTransaction(async () => {
-      const quota = await lockQuota(platformIdentifier, region);
-
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ availability: quota.availability + 1 })
-        .where({ id: quota.id });
-    });
+    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+      { platformIdentifier, region },
+      async (quota) => {
+        await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+          .update({ availability: quota.availability + 1 })
+          .where({ id: quota.id });
+      }
+    );
   },
 
   updateQuotaCapacity: async ({
@@ -52,30 +55,45 @@ export const DeploymentsQuotasDomain = {
     platformIdentifier: PlatformIdentifier;
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
-  }): Promise<{ availabilityDifference: number; newAvailability: number }> => {
-    return withTransaction(async () => {
-      const quota = await lockQuota(platformIdentifier, region);
+  }): Promise<{ newAvailability: number }> => {
+    return DeploymentsQuotasDomain.withLockedQuotaTransaction(
+      { platformIdentifier, region },
+      async (quota) => {
+        const difference = newCapacity - quota.capacity;
+        const newAvailability = quota.availability + difference;
+        await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+          .update({
+            capacity: newCapacity,
+            availability: quota.availability + difference,
+          })
+          .where({ id: quota.id });
 
-      const difference = newCapacity - quota.capacity;
-      const newAvailability = quota.availability + difference;
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({
-          capacity: newCapacity,
-          availability: quota.availability + difference,
-        })
-        .where({ id: quota.id });
-
-      return {
-        availabilityDifference: difference,
-        newAvailability,
-      };
-    });
+        return { newAvailability };
+      }
+    );
   },
 
   loadQuotas: async (field: DeploymentRequestQuotaMutator) => {
     return db<DeploymentRequestQuota[]>('DeploymentRequestQuota')
       .where(field)
       .select('*');
+  },
+
+  withLockedQuotaTransaction: async <T>(
+    {
+      platformIdentifier,
+      region,
+    }: {
+      platformIdentifier: PlatformIdentifier;
+      region: DeploymentRequestPlatformRegion;
+    },
+    callback: (quota: DeploymentRequestQuota) => Promise<T>
+  ) => {
+    return withTransaction(async () => {
+      const quota = await lockQuota(platformIdentifier, region);
+
+      return callback(quota);
+    });
   },
 };
 

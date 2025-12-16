@@ -129,7 +129,6 @@ describe('DeploymentsQuotasDomain', () => {
       const oldAvailability = 2;
       const newCapacity = 2;
       const expectedAvailability = -1;
-      const expectedDifference = -3;
       await db<DeploymentRequestQuota>('DeploymentRequestQuota')
         .update({ capacity: oldCapacity, availability: oldAvailability })
         .where({ region, platform_identifier: platformIdentifier });
@@ -148,7 +147,6 @@ describe('DeploymentsQuotasDomain', () => {
         .first();
 
       expect(updatedRequestQuota!.availability).toBe(expectedAvailability);
-      expect(result.availabilityDifference).toBe(expectedDifference);
       expect(result.newAvailability).toBe(expectedAvailability);
     });
 
@@ -158,7 +156,6 @@ describe('DeploymentsQuotasDomain', () => {
         const oldAvailability = 2;
         const newCapacity = 10;
         const expectedAvailability = 7;
-        const expectedDifference = 5;
 
         await db<DeploymentRequestQuota>('DeploymentRequestQuota')
           .update({ capacity: oldCapacity, availability: oldAvailability })
@@ -178,7 +175,6 @@ describe('DeploymentsQuotasDomain', () => {
           .first();
 
         expect(updatedRequestQuota!.availability).toBe(expectedAvailability);
-        expect(result.availabilityDifference).toBe(expectedDifference);
         expect(result.newAvailability).toBe(expectedAvailability);
       });
     });
