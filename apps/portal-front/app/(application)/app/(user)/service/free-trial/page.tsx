@@ -9,6 +9,7 @@ import { TrialsHeader } from '@/components/service/trial-instances/trials-header
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import React from 'react';
 
 interface Props {
@@ -53,7 +54,9 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
           </>
         }
       />
-      <RegistrationLearnMore />
+      <RegistrationLearnMore
+        serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
+      />
     </>
   );
 };

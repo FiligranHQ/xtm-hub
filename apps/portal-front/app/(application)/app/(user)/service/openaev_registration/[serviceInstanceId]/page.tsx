@@ -1,4 +1,5 @@
 import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
+import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import ClientSection from './client-section';
 
 export interface ServiceOpenAEVRegistrationPageProps {
@@ -8,7 +9,9 @@ const Page = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
   return (
     <>
       <ClientSection params={params} />
-      <RegistrationLearnMore />
+      <RegistrationLearnMore
+        serviceInstanceTag={ServiceInstanceTagEnum.OPENAEV}
+      />
     </>
   );
 };

@@ -35,11 +35,17 @@ const Section = ({
   </section>
 );
 
-export const RegistrationLearnMore: React.FC = async () => {
+interface RegistrationLearnMoreProps {
+  serviceInstanceTag: ServiceInstanceTagEnum;
+}
+
+export const RegistrationLearnMore = async ({
+  serviceInstanceTag,
+}: RegistrationLearnMoreProps) => {
   const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
     ServiceLinksByTagsQueryGraphql,
     {
-      tags: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENAEV],
+      tags: [ServiceInstanceTagEnum.TRIAL, serviceInstanceTag],
     },
     { cache: undefined, next: { revalidate: 3600 } }
   );
@@ -129,7 +135,11 @@ export const RegistrationLearnMore: React.FC = async () => {
           <div className="order-first lg:order-last basis-full">
             <H2>Quick start guide</H2>
             <P className="text-gray mb-l">
-              Get more out of your OpenAEV platform!
+              Get more out of your{' '}
+              {serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
+                ? 'OpenCTI'
+                : 'OpenAEV'}
+              platform!
             </P>
             <P className="text-gray">
               Explore step-by-step guides, expert courses, and community
