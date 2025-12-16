@@ -83,8 +83,20 @@ describe('isPlatformStateTransitionValid', () => {
       DeploymentRequestPlatformState.Active,
     ],
     [
+      DeploymentRequestPlatformState.Provisioning,
+      DeploymentRequestPlatformState.Removing,
+    ],
+    [
+      DeploymentRequestPlatformState.Provisioning,
+      DeploymentRequestPlatformState.Removed,
+    ],
+    [
       DeploymentRequestPlatformState.Active,
       DeploymentRequestPlatformState.Removing,
+    ],
+    [
+      DeploymentRequestPlatformState.Active,
+      DeploymentRequestPlatformState.Removed,
     ],
     [
       DeploymentRequestPlatformState.Removing,
@@ -103,7 +115,7 @@ describe('isPlatformStateTransitionValid', () => {
     [null, DeploymentRequestPlatformState.Active],
     [
       DeploymentRequestPlatformState.Provisioning,
-      DeploymentRequestPlatformState.Removing,
+      DeploymentRequestPlatformState.Unprovisioned,
     ],
     [DeploymentRequestPlatformState.Active, null],
     [
