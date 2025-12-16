@@ -24,8 +24,7 @@ export const isTrial = (
 
 export const buildPlatformHoverLinks = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
-  t: ReturnType<typeof useTranslations>,
-  canUpdatePlatform: boolean
+  t: ReturnType<typeof useTranslations>
 ): PlatformHoverAction[] | undefined => {
   const isTrialActive =
     platform.deployment_request?.hub_status ===
@@ -46,13 +45,6 @@ export const buildPlatformHoverLinks = (
       label: t('Service.RegisteredPlatforms.GoToMyPlatform'),
       href: platform.url,
       target: '_blank',
-    });
-  }
-  if (canUpdatePlatform && !isTrial(platform)) {
-    actions.push({
-      id: 'platform-update',
-      label: t('Platform.Update'),
-      variant: 'outline-primary',
     });
   }
 
