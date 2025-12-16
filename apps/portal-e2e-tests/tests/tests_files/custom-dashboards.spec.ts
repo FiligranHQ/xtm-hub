@@ -48,6 +48,7 @@ test.describe('Custom dashboards', () => {
     await page.goto('/');
     await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToPublicCustomDashboard();
+    await page.evaluate(() => window.scrollTo(0, 0));
     await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToPublicDashboardDetail(
       DASHBOARD_TEST.shortDescription

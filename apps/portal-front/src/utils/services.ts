@@ -4,8 +4,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { buildPlatformHoverLinks } from '@/utils/platform';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import { buildPlatformHoverLinks, isTrial } from '@/utils/platform';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
@@ -23,15 +22,6 @@ export const isExternalService = (
     ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
     ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
-
-const isTrial = (
-  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
-) => {
-  return (
-    platform.deployment_request?.type ===
-    DeploymentRequestDeploymentTypeEnum.TRIAL
-  );
-};
 
 export const isExpired = (endDate: Date | undefined | null): boolean => {
   return endDate ? new Date(endDate) < new Date() : false;
@@ -112,7 +102,8 @@ export const freeTrialSkeletonToServiceInstanceCardData = (
 
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslations>,
+  canUpdatePlatform: boolean = false
 ): ServiceInstanceCardData => {
   const cardBackgroundByServiceMap: Partial<
     Record<ServiceDefinitionIdentifierEnum, string>
@@ -136,12 +127,13 @@ export const registeredPlatformToServiceInstanceCardData = (
         platform.deployment_request
           ?.hub_status as DeploymentRequestHubStatusEnum
       ) || isExpired(platform.subscription?.end_date),
+    hoverLinks: buildPlatformHoverLinks(platform, t, canUpdatePlatform),
+    canUpdatePlatform,
   };
   if (isTrial(platform)) {
     return {
       ...commonValues,
       ...freeTrialStaticData(t),
-      hoverLinks: buildPlatformHoverLinks(platform, t),
       displayedServiceStatus: getDisplayDays(platform),
     };
   }
@@ -150,8 +142,6 @@ export const registeredPlatformToServiceInstanceCardData = (
     ...commonValues,
     name: platform.title,
     description: t('Register.Details.Description'),
-    displayLinkArrow: true,
-    displayUpdatePlatformIfAllowed: true,
     illustrationDocumentUrl: platform.illustration_document_id
       ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
       : `/${platformIdentifier}-private-platform-illustration.png`,

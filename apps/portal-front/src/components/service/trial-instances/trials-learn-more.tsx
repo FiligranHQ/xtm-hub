@@ -1,20 +1,10 @@
-'use server';
-import ServiceInstanceCard from '@/components/service/service-instance-card';
 import { cn } from '@/lib/utils';
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { publicServiceInstanceToInstanceCardData } from '@/utils/services';
-import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
-import ServiceLinksByTagsQueryGraphql, {
-  serviceLinksByTagsQuery,
-} from '@generated/serviceLinksByTagsQuery.graphql';
-import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import {
   AnalyticsIcon,
   ArrowRightAltIcon,
   ArrowsInputIcon,
   ArrowsOutputIcon,
 } from 'filigran-icon';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -30,33 +20,10 @@ const P = ({
   className?: string;
 }) => <p className={cn('text-sm', className)}>{children}</p>;
 
-const Section = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => (
-  <section className={cn('flex flex-col gap-xxl py-20', className)}>
-    {children}
-  </section>
-);
-
-export const TrialsLearnMore: React.FC = async () => {
-  const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
-    ServiceLinksByTagsQueryGraphql,
-    {
-      tags: [ServiceInstanceTagEnum.TRIAL, ServiceInstanceTagEnum.OPENCTI],
-    },
-    { cache: undefined, next: { revalidate: 3600 } }
-  );
-
-  const services = response.data
-    .serviceInstanceLinksByTags as unknown as serviceList_fragment$data[];
-
+export const TrialsLearnMore: React.FC = () => {
   return (
     <>
-      <Section className="pt-0">
+      <section className="flex flex-col gap-xxl py-20 pt-0">
         <div className="flex flex-col gap-xl items-center lg:flex-row">
           <div className="w-[413px]">
             <iframe
@@ -139,97 +106,7 @@ export const TrialsLearnMore: React.FC = async () => {
             </P>
           </article>
         </div>
-      </Section>
-      <Section className="bg-blue-800/5 px-xl">
-        <div className="text-center w-[70%] m-auto">
-          <H2>Your eXtended Threat Management (XTM) suite</H2>
-          <P>
-            OpenCTI is part of Filigran’s open-source threat intelligence,
-            advanced adversary simulation, and strategic cyber risk management
-            solution designed to help your organization anticipate and manage
-            threats end-to-end.
-          </P>
-        </div>
-        <div className="flex flex-col lg:flex-row gap-xl">
-          <div className="flex flex-col gap-s basis-full">
-            <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
-              <h3 className="mb-m flex gap-s">
-                <Image
-                  width="25"
-                  height="25"
-                  src="/logo_opencti_dark.png"
-                  alt="OpenCTI Logo"
-                />
-                OpenCTI
-              </h3>
-              <P className="mb-s">
-                <strong>Collect, correlate and leverage</strong>
-              </P>
-              <P>
-                An open-source threat intelligence platform built by
-                practitioners for practitioners - to break data silos and make
-                threat intelligence truly actionable.
-              </P>
-            </div>
-            <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
-              <h3 className="mb-m flex gap-s">
-                <Image
-                  width="25"
-                  height="25"
-                  src="/logo_openaev_dark.png"
-                  alt="OpenAEV Logo"
-                />
-                OpenAEV
-              </h3>
-              <P className="mb-s">
-                <strong>Prioritize, test and fix what matters</strong>
-              </P>
-              <P>
-                Proactively defend against threats with Adversarial Exposure
-                Validation (AEV), simulating real-life attack scenarios to
-                optimize security defenses.
-              </P>
-            </div>
-          </div>
-          <div className="basis-full m-auto">
-            <Image
-              width="1232"
-              height="692"
-              src={`/xtm_schema.png`}
-              priority={false}
-              loading="lazy"
-              alt={`Illustration of free trial service`}
-              className="rounded w-full"
-            />
-          </div>
-        </div>
-      </Section>
-      <Section>
-        <div className="flex flex-col lg:flex-row items-center gap-xl">
-          <div className="basis-full flex justify-between gap-l">
-            {services.map((service) => (
-              <ServiceInstanceCard
-                key={service.id}
-                className="basis-full max-w-[50%]"
-                serviceInstance={publicServiceInstanceToInstanceCardData(
-                  service
-                )}
-              />
-            ))}
-          </div>
-          <div className="order-first lg:order-last basis-full">
-            <H2>Quick start guide</H2>
-            <P className="text-gray mb-l">
-              Get more out of your OpenCTI platform!
-            </P>
-            <P className="text-gray">
-              Explore step-by-step guides, expert courses, and community
-              feedback to solve real-world use cases and become a Filigran
-              champion!
-            </P>
-          </div>
-        </div>
-      </Section>
+      </section>
     </>
   );
 };
