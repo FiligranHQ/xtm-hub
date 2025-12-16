@@ -86,6 +86,7 @@ const trialsTabConfig: Record<
     statuses: [
       DeploymentRequestHubStatusEnum.ACTIVE,
       DeploymentRequestHubStatusEnum.PENDING,
+      DeploymentRequestHubStatusEnum.PROVISIONING,
     ],
   },
   [TrialsTabType.Waiting]: {
