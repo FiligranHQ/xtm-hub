@@ -258,6 +258,7 @@ export type DeploymentAvailability = {
   __typename?: 'DeploymentAvailability';
   availableCount: Scalars['Int']['output'];
   capacity: Scalars['Int']['output'];
+  platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
 };
 
@@ -2580,6 +2581,7 @@ export type DefaultDocumentResolvers<ContextType = PortalContext, ParentType ext
 export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentAvailability'] = ResolversParentTypes['DeploymentAvailability']> = ResolversObject<{
   availableCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   capacity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

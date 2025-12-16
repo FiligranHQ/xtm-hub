@@ -74,10 +74,20 @@ export const TrialsAdminCancelDeploymentRequestMutation = graphql`
 
 export const TrialsDeploymentAvailabilityFragment = graphql`
   fragment trialsDeploymentAvailabilityFragment on DeploymentAvailability
-  @relay(plural: true) {
+  @inline {
     region
     availableCount
     capacity
+    platform_identifier
+  }
+`;
+
+export const TrialsDeploymentRequestsAvailableListFragment = graphql`
+  fragment trialsDeploymentRequestsAvailableList on Query
+  @refetchable(queryName: "TrialsDeploymentRequestsAvailableListQuery") {
+    deploymentRequestsAvailable(platformIdentifier: $platformIdentifier) {
+      ...trialsDeploymentAvailabilityFragment
+    }
   }
 `;
 
@@ -85,8 +95,16 @@ export const TrialsDeploymentRequestsAvailableQuery = graphql`
   query trialsDeploymentRequestsAvailableQuery(
     $platformIdentifier: PlatformIdentifier
   ) {
-    deploymentRequestsAvailable(platformIdentifier: $platformIdentifier) {
-      ...trialsDeploymentAvailabilityFragment
+    ...trialsDeploymentRequestsAvailableList
+  }
+`;
+
+export const TrialsUpdateDeploymentQuotaCapacityMutation = graphql`
+  mutation trialsUpdateDeploymentQuotaCapacityMutation(
+    $input: UpdateDeploymentQuotaCapacityInput!
+  ) {
+    updateDeploymentQuotaCapacity(input: $input) {
+      success
     }
   }
 `;

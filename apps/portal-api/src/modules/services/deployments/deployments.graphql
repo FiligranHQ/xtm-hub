@@ -129,6 +129,7 @@ type DeploymentAvailability {
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
   capacity: Int!
+  platform_identifier: PlatformIdentifier!
 }
 
 enum DeploymentRequestOrdering {
