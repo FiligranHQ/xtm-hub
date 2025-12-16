@@ -409,6 +409,8 @@ enum DeploymentRequestOrdering {
   region
   ordering
   request_date
+  cancellation_date
+  cancellation_user_email
 }
 
 enum ReorderDeploymentRequestInQueueDirection {

@@ -324,6 +324,8 @@ export enum DeploymentRequestHubStatus {
 }
 
 export enum DeploymentRequestOrdering {
+  CancellationDate = 'cancellation_date',
+  CancellationUserEmail = 'cancellation_user_email',
   EndDate = 'end_date',
   HubStatus = 'hub_status',
   Ordering = 'ordering',
