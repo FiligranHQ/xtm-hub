@@ -22,94 +22,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  detect-affected-projects:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      all: ${{ steps.affected.outputs.all }}
-      projects: ${{ steps.affected.outputs.projects }}
-      build-front: ${{ steps.check.outputs.build-front }}
-      build-api: ${{ steps.check.outputs.build-api }}
-      build-e2e: ${{ steps.check.outputs.build-e2e }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Get Yarn cache directory
-        id: yarn-cache-dir
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Setup Yarn cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Restore Nx cache
-        uses: actions/cache/restore@v4
-        id: nx-cache
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/yarn.lock') }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-nx-${{ hashFiles('**/yarn.lock') }}-
-            ${{ runner.os }}-nx-
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Detect affected projects
-        id: affected
-        run: |
-          chmod +x .github/scripts/get-affected-projects.sh
-          .github/scripts/get-affected-projects.sh
-
-      - name: Save Nx cache
-        uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/yarn.lock') }}-${{ github.sha }}
-
-      - name: Check which projects to build
-        id: check
-        run: |
-          PROJECTS='${{ steps.affected.outputs.projects }}'
-          echo "Projects to build: $PROJECTS"
-
-          # Check if each project should be built
-          if [[ "$PROJECTS" == *"portal-front"* ]]; then
-            echo "build-front=true" >> $GITHUB_OUTPUT
-          else
-            echo "build-front=false" >> $GITHUB_OUTPUT
-          fi
-
-          if [[ "$PROJECTS" == *"portal-api"* ]]; then
-            echo "build-api=true" >> $GITHUB_OUTPUT
-          else
-            echo "build-api=false" >> $GITHUB_OUTPUT
-          fi
-
-          if [[ "$PROJECTS" == *"portal-e2e-tests"* ]]; then
-            echo "build-e2e=true" >> $GITHUB_OUTPUT
-          else
-            echo "build-e2e=false" >> $GITHUB_OUTPUT
-          fi
-
   build-images-tests:
-    needs: detect-affected-projects
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -118,7 +31,17 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        include: ${{ fromJSON(needs.detect-affected-projects.outputs.projects) }}
+        include:
+          - image: portal-front
+            dockerfile: apps/portal-front/Dockerfile
+          - image: portal-api
+            dockerfile: apps/portal-api/Dockerfile
+          - image: portal-e2e-tests
+            dockerfile: apps/portal-e2e-tests/Dockerfile
+          - image: portal-front-test
+            dockerfile: apps/portal-front/test.Dockerfile
+          - image: portal-api-test
+            dockerfile: apps/portal-api/test.Dockerfile
     outputs:
       docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
       docker-labels: ${{ steps.meta.outputs.labels }}
@@ -185,18 +108,13 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   run-e2e-tests:
-    needs: [detect-affected-projects, build-images-tests]
+    needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
       packages: write
       pull-requests: write
-    if: |
-      needs.detect-affected-projects.outputs.all == 'true' ||
-      needs.detect-affected-projects.outputs.build-e2e == 'true' ||
-      needs.detect-affected-projects.outputs.build-front == 'true' ||
-      needs.detect-affected-projects.outputs.build-api == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -297,15 +215,13 @@ jobs:
           retention-days: 30
 
   run-front-unit-tests:
-    needs: [detect-affected-projects, build-images-tests]
+    needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
       packages: write
-    if: |
-      contains(github.ref , 'refs/tags/') == false &&
-      (needs.detect-affected-projects.outputs.all == 'true' || needs.detect-affected-projects.outputs.build-front == 'true')
+    if: contains(github.ref , 'refs/tags/') == false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -337,15 +253,13 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   run-api-unit-tests:
-    needs: [detect-affected-projects, build-images-tests]
+    needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
       packages: write
-    if: |
-      contains(github.ref , 'refs/tags/') == false &&
-      (needs.detect-affected-projects.outputs.all == 'true' || needs.detect-affected-projects.outputs.build-api == 'true')
+    if: contains(github.ref , 'refs/tags/') == false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
