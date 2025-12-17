@@ -116,7 +116,20 @@ const resolvers: Resolvers = {
       );
     },
     serviceInstanceLinksByTags: async (_, { tags }) => {
-      return serviceInstanceApp.loadLinkServiceInstancesByTags(tags);
+      const services =
+        await serviceInstanceApp.loadLinkServiceInstancesByTags(tags);
+      return services.map((service: SeoServiceInstance) => ({
+        ...service,
+        ...(service.illustration_document_id && {
+          illustration_document_id: toGlobalId(
+            'Document',
+            service.illustration_document_id
+          ),
+        }),
+        ...(service.logo_document_id && {
+          logo_document_id: toGlobalId('Document', service.logo_document_id),
+        }),
+      }));
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
       const serviceInstance = await serviceInstanceApp.loadServiceInstance(
