@@ -77,62 +77,41 @@ if [[ "$EVENT_NAME" == "pull_request" ]]; then
   echo -e "${GREEN}Affected apps:${NC}"
   echo "$AFFECTED_APPS"
 
-  # Build JSON array for matrix
-  PROJECTS_JSON="["
-  FIRST=true
+  # Check which apps are affected for conditional test images
+  HAS_FRONT=false
+  HAS_API=false
 
   while IFS= read -r app; do
-    # Map app name to docker image config
     case "$app" in
-      "portal-front")
-        if [ "$FIRST" = true ]; then
-          FIRST=false
-        else
-          PROJECTS_JSON+=","
-        fi
-        PROJECTS_JSON+='{"image":"portal-front","dockerfile":"apps/portal-front/Dockerfile"}'
-        # Also add test image
-        PROJECTS_JSON+=',{"image":"portal-front-test","dockerfile":"apps/portal-front/test.Dockerfile"}'
-        ;;
-      "portal-api")
-        if [ "$FIRST" = true ]; then
-          FIRST=false
-        else
-          PROJECTS_JSON+=","
-        fi
-        PROJECTS_JSON+='{"image":"portal-api","dockerfile":"apps/portal-api/Dockerfile"}'
-        # Also add test image
-        PROJECTS_JSON+=',{"image":"portal-api-test","dockerfile":"apps/portal-api/test.Dockerfile"}'
-        ;;
-      "portal-e2e-tests")
-        if [ "$FIRST" = true ]; then
-          FIRST=false
-        else
-          PROJECTS_JSON+=","
-        fi
-        PROJECTS_JSON+='{"image":"portal-e2e-tests","dockerfile":"apps/portal-e2e-tests/Dockerfile"}'
-        ;;
+      "portal-front") HAS_FRONT=true ;;
+      "portal-api") HAS_API=true ;;
     esac
   done <<< "$AFFECTED_APPS"
 
-  PROJECTS_JSON+="]"
+  # ALWAYS build the 3 main images together (needed for e2e tests)
+  # Only test images are conditional
+  PROJECTS_JSON='[
+    {"image":"portal-front","dockerfile":"apps/portal-front/Dockerfile"},
+    {"image":"portal-api","dockerfile":"apps/portal-api/Dockerfile"},
+    {"image":"portal-e2e-tests","dockerfile":"apps/portal-e2e-tests/Dockerfile"}'
 
-  # If no valid projects found, build all
-  if [[ "$PROJECTS_JSON" == "[]" ]]; then
-    echo -e "${YELLOW}⚠️  No matching projects found, building all as safety measure${NC}"
-    echo "all=true" >> $GITHUB_OUTPUT
-    echo "projects=$ALL_PROJECTS" >> $GITHUB_OUTPUT
-    echo "projects-json<<EOF" >> $GITHUB_OUTPUT
-    echo "$ALL_PROJECTS" >> $GITHUB_OUTPUT
-    echo "EOF" >> $GITHUB_OUTPUT
-  else
-    echo -e "${GREEN}✅ Building affected projects only${NC}"
-    echo "all=false" >> $GITHUB_OUTPUT
-    echo "projects=$PROJECTS_JSON" >> $GITHUB_OUTPUT
-    echo "projects-json<<EOF" >> $GITHUB_OUTPUT
-    echo "$PROJECTS_JSON" >> $GITHUB_OUTPUT
-    echo "EOF" >> $GITHUB_OUTPUT
+  # Add test images only if their corresponding app is affected
+  if [[ "$HAS_FRONT" == "true" ]]; then
+    PROJECTS_JSON+=',{"image":"portal-front-test","dockerfile":"apps/portal-front/test.Dockerfile"}'
   fi
+
+  if [[ "$HAS_API" == "true" ]]; then
+    PROJECTS_JSON+=',{"image":"portal-api-test","dockerfile":"apps/portal-api/test.Dockerfile"}'
+  fi
+
+  PROJECTS_JSON+=']'
+
+  echo -e "${GREEN}✅ Building main images + affected test images${NC}"
+  echo "all=false" >> $GITHUB_OUTPUT
+  echo "projects=$PROJECTS_JSON" >> $GITHUB_OUTPUT
+  echo "projects-json<<EOF" >> $GITHUB_OUTPUT
+  echo "$PROJECTS_JSON" >> $GITHUB_OUTPUT
+  echo "EOF" >> $GITHUB_OUTPUT
 
   echo "Projects matrix: $PROJECTS_JSON"
 else
