@@ -200,7 +200,9 @@ export const RegistrationDetails: React.FC<Props> = ({
           <TrialsManageUsersDialog platform={platform} />
         )}
         {displayUpdatePlatform && (
-          <Button onClick={() => setOpenPlatformSheet(true)}>
+          <Button
+            variant="outline-primary"
+            onClick={() => setOpenPlatformSheet(true)}>
             {t('Platform.Update')}
           </Button>
         )}
