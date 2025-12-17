@@ -12,6 +12,7 @@ import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import React from 'react';
+import PersonalSpaceInfo from './personal-space-info';
 
 interface Props {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -55,6 +56,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
           </>
         }
       />
+      <PersonalSpaceInfo />
       <TrialsLearnMore />
       <RegistrationLearnMore
         serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
