@@ -1,10 +1,9 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
   RegisteredPlatform,
+  SeoServiceInstance,
   ServiceDefinitionIdentifier,
   ServiceInstance,
-  ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
@@ -146,7 +145,7 @@ export const serviceInstanceApp = {
 
   loadLinkServiceInstancesByTags: async (
     tags: ServiceInstanceTag[]
-  ): Promise<ServiceInstance[]> => {
+  ): Promise<SeoServiceInstance[]> => {
     const serviceInstances =
       await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
         ServiceDefinitionIdentifier.Link,
@@ -155,11 +154,7 @@ export const serviceInstanceApp = {
 
     return serviceInstances.map((serviceInstance) => ({
       ...serviceInstance,
-      capabilities: [],
-      creation_status:
-        serviceInstance.creation_status as ServiceInstanceCreationStatus,
-      join_type: serviceInstance.join_type as ServiceInstanceJoinType,
-      tags: serviceInstance.tags as ServiceInstanceTag[],
+      __typename: 'SeoServiceInstance',
     }));
   },
 };

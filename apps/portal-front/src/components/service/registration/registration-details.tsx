@@ -1,18 +1,23 @@
+import { PortalContext } from '@/components/me/app-portal-context';
+import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
+import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
+import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { toast } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useFragment, useMutation } from 'react-relay';
 
 interface Props {
@@ -23,6 +28,23 @@ export const RegistrationDetails: React.FC<Props> = ({
   registeredPlatform,
 }) => {
   const t = useTranslations();
+  const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
+
+  const { hasOrganizationCapability, hasCapability } =
+    useContext(PortalContext);
+
+  const canUpdatePlatform: boolean =
+    // Allow BYPASS users to update platforms
+    !!hasCapability?.(RestrictionEnum.BYPASS) ||
+    // Check standard organization capabilities
+    (!!hasOrganizationCapability &&
+      hasOrganizationCapability(
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      ) &&
+      hasOrganizationCapability(
+        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+      ));
+
   const platform =
     useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
       registeredPlatformByServiceInstanceIdFragment,
@@ -80,6 +102,18 @@ export const RegistrationDetails: React.FC<Props> = ({
     (platform.deployment_request?.hub_status as DeploymentRequestHubStatusEnum);
 
   const isTrial = platform.contract === PlatformContractEnum.TRIAL;
+  const serviceInstanceId = platform.subscription?.service_instance?.id;
+  const displayUpdatePlatform =
+    canUpdatePlatform && !isTrial && serviceInstanceId;
+
+  const displayedIdentifier = translateServiceDefinitionIdentifier(
+    platform.identifier
+  );
+
+  const displayAccessPlatformButtonForTrial =
+    platform.url &&
+    platform.deployment_request?.hub_status ===
+      DeploymentRequestHubStatusEnum.ACTIVE;
 
   return (
     <section className="flex justify-between p-xl border border-solid border-blue rounded">
@@ -149,22 +183,40 @@ export const RegistrationDetails: React.FC<Props> = ({
           <span className="text-gray/60">License:</span> Enterprise Edition
         </li>
       </ul>
-      {platform.deployment_request?.hub_status ===
-        DeploymentRequestHubStatusEnum.ACTIVE &&
-        platform.url && (
-          <div className="flex flex-col gap-m">
-            <Button>
-              <Link
-                target="_blank"
-                rel="noopener noreferrer"
-                href={platform.url}>
-                Access OpenCTI
-              </Link>
-            </Button>
 
-            <TrialsManageUsersDialog platform={platform} />
-          </div>
+      <div className="flex flex-col gap-m">
+        {(displayAccessPlatformButtonForTrial || !isTrial) && (
+          <Button>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href={platform.url}>
+              Access {displayedIdentifier}
+            </Link>
+          </Button>
         )}
+
+        {displayAccessPlatformButtonForTrial && isTrial && (
+          <TrialsManageUsersDialog platform={platform} />
+        )}
+        {displayUpdatePlatform && (
+          <Button
+            variant="outline-primary"
+            onClick={() => setOpenPlatformSheet(true)}>
+            {t('Platform.Update')}
+          </Button>
+        )}
+      </div>
+
+      {displayUpdatePlatform && (
+        <PlatformUpdateSheet
+          serviceInstanceId={serviceInstanceId}
+          serviceInstanceName={platform.title}
+          serviceDefinitionIdentifier={platform.identifier}
+          open={openPlatformSheet}
+          setOpen={setOpenPlatformSheet}
+        />
+      )}
     </section>
   );
 };

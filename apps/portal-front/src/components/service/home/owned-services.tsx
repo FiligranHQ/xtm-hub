@@ -8,8 +8,6 @@ import {
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -31,30 +29,7 @@ const OwnedServices = ({
   registeredPlatforms,
 }: OwnedServicesProps) => {
   const t = useTranslations();
-  const { hasOrganizationCapability, hasCapability } =
-    useContext(PortalContext);
-
-  const canUpdatePlatform = () => {
-    // Allow BYPASS users to update platforms
-    if (hasCapability?.(RestrictionEnum.BYPASS)) {
-      return true;
-    }
-
-    // Check standard organization capabilities
-    if (!hasOrganizationCapability) {
-      return false;
-    }
-
-    return (
-      hasOrganizationCapability(
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
-      ) &&
-      hasOrganizationCapability(
-        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
-      )
-    );
-  };
-
+  const { isPersonalSpace } = useContext(PortalContext);
   // Merge and sort by ordering property
   const sortedServices = [
     ...services
@@ -73,11 +48,7 @@ const OwnedServices = ({
           ServiceInstanceCreationStatusEnum.DISABLED
       )
       .map((platform) =>
-        registeredPlatformToServiceInstanceCardData(
-          platform,
-          t,
-          canUpdatePlatform()
-        )
+        registeredPlatformToServiceInstanceCardData(platform, t)
       ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
@@ -88,13 +59,11 @@ const OwnedServices = ({
       service.deployment_request.counts_in_orga_quota
   );
 
-  const shouldDisplayFreeTrialSkeleton = trialInstances.length === 0;
+  const shouldDisplayFreeTrialSkeleton =
+    trialInstances.length === 0 && !isPersonalSpace;
 
   const freeTrialServiceInstanceDataCard =
-    freeTrialSkeletonToServiceInstanceCardData(
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-      t
-    );
+    freeTrialSkeletonToServiceInstanceCardData(t);
 
   if (sortedServices.length > 0) {
     return (

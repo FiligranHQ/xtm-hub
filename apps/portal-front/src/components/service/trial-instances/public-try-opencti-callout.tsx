@@ -13,8 +13,8 @@ export function PublicTryOpenCTICallout() {
       <div>
         {t('Service.Trials.Explore')}
         <Link
-          href={`/redirect/free-trial`}
-          className="ml-xs underline">
+          href={`/cybersecurity-solutions/free-trial`}
+          className="ml-xs underline font-bold">
           {t('Service.Trials.LearnMore')}
         </Link>
       </div>
