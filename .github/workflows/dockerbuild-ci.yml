@@ -322,11 +322,13 @@ jobs:
       - name: Install docker
         uses: docker/setup-docker-action@v4
 
-      - name: Launch docker compose
+      - name: Run front unit tests
         run: |
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           mkdir -p coverage
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
+          docker run --rm \
+            -v $(pwd)/coverage:/app/apps/portal-front/coverage \
+            filigran/portal-front-test:${IMAGE_TAGS}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
