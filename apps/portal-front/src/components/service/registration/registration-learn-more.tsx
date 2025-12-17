@@ -2,12 +2,12 @@
 import ServiceInstanceCard from '@/components/service/service-instance-card';
 import { cn } from '@/lib/utils';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { publicServiceInstanceToInstanceCardData } from '@/utils/services';
+import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import ServiceLinksByTagsQueryGraphql, {
   serviceLinksByTagsQuery,
 } from '@generated/serviceLinksByTagsQuery.graphql';
-import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import Image from 'next/image';
 import React from 'react';
 
@@ -51,7 +51,7 @@ export const RegistrationLearnMore = async ({
   );
 
   const services = response.data
-    .serviceInstanceLinksByTags as unknown as serviceList_fragment$data[];
+    .serviceInstanceLinksByTags as unknown as seoServiceInstanceFragment$data[];
 
   return (
     <>
@@ -126,9 +126,7 @@ export const RegistrationLearnMore = async ({
               <ServiceInstanceCard
                 key={service.id}
                 className="basis-full max-w-[50%]"
-                serviceInstance={publicServiceInstanceToInstanceCardData(
-                  service
-                )}
+                serviceInstance={seoServiceInstanceToInstanceCardData(service)}
               />
             ))}
           </div>

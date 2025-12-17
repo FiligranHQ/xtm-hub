@@ -21,7 +21,9 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
 
     const freeTrialUrl = new URL(`/app/service/free-trial`, baseUrlFront);
 
-    const isAdmin = user.capabilities.includes(RestrictionEnum.BYPASS);
+    const isAdmin = user.capabilities.some(
+      ({ name }) => name === RestrictionEnum.BYPASS
+    );
     const requiredCapabilities: OrganizationCapabilityEnum[] = [
       OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
       OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
@@ -29,7 +31,6 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
     const userIsAllowed = requiredCapabilities.some((cap) =>
       user.selected_org_capabilities.includes(cap)
     );
-
     if (!userIsAllowed && !isAdmin) {
       return NextResponse.redirect(freeTrialUrl);
     }
@@ -68,7 +69,7 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
       return NextResponse.redirect(instanceUrl);
     }
 
-    return NextResponse.redirect(`${freeTrialUrl}?openForm`);
+    return NextResponse.redirect(`${freeTrialUrl}?openForm=true`);
   } catch (error) {
     if ((error as Error).message === 'UNAUTHENTICATED') {
       return NextResponse.redirect(redirectionUrl);

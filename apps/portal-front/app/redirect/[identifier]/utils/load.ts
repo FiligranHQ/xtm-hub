@@ -24,7 +24,7 @@ interface MeResponse {
         name: string;
         personal_space: boolean;
       }[];
-      capabilities: Restriction[];
+      capabilities: { name: Restriction }[];
       selected_org_capabilities: OrganizationCapabilityEnum[];
     };
   };
