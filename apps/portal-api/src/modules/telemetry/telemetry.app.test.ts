@@ -26,8 +26,8 @@ import * as DocumentUploadsHelper from '../services/document/document.uploads.he
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../services/integration-feeds/integration-feeds.model';
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../services/integration-feeds/integrations.model';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
 
 // Mock the ES Client
@@ -135,7 +135,7 @@ describe('TelemetryApp', () => {
       const fakeResourceId =
         'c07f6909-f8c5-4f61-b17d-b5b2da9b2799' as DocumentId;
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         {
           id: fakeResourceId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -275,7 +275,7 @@ describe('TelemetryApp', () => {
       const fakeResourceId =
         'ddd49f48-1a66-4670-9dab-0d247b613969' as DocumentId;
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         {
           id: fakeResourceId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',

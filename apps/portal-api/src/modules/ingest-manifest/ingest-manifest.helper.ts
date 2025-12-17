@@ -10,9 +10,9 @@ import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
 import { semanticVersionRegex } from '../../utils/semantic-versioning';
 import { Upload } from '../services/document/document.uploads.helper';
 import {
-  INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../services/integration-feeds/integration-feeds.model';
+  INTEGRATION_SERVICE_INSTANCE_ID,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../services/integration-feeds/integrations.model';
 import { ManifestInformation } from './ingest-manifest.model';
 
 export interface ManifestExtractionResult {
@@ -101,8 +101,8 @@ export const extractManifestInformation = (
         description: validContract.description,
         short_description: validContract.short_description?.slice(0, 250),
         slug: validContract.slug,
-        service_instance_id: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         source_type: 'external',
         /* Document metadata properties */
         container_image: validContract.container_image,

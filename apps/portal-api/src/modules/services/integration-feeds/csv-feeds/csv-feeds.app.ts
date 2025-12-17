@@ -8,18 +8,18 @@ import { loadDocumentWithCountersById } from '../../document/document.helper';
 import { Upload } from '../../document/document.uploads.helper';
 import {
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../integration-feeds.model';
+  INTEGRATION_CSV_FEED_METADATA,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../integrations.model';
 
 export const csvFeedsApp = {
   createCsvFeed: async (input: Partial<CsvFeed>, document: Upload[]) => {
     const doc =
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         { ...input, integration_type: IntegrationsType.CsvFeed },
         document,
-        INTEGRATION_FEED_CSV_FEED_METADATA
+        INTEGRATION_CSV_FEED_METADATA
       );
 
     try {

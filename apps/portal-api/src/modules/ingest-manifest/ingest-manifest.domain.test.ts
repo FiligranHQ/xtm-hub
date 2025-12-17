@@ -9,8 +9,8 @@ import { minioInit } from '../../server/initialize';
 import { DocumentChildrenDomain } from '../services/document/domain/document.children.domain';
 import {
   Connector,
-  INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-} from '../services/integration-feeds/integration-feeds.model';
+  INTEGRATION_SERVICE_INSTANCE_ID,
+} from '../services/integration-feeds/integrations.model';
 import { labelsDomain } from '../settings/labels/labels.domain';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
@@ -44,9 +44,7 @@ describe('upsertConnectors', () => {
         result.forEach((doc) => {
           expect(doc.uploader_id).toBe(SYSTEM_USER_UUID);
           expect(doc.uploader_organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
-          expect(doc.service_instance_id).toBe(
-            INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
-          );
+          expect(doc.service_instance_id).toBe(INTEGRATION_SERVICE_INSTANCE_ID);
         });
       });
 

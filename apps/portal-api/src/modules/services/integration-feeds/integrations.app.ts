@@ -15,48 +15,48 @@ import {
   loadSeoDocumentsByServiceSlug,
 } from '../document/domain/document.domain';
 import {
-  INTEGRATION_FEED_METADATA,
+  INTEGRATION_METADATA,
   Integrations,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from './integration-feeds.model';
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from './integrations.model';
 
-export const integrationFeedsApp = {
+export const integrationsApp = {
   loadIntegrations: async (input: QueryIntegrationsArgs) => {
     return loadParentDocumentsByServiceInstance<IntegrationsConnection>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
-      INTEGRATION_FEED_METADATA
+      INTEGRATION_METADATA
     );
   },
   loadIntegration: async (
     documentId: DocumentId
   ): Promise<WithLabels<Integrations>> => {
-    return loadDocumentWithCountersById(documentId, INTEGRATION_FEED_METADATA);
+    return loadDocumentWithCountersById(documentId, INTEGRATION_METADATA);
   },
-  loadPublicAccessIntegrationFeeds: async (serviceSlug: string) =>
+  loadPublicAccessIntegrations: async (serviceSlug: string) =>
     loadSeoDocumentsByServiceSlug(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       serviceSlug,
-      INTEGRATION_FEED_METADATA
+      INTEGRATION_METADATA
     ),
 
-  loadPaginatedPublicAccessIntegrationFeeds: async (
+  loadPaginatedPublicAccessIntegrations: async (
     input: QueryPublicIntegrationsArgs
   ) => {
     const { slug, ...opts } = input;
     return loadPaginatedSeoDocumentsByServiceSlug<IntegrationsConnection>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
       opts,
-      INTEGRATION_FEED_METADATA
+      INTEGRATION_METADATA
     );
   },
 
-  loadPublicAccessIntegrationFeed: async (slug: string) => {
+  loadPublicAccessIntegration: async (slug: string) => {
     return loadSeoDocumentWithCountersBySlug<WithLabels<Integrations>>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
-      INTEGRATION_FEED_METADATA
+      INTEGRATION_METADATA
     );
   },
 };

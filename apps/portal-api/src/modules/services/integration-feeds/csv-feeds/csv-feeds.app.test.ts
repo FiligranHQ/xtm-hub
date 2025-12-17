@@ -23,8 +23,8 @@ import * as DocumentUploadsHelper from '../../document/document.uploads.helper';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../integration-feeds.model';
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../integrations.model';
 import { csvFeedsApp } from './csv-feeds.app';
 
 describe('csv feeds app', () => {
@@ -66,7 +66,7 @@ describe('csv feeds app', () => {
         minio_name: 'minioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
-        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         active: false,
       },
       []
@@ -103,7 +103,7 @@ describe('csv feeds app', () => {
     );
 
     await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       {
         id: documentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',

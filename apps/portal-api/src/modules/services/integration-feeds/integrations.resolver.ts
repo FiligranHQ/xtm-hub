@@ -13,8 +13,8 @@ import {
   loadUploaderOrganization,
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import { integrationFeedsApp } from './integration-feeds.app';
-import { Integrations } from './integration-feeds.model';
+import { integrationsApp } from './integrations.app';
+import { Integrations } from './integrations.model';
 
 const resolvers: Resolvers = {
   Integrations: {
@@ -37,16 +37,15 @@ const resolvers: Resolvers = {
       subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
   Query: {
-    integrations: async (_, input) =>
-      integrationFeedsApp.loadIntegrations(input),
+    integrations: async (_, input) => integrationsApp.loadIntegrations(input),
     integration: async (_, { id }) =>
-      integrationFeedsApp.loadIntegration(extractId<DocumentId>(id)),
+      integrationsApp.loadIntegration(extractId<DocumentId>(id)),
     publicIntegrations: async (_, input) =>
-      integrationFeedsApp.loadPaginatedPublicAccessIntegrationFeeds(input),
+      integrationsApp.loadPaginatedPublicAccessIntegrations(input),
     publicIntegrationByServiceSlug: async (_, { serviceSlug }) =>
-      integrationFeedsApp.loadPublicAccessIntegrationFeeds(serviceSlug),
+      integrationsApp.loadPublicAccessIntegrations(serviceSlug),
     publicIntegrationBySlug: async (_, { slug }) =>
-      integrationFeedsApp.loadPublicAccessIntegrationFeed(slug),
+      integrationsApp.loadPublicAccessIntegration(slug),
   },
 };
 

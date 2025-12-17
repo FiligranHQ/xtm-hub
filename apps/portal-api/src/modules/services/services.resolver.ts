@@ -31,7 +31,7 @@ import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
-import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from './integration-feeds/integration-feeds.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './integration-feeds/integrations.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios/openaev-scenarios.domain';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
@@ -60,10 +60,10 @@ const resolvers: Resolvers = {
       const typeMapping = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
-        [OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
+        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
       };
 
-      if (service_instance.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+      if (service_instance.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         return (
           integrationFeedMapping[service_instance.integration_type] ??
           typeMapping[service_instance.type]

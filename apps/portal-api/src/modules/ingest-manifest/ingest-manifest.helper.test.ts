@@ -3,7 +3,7 @@ import {
   ConnectorType,
   IntegrationsType,
 } from '../../__generated__/resolvers-types';
-import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../services/integration-feeds/integration-feeds.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../services/integration-feeds/integrations.model';
 import {
   extractManifestInformation,
   ManifestExtractionResult,
@@ -30,7 +30,7 @@ describe('Ingest manifest helper', () => {
           integration_subtype: ConnectorType.InternalEnrichment,
           source_code: 'https://github.com/example/repo',
           subscription_link: 'https://example.com/subscribe',
-          type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           integration_type: IntegrationsType.Connector,
           manager_supported: true,
           playbook_supported: false,
@@ -50,7 +50,7 @@ describe('Ingest manifest helper', () => {
           integration_subtype: ConnectorType.ExternalImport,
           source_code: 'https://github.com/example/repo2',
           subscription_link: 'https://example.com/subscribe2',
-          type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           integration_type: IntegrationsType.Connector,
           manager_supported: false,
           playbook_supported: true,

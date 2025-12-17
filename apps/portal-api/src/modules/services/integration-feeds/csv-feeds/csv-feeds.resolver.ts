@@ -17,9 +17,9 @@ import {
 } from '../../document/domain/document.domain';
 import {
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../integration-feeds.model';
+  INTEGRATION_CSV_FEED_METADATA,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../integrations.model';
 import { csvFeedsApp } from './csv-feeds.app';
 
 const resolvers: Resolvers = {
@@ -47,7 +47,7 @@ const resolvers: Resolvers = {
     updateCsvFeed: async (_, input) => {
       try {
         return updateDocumentWithChildren<CsvFeed>(
-          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           extractId<ServiceInstanceId>(input.serviceInstanceId),
           {
@@ -57,7 +57,7 @@ const resolvers: Resolvers = {
               integration_type: IntegrationsType.CsvFeed,
             },
           },
-          INTEGRATION_FEED_CSV_FEED_METADATA
+          INTEGRATION_CSV_FEED_METADATA
         );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {

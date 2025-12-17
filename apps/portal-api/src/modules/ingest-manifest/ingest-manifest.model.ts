@@ -1,4 +1,4 @@
-import { Connector } from '../services/integration-feeds/integration-feeds.model';
+import { Connector } from '../services/integration-feeds/integrations.model';
 
 export interface ManifestInformation extends Partial<Connector> {
   labels: string[];

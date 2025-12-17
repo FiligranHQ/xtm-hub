@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SERVICE_INTEGRATIONS_FEEDS_ID } from '../../../../tests/tests.const';
+import { SERVICE_INTEGRATIONS_ID } from '../../../../tests/tests.const';
 import { IntegrationsType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from '../document/document.app';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
-import { integrationFeedsApp } from './integration-feeds.app';
+import { integrationsApp } from './integrations.app';
 import {
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from './integration-feeds.model';
+  INTEGRATION_CSV_FEED_METADATA,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from './integrations.model';
 
 describe('csv feeds app', () => {
   const minioFileMock = {
@@ -41,7 +41,7 @@ describe('csv feeds app', () => {
     );
 
     await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       {
         id: documentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -50,16 +50,16 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
         integration_type: IntegrationsType.CsvFeed,
         active: true,
       },
       [],
-      INTEGRATION_FEED_CSV_FEED_METADATA
+      INTEGRATION_CSV_FEED_METADATA
     );
 
     const documentLoaded =
-      await integrationFeedsApp.loadPublicAccessIntegrationFeed('myCsvFeed');
+      await integrationsApp.loadPublicAccessIntegration('myCsvFeed');
 
     expect(documentLoaded.download_number).toBe(8);
     expect(documentLoaded.share_number).toBe(13);

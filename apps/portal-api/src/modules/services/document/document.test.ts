@@ -27,8 +27,8 @@ import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../integration-feeds/integration-feeds.model';
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../integration-feeds/integrations.model';
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
@@ -350,7 +350,7 @@ describe('increment shared counter', () => {
         minio_name: 'xminioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
-        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         integration_type: IntegrationsType.CsvFeed,
       },
       INTEGRATION_FEED_CSV_FEED_METADATA
