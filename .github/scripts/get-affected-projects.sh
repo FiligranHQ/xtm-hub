@@ -19,20 +19,37 @@ echo "Branch: $BRANCH"
 echo "Event: $EVENT_NAME"
 echo "Base: $BASE_SHA"
 
-# All available projects
+# All available projects (for non-tag builds)
 ALL_PROJECTS='[
+  {"image":"portal-front","dockerfile":"apps/portal-front/Dockerfile"},
+  {"image":"portal-api","dockerfile":"apps/portal-api/Dockerfile"},
+  {"image":"portal-e2e-tests","dockerfile":"apps/portal-e2e-tests/Dockerfile"},
+  {"image":"portal-front-test","dockerfile":"apps/portal-front/test.Dockerfile"},
+  {"image":"portal-api-test","dockerfile":"apps/portal-api/test.Dockerfile"}
+]'
+
+# Projects for tags (no test images)
+TAG_PROJECTS='[
   {"image":"portal-front","dockerfile":"apps/portal-front/Dockerfile"},
   {"image":"portal-api","dockerfile":"apps/portal-api/Dockerfile"},
   {"image":"portal-e2e-tests","dockerfile":"apps/portal-e2e-tests/Dockerfile"}
 ]'
 
 # Check if we should build all projects (main, development, tags)
-if [[ "$BRANCH" == "main" ]] || [[ "$BRANCH" == "development" ]] || [[ "$GITHUB_REF" == refs/tags/* ]]; then
+if [[ "$BRANCH" == "main" ]] || [[ "$BRANCH" == "development" ]]; then
   echo -e "${GREEN}✅ Building ALL projects (branch: $BRANCH)${NC}"
   echo "all=true" >> $GITHUB_OUTPUT
   echo "projects=$ALL_PROJECTS" >> $GITHUB_OUTPUT
   echo "projects-json<<EOF" >> $GITHUB_OUTPUT
   echo "$ALL_PROJECTS" >> $GITHUB_OUTPUT
+  echo "EOF" >> $GITHUB_OUTPUT
+  exit 0
+elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
+  echo -e "${GREEN}✅ Building production projects only (tag: $BRANCH, no test images)${NC}"
+  echo "all=true" >> $GITHUB_OUTPUT
+  echo "projects=$TAG_PROJECTS" >> $GITHUB_OUTPUT
+  echo "projects-json<<EOF" >> $GITHUB_OUTPUT
+  echo "$TAG_PROJECTS" >> $GITHUB_OUTPUT
   echo "EOF" >> $GITHUB_OUTPUT
   exit 0
 fi
@@ -74,6 +91,8 @@ if [[ "$EVENT_NAME" == "pull_request" ]]; then
           PROJECTS_JSON+=","
         fi
         PROJECTS_JSON+='{"image":"portal-front","dockerfile":"apps/portal-front/Dockerfile"}'
+        # Also add test image
+        PROJECTS_JSON+=',{"image":"portal-front-test","dockerfile":"apps/portal-front/test.Dockerfile"}'
         ;;
       "portal-api")
         if [ "$FIRST" = true ]; then
@@ -82,6 +101,8 @@ if [[ "$EVENT_NAME" == "pull_request" ]]; then
           PROJECTS_JSON+=","
         fi
         PROJECTS_JSON+='{"image":"portal-api","dockerfile":"apps/portal-api/Dockerfile"}'
+        # Also add test image
+        PROJECTS_JSON+=',{"image":"portal-api-test","dockerfile":"apps/portal-api/test.Dockerfile"}'
         ;;
       "portal-e2e-tests")
         if [ "$FIRST" = true ]; then
