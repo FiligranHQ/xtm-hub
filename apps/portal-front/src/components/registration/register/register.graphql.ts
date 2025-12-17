@@ -93,6 +93,7 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
     title
     contract
     url
+    identifier
     subscription {
       start_date
       end_date
