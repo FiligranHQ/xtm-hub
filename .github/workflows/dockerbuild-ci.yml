@@ -8,11 +8,25 @@ on:
       - "development"
     tags:
       - "v*"
+    paths:
+      - "apps/**"
+      - "xtm-hub-dev/docker-compose-ci.yml"
+      - ".github/workflows/dockerbuild-ci.yml"
+      - "package.json"
+      - "yarn.lock"
+      - "nx.json"
   pull_request:
     branches:
       - "main"
       - "development"
       - "issue/*"
+    paths:
+      - "apps/**"
+      - "xtm-hub-dev/docker-compose-ci.yml"
+      - ".github/workflows/dockerbuild-ci.yml"
+      - "package.json"
+      - "yarn.lock"
+      - "nx.json"
 
 permissions:
   contents: read
