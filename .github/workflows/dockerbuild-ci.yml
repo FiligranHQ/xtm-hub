@@ -6,15 +6,13 @@ on:
     branches:
       - "main"
       - "development"
-    tags:
-      - "v*"
     paths:
       - "apps/**"
-      - "xtm-hub-dev/docker-compose-ci.yml"
       - ".github/workflows/dockerbuild-ci.yml"
       - "package.json"
       - "yarn.lock"
-      - "nx.json"
+    tags:
+      - "v*"
   pull_request:
     branches:
       - "main"
@@ -22,11 +20,9 @@ on:
       - "issue/*"
     paths:
       - "apps/**"
-      - "xtm-hub-dev/docker-compose-ci.yml"
       - ".github/workflows/dockerbuild-ci.yml"
       - "package.json"
       - "yarn.lock"
-      - "nx.json"
 
 permissions:
   contents: read
