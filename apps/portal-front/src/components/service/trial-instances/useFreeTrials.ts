@@ -12,7 +12,7 @@ import { useContext } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
 export const useFreeTrial = () => {
-  const { me } = useContext(PortalContext);
+  const { me, isPersonalSpace } = useContext(PortalContext);
   const { settings } = useContext(SettingsContext);
 
   const isBlacklisted =
@@ -41,9 +41,8 @@ export const useFreeTrial = () => {
         DeploymentRequestDeploymentTypeEnum.TRIAL &&
       platform.deployment_request.counts_in_orga_quota
   );
-
   return {
-    freeTrial: freeTrials.length > 0 ? freeTrials[0] : null,
+    freeTrial: freeTrials.length > 0 && !isPersonalSpace ? freeTrials[0] : null,
     isBlacklisted,
   };
 };
