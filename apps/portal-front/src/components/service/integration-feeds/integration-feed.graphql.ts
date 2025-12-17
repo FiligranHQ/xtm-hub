@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const integrationFeedsItem = graphql`
-  fragment integrationFeedsItem_fragment on IntegrationFeed @inline {
+  fragment integrationFeedsItem_fragment on Integrations @inline {
     __typename
     id
     active

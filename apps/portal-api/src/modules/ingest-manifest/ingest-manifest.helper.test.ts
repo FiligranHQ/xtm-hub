@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ConnectorType,
-  IntegrationFeedType,
+  IntegrationsType,
 } from '../../__generated__/resolvers-types';
 import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../services/integration-feeds/integration-feeds.model';
 import {
@@ -31,7 +31,7 @@ describe('Ingest manifest helper', () => {
           source_code: 'https://github.com/example/repo',
           subscription_link: 'https://example.com/subscribe',
           type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-          integration_type: IntegrationFeedType.Connector,
+          integration_type: IntegrationsType.Connector,
           manager_supported: true,
           playbook_supported: false,
           source_type: 'external',
@@ -51,7 +51,7 @@ describe('Ingest manifest helper', () => {
           source_code: 'https://github.com/example/repo2',
           subscription_link: 'https://example.com/subscribe2',
           type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-          integration_type: IntegrationFeedType.Connector,
+          integration_type: IntegrationsType.Connector,
           manager_supported: false,
           playbook_supported: true,
           source_type: 'external',

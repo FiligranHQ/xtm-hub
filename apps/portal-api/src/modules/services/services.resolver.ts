@@ -2,7 +2,7 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db } from '../../../knexfile';
 import {
-  IntegrationFeedType,
+  IntegrationsType,
   RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
@@ -54,8 +54,8 @@ const resolvers: Resolvers = {
   ServiceInstance: {
     __resolveType(service_instance) {
       const integrationFeedMapping = {
-        [IntegrationFeedType.Connector]: 'Connector',
-        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+        [IntegrationsType.Connector]: 'Connector',
+        [IntegrationsType.CsvFeed]: 'CsvFeed',
       };
       const typeMapping = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',

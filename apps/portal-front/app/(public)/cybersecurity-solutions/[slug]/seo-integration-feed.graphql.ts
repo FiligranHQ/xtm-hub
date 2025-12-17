@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const SeoIntegrationFeedFragment = graphql`
-  fragment seoIntegrationFeedFragment on IntegrationFeed {
+  fragment seoIntegrationFeedFragment on Integrations {
     __typename
     id
     name
@@ -62,7 +62,7 @@ export const SeoIntegrationFeedBySlugQuery = graphql`
 `;
 
 export const seoIntegrationFeedsItem = graphql`
-  fragment seoIntegrationFeedsItemFragment on IntegrationFeed @inline {
+  fragment seoIntegrationFeedsItemFragment on Integrations @inline {
     __typename
     id
     name

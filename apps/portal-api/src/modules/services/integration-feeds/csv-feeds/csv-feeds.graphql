@@ -1,4 +1,4 @@
-type CsvFeed implements Node & Document & IntegrationFeed {
+type CsvFeed implements Node & Document & Integrations {
   # Node
   id: ID!
 
@@ -24,9 +24,9 @@ type CsvFeed implements Node & Document & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
 
-  # IntegrationFeed
+  # Integrations
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationsType!
 }
 
 input CreateCsvFeedInput {

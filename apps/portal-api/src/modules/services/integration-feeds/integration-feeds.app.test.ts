@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SERVICE_INTEGRATIONS_FEEDS_ID } from '../../../../tests/tests.const';
-import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
+import { IntegrationsType } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -51,7 +51,7 @@ describe('csv feeds app', () => {
         minio_name: 'minioName',
         file_name: 'csvfilename',
         service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
-        integration_type: IntegrationFeedType.CsvFeed,
+        integration_type: IntegrationsType.CsvFeed,
         active: true,
       },
       [],

@@ -6,7 +6,7 @@ import {
   requestContextAdminUser,
   SERVICE_INTEGRATIONS_FEEDS_ID,
 } from '../../../../tests/tests.const';
-import { IntegrationFeedType } from '../../../__generated__/resolvers-types';
+import { IntegrationsType } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -351,7 +351,7 @@ describe('increment shared counter', () => {
         file_name: 'csvfilename',
         service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
         type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-        integration_type: IntegrationFeedType.CsvFeed,
+        integration_type: IntegrationsType.CsvFeed,
       },
       INTEGRATION_FEED_CSV_FEED_METADATA
     );

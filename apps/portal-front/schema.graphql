@@ -50,11 +50,11 @@ type Query {
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
-  integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
-  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
-  publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
-  publicIntegrationFeedBySlug(slug: String): IntegrationFeed
+  integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationsConnection!
+  integrationFeed(id: ID, serviceInstanceId: ID): Integrations
+  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationsConnection!
+  publicIntegrationFeedByServiceSlug(serviceSlug: String): [Integrations]
+  publicIntegrationFeedBySlug(slug: String): Integrations
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
@@ -544,7 +544,7 @@ type ServiceLink implements Node {
   name: String
 }
 
-type CsvFeed implements Node & Document & IntegrationFeed {
+type CsvFeed implements Node & Document & Integrations {
   id: ID!
   type: String!
   uploader: User
@@ -567,7 +567,7 @@ type CsvFeed implements Node & Document & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationsType!
 }
 
 input CreateCsvFeedInput {
@@ -591,7 +591,7 @@ input UpdateCsvFeedInput {
   uploader_id: String
 }
 
-enum IntegrationFeedType {
+enum IntegrationsType {
   csv_feed
   connector
   rss_feed
@@ -609,7 +609,7 @@ enum ConnectorType {
   STREAM
 }
 
-interface IntegrationFeed implements Node & Document {
+interface Integrations implements Node & Document {
   id: ID!
   type: String!
   uploader: User
@@ -632,10 +632,10 @@ interface IntegrationFeed implements Node & Document {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationsType!
 }
 
-type Connector implements Node & Document & IntegrationFeed {
+type Connector implements Node & Document & Integrations {
   id: ID!
   type: String!
   uploader: User
@@ -658,7 +658,7 @@ type Connector implements Node & Document & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationsType!
   product_version: String!
   container_image: String
   verified: Boolean!
@@ -669,14 +669,14 @@ type Connector implements Node & Document & IntegrationFeed {
   playbook_supported: Boolean!
 }
 
-type IntegrationFeedEdge {
+type IntegrationsEdge {
   cursor: String!
-  node: IntegrationFeed!
+  node: Integrations!
 }
 
-type IntegrationFeedConnection {
+type IntegrationsConnection {
   totalCount: Int!
-  edges: [IntegrationFeedEdge!]!
+  edges: [IntegrationsEdge!]!
   pageInfo: PageInfo!
 }
 

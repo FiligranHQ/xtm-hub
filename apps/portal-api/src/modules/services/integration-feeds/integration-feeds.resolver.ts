@@ -1,5 +1,5 @@
 import {
-  IntegrationFeedType,
+  IntegrationsType,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -14,14 +14,14 @@ import {
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { integrationFeedsApp } from './integration-feeds.app';
-import { IntegrationFeed } from './integration-feeds.model';
+import { Integrations } from './integration-feeds.model';
 
 const resolvers: Resolvers = {
-  IntegrationFeed: {
-    __resolveType(feed: IntegrationFeed) {
+  Integrations: {
+    __resolveType(feed: Integrations) {
       const mapping = {
-        [IntegrationFeedType.Connector]: 'Connector',
-        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+        [IntegrationsType.Connector]: 'Connector',
+        [IntegrationsType.CsvFeed]: 'CsvFeed',
       };
 
       return mapping[feed.integration_type];

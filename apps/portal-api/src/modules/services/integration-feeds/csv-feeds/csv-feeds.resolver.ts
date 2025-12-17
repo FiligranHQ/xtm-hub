@@ -1,5 +1,5 @@
 import {
-  IntegrationFeedType,
+  IntegrationsType,
   Resolvers,
 } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
@@ -54,7 +54,7 @@ const resolvers: Resolvers = {
             ...input,
             input: {
               ...input.input,
-              integration_type: IntegrationFeedType.CsvFeed,
+              integration_type: IntegrationsType.CsvFeed,
             },
           },
           INTEGRATION_FEED_CSV_FEED_METADATA
