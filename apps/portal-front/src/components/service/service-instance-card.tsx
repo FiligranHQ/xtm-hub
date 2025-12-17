@@ -1,19 +1,11 @@
 'use client';
 
-import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
-import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import {
-  ArrowOutwardIcon,
-  LogoFiligranIcon,
-  MoreVertIcon,
-} from 'filigran-icon';
+import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
 import { AspectRatio, Button } from 'filigran-ui/servers';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback } from 'react';
 
 export type PlatformHoverAction = {
   id: string;
@@ -30,13 +22,11 @@ export interface ServiceInstanceCardData {
   slug?: string;
   logoBackgroundImageUrl: string | null;
   fullBackgroundImage?: boolean;
-  service_definition_identifier: ServiceDefinitionIdentifierEnum;
   illustrationDocumentUrl: string | null;
   isCustomIllustrationDocument?: boolean;
   card_background?: string | null;
   displayedServiceStatus?: string;
   displayLinkArrow?: boolean;
-  canUpdatePlatform?: boolean;
   disableCard?: boolean;
   cardTitleOverride?: string;
   description?: string;
@@ -54,41 +44,22 @@ interface ServiceInstanceCardProps {
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className }) => {
-  const t = useTranslations();
-
-  // Check if user can update platform
-  const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
-
-  const renderHoverButton = useCallback(
-    (action: PlatformHoverAction) => {
-      if (action.id === 'platform-update') {
-        // Button that opens the sheet
-        return (
-          <Button
-            key={action.id}
-            {...(action.variant ? { variant: action.variant } : {})}
-            onClick={() => setOpenPlatformSheet(true)}>
+  const renderHoverButton = useCallback((action: PlatformHoverAction) => {
+    if (action.href) {
+      return (
+        <Button
+          key={action.id}
+          {...(action.variant ? { variant: action.variant } : {})}>
+          <Link
+            href={action.href}
+            target={action.target}>
             {action.label}
-          </Button>
-        );
-      }
-      if (action.href) {
-        return (
-          <Button
-            key={action.id}
-            {...(action.variant ? { variant: action.variant } : {})}>
-            <Link
-              href={action.href}
-              target={action.target}>
-              {action.label}
-            </Link>
-          </Button>
-        );
-      }
-      return <></>;
-    },
-    [setOpenPlatformSheet]
-  );
+          </Link>
+        </Button>
+      );
+    }
+    return <></>;
+  }, []);
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
@@ -200,23 +171,6 @@ const ServiceInstanceCard: React.FunctionComponent<
                   <ArrowOutwardIcon className="size-3 shrink-0" />
                 </div>
               )}
-              {serviceInstance.canUpdatePlatform &&
-                !serviceInstance.hoverLinks && (
-                  <div className="relative">
-                    <IconActions
-                      icon={
-                        <>
-                          <MoreVertIcon className="h-4 w-4 text-white" />
-                          <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                        </>
-                      }>
-                      <IconActionsItem
-                        onClick={() => setOpenPlatformSheet(true)}>
-                        {t('Platform.Update')}
-                      </IconActionsItem>
-                    </IconActions>
-                  </div>
-                )}
             </div>
           </div>
           <p className="txt-sub-content text-muted-foreground">
@@ -231,13 +185,6 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}
         </div>
       </div>
-      {serviceInstance.canUpdatePlatform && (
-        <PlatformUpdateSheet
-          serviceInstance={serviceInstance}
-          open={openPlatformSheet}
-          setOpen={setOpenPlatformSheet}
-        />
-      )}
     </li>
   );
 };

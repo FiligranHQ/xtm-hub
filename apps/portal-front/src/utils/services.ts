@@ -88,22 +88,19 @@ const freeTrialStaticData = (t: ReturnType<typeof useTranslations>) => {
 };
 
 export const freeTrialSkeletonToServiceInstanceCardData = (
-  serviceDefinitionIdentifier: ServiceDefinitionIdentifierEnum,
   t: ReturnType<typeof useTranslations>
 ) => {
   return {
     ...freeTrialStaticData(t),
     id: 'freeTrial',
     displayedServiceStatus: t('Service.Trials.Display.New'),
-    service_definition_identifier: serviceDefinitionIdentifier,
     url: '/app/service/free-trial',
   };
 };
 
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
-  t: ReturnType<typeof useTranslations>,
-  canUpdatePlatform: boolean = false
+  t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
   const cardBackgroundByServiceMap: Partial<
     Record<ServiceDefinitionIdentifierEnum, string>
@@ -117,7 +114,6 @@ export const registeredPlatformToServiceInstanceCardData = (
     platform.identifier as ServiceDefinitionIdentifierEnum;
   const commonValues = {
     id: platform.id,
-    service_definition_identifier: platformIdentifier,
     url: platform.url,
     disableCard:
       [
@@ -127,8 +123,7 @@ export const registeredPlatformToServiceInstanceCardData = (
         platform.deployment_request
           ?.hub_status as DeploymentRequestHubStatusEnum
       ) || isExpired(platform.subscription?.end_date),
-    hoverLinks: buildPlatformHoverLinks(platform, t, canUpdatePlatform),
-    canUpdatePlatform,
+    hoverLinks: buildPlatformHoverLinks(platform, t),
   };
   if (isTrial(platform)) {
     return {
@@ -205,8 +200,6 @@ export const publicServiceInstanceToInstanceCardData = (
       instance.id,
       instance.logo_document_id
     ),
-    service_definition_identifier: instance.service_definition!
-      .identifier as ServiceDefinitionIdentifierEnum,
     url: computeUrl(instance),
     ordering: instance.ordering,
   };
@@ -233,8 +226,6 @@ export const userServicesOwnedServiceToInstanceCardData = ({
       instance.id,
       instance.logo_document_id
     ),
-    service_definition_identifier: instance.service_definition!
-      .identifier as ServiceDefinitionIdentifierEnum,
     url: computeUrl(instance),
     ordering: instance.ordering,
   };
@@ -259,8 +250,6 @@ export const seoServiceInstanceToInstanceCardData = (
       instance.id,
       instance.logo_document_id
     ),
-    service_definition_identifier: instance.service_definition!
-      .identifier as ServiceDefinitionIdentifierEnum,
     url: computeUrl(instance, true),
     ordering: 0,
   };
