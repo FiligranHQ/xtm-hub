@@ -1,7 +1,7 @@
 import {
   IntegrationsConnection,
-  QueryIntegrationFeedsArgs,
-  QueryPublicIntegrationFeedsArgs,
+  QueryIntegrationsArgs,
+  QueryPublicIntegrationsArgs,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { WithLabels } from '../../../utils/types';
@@ -21,14 +21,14 @@ import {
 } from './integration-feeds.model';
 
 export const integrationFeedsApp = {
-  loadIntegrationFeeds: async (input: QueryIntegrationFeedsArgs) => {
+  loadIntegrations: async (input: QueryIntegrationsArgs) => {
     return loadParentDocumentsByServiceInstance<IntegrationsConnection>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       input,
       INTEGRATION_FEED_METADATA
     );
   },
-  loadIntegrationFeed: async (
+  loadIntegration: async (
     documentId: DocumentId
   ): Promise<WithLabels<Integrations>> => {
     return loadDocumentWithCountersById(documentId, INTEGRATION_FEED_METADATA);
@@ -41,7 +41,7 @@ export const integrationFeedsApp = {
     ),
 
   loadPaginatedPublicAccessIntegrationFeeds: async (
-    input: QueryPublicIntegrationFeedsArgs
+    input: QueryPublicIntegrationsArgs
   ) => {
     const { slug, ...opts } = input;
     return loadPaginatedSeoDocumentsByServiceSlug<IntegrationsConnection>(

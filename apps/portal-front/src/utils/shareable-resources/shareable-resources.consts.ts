@@ -1,6 +1,6 @@
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-import SeoIntegrationFeedByServiceSlugQuery from '@generated/seoIntegrationFeedByServiceSlugQuery.graphql';
+import SeoIntegrationByServiceSlugQuery from '@generated/seoIntegrationByServiceSlugQuery.graphql';
 import SeoIntegrationFeedBySlugQuery from '@generated/seoIntegrationFeedBySlugQuery.graphql';
 import SeoOpenaevScenarioBySlugQuery from '@generated/seoOpenaevScenarioBySlugQuery.graphql';
 import SeoOpenaevScenariosByServiceSlugQuery from '@generated/seoOpenaevScenariosByServiceSlugQuery.graphql';
@@ -68,8 +68,8 @@ export const localeMap: Record<ServiceSlug, string> = {
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
     makeQueryMapEntry<SeoIntegrationFeed>({
-      query: SeoIntegrationFeedByServiceSlugQuery,
-      key: 'publicIntegrationFeedByServiceSlug',
+      query: SeoIntegrationByServiceSlugQuery,
+      key: 'publicIntegrationByServiceSlug',
     }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeQueryMapEntry<SeoCustomDashboard>({

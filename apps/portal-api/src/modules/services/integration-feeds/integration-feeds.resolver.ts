@@ -37,16 +37,15 @@ const resolvers: Resolvers = {
       subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
   Query: {
-    integrationFeeds: async (_, input) =>
-      integrationFeedsApp.loadIntegrationFeeds(input),
-
-    integrationFeed: async (_, { id }) =>
-      integrationFeedsApp.loadIntegrationFeed(extractId<DocumentId>(id)),
-    publicIntegrationFeeds: async (_, input) =>
+    integrations: async (_, input) =>
+      integrationFeedsApp.loadIntegrations(input),
+    integration: async (_, { id }) =>
+      integrationFeedsApp.loadIntegration(extractId<DocumentId>(id)),
+    publicIntegrations: async (_, input) =>
       integrationFeedsApp.loadPaginatedPublicAccessIntegrationFeeds(input),
-    publicIntegrationFeedByServiceSlug: async (_, { serviceSlug }) =>
+    publicIntegrationByServiceSlug: async (_, { serviceSlug }) =>
       integrationFeedsApp.loadPublicAccessIntegrationFeeds(serviceSlug),
-    publicIntegrationFeedBySlug: async (_, { slug }) =>
+    publicIntegrationBySlug: async (_, { slug }) =>
       integrationFeedsApp.loadPublicAccessIntegrationFeed(slug),
   },
 };

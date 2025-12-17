@@ -1159,8 +1159,8 @@ export type Query = {
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
-  integrationFeed?: Maybe<Integrations>;
-  integrationFeeds: IntegrationsConnection;
+  integration?: Maybe<Integrations>;
+  integrations: IntegrationsConnection;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   label?: Maybe<Label>;
   labels?: Maybe<LabelConnection>;
@@ -1174,9 +1174,9 @@ export type Query = {
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
-  publicIntegrationFeedByServiceSlug?: Maybe<Array<Maybe<Integrations>>>;
-  publicIntegrationFeedBySlug?: Maybe<Integrations>;
-  publicIntegrationFeeds: IntegrationsConnection;
+  publicIntegrationByServiceSlug?: Maybe<Array<Maybe<Integrations>>>;
+  publicIntegrationBySlug?: Maybe<Integrations>;
+  publicIntegrations: IntegrationsConnection;
   publicServiceInstances: ServiceConnection;
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
@@ -1275,13 +1275,13 @@ export type QueryDocumentsArgs = {
 };
 
 
-export type QueryIntegrationFeedArgs = {
+export type QueryIntegrationArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
-export type QueryIntegrationFeedsArgs = {
+export type QueryIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
@@ -1368,17 +1368,17 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
-export type QueryPublicIntegrationFeedByServiceSlugArgs = {
+export type QueryPublicIntegrationByServiceSlugArgs = {
   serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-export type QueryPublicIntegrationFeedBySlugArgs = {
+export type QueryPublicIntegrationBySlugArgs = {
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-export type QueryPublicIntegrationFeedsArgs = {
+export type QueryPublicIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
@@ -2963,8 +2963,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  integrationFeed?: Resolver<Maybe<ResolversTypes['Integrations']>, ParentType, ContextType, Partial<QueryIntegrationFeedArgs>>;
-  integrationFeeds?: Resolver<ResolversTypes['IntegrationsConnection'], ParentType, ContextType, RequireFields<QueryIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  integration?: Resolver<Maybe<ResolversTypes['Integrations']>, ParentType, ContextType, Partial<QueryIntegrationArgs>>;
+  integrations?: Resolver<ResolversTypes['IntegrationsConnection'], ParentType, ContextType, RequireFields<QueryIntegrationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   label?: Resolver<Maybe<ResolversTypes['Label']>, ParentType, ContextType, RequireFields<QueryLabelArgs, 'id'>>;
   labels?: Resolver<Maybe<ResolversTypes['LabelConnection']>, ParentType, ContextType, RequireFields<QueryLabelsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2977,9 +2977,9 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
-  publicIntegrationFeedByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['Integrations']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedByServiceSlugArgs>>;
-  publicIntegrationFeedBySlug?: Resolver<Maybe<ResolversTypes['Integrations']>, ParentType, ContextType, Partial<QueryPublicIntegrationFeedBySlugArgs>>;
-  publicIntegrationFeeds?: Resolver<ResolversTypes['IntegrationsConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationFeedsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
+  publicIntegrationByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['Integrations']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationByServiceSlugArgs>>;
+  publicIntegrationBySlug?: Resolver<Maybe<ResolversTypes['Integrations']>, ParentType, ContextType, Partial<QueryPublicIntegrationBySlugArgs>>;
+  publicIntegrations?: Resolver<ResolversTypes['IntegrationsConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;

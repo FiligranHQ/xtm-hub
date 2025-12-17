@@ -6,7 +6,7 @@ import ShareableResourceSlug from '@/components/service/document/shareable-resou
 import {
   IntegrationFeedQuery,
   integrationFeedsItem,
-} from '@/components/service/integration-feeds/integration-feed.graphql';
+} from '@/components/service/integration-feeds/integration.graphql';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import {
   APP_PATH,
@@ -41,7 +41,7 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
 
   const documentData = readInlineData<integrationFeedsItem_fragment$key>(
     integrationFeedsItem,
-    data.integrationFeed
+    data.integrations
   );
 
   const breadcrumbValue = [

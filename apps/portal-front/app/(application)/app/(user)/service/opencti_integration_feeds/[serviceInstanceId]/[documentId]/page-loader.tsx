@@ -2,7 +2,7 @@
 
 import Loader from '@/components/loader';
 import IntegrationFeedSlug from '@/components/service/integration-feeds/[slug]/integration-feed-slug';
-import { IntegrationFeedQuery } from '@/components/service/integration-feeds/integration-feed.graphql';
+import { IntegrationFeedQuery } from '@/components/service/integration-feeds/integration.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { integrationFeedQuery } from '@generated/integrationFeedQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';

@@ -4,12 +4,12 @@ import PublicIntegrationFeedsList from '@/components/service/integration-feeds/[
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
-import { seoIntegrationFeedsQuery } from '@generated/seoIntegrationFeedsQuery.graphql';
+import { seoIntegrationsQuery } from '@generated/seoIntegrationsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { Skeleton } from 'filigran-ui';
 import React, { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
-import { SeoIntegrationFeedListQuery } from './seo-integration-feed.graphql';
+import { SeoIntegrationListQuery } from './seo-integration.graphql';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
@@ -20,8 +20,8 @@ export const IntegrationFeedListPageLoader: React.FC<Props> = ({
   serviceInstance,
   baseUrl,
 }) => {
-  const [queryRef, loadQuery] = useQueryLoader<seoIntegrationFeedsQuery>(
-    SeoIntegrationFeedListQuery
+  const [queryRef, loadQuery] = useQueryLoader<seoIntegrationsQuery>(
+    SeoIntegrationListQuery
   );
 
   const { localStorageKey } = useShareableResourceMapping(

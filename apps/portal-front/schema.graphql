@@ -50,11 +50,11 @@ type Query {
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationsConnection!
-  integrationFeed(id: ID, serviceInstanceId: ID): Integrations
-  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationsConnection!
-  publicIntegrationFeedByServiceSlug(serviceSlug: String): [Integrations]
-  publicIntegrationFeedBySlug(slug: String): Integrations
+  integrations(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationsConnection!
+  integration(id: ID, serviceInstanceId: ID): Integrations
+  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationsConnection!
+  publicIntegrationByServiceSlug(serviceSlug: String): [Integrations]
+  publicIntegrationBySlug(slug: String): Integrations
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!

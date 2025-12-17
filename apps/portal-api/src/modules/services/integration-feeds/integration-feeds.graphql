@@ -70,7 +70,7 @@ type Connector implements Node & Document & Integrations {
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
-  # Integration Feed
+  # Integrations
   remover_id: ID @auth
   integration_type: IntegrationsType!
   product_version: String!
@@ -95,7 +95,7 @@ type IntegrationsConnection {
 }
 
 type Query {
-  integrationFeeds(
+  integrations(
     first: Int!
     after: ID
     orderBy: DocumentOrdering!
@@ -104,8 +104,8 @@ type Query {
     filters: [Filter!]
     serviceInstanceId: String
   ): IntegrationsConnection! @auth
-  integrationFeed(id: ID, serviceInstanceId: ID): Integrations @auth
-  publicIntegrationFeeds(
+  integration(id: ID, serviceInstanceId: ID): Integrations @auth
+  publicIntegrations(
     slug: String!
     first: Int!
     after: ID
@@ -115,6 +115,6 @@ type Query {
     filters: [Filter!]
     serviceInstanceId: String
   ): IntegrationsConnection!
-  publicIntegrationFeedByServiceSlug(serviceSlug: String): [Integrations]
-  publicIntegrationFeedBySlug(slug: String): Integrations
+  publicIntegrationByServiceSlug(serviceSlug: String): [Integrations]
+  publicIntegrationBySlug(slug: String): Integrations
 }
