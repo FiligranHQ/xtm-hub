@@ -1,5 +1,6 @@
 'use client';
 
+import { PortalContext } from '@/components/me/app-portal-context';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
@@ -13,7 +14,7 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { Suspense } from 'react';
+import { Suspense, useContext } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {
@@ -28,7 +29,7 @@ const OwnedServices = ({
   registeredPlatforms,
 }: OwnedServicesProps) => {
   const t = useTranslations();
-
+  const { isPersonalSpace } = useContext(PortalContext);
   // Merge and sort by ordering property
   const sortedServices = [
     ...services
@@ -58,7 +59,8 @@ const OwnedServices = ({
       service.deployment_request.counts_in_orga_quota
   );
 
-  const shouldDisplayFreeTrialSkeleton = trialInstances.length === 0;
+  const shouldDisplayFreeTrialSkeleton =
+    trialInstances.length === 0 && !isPersonalSpace;
 
   const freeTrialServiceInstanceDataCard =
     freeTrialSkeletonToServiceInstanceCardData(t);
