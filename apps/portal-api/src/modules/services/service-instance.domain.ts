@@ -41,7 +41,7 @@ export const ServiceInstanceDomain = {
   loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription: async (
     serviceDefinitionIdentifier: ServiceDefinitionIdentifier,
     tags: ServiceInstanceTag[]
-  ): Promise<ServiceInstance[]> => {
+  ): Promise<SeoServiceInstance[]> => {
     const formattedTags = tags.map((tag) => `'${tag}'`).join(',');
     return db<ServiceInstance>('ServiceInstance')
       .leftJoin(
@@ -56,6 +56,12 @@ export const ServiceInstanceDomain = {
         '=',
         'ServiceInstance.id'
       )
+      .leftJoin(
+        'Service_Link',
+        'Service_Link.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
       .whereNull('Subscription.id')
       .andWhereRaw(
         `"ServiceInstance"."tags"::text[] @> array[${formattedTags}]`
@@ -65,7 +71,25 @@ export const ServiceInstanceDomain = {
         '=',
         serviceDefinitionIdentifier
       )
-      .select('ServiceInstance.*');
+      .select(
+        'ServiceInstance.id',
+        'ServiceInstance.name',
+        'ServiceInstance.slug',
+        'ServiceInstance.description',
+        'ServiceInstance.logo_document_id',
+        'ServiceInstance.illustration_document_id',
+        'ServiceInstance.tags',
+        'ServiceInstance.ordering',
+        dbRaw(
+          formatRawObject({
+            columnName: 'ServiceDefinition',
+            typename: 'ServiceDefinition',
+            as: 'service_definition',
+          })
+        ),
+        dbRaw('json_agg("Service_Link") AS links')
+      )
+      .groupBy('ServiceInstance.id', 'ServiceDefinition.id');
   },
 };
 

@@ -178,7 +178,7 @@ export const serviceWithSubscriptionsFragment = graphql`
 export const ServiceLinksByTagsQuery = graphql`
   query serviceLinksByTagsQuery($tags: [ServiceInstanceTag!]!) {
     serviceInstanceLinksByTags(tags: $tags) {
-      ...serviceList_fragment
+      ...seoServiceInstanceFragment
     }
   }
 `;
