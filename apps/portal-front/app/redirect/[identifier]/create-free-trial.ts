@@ -2,7 +2,6 @@ import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import type { createFreeTrialRegisteredPlatformsStatusAndTypeQuery } from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
 import CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
@@ -49,19 +48,11 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
     const freeTrials = platforms.filter(
       (platform) =>
         platform.deployment_request?.type ===
-        DeploymentRequestDeploymentTypeEnum.TRIAL
+          DeploymentRequestDeploymentTypeEnum.TRIAL &&
+        platform.deployment_request.counts_in_orga_quota === true
     );
 
-    const isTrialStarted = [
-      DeploymentRequestHubStatusEnum.QUEUED,
-      DeploymentRequestHubStatusEnum.PENDING,
-      DeploymentRequestHubStatusEnum.ACTIVE,
-    ].includes(
-      freeTrials[0]?.deployment_request
-        ?.hub_status as DeploymentRequestHubStatusEnum
-    );
-
-    if (isTrialStarted) {
+    if (freeTrials.length > 0) {
       const instanceUrl = new URL(
         `/app/service/opencti_registration/${freeTrials[0]?.id}`,
         baseUrlFront
