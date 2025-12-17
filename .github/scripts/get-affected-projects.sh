@@ -90,10 +90,7 @@ if [[ "$EVENT_NAME" == "pull_request" ]]; then
 
   # ALWAYS build the 3 main images together (needed for e2e tests)
   # Only test images are conditional
-  PROJECTS_JSON='[
-    {"image":"portal-front","dockerfile":"apps/portal-front/Dockerfile"},
-    {"image":"portal-api","dockerfile":"apps/portal-api/Dockerfile"},
-    {"image":"portal-e2e-tests","dockerfile":"apps/portal-e2e-tests/Dockerfile"}'
+  PROJECTS_JSON='[{"image":"portal-front","dockerfile":"apps/portal-front/Dockerfile"},{"image":"portal-api","dockerfile":"apps/portal-api/Dockerfile"},{"image":"portal-e2e-tests","dockerfile":"apps/portal-e2e-tests/Dockerfile"}'
 
   # Add test images only if their corresponding app is affected
   if [[ "$HAS_FRONT" == "true" ]]; then
