@@ -6,6 +6,7 @@ import {
   StartTrialButtonVariant,
 } from '@/components/service/trial-instances/start-trial-button';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
+import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -54,6 +55,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
           </>
         }
       />
+      <TrialsLearnMore />
       <RegistrationLearnMore
         serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
       />
