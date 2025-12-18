@@ -129,6 +129,7 @@ type DeploymentAvailability {
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
   capacity: Int!
+  platform_identifier: PlatformIdentifier!
 }
 
 enum DeploymentRequestOrdering {
@@ -152,6 +153,12 @@ enum ReorderDeploymentRequestInQueueDirection {
 input ReorderDeploymentRequestInQueueInput {
   id: ID!
   direction: ReorderDeploymentRequestInQueueDirection!
+}
+
+input UpdateDeploymentQuotaCapacityInput {
+  platformIdentifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  newCapacity: Int!
 }
 
 extend type Query {
@@ -189,4 +196,7 @@ extend type Mutation {
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
     @auth(requires: [BYPASS])
+  updateDeploymentQuotaCapacity(
+    input: UpdateDeploymentQuotaCapacityInput!
+  ): Success! @auth(requires: [BYPASS])
 }

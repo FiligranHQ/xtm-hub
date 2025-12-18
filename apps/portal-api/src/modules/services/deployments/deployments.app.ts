@@ -38,10 +38,6 @@ import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 import config from 'config';
-import {
-  databaseContext,
-  withTransaction,
-} from '../../../context/database.context';
 import { UserId } from '../../../model/kanel/public/User';
 import { SYSTEM_USER_UUID } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
@@ -98,50 +94,57 @@ export const DeploymentsApp = {
     }
 
     try {
-      const createdDeploymentRequest = await databaseContext.withTransaction(
-        async () => {
-          const { isPlaceAvailable } =
-            await DeploymentsQuotasDomain.reservePlace(
-              input.platform_identifier,
-              input.region
-            );
-          const hubStatus = isPlaceAvailable
-            ? DeploymentRequestHubStatus.Pending
-            : DeploymentRequestHubStatus.Queued;
-          const maxOrdering = await DeploymentRequestDomain.getMaxOrdering();
-          const ordering = (maxOrdering ?? 0) + 1;
-
-          const serviceInstanceId =
-            await registrationDomain.registerNewPlatform({
-              serviceDefinitionId: serviceDefinition.id,
-              organizationId: user.selected_organization_id,
-              platformIdentifier: input.platform_identifier,
-              serviceInstanceCreationStatus:
-                ServiceInstanceCreationStatus.Pending,
-            });
-
-          return await DeploymentRequestDomain.insertDeploymentRequest({
-            id: uuidv4() as DeploymentRequestId,
-            user_requester_id: user.id,
-            organization_requester_id: user.selected_organization_id,
-            service_instance_id: serviceInstanceId,
-            hub_status: hubStatus,
-            target_state:
-              hubStatus === DeploymentRequestHubStatus.Queued
-                ? DeploymentRequestPlatformState.Unprovisioned
-                : DeploymentRequestPlatformState.Active,
-            actual_state: DeploymentRequestPlatformState.Unprovisioned,
-            ordering,
-            type: input.type,
-            platform_identifier: input.platform_identifier,
+      const createdDeploymentRequest =
+        await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+          {
+            platformIdentifier: input.platform_identifier,
             region: input.region,
-            job_title: input.job_title,
-            use_case: input.use_case,
-            activity_sector: input.activity_sector,
-            platform_token: uuidv4(),
-          });
-        }
-      );
+          },
+          async () => {
+            const { isPlaceAvailable } =
+              await DeploymentsQuotasDomain.reservePlace(
+                input.platform_identifier,
+                input.region
+              );
+            const hubStatus = isPlaceAvailable
+              ? DeploymentRequestHubStatus.Pending
+              : DeploymentRequestHubStatus.Queued;
+            const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
+              hub_status: hubStatus,
+            });
+            const ordering = (maxOrdering ?? 0) + 1;
+
+            const serviceInstanceId =
+              await registrationDomain.registerNewPlatform({
+                serviceDefinitionId: serviceDefinition.id,
+                organizationId: user.selected_organization_id,
+                platformIdentifier: input.platform_identifier,
+                serviceInstanceCreationStatus:
+                  ServiceInstanceCreationStatus.Pending,
+              });
+
+            return await DeploymentRequestDomain.insertDeploymentRequest({
+              id: uuidv4() as DeploymentRequestId,
+              user_requester_id: user.id,
+              organization_requester_id: user.selected_organization_id,
+              service_instance_id: serviceInstanceId,
+              hub_status: hubStatus,
+              target_state:
+                hubStatus === DeploymentRequestHubStatus.Queued
+                  ? DeploymentRequestPlatformState.Unprovisioned
+                  : DeploymentRequestPlatformState.Active,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              ordering,
+              type: input.type,
+              platform_identifier: input.platform_identifier,
+              region: input.region,
+              job_title: input.job_title,
+              use_case: input.use_case,
+              activity_sector: input.activity_sector,
+              platform_token: uuidv4(),
+            });
+          }
+        );
 
       try {
         const createDeploymentEvent = buildCreateDeploymentEvent(
@@ -257,39 +260,47 @@ export const DeploymentsApp = {
       newStatus = deploymentRequest.hub_status;
     }
 
-    await withTransaction(async () => {
-      const shouldUpdateSubscriptionDates = input.start_date || input.end_date;
-      if (shouldUpdateSubscriptionDates) {
-        await updateSubscriptionBy(
-          { service_instance_id: deploymentRequest.service_instance_id },
-          {
-            start_date: input.start_date,
-            end_date: input.end_date,
-          }
+    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+      {
+        platformIdentifier:
+          deploymentRequest.platform_identifier as PlatformIdentifier,
+        region: deploymentRequest.region as DeploymentRequestPlatformRegion,
+      },
+      async () => {
+        const shouldUpdateSubscriptionDates =
+          input.start_date || input.end_date;
+        if (shouldUpdateSubscriptionDates) {
+          await updateSubscriptionBy(
+            { service_instance_id: deploymentRequest.service_instance_id },
+            {
+              start_date: input.start_date,
+              end_date: input.end_date,
+            }
+          );
+        }
+
+        const updateData: DeploymentRequestMutator = {
+          start_date: input.start_date,
+          end_date: input.end_date,
+          platform_id: input.platform_id,
+          failure_reason: input.failure_reason,
+          actual_state: input.actual_state,
+          ordering: input.ordering,
+          hub_status: newStatus,
+        };
+
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          deploymentRequestId,
+          updateData
         );
+
+        if (newStatus === DeploymentRequestHubStatus.Active) {
+          await DeploymentRequestDomain.initialiseServiceGroup(
+            input.id as DeploymentRequestId
+          );
+        }
       }
-
-      const updateData: DeploymentRequestMutator = {
-        start_date: input.start_date,
-        end_date: input.end_date,
-        platform_id: input.platform_id,
-        failure_reason: input.failure_reason,
-        actual_state: input.actual_state,
-        ordering: input.ordering,
-        hub_status: newStatus,
-      };
-
-      await DeploymentRequestDomain.updateDeploymentRequestById(
-        deploymentRequestId,
-        updateData
-      );
-
-      if (newStatus === DeploymentRequestHubStatus.Active) {
-        await DeploymentRequestDomain.initialiseServiceGroup(
-          input.id as DeploymentRequestId
-        );
-      }
-    });
+    );
 
     const updatedDeploymentRequest =
       await DeploymentRequestDomain.loadFullDeploymentRequestById(
@@ -363,6 +374,7 @@ export const DeploymentsApp = {
       region: quota.region as DeploymentRequestPlatformRegion,
       availableCount: quota.availability,
       capacity: quota.capacity,
+      platform_identifier: quota.platform_identifier as PlatformIdentifier,
     }));
   },
 
@@ -402,6 +414,65 @@ export const DeploymentsApp = {
     };
   },
 
+  updateDeploymentQuotaCapacity: async ({
+    platformIdentifier,
+    region,
+    newCapacity,
+  }: {
+    platformIdentifier: PlatformIdentifier;
+    region: DeploymentRequestPlatformRegion;
+    newCapacity: number;
+  }): Promise<{ success: boolean }> => {
+    const { user } = requestContext.require();
+    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+      { platformIdentifier, region },
+      async () => {
+        const { newAvailability } =
+          await DeploymentsQuotasDomain.updateQuotaCapacity({
+            platformIdentifier,
+            region,
+            newCapacity,
+          });
+
+        if (newAvailability < 0) {
+          for (let i = 0; i < -newAvailability; i++) {
+            const updatedRequest =
+              await DeploymentRequestDomain.setLastPendingRequestAsQueued(
+                platformIdentifier,
+                region
+              );
+
+            if (!updatedRequest) {
+              break;
+            }
+
+            void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
+            await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+          }
+        } else if (newAvailability > 0) {
+          for (let i = 0; i < newAvailability; i++) {
+            const updatedRequest =
+              await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
+                platformIdentifier,
+                region
+              );
+            if (!updatedRequest) {
+              break;
+            }
+
+            void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
+            await DeploymentsQuotasDomain.reservePlace(
+              platformIdentifier,
+              region
+            );
+          }
+        }
+      }
+    );
+
+    return { success: true };
+  },
+
   cancelDeploymentRequest: async (
     deploymentRequestId: DeploymentRequestId,
     isAdmin: boolean
@@ -439,35 +510,41 @@ export const DeploymentsApp = {
         ? DeploymentRequestPlatformState.Unprovisioned
         : DeploymentRequestPlatformState.Removed;
 
-    await withTransaction(async () => {
-      await DeploymentRequestDomain.updateDeploymentRequestById(
-        deploymentRequestId,
-        {
-          hub_status: DeploymentRequestHubStatus.Cancelled,
-          target_state: target_state,
-          cancellation_date: new Date(),
-          cancellation_user_id: user.id,
-          counts_in_orga_quota: countsInOrgaQuota,
+    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+      {
+        platformIdentifier: deploymentRequest.platform_identifier,
+        region: deploymentRequest.region,
+      },
+      async () => {
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          deploymentRequestId,
+          {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            target_state: target_state,
+            cancellation_date: new Date(),
+            cancellation_user_id: user.id,
+            counts_in_orga_quota: countsInOrgaQuota,
+          }
+        );
+        if (!countsInOrgaQuota) {
+          await updateServiceInstance(deploymentRequest.service_instance_id, {
+            creation_status: ServiceInstanceCreationStatus.Disabled,
+          });
         }
-      );
-      if (!countsInOrgaQuota) {
-        await updateServiceInstance(deploymentRequest.service_instance_id, {
-          creation_status: ServiceInstanceCreationStatus.Disabled,
-        });
+        await DeploymentsApp.releaseDeploymentRequestPlace(
+          previousHubStatus,
+          deploymentRequest.platform_identifier,
+          deploymentRequest.region
+        );
       }
-      await DeploymentsApp.releaseDeploymentRequestPlace(
-        previousHubStatus,
-        deploymentRequest.platform_identifier,
-        deploymentRequest.region
-      );
-    });
+    );
 
     const updatedDeploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         id: deploymentRequestId,
       });
 
-    void sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
+    await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
       const [requester] = await loadUnsecureUser({
@@ -499,27 +576,33 @@ export const DeploymentsApp = {
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
       try {
-        await withTransaction(async () => {
-          const updatedDeploymentRequest =
-            await DeploymentRequestDomain.updateDeploymentRequestById(
-              trial.id,
-              {
-                hub_status: DeploymentRequestHubStatus.Expired,
-                target_state: DeploymentRequestPlatformState.Removed,
-              }
+        await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+          {
+            platformIdentifier: trial.platform_identifier as PlatformIdentifier,
+            region: trial.region as DeploymentRequestPlatformRegion,
+          },
+          async () => {
+            const updatedDeploymentRequest =
+              await DeploymentRequestDomain.updateDeploymentRequestById(
+                trial.id,
+                {
+                  hub_status: DeploymentRequestHubStatus.Expired,
+                  target_state: DeploymentRequestPlatformState.Removed,
+                }
+              );
+
+            await DeploymentsApp.releaseDeploymentRequestPlace(
+              previousHubStatus,
+              trial.platform_identifier as PlatformIdentifier,
+              trial.region as DeploymentRequestPlatformRegion
             );
 
-          await DeploymentsApp.releaseDeploymentRequestPlace(
-            previousHubStatus,
-            trial.platform_identifier as PlatformIdentifier,
-            trial.region as DeploymentRequestPlatformRegion
-          );
-
-          await sendUpdateDeploymentTelemetryEvent(
-            updatedDeploymentRequest,
-            SYSTEM_USER_UUID
-          );
-        });
+            await sendUpdateDeploymentTelemetryEvent(
+              updatedDeploymentRequest,
+              SYSTEM_USER_UUID
+            );
+          }
+        );
 
         try {
           const [requester] = await loadUnsecureUser({
@@ -561,11 +644,10 @@ export const DeploymentsApp = {
       return;
     }
 
-    const [updatedDeploymentRequest] =
-      await DeploymentRequestDomain.setQueuedRequestsAsPending(
+    const updatedDeploymentRequest =
+      await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
         platformIdentifier,
-        region,
-        1
+        region
       );
     if (updatedDeploymentRequest) {
       const { user } = requestContext.require();

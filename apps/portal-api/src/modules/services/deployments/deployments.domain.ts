@@ -52,9 +52,12 @@ export const DeploymentRequestDomain = {
     };
   },
 
-  getMaxOrdering: async (): Promise<number | null> => {
+  getMaxOrdering: async (
+    field: DeploymentRequestMutator
+  ): Promise<number | null> => {
     const result = await db<DeploymentRequest>('DeploymentRequest')
       .max('ordering as max')
+      .where(field)
       .first();
     return result?.max ? parseInt(result.max as string, 10) : null;
   },
@@ -160,29 +163,66 @@ export const DeploymentRequestDomain = {
     return deploymentRequest;
   },
 
-  setQueuedRequestsAsPending: async (
+  setFirstQueuedRequestAsPending: async (
     platformIdentifier: PlatformIdentifier,
-    region: DeploymentRequestPlatformRegion,
-    requestsToMoveCount: number
-  ): Promise<DeploymentRequest[]> => {
-    const requests = await db<DeploymentRequest[]>('DeploymentRequest')
+    region: DeploymentRequestPlatformRegion
+  ): Promise<DeploymentRequest | null> => {
+    const request = await db<DeploymentRequest>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
       .andWhere('platform_identifier', '=', platformIdentifier)
       .andWhere('region', '=', region)
       .orderBy('ordering', 'asc')
-      .limit(requestsToMoveCount);
+      .first();
 
-    return db<DeploymentRequest>('DeploymentRequest')
+    if (!request) {
+      return null;
+    }
+
+    const maxPendingOrdering = await DeploymentRequestDomain.getMaxOrdering({
+      hub_status: DeploymentRequestHubStatus.Pending,
+    });
+
+    const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .update({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
+        ordering: maxPendingOrdering + 1,
       })
-      .whereIn(
-        'id',
-        requests.map(({ id }) => id)
-      )
+      .where('id', '=', request.id)
       .returning('*');
+    return updatedRequest ?? null;
+  },
+
+  setLastPendingRequestAsQueued: async (
+    platformIdentifier: PlatformIdentifier,
+    region: DeploymentRequestPlatformRegion
+  ): Promise<DeploymentRequest | null> => {
+    const request = await db<DeploymentRequest>('DeploymentRequest')
+      .select('*')
+      .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
+      .andWhere('platform_identifier', '=', platformIdentifier)
+      .andWhere('region', '=', region)
+      .orderBy('ordering', 'desc')
+      .first();
+
+    if (!request) {
+      return null;
+    }
+
+    await db<DeploymentRequest>('DeploymentRequest')
+      .increment('ordering', 1)
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
+    const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
+      .update({
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Removed,
+        ordering: 1,
+      })
+      .where({ id: request.id })
+      .returning('*');
+
+    return updatedRequest;
   },
 
   initialiseServiceGroup: async (id: DeploymentRequestId) => {

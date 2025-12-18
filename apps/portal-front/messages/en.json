@@ -301,6 +301,16 @@
       "MoveToTop": "Move to top",
       "MoveUp": "Move up"
     },
+    "UpdateQuotasForm": {
+      "Title": "Update quotas for {platform} in {region}",
+      "QuotasUpdated": "Quota has been updated successfully",
+      "NewCapacityLabel": "New quota capacity",
+      "AlertDialog": {
+        "ConfirmTitle": "Quota Update for Region {region}",
+        "ConfirmDescription": "You’ve updated the quotas for Region {region} from {oldCapacity} to {newCapacity}.",
+        "ConfirmSentence": "Are you sure you want to save these changes?"
+      }
+    },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
   },
   "Parameters": {

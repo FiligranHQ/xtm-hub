@@ -22,7 +22,7 @@ export default defineConfig([
     '**/src/utils/error/error.util.ts',
   ]),
   {
-    files: ['**/*.test.ts'],
+    files: ['**/*.test.ts', '**/*.test.utils.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
     },
