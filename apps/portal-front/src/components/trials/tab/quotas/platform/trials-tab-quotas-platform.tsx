@@ -115,7 +115,7 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
 
   return (
     <>
-      <h2 className="mt-xxl">
+      <h2 className="mt-xxl ml-l">
         {t(`PlatformIdentifier.${platformIdentifier}`)}
       </h2>
       <DataTable
