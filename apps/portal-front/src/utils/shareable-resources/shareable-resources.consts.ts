@@ -20,7 +20,7 @@ export interface ServiceConfig {
 }
 
 export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
     redirectPath: 'opencti_integrations',
     description:
       '. Discover more OpenCTI integrations like this in our OpenCTI Integrations Library, available for download on the XTM Hub.',
@@ -60,13 +60,13 @@ function makeSingleQueryMapEntry<TReturn>({
 }
 
 export const localeMap: Record<ServiceSlug, string> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'OpenctiIntegrations',
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: 'OpenctiIntegrations',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
   [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeQueryMapEntry<SeoIntegration>({
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: makeQueryMapEntry<SeoIntegration>({
     query: SeoIntegrationByServiceSlugQuery,
     key: 'publicIntegrationByServiceSlug',
   }),
@@ -82,11 +82,10 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
 };
 
 export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
-    makeSingleQueryMapEntry<SeoIntegration>({
-      query: SeoIntegrationBySlugQuery,
-      key: 'publicIntegrationBySlug',
-    }),
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: makeSingleQueryMapEntry<SeoIntegration>({
+    query: SeoIntegrationBySlugQuery,
+    key: 'publicIntegrationBySlug',
+  }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeSingleQueryMapEntry<SeoCustomDashboard>({
       query: SeoCustomDashboardBySlugQuery,

@@ -151,6 +151,6 @@ export function useCsvFeedContext(
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: CsvFeedForm,
-    type: ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
+    type: ShareableResourceType.OPENCTI_INTEGRATION,
   };
 }

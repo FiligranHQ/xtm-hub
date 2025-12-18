@@ -5,16 +5,16 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { Merge } from '@/utils/typescript';
-import { seoIntegrationFeedConnectorFragment$data } from '@generated/seoIntegrationFeedConnectorFragment.graphql';
-import { seoIntegrationFeedFragment$data } from '@generated/seoIntegrationFeedFragment.graphql';
+import { seoIntegrationConnectorFragment$data } from '@generated/seoIntegrationConnectorFragment.graphql';
+import { seoIntegrationFragment$data } from '@generated/seoIntegrationFragment.graphql';
 import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
 import Image from 'next/image';
 import React from 'react';
 import { MarkdownAsync } from 'react-markdown';
 
 export type ShareableResourceConnectorType = Merge<
-  Merge<SubscribableResource, seoIntegrationFeedFragment$data>,
-  seoIntegrationFeedConnectorFragment$data
+  Merge<SubscribableResource, seoIntegrationFragment$data>,
+  seoIntegrationConnectorFragment$data
 >;
 interface ShareableResourceConnectorSlugPublicProps {
   documentData: ShareableResourceConnectorType;

@@ -29,13 +29,13 @@ export type SubscribableResource =
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
-  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration',
-  OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
+  OPENCTI_INTEGRATION = 'opencti_integration',
+  OPENCTI_CUSTOM_DASHBOARD = 'opencti_custom_dashboard',
 }
 
 export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
   openaev_scenario: 'Scenario OpenAEV',
-  opencti_integration_feed: 'Feed OpenCTI',
+  opencti_integration: 'Feed OpenCTI',
   opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
 };
 
@@ -46,7 +46,7 @@ export const isIntegrationItem = (
     | ShareableResourceConnectorType
     | PublicShareableResource
 ): resource is integrationsItem_fragment$data => {
-  return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
+  return resource.type === ShareableResourceType.OPENCTI_INTEGRATION;
 };
 
 export const isConnectorResource = (
@@ -186,7 +186,7 @@ export type MakeQueryMapParams = {
 
 export type ServiceInfo = { link: string; description: string };
 export enum ServiceSlug {
-  OPEN_CTI_INTEGRATION_FEEDS = 'open-cti-integrations',
+  OPEN_CTI_INTEGRATIONS = 'open-cti-integrations',
   OPEN_CTI_CUSTOM_DASHBOARDS = 'open-cti-custom-dashboards',
   OPEN_AEV_SCENARIOS = 'open-aev-scenarios',
 }

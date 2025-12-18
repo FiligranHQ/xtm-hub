@@ -65,8 +65,8 @@ const ServiceIdentifierToEventService = new Map<
     TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY,
   ],
   [
-    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
-    TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+    ServiceDefinitionIdentifier.OpenctiIntegrations,
+    TelemetryEventService.INTEGRATIONS_LIBRARY,
   ],
   [
     ServiceDefinitionIdentifier.OpenctiCustomDashboards,

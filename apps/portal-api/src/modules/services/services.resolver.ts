@@ -53,19 +53,19 @@ import {
 const resolvers: Resolvers = {
   ServiceInstance: {
     __resolveType(service_instance) {
-      const integrationFeedMapping = {
+      const integrationMapping = {
         [IntegrationsType.Connector]: 'Connector',
         [IntegrationsType.CsvFeed]: 'CsvFeed',
       };
       const typeMapping = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
-        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
+        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
       };
 
       if (service_instance.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         return (
-          integrationFeedMapping[service_instance.integration_type] ??
+          integrationMapping[service_instance.integration_type] ??
           typeMapping[service_instance.type]
         );
       }

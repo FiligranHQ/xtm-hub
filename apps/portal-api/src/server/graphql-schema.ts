@@ -12,7 +12,7 @@ import deploymentResolver from '../modules/services/deployments/deployments.reso
 import vaultResolver from '../modules/services/document/document.resolver';
 import serviceGroupResolver from '../modules/services/group/service-group.resolver';
 import csvFeedsResolver from '../modules/services/integrations/csv-feeds/csv-feeds.resolver';
-import integrationFeedsResolver from '../modules/services/integrations/integrations.resolver';
+import integrationsResolver from '../modules/services/integrations/integrations.resolver';
 import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
@@ -55,7 +55,7 @@ const resolvers = mergeResolvers([
   telemetryResolver,
   deploymentResolver,
   ingestManifestResolver,
-  integrationFeedsResolver,
+  integrationsResolver,
   serviceGroupResolver,
 ]);
 

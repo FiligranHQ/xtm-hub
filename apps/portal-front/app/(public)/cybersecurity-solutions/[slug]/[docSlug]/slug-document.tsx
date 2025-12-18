@@ -16,7 +16,7 @@ const SlugDocument = async ({
   document: SeoResource;
 }) => {
   switch (serviceInstance.slug as ServiceSlug) {
-    case ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS:
+    case ServiceSlug.OPEN_CTI_INTEGRATIONS:
       return (
         document.children_documents![0] && (
           <div className="relative w-full h-[35vh]">
