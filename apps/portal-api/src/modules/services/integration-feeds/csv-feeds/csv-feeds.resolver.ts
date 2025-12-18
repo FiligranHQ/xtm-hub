@@ -11,10 +11,8 @@ import {
 import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../../../utils/error/error.util';
 import { extractId } from '../../../../utils/utils';
-import {
-  deleteDocument,
-  updateDocumentWithChildren,
-} from '../../document/domain/document.domain';
+import { DocumentApp } from '../../document/document.app';
+import { updateDocumentWithChildren } from '../../document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
@@ -63,7 +61,7 @@ const resolvers: Resolvers = {
     },
     deleteCsvFeed: async (_, { id }, context) => {
       try {
-        return deleteDocument<CsvFeed>(
+        return DocumentApp.deleteDocument<CsvFeed>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true

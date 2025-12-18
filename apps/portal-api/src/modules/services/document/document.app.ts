@@ -1,11 +1,19 @@
 import { withTransaction } from '../../../context/database.context';
-import { default as DocumentModel } from '../../../model/kanel/public/Document';
+import {
+  DocumentId,
+  default as DocumentModel,
+} from '../../../model/kanel/public/Document';
 import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import { processUploads, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import { DocumentData, DocumentDomain } from './domain/document.domain';
+import {
+  DocumentData,
+  DocumentDomain,
+  passDocumentToInactive,
+} from './domain/document.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
@@ -90,6 +98,40 @@ export const DocumentApp = {
       await DocumentChildrenDomain.upsertImages(doc, uploads);
       return doc;
     });
+  },
+
+  deleteDocument: async <T extends DocumentModel>(
+    documentId: DocumentId,
+    serviceInstanceId: ServiceInstanceId,
+    hardDelete: boolean
+  ): Promise<T> => {
+    const [documentFromDb] = await DocumentDomain.loadDocumentBy({
+      'Document.id': documentId,
+      'Document.service_instance_id': serviceInstanceId,
+    });
+
+    if (!documentFromDb) {
+      throw new Error('Document not found');
+    }
+
+    const childIds = await DocumentChildrenDomain.loadChildrenIds(documentId);
+    if (hardDelete) {
+      await withTransaction(async () => {
+        await DocumentChildrenDomain.deleteChildrenByParent(documentId);
+        await DocumentDomain.deleteDocuments([...childIds, documentId]);
+
+        // Labels
+        await objectLabelDomain.deleteObjectLabelBy({
+          object_id: documentId as unknown as ObjectLabelObjectId,
+        });
+      });
+      return documentFromDb as T;
+    }
+
+    // Soft delete => desactivate the document
+    await passDocumentToInactive([documentId, ...childIds]);
+
+    return documentFromDb as T;
   },
 };
 

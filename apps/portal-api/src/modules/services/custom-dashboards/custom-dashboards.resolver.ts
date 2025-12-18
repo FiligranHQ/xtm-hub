@@ -10,9 +10,9 @@ import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
+import { DocumentApp } from '../document/document.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import {
-  deleteDocument,
   DocumentDomain,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
@@ -116,7 +116,7 @@ const resolvers: Resolvers = {
     },
     deleteCustomDashboard: async (_, { id }, context) => {
       try {
-        return deleteDocument<CustomDashboard>(
+        return DocumentApp.deleteDocument<CustomDashboard>(
           extractId<DocumentId>(id),
           context.serviceInstanceId as ServiceInstanceId,
           true

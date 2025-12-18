@@ -283,40 +283,6 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
   });
 };
 
-export const deleteDocument = async <T extends DocumentModel>(
-  documentId: DocumentId,
-  serviceInstanceId: ServiceInstanceId,
-  hardDelete: boolean
-): Promise<T> => {
-  const [documentFromDb] = await DocumentDomain.loadDocumentBy({
-    'Document.id': documentId,
-    'Document.service_instance_id': serviceInstanceId,
-  });
-
-  if (!documentFromDb) {
-    throw new Error('Document not found');
-  }
-
-  const childIds = await DocumentChildrenDomain.loadChildrenIds(documentId);
-  if (hardDelete) {
-    await withTransaction(async () => {
-      await DocumentChildrenDomain.deleteChildrenByParent(documentId);
-      await DocumentDomain.deleteDocuments([...childIds, documentId]);
-
-      // Labels
-      await objectLabelDomain.deleteObjectLabelBy({
-        object_id: documentId as unknown as ObjectLabelObjectId,
-      });
-    });
-    return documentFromDb as T;
-  }
-
-  // Soft delete => desactivate the document
-  await passDocumentToInactive([documentId, ...childIds]);
-
-  return documentFromDb as T;
-};
-
 export const passDocumentToInactive = async (
   documentId: DocumentId | DocumentId[]
 ) => {

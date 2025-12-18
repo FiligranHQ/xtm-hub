@@ -35,7 +35,6 @@ import {
 import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import {
-  deleteDocument,
   DocumentDomain,
   loadDocuments,
   updateDocument,
@@ -80,7 +79,7 @@ const resolvers: Resolvers = {
     },
     deleteDocument: async (_, { documentId, forceDelete }, context) => {
       try {
-        return await deleteDocument(
+        return await DocumentApp.deleteDocument(
           fromGlobalId(documentId).id as DocumentId,
           context.serviceInstanceId as ServiceInstanceId,
           forceDelete
