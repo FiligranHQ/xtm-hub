@@ -3,7 +3,7 @@ import { Callout } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-export function PublicTryOpenCTICallout() {
+export function PublicTryOpenCTIBanner() {
   const t = useTranslations();
 
   return (

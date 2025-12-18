@@ -1,4 +1,4 @@
-import { TestEnvCallout } from '@/components/admin/test-env-callout';
+import { TestEnvBanner } from '@/components/admin/test-env-banner';
 import LoginForm from '@/components/login/login-form';
 import LoginMessage from '@/components/login/login-message';
 import LoginTitleForm from '@/components/login/login-title';
@@ -28,7 +28,7 @@ export const LoginLayout: FunctionComponent = ({}) => {
   }, [currentPath]);
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
-      <TestEnvCallout />
+      <TestEnvBanner />
       <div className="flex flex-col items-center p-xl sm:p-0">
         <LoginTitleForm />
         <div className="space-y-l mt-l w-full flex flex-col items-center">

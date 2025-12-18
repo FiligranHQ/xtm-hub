@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext } from 'react';
 
-export function TestEnvCallout() {
+export function TestEnvBanner() {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
 
@@ -17,7 +17,7 @@ export function TestEnvCallout() {
         variant="destructive"
         className="rounded-none text-black justify-center uppercase">
         <div className="">
-          {t('TestEnvCallout', {
+          {t('TestEnvBanner', {
             environnement: settings?.environment,
           })}
           <Link
