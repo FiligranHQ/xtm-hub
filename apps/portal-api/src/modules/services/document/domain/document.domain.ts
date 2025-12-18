@@ -17,22 +17,17 @@ import {
   DocumentId,
   default as DocumentModel,
 } from '../../../../model/kanel/public/Document';
-import { LabelId } from '../../../../model/kanel/public/Label';
-import { ObjectLabelObjectId } from '../../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../../model/kanel/public/User';
 import { formatRawObject } from '../../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../../utils/utils';
 import { Document, normalizeDocumentName } from '../document.helper';
 
-import { withTransaction } from '../../../../context/database.context';
 import { requestContext } from '../../../../context/request.context';
-import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
 } from '../../../../security/restriction/document';
-import { objectLabelDomain } from '../../../settings/objectLabel/object-label.domain';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
@@ -164,68 +159,6 @@ export const DocumentDomain = {
   deleteDocuments: async (ids: DocumentId[]) => {
     await db<Document>('Document').whereIn('id', ids).delete();
   },
-};
-
-export const updateDocument = async <T extends DocumentModel>(
-  documentId: DocumentId,
-  documentData: Omit<Partial<T>, 'labels'> & {
-    labels?: string[];
-  },
-  metadataKeys: DocumentMetadataKeys<T> = []
-): Promise<T> => {
-  const { user } = requestContext.require();
-  const uploader_organization_id = documentData.uploader_organization_id
-    ? extractId<OrganizationId>(documentData.uploader_organization_id)
-    : null;
-
-  const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
-  const uploader_id = (
-    documentData.uploader_id && extractedId ? extractedId : user.id
-  ) as UserId;
-
-  return await withTransaction(async () => {
-    const [document] = await db<DocumentModel>('Document')
-      .where('id', '=', documentId)
-      .update({
-        ...omit(documentData, ['labels', ...metadataKeys]),
-        uploader_organization_id,
-        uploader_id,
-        updated_at: new Date(),
-        updater_id: user.id,
-      })
-      .returning('*');
-
-    // If label is null => that mean we want to update the field to empty
-    if (documentData.labels !== undefined) {
-      await objectLabelDomain.deleteObjectLabelBy({
-        object_id: documentId as unknown as ObjectLabelObjectId,
-      });
-
-      if (documentData.labels?.length > 0) {
-        await objectLabelDomain.insertObjectLabel(
-          documentData.labels.map((id) => ({
-            object_id: documentId as unknown as ObjectLabelObjectId,
-            label_id: extractId(id) as LabelId,
-          }))
-        );
-      }
-    }
-
-    if (metadataKeys.length) {
-      await DocumentMetadataDomain.deleteMetadata({ id: documentId });
-      const metadatas = await DocumentMetadataDomain.insertMetadata(
-        document.id,
-        documentData,
-        metadataKeys
-      );
-
-      for (const metadata of metadatas) {
-        document[metadata.key] = metadata.value;
-      }
-    }
-
-    return document as T;
-  });
 };
 
 export const loadParentDocumentsByServiceInstance = async <

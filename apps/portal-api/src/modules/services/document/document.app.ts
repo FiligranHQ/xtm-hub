@@ -1,14 +1,20 @@
+import { db } from '../../../../knexfile';
 import {
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
+import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
   default as DocumentModel,
 } from '../../../model/kanel/public/Document';
+import { LabelId } from '../../../model/kanel/public/Label';
 import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
+import { extractId, omit } from '../../../utils/utils';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import {
@@ -17,11 +23,7 @@ import {
   Upload,
 } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import {
-  DocumentData,
-  DocumentDomain,
-  updateDocument,
-} from './domain/document.domain';
+import { DocumentData, DocumentDomain } from './domain/document.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
@@ -92,6 +94,67 @@ export const DocumentApp = {
     });
   },
 
+  updateDocument: async <T extends DocumentModel>(
+    documentId: DocumentId,
+    documentData: Omit<Partial<T>, 'labels'> & {
+      labels?: string[];
+    },
+    metadataKeys: DocumentMetadataKeys<T> = []
+  ): Promise<T> => {
+    const { user } = requestContext.require();
+    const uploader_organization_id = documentData.uploader_organization_id
+      ? extractId<OrganizationId>(documentData.uploader_organization_id)
+      : null;
+
+    const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
+    const uploader_id = (
+      documentData.uploader_id && extractedId ? extractedId : user.id
+    ) as UserId;
+
+    return await withTransaction(async () => {
+      const [document] = await db<DocumentModel>('Document')
+        .where('id', '=', documentId)
+        .update({
+          ...omit(documentData, ['labels', ...metadataKeys]),
+          uploader_organization_id,
+          uploader_id,
+          updated_at: new Date(),
+          updater_id: user.id,
+        })
+        .returning('*');
+
+      // If label is null => that mean we want to update the field to empty
+      if (documentData.labels !== undefined) {
+        await objectLabelDomain.deleteObjectLabelBy({
+          object_id: documentId as unknown as ObjectLabelObjectId,
+        });
+
+        if (documentData.labels?.length > 0) {
+          await objectLabelDomain.insertObjectLabel(
+            documentData.labels.map((id) => ({
+              object_id: documentId as unknown as ObjectLabelObjectId,
+              label_id: extractId(id) as LabelId,
+            }))
+          );
+        }
+      }
+
+      if (metadataKeys.length) {
+        await DocumentMetadataDomain.deleteMetadata({ id: documentId });
+        const metadatas = await DocumentMetadataDomain.insertMetadata(
+          document.id,
+          documentData,
+          metadataKeys
+        );
+
+        for (const metadata of metadatas) {
+          document[metadata.key] = metadata.value;
+        }
+      }
+
+      return document as T;
+    });
+  },
   updateDocumentWithChildren: async <T extends DocumentModel>(
     type: string,
     parentDocumentId: DocumentId,
@@ -121,7 +184,7 @@ export const DocumentApp = {
     }
 
     return withTransaction(async () => {
-      const updatedDocument = await updateDocument<T>(
+      const updatedDocument = await DocumentApp.updateDocument<T>(
         parentDocumentId,
         data,
         metadataKeys

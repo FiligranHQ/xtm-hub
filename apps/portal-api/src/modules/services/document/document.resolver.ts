@@ -34,11 +34,7 @@ import {
 } from './document.helper';
 import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import {
-  DocumentDomain,
-  loadDocuments,
-  updateDocument,
-} from './domain/document.domain';
+import { DocumentDomain, loadDocuments } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
@@ -68,7 +64,7 @@ const resolvers: Resolvers = {
     },
     editDocument: async (_, { documentId, input }) => {
       try {
-        return await updateDocument(
+        return await DocumentApp.updateDocument(
           extractId<DocumentId>(documentId),
           input,
           []
