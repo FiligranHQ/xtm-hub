@@ -94,11 +94,12 @@ export const TrialsTabQuotasPlatformUpdateForm: React.FC<Props> = ({
               </FormLabel>
               <FormControl>
                 <Input
+                  {...field}
                   placeholder={t(
                     'TrialsDashboard.UpdateQuotasForm.NewCapacityLabel'
                   )}
                   type="number"
-                  {...field}
+                  min={0}
                   onChange={(event) =>
                     field.onChange(Number.parseInt(event.target.value, 10))
                   }
