@@ -1,14 +1,14 @@
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
 import SeoIntegrationByServiceSlugQuery from '@generated/seoIntegrationByServiceSlugQuery.graphql';
-import SeoIntegrationFeedBySlugQuery from '@generated/seoIntegrationFeedBySlugQuery.graphql';
+import SeoIntegrationBySlugQuery from '@generated/seoIntegrationBySlugQuery.graphql';
 import SeoOpenaevScenarioBySlugQuery from '@generated/seoOpenaevScenarioBySlugQuery.graphql';
 import SeoOpenaevScenariosByServiceSlugQuery from '@generated/seoOpenaevScenariosByServiceSlugQuery.graphql';
 import {
   MakeQueryMapParams,
   QueryMapEntry,
   SeoCustomDashboard,
-  SeoIntegrationFeed,
+  SeoIntegration,
   SeoOpenAEVScenario,
   SeoResource,
   ServiceSlug,
@@ -66,11 +66,10 @@ export const localeMap: Record<ServiceSlug, string> = {
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
-    makeQueryMapEntry<SeoIntegrationFeed>({
-      query: SeoIntegrationByServiceSlugQuery,
-      key: 'publicIntegrationByServiceSlug',
-    }),
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: makeQueryMapEntry<SeoIntegration>({
+    query: SeoIntegrationByServiceSlugQuery,
+    key: 'publicIntegrationByServiceSlug',
+  }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeQueryMapEntry<SeoCustomDashboard>({
       query: SeoCustomDashboardsByServiceSlugQuery,
@@ -84,9 +83,9 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
 
 export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
-    makeSingleQueryMapEntry<SeoIntegrationFeed>({
-      query: SeoIntegrationFeedBySlugQuery,
-      key: 'publicIntegrationFeedBySlug',
+    makeSingleQueryMapEntry<SeoIntegration>({
+      query: SeoIntegrationBySlugQuery,
+      key: 'publicIntegrationBySlug',
     }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeSingleQueryMapEntry<SeoCustomDashboard>({

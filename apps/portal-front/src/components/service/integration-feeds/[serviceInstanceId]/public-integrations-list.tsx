@@ -32,7 +32,7 @@ interface Props {
   baseUrl: string;
 }
 
-const PublicIntegrationFeedsList: React.FC<Props> = ({
+const PublicIntegrationsList: React.FC<Props> = ({
   queryRef,
   serviceInstance,
   baseUrl,
@@ -47,7 +47,7 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
     seoIntegrationsList$key
   >(seoIntegrationsFragment, queryData);
 
-  const integrationFeeds = useMemo(() => {
+  const integrations = useMemo(() => {
     return (data.publicIntegrations?.edges ?? [])
       .map(({ node }) =>
         readInlineData<seoIntegrationsItemFragment$key>(
@@ -110,7 +110,7 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
         }
       />
       <PublicShareableResourceList
-        documents={integrationFeeds}
+        documents={integrations}
         serviceInstance={serviceInstance}
         baseUrl={baseUrl}
       />
@@ -118,4 +118,4 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
   );
 };
 
-export default PublicIntegrationFeedsList;
+export default PublicIntegrationsList;

@@ -1,11 +1,11 @@
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import { IntegrationFeedConnectorTypeFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-connector-type-filter';
-import { IntegrationFeedTypeFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-type-filter';
+import { IntegrationConnectorTypeFilter } from '@/components/ui/shareable-resource/integration-feed/integration-connector-type-filter';
+import { IntegrationTypeFilter } from '@/components/ui/shareable-resource/integration-feed/integration-type-filter';
 import { IntegrationsTypeEnum } from '@generated/models/IntegrationsType.enum';
 import React from 'react';
 
-export const IntegrationFeedFilters: React.FC = () => {
+export const IntegrationFilters: React.FC = () => {
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { integrationTypes } = useServiceListLocalStorage(localStorageKey);
   const shouldDisplayConnectorFilter = integrationTypes.includes(
@@ -14,8 +14,8 @@ export const IntegrationFeedFilters: React.FC = () => {
 
   return (
     <div className="flex justify-between gap-s">
-      <IntegrationFeedTypeFilter />
-      {shouldDisplayConnectorFilter && <IntegrationFeedConnectorTypeFilter />}
+      <IntegrationTypeFilter />
+      {shouldDisplayConnectorFilter && <IntegrationConnectorTypeFilter />}
     </div>
   );
 };

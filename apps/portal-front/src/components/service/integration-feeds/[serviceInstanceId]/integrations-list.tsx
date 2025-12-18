@@ -17,8 +17,8 @@ import {
   IntegrationsListQuery,
 } from '@/components/service/integration-feeds/integration.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
-import { IntegrationFeedDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-deployable-filter';
-import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
+import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-deployable-filter';
+import { IntegrationFilters } from '@/components/ui/shareable-resource/integration-feed/integration-filters';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/product-version-filter';
 import {
   integrationsItem_fragment$data,
@@ -40,19 +40,19 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 
-interface IntegrationFeedsListProps {
+interface IntegrationsListProps {
   queryRef: PreloadedQuery<integrationsQuery>;
   serviceInstance: serviceInstance_fragment$data;
   search: string;
   onSearchChange: (v: string) => void;
 }
 
-const IntegrationFeedsList = ({
+const IntegrationsList = ({
   queryRef,
   serviceInstance,
   search,
   onSearchChange,
-}: IntegrationFeedsListProps) => {
+}: IntegrationsListProps) => {
   const queryData = usePreloadedQuery<integrationsQuery>(
     IntegrationsListQuery,
     queryRef
@@ -85,7 +85,7 @@ const IntegrationFeedsList = ({
 
   const filters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationsType]: {
-      node: <IntegrationFeedFilters />,
+      node: <IntegrationFilters />,
       reset: () => {
         removeConnectorTypes();
         removeIntegrationTypes();
@@ -100,7 +100,7 @@ const IntegrationFeedsList = ({
       reset: removeProductVersions,
     },
     [ServiceListFilterKey.ManagerSupported]: {
-      node: <IntegrationFeedDeployableFilter />,
+      node: <IntegrationDeployableFilter />,
       reset: removeDeployable,
     },
   };
@@ -156,4 +156,4 @@ const IntegrationFeedsList = ({
   );
 };
 
-export default IntegrationFeedsList;
+export default IntegrationsList;

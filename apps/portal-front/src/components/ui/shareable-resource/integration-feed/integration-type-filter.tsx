@@ -8,7 +8,7 @@ import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 
-export const IntegrationFeedTypeFilter: React.FC = () => {
+export const IntegrationTypeFilter: React.FC = () => {
   const { integrationTypes, setIntegrationTypes, removeConnectorTypes } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds

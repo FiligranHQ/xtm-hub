@@ -4,7 +4,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import IntegrationFeedsList from '@/components/service/integration-feeds/[serviceInstanceId]/integration-feeds-list';
+import IntegrationsList from '@/components/service/integration-feeds/[serviceInstanceId]/integrations-list';
 import { IntegrationsListQuery } from '@/components/service/integration-feeds/integration.graphql';
 import { integrationsQuery } from '@generated/integrationsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
@@ -69,7 +69,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   return (
     <>
       {queryRef ? (
-        <IntegrationFeedsList
+        <IntegrationsList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           search={search}

@@ -1,29 +1,29 @@
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
+import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
-import { seoIntegrationFeedsItemFragment$data } from '@generated/seoIntegrationFeedsItemFragment.graphql';
+import { seoIntegrationsItemFragment$data } from '@generated/seoIntegrationsItemFragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
   | customDashboardsItem_fragment$data
   | csvFeedsItem_fragment$data
-  | integrationFeedsItem_fragment$data
+  | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
-  | SeoIntegrationFeed
+  | SeoIntegration
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
 export type PublicShareableResource =
-  | seoIntegrationFeedsItemFragment$data
-  | SeoIntegrationFeed
+  | seoIntegrationsItemFragment$data
+  | SeoIntegration
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
 export type SubscribableResource =
   | csvFeedsItem_fragment$data
-  | integrationFeedsItem_fragment$data
+  | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
   | customDashboardsItem_fragment$data;
 
@@ -39,13 +39,13 @@ export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
   opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
 };
 
-export const isIntegrationFeedItem = (
+export const isIntegrationItem = (
   resource:
     | SubscribableResource
     | ShareableResource
     | ShareableResourceConnectorType
     | PublicShareableResource
-): resource is integrationFeedsItem_fragment$data => {
+): resource is integrationsItem_fragment$data => {
   return resource.type === ShareableResourceType.OPENCTI_INTEGRATION_FEEDS;
 };
 
@@ -56,11 +56,11 @@ export const isConnectorResource = (
     | ShareableResourceConnectorType
     | PublicShareableResource
 ): resource is ShareableResourceConnectorType => {
-  return isIntegrationFeedItem(resource) && resource.__typename === 'Connector';
+  return isIntegrationItem(resource) && resource.__typename === 'Connector';
 };
 
 export type SeoResource =
-  | SeoIntegrationFeed
+  | SeoIntegration
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
@@ -101,7 +101,7 @@ export interface SeoCustomDashboard {
   };
 }
 
-export interface SeoIntegrationFeed {
+export interface SeoIntegration {
   description: string;
   id: string;
   type: 'opencti_integration_feeds';

@@ -1,6 +1,6 @@
 'use client';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import PublicIntegrationFeedsList from '@/components/service/integration-feeds/[serviceInstanceId]/public-integration-feeds-list';
+import PublicIntegrationsList from '@/components/service/integration-feeds/[serviceInstanceId]/public-integrations-list';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
@@ -16,7 +16,7 @@ interface Props {
   baseUrl: string;
 }
 
-export const IntegrationFeedListPageLoader: React.FC<Props> = ({
+export const IntegrationListPageLoader: React.FC<Props> = ({
   serviceInstance,
   baseUrl,
 }) => {
@@ -72,7 +72,7 @@ export const IntegrationFeedListPageLoader: React.FC<Props> = ({
   return (
     <>
       {queryRef ? (
-        <PublicIntegrationFeedsList
+        <PublicIntegrationsList
           serviceInstance={serviceInstance}
           search={search}
           onSearchChange={setSearch}
