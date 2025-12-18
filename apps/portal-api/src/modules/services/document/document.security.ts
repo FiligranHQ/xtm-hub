@@ -22,7 +22,7 @@ export const isUserRestrictedToActiveDocument = async (
     await loadServiceDefinitionByServiceInstance(serviceInstanceId);
   return (
     !capabilities?.includes(ServiceRestriction.Upload) &&
-    ['opencti_custom_dashboards', 'opencti_integration_feeds'].includes(
+    ['opencti_custom_dashboards', 'opencti_integrations'].includes(
       serviceDef.identifier
     )
   );

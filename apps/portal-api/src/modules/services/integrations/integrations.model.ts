@@ -7,7 +7,7 @@ import type { ServiceInstanceId } from '../../../model/kanel/public/ServiceInsta
 
 export const INTEGRATION_SERVICE_INSTANCE_ID: ServiceInstanceId =
   '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc' as ServiceInstanceId;
-export const OPENCTI_INTEGRATION_DOCUMENT_TYPE = 'opencti_integration_feed';
+export const OPENCTI_INTEGRATION_DOCUMENT_TYPE = 'opencti_integration';
 
 export type Integrations = Document & {
   integration_type: IntegrationsType;

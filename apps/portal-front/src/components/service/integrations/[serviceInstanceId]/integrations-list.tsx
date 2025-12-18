@@ -15,10 +15,10 @@ import {
   integrationsFragment,
   integrationsItem,
   IntegrationsListQuery,
-} from '@/components/service/integration-feeds/integration.graphql';
+} from '@/components/service/integrations/integration.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
-import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-deployable-filter';
-import { IntegrationFilters } from '@/components/ui/shareable-resource/integration-feed/integration-filters';
+import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/integration-deployable-filter';
+import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/integration-filters';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/product-version-filter';
 import {
   integrationsItem_fragment$data,

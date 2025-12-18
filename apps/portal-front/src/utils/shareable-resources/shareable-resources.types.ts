@@ -29,7 +29,7 @@ export type SubscribableResource =
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
-  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration_feed',
+  OPENCTI_INTEGRATION_FEEDS = 'opencti_integration',
   OPENCTI_CUSTOM_DASHBOARDS = 'opencti_custom_dashboard',
 }
 
@@ -104,7 +104,7 @@ export interface SeoCustomDashboard {
 export interface SeoIntegration {
   description: string;
   id: string;
-  type: 'opencti_integration_feeds';
+  type: 'opencti_integrations';
   children_documents: {
     id: string;
   }[];
@@ -186,7 +186,7 @@ export type MakeQueryMapParams = {
 
 export type ServiceInfo = { link: string; description: string };
 export enum ServiceSlug {
-  OPEN_CTI_INTEGRATION_FEEDS = 'open-cti-integration-feeds',
+  OPEN_CTI_INTEGRATION_FEEDS = 'open-cti-integrations',
   OPEN_CTI_CUSTOM_DASHBOARDS = 'open-cti-custom-dashboards',
   OPEN_AEV_SCENARIOS = 'open-aev-scenarios',
 }

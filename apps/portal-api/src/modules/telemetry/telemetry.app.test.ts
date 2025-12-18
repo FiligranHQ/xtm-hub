@@ -27,7 +27,7 @@ import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../services/integration-feeds/integrations.model';
+} from '../services/integrations/integrations.model';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
 
 // Mock the ES Client

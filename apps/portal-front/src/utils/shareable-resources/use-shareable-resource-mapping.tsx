@@ -8,8 +8,8 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-deployable-filter';
-import { IntegrationFilters } from '@/components/ui/shareable-resource/integration-feed/integration-filters';
+import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/integration-deployable-filter';
+import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/integration-filters';
 import {
   ServiceSlug,
   ShareableResourceType,

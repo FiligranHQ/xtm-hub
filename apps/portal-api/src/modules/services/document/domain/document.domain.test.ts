@@ -21,7 +21,7 @@ import {
   INTEGRATION_METADATA,
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../../integration-feeds/integrations.model';
+} from '../../integrations/integrations.model';
 import { loadParentDocumentsByServiceInstance } from './document.domain';
 
 import { DocumentApp } from '../document.app';

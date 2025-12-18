@@ -3,7 +3,7 @@ import {
   ConnectorType,
   IntegrationsType,
 } from '../../__generated__/resolvers-types';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../services/integration-feeds/integrations.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../services/integrations/integrations.model';
 import {
   extractManifestInformation,
   ManifestExtractionResult,

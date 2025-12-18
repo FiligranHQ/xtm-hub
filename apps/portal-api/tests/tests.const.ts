@@ -44,9 +44,9 @@ export const THALES_SIMPLE_USER_ID =
 export const THALES_SIMPLE_USER_EMAIL = 'user@thales.com';
 export const FILIGRAN_USER_ID =
   '77b4b845-4ab4-4df8-8e12-0651da813ebb' as UserId;
-export const INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD =
+export const INTEGRATION_SERVICE_CAPABILITY_UPLOAD =
   '26611d56-e443-45fb-9f6c-cc6b9b8a5de9' as ServiceCapabilityId;
-export const INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE =
+export const INTEGRATION_SERVICE_CAPABILITY_DELETE =
   '283e06b2-2d64-42c7-b432-890e69ac8b8f' as ServiceCapabilityId;
 
 export const contextAdminUser: PortalContext = {
