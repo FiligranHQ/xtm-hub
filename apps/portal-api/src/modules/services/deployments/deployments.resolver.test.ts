@@ -60,7 +60,6 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        hub_status: DeploymentRequestHubStatus.Pending,
       });
 
       expect(initialDeployment).toMatchObject({
@@ -183,21 +182,25 @@ describe('Deployment app', () => {
           region: DeploymentRequestPlatformRegion.ApacAu,
           availableCount: 10,
           capacity: 10,
+          platform_identifier: PlatformIdentifier.Opencti,
         },
         {
           region: DeploymentRequestPlatformRegion.ApacSg,
           availableCount: 10,
           capacity: 10,
+          platform_identifier: PlatformIdentifier.Opencti,
         },
         {
           region: DeploymentRequestPlatformRegion.EuWest,
           availableCount: 20,
           capacity: 20,
+          platform_identifier: PlatformIdentifier.Opencti,
         },
         {
           region: DeploymentRequestPlatformRegion.UsEast,
           availableCount: 20,
           capacity: 20,
+          platform_identifier: PlatformIdentifier.Opencti,
         },
       ]);
     });

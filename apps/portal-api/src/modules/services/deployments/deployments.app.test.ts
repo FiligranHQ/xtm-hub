@@ -853,6 +853,12 @@ describe('Deployment app', () => {
     });
   });
   describe('cancelDeploymentRequest', () => {
+    let freePlaceSpy: MockInstance;
+    beforeEach(() => {
+      freePlaceSpy = vi
+        .spyOn(DeploymentsQuotasDomain, 'freePlace')
+        .mockResolvedValue();
+    });
     it.each`
       isAdmin  | hub_status                                 | actual_state                                    | counts_in_orga_quota | target_state
       ${false} | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${false}             | ${DeploymentRequestPlatformState.Removed}
@@ -876,9 +882,6 @@ describe('Deployment app', () => {
           hub_status,
           actual_state,
         })) as DeploymentRequest;
-        const freePlaceSpy = vi
-          .spyOn(DeploymentsQuotasDomain, 'freePlace')
-          .mockResolvedValue();
         const deployment = await DeploymentsApp.cancelDeploymentRequest(
           initialDeployment.id,
           isAdmin
@@ -1005,12 +1008,14 @@ describe('Deployment app', () => {
     });
 
     const insertRequest = async (
-      hubStatus: DeploymentRequestHubStatus
+      hubStatus: DeploymentRequestHubStatus,
+      ordering: number = 1
     ): Promise<DeploymentRequest> => {
       return (await insertOpenCtiDeploymentRequest({
         platform_identifier: platformIdentifier,
         region,
         hub_status: hubStatus,
+        ordering,
       }))!;
     };
 
@@ -1061,28 +1066,40 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Active
         );
         const { id: pendingRequestId } = await insertRequest(
-          DeploymentRequestHubStatus.Pending
+          DeploymentRequestHubStatus.Pending,
+          2
         );
-        const { id: queuedRequestId } = await insertRequest(
-          DeploymentRequestHubStatus.Queued
+        const { id: queuedRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Queued,
+          7
+        );
+        const { id: queuedRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Queued,
+          4
         );
 
         await DeploymentsApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
-          newCapacity: 3,
+          newCapacity: 4,
         });
 
-        await assertQuota({ capacity: 3, availability: 0 });
+        await assertQuota({ capacity: 4, availability: 0 });
 
         await assertDeploymentRequestProperties(activeRequestId, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
         await assertDeploymentRequestProperties(pendingRequestId, {
           hub_status: DeploymentRequestHubStatus.Pending,
+          ordering: 2,
         });
-        await assertDeploymentRequestProperties(queuedRequestId, {
+        await assertDeploymentRequestProperties(queuedRequestId1, {
           hub_status: DeploymentRequestHubStatus.Pending,
+          ordering: 4,
+        });
+        await assertDeploymentRequestProperties(queuedRequestId2, {
+          hub_status: DeploymentRequestHubStatus.Pending,
+          ordering: 3,
         });
       });
 
@@ -1155,9 +1172,101 @@ describe('Deployment app', () => {
       });
     });
     describe('decrease capacity', () => {
-      it('should move all pending requests to queue when new availability is negative', async () => {
+      it('should release pending requests from availability', async () => {
+        await initQuota({ capacity: 1, availability: 0 });
+        const { id: pendingRequestId } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 0,
+        });
+
+        await assertQuota({ capacity: 0, availability: 0 });
+
+        await assertDeploymentRequestProperties(pendingRequestId, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        });
+      });
+
+      it('should only release pending requests until availability is equal to zero', async () => {
         await initQuota({ capacity: 2, availability: 0 });
-        const { id: activeRequestId } = await insertRequest(
+        const { id: pendingRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+        const { id: pendingRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 1,
+        });
+
+        await assertQuota({ capacity: 1, availability: 0 });
+
+        await assertDeploymentRequestProperties(pendingRequestId1, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        });
+        await assertDeploymentRequestProperties(pendingRequestId2, {
+          hub_status: DeploymentRequestHubStatus.Pending,
+        });
+      });
+
+      it('should move pending requests to queued with the right ordering', async () => {
+        await initQuota({ capacity: 2, availability: 0 });
+        const { id: pendingRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Pending,
+          4
+        );
+        const { id: pendingRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Pending,
+          3
+        );
+        const { id: queuedRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Queued,
+          2
+        );
+        const { id: queuedRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Queued,
+          5
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 0,
+        });
+
+        await assertQuota({ capacity: 0, availability: 0 });
+
+        await assertDeploymentRequestProperties(pendingRequestId1, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          ordering: 2,
+        });
+        await assertDeploymentRequestProperties(pendingRequestId2, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          ordering: 1,
+        });
+        await assertDeploymentRequestProperties(queuedRequestId1, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          ordering: 4,
+        });
+        await assertDeploymentRequestProperties(queuedRequestId2, {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          ordering: 7,
+        });
+      });
+
+      it('should move only pending requests to free place when new availability is negative', async () => {
+        await initQuota({ capacity: 3, availability: 0 });
+        const { id: activeRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Active
+        );
+        const { id: activeRequestId2 } = await insertRequest(
           DeploymentRequestHubStatus.Active
         );
         const { id: pendingRequestId } = await insertRequest(
@@ -1175,7 +1284,10 @@ describe('Deployment app', () => {
 
         await assertQuota({ capacity: 1, availability: -1 });
 
-        await assertDeploymentRequestProperties(activeRequestId, {
+        await assertDeploymentRequestProperties(activeRequestId1, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        await assertDeploymentRequestProperties(activeRequestId2, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
         await assertDeploymentRequestProperties(pendingRequestId, {
@@ -1419,9 +1531,9 @@ describe('Deployment app', () => {
         ...deploymentRequestToRelease!,
         hub_status: DeploymentRequestHubStatus.Pending,
       };
-      const setQueuedRequestsAsPendingSpy = vi
-        .spyOn(DeploymentRequestDomain, 'setQueuedRequestsAsPending')
-        .mockResolvedValue([queuedDeploymentRequest]);
+      const setFirstQueuedRequestAsPendingSpy = vi
+        .spyOn(DeploymentRequestDomain, 'setFirstQueuedRequestAsPending')
+        .mockResolvedValue(queuedDeploymentRequest);
 
       await DeploymentsApp.releaseDeploymentRequestPlace(
         deploymentRequestToRelease!.hub_status as DeploymentRequestHubStatus,
@@ -1429,10 +1541,9 @@ describe('Deployment app', () => {
         deploymentRequestToRelease!.region as DeploymentRequestPlatformRegion
       );
 
-      expect(setQueuedRequestsAsPendingSpy).toHaveBeenCalledWith(
+      expect(setFirstQueuedRequestAsPendingSpy).toHaveBeenCalledWith(
         deploymentRequestToRelease!.platform_identifier,
-        deploymentRequestToRelease!.region,
-        1
+        deploymentRequestToRelease!.region
       );
       expect(freePlaceSpy).not.toHaveBeenCalled();
     });
@@ -1440,8 +1551,8 @@ describe('Deployment app', () => {
     it('should free place when deployment request was not moved to pending', async () => {
       vi.spyOn(
         DeploymentRequestDomain,
-        'setQueuedRequestsAsPending'
-      ).mockResolvedValue([]);
+        'setFirstQueuedRequestAsPending'
+      ).mockResolvedValue(null);
 
       const deploymentRequest = await insertOpenCtiDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
@@ -1463,8 +1574,8 @@ describe('Deployment app', () => {
       it('should not send telemetry event when deployment request was not moved to pending', async () => {
         vi.spyOn(
           DeploymentRequestDomain,
-          'setQueuedRequestsAsPending'
-        ).mockResolvedValue([]);
+          'setFirstQueuedRequestAsPending'
+        ).mockResolvedValue(null);
 
         const deploymentRequest = await insertOpenCtiDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Active,
@@ -1493,13 +1604,11 @@ describe('Deployment app', () => {
 
         vi.spyOn(
           DeploymentRequestDomain,
-          'setQueuedRequestsAsPending'
-        ).mockResolvedValue([
-          {
-            ...queuedDeploymentRequest!,
-            hub_status: DeploymentRequestHubStatus!.Pending,
-          },
-        ]);
+          'setFirstQueuedRequestAsPending'
+        ).mockResolvedValue({
+          ...queuedDeploymentRequest!,
+          hub_status: DeploymentRequestHubStatus!.Pending,
+        });
         const deploymentRequest = await insertOpenCtiDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Active,
         });

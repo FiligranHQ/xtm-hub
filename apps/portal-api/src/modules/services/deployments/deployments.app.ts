@@ -109,7 +109,9 @@ export const DeploymentsApp = {
             const hubStatus = isPlaceAvailable
               ? DeploymentRequestHubStatus.Pending
               : DeploymentRequestHubStatus.Queued;
-            const maxOrdering = await DeploymentRequestDomain.getMaxOrdering();
+            const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
+              hub_status: hubStatus,
+            });
             const ordering = (maxOrdering ?? 0) + 1;
 
             const serviceInstanceId =
@@ -432,19 +434,27 @@ export const DeploymentsApp = {
           });
 
         if (newAvailability < 0) {
-          await DeploymentRequestDomain.setPendingRequestsAsQueued(
-            platformIdentifier,
-            region
-          );
+          for (let i = 0; i < -newAvailability; i++) {
+            const updatedRequest =
+              await DeploymentRequestDomain.setLastPendingRequestAsQueued(
+                platformIdentifier,
+                region
+              );
+
+            if (!updatedRequest) {
+              break;
+            }
+
+            await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+          }
         } else if (newAvailability > 0) {
           for (let i = 0; i < newAvailability; i++) {
-            const [updatedRequests] =
-              await DeploymentRequestDomain.setQueuedRequestsAsPending(
+            const updatedRequest =
+              await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
                 platformIdentifier,
-                region,
-                1
+                region
               );
-            if (!updatedRequests) {
+            if (!updatedRequest) {
               break;
             }
 
@@ -631,11 +641,10 @@ export const DeploymentsApp = {
       return;
     }
 
-    const [updatedDeploymentRequest] =
-      await DeploymentRequestDomain.setQueuedRequestsAsPending(
+    const updatedDeploymentRequest =
+      await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
         platformIdentifier,
-        region,
-        1
+        region
       );
     if (updatedDeploymentRequest) {
       const { user } = requestContext.require();

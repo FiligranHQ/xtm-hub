@@ -491,7 +491,7 @@ describe('DeploymentRequestDomain', () => {
       expect(resultTopDeploymentRequest!.ordering).toBe(4);
     });
   });
-  describe('setPendingRequestsAsQueued', () => {
+  describe('setLastPendingRequestAsQueued', () => {
     let platformIdentifier: PlatformIdentifier;
     let region: DeploymentRequestPlatformRegion;
     let deploymentRequestId1: DeploymentRequestId;
@@ -531,48 +531,15 @@ describe('DeploymentRequestDomain', () => {
       deploymentRequestId4 = deploymentRequest4!.id;
     });
 
-    it('should update a limited number of requests when limit is specified', async () => {
-      const updatedRequests =
-        await DeploymentRequestDomain.setPendingRequestsAsQueued(
-          platformIdentifier,
-          region,
-          1
-        );
-
-      expect(updatedRequests.length).toBe(1);
-      expect(updatedRequests[0]!.id).toBe(deploymentRequestId2);
-
-      await assertDeploymentRequestProperties(deploymentRequestId1, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
-
-      await assertDeploymentRequestProperties(deploymentRequestId2, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Removed,
-      });
-
-      await assertDeploymentRequestProperties(deploymentRequestId3, {
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-      });
-
-      await assertDeploymentRequestProperties(deploymentRequestId4, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
-    });
-
-    it('should update all requests when limit is not specified', async () => {
-      const updatedRequests =
-        await DeploymentRequestDomain.setPendingRequestsAsQueued(
+    it('should update the last request in platform and region', async () => {
+      const updatedRequest =
+        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
           platformIdentifier,
           region
         );
 
-      expect(updatedRequests.length).toBe(2);
-      expect(updatedRequests[0]!.id).toBe(deploymentRequestId2);
-      expect(updatedRequests[1]!.id).toBe(deploymentRequestId3);
+      expect(updatedRequest).toBeDefined();
+      expect(updatedRequest!.id).toBe(deploymentRequestId3);
 
       await assertDeploymentRequestProperties(deploymentRequestId1, {
         hub_status: DeploymentRequestHubStatus.Queued,
@@ -580,8 +547,8 @@ describe('DeploymentRequestDomain', () => {
       });
 
       await assertDeploymentRequestProperties(deploymentRequestId2, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Removed,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
       });
 
       await assertDeploymentRequestProperties(deploymentRequestId3, {
@@ -596,25 +563,25 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should set pending requests in the right order with queued requests', async () => {
-      await DeploymentRequestDomain.setPendingRequestsAsQueued(
+      await DeploymentRequestDomain.setLastPendingRequestAsQueued(
         platformIdentifier,
         region
       );
 
       await assertDeploymentRequestProperties(deploymentRequestId1, {
-        ordering: 5,
+        ordering: 4,
       });
 
       await assertDeploymentRequestProperties(deploymentRequestId2, {
-        ordering: 1,
+        ordering: 4,
       });
 
       await assertDeploymentRequestProperties(deploymentRequestId3, {
-        ordering: 2,
+        ordering: 1,
       });
 
       await assertDeploymentRequestProperties(deploymentRequestId4, {
-        ordering: 8,
+        ordering: 7,
       });
     });
 
@@ -623,13 +590,13 @@ describe('DeploymentRequestDomain', () => {
         hub_status: DeploymentRequestHubStatus.Queued,
       });
 
-      const updatedRequests =
-        await DeploymentRequestDomain.setPendingRequestsAsQueued(
+      const updatedRequest =
+        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
           platformIdentifier,
           region
         );
 
-      expect(updatedRequests.length).toBe(0);
+      expect(updatedRequest).toBeDefined();
 
       await assertDeploymentRequestProperties(deploymentRequestId1, {
         ordering: 3,
@@ -649,8 +616,8 @@ describe('DeploymentRequestDomain', () => {
     });
   });
 
-  describe('setQueuedRequestsAsPending', () => {
-    it('should move a limited number of requests to pending, ordered by ordering', async () => {
+  describe('setFirstQueuedRequestAsPending', () => {
+    it('should move the first request to pending, ordered by ordering', async () => {
       const deploymentRequest1 = await insertOpenCtiDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
@@ -672,40 +639,43 @@ describe('DeploymentRequestDomain', () => {
         target_state: DeploymentRequestPlatformState.Unprovisioned,
       });
 
-      const updatedDeploymentRequests =
-        await DeploymentRequestDomain.setQueuedRequestsAsPending(
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
           deploymentRequest1!.platform_identifier as PlatformIdentifier,
-          deploymentRequest1!.region as DeploymentRequestPlatformRegion,
-          1
+          deploymentRequest1!.region as DeploymentRequestPlatformRegion
         );
 
-      expect(updatedDeploymentRequests.length).toBe(1);
-      expect(updatedDeploymentRequests[0]!.id).toBe(deploymentRequest1!.id);
-      expect(updatedDeploymentRequests[0]!.hub_status).toBe(
+      expect(updatedDeploymentRequest).toBeDefined();
+      expect(updatedDeploymentRequest!.id).toBe(deploymentRequest1!.id);
+      expect(updatedDeploymentRequest!.hub_status).toBe(
         DeploymentRequestHubStatus.Pending
       );
-      expect(updatedDeploymentRequests[0]!.target_state).toBe(
+      expect(updatedDeploymentRequest!.target_state).toBe(
         DeploymentRequestHubStatus.Active
       );
 
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
+        ordering: 6,
       });
 
       await assertDeploymentRequestProperties(deploymentRequest2!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
+        ordering: 4,
       });
 
       await assertDeploymentRequestProperties(deploymentRequest3!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
+        ordering: 5,
       });
 
       await assertDeploymentRequestProperties(deploymentRequest4!.id, {
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
+        ordering: 6,
       });
     });
 
@@ -723,13 +693,12 @@ describe('DeploymentRequestDomain', () => {
         platform_identifier: PlatformIdentifier.Openaev,
       });
 
-      const updatedDeploymentRequests =
-        await DeploymentRequestDomain.setQueuedRequestsAsPending(
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
           PlatformIdentifier.Opencti,
-          deploymentRequest1!.region as DeploymentRequestPlatformRegion,
-          10
+          deploymentRequest1!.region as DeploymentRequestPlatformRegion
         );
-      expect(updatedDeploymentRequests.length).toBe(1);
+      expect(updatedDeploymentRequest).toBeDefined();
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
       });
@@ -752,13 +721,12 @@ describe('DeploymentRequestDomain', () => {
         region: DeploymentRequestPlatformRegion.EuWest,
       });
 
-      const updatedDeploymentRequests =
-        await DeploymentRequestDomain.setQueuedRequestsAsPending(
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
           deploymentRequest1!.platform_identifier as PlatformIdentifier,
-          DeploymentRequestPlatformRegion.UsEast,
-          10
+          DeploymentRequestPlatformRegion.UsEast
         );
-      expect(updatedDeploymentRequests.length).toBe(1);
+      expect(updatedDeploymentRequest).toBeDefined();
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
       });
