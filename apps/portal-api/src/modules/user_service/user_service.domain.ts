@@ -164,7 +164,7 @@ export const getUserServiceCapabilities = async (
   return userServiceCapability.length > 0 ? userServiceCapability : undefined;
 };
 export const loadUserServiceBySubscription = (opts, subscriptionId) => {
-  const userServiceQuery = db<UserService>('User_Service', opts)
+  const userServiceQuery = db<UserService>('User_Service')
     .where('subscription_id', '=', subscriptionId)
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
     .select([
@@ -188,7 +188,7 @@ export const loadUserServiceByUser = (user: UserLoadUserBy, opts) => {
   const userSelectedOrganization = user.selected_organization_id;
   const userId = user.id;
 
-  const userServiceQuery = db<UserService>('User_Service', opts)
+  const userServiceQuery = db<UserService>('User_Service')
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
     .leftJoin(
       'Subscription as sub',

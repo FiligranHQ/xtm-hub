@@ -31,23 +31,15 @@ const resolvers: Resolvers = {
   SeoOpenAEVScenario: {
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) =>
-      getUploader(id, {
-        unsecured: true,
-      }),
-    labels: ({ id }) =>
-      labelsDomain.loadLabelsByDocumentId(id, {
-        unsecured: true,
-      }),
+    uploader: ({ id }, _) => getUploader(id),
+    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
   },
   OpenAEVScenario: {
-    labels: ({ id }) =>
-      labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
+    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
-    uploader_organization: ({ id }, _) =>
-      loadUploaderOrganization(id, { unsecured: true }),
+    uploader: ({ id }, _) => getUploader(id),
+    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>

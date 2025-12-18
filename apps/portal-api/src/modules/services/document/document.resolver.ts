@@ -172,17 +172,9 @@ const resolvers: Resolvers = {
     },
 
     children_documents: ({ id }, _) =>
-      DocumentChildrenDomain.loadChildrenDocuments(id, {
-        unsecured: true,
-      }),
-    uploader: ({ id }, _) =>
-      getUploader(id, {
-        unsecured: true,
-      }),
-    uploader_organization: ({ id }, _) =>
-      loadUploaderOrganization(id, {
-        unsecured: true,
-      }),
+      DocumentChildrenDomain.loadChildrenDocuments(id),
+    uploader: ({ id }, _) => getUploader(id),
+    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
       return getServiceInstance(service_instance_id as ServiceInstanceId);
     },

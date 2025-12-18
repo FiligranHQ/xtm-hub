@@ -1,5 +1,5 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db, dbUnsecure, QueryOpts } from '../../../../../knexfile';
+import { db, dbUnsecure } from '../../../../../knexfile';
 import { withTransaction } from '../../../../context/database.context';
 import {
   DocumentId,
@@ -44,11 +44,8 @@ export const DocumentChildrenDomain = {
     return children.map(({ child_document_id }) => child_document_id);
   },
 
-  loadChildrenDocuments: async (
-    documentId: string,
-    opts: Partial<QueryOpts> = {}
-  ): Promise<Document[]> => {
-    return db<Document>('Document_Children', opts)
+  loadChildrenDocuments: async (documentId: string): Promise<Document[]> => {
+    return db<Document>('Document_Children')
       .leftJoin(
         'Document',
         'Document.id',

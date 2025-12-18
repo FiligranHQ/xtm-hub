@@ -167,16 +167,13 @@ export function db<T>(
 ): Knex.QueryBuilder<T, any>;
 
 export function db<T>(
-  type: DatabaseType,
-  opts?: Partial<QueryOpts>
+  type: DatabaseType
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any>;
 
 export function db<T>(
   contextOrType: PortalContext | DatabaseType,
-  typeOrOpts?: DatabaseType | Partial<QueryOpts>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  options: Partial<QueryOpts> = {}
+  typeOrOpts?: DatabaseType | Partial<QueryOpts>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any> {
   const isPortalContextProvided = typeof contextOrType !== 'string';
@@ -208,7 +205,7 @@ export function db<T>(
 
 export const dbUnsecure = <T>(type: DatabaseType) => {
   const context = { user: null, req: null, res: null };
-  return db<T>(context, type, { unsecured: true });
+  return db<T>(context, type);
 };
 
 export const dbConnections = <T>(
@@ -362,7 +359,7 @@ export const paginate = async <T, U>(
   type: DatabaseType,
   pagination: Pagination,
   opts: Partial<QueryOpts> = {},
-  queryContext = db<T>(type, opts)
+  queryContext = db<T>(type)
 ) => {
   const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
   const columns = Object.keys(await database(type).columnInfo());

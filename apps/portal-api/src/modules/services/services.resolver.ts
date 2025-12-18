@@ -197,13 +197,12 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    deleteServiceInstance: async (_, { id }, context) => {
+    deleteServiceInstance: async (_, { id }) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
       };
       const [deletedServiceInstance] = await db<ServiceInstance>(
-        context,
         'ServiceInstance'
       )
         .where({ id: databaseId })
@@ -244,13 +243,12 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    editServiceInstance: async (_, { id, name }, context) => {
+    editServiceInstance: async (_, { id, name }) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
       };
       const [updatedServiceInstance] = await db<ServiceInstance>(
-        context,
         'ServiceInstance'
       )
         .where({ id: databaseId })
@@ -259,7 +257,7 @@ const resolvers: Resolvers = {
       await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
       return updatedServiceInstance;
     },
-    addServiceInstance: async (_, { input }, context) => {
+    addServiceInstance: async (_, { input }) => {
       try {
         const dataService = {
           id: uuidv4(),
@@ -270,7 +268,6 @@ const resolvers: Resolvers = {
 
         return await withTransaction(async () => {
           const [addedServiceInstance] = await db<ServiceInstance>(
-            context,
             'ServiceInstance'
           )
             .insert(dataService)
@@ -285,7 +282,7 @@ const resolvers: Resolvers = {
             price: input.price,
           };
 
-          await db<ServicePrice>(context, 'Service_Price')
+          await db<ServicePrice>('Service_Price')
             .insert(dataServicePrice)
             .returning('*');
 
@@ -297,7 +294,7 @@ const resolvers: Resolvers = {
             name: input.service_instance_name,
           };
 
-          await db<ServiceLink>(context, 'Service_Link')
+          await db<ServiceLink>('Service_Link')
             .insert(dataServiceLink)
             .returning('*');
           await dispatch('ServiceInstance', 'add', addedServiceInstance);
@@ -311,10 +308,7 @@ const resolvers: Resolvers = {
             status: 'ACCEPTED',
           };
 
-          const [addedSubscription] = await db<Subscription>(
-            context,
-            'Subscription'
-          )
+          const [addedSubscription] = await db<Subscription>('Subscription')
             .insert(dataSubscription)
             .returning('*');
           addedSubscription.organization = await loadOrganizationBy({

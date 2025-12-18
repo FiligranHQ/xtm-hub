@@ -86,12 +86,9 @@ export const documentVisualizeEndpoint = (app) => {
             .json({ message: 'Service definition not found' });
         }
 
-        const [document] = await DocumentDomain.loadDocumentBy(
-          {
-            'Document.id': fromGlobalId(req.params.documentId).id,
-          },
-          { unsecured: true }
-        );
+        const [document] = await DocumentDomain.loadDocumentBy({
+          'Document.id': fromGlobalId(req.params.documentId).id,
+        });
 
         if (!document || !document.mime_type.startsWith('image/')) {
           logApp.error(

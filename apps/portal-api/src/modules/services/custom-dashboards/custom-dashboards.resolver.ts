@@ -29,13 +29,11 @@ import {
 
 const resolvers: Resolvers = {
   CustomDashboard: {
-    labels: ({ id }) =>
-      labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
+    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
-    uploader_organization: ({ id }, _) =>
-      loadUploaderOrganization(id, { unsecured: true }),
+    uploader: ({ id }, _) => getUploader(id),
+    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: async ({ service_instance_id }, _, context) =>
@@ -51,14 +49,9 @@ const resolvers: Resolvers = {
       for (const dashboard of dashboards) {
         dashboard.children_documents =
           await DocumentChildrenDomain.loadImagesByDocumentId(dashboard.id);
-        dashboard.uploader = await getUploader(dashboard.id, {
-          unsecured: true,
-        });
+        dashboard.uploader = await getUploader(dashboard.id);
         dashboard.labels = await labelsDomain.loadLabelsByDocumentId(
-          dashboard.id,
-          {
-            unsecured: true,
-          }
+          dashboard.id
         );
       }
       return dashboards;
