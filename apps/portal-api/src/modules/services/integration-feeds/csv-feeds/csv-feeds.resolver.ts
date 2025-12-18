@@ -24,9 +24,16 @@ import { csvFeedsApp } from './csv-feeds.app';
 
 const resolvers: Resolvers = {
   Mutation: {
-    createCsvFeed: async (_, { input, document }) => {
+    createCsvFeed: async (_, { input, document, serviceInstanceId }) => {
       try {
-        return csvFeedsApp.createCsvFeed(input, document);
+        return csvFeedsApp.createCsvFeed(
+          {
+            ...input,
+            service_instance_id:
+              extractId<ServiceInstanceId>(serviceInstanceId),
+          },
+          document
+        );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CsvFeedUniqueSlugError, {
@@ -42,6 +49,7 @@ const resolvers: Resolvers = {
         return updateDocumentWithChildren<CsvFeed>(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
           {
             ...input,
             input: {
@@ -61,11 +69,11 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.CsvFeedUpdateError);
       }
     },
-    deleteCsvFeed: async (_, { id }, context) => {
+    deleteCsvFeed: async (_, { id, serviceInstanceId }) => {
       try {
         return deleteDocument<CsvFeed>(
           extractId<DocumentId>(id),
-          context.serviceInstanceId as ServiceInstanceId,
+          extractId<ServiceInstanceId>(serviceInstanceId) as ServiceInstanceId,
           true
         );
       } catch (error) {

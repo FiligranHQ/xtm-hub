@@ -75,9 +75,19 @@ const resolvers: Resolvers = {
       OpenAEVScenariosApp.loadOpenAEVScenario(extractId<DocumentId>(id)),
   },
   Mutation: {
-    createOpenAEVScenario: async (_, { input, document }) => {
+    createOpenAEVScenario: async (
+      _,
+      { input, document, serviceInstanceId }
+    ) => {
       try {
-        return OpenAEVScenariosApp.createOpenAEVScenario(input, document);
+        return OpenAEVScenariosApp.createOpenAEVScenario(
+          {
+            ...input,
+            service_instance_id:
+              extractId<ServiceInstanceId>(serviceInstanceId),
+          },
+          document
+        );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
@@ -95,6 +105,7 @@ const resolvers: Resolvers = {
         return updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
           input,
           OPENAEV_SCENARIO_METADATA
         );
@@ -110,11 +121,11 @@ const resolvers: Resolvers = {
         );
       }
     },
-    deleteOpenAEVScenario: async (_, { id }, context) => {
+    deleteOpenAEVScenario: async (_, { id, serviceInstanceId }) => {
       try {
         return deleteDocument<OpenAEVScenario>(
           extractId<DocumentId>(id),
-          context.serviceInstanceId as ServiceInstanceId,
+          extractId<ServiceInstanceId>(serviceInstanceId) as ServiceInstanceId,
           true
         );
       } catch (error) {

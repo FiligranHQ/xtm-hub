@@ -6,6 +6,7 @@ import {
   default as DocumentModel,
 } from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import { restrictDocumentToUserOrganization } from '../../../../security/restriction/document';
 import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { MinioFile } from '../../../../thirdparty/minio/types';
@@ -74,6 +75,7 @@ export const DocumentChildrenDomain = {
 
   createImageDocuments: async (
     parentDocumentId: DocumentId,
+    serviceInstanceId: ServiceInstanceId,
     files: MinioFile[]
   ) => {
     await Promise.all(
@@ -85,6 +87,7 @@ export const DocumentChildrenDomain = {
             file_name: file.fileName,
             minio_name: file.minioName,
             mime_type: file.mimeType,
+            service_instance_id: serviceInstanceId,
           },
           []
         )
@@ -114,13 +117,17 @@ export const DocumentChildrenDomain = {
     doc: T,
     upload: Upload[] | Upload
   ) => {
-    const files = await processUploads(upload);
+    const files = await processUploads(upload, doc.service_instance_id);
 
     const deletedDocuments = await withTransaction(async () => {
       const deletedDocuments =
         await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
 
-      await DocumentChildrenDomain.createImageDocuments(doc.id, files);
+      await DocumentChildrenDomain.createImageDocuments(
+        doc.id,
+        doc.service_instance_id,
+        files
+      );
 
       return deletedDocuments;
     });

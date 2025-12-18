@@ -213,8 +213,14 @@ const resolvers: Resolvers = {
     },
     addServicePicture: async (_, payload) => {
       try {
+        const extractedServiceInstanceId = extractId<ServiceInstanceId>(
+          payload.serviceInstanceId
+        );
         const updatedServiceInstance = await withTransaction(async () => {
-          const document = await uploadNewFile(payload.document);
+          const document = await uploadNewFile(
+            payload.document,
+            extractedServiceInstanceId
+          );
           const update = payload.isLogo
             ? {
                 logo_document_id: document.id,
@@ -226,7 +232,7 @@ const resolvers: Resolvers = {
             'ServiceInstance'
           )
             .where({
-              id: extractId<ServiceInstanceId>(payload.serviceInstanceId),
+              id: extractedServiceInstanceId,
             })
             .update(update)
             .returning('*');

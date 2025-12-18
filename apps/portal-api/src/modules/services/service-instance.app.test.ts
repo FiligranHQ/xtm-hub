@@ -409,7 +409,10 @@ describe('Service Instance app', () => {
           mockUpload
         );
 
-        expect(uploadNewFileSpy).toHaveBeenCalledWith(mockUpload);
+        expect(uploadNewFileSpy).toHaveBeenCalledWith(
+          mockUpload,
+          mockServiceInstance.id
+        );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
           mockServiceInstanceId,
           {

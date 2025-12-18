@@ -68,7 +68,7 @@ export const DocumentDomain = {
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
-    const { user, portalContext } = requestContext.require();
+    const { user } = requestContext.require();
     const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
     const uploader_id =
       documentData.uploader_id && extractedId ? extractedId : user.id;
@@ -82,10 +82,6 @@ export const DocumentDomain = {
         active: documentData.active ?? true,
         uploader_id,
         uploader_organization_id: user.selected_organization_id,
-        ...(!!portalContext.serviceInstanceId && {
-          service_instance_id:
-            portalContext.serviceInstanceId as ServiceInstanceId,
-        }),
       })
       .returning('*');
 
@@ -212,12 +208,18 @@ export const updateDocument = async <T extends DocumentModel>(
 export const updateDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   parentDocumentId: DocumentId,
+  serviceInstanceId: ServiceInstanceId,
   mutationArgs: MutationUpdateDocumentArgs,
   metadataKeys: DocumentMetadataKeys<T>
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
   const { documentFile, newImages, existingImageIds } =
-    await processDocumentUpdateUploads(document, isUpdateDoc, images);
+    await processDocumentUpdateUploads(
+      document,
+      isUpdateDoc,
+      images,
+      serviceInstanceId
+    );
   const data = {
     ...input,
     type,
@@ -250,6 +252,7 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
 
     await DocumentChildrenDomain.createImageDocuments(
       parentDocumentId,
+      serviceInstanceId,
       newImages
     );
     return updatedDocument;
