@@ -1,4 +1,4 @@
-import { PublicTryOpenCTICallout } from '@/components/service/trial-instances/public-try-opencti-callout';
+import { PublicTryOpenCTIBanner } from '@/components/service/trial-instances/public-try-opencti-banner';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { Button } from 'filigran-ui/servers';
 import 'filigran-ui/theme.css';
@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-screen">
-      <PublicTryOpenCTICallout />
+    <div className="flex flex-col h-screen">
+      <PublicTryOpenCTIBanner />
       <header className="flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between sticky top-0 z-[20]">
         <Link href="/">
           <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
@@ -31,7 +31,7 @@ export default function RootLayout({
           <Link href="/login">Sign In</Link>
         </Button>
       </header>
-      <main className="container flex-grow">
+      <main className="container flex-grow overflow-auto">
         <div className="pt-l">{children}</div>
       </main>
       <footer className="container text-muted-foreground">
