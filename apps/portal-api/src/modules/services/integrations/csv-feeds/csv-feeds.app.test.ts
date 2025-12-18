@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
   requestContextAdminUser,
-  SERVICE_INTEGRATIONS_FEEDS_ID,
+  SERVICE_INTEGRATIONS_ID,
 } from '../../../../../tests/tests.const';
 import { IntegrationsType } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
@@ -22,7 +22,7 @@ import { DocumentApp } from '../../document/document.app';
 import * as DocumentUploadsHelper from '../../document/document.uploads.helper';
 import {
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
+  INTEGRATION_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations.model';
 import { csvFeedsApp } from './csv-feeds.app';
@@ -52,7 +52,7 @@ describe('csv feeds app', () => {
       user: requestContextAdminUser.user,
       portalContext: {
         ...contextAdminUser,
-        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
+        serviceInstanceId: SERVICE_INTEGRATIONS_ID,
       },
     };
     requestContext.set(testContext);
@@ -65,7 +65,7 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         active: false,
       },
@@ -111,12 +111,12 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
         active: false,
         integration_type: IntegrationsType.CsvFeed,
       },
       [],
-      INTEGRATION_FEED_CSV_FEED_METADATA
+      INTEGRATION_CSV_FEED_METADATA
     );
 
     const documentLoaded = await csvFeedsApp.loadCsvFeed(documentId);
