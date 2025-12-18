@@ -10,9 +10,9 @@ import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
+  isConnectorResource,
   SeoResource,
   ServiceSlug,
-  isConnectorResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';

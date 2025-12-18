@@ -55,7 +55,7 @@ async function buildDocumentList(
 
     const service =
       doc.type === 'csv_feed'
-        ? TelemetryEventService.INTEGRATION_FEEDS_LIBRARY
+        ? TelemetryEventService.INTEGRATIONS_LIBRARY
         : doc.type === 'custom_dashboard'
           ? TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY
           : TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY;

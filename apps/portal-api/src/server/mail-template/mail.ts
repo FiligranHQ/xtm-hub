@@ -54,7 +54,7 @@ export const ServiceIdentifierToMailTemplate = new Map<
     ServiceDefinitionIdentifier.OpenctiCustomDashboards,
     'opencti_custom_dashboards',
   ],
-  [ServiceDefinitionIdentifier.OpenctiIntegrationFeeds, 'opencti_integrations'],
+  [ServiceDefinitionIdentifier.OpenctiIntegrations, 'opencti_integrations'],
   [ServiceDefinitionIdentifier.Vault, 'vault'],
 ]);
 // ATTENTION, the key should be the same as the template file

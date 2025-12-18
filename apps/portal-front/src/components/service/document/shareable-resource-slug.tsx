@@ -61,8 +61,8 @@ const ShareableResourceSlug: React.FunctionComponent<
     if (!documentData.active) return false;
 
     return [
-      ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
-      ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
+      ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
+      ShareableResourceType.OPENCTI_INTEGRATION,
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData.active, documentData.type]);
