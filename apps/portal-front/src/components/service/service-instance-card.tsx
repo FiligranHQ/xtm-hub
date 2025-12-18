@@ -1,22 +1,19 @@
 'use client';
 
-import { PortalContext } from '@/components/me/app-portal-context';
-import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
-import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn } from '@/lib/utils';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import {
-  ArrowOutwardIcon,
-  LogoFiligranIcon,
-  MoreVertIcon,
-} from 'filigran-icon';
-import { AspectRatio } from 'filigran-ui/servers';
-import { useTranslations } from 'next-intl';
+import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
+import { AspectRatio, Button } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, useContext, useState } from 'react';
+import { ReactNode, useCallback } from 'react';
+
+export type PlatformHoverAction = {
+  id: string;
+  label: string;
+  href?: string;
+  target?: string;
+  variant?: 'outline-primary';
+};
 
 export interface ServiceInstanceCardData {
   id: string;
@@ -25,19 +22,17 @@ export interface ServiceInstanceCardData {
   slug?: string;
   logoBackgroundImageUrl: string | null;
   fullBackgroundImage?: boolean;
-  service_definition_identifier: ServiceDefinitionIdentifierEnum;
   illustrationDocumentUrl: string | null;
   isCustomIllustrationDocument?: boolean;
   card_background?: string | null;
   displayedServiceStatus?: string;
   displayLinkArrow?: boolean;
-  displayUpdatePlatformIfAllowed?: boolean;
   disableCard?: boolean;
   cardTitleOverride?: string;
   description?: string;
   url: string;
   ordering: number;
-  hoverLinks?: ReactNode;
+  hoverLinks?: PlatformHoverAction[];
 }
 
 interface ServiceInstanceCardProps {
@@ -49,37 +44,22 @@ interface ServiceInstanceCardProps {
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className }) => {
-  const t = useTranslations();
-  const { hasOrganizationCapability, hasCapability } =
-    useContext(PortalContext);
-
-  // Check if user can update platform
-  const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
-
-  const canUpdatePlatform = () => {
-    if (!serviceInstance.displayUpdatePlatformIfAllowed) {
-      return false;
+  const renderHoverButton = useCallback((action: PlatformHoverAction) => {
+    if (action.href) {
+      return (
+        <Button
+          key={action.id}
+          {...(action.variant ? { variant: action.variant } : {})}>
+          <Link
+            href={action.href}
+            target={action.target}>
+            {action.label}
+          </Link>
+        </Button>
+      );
     }
-
-    // Allow BYPASS users to update platforms
-    if (hasCapability?.(RestrictionEnum.BYPASS)) {
-      return true;
-    }
-
-    // Check standard organization capabilities
-    if (!hasOrganizationCapability) {
-      return false;
-    }
-
-    return (
-      hasOrganizationCapability(
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
-      ) &&
-      hasOrganizationCapability(
-        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
-      )
-    );
-  };
+    return <></>;
+  }, []);
 
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
@@ -89,7 +69,7 @@ const ServiceInstanceCard: React.FunctionComponent<
       {serviceInstance.hoverLinks && (
         <div className="absolute inset-0 bg-black/80 z-10 opacity-0 hover:opacity-100 flex">
           <div className="flex flex-col gap-s m-auto">
-            {serviceInstance.hoverLinks}
+            {serviceInstance.hoverLinks?.map(renderHoverButton)}
           </div>
         </div>
       )}
@@ -166,7 +146,9 @@ const ServiceInstanceCard: React.FunctionComponent<
         <div className="min-h-40 flex flex-col p-l gap-l flex-1 bg-page-background group-hover:bg-hover">
           <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
             {rightAction || serviceInstance.hoverLinks ? (
-              <h2>{serviceInstance.name}</h2>
+              <h2>
+                {serviceInstance.cardTitleOverride || serviceInstance.name}
+              </h2>
             ) : (
               <Link
                 href={
@@ -189,21 +171,6 @@ const ServiceInstanceCard: React.FunctionComponent<
                   <ArrowOutwardIcon className="size-3 shrink-0" />
                 </div>
               )}
-              {canUpdatePlatform() && (
-                <div className="relative">
-                  <IconActions
-                    icon={
-                      <>
-                        <MoreVertIcon className="h-4 w-4 text-white" />
-                        <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                      </>
-                    }>
-                    <IconActionsItem onClick={() => setOpenPlatformSheet(true)}>
-                      {t('Platform.Update')}
-                    </IconActionsItem>
-                  </IconActions>
-                </div>
-              )}
             </div>
           </div>
           <p className="txt-sub-content text-muted-foreground">
@@ -218,13 +185,6 @@ const ServiceInstanceCard: React.FunctionComponent<
           )}
         </div>
       </div>
-      {canUpdatePlatform() && (
-        <PlatformUpdateSheet
-          serviceInstance={serviceInstance}
-          open={openPlatformSheet}
-          setOpen={setOpenPlatformSheet}
-        />
-      )}
     </li>
   );
 };

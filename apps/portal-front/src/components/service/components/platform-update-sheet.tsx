@@ -1,10 +1,10 @@
 'use client';
 
+import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -25,7 +25,6 @@ import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { ServiceInstanceCardData } from '../service-instance-card';
 
 const platformUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -33,14 +32,22 @@ const platformUpdateSchema = z.object({
 });
 
 interface PlatformUpdateSheetProps {
-  serviceInstance: ServiceInstanceCardData;
+  serviceInstanceId: string;
+  serviceInstanceName: string;
+  serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
 export const PlatformUpdateSheet: FunctionComponent<
   PlatformUpdateSheetProps
-> = ({ serviceInstance, open, setOpen }) => {
+> = ({
+  serviceInstanceId,
+  serviceInstanceName,
+  serviceDefinitionIdentifier,
+  open,
+  setOpen,
+}) => {
   const t = useTranslations();
   const { toast } = useToast();
 
@@ -52,7 +59,7 @@ export const PlatformUpdateSheet: FunctionComponent<
   const form = useForm<z.infer<typeof platformUpdateSchema>>({
     resolver: zodResolver(platformUpdateSchema),
     defaultValues: {
-      name: serviceInstance.name,
+      name: serviceInstanceName,
       illustration_document: undefined,
     },
   });
@@ -68,7 +75,7 @@ export const PlatformUpdateSheet: FunctionComponent<
     updatePlatformMetadata({
       variables: {
         input: {
-          serviceInstanceId: serviceInstance.id,
+          serviceInstanceId: serviceInstanceId,
           name: values.name,
         },
         document,
@@ -99,15 +106,7 @@ export const PlatformUpdateSheet: FunctionComponent<
 
   // Get platform name for display
   const getPlatformName = () => {
-    const platformIdentifier =
-      serviceInstance.service_definition_identifier ===
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
-        ? PlatformIdentifierEnum.OPENCTI
-        : PlatformIdentifierEnum.OPENAEV;
-
-    return platformIdentifier === PlatformIdentifierEnum.OPENCTI
-      ? 'OpenCTI'
-      : 'OpenAEV';
+    return translateServiceDefinitionIdentifier(serviceDefinitionIdentifier);
   };
 
   return (

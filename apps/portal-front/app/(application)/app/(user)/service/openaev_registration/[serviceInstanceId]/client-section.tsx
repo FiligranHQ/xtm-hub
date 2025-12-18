@@ -12,9 +12,9 @@ import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registere
 import { notFound } from 'next/navigation';
 import { use } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
-import { ServiceOpenCTIRegistrationPageProps } from './page';
+import { ServiceOpenAEVRegistrationPageProps } from './page';
 
-const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
+const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
   const { serviceInstanceId } = use(params);
   const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
 

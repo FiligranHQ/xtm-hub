@@ -1,7 +1,6 @@
 'use client';
 
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
+import { PortalContext } from '@/components/me/app-portal-context';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
@@ -15,7 +14,7 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { Suspense } from 'react';
+import { Suspense, useContext } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {
@@ -29,10 +28,8 @@ const OwnedServices = ({
   publicServices,
   registeredPlatforms,
 }: OwnedServicesProps) => {
-  const isFreeTrialFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.OPEN_CTI_FREE_TRIAL
-  );
   const t = useTranslations();
+  const { isPersonalSpace } = useContext(PortalContext);
   // Merge and sort by ordering property
   const sortedServices = [
     ...services
@@ -63,13 +60,10 @@ const OwnedServices = ({
   );
 
   const shouldDisplayFreeTrialSkeleton =
-    isFreeTrialFeatureEnabled && trialInstances.length === 0;
+    trialInstances.length === 0 && !isPersonalSpace;
 
   const freeTrialServiceInstanceDataCard =
-    freeTrialSkeletonToServiceInstanceCardData(
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-      t
-    );
+    freeTrialSkeletonToServiceInstanceCardData(t);
 
   if (sortedServices.length > 0) {
     return (

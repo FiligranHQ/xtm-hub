@@ -67,7 +67,7 @@ type Query {
   platformAssociatedOrganization(platformId: String!): Organization
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
-  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [ServiceInstance!]!
+  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ID): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
@@ -411,6 +411,8 @@ enum DeploymentRequestOrdering {
   region
   ordering
   request_date
+  cancellation_date
+  cancellation_user_email
 }
 
 enum ReorderDeploymentRequestInQueueDirection {

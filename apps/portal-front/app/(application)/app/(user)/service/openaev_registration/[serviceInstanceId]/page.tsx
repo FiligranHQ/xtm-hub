@@ -2,15 +2,15 @@ import { RegistrationLearnMore } from '@/components/service/registration/registr
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import ClientSection from './client-section';
 
-export interface ServiceOpenCTIRegistrationPageProps {
+export interface ServiceOpenAEVRegistrationPageProps {
   params: Promise<{ serviceInstanceId: string }>;
 }
-const Page = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
+const Page = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
   return (
     <>
       <ClientSection params={params} />
       <RegistrationLearnMore
-        serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
+        serviceInstanceTag={ServiceInstanceTagEnum.OPENAEV}
       />
     </>
   );

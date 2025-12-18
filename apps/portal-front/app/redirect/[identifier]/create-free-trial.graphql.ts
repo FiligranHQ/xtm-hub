@@ -10,6 +10,7 @@ const CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery = graphql`
       deployment_request {
         type
         hub_status
+        counts_in_orga_quota
       }
     }
   }
