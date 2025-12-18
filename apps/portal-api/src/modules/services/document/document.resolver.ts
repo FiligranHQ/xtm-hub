@@ -19,7 +19,7 @@ import {
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration-feeds/integrations.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import {
   getServiceInstance,

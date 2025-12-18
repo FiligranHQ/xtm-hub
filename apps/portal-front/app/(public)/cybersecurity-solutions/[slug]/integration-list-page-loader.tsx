@@ -1,6 +1,6 @@
 'use client';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import PublicIntegrationsList from '@/components/service/integration-feeds/[serviceInstanceId]/public-integrations-list';
+import PublicIntegrationsList from '@/components/service/integrations/[serviceInstanceId]/public-integrations-list';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';

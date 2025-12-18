@@ -14,7 +14,7 @@ import { isConnectorResource } from '@/utils/shareable-resources/shareable-resou
 import {
   IntegrationQuery,
   integrationsItem,
-} from '@/components/service/integration-feeds/integration.graphql';
+} from '@/components/service/integrations/integration.graphql';
 import { integrationQuery } from '@generated/integrationQuery.graphql';
 import {
   integrationsItem_fragment$data,

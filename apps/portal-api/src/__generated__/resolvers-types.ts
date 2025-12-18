@@ -1655,7 +1655,7 @@ export enum ServiceDefinitionIdentifier {
   OpenaevRegistration = 'openaev_registration',
   OpenaevScenarios = 'openaev_scenarios',
   OpenctiCustomDashboards = 'opencti_custom_dashboards',
-  OpenctiIntegrationFeeds = 'opencti_integration_feeds',
+  OpenctiIntegrations = 'opencti_integrations',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault'
 }

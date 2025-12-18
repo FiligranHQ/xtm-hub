@@ -12,7 +12,7 @@ import { WithLabels } from '../../../utils/types';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration-feeds/integrations.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import { DocumentApp } from './document.app';
 import { Upload } from './document.uploads.helper';
