@@ -28,7 +28,7 @@ import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../integration-feeds/integrations.model';
+} from '../integrations/integrations.model';
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,

@@ -1,8 +1,8 @@
 'use client';
 
 import Loader from '@/components/loader';
-import IntegrationSlug from '@/components/service/integration-feeds/[slug]/integration-slug';
-import { IntegrationQuery } from '@/components/service/integration-feeds/integration.graphql';
+import IntegrationSlug from '@/components/service/integrations/[slug]/integration-slug';
+import { IntegrationQuery } from '@/components/service/integrations/integration.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import { integrationQuery } from '@generated/integrationQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';

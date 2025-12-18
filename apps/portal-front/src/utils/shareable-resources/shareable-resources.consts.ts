@@ -21,9 +21,9 @@ export interface ServiceConfig {
 
 export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
   [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
-    redirectPath: 'opencti_integration_feeds',
+    redirectPath: 'opencti_integrations',
     description:
-      '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
+      '. Discover more OpenCTI integrations like this in our OpenCTI Integrations Library, available for download on the XTM Hub.',
   },
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
     redirectPath: 'opencti_custom_dashboards',
@@ -60,7 +60,7 @@ function makeSingleQueryMapEntry<TReturn>({
 }
 
 export const localeMap: Record<ServiceSlug, string> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'OpenctiIntegrationFeeds',
+  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'OpenctiIntegrations',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
   [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
 };

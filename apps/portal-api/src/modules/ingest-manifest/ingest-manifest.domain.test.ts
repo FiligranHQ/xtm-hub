@@ -10,7 +10,7 @@ import { DocumentChildrenDomain } from '../services/document/domain/document.chi
 import {
   Connector,
   INTEGRATION_SERVICE_INSTANCE_ID,
-} from '../services/integration-feeds/integrations.model';
+} from '../services/integrations/integrations.model';
 import { labelsDomain } from '../settings/labels/labels.domain';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';

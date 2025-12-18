@@ -12,7 +12,7 @@ import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
-import { INTEGRATION_METADATA } from './src/modules/services/integration-feeds/integrations.model';
+import { INTEGRATION_METADATA } from './src/modules/services/integrations/integrations.model';
 import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { compareSemanticVersions } from './src/utils/semantic-versioning';

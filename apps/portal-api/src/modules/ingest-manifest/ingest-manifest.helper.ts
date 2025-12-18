@@ -12,7 +12,7 @@ import { Upload } from '../services/document/document.uploads.helper';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../services/integration-feeds/integrations.model';
+} from '../services/integrations/integrations.model';
 import { ManifestInformation } from './ingest-manifest.model';
 
 export interface ManifestExtractionResult {
