@@ -79,7 +79,7 @@ describe('csv feeds app', () => {
       organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
-      service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+      service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,
       resource_title: 'myCsvFeed',

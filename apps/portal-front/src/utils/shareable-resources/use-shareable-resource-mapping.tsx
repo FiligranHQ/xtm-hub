@@ -20,7 +20,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     ServiceSlug,
     ServiceListLocalStorageKey
   > = {
-    [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
+    [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds,
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
       ServiceListLocalStorageKey.OpenCTICustomDashboards,
@@ -29,10 +29,10 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   };
   const localStorageKey = localStorageKeyMapping[slug];
   const typeFeed: Record<ServiceSlug, ShareableResourceType> = {
-    [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
-      ShareableResourceType.OPENCTI_INTEGRATION_FEEDS,
+    [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
+      ShareableResourceType.OPENCTI_INTEGRATION,
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
-      ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
+      ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
     [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
   };
   const {
@@ -48,7 +48,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   };
 
   const filtersMap: Record<ServiceSlug, ServiceListFilterMap> = {
-    [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
+    [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
       [ServiceListFilterKey.Label]: labelFilter,
       [ServiceListFilterKey.IntegrationsType]: {
         node: <IntegrationFilters />,

@@ -198,7 +198,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           {serviceInstance.name}
         </h1>
 
-        {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS ? (
+        {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATIONS ? (
           <RelayProvider>
             <IntegrationListPageLoader
               baseUrl={baseUrl}

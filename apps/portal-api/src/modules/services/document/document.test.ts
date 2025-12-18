@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
   requestContextAdminUser,
-  SERVICE_INTEGRATIONS_FEEDS_ID,
+  SERVICE_INTEGRATIONS_ID,
 } from '../../../../tests/tests.const';
 import { IntegrationsType } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -26,7 +26,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
+  INTEGRATION_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
 import { DocumentApp } from './document.app';
@@ -337,7 +337,7 @@ describe('increment shared counter', () => {
       user: requestContextAdminUser.user,
       portalContext: {
         ...contextAdminUser,
-        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
+        serviceInstanceId: SERVICE_INTEGRATIONS_ID,
       },
     };
     requestContext.set(testContext);
@@ -349,11 +349,11 @@ describe('increment shared counter', () => {
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         integration_type: IntegrationsType.CsvFeed,
       },
-      INTEGRATION_FEED_CSV_FEED_METADATA
+      INTEGRATION_CSV_FEED_METADATA
     );
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {
@@ -392,7 +392,7 @@ describe('increment shared counter', () => {
       organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
-      service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+      service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,
       resource_title: 'Csv Feed',
@@ -419,7 +419,7 @@ describe('increment shared counter', () => {
       event_type: TelemetryEventType.SHARE,
       organization_type: 'Public',
       source: TELEMETRY_SOURCE,
-      service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+      service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,
       resource_title: 'Csv Feed',
