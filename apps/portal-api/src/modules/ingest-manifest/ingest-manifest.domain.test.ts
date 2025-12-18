@@ -50,7 +50,7 @@ describe('upsertConnectors', () => {
 
       it('should set correct document type and status', () => {
         result.forEach((doc) => {
-          expect(doc.type).toBe('opencti_integration_feed');
+          expect(doc.type).toBe('opencti_integration');
           expect(doc.source_type).toBe('external');
           expect(doc.active).toBe(true);
         });

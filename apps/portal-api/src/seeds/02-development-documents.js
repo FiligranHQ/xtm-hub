@@ -20,7 +20,7 @@ export async function seed(knex) {
       'ServiceInstance.service_definition_id',
       'ServiceDefinition.id'
     )
-    .where('ServiceDefinition.identifier', 'opencti_integration_feeds')
+    .where('ServiceDefinition.identifier', 'opencti_integrations')
     .select('ServiceInstance.id')
     .first();
 
