@@ -1170,6 +1170,61 @@ describe('Deployment app', () => {
           hub_status: DeploymentRequestHubStatus.Queued,
         });
       });
+
+      it('should send telemetry event for each request moved', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        await initQuota({ capacity: 0, availability: 0 });
+
+        const { id: queuedRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Queued
+        );
+        const { id: queuedRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Queued
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 2,
+        });
+
+        await assertQuota({ capacity: 2, availability: 0 });
+
+        expect(telemetrySpy).toHaveBeenCalledTimes(2);
+        expect(telemetrySpy).toHaveBeenCalledWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          user_id: ADMIN_USER_ID,
+          deployment_id: queuedRequestId1!,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
+          platform_id: null,
+          end_date: null,
+          start_date: null,
+          status: DeploymentRequestHubStatus.Pending,
+        });
+        expect(telemetrySpy).toHaveBeenCalledWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          user_id: ADMIN_USER_ID,
+          deployment_id: queuedRequestId2!,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
+          platform_id: null,
+          end_date: null,
+          start_date: null,
+          status: DeploymentRequestHubStatus.Pending,
+        });
+      });
     });
     describe('decrease capacity', () => {
       it('should release pending requests from availability', async () => {
@@ -1342,6 +1397,61 @@ describe('Deployment app', () => {
         });
         await assertDeploymentRequestProperties(pendingRequestId, {
           hub_status: DeploymentRequestHubStatus.Pending,
+        });
+      });
+
+      it('should send telemetry event for each request moved', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        await initQuota({ capacity: 2, availability: 0 });
+
+        const { id: pendingRequestId1 } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+        const { id: pendingRequestId2 } = await insertRequest(
+          DeploymentRequestHubStatus.Pending
+        );
+
+        await DeploymentsApp.updateDeploymentQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: 0,
+        });
+
+        await assertQuota({ capacity: 0, availability: 0 });
+
+        expect(telemetrySpy).toHaveBeenCalledTimes(2);
+        expect(telemetrySpy).toHaveBeenCalledWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          user_id: ADMIN_USER_ID,
+          deployment_id: pendingRequestId1!,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
+          platform_id: null,
+          end_date: null,
+          start_date: null,
+          status: DeploymentRequestHubStatus.Queued,
+        });
+        expect(telemetrySpy).toHaveBeenCalledWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_name: PLATFORM_NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TELEMETRY_SOURCE,
+          user_id: ADMIN_USER_ID,
+          deployment_id: pendingRequestId2!,
+          deployment_type: DeploymentRequestDeploymentType.Trial,
+          platform_id: null,
+          end_date: null,
+          start_date: null,
+          status: DeploymentRequestHubStatus.Queued,
         });
       });
     });

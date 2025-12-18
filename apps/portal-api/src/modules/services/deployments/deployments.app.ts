@@ -423,6 +423,7 @@ export const DeploymentsApp = {
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
+    const { user } = requestContext.require();
     await DeploymentsQuotasDomain.withLockedQuotaTransaction(
       { platformIdentifier, region },
       async () => {
@@ -445,6 +446,7 @@ export const DeploymentsApp = {
               break;
             }
 
+            void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
             await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
           }
         } else if (newAvailability > 0) {
@@ -458,6 +460,7 @@ export const DeploymentsApp = {
               break;
             }
 
+            void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
             await DeploymentsQuotasDomain.reservePlace(
               platformIdentifier,
               region
@@ -541,7 +544,7 @@ export const DeploymentsApp = {
         id: deploymentRequestId,
       });
 
-    void sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
+    await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
       const [requester] = await loadUnsecureUser({
