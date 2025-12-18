@@ -1,5 +1,5 @@
 {
-  "AdminCallout": "Vous êtes actuellement en mode administrateur",
+  "AdminBanner": "Vous êtes actuellement en mode administrateur",
   "App": {
     "Collapse": "Réduire",
     "CollapseSidebar": "Réduire la sidebar",
@@ -813,7 +813,7 @@
   },
   "Sort Asc": "Tri Asc",
   "Sort Desc": "Sort Desc",
-  "TestEnvCallout": "Vous êtes sur l'environnement {environnement}",
+  "TestEnvBanner": "Vous êtes sur l'environnement {environnement}",
   "ThemeToggle": {
     "Automatic": "Automatique",
     "Dark": "Foncé",

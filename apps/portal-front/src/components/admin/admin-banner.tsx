@@ -4,7 +4,7 @@ import { Callout } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import useAdminPath from '../../hooks/useAdminPath';
 
-export function AdminCallout() {
+export function AdminBanner() {
   const t = useTranslations();
   const isAdminPath = useAdminPath();
 
@@ -13,7 +13,7 @@ export function AdminCallout() {
       <Callout
         variant="warning"
         className="rounded-none text-black justify-center uppercase">
-        {t('AdminCallout')}
+        {t('AdminBanner')}
       </Callout>
     )
   );
