@@ -33,7 +33,7 @@ describe('Subscription mutation resolver', () => {
       expect(response).toBeTruthy();
       expect(response?.name).toEqual('Malware analysis');
     });
-    it('should send a telemetry event for subscription integration feeds service', async () => {
+    it('should send a telemetry event for subscription integrations service', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);

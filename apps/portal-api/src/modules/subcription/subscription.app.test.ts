@@ -3,9 +3,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../knexfile';
 import {
   FILIGRAN_ORGA_ID,
-  INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE,
-  INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD,
-  SERVICE_INTEGRATIONS_FEEDS_ID,
+  INTEGRATION_SERVICE_CAPABILITY_DELETE,
+  INTEGRATION_SERVICE_CAPABILITY_UPLOAD,
+  SERVICE_INTEGRATIONS_ID,
 } from '../../../tests/tests.const';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import ServiceInstance, {
@@ -89,8 +89,8 @@ describe('Subscription app', () => {
         startDate: new Date(),
         endDate: new Date(),
         capabilityIds: [
-          INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD,
-          INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE,
+          INTEGRATION_SERVICE_CAPABILITY_UPLOAD,
+          INTEGRATION_SERVICE_CAPABILITY_DELETE,
         ],
       });
 
@@ -112,15 +112,13 @@ describe('Subscription app', () => {
       expect(
         capabilities.some(
           (capa) =>
-            capa.service_capability_id ===
-            INTEGRATION_FEED_SERVICE_CAPABILITY_UPLOAD
+            capa.service_capability_id === INTEGRATION_SERVICE_CAPABILITY_UPLOAD
         )
       ).toBeTruthy();
       expect(
         capabilities.some(
           (capa) =>
-            capa.service_capability_id ===
-            INTEGRATION_FEED_SERVICE_CAPABILITY_DELETE
+            capa.service_capability_id === INTEGRATION_SERVICE_CAPABILITY_DELETE
         )
       ).toBeTruthy();
     });
@@ -132,7 +130,7 @@ describe('Subscription app', () => {
       const subscription = await createSubscription({
         id,
         organization_id: FILIGRAN_ORGA_ID,
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
         start_date: new Date(),
         end_date: null,
         status: 'ACCEPTED',
