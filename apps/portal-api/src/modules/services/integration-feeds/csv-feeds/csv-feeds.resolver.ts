@@ -12,7 +12,6 @@ import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../../../utils/error/error.util';
 import { extractId } from '../../../../utils/utils';
 import { DocumentApp } from '../../document/document.app';
-import { updateDocumentWithChildren } from '../../document/domain/document.domain';
 import {
   CsvFeed,
   INTEGRATION_FEED_CSV_FEED_METADATA,
@@ -37,7 +36,7 @@ const resolvers: Resolvers = {
     },
     updateCsvFeed: async (_, input) => {
       try {
-        return updateDocumentWithChildren<CsvFeed>(
+        return DocumentApp.updateDocumentWithChildren<CsvFeed>(
           OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           {

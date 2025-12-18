@@ -16,7 +16,6 @@ import {
   DocumentDomain,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
-  updateDocumentWithChildren,
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
@@ -95,7 +94,7 @@ const resolvers: Resolvers = {
     },
     updateCustomDashboard: async (_, input) => {
       try {
-        return updateDocumentWithChildren<CustomDashboard>(
+        return DocumentApp.updateDocumentWithChildren<CustomDashboard>(
           OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,

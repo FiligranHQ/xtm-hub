@@ -10,8 +10,6 @@ import {
   CustomDashboardConnection,
   DocumentConnection,
   IntegrationFeedConnection,
-  MutationUpdateCsvFeedArgs,
-  MutationUpdateCustomDashboardArgs,
   Organization,
   QueryDocumentsArgs,
 } from '../../../../__generated__/resolvers-types';
@@ -36,8 +34,6 @@ import {
 } from '../../../../security/restriction/document';
 import { objectLabelDomain } from '../../../settings/objectLabel/object-label.domain';
 import { isUserRestrictedToActiveDocument } from '../document.security';
-import { processDocumentUpdateUploads } from '../document.uploads.helper';
-import { DocumentChildrenDomain } from './document.children.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
@@ -50,10 +46,6 @@ export type DocumentData<T extends DocumentModel> = Omit<
   labels?: string[];
   parent_document_id?: DocumentId;
 };
-
-type MutationUpdateDocumentArgs =
-  | MutationUpdateCustomDashboardArgs
-  | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
 
 export const DocumentDomain = {
   deactivateDocuments: async (documentIds: DocumentId[]) => {
@@ -233,53 +225,6 @@ export const updateDocument = async <T extends DocumentModel>(
     }
 
     return document as T;
-  });
-};
-
-export const updateDocumentWithChildren = async <T extends DocumentModel>(
-  type: string,
-  parentDocumentId: DocumentId,
-  mutationArgs: MutationUpdateDocumentArgs,
-  metadataKeys: DocumentMetadataKeys<T>
-) => {
-  const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
-  const { documentFile, newImages, existingImageIds } =
-    await processDocumentUpdateUploads(document, isUpdateDoc, images);
-  const data = {
-    ...input,
-    type,
-  } as Partial<T>;
-
-  // We are updating the base document
-  if (documentFile) {
-    Object.assign(data, {
-      file_name: documentFile.fileName,
-      minio_name: documentFile.minioName,
-      mime_type: documentFile.mimeType,
-    });
-  }
-
-  return withTransaction(async () => {
-    const updatedDocument = await updateDocument<T>(
-      parentDocumentId,
-      data,
-      metadataKeys
-    );
-
-    // Delete the images that are not in the existingImages array
-    const childIds = await DocumentChildrenDomain.loadChildrenIds(
-      parentDocumentId,
-      existingImageIds
-    );
-    if (childIds.length > 0) {
-      await DocumentDomain.deleteDocuments(childIds);
-    }
-
-    await DocumentChildrenDomain.createImageDocuments(
-      parentDocumentId,
-      newImages
-    );
-    return updatedDocument;
   });
 };
 

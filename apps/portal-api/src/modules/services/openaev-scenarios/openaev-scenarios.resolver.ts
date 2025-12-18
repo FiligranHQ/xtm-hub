@@ -16,7 +16,6 @@ import {
   DocumentDomain,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
-  updateDocumentWithChildren,
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
@@ -92,7 +91,7 @@ const resolvers: Resolvers = {
     },
     updateOpenAEVScenario: async (_, input) => {
       try {
-        return updateDocumentWithChildren<OpenAEVScenario>(
+        return DocumentApp.updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           input,

@@ -1,3 +1,7 @@
+import {
+  MutationUpdateCsvFeedArgs,
+  MutationUpdateCustomDashboardArgs,
+} from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import {
   DocumentId,
@@ -7,13 +11,25 @@ import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
-import { processUploads, Upload } from './document.uploads.helper';
+import {
+  processDocumentUpdateUploads,
+  processUploads,
+  Upload,
+} from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import { DocumentData, DocumentDomain } from './domain/document.domain';
+import {
+  DocumentData,
+  DocumentDomain,
+  updateDocument,
+} from './domain/document.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
+
+export type MutationUpdateDocumentArgs =
+  | MutationUpdateCustomDashboardArgs
+  | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
 
 export const DocumentApp = {
   createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
@@ -73,6 +89,58 @@ export const DocumentApp = {
       await DocumentChildrenDomain.createImageDocuments(doc.id, files);
 
       return doc;
+    });
+  },
+
+  updateDocumentWithChildren: async <T extends DocumentModel>(
+    type: string,
+    parentDocumentId: DocumentId,
+    mutationArgs: MutationUpdateDocumentArgs,
+    metadataKeys: DocumentMetadataKeys<T>
+  ) => {
+    const {
+      document,
+      updateDocument: isUpdateDoc,
+      images,
+      input,
+    } = mutationArgs;
+    const { documentFile, newImages, existingImageIds } =
+      await processDocumentUpdateUploads(document, isUpdateDoc, images);
+    const data = {
+      ...input,
+      type,
+    } as Partial<T>;
+
+    // We are updating the base document
+    if (documentFile) {
+      Object.assign(data, {
+        file_name: documentFile.fileName,
+        minio_name: documentFile.minioName,
+        mime_type: documentFile.mimeType,
+      });
+    }
+
+    return withTransaction(async () => {
+      const updatedDocument = await updateDocument<T>(
+        parentDocumentId,
+        data,
+        metadataKeys
+      );
+
+      // Delete the images that are not in the existingImages array
+      const childIds = await DocumentChildrenDomain.loadChildrenIds(
+        parentDocumentId,
+        existingImageIds
+      );
+      if (childIds.length > 0) {
+        await DocumentDomain.deleteDocuments(childIds);
+      }
+
+      await DocumentChildrenDomain.createImageDocuments(
+        parentDocumentId,
+        newImages
+      );
+      return updatedDocument;
     });
   },
 
