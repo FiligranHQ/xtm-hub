@@ -115,6 +115,33 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
+  loadUploader: async (
+    documentId: string,
+    opts: Partial<QueryOpts> = {}
+  ): Promise<User | null> => {
+    return db<User>('User', opts)
+      .leftJoin('Document', 'Document.uploader_id', 'User.id')
+      .where('Document.id', '=', documentId)
+      .select('User.*')
+      .first();
+  },
+
+  loadUploaderOrganization: async (
+    documentId: string,
+    opts: Partial<QueryOpts> = {}
+  ): Promise<Organization> => {
+    const [organization] = await db<Organization>('Organization', opts)
+      .leftJoin(
+        'Document',
+        'Document.uploader_organization_id',
+        'Organization.id'
+      )
+      .where('Document.id', '=', documentId)
+      .select('Organization.*');
+
+    return organization;
+  },
+
   upsertOnSlug: async <T extends DocumentModel>(
     documentData: Omit<Partial<T>, 'labels'> & {
       labels?: string[];
@@ -403,33 +430,6 @@ export const loadDocuments = async <
   );
 
   return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
-};
-
-export const getUploader = async (
-  documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<User | null> => {
-  return db<User>('User', opts)
-    .leftJoin('Document', 'Document.uploader_id', 'User.id')
-    .where('Document.id', '=', documentId)
-    .select('User.*')
-    .first();
-};
-
-export const loadUploaderOrganization = async (
-  documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<Organization> => {
-  const [organization] = await db<Organization>('Organization', opts)
-    .leftJoin(
-      'Document',
-      'Document.uploader_organization_id',
-      'Organization.id'
-    )
-    .where('Document.id', '=', documentId)
-    .select('Organization.*');
-
-  return organization;
 };
 
 export const loadSeoDocumentBySlug = async (

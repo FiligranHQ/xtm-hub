@@ -13,10 +13,9 @@ import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import {
   deleteDocument,
-  getUploader,
+  DocumentDomain,
   loadParentDocumentsByServiceInstance,
   loadSeoDocumentsByServiceSlug,
-  loadUploaderOrganization,
   updateDocumentWithChildren,
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
@@ -32,7 +31,7 @@ const resolvers: Resolvers = {
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) =>
-      getUploader(id, {
+      DocumentDomain.loadUploader(id, {
         unsecured: true,
       }),
     labels: ({ id }) =>
@@ -45,9 +44,10 @@ const resolvers: Resolvers = {
       labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => getUploader(id, { unsecured: true }),
+    uploader: ({ id }, _) =>
+      DocumentDomain.loadUploader(id, { unsecured: true }),
     uploader_organization: ({ id }, _) =>
-      loadUploaderOrganization(id, { unsecured: true }),
+      DocumentDomain.loadUploaderOrganization(id, { unsecured: true }),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>

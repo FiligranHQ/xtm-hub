@@ -37,9 +37,7 @@ import { DocumentChildrenDomain } from './domain/document.children.domain';
 import {
   deleteDocument,
   DocumentDomain,
-  getUploader,
   loadDocuments,
-  loadUploaderOrganization,
   updateDocument,
 } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
@@ -164,11 +162,11 @@ const resolvers: Resolvers = {
         unsecured: true,
       }),
     uploader: ({ id }, _) =>
-      getUploader(id, {
+      DocumentDomain.loadUploader(id, {
         unsecured: true,
       }),
     uploader_organization: ({ id }, _) =>
-      loadUploaderOrganization(id, {
+      DocumentDomain.loadUploaderOrganization(id, {
         unsecured: true,
       }),
     service_instance: ({ service_instance_id }, _) => {
