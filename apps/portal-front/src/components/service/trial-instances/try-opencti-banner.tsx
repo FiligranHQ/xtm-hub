@@ -7,12 +7,12 @@ import { StartTrialButton } from '@/components/service/trial-instances/start-tri
 import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { daysUntil } from '@/utils/date';
+import { ArrowRightAltIcon } from '@filigran/icon';
+import { Callout } from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
-import { ArrowRightAltIcon } from 'filigran-icon';
-import { Callout } from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
 import Link from 'next/link';
 import { useContext } from 'react';
 import { ContactUsButton } from './contact-us-button';

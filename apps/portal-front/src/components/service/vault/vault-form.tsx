@@ -4,7 +4,7 @@ import {
   newDocumentSchema,
   VaultNewFileForm,
 } from '@/components/service/vault/vault-new-file-form';
-import { Button, useToast } from 'filigran-ui';
+import { Button, useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useState } from 'react';

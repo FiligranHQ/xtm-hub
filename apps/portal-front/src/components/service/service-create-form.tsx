@@ -1,6 +1,4 @@
 import { ServiceListCreateMutation } from '@/components/service/service.graphql';
-import { serviceListMutation } from '@generated/serviceListMutation.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -10,7 +8,9 @@ import {
   FormLabel,
   FormMessage,
   Input,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { serviceListMutation } from '@generated/serviceListMutation.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';

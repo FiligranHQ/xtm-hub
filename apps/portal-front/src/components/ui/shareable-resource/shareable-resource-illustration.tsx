@@ -3,10 +3,10 @@ import {
   PublicShareableResource,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { Carousel, CarouselItem } from '@filigran/ui/clients';
+import { AspectRatio } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { Carousel, CarouselItem } from 'filigran-ui/clients';
-import { AspectRatio } from 'filigran-ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
 import ShareableResourceBento from './shareable-resource-bento';

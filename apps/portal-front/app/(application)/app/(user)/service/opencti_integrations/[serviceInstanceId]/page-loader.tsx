@@ -6,10 +6,10 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/integrations-list';
 import { IntegrationsListQuery } from '@/components/service/integrations/integration.graphql';
+import { Skeleton } from '@filigran/ui';
 import { integrationsQuery } from '@generated/integrationsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 

@@ -9,7 +9,6 @@ import {
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import {
   AutoForm,
   Button,
@@ -22,7 +21,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { FunctionComponent, useContext, useState } from 'react';

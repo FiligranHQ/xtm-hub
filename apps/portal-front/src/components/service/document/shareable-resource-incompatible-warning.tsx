@@ -1,4 +1,4 @@
-import { CheckIndeterminateIcon } from 'filigran-icon';
+import { CheckIndeterminateIcon } from '@filigran/icon';
 import React from 'react';
 
 interface Props {

@@ -3,7 +3,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { MultiSelectFormField } from 'filigran-ui';
+import { MultiSelectFormField } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
 export const IntegrationDeployableFilter = () => {

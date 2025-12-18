@@ -2,8 +2,8 @@ import { getIngestionConnectorMetadata } from '@/components/connectors/connector
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
 import { roundToNearest } from '@/lib/utils';
-import { LogoGitIcon, OpenInNewIcon } from 'filigran-icon';
-import { Badge, Button } from 'filigran-ui/servers';
+import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
+import { Badge, Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';

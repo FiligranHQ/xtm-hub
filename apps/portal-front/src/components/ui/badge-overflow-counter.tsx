@@ -6,8 +6,8 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui';
-import { Badge } from 'filigran-ui/servers';
+} from '@filigran/ui';
+import { Badge } from '@filigran/ui/servers';
 import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { useEventListener } from 'usehooks-ts';
 

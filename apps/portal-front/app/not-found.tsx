@@ -1,7 +1,7 @@
 import AppContext from '@/components/app-context';
 import { ErrorPage } from '@/components/ui/error-page';
 import I18nContext from '@/i18n/i18n-context';
-import 'filigran-ui/theme.css';
+import '@filigran/ui/theme.css';
 import '../styles/globals.css';
 
 export default function NotFound() {

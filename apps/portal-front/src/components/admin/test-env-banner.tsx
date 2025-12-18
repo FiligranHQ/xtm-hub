@@ -1,7 +1,7 @@
 'use client';
 
 import { SettingsContext } from '@/components/settings/env-portal-context';
-import { Callout } from 'filigran-ui';
+import { Callout } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext } from 'react';

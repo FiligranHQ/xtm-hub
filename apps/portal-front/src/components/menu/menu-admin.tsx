@@ -3,8 +3,7 @@ import useAdminByPass from '@/hooks/useAdminByPass';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { SettingsIcon } from 'filigran-icon';
+import { SettingsIcon } from '@filigran/icon';
 import {
   Accordion,
   AccordionContent,
@@ -16,7 +15,8 @@ import {
   PopoverContent,
   PopoverTrigger,
   Separator,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

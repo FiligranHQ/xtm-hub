@@ -4,8 +4,8 @@ import {
   EditLabelMutation,
 } from '@/components/admin/label/label.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { toast } from '@filigran/ui';
 import { label_fragment$data } from '@generated/label_fragment.graphql';
-import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';

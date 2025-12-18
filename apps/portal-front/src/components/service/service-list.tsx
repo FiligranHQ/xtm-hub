@@ -2,13 +2,13 @@
 
 import useDecodedQuery from '@/hooks/useDecodedQuery';
 import { isExternalService } from '@/utils/services';
+import { toast } from '@filigran/ui';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
-import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { PreloadedQuery } from 'react-relay';

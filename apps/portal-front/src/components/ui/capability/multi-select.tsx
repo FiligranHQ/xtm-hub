@@ -1,5 +1,5 @@
 import { useOrganizationCapabilities } from '@/hooks/useOrganizationCapabilities';
-import { MultiSelectFormField } from 'filigran-ui/clients';
+import { MultiSelectFormField } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 

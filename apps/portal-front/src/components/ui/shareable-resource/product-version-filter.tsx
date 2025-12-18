@@ -2,8 +2,8 @@ import { ServiceListFilterContainer } from '@/components/service/components/head
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
+import { MultiSelectFormField } from '@filigran/ui';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 

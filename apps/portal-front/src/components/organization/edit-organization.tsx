@@ -1,9 +1,9 @@
 import { OrganizationForm } from '@/components/organization/organization-form';
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
+import { useToast } from '@filigran/ui';
 import { organizationEditMutation } from '@generated/organizationEditMutation.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
-import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
@@ -25,7 +25,6 @@ export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
-
 
   const handleSubmit = (values: z.infer<typeof organizationFormSchema>) => {
     commitOrganizationEditionMutation({

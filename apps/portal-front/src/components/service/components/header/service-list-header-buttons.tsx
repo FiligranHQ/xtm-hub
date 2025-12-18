@@ -6,7 +6,7 @@ import { useServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { APP_PATH } from '@/utils/path/constant';
-import { Button } from 'filigran-ui';
+import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';

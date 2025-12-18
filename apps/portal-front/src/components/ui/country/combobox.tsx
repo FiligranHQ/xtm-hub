@@ -1,4 +1,4 @@
-import { Combobox } from 'filigran-ui';
+import { Combobox } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 import countryData from './data.json';

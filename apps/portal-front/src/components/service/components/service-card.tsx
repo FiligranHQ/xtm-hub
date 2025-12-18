@@ -16,7 +16,7 @@ import {
   isConnectorResource,
   SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { MoreVertIcon } from 'filigran-icon';
+import { MoreVertIcon } from '@filigran/icon';
 import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
 

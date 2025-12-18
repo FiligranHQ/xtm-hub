@@ -27,6 +27,16 @@ import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
 import { APP_PATH } from '@/utils/path/constant';
+import { MoreVertIcon } from '@filigran/icon';
+import {
+  Button,
+  DataTable,
+  DataTableHeadBarOptions,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
@@ -39,16 +49,6 @@ import {
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { MoreVertIcon } from 'filigran-icon';
-import {
-  Button,
-  DataTable,
-  DataTableHeadBarOptions,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';
@@ -345,7 +345,9 @@ const DocumentList: React.FunctionComponent<ServiceProps> = ({
           documentData={deleteDocument}
           connectionId={data.documents.__id}
           open={!!deleteDocument}
-          setOpen={(open) => setDeleteDocument(open ? deleteDocument : undefined)}
+          setOpen={(open) =>
+            setDeleteDocument(open ? deleteDocument : undefined)
+          }
         />
       )}
     </>
