@@ -124,39 +124,18 @@ describe('DeploymentsQuotasDomain', () => {
       );
     });
 
-    it('should decrement availability by capacity difference', async () => {
-      const oldCapacity = 5;
-      const oldAvailability = 2;
-      const newCapacity = 2;
-      const expectedAvailability = -1;
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ capacity: oldCapacity, availability: oldAvailability })
-        .where({ region, platform_identifier: platformIdentifier });
-
-      const result = await DeploymentsQuotasDomain.updateQuotaCapacity({
-        platformIdentifier,
-        region,
-        newCapacity: newCapacity,
-      });
-
-      const updatedRequestQuota = await db<DeploymentRequestQuota>(
-        'DeploymentRequestQuota'
-      )
-        .where({ region, platform_identifier: platformIdentifier })
-        .select('*')
-        .first();
-
-      expect(updatedRequestQuota!.availability).toBe(expectedAvailability);
-      expect(result.newAvailability).toBe(expectedAvailability);
-    });
-
-    describe('increment', () => {
-      it('should increment availability by capacity difference', async () => {
-        const oldCapacity = 5;
-        const oldAvailability = 2;
-        const newCapacity = 10;
-        const expectedAvailability = 7;
-
+    it.each`
+      oldCapacity | oldAvailability | newCapacity | expectedAvailability
+      ${5}        | ${2}            | ${2}        | ${-1}
+      ${5}        | ${2}            | ${10}       | ${7}
+    `(
+      'should update capacity by $newCapacity and return $expectedAvailability availability',
+      async ({
+        oldCapacity,
+        oldAvailability,
+        newCapacity,
+        expectedAvailability,
+      }) => {
         await db<DeploymentRequestQuota>('DeploymentRequestQuota')
           .update({ capacity: oldCapacity, availability: oldAvailability })
           .where({ region, platform_identifier: platformIdentifier });
@@ -174,9 +153,11 @@ describe('DeploymentsQuotasDomain', () => {
           .select('*')
           .first();
 
+        expect(updatedRequestQuota).toBeDefined();
+        expect(updatedRequestQuota!.capacity).toBe(newCapacity);
         expect(updatedRequestQuota!.availability).toBe(expectedAvailability);
         expect(result.newAvailability).toBe(expectedAvailability);
-      });
-    });
+      }
+    );
   });
 });
