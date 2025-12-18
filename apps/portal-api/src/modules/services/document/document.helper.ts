@@ -15,10 +15,7 @@ import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/cus
 import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import { DocumentApp } from './document.app';
-import {
-  DocumentDomain,
-  loadSeoDocumentBySlug,
-} from './domain/document.domain';
+import { DocumentDomain } from './domain/document.domain';
 
 export const BOOLEAN_METADATA = [
   'verified',
@@ -147,6 +144,10 @@ export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
   slug: string,
   include_metadata: string[] = []
 ) => {
-  const document: T = await loadSeoDocumentBySlug(type, slug, include_metadata);
+  const document: T = await DocumentDomain.loadSeoDocumentBySlug(
+    type,
+    slug,
+    include_metadata
+  );
   return updateDocumentWithCounters(document);
 };

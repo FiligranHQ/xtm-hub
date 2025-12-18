@@ -34,7 +34,7 @@ import {
 } from './document.helper';
 import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import { DocumentDomain, loadDocuments } from './domain/document.domain';
+import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
@@ -202,7 +202,7 @@ const resolvers: Resolvers = {
       }
     ) => {
       try {
-        return loadDocuments(
+        return DocumentDomain.loadDocuments(
           {
             first,
             after,

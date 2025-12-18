@@ -12,11 +12,7 @@ import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentApp } from '../document/document.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
-import {
-  DocumentDomain,
-  loadParentDocumentsByServiceInstance,
-  loadSeoDocumentsByServiceSlug,
-} from '../document/domain/document.domain';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
@@ -42,7 +38,7 @@ const resolvers: Resolvers = {
   },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }) => {
-      const dashboards = await loadSeoDocumentsByServiceSlug(
+      const dashboards = await DocumentDomain.loadSeoDocumentsByServiceSlug(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         serviceSlug,
         CUSTOM_DASHBOARD_METADATA
@@ -66,7 +62,7 @@ const resolvers: Resolvers = {
       return CustomDashboardsApp.loadSeoCustomDashboard(slug);
     },
     customDashboards: async (_, input) => {
-      return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
+      return DocumentDomain.loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         input,
         CUSTOM_DASHBOARD_METADATA

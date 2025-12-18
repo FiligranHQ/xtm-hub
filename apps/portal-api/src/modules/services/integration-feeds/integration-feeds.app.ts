@@ -9,11 +9,7 @@ import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
 } from '../document/document.helper';
-import {
-  loadPaginatedSeoDocumentsByServiceSlug,
-  loadParentDocumentsByServiceInstance,
-  loadSeoDocumentsByServiceSlug,
-} from '../document/domain/document.domain';
+import { DocumentDomain } from '../document/domain/document.domain';
 import {
   INTEGRATION_FEED_METADATA,
   IntegrationFeed,
@@ -22,7 +18,7 @@ import {
 
 export const integrationFeedsApp = {
   loadIntegrationFeeds: async (input: QueryIntegrationFeedsArgs) => {
-    return loadParentDocumentsByServiceInstance<IntegrationFeedConnection>(
+    return DocumentDomain.loadParentDocumentsByServiceInstance<IntegrationFeedConnection>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       input,
       INTEGRATION_FEED_METADATA
@@ -34,7 +30,7 @@ export const integrationFeedsApp = {
     return loadDocumentWithCountersById(documentId, INTEGRATION_FEED_METADATA);
   },
   loadPublicAccessIntegrationFeeds: async (serviceSlug: string) =>
-    loadSeoDocumentsByServiceSlug(
+    DocumentDomain.loadSeoDocumentsByServiceSlug(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       serviceSlug,
       INTEGRATION_FEED_METADATA
@@ -44,7 +40,7 @@ export const integrationFeedsApp = {
     input: QueryPublicIntegrationFeedsArgs
   ) => {
     const { slug, ...opts } = input;
-    return loadPaginatedSeoDocumentsByServiceSlug<IntegrationFeedConnection>(
+    return DocumentDomain.loadPaginatedSeoDocumentsByServiceSlug<IntegrationFeedConnection>(
       OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
       slug,
       opts,

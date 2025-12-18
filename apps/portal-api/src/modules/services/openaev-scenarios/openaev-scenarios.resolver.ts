@@ -12,11 +12,7 @@ import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentApp } from '../document/document.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
-import {
-  DocumentDomain,
-  loadParentDocumentsByServiceInstance,
-  loadSeoDocumentsByServiceSlug,
-} from '../document/domain/document.domain';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
@@ -54,7 +50,7 @@ const resolvers: Resolvers = {
   },
   Query: {
     seoOpenAEVScenariosByServiceSlug: async (_, { serviceSlug }) => {
-      return loadSeoDocumentsByServiceSlug(
+      return DocumentDomain.loadSeoDocumentsByServiceSlug(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
         OPENAEV_SCENARIO_METADATA
@@ -64,7 +60,7 @@ const resolvers: Resolvers = {
       return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
     },
     openAEVScenarios: async (_, input) => {
-      return loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
+      return DocumentDomain.loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         input,
         OPENAEV_SCENARIO_METADATA

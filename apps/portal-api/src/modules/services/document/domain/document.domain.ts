@@ -129,6 +129,203 @@ export const DocumentDomain = {
     return organization;
   },
 
+  loadParentDocumentsByServiceInstance: async <
+    T =
+      | DocumentConnection
+      | IntegrationFeedConnection
+      | CustomDashboardConnection,
+  >(
+    type: string,
+    input: QueryDocumentsArgs,
+    include_metadata?: string[]
+  ): Promise<T> => {
+    return DocumentDomain.loadDocuments<T>(
+      {
+        ...input,
+        parentsOnly: true,
+        searchTerm: normalizeDocumentName(input.searchTerm),
+      },
+      {
+        'Document.service_instance_id': extractId<ServiceInstanceId>(
+          input.serviceInstanceId
+        ),
+        'Document.type': type,
+      },
+      include_metadata
+    );
+  },
+
+  loadDocuments: async <
+    T =
+      | DocumentConnection
+      | IntegrationFeedConnection
+      | CustomDashboardConnection,
+  >(
+    opts: Partial<QueryDocumentsArgs>,
+    field: Record<string, unknown>,
+    include_metadata?: string[]
+  ): Promise<T> => {
+    const { user } = requestContext.require();
+
+    const loadDocumentQuery = db<Document>('Document', opts)
+      .select(['Document.*'])
+      .tap(restrictDocumentToUserOrganization)
+      .where(field);
+
+    if (
+      field['Document.service_instance_id'] &&
+      (await isUserRestrictedToActiveDocument(
+        user,
+        field['Document.service_instance_id'] as ServiceInstanceId
+      ))
+    ) {
+      loadDocumentQuery.tap(restrictDocumentToActive);
+    }
+
+    if (opts.parentsOnly) {
+      // Using the Document_Children table to filter for parent documents (those that have children)
+      loadDocumentQuery.whereNotExists(function () {
+        this.select(dbRaw('1'))
+          .from('Document_Children')
+          .whereRaw(
+            '"Document_Children"."child_document_id" = "Document"."id"'
+          );
+      });
+    }
+
+    loadDocumentQuery
+      .leftJoin(
+        'Document_Children',
+        'Document.id',
+        'Document_Children.parent_document_id'
+      )
+      .leftJoin(
+        'Document as children_documents',
+        'Document_Children.child_document_id',
+        'children_documents.id'
+      )
+      .leftJoin(
+        'ServiceInstance',
+        'Document.service_instance_id',
+        'ServiceInstance.id'
+      );
+
+    loadDocumentQuery.select(
+      dbRaw(
+        `CASE
+      WHEN COUNT("children_documents"."id") = 0 THEN NULL
+      ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
+    END AS children_documents`
+      ),
+      dbRaw(
+        formatRawObject({
+          columnName: 'ServiceInstance',
+          typename: 'ServiceInstance',
+          as: 'service_instance',
+        })
+      )
+    );
+
+    loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(
+      loadDocumentQuery,
+      include_metadata
+    );
+
+    return paginate<Document, T>(
+      'Document',
+      opts,
+      undefined,
+      loadDocumentQuery
+    );
+  },
+
+  loadSeoDocumentBySlug: async (
+    type: string,
+    slug: string,
+    include_metadata: string[] = []
+  ) => {
+    const docQuery = dbUnsecure<Document>('Document')
+      .select('Document.*')
+      .where('Document.slug', '=', slug)
+      .where('Document.active', '=', true)
+      .where('Document.type', '=', type)
+      .whereNotExists(function () {
+        this.select('*')
+          .from('Document_Children')
+          .whereRaw(
+            '"Document_Children"."child_document_id" = "Document"."id"'
+          );
+      })
+      .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
+
+    return docQuery.first();
+  },
+
+  loadPaginatedSeoDocumentsByServiceSlug: async <
+    T =
+      | DocumentConnection
+      | IntegrationFeedConnection
+      | CustomDashboardConnection,
+  >(
+    type: string,
+    serviceSlug: string,
+    opts: Partial<QueryDocumentsArgs>,
+    include_metadata?: string[]
+  ) => {
+    const loadDocumentsQuery = DocumentDomain.loadSeoDocumentsByServiceSlug(
+      type,
+      serviceSlug,
+      include_metadata
+    );
+
+    return paginate<Document, T>(
+      'Document',
+      opts,
+      undefined,
+      loadDocumentsQuery
+    );
+  },
+
+  loadSeoDocumentsByServiceSlug: (
+    type: string,
+    serviceSlug: string,
+    include_metadata: string[] = []
+  ): Knex.QueryBuilder => {
+    const loadDocumentsQuery = dbUnsecure<Document>('Document')
+      .select('Document.*')
+      .leftJoin(
+        'ServiceInstance',
+        'Document.service_instance_id',
+        'ServiceInstance.id'
+      )
+      .whereNotExists(function () {
+        this.select('*')
+          .from('Document_Children')
+          .whereRaw(
+            '"Document_Children"."child_document_id" = "Document"."id"'
+          );
+      })
+      .where('ServiceInstance.slug', '=', serviceSlug)
+      .where('Document.active', '=', true)
+      .where('Document.type', '=', type)
+      .orderBy([
+        { column: 'Document.updated_at', order: 'desc' },
+        { column: 'Document.created_at', order: 'desc' },
+      ])
+      .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(
+      loadDocumentsQuery,
+      include_metadata
+    );
+
+    return loadDocumentsQuery;
+  },
+
   upsertOnSlug: async <T extends DocumentModel>(
     documentData: Omit<Partial<T>, 'labels'> & {
       labels?: string[];
@@ -159,185 +356,4 @@ export const DocumentDomain = {
   deleteDocuments: async (ids: DocumentId[]) => {
     await db<Document>('Document').whereIn('id', ids).delete();
   },
-};
-
-export const loadParentDocumentsByServiceInstance = async <
-  T =
-    | DocumentConnection
-    | IntegrationFeedConnection
-    | CustomDashboardConnection,
->(
-  type: string,
-  input: QueryDocumentsArgs,
-  include_metadata?: string[]
-): Promise<T> => {
-  return loadDocuments<T>(
-    {
-      ...input,
-      parentsOnly: true,
-      searchTerm: normalizeDocumentName(input.searchTerm),
-    },
-    {
-      'Document.service_instance_id': extractId<ServiceInstanceId>(
-        input.serviceInstanceId
-      ),
-      'Document.type': type,
-    },
-    include_metadata
-  );
-};
-
-export const loadDocuments = async <
-  T =
-    | DocumentConnection
-    | IntegrationFeedConnection
-    | CustomDashboardConnection,
->(
-  opts: Partial<QueryDocumentsArgs>,
-  field: Record<string, unknown>,
-  include_metadata?: string[]
-): Promise<T> => {
-  const { user } = requestContext.require();
-
-  const loadDocumentQuery = db<Document>('Document', opts)
-    .select(['Document.*'])
-    .tap(restrictDocumentToUserOrganization)
-    .where(field);
-
-  if (
-    field['Document.service_instance_id'] &&
-    (await isUserRestrictedToActiveDocument(
-      user,
-      field['Document.service_instance_id'] as ServiceInstanceId
-    ))
-  ) {
-    loadDocumentQuery.tap(restrictDocumentToActive);
-  }
-
-  if (opts.parentsOnly) {
-    // Using the Document_Children table to filter for parent documents (those that have children)
-    loadDocumentQuery.whereNotExists(function () {
-      this.select(dbRaw('1'))
-        .from('Document_Children')
-        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
-    });
-  }
-
-  loadDocumentQuery
-    .leftJoin(
-      'Document_Children',
-      'Document.id',
-      'Document_Children.parent_document_id'
-    )
-    .leftJoin(
-      'Document as children_documents',
-      'Document_Children.child_document_id',
-      'children_documents.id'
-    )
-    .leftJoin(
-      'ServiceInstance',
-      'Document.service_instance_id',
-      'ServiceInstance.id'
-    );
-
-  loadDocumentQuery.select(
-    dbRaw(
-      `CASE
-      WHEN COUNT("children_documents"."id") = 0 THEN NULL
-      ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
-    END AS children_documents`
-    ),
-    dbRaw(
-      formatRawObject({
-        columnName: 'ServiceInstance',
-        typename: 'ServiceInstance',
-        as: 'service_instance',
-      })
-    )
-  );
-
-  loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
-
-  DocumentMetadataDomain.addIncludeMetadataQuery(
-    loadDocumentQuery,
-    include_metadata
-  );
-
-  return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
-};
-
-export const loadSeoDocumentBySlug = async (
-  type: string,
-  slug: string,
-  include_metadata: string[] = []
-) => {
-  const docQuery = dbUnsecure<Document>('Document')
-    .select('Document.*')
-    .where('Document.slug', '=', slug)
-    .where('Document.active', '=', true)
-    .where('Document.type', '=', type)
-    .whereNotExists(function () {
-      this.select('*')
-        .from('Document_Children')
-        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
-    })
-    .groupBy(['Document.id']);
-
-  DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
-
-  return docQuery.first();
-};
-
-export const loadPaginatedSeoDocumentsByServiceSlug = async <
-  T =
-    | DocumentConnection
-    | IntegrationFeedConnection
-    | CustomDashboardConnection,
->(
-  type: string,
-  serviceSlug: string,
-  opts: Partial<QueryDocumentsArgs>,
-  include_metadata?: string[]
-) => {
-  const loadDocumentsQuery = loadSeoDocumentsByServiceSlug(
-    type,
-    serviceSlug,
-    include_metadata
-  );
-
-  return paginate<Document, T>('Document', opts, undefined, loadDocumentsQuery);
-};
-
-export const loadSeoDocumentsByServiceSlug = (
-  type: string,
-  serviceSlug: string,
-  include_metadata: string[] = []
-): Knex.QueryBuilder => {
-  const loadDocumentsQuery = dbUnsecure<Document>('Document')
-    .select('Document.*')
-    .leftJoin(
-      'ServiceInstance',
-      'Document.service_instance_id',
-      'ServiceInstance.id'
-    )
-    .whereNotExists(function () {
-      this.select('*')
-        .from('Document_Children')
-        .whereRaw('"Document_Children"."child_document_id" = "Document"."id"');
-    })
-    .where('ServiceInstance.slug', '=', serviceSlug)
-    .where('Document.active', '=', true)
-    .where('Document.type', '=', type)
-    .orderBy([
-      { column: 'Document.updated_at', order: 'desc' },
-      { column: 'Document.created_at', order: 'desc' },
-    ])
-    .groupBy(['Document.id']);
-
-  DocumentMetadataDomain.addIncludeMetadataQuery(
-    loadDocumentsQuery,
-    include_metadata
-  );
-
-  return loadDocumentsQuery;
 };
