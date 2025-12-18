@@ -9,11 +9,7 @@ import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import { processUploads, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import {
-  DocumentData,
-  DocumentDomain,
-  passDocumentToInactive,
-} from './domain/document.domain';
+import { DocumentData, DocumentDomain } from './domain/document.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
@@ -129,7 +125,7 @@ export const DocumentApp = {
     }
 
     // Soft delete => desactivate the document
-    await passDocumentToInactive([documentId, ...childIds]);
+    await DocumentDomain.deactivateDocuments([documentId, ...childIds]);
 
     return documentFromDb as T;
   },

@@ -56,12 +56,12 @@ type MutationUpdateDocumentArgs =
   | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
 
 export const DocumentDomain = {
-  passOldDocumentsIntoInactive: async (existingDocuments: Document[]) => {
-    const documentIds = existingDocuments.map((doc) => doc.id);
-    await dbUnsecure<Document>('Document')
+  deactivateDocuments: async (documentIds: DocumentId[]) => {
+    const { user } = requestContext.require();
+
+    await db<Document>('Document')
       .whereIn('id', documentIds)
-      .update({ active: false })
-      .returning('*');
+      .update({ active: false, remover_id: user.id });
   },
 
   createDocument: async <T extends DocumentModel>(
@@ -281,16 +281,6 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
     );
     return updatedDocument;
   });
-};
-
-export const passDocumentToInactive = async (
-  documentId: DocumentId | DocumentId[]
-) => {
-  const { user } = requestContext.require();
-  documentId = Array.isArray(documentId) ? documentId : [documentId];
-  await db<Document>('Document')
-    .whereIn('Document.id', documentId)
-    .update({ active: false, remover_id: user.id });
 };
 
 export const loadParentDocumentsByServiceInstance = async <
