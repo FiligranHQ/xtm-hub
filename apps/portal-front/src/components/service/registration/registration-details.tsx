@@ -3,8 +3,7 @@ import { translateServiceDefinitionIdentifier } from '@/components/registration/
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
 import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
-import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { TrialCancelSheet } from '@/components/service/trial-instances/trial-cancel-sheet';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
@@ -12,13 +11,11 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
-import { toast } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useContext, useState } from 'react';
-import { useFragment, useMutation } from 'react-relay';
+import { useFragment } from 'react-relay';
 
 interface Props {
   registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;
@@ -29,6 +26,7 @@ export const RegistrationDetails: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
+  const [openCancelSheet, setOpenCancelSheet] = useState(false);
 
   const { hasOrganizationCapability, hasCapability } =
     useContext(PortalContext);
@@ -50,43 +48,6 @@ export const RegistrationDetails: React.FC<Props> = ({
       registeredPlatformByServiceInstanceIdFragment,
       registeredPlatform
     );
-  const [cancelDeploymentRequestMutation] =
-    useMutation<trialInstancesCancelDeploymentRequestMutation>(
-      CancelDeploymentRequestMutation
-    );
-
-  const cancelTrial = () => {
-    cancelDeploymentRequestMutation({
-      variables: {
-        deploymentRequestId: platform.deployment_request!.id,
-      },
-
-      onCompleted: (response) => {
-        if (response.cancelDeploymentRequest?.counts_in_orga_quota) {
-          toast({
-            title: t('Utils.Success'),
-            description: t(
-              'Service.Trials.Cancellation.Toast.NoNewTrialPossible'
-            ),
-          });
-        } else {
-          toast({
-            title: t('Utils.Success'),
-            description: t(
-              'Service.Trials.Cancellation.Toast.NewTrialPossible'
-            ),
-          });
-        }
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
-  };
 
   const isCancellable =
     platform.deployment_request &&
@@ -129,20 +90,11 @@ export const RegistrationDetails: React.FC<Props> = ({
             <span className="text-gray/60">Status:</span>{' '}
             {formatTitleCase(platform.deployment_request?.hub_status)}
             {isCancellable && (
-              <AlertDialogComponent
-                AlertTitle={t('Service.Trials.Cancellation.Confirmation.Title')}
-                triggerElement={
-                  <Button variant="link-destructive">Cancel</Button>
-                }
-                onClickContinue={() => cancelTrial()}>
-                {isCancellationDefinitive
-                  ? t(
-                      'Service.Trials.Cancellation.Confirmation.NoNewTrialPossible'
-                    )
-                  : t(
-                      'Service.Trials.Cancellation.Confirmation.NewTrialPossible'
-                    )}
-              </AlertDialogComponent>
+              <Button
+                variant="link-destructive"
+                onClick={() => setOpenCancelSheet(true)}>
+                Cancel
+              </Button>
             )}
           </li>
         )}
@@ -215,6 +167,14 @@ export const RegistrationDetails: React.FC<Props> = ({
           serviceDefinitionIdentifier={platform.identifier}
           open={openPlatformSheet}
           setOpen={setOpenPlatformSheet}
+        />
+      )}
+      {platform.deployment_request && (
+        <TrialCancelSheet
+          deploymentRequestId={platform.deployment_request?.id}
+          isCancellationDefinitive={isCancellationDefinitive}
+          open={openCancelSheet}
+          setOpen={setOpenCancelSheet}
         />
       )}
     </section>
