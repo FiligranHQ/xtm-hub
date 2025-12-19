@@ -475,7 +475,8 @@ export const DeploymentsApp = {
 
   cancelDeploymentRequest: async (
     deploymentRequestId: DeploymentRequestId,
-    isAdmin: boolean
+    isAdmin: boolean,
+    cancellationReason?: string
   ): Promise<DeploymentRequest> => {
     const { user } = requestContext.require();
     const deploymentRequest =
@@ -523,6 +524,7 @@ export const DeploymentsApp = {
             target_state: target_state,
             cancellation_date: new Date(),
             cancellation_user_id: user.id,
+            cancellation_reason: cancellationReason,
             counts_in_orga_quota: countsInOrgaQuota,
           }
         );

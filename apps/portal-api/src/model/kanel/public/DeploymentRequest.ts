@@ -57,6 +57,8 @@ export default interface DeploymentRequest {
   cancellation_user_id: string | null;
 
   cancellation_date: Date | null;
+
+  cancellation_reason: string | null;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
@@ -110,6 +112,8 @@ export interface DeploymentRequestInitializer {
   cancellation_user_id?: string | null;
 
   cancellation_date?: Date | null;
+
+  cancellation_reason?: string | null;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
@@ -159,4 +163,6 @@ export interface DeploymentRequestMutator {
   cancellation_user_id?: string | null;
 
   cancellation_date?: Date | null;
+
+  cancellation_reason?: string | null;
 }
