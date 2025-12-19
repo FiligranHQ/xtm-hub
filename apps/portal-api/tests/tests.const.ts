@@ -73,7 +73,6 @@ export const contextAdminUser: PortalContext = {
       },
     ],
   },
-  serviceInstanceId: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
 } as PortalContext;
 
 export const requestContextAdminUser = {

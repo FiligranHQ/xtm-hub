@@ -65,7 +65,6 @@ export const serviceInstanceApp = {
     upload: Upload | null
   ): Promise<RegisteredPlatform> => {
     const { id } = fromGlobalId(input.serviceInstanceId);
-    context.serviceInstanceId = input.serviceInstanceId;
 
     const serviceInstance = await loadPlatformServiceInstance(
       context.user.selected_organization_id,
