@@ -18,7 +18,7 @@ import { useContext } from 'react';
 import { ContactUsButton } from './contact-us-button';
 
 // Component
-export const TryOpenCTICallout = () => {
+export const TryOpenCTIBanner = () => {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
 

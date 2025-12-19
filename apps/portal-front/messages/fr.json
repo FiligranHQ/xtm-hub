@@ -1,5 +1,5 @@
 {
-  "AdminCallout": "Vous êtes actuellement en mode administrateur",
+  "AdminBanner": "Vous êtes actuellement en mode administrateur",
   "App": {
     "Collapse": "Réduire",
     "CollapseSidebar": "Réduire la sidebar",
@@ -300,6 +300,16 @@
       "SearchTrials": "Recherche par email ou par organisation",
       "MoveToTop": "Aller au début",
       "MoveUp": "Remonter"
+    },
+    "UpdateQuotasForm": {
+      "Title": "Mise à jour des quotas pour {platform} dans {region}",
+      "QuotasUpdated": "Le quota a été mis à jour avec succès",
+      "NewCapacityLabel": "Nouvelle capacité de quota",
+      "AlertDialog": {
+        "ConfirmTitle": "Mise à jour des quotas pour la région {region}",
+        "ConfirmDescription": "Vous avez mis à jour les quotas pour la région {region} de {oldCapacity} à {newCapacity}.",
+        "ConfirmSentence": "Êtes-vous sûr de vouloir enregistrer ces modifications ?"
+      }
     },
     "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai"
   },
@@ -808,7 +818,7 @@
   },
   "Sort Asc": "Tri Asc",
   "Sort Desc": "Sort Desc",
-  "TestEnvCallout": "Vous êtes sur l'environnement {environnement}",
+  "TestEnvBanner": "Vous êtes sur l'environnement {environnement}",
   "ThemeToggle": {
     "Automatic": "Automatique",
     "Dark": "Foncé",

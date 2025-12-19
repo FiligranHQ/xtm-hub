@@ -1,5 +1,5 @@
 {
-  "AdminCallout": "You are currently in admin mode.",
+  "AdminBanner": "You are currently in admin mode.",
   "App": {
     "Collapse": "Collapse",
     "CollapseSidebar": "Collapse sidebar",
@@ -300,6 +300,16 @@
       "SearchTrials": "Search by email or organization",
       "MoveToTop": "Move to top",
       "MoveUp": "Move up"
+    },
+    "UpdateQuotasForm": {
+      "Title": "Update quotas for {platform} in {region}",
+      "QuotasUpdated": "Quota has been updated successfully",
+      "NewCapacityLabel": "New quota capacity",
+      "AlertDialog": {
+        "ConfirmTitle": "Quota Update for Region {region}",
+        "ConfirmDescription": "You’ve updated the quotas for Region {region} from {oldCapacity} to {newCapacity}.",
+        "ConfirmSentence": "Are you sure you want to save these changes?"
+      }
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
   },
@@ -808,7 +818,7 @@
   },
   "Sort Asc": "Sort Asc",
   "Sort Desc": "Sort Desc",
-  "TestEnvCallout": "You are viewing the {environnement} environment.",
+  "TestEnvBanner": "You are viewing the {environnement} environment.",
   "ThemeToggle": {
     "Automatic": "Automatic",
     "Dark": "Dark",

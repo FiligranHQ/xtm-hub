@@ -110,4 +110,54 @@ describe('DeploymentsQuotasDomain', () => {
       expect(updatedRequestQuota!.availability).toBe(1);
     });
   });
+
+  describe('updateQuotaCapacity', () => {
+    it('should throw when quota is not found', async () => {
+      const call = DeploymentsQuotasDomain.updateQuotaCapacity({
+        platformIdentifier: 'test' as PlatformIdentifier,
+        region,
+        newCapacity: 1,
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.DeploymentRequestQuotaNotFound
+      );
+    });
+
+    it.each`
+      oldCapacity | oldAvailability | newCapacity | expectedAvailability
+      ${5}        | ${2}            | ${2}        | ${-1}
+      ${5}        | ${2}            | ${10}       | ${7}
+    `(
+      'should update capacity by $newCapacity and return $expectedAvailability availability',
+      async ({
+        oldCapacity,
+        oldAvailability,
+        newCapacity,
+        expectedAvailability,
+      }) => {
+        await db<DeploymentRequestQuota>('DeploymentRequestQuota')
+          .update({ capacity: oldCapacity, availability: oldAvailability })
+          .where({ region, platform_identifier: platformIdentifier });
+
+        const result = await DeploymentsQuotasDomain.updateQuotaCapacity({
+          platformIdentifier,
+          region,
+          newCapacity: newCapacity,
+        });
+
+        const updatedRequestQuota = await db<DeploymentRequestQuota>(
+          'DeploymentRequestQuota'
+        )
+          .where({ region, platform_identifier: platformIdentifier })
+          .select('*')
+          .first();
+
+        expect(updatedRequestQuota).toBeDefined();
+        expect(updatedRequestQuota!.capacity).toBe(newCapacity);
+        expect(updatedRequestQuota!.availability).toBe(expectedAvailability);
+        expect(result.newAvailability).toBe(expectedAvailability);
+      }
+    );
+  });
 });

@@ -24,7 +24,10 @@ import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
-import { insertOpenCtiDeploymentRequest } from './deployments.test.utils';
+import {
+  assertDeploymentRequestProperties,
+  insertOpenCtiDeploymentRequest,
+} from './deployments.test.utils';
 
 describe('DeploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -127,7 +130,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.platform_identifier).toBe(platformIdentifier);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Active);
     });
@@ -150,7 +153,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
     });
 
@@ -238,7 +241,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.platform_token).toBe(platformToken);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Active);
     });
@@ -258,7 +261,7 @@ describe('DeploymentRequestDomain', () => {
         );
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(deployment.id);
+      expect(result?.id).toBe(deployment!.id);
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
     });
 
@@ -488,9 +491,133 @@ describe('DeploymentRequestDomain', () => {
       expect(resultTopDeploymentRequest!.ordering).toBe(4);
     });
   });
+  describe('setLastPendingRequestAsQueued', () => {
+    let platformIdentifier: PlatformIdentifier;
+    let region: DeploymentRequestPlatformRegion;
+    let deploymentRequestId1: DeploymentRequestId;
+    let deploymentRequestId2: DeploymentRequestId;
+    let deploymentRequestId3: DeploymentRequestId;
+    let deploymentRequestId4: DeploymentRequestId;
+    beforeEach(async () => {
+      const deploymentRequest1 = await insertOpenCtiDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+      });
+      deploymentRequestId1 = deploymentRequest1!.id;
+      platformIdentifier = deploymentRequest1!
+        .platform_identifier as PlatformIdentifier;
+      region = deploymentRequest1!.region as DeploymentRequestPlatformRegion;
 
-  describe('setQueuedRequestsAsPending', () => {
-    it('should move a limited number of requests to pending, ordered by ordering', async () => {
+      const deploymentRequest2 = await insertOpenCtiDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+      deploymentRequestId2 = deploymentRequest2!.id;
+
+      const deploymentRequest3 = await insertOpenCtiDeploymentRequest({
+        ordering: 5,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+      deploymentRequestId3 = deploymentRequest3!.id;
+
+      const deploymentRequest4 = await insertOpenCtiDeploymentRequest({
+        ordering: 6,
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+      });
+      deploymentRequestId4 = deploymentRequest4!.id;
+    });
+
+    it('should update the last request in platform and region', async () => {
+      const updatedRequest =
+        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
+          platformIdentifier,
+          region
+        );
+
+      expect(updatedRequest).toBeDefined();
+      expect(updatedRequest!.id).toBe(deploymentRequestId3);
+
+      await assertDeploymentRequestProperties(deploymentRequestId1, {
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId2, {
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId3, {
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Removed,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId4, {
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+      });
+    });
+
+    it('should set pending requests in the right order with queued requests', async () => {
+      await DeploymentRequestDomain.setLastPendingRequestAsQueued(
+        platformIdentifier,
+        region
+      );
+
+      await assertDeploymentRequestProperties(deploymentRequestId1, {
+        ordering: 4,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId2, {
+        ordering: 4,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId3, {
+        ordering: 1,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId4, {
+        ordering: 7,
+      });
+    });
+
+    it('should do nothing when there is no pending requests', async () => {
+      await db<DeploymentRequest>('DeploymentRequest').update({
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      const updatedRequest =
+        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
+          platformIdentifier,
+          region
+        );
+
+      expect(updatedRequest).toBeDefined();
+
+      await assertDeploymentRequestProperties(deploymentRequestId1, {
+        ordering: 3,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId2, {
+        ordering: 4,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId3, {
+        ordering: 5,
+      });
+
+      await assertDeploymentRequestProperties(deploymentRequestId4, {
+        ordering: 6,
+      });
+    });
+  });
+
+  describe('setFirstQueuedRequestAsPending', () => {
+    it('should move the first request to pending, ordered by ordering', async () => {
       const deploymentRequest1 = await insertOpenCtiDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
@@ -512,40 +639,43 @@ describe('DeploymentRequestDomain', () => {
         target_state: DeploymentRequestPlatformState.Unprovisioned,
       });
 
-      const updatedDeploymentRequests =
-        await DeploymentRequestDomain.setQueuedRequestsAsPending(
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
           deploymentRequest1!.platform_identifier as PlatformIdentifier,
-          deploymentRequest1!.region as DeploymentRequestPlatformRegion,
-          1
+          deploymentRequest1!.region as DeploymentRequestPlatformRegion
         );
 
-      expect(updatedDeploymentRequests.length).toBe(1);
-      expect(updatedDeploymentRequests[0]!.id).toBe(deploymentRequest1!.id);
-      expect(updatedDeploymentRequests[0]!.hub_status).toBe(
+      expect(updatedDeploymentRequest).toBeDefined();
+      expect(updatedDeploymentRequest!.id).toBe(deploymentRequest1!.id);
+      expect(updatedDeploymentRequest!.hub_status).toBe(
         DeploymentRequestHubStatus.Pending
       );
-      expect(updatedDeploymentRequests[0]!.target_state).toBe(
+      expect(updatedDeploymentRequest!.target_state).toBe(
         DeploymentRequestHubStatus.Active
       );
 
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
+        ordering: 6,
       });
 
       await assertDeploymentRequestProperties(deploymentRequest2!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
+        ordering: 4,
       });
 
       await assertDeploymentRequestProperties(deploymentRequest3!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
+        ordering: 5,
       });
 
       await assertDeploymentRequestProperties(deploymentRequest4!.id, {
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
+        ordering: 6,
       });
     });
 
@@ -563,13 +693,12 @@ describe('DeploymentRequestDomain', () => {
         platform_identifier: PlatformIdentifier.Openaev,
       });
 
-      const updatedDeploymentRequests =
-        await DeploymentRequestDomain.setQueuedRequestsAsPending(
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
           PlatformIdentifier.Opencti,
-          deploymentRequest1!.region as DeploymentRequestPlatformRegion,
-          10
+          deploymentRequest1!.region as DeploymentRequestPlatformRegion
         );
-      expect(updatedDeploymentRequests.length).toBe(1);
+      expect(updatedDeploymentRequest).toBeDefined();
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
       });
@@ -592,13 +721,12 @@ describe('DeploymentRequestDomain', () => {
         region: DeploymentRequestPlatformRegion.EuWest,
       });
 
-      const updatedDeploymentRequests =
-        await DeploymentRequestDomain.setQueuedRequestsAsPending(
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
           deploymentRequest1!.platform_identifier as PlatformIdentifier,
-          DeploymentRequestPlatformRegion.UsEast,
-          10
+          DeploymentRequestPlatformRegion.UsEast
         );
-      expect(updatedDeploymentRequests.length).toBe(1);
+      expect(updatedDeploymentRequest).toBeDefined();
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
         hub_status: DeploymentRequestHubStatus.Pending,
       });
@@ -607,36 +735,4 @@ describe('DeploymentRequestDomain', () => {
       });
     });
   });
-
-  const assertDeploymentRequestProperties = async (
-    id: DeploymentRequestId,
-    {
-      hub_status,
-      target_state,
-      ordering,
-    }: {
-      hub_status?: DeploymentRequestHubStatus;
-      target_state?: DeploymentRequestPlatformState;
-      ordering?: number;
-    }
-  ) => {
-    const deploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({
-        id,
-      });
-
-    expect(deploymentRequest).toBeDefined();
-
-    if (hub_status) {
-      expect(deploymentRequest!.hub_status).toBe(hub_status);
-    }
-
-    if (target_state) {
-      expect(deploymentRequest!.target_state).toBe(target_state);
-    }
-
-    if (ordering) {
-      expect(deploymentRequest!.ordering).toBe(ordering);
-    }
-  };
 });

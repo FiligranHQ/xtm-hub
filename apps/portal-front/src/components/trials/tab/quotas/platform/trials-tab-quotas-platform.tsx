@@ -1,17 +1,25 @@
-import { TrialsDeploymentAvailabilityFragment } from '@/components/trials/trials.graphql';
-import { PlatformIdentifier } from '@generated/oneClickDeployMutation.graphql';
+import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/platform/trials-tab-quotas-platform-update';
 import {
+  TrialsDeploymentRequestsAvailableListFragment,
+  TrialsDeploymentRequestsAvailableQuery,
+} from '@/components/trials/trials.graphql';
+import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
+import { PlatformIdentifier } from '@generated/oneClickDeployMutation.graphql';
+import trialsDeploymentAvailabilityFragmentGraphql, {
   trialsDeploymentAvailabilityFragment$data,
   trialsDeploymentAvailabilityFragment$key,
 } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
-import TrialsDeploymentRequestsAvailableQueryGraphql, {
-  trialsDeploymentRequestsAvailableQuery,
-} from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
+import { trialsDeploymentRequestsAvailableList$key } from '@generated/trialsDeploymentRequestsAvailableList.graphql';
+import { trialsDeploymentRequestsAvailableQuery } from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
-import { useFragment, useLazyLoadQuery } from 'react-relay';
+import React, { useMemo, useState } from 'react';
+import {
+  readInlineData,
+  useLazyLoadQuery,
+  useRefetchableFragment,
+} from 'react-relay';
 
 interface Props {
   platformIdentifier: PlatformIdentifier;
@@ -21,21 +29,35 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
   platformIdentifier,
 }) => {
   const t = useTranslations();
+
   const queryData = useLazyLoadQuery<trialsDeploymentRequestsAvailableQuery>(
-    TrialsDeploymentRequestsAvailableQueryGraphql,
+    TrialsDeploymentRequestsAvailableQuery,
     { platformIdentifier }
   );
 
-  const availabilities = useFragment<trialsDeploymentAvailabilityFragment$key>(
-    TrialsDeploymentAvailabilityFragment,
-    queryData.deploymentRequestsAvailable
-  );
-  if (!availabilities.length) {
+  const [data, refetch] = useRefetchableFragment<
+    trialsDeploymentRequestsAvailableQuery,
+    trialsDeploymentRequestsAvailableList$key
+  >(TrialsDeploymentRequestsAvailableListFragment, queryData);
+  if (!data.deploymentRequestsAvailable.length) {
     return null;
   }
 
+  const availabilities = useMemo(() => {
+    return data.deploymentRequestsAvailable.map((availability) =>
+      readInlineData<trialsDeploymentAvailabilityFragment$key>(
+        trialsDeploymentAvailabilityFragmentGraphql,
+        availability
+      )
+    );
+  }, [data]);
+
+  const [quotaEdit, setQuotaEdit] = useState<
+    trialsDeploymentAvailabilityFragment$data | undefined
+  >(undefined);
+
   const columns: ColumnDef<
-    { id: string } & trialsDeploymentAvailabilityFragment$data[number]
+    { id: string } & trialsDeploymentAvailabilityFragment$data
   >[] = useMemo(
     () => [
       {
@@ -47,7 +69,7 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
           row,
         }: {
           row: {
-            original: trialsDeploymentAvailabilityFragment$data[number];
+            original: trialsDeploymentAvailabilityFragment$data;
           };
         }) => {
           return (
@@ -93,13 +115,28 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
 
   return (
     <>
-      <h2 className="mt-xxl">
+      <h2 className="mt-xxl ml-l">
         {t(`PlatformIdentifier.${platformIdentifier}`)}
       </h2>
       <DataTable
         columns={columns}
         data={dataTableData}
+        onClickRow={(row) => setQuotaEdit(row.original)}
       />
+      {quotaEdit && (
+        <TrialsTabQuotasPlatformUpdate
+          quota={quotaEdit}
+          key={`${quotaEdit.platform_identifier}${quotaEdit.region}`}
+          defaultStateOpen={!!quotaEdit}
+          onCloseSheet={() => {
+            refetch(
+              { platformIdentifier },
+              { fetchPolicy: 'store-and-network' }
+            );
+            useExecuteAfterAnimation(() => setQuotaEdit(undefined));
+          }}
+        />
+      )}
     </>
   );
 };
