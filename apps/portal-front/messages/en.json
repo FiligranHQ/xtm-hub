@@ -282,6 +282,7 @@
       "Priority": "Priority",
       "CancellationDate": "Cancellation Date",
       "CancellationOwner": "Cancellation Owner",
+      "CancellationReason": "Cancellation Reason",
       "Available": "Available",
       "Taken": "Taken",
       "Total": "Total"

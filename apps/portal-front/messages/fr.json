@@ -282,6 +282,7 @@
       "Priority": "Priorité",
       "CancellationDate": "Date d'annulation",
       "CancellationOwner": "Propriétaire de l'annulation",
+      "CancellationReason": "Raison de l'annulation",
       "Available": "Disponible",
       "Taken": "Pris",
       "Total": "Total"
