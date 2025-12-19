@@ -687,6 +687,10 @@ const sendUpdateDeploymentTelemetryEvent = async (
         deployment_type:
           deploymentRequest.type as DeploymentRequestDeploymentType,
         platform_id: deploymentRequest.platform_id,
+        ...(deploymentRequest.hub_status ===
+          DeploymentRequestHubStatus.Cancelled && {
+          cancellation_reason: deploymentRequest.cancellation_reason,
+        }),
       }
     );
 
