@@ -17,7 +17,7 @@ export default class CsvFeedPage {
   async subscribeCsvFeedService() {
     await this.page
       .locator('li')
-      .filter({ hasText: 'OpenCTI Integration Feeds Library' })
+      .filter({ hasText: 'OpenCTI Integrations Library' })
       .getByRole('button')
       .click();
     await this.page.getByRole('button', { name: 'Continue' }).click();
