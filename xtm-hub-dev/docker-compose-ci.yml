@@ -6,13 +6,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-front/Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front:development
+    image: filigran/portal-front:${IMAGE_TAGS}
     depends_on:
       portal-api:
         condition: service_healthy
@@ -31,13 +25,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-front/test.Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-front:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-front:main
-        - type=registry,ref=filigran/portal-front:development
+    image: filigran/portal-front-test:${IMAGE_TAGS}
     environment:
       - SERVER_HTTP_API=http://portal-api:4001
     volumes:
@@ -49,13 +37,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-api/test.Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-api:main
-        - type=registry,ref=filigran/portal-api:development
+    image: filigran/portal-api-test:${IMAGE_TAGS}
     depends_on:
       portal-postgres:
         condition: service_healthy
@@ -85,13 +67,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-api/Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-api:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-api:main
-        - type=registry,ref=filigran/portal-api:development
+    image: filigran/portal-api:${IMAGE_TAGS}
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://portal-api:4001/health"]
       interval: 10s
@@ -159,11 +135,14 @@ services:
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
     healthcheck:
-      test: [ "CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
-
 
   portal-minio:
     container_name: portal-minio
@@ -189,13 +168,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    build:
-      context: ../
-      dockerfile: apps/portal-e2e-tests/Dockerfile
-      cache_from:
-        - type=registry,ref=filigran/portal-e2e-tests:cache-${IMAGE_TAGS}
-        - type=registry,ref=filigran/portal-e2e-tests:main
-        - type=registry,ref=filigran/portal-e2e-tests:development
+    image: filigran/portal-e2e-tests:${IMAGE_TAGS}
     depends_on:
       portal-front:
         condition: service_healthy
