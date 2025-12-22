@@ -73,7 +73,7 @@ const resolvers: Resolvers = {
       try {
         return deleteDocument<CsvFeed>(
           extractId<DocumentId>(id),
-          extractId<ServiceInstanceId>(serviceInstanceId) as ServiceInstanceId,
+          extractId<ServiceInstanceId>(serviceInstanceId),
           true
         );
       } catch (error) {

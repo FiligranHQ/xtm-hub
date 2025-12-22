@@ -94,9 +94,7 @@ const resolvers: Resolvers = {
       try {
         return await deleteDocument(
           extractId<DocumentId>(documentId),
-          extractId<ServiceInstanceId>(
-            service_instance_id
-          ) as ServiceInstanceId,
+          extractId<ServiceInstanceId>(service_instance_id),
           forceDelete
         );
       } catch (error) {
