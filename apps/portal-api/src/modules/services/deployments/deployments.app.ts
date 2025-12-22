@@ -42,12 +42,13 @@ import { UserId } from '../../../model/kanel/public/User';
 import { SYSTEM_USER_UUID } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
+import { ucfirst } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { loadUnsecureUser } from '../../users/users.domain';
+import { loadAdminUsers, loadUnsecureUser } from '../../users/users.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
@@ -188,6 +189,31 @@ export const DeploymentsApp = {
         });
       } catch (error) {
         logApp.error('Unable to send mail', {
+          error,
+          deploymentRequestId: createdDeploymentRequest.id,
+        });
+      }
+
+      try {
+        const adminUsers = await loadAdminUsers();
+        sendMail({
+          to: adminUsers.map((user) => user.email),
+          template: 'admin_saas_instance_requested',
+          params: {
+            organizationName: user.organizations.find(
+              (o) => o.id === user.selected_organization_id
+            ).name,
+            userName: `${user.first_name} ${user.last_name}`,
+            userEmail: user.email,
+            region: input.region,
+            activitySector: input.activity_sector,
+            useCase: input.use_case,
+            platformIdentifier: ucfirst(input.platform_identifier),
+            deploymentType: ucfirst(input.type),
+          },
+        });
+      } catch (error) {
+        logApp.error('Unable to send mail to admins', {
           error,
           deploymentRequestId: createdDeploymentRequest.id,
         });

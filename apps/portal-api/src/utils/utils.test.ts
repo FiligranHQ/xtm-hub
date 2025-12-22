@@ -7,6 +7,7 @@ import {
   isNotEmptyField,
   parseKeyValueArrayToObject,
   parseKeyValueArrayToObjectReverse,
+  ucfirst,
 } from './utils';
 
 describe('utils', () => {
@@ -213,6 +214,22 @@ describe('utils', () => {
         'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/88_Pisum_sativum_L.jpg/250px-88_Pisum_sativum_L.jpg'
       );
       expect(result).toBeTruthy();
+    });
+  });
+
+  describe('ucfirst', () => {
+    it.each`
+      input            | expected
+      ${'hello'}       | ${'Hello'}
+      ${'world'}       | ${'World'}
+      ${''}            | ${''}
+      ${'a'}           | ${'A'}
+      ${'Hello'}       | ${'Hello'}
+      ${'HELLO'}       | ${'HELLO'}
+      ${'hello world'} | ${'Hello world'}
+      ${'123abc'}      | ${'123abc'}
+    `('should return $expected for input $input', ({ input, expected }) => {
+      expect(ucfirst(input)).toBe(expected);
     });
   });
 });
