@@ -667,8 +667,7 @@ export const DeploymentsApp = {
 
 const sendUpdateDeploymentTelemetryEvent = async (
   deploymentRequest: DeploymentRequestModel,
-  userId: UserId,
-  hubStatus?: DeploymentRequestHubStatus
+  userId: UserId
 ) => {
   try {
     const organization = await loadOrganizationBy({
@@ -678,9 +677,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
       organization,
       userId,
       {
-        status:
-          hubStatus ??
-          (deploymentRequest.hub_status as DeploymentRequestHubStatus),
+        status: deploymentRequest.hub_status as DeploymentRequestHubStatus,
         start_date: deploymentRequest.start_date,
         end_date: deploymentRequest.end_date,
         deployment_id: deploymentRequest.id,
