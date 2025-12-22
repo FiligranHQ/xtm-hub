@@ -283,6 +283,7 @@
       "Priority": "Priorité",
       "CancellationDate": "Date d'annulation",
       "CancellationOwner": "Propriétaire de l'annulation",
+      "CancellationReason": "Raison de l'annulation",
       "Available": "Disponible",
       "Taken": "Pris",
       "Total": "Total"
@@ -733,10 +734,16 @@
           "NewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès.",
           "Admin": "L'essai gratuit d'OpenCTI a été annulé avec succès."
         },
+        "ConfirmationForm": {
+          "Title": "Annuler votre essai gratuit d'OpenCTI",
+          "NoNewTrialPossible": "Veuillez noter que de nouveaux essais openCTI ne peuvent pas être demandés après cette action.",
+          "CancellationReason": "Raison de l'annulation",
+          "CancellationReasonPlaceholder": "Sélectionnez une raison",
+          "CancellationReasonOther": "Autre",
+          "CancellationReasonOtherPlaceholder": "Ecrivez votre raison ici"
+        },
         "Confirmation": {
           "Title": "Annulation de l'essai",
-          "NoNewTrialPossible": "Etes-vous sûr de vouloir annuler votre essai gratuit d'OpenCTI ? Veuillez noter que de nouveaux essais OpenCTI ne peuvent pas être demandés après cette action.",
-          "NewTrialPossible": "Etes-vous sûr de vouloir annuler votre essai gratuit d'OpenCTI ?",
           "Admin": "Etes-vous sûr de vouloir annuler la version d'évaluation gratuite d'OpenCTI à partir de {organizationName} ? ?"
         }
       },

@@ -283,6 +283,7 @@
       "Priority": "Priority",
       "CancellationDate": "Cancellation Date",
       "CancellationOwner": "Cancellation Owner",
+      "CancellationReason": "Cancellation Reason",
       "Available": "Available",
       "Taken": "Taken",
       "Total": "Total"
@@ -733,10 +734,16 @@
           "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully.",
           "Admin": "The OpenCTI free trial was cancelled successfully."
         },
+        "ConfirmationForm": {
+          "Title": "Cancel your OpenCTI free trial",
+          "NoNewTrialPossible": "Please note that new openCTI trials can’t be requested after this action.",
+          "CancellationReason": "Cancellation reason",
+          "CancellationReasonPlaceholder": "Select a reason",
+          "CancellationReasonOther": "Other",
+          "CancellationReasonOtherPlaceholder": "Write your reason here"
+        },
         "Confirmation": {
           "Title": "Trial Cancellation",
-          "NoNewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ? Please note that new openCTI trials can’t be requested after this action.",
-          "NewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ?",
           "Admin": "Are you sure you want to cancel OpenCTI free trial from {organizationName} ?"
         }
       },

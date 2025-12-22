@@ -501,7 +501,8 @@ export const DeploymentsApp = {
 
   cancelDeploymentRequest: async (
     deploymentRequestId: DeploymentRequestId,
-    isAdmin: boolean
+    isAdmin: boolean,
+    cancellationReason?: string
   ): Promise<DeploymentRequest> => {
     const { user } = requestContext.require();
     const deploymentRequest =
@@ -549,6 +550,7 @@ export const DeploymentsApp = {
             target_state: target_state,
             cancellation_date: new Date(),
             cancellation_user_id: user.id,
+            cancellation_reason: cancellationReason,
             counts_in_orga_quota: countsInOrgaQuota,
           }
         );
@@ -691,8 +693,7 @@ export const DeploymentsApp = {
 
 const sendUpdateDeploymentTelemetryEvent = async (
   deploymentRequest: DeploymentRequestModel,
-  userId: UserId,
-  hubStatus?: DeploymentRequestHubStatus
+  userId: UserId
 ) => {
   try {
     const organization = await loadOrganizationBy({
@@ -702,15 +703,17 @@ const sendUpdateDeploymentTelemetryEvent = async (
       organization,
       userId,
       {
-        status:
-          hubStatus ??
-          (deploymentRequest.hub_status as DeploymentRequestHubStatus),
+        status: deploymentRequest.hub_status as DeploymentRequestHubStatus,
         start_date: deploymentRequest.start_date,
         end_date: deploymentRequest.end_date,
         deployment_id: deploymentRequest.id,
         deployment_type:
           deploymentRequest.type as DeploymentRequestDeploymentType,
         platform_id: deploymentRequest.platform_id,
+        ...(deploymentRequest.hub_status ===
+          DeploymentRequestHubStatus.Cancelled && {
+          cancellation_reason: deploymentRequest.cancellation_reason,
+        }),
       }
     );
 

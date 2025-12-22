@@ -918,9 +918,11 @@ describe('Deployment app', () => {
           hub_status,
           actual_state,
         })) as DeploymentRequest;
+        const cancellationReason = isAdmin ? undefined : 'my reason';
         const deployment = await DeploymentsApp.cancelDeploymentRequest(
           initialDeployment.id,
-          isAdmin
+          isAdmin,
+          cancellationReason
         );
 
         expect(deployment).toMatchObject({
@@ -929,6 +931,7 @@ describe('Deployment app', () => {
           counts_in_orga_quota,
           cancellation_date: expect.any(Date),
           cancellation_user_id: ADMIN_USER_ID,
+          cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
         const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -1000,7 +1003,11 @@ describe('Deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      await DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+      await DeploymentsApp.cancelDeploymentRequest(
+        deployment.id,
+        false,
+        'CancellationReason'
+      );
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -1016,6 +1023,7 @@ describe('Deployment app', () => {
         start_date: null,
         end_date: null,
         platform_id: null,
+        cancellation_reason: 'CancellationReason',
       });
     });
 

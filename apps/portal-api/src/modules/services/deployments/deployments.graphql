@@ -45,6 +45,7 @@ type DeploymentRequest implements Node {
   counts_in_orga_quota: Boolean!
   cancellation_date: Date
   cancellation_user_email: String
+  cancellation_reason: String
 }
 
 type PlatformDeploymentRequest {
@@ -143,6 +144,7 @@ enum DeploymentRequestOrdering {
   request_date
   cancellation_date
   cancellation_user_email
+  cancellation_reason
 }
 
 enum ReorderDeploymentRequestInQueueDirection {
@@ -192,7 +194,10 @@ extend type Mutation {
   reorderDeploymentRequestInQueue(
     input: ReorderDeploymentRequestInQueueInput!
   ): Success! @auth(requires: [BYPASS])
-  cancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
+  cancelDeploymentRequest(
+    deploymentRequestId: ID!
+    cancellationReason: String
+  ): DeploymentRequest
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
     @auth(requires: [BYPASS])
