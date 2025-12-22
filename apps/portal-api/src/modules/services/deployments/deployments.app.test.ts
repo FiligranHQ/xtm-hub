@@ -322,6 +322,7 @@ describe('Deployment app', () => {
         expect(deployment).toBeDefined();
       });
     });
+
     describe('mail', () => {
       it('should send a mail if status is pending', async () => {
         await DeploymentsApp.createDeploymentRequest({
@@ -333,14 +334,34 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        expect(mockSendMail).toHaveBeenCalledWith({
+        expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_requested',
           params: {
             firstName: 'Firstname',
           },
         });
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+          to: [DEFAULT_ADMIN_EMAIL],
+          template: 'admin_saas_instance_requested',
+          params: {
+            activitySector: 'cybersecurity',
+            deploymentType: 'Trial',
+            jobTitle: 'myJob',
+            organizationName: 'Filigran',
+            platformIdentifier: 'Opencti',
+            region: DeploymentRequestPlatformRegion.UsEast,
+            status: 'pending',
+            useCase: 'use_case',
+            userEmail: 'admin@filigran.io',
+            userName: 'firstName lastName',
+          },
+        });
       });
+
       it('should send a mail if there is no space available', async () => {
         vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
           isPlaceAvailable: false,
@@ -354,11 +375,30 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        expect(mockSendMail).toHaveBeenCalledWith({
+        expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_queued',
           params: {
             firstName: 'Firstname',
+          },
+        });
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+          to: [DEFAULT_ADMIN_EMAIL],
+          template: 'admin_saas_instance_requested',
+          params: {
+            activitySector: 'cybersecurity',
+            deploymentType: 'Trial',
+            jobTitle: 'myJob',
+            organizationName: 'Filigran',
+            platformIdentifier: 'Opencti',
+            region: 'us_east',
+            status: 'queued',
+            useCase: 'use_case',
+            userEmail: 'admin@filigran.io',
+            userName: 'firstName lastName',
           },
         });
       });

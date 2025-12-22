@@ -215,7 +215,7 @@ export const DeploymentsApp = {
           },
         });
       } catch (error) {
-        logApp.error('Unable to send mail', {
+        logApp.error('Unable to send mail to admins', {
           error,
           deploymentRequestId: createdDeploymentRequest.id,
         });
