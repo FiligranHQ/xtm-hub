@@ -75,7 +75,7 @@ export type Capability = Node & {
   name: Restriction;
 };
 
-export type Connector = Document & Integrations & Node & {
+export type Connector = Document & Integration & Node & {
   __typename?: 'Connector';
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
@@ -86,7 +86,7 @@ export type Connector = Document & Integrations & Node & {
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_subtype: ConnectorType;
-  integration_type: IntegrationsType;
+  integration_type: IntegrationType;
   labels?: Maybe<Array<Label>>;
   manager_supported: Scalars['Boolean']['output'];
   minio_name: Scalars['String']['output'];
@@ -159,7 +159,7 @@ export type CreateOpenAevScenarioInput = {
   uploader_id: Scalars['String']['input'];
 };
 
-export type CsvFeed = Document & Integrations & Node & {
+export type CsvFeed = Document & Integration & Node & {
   __typename?: 'CsvFeed';
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
@@ -168,7 +168,7 @@ export type CsvFeed = Document & Integrations & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_type: IntegrationsType;
+  integration_type: IntegrationType;
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -450,7 +450,7 @@ export type GenericServiceCapability = Node & {
   name?: Maybe<Scalars['String']['output']>;
 };
 
-export type Integrations = {
+export type Integration = {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
@@ -458,7 +458,7 @@ export type Integrations = {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_type: IntegrationsType;
+  integration_type: IntegrationType;
   labels?: Maybe<Array<Label>>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -476,20 +476,20 @@ export type Integrations = {
   uploader_organization?: Maybe<Organization>;
 };
 
-export type IntegrationsConnection = {
-  __typename?: 'IntegrationsConnection';
-  edges: Array<IntegrationsEdge>;
+export type IntegrationConnection = {
+  __typename?: 'IntegrationConnection';
+  edges: Array<IntegrationEdge>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
 };
 
-export type IntegrationsEdge = {
-  __typename?: 'IntegrationsEdge';
+export type IntegrationEdge = {
+  __typename?: 'IntegrationEdge';
   cursor: Scalars['String']['output'];
-  node: Integrations;
+  node: Integration;
 };
 
-export enum IntegrationsType {
+export enum IntegrationType {
   Connector = 'connector',
   CsvFeed = 'csv_feed',
   JsonFeed = 'json_feed',
@@ -1159,8 +1159,8 @@ export type Query = {
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
-  integration?: Maybe<Integrations>;
-  integrations: IntegrationsConnection;
+  integration?: Maybe<Integration>;
+  integrations: IntegrationConnection;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   label?: Maybe<Label>;
   labels?: Maybe<LabelConnection>;
@@ -1174,9 +1174,9 @@ export type Query = {
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
-  publicIntegrationByServiceSlug?: Maybe<Array<Maybe<Integrations>>>;
-  publicIntegrationBySlug?: Maybe<Integrations>;
-  publicIntegrations: IntegrationsConnection;
+  publicIntegrationBySlug?: Maybe<Integration>;
+  publicIntegrations: IntegrationConnection;
+  publicIntegrationsByServiceSlug?: Maybe<Array<Maybe<Integration>>>;
   publicServiceInstances: ServiceConnection;
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
@@ -1368,11 +1368,6 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
-export type QueryPublicIntegrationByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryPublicIntegrationBySlugArgs = {
   slug?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1387,6 +1382,11 @@ export type QueryPublicIntegrationsArgs = {
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
+};
+
+
+export type QueryPublicIntegrationsByServiceSlugArgs = {
+  serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2124,7 +2124,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( OpenAevScenario );
-  Integrations: ( Connector ) | ( CsvFeed );
+  Integration: ( Connector ) | ( CsvFeed );
   Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
@@ -2176,10 +2176,10 @@ export type ResolversTypes = ResolversObject<{
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
-  Integrations: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integrations']>;
-  IntegrationsConnection: ResolverTypeWrapper<Omit<IntegrationsConnection, 'edges'> & { edges: Array<ResolversTypes['IntegrationsEdge']> }>;
-  IntegrationsEdge: ResolverTypeWrapper<Omit<IntegrationsEdge, 'node'> & { node: ResolversTypes['Integrations'] }>;
-  IntegrationsType: IntegrationsType;
+  Integration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integration']>;
+  IntegrationConnection: ResolverTypeWrapper<Omit<IntegrationConnection, 'edges'> & { edges: Array<ResolversTypes['IntegrationEdge']> }>;
+  IntegrationEdge: ResolverTypeWrapper<Omit<IntegrationEdge, 'node'> & { node: ResolversTypes['Integration'] }>;
+  IntegrationType: IntegrationType;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
   IsPlatformRegisteredResponse: ResolverTypeWrapper<IsPlatformRegisteredResponse>;
@@ -2328,9 +2328,9 @@ export type ResolversParentTypes = ResolversObject<{
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
-  Integrations: ResolversInterfaceTypes<ResolversParentTypes>['Integrations'];
-  IntegrationsConnection: Omit<IntegrationsConnection, 'edges'> & { edges: Array<ResolversParentTypes['IntegrationsEdge']> };
-  IntegrationsEdge: Omit<IntegrationsEdge, 'node'> & { node: ResolversParentTypes['Integrations'] };
+  Integration: ResolversInterfaceTypes<ResolversParentTypes>['Integration'];
+  IntegrationConnection: Omit<IntegrationConnection, 'edges'> & { edges: Array<ResolversParentTypes['IntegrationEdge']> };
+  IntegrationEdge: Omit<IntegrationEdge, 'node'> & { node: ResolversParentTypes['Integration'] };
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: IsPlatformRegisteredOrganization;
   IsPlatformRegisteredResponse: IsPlatformRegisteredResponse;
@@ -2463,7 +2463,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_subtype?: Resolver<ResolversTypes['ConnectorType'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['IntegrationsType'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2496,7 +2496,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['IntegrationsType'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2670,7 +2670,7 @@ export type GenericServiceCapabilityResolvers<ContextType = PortalContext, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type IntegrationsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Integrations'] = ResolversParentTypes['Integrations']> = ResolversObject<{
+export type IntegrationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Connector' | 'CsvFeed', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
@@ -2679,7 +2679,7 @@ export type IntegrationsResolvers<ContextType = PortalContext, ParentType extend
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_type?: Resolver<ResolversTypes['IntegrationsType'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2697,16 +2697,16 @@ export type IntegrationsResolvers<ContextType = PortalContext, ParentType extend
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
 }>;
 
-export type IntegrationsConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationsConnection'] = ResolversParentTypes['IntegrationsConnection']> = ResolversObject<{
-  edges?: Resolver<Array<ResolversTypes['IntegrationsEdge']>, ParentType, ContextType>;
+export type IntegrationConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationConnection'] = ResolversParentTypes['IntegrationConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['IntegrationEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type IntegrationsEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationsEdge'] = ResolversParentTypes['IntegrationsEdge']> = ResolversObject<{
+export type IntegrationEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationEdge'] = ResolversParentTypes['IntegrationEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['Integrations'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Integration'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2963,8 +2963,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  integration?: Resolver<Maybe<ResolversTypes['Integrations']>, ParentType, ContextType, Partial<QueryIntegrationArgs>>;
-  integrations?: Resolver<ResolversTypes['IntegrationsConnection'], ParentType, ContextType, RequireFields<QueryIntegrationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  integration?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryIntegrationArgs>>;
+  integrations?: Resolver<ResolversTypes['IntegrationConnection'], ParentType, ContextType, RequireFields<QueryIntegrationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   label?: Resolver<Maybe<ResolversTypes['Label']>, ParentType, ContextType, RequireFields<QueryLabelArgs, 'id'>>;
   labels?: Resolver<Maybe<ResolversTypes['LabelConnection']>, ParentType, ContextType, RequireFields<QueryLabelsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2977,9 +2977,9 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
-  publicIntegrationByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['Integrations']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationByServiceSlugArgs>>;
-  publicIntegrationBySlug?: Resolver<Maybe<ResolversTypes['Integrations']>, ParentType, ContextType, Partial<QueryPublicIntegrationBySlugArgs>>;
-  publicIntegrations?: Resolver<ResolversTypes['IntegrationsConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
+  publicIntegrationBySlug?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryPublicIntegrationBySlugArgs>>;
+  publicIntegrations?: Resolver<ResolversTypes['IntegrationConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
+  publicIntegrationsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['Integration']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationsByServiceSlugArgs>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
@@ -3326,9 +3326,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
-  Integrations?: IntegrationsResolvers<ContextType>;
-  IntegrationsConnection?: IntegrationsConnectionResolvers<ContextType>;
-  IntegrationsEdge?: IntegrationsEdgeResolvers<ContextType>;
+  Integration?: IntegrationResolvers<ContextType>;
+  IntegrationConnection?: IntegrationConnectionResolvers<ContextType>;
+  IntegrationEdge?: IntegrationEdgeResolvers<ContextType>;
   IsPlatformRegisteredOrganization?: IsPlatformRegisteredOrganizationResolvers<ContextType>;
   IsPlatformRegisteredResponse?: IsPlatformRegisteredResponseResolvers<ContextType>;
   JSON?: GraphQLScalarType;

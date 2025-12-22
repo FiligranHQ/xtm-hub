@@ -1,5 +1,5 @@
 import {
-  IntegrationsConnection,
+  IntegrationConnection,
   QueryIntegrationsArgs,
   QueryPublicIntegrationsArgs,
 } from '../../../__generated__/resolvers-types';
@@ -16,13 +16,13 @@ import {
 } from '../document/domain/document.domain';
 import {
   INTEGRATION_METADATA,
-  Integrations,
+  Integration,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from './integrations.model';
 
 export const integrationsApp = {
   loadIntegrations: async (input: QueryIntegrationsArgs) => {
-    return loadParentDocumentsByServiceInstance<IntegrationsConnection>(
+    return loadParentDocumentsByServiceInstance<IntegrationConnection>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       INTEGRATION_METADATA
@@ -30,7 +30,7 @@ export const integrationsApp = {
   },
   loadIntegration: async (
     documentId: DocumentId
-  ): Promise<WithLabels<Integrations>> => {
+  ): Promise<WithLabels<Integration>> => {
     return loadDocumentWithCountersById(documentId, INTEGRATION_METADATA);
   },
   loadPublicAccessIntegrations: async (serviceSlug: string) =>
@@ -44,7 +44,7 @@ export const integrationsApp = {
     input: QueryPublicIntegrationsArgs
   ) => {
     const { slug, ...opts } = input;
-    return loadPaginatedSeoDocumentsByServiceSlug<IntegrationsConnection>(
+    return loadPaginatedSeoDocumentsByServiceSlug<IntegrationConnection>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
       opts,
@@ -53,7 +53,7 @@ export const integrationsApp = {
   },
 
   loadPublicAccessIntegration: async (slug: string) => {
-    return loadSeoDocumentWithCountersBySlug<WithLabels<Integrations>>(
+    return loadSeoDocumentWithCountersBySlug<WithLabels<Integration>>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
       INTEGRATION_METADATA

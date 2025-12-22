@@ -15,7 +15,7 @@ import { LoginEvent, TelemetryEventType } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
-  IntegrationsType,
+  IntegrationType,
   PlatformIdentifier,
   ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
@@ -145,7 +145,7 @@ describe('TelemetryApp', () => {
           minio_name: 'minioName',
           file_name: 'csvfilename',
           service_instance_id: SERVICE_INTEGRATIONS_ID,
-          integration_type: IntegrationsType.CsvFeed,
+          integration_type: IntegrationType.CsvFeed,
           active: true,
         },
         [],
@@ -285,7 +285,7 @@ describe('TelemetryApp', () => {
           minio_name: 'minioName',
           file_name: 'connectorFilename',
           service_instance_id: SERVICE_INTEGRATIONS_ID,
-          integration_type: IntegrationsType.CsvFeed,
+          integration_type: IntegrationType.CsvFeed,
           active: true,
         },
         [],

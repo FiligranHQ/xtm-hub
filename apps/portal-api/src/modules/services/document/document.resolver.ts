@@ -1,6 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
-  IntegrationsType,
+  IntegrationType,
   Resolvers,
   SubscriptionModel,
 } from '../../../__generated__/resolvers-types';
@@ -150,8 +150,8 @@ const resolvers: Resolvers = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
       };
       const INTEGRATION_MAPPINGS = {
-        [IntegrationsType.Connector]: 'Connector',
-        [IntegrationsType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.Connector]: 'Connector',
+        [IntegrationType.CsvFeed]: 'CsvFeed',
       };
       if (TYPE_MAPPINGS[document.type]) {
         return TYPE_MAPPINGS[document.type];

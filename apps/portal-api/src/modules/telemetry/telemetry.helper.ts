@@ -1,5 +1,5 @@
 import {
-  IntegrationsType,
+  IntegrationType,
   Organization,
   PlatformContract,
   PlatformIdentifier,
@@ -88,19 +88,19 @@ export function shouldSendEventForService(
   return ServiceIdentifierToEventService.has(service);
 }
 
-const IntegrationsTypeToEventServiceType = new Map<
-  IntegrationsType,
+const IntegrationTypeToEventServiceType = new Map<
+  IntegrationType,
   TelemetryEventServiceType
 >([
-  [IntegrationsType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
-  [IntegrationsType.Connector, TelemetryEventServiceType.CONNECTORS],
+  [IntegrationType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
+  [IntegrationType.Connector, TelemetryEventServiceType.CONNECTORS],
 ]);
 
 const buildServiceTypeEvent = async (resource_id: string) => {
   const integration_type =
     await DocumentMetadataDomain.loadIntegrationType(resource_id);
 
-  return IntegrationsTypeToEventServiceType.get(integration_type);
+  return IntegrationTypeToEventServiceType.get(integration_type);
 };
 
 export function buildLoginEvent(

@@ -1,5 +1,5 @@
 import {
-  IntegrationsType,
+  IntegrationType,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -14,14 +14,14 @@ import {
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { integrationsApp } from './integrations.app';
-import { Integrations } from './integrations.model';
+import { Integration } from './integrations.model';
 
 const resolvers: Resolvers = {
-  Integrations: {
-    __resolveType(feed: Integrations) {
+  Integration: {
+    __resolveType(feed: Integration) {
       const mapping = {
-        [IntegrationsType.Connector]: 'Connector',
-        [IntegrationsType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.Connector]: 'Connector',
+        [IntegrationType.CsvFeed]: 'CsvFeed',
       };
 
       return mapping[feed.integration_type];
@@ -42,7 +42,7 @@ const resolvers: Resolvers = {
       integrationsApp.loadIntegration(extractId<DocumentId>(id)),
     publicIntegrations: async (_, input) =>
       integrationsApp.loadPaginatedPublicAccessIntegrations(input),
-    publicIntegrationByServiceSlug: async (_, { serviceSlug }) =>
+    publicIntegrationsByServiceSlug: async (_, { serviceSlug }) =>
       integrationsApp.loadPublicAccessIntegrations(serviceSlug),
     publicIntegrationBySlug: async (_, { slug }) =>
       integrationsApp.loadPublicAccessIntegration(slug),
