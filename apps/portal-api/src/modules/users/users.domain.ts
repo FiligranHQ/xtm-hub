@@ -14,7 +14,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
-import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
+import { ADMIN_UUID, CAPABILITY_BYPASS, ROLE_ADMIN } from '../../portal.const';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
@@ -30,6 +30,25 @@ export const UsersDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {
     return db<User[]>('User').whereIn('id', userIds);
   },
+};
+
+export const loadAdminUsers = async (): Promise<User[]> => {
+  const users: User[] = await dbUnsecure<User>('User')
+    .leftJoin('User_RolePortal', 'User_RolePortal.user_id', 'User.id')
+    .leftJoin(
+      'RolePortal',
+      'RolePortal.id',
+      '=',
+      'User_RolePortal.role_portal_id'
+    )
+    .where('RolePortal.name', '=', ROLE_ADMIN.name)
+    .andWhere((qb) =>
+      qb.whereNull('User.disabled').orWhere('User.disabled', false)
+    )
+    .select('User.*')
+    .distinct();
+
+  return users;
 };
 
 export const loadUnsecureUser = async (

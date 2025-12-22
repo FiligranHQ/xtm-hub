@@ -13,7 +13,12 @@ import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
-import { loadUserBy, updateUser, updateUserAtLogin } from './users.domain';
+import {
+  loadAdminUsers,
+  loadUserBy,
+  updateUser,
+  updateUserAtLogin,
+} from './users.domain';
 
 //Issue with test
 describe('Users domain', () => {
@@ -59,5 +64,45 @@ describe('Users domain', () => {
   });
   afterEach(async () => {
     vi.useRealTimers();
+  });
+
+  describe('loadAdminUsers', () => {
+    it('should load all users with ADMIN role', async () => {
+      const adminUsers = await loadAdminUsers();
+
+      expect(adminUsers).toBeDefined();
+      expect(Array.isArray(adminUsers)).toBe(true);
+      expect(adminUsers.length).toBeGreaterThan(0);
+
+      // Vérifier que l'admin système est bien dans la liste
+      const systemAdmin = adminUsers.find((user) => user.id === ADMIN_UUID);
+      expect(systemAdmin).toBeDefined();
+      expect(systemAdmin?.email).toBe(DEFAULT_ADMIN_EMAIL);
+    });
+
+    it('should not return disabled users', async () => {
+      const adminUsers = await loadAdminUsers();
+
+      // Vérifier qu'aucun user retourné n'est disabled
+      adminUsers.forEach((user) => {
+        expect(user.disabled).toBeFalsy();
+      });
+    });
+
+    it('should only return users with ADMIN role', async () => {
+      const adminUsers = await loadAdminUsers();
+
+      // Vérifier que les users simples ne sont pas dans la liste
+      const simpleUser = adminUsers.find(
+        (user) => user.id === THALES_SIMPLE_USER_ID
+      );
+      expect(simpleUser).toBeUndefined();
+
+      // Vérifier que l'admin d'organisation (qui n'a pas le rôle portal ADMIN) n'est pas dans la liste
+      const orgAdmin = adminUsers.find(
+        (user) => user.id === THALES_ADMIN_ORGA_USER_ID
+      );
+      expect(orgAdmin).toBeUndefined();
+    });
   });
 });

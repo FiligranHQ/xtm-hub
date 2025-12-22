@@ -31,6 +31,18 @@ export interface OpenCTIFreeTrialRegistered {
 export interface OpenCTIFreeTrialGenericModel {
   firstName: string;
 }
+export interface AdminSaasInstanceRequestedModel {
+  organizationName: string;
+  userName: string;
+  userEmail: string;
+  region: string;
+  status: string;
+  activitySector: string;
+  jobTitle: string;
+  useCase: string;
+  platformIdentifier: string;
+  deploymentType: string;
+}
 
 export interface PlatformUnregisteredModel {
   adminName: string;
@@ -69,6 +81,7 @@ export type MailTemplates = {
   opencti_free_trial_provisioning: OpenCTIFreeTrialGenericModel;
   opencti_free_trial_cancelled: OpenCTIFreeTrialGenericModel;
   opencti_free_trial_expired: OpenCTIFreeTrialGenericModel;
+  admin_saas_instance_requested: AdminSaasInstanceRequestedModel;
 };
 
 export const templateSubjects: {
@@ -102,4 +115,7 @@ export const templateSubjects: {
     `Your OpenCTI Platform Is Being Provisioned`,
   opencti_free_trial_cancelled: () => 'Your OpenCTI Trial Has Been Cancelled',
   opencti_free_trial_expired: () => 'Your OpenCTI Free Trial Has Expired',
+  admin_saas_instance_requested: (params: AdminSaasInstanceRequestedModel) => {
+    return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Launch on XTM Hub by ${params.organizationName}`;
+  },
 };
