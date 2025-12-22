@@ -2,14 +2,14 @@ import { useServiceListLocalStorageKeyContext } from '@/components/service/compo
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { IntegrationConnectorTypeFilter } from '@/components/ui/shareable-resource/integration/integration-connector-type-filter';
 import { IntegrationTypeFilter } from '@/components/ui/shareable-resource/integration/integration-type-filter';
-import { IntegrationsTypeEnum } from '@generated/models/IntegrationsType.enum';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import React from 'react';
 
 export const IntegrationFilters: React.FC = () => {
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { integrationTypes } = useServiceListLocalStorage(localStorageKey);
   const shouldDisplayConnectorFilter = integrationTypes.includes(
-    IntegrationsTypeEnum.CONNECTOR
+    IntegrationTypeEnum.CONNECTOR
   );
 
   return (

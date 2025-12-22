@@ -4,7 +4,7 @@ import {
   requestContextAdminUser,
   SERVICE_INTEGRATIONS_ID,
 } from '../../../../../tests/tests.const';
-import { IntegrationsType } from '../../../../__generated__/resolvers-types';
+import { IntegrationType } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import {
@@ -113,7 +113,7 @@ describe('csv feeds app', () => {
         file_name: 'csvfilename',
         service_instance_id: SERVICE_INTEGRATIONS_ID,
         active: false,
-        integration_type: IntegrationsType.CsvFeed,
+        integration_type: IntegrationType.CsvFeed,
       },
       [],
       INTEGRATION_CSV_FEED_METADATA

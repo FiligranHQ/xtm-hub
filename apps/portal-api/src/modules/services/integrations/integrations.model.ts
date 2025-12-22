@@ -1,6 +1,6 @@
 import {
   Document as DocumentResolverType,
-  IntegrationsType,
+  IntegrationType,
 } from '../../../__generated__/resolvers-types';
 import Document from '../../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -9,11 +9,11 @@ export const INTEGRATION_SERVICE_INSTANCE_ID: ServiceInstanceId =
   '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc' as ServiceInstanceId;
 export const OPENCTI_INTEGRATION_DOCUMENT_TYPE = 'opencti_integration';
 
-export type Integrations = Document & {
-  integration_type: IntegrationsType;
+export type Integration = Document & {
+  integration_type: IntegrationType;
 };
-export type CsvFeed = Integrations;
-export type Connector = Integrations & {
+export type CsvFeed = Integration;
+export type Connector = Integration & {
   product_version: string;
   container_image?: string | null; // Docker/container identifier
   verified: boolean;
