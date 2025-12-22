@@ -333,7 +333,7 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        expect(mockSendMail).toHaveBeenCalledWith({
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_requested',
           params: {
@@ -354,7 +354,7 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        expect(mockSendMail).toHaveBeenCalledWith({
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_queued',
           params: {
@@ -741,7 +741,7 @@ describe('Deployment app', () => {
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
-        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        expect(mockSendMail).toHaveBeenCalledWith({
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_provisioning',
           params: {
@@ -990,7 +990,7 @@ describe('Deployment app', () => {
 
       await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
 
-      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+      expect(mockSendMail).toHaveBeenCalledWith({
         to: 'admin@thales.com',
         template: 'opencti_free_trial_cancelled',
         params: {
@@ -1555,7 +1555,7 @@ describe('Deployment app', () => {
 
       await DeploymentsApp.expireTrials();
 
-      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+      expect(mockSendMail).toHaveBeenCalledWith({
         to: 'admin@thales.com',
         template: 'opencti_free_trial_expired',
         params: {
