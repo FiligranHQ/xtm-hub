@@ -350,11 +350,9 @@ describe('Deployment app', () => {
           params: {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
-            jobTitle: 'myJob',
             organizationName: 'Filigran',
             platformIdentifier: 'Opencti',
             region: DeploymentRequestPlatformRegion.UsEast,
-            status: 'pending',
             useCase: 'use_case',
             userEmail: 'admin@filigran.io',
             userName: 'firstName lastName',
@@ -391,11 +389,9 @@ describe('Deployment app', () => {
           params: {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
-            jobTitle: 'myJob',
             organizationName: 'Filigran',
             platformIdentifier: 'Opencti',
             region: 'us_east',
-            status: 'queued',
             useCase: 'use_case',
             userEmail: 'admin@filigran.io',
             userName: 'firstName lastName',
