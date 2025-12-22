@@ -3,7 +3,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { IntegrationsTypeEnum } from '@generated/models/IntegrationsType.enum';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
@@ -15,8 +15,8 @@ export const IntegrationTypeFilter: React.FC = () => {
     );
   const t = useTranslations();
 
-  const onIntegrationTypeChange = (v: IntegrationsTypeEnum[]) => {
-    const hasConnectorType = v.includes(IntegrationsTypeEnum.CONNECTOR);
+  const onIntegrationTypeChange = (v: IntegrationTypeEnum[]) => {
+    const hasConnectorType = v.includes(IntegrationTypeEnum.CONNECTOR);
     if (!hasConnectorType) {
       removeConnectorTypes();
     }
@@ -24,13 +24,13 @@ export const IntegrationTypeFilter: React.FC = () => {
   };
 
   const options = useMemo(() => {
-    return Object.values(IntegrationsTypeEnum)
+    return Object.values(IntegrationTypeEnum)
       .map((feedType) => ({
         label: t(`Service.OpenctiIntegrationFeeds.Filter.Type.${feedType}`),
         value: feedType.toString(),
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
-  }, [IntegrationsTypeEnum]);
+  }, [IntegrationTypeEnum]);
 
   return (
     <ServiceListFilterContainer>
@@ -42,7 +42,7 @@ export const IntegrationTypeFilter: React.FC = () => {
         )}
         noResultString={t('Utils.NotFound')}
         onValueChange={(values) =>
-          onIntegrationTypeChange(values as IntegrationsTypeEnum[])
+          onIntegrationTypeChange(values as IntegrationTypeEnum[])
         }
         variant="inverted"
       />

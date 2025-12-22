@@ -3,7 +3,7 @@ import { Readable } from 'stream';
 import z from 'zod';
 import {
   ConnectorType,
-  IntegrationsType,
+  IntegrationType,
 } from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
@@ -109,7 +109,7 @@ export const extractManifestInformation = (
         product_version: manifestData.version,
         verified: validContract.verified,
         integration_subtype: validContract.container_type,
-        integration_type: IntegrationsType.Connector,
+        integration_type: IntegrationType.Connector,
         source_code: validContract.source_code,
         subscription_link: validContract.subscription_link,
         manager_supported: validContract.manager_supported,

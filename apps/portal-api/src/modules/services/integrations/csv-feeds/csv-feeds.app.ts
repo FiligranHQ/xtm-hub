@@ -1,4 +1,4 @@
-import { IntegrationsType } from '../../../../__generated__/resolvers-types';
+import { IntegrationType } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import { logApp } from '../../../../utils/app-logger.util';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
@@ -17,7 +17,7 @@ export const csvFeedsApp = {
     const doc =
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-        { ...input, integration_type: IntegrationsType.CsvFeed },
+        { ...input, integration_type: IntegrationType.CsvFeed },
         document,
         INTEGRATION_CSV_FEED_METADATA
       );

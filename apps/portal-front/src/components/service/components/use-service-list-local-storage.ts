@@ -1,6 +1,6 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
 import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
-import { IntegrationsTypeEnum } from '@generated/models/IntegrationsType.enum';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {
@@ -34,7 +34,7 @@ export const useServiceListLocalStorage = (
     );
 
   const [integrationTypes, setIntegrationTypes, removeIntegrationTypes] =
-    useLocalStorage<IntegrationsTypeEnum[]>(
+    useLocalStorage<IntegrationTypeEnum[]>(
       `integrationType${serviceName}List`,
       []
     );

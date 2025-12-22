@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const SeoIntegrationFragment = graphql`
-  fragment seoIntegrationFragment on Integrations {
+  fragment seoIntegrationFragment on Integration {
     __typename
     id
     name
@@ -44,9 +44,9 @@ export const SeoIntegrationConnectorFragment = graphql`
   }
 `;
 
-export const seoIntegrationByServiceSlugQuery = graphql`
-  query seoIntegrationByServiceSlugQuery($serviceSlug: String!) {
-    publicIntegrationByServiceSlug(serviceSlug: $serviceSlug) {
+export const seoIntegrationsByServiceSlugQuery = graphql`
+  query seoIntegrationsByServiceSlugQuery($serviceSlug: String!) {
+    publicIntegrationsByServiceSlug(serviceSlug: $serviceSlug) {
       ...seoIntegrationFragment
       ...seoIntegrationConnectorFragment
     }
@@ -62,7 +62,7 @@ export const SeoIntegrationBySlugQuery = graphql`
 `;
 
 export const seoIntegrationsItem = graphql`
-  fragment seoIntegrationsItemFragment on Integrations @inline {
+  fragment seoIntegrationsItemFragment on Integration @inline {
     __typename
     id
     name

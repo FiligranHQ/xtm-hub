@@ -3,7 +3,7 @@ import { db, dbRaw, dbUnsecure, paginate } from '../../../../../knexfile';
 import {
   CustomDashboardConnection,
   DocumentConnection,
-  IntegrationsConnection,
+  IntegrationConnection,
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
   Organization,
@@ -295,7 +295,7 @@ export const passDocumentToInactive = async (
 };
 
 export const loadParentDocumentsByServiceInstance = async <
-  T = DocumentConnection | IntegrationsConnection | CustomDashboardConnection,
+  T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
 >(
   type: string,
   input: QueryDocumentsArgs,
@@ -318,7 +318,7 @@ export const loadParentDocumentsByServiceInstance = async <
 };
 
 export const loadDocuments = async <
-  T = DocumentConnection | IntegrationsConnection | CustomDashboardConnection,
+  T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
 >(
   opts: Partial<QueryDocumentsArgs>,
   field: Record<string, unknown>,
@@ -439,7 +439,7 @@ export const loadSeoDocumentBySlug = async (
 };
 
 export const loadPaginatedSeoDocumentsByServiceSlug = async <
-  T = DocumentConnection | IntegrationsConnection | CustomDashboardConnection,
+  T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
 >(
   type: string,
   serviceSlug: string,
