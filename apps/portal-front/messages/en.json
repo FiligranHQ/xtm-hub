@@ -739,7 +739,7 @@
           "CancellationReason": "Cancellation reason",
           "CancellationReasonPlaceholder": "Select a reason",
           "CancellationReasonOther": "Other",
-          "CancellationReasonOtherPlaceholder": "Other reason"
+          "CancellationReasonOtherPlaceholder": "Write your reason here"
         },
         "Confirmation": {
           "Title": "Trial Cancellation",

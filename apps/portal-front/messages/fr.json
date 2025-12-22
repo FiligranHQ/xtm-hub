@@ -739,7 +739,7 @@
           "CancellationReason": "Raison de l'annulation",
           "CancellationReasonPlaceholder": "Sélectionnez une raison",
           "CancellationReasonOther": "Autre",
-          "CancellationReasonOtherPlaceholder": "Autre raison"
+          "CancellationReasonOtherPlaceholder": "Ecrivez votre raison ici"
         },
         "Confirmation": {
           "Title": "Annulation de l'essai",

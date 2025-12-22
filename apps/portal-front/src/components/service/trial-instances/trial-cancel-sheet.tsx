@@ -30,11 +30,11 @@ interface TrialCancelSheetProps {
 }
 
 const OPTIONS = [
-  'Intelligence lacks actionable insight for our specific needs.',
-  'Incompatible with our existing security stack.',
-  'Configuration is too complex to complete within a reasonable timeframe.',
-  'Internal security or legal team required immediate termination.',
-  'We lack the internal analysts/expertise to utilise the tool effectively.',
+  'Intelligence lacks actionable insight for our specific needs',
+  'Incompatible with our existing security stack',
+  'Configuration is too complex to complete within a reasonable timeframe',
+  'Internal security or legal team required immediate termination',
+  'We lack the internal analysts/expertise to utilise the tool effectively',
 ];
 const CANCELLATION_REASONS = OPTIONS.map((option) => ({
   value: option,
