@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Subscription,
   UserServiceCapability,
@@ -17,7 +17,10 @@ import { restrictSubscriptionToUserOrganization } from '../../security/restricti
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
-import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
+import {
+  GenericServiceCapabilityIds,
+  GenericServiceCapabilityName,
+} from './service-capability/generic_service_capability.const';
 
 export const insertUserService = async (userServiceData) => {
   return db<UserService>('User_Service').insert(userServiceData).returning('*');
@@ -161,7 +164,7 @@ export const getUserServiceCapabilities = async (
   return userServiceCapability.length > 0 ? userServiceCapability : undefined;
 };
 export const loadUserServiceBySubscription = (opts, subscriptionId) => {
-  const userServiceQuery = db<UserService>('User_Service', opts)
+  const userServiceQuery = db<UserService>('User_Service')
     .where('subscription_id', '=', subscriptionId)
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
     .select([
@@ -185,7 +188,7 @@ export const loadUserServiceByUser = (user: UserLoadUserBy, opts) => {
   const userSelectedOrganization = user.selected_organization_id;
   const userId = user.id;
 
-  const userServiceQuery = db<UserService>('User_Service', opts)
+  const userServiceQuery = db<UserService>('User_Service')
     .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
     .leftJoin(
       'Subscription as sub',
@@ -260,4 +263,36 @@ export const loadUserServiceBy = async (
     | UserServiceMutator
 ): Promise<UserService[]> => {
   return db<UserService>('User_Service').where(field);
+};
+
+export const loadUserServiceCapability = async (
+  userId: UserId,
+  subscriptionId: SubscriptionId,
+  capability: GenericServiceCapabilityName
+) => {
+  return dbUnsecure('User_Service')
+    .leftJoin(
+      'UserService_Capability',
+      'User_Service.id',
+      'UserService_Capability.user_service_id'
+    )
+    .leftJoin(
+      'Generic_Service_Capability',
+      'Generic_Service_Capability.id',
+      'UserService_Capability.generic_service_capability_id'
+    )
+    .where({
+      user_id: userId,
+      'User_Service.subscription_id': subscriptionId,
+      'Generic_Service_Capability.name': capability,
+    })
+    .first();
+};
+
+export const deleteUserCapabilityById = async (
+  userServiceId: UserServiceId
+) => {
+  await db<UserServiceCapability>('UserService_Capability')
+    .where('user_service_id', '=', userServiceId)
+    .delete('*');
 };

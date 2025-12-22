@@ -10,7 +10,7 @@ import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { extractId, omit } from '../../../utils/utils';
+import { extractId } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -46,15 +46,22 @@ import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (_, { document, parentDocumentId, ...payload }) => {
+    addDocument: async (
+      _,
+      { document, parentDocumentId, service_instance_id, ...payload }
+    ) => {
       try {
         await waitForUploads(document);
-        const { minioName, fileName, mimeType } =
-          await MinIOClient.createFile(document);
-
+        const extractedServiceInstanceId =
+          extractId<ServiceInstanceId>(service_instance_id);
+        const { minioName, fileName, mimeType } = await MinIOClient.createFile(
+          document,
+          extractedServiceInstanceId
+        );
         return await DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
           {
-            ...omit(payload, ['service_instance_id']),
+            ...payload,
+            service_instance_id: extractedServiceInstanceId,
             minio_name: minioName,
             file_name: fileName,
             mime_type: mimeType,
@@ -80,11 +87,14 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.UpdateDocumentError);
       }
     },
-    deleteDocument: async (_, { documentId, forceDelete }, context) => {
+    deleteDocument: async (
+      _,
+      { documentId, forceDelete, service_instance_id }
+    ) => {
       try {
         return await deleteDocument(
-          fromGlobalId(documentId).id as DocumentId,
-          context.serviceInstanceId as ServiceInstanceId,
+          extractId<DocumentId>(documentId),
+          extractId<ServiceInstanceId>(service_instance_id),
           forceDelete
         );
       } catch (error) {
@@ -160,17 +170,9 @@ const resolvers: Resolvers = {
     },
 
     children_documents: ({ id }, _) =>
-      DocumentChildrenDomain.loadChildrenDocuments(id, {
-        unsecured: true,
-      }),
-    uploader: ({ id }, _) =>
-      getUploader(id, {
-        unsecured: true,
-      }),
-    uploader_organization: ({ id }, _) =>
-      loadUploaderOrganization(id, {
-        unsecured: true,
-      }),
+      DocumentChildrenDomain.loadChildrenDocuments(id),
+    uploader: ({ id }, _) => getUploader(id),
+    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
       return getServiceInstance(service_instance_id as ServiceInstanceId);
     },

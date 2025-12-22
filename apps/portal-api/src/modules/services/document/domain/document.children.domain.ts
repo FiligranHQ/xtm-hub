@@ -1,11 +1,12 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db, dbUnsecure, QueryOpts } from '../../../../../knexfile';
+import { db, dbUnsecure } from '../../../../../knexfile';
 import { withTransaction } from '../../../../context/database.context';
 import {
   DocumentId,
   default as DocumentModel,
 } from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import { restrictDocumentToUserOrganization } from '../../../../security/restriction/document';
 import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { MinioFile } from '../../../../thirdparty/minio/types';
@@ -43,11 +44,8 @@ export const DocumentChildrenDomain = {
     return children.map(({ child_document_id }) => child_document_id);
   },
 
-  loadChildrenDocuments: async (
-    documentId: string,
-    opts: Partial<QueryOpts> = {}
-  ): Promise<Document[]> => {
-    return db<Document>('Document_Children', opts)
+  loadChildrenDocuments: async (documentId: string): Promise<Document[]> => {
+    return db<Document>('Document_Children')
       .leftJoin(
         'Document',
         'Document.id',
@@ -74,6 +72,7 @@ export const DocumentChildrenDomain = {
 
   createImageDocuments: async (
     parentDocumentId: DocumentId,
+    serviceInstanceId: ServiceInstanceId,
     files: MinioFile[]
   ) => {
     await Promise.all(
@@ -85,6 +84,7 @@ export const DocumentChildrenDomain = {
             file_name: file.fileName,
             minio_name: file.minioName,
             mime_type: file.mimeType,
+            service_instance_id: serviceInstanceId,
           },
           []
         )
@@ -114,13 +114,17 @@ export const DocumentChildrenDomain = {
     doc: T,
     upload: Upload[] | Upload
   ) => {
-    const files = await processUploads(upload);
+    const files = await processUploads(upload, doc.service_instance_id);
 
     const deletedDocuments = await withTransaction(async () => {
       const deletedDocuments =
         await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
 
-      await DocumentChildrenDomain.createImageDocuments(doc.id, files);
+      await DocumentChildrenDomain.createImageDocuments(
+        doc.id,
+        doc.service_instance_id,
+        files
+      );
 
       return deletedDocuments;
     });

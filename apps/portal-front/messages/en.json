@@ -103,6 +103,7 @@
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
+      "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
       "NO_ASYNC_CONTEXT_AVAILABLE": "An unknown error occurred",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "An unknown error occurred",
@@ -282,6 +283,7 @@
       "Priority": "Priority",
       "CancellationDate": "Cancellation Date",
       "CancellationOwner": "Cancellation Owner",
+      "CancellationReason": "Cancellation Reason",
       "Available": "Available",
       "Taken": "Taken",
       "Total": "Total"
@@ -732,10 +734,16 @@
           "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully.",
           "Admin": "The OpenCTI free trial was cancelled successfully."
         },
+        "ConfirmationForm": {
+          "Title": "Cancel your OpenCTI free trial",
+          "NoNewTrialPossible": "Please note that new openCTI trials can’t be requested after this action.",
+          "CancellationReason": "Cancellation reason",
+          "CancellationReasonPlaceholder": "Select a reason",
+          "CancellationReasonOther": "Other",
+          "CancellationReasonOtherPlaceholder": "Write your reason here"
+        },
         "Confirmation": {
           "Title": "Trial Cancellation",
-          "NoNewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ? Please note that new openCTI trials can’t be requested after this action.",
-          "NewTrialPossible": "Are you sure you want to cancel your OpenCTI free trial ?",
           "Admin": "Are you sure you want to cancel OpenCTI free trial from {organizationName} ?"
         }
       },
