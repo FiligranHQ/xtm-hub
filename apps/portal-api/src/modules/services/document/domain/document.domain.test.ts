@@ -3,10 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import {
-  contextAdminUser,
-  requestContextAdminUser,
-} from '../../../../../tests/tests.const';
-import {
   DocumentOrdering,
   FilterKey,
   IntegrationFeedConnection,
@@ -28,7 +24,6 @@ import {
 } from '../../integration-feeds/integration-feeds.model';
 import { loadParentDocumentsByServiceInstance } from './document.domain';
 
-import { requestContext } from '../../../../context/request.context';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 
@@ -52,14 +47,7 @@ describe('Document domain', () => {
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       const documentId = uuidv4() as DocumentId;
-      const testContext = {
-        user: requestContextAdminUser.user,
-        portalContext: {
-          ...contextAdminUser,
-          serviceInstanceId: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-        },
-      };
-      requestContext.set(testContext);
+
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
         OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
         {
@@ -72,6 +60,7 @@ describe('Document domain', () => {
           file_name: 'csvfilename',
           active: true,
           integration_type: IntegrationFeedType.CsvFeed,
+          service_instance_id: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
         },
         [],
         INTEGRATION_FEED_CSV_FEED_METADATA
@@ -117,14 +106,6 @@ describe('Document domain', () => {
     it('should filter an integration feed with a metadata type', async () => {
       // Create data
       const documentId = uuidv4() as DocumentId;
-      const testContext = {
-        user: requestContextAdminUser.user,
-        portalContext: {
-          ...contextAdminUser,
-          serviceInstanceId: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-        },
-      };
-      requestContext.set(testContext);
 
       const csvFeed =
         await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
@@ -139,6 +120,7 @@ describe('Document domain', () => {
             file_name: 'csvfilename',
             active: true,
             integration_type: IntegrationFeedType.CsvFeed,
+            service_instance_id: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
           },
           [],
           INTEGRATION_FEED_CSV_FEED_METADATA

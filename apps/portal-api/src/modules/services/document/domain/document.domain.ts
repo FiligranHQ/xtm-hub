@@ -1,11 +1,5 @@
 import { Knex } from 'knex';
-import {
-  db,
-  dbRaw,
-  dbUnsecure,
-  paginate,
-  QueryOpts,
-} from '../../../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../../../knexfile';
 import {
   CustomDashboardConnection,
   DocumentConnection,
@@ -68,7 +62,7 @@ export const DocumentDomain = {
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
-    const { user, portalContext } = requestContext.require();
+    const { user } = requestContext.require();
     const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
     const uploader_id =
       documentData.uploader_id && extractedId ? extractedId : user.id;
@@ -82,10 +76,6 @@ export const DocumentDomain = {
         active: documentData.active ?? true,
         uploader_id,
         uploader_organization_id: user.selected_organization_id,
-        ...(!!portalContext.serviceInstanceId && {
-          service_instance_id:
-            portalContext.serviceInstanceId as ServiceInstanceId,
-        }),
       })
       .returning('*');
 
@@ -93,12 +83,9 @@ export const DocumentDomain = {
   },
 
   loadDocumentBy: async (
-    field: Record<string, unknown>,
-    opts = {}
+    field: Record<string, unknown>
   ): Promise<DocumentModel[]> => {
-    return db<DocumentModel>('Document', opts)
-      .where(field)
-      .select('Document.*');
+    return db<DocumentModel>('Document').where(field).select('Document.*');
   },
 
   loadDocumentWithMetadataById: async <T extends Document>(
@@ -212,12 +199,18 @@ export const updateDocument = async <T extends DocumentModel>(
 export const updateDocumentWithChildren = async <T extends DocumentModel>(
   type: string,
   parentDocumentId: DocumentId,
+  serviceInstanceId: ServiceInstanceId,
   mutationArgs: MutationUpdateDocumentArgs,
   metadataKeys: DocumentMetadataKeys<T>
 ) => {
   const { document, updateDocument: isUpdateDoc, images, input } = mutationArgs;
   const { documentFile, newImages, existingImageIds } =
-    await processDocumentUpdateUploads(document, isUpdateDoc, images);
+    await processDocumentUpdateUploads(
+      document,
+      isUpdateDoc,
+      images,
+      serviceInstanceId
+    );
   const data = {
     ...input,
     type,
@@ -250,6 +243,7 @@ export const updateDocumentWithChildren = async <T extends DocumentModel>(
 
     await DocumentChildrenDomain.createImageDocuments(
       parentDocumentId,
+      serviceInstanceId,
       newImages
     );
     return updatedDocument;
@@ -338,7 +332,7 @@ export const loadDocuments = async <
 ): Promise<T> => {
   const { user } = requestContext.require();
 
-  const loadDocumentQuery = db<Document>('Document', opts)
+  const loadDocumentQuery = db<Document>('Document')
     .select(['Document.*'])
     .tap(restrictDocumentToUserOrganization)
     .where(field);
@@ -405,11 +399,8 @@ export const loadDocuments = async <
   return paginate<Document, T>('Document', opts, undefined, loadDocumentQuery);
 };
 
-export const getUploader = async (
-  documentId: string,
-  opts: Partial<QueryOpts> = {}
-): Promise<User | null> => {
-  return db<User>('User', opts)
+export const getUploader = async (documentId: string): Promise<User | null> => {
+  return db<User>('User')
     .leftJoin('Document', 'Document.uploader_id', 'User.id')
     .where('Document.id', '=', documentId)
     .select('User.*')
@@ -417,10 +408,9 @@ export const getUploader = async (
 };
 
 export const loadUploaderOrganization = async (
-  documentId: string,
-  opts: Partial<QueryOpts> = {}
+  documentId: string
 ): Promise<Organization> => {
-  const [organization] = await db<Organization>('Organization', opts)
+  const [organization] = await db<Organization>('Organization')
     .leftJoin(
       'Document',
       'Document.uploader_organization_id',

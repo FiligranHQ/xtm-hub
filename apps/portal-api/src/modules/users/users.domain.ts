@@ -1,4 +1,4 @@
-import { db, dbRaw, dbUnsecure, paginate, QueryOpts } from '../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
 import {
   Filter,
   FilterKey,
@@ -38,8 +38,8 @@ export const loadUnsecureUser = async (
   return dbUnsecure<User>('User').where(field);
 };
 
-export const getOrganizations = (id: string, opts?: Partial<QueryOpts>) => {
-  return db<Organization>('Organization', opts)
+export const getOrganizations = (id: string) => {
+  return db<Organization>('Organization')
     .leftJoin(
       'User_Organization',
       'Organization.id',
@@ -51,13 +51,9 @@ export const getOrganizations = (id: string, opts?: Partial<QueryOpts>) => {
     .select('Organization.*');
 };
 
-export const getCapabilities = async (
-  id: string,
-  opts?: Partial<QueryOpts>
-) => {
+export const getCapabilities = async (id: string) => {
   const capabilities = await db<UserLoadUserBy['capabilities']>(
-    'CapabilityPortal',
-    opts
+    'CapabilityPortal'
   )
     .leftJoin(
       'RolePortal_CapabilityPortal as rolePortal_CapabilityPortal',
@@ -84,8 +80,8 @@ export const getCapabilities = async (
   return capabilities;
 };
 
-export const getRolesPortal = (id: string, opts?: Partial<QueryOpts>) => {
-  return db<UserLoadUserBy['capabilities']>('RolePortal', opts)
+export const getRolesPortal = (id: string) => {
+  return db<UserLoadUserBy['capabilities']>('RolePortal')
     .leftJoin(
       'User_RolePortal as user_RolePortal',
       'RolePortal.id',
@@ -255,7 +251,7 @@ export const loadUsersByCapabilitiesInOrganization = async (
 
 export const loadUserConnection = (opts: QueryUsersArgs) => {
   const { filters } = opts;
-  const loadUserQuery = db<UserGenerated>('User', opts);
+  const loadUserQuery = db<UserGenerated>('User');
 
   const userOrganizationCapabilityQuery = db<UserService>('User_Organization')
     .leftJoin(
@@ -328,7 +324,7 @@ export const loadUserConnection = (opts: QueryUsersArgs) => {
 
 export const loadPendingUsers = (opts: QueryUsersArgs) => {
   const { user } = requestContext.require();
-  const loadPendingUserQuery = db<UserGenerated>('User', opts);
+  const loadPendingUserQuery = db<UserGenerated>('User');
   loadPendingUserQuery
     .leftJoin(
       'User_Organization_Pending as UserOrgPendingFilter',

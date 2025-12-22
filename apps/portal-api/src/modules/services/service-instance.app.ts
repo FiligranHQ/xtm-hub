@@ -65,7 +65,6 @@ export const serviceInstanceApp = {
     upload: Upload | null
   ): Promise<RegisteredPlatform> => {
     const { id } = fromGlobalId(input.serviceInstanceId);
-    context.serviceInstanceId = input.serviceInstanceId;
 
     const serviceInstance = await loadPlatformServiceInstance(
       context.user.selected_organization_id,
@@ -101,8 +100,7 @@ export const serviceInstanceApp = {
 
     // Handle illustration image upload if provided
     if (upload) {
-      context.serviceInstanceId = serviceInstance.id;
-      const document = await uploadNewFile(upload);
+      const document = await uploadNewFile(upload, serviceInstance.id);
       updateData.illustration_document_id = document.id;
     }
 

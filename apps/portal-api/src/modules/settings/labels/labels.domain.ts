@@ -1,4 +1,4 @@
-import { db, paginate, QueryOpts } from '../../../../knexfile';
+import { db, paginate } from '../../../../knexfile';
 import {
   LabelConnection,
   QueryLabelsArgs,
@@ -24,7 +24,7 @@ export const labelsDomain = {
   },
 
   loadLabels: (opts: Partial<QueryLabelsArgs>): Promise<LabelConnection> => {
-    const labelQuery = db<Label>('Label', opts).modify((queryBuilder) => {
+    const labelQuery = db<Label>('Label').modify((queryBuilder) => {
       if (opts.documentType) {
         queryBuilder
           .distinct('Label.*')
@@ -41,11 +41,8 @@ export const labelsDomain = {
     );
   },
 
-  loadLabelsByDocumentId: (
-    documentId: string,
-    opts: Partial<QueryOpts> = {}
-  ): Promise<Label[]> => {
-    return db<Label>('Label', opts)
+  loadLabelsByDocumentId: (documentId: string): Promise<Label[]> => {
+    return db<Label>('Label')
       .leftJoin('Object_Label as ol', 'ol.label_id', 'Label.id')
       .where('ol.object_id', '=', documentId)
       .returning('Label.*');

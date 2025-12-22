@@ -103,6 +103,7 @@
       "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
+      "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
       "NO_ASYNC_CONTEXT_AVAILABLE": "An unknown error occurred",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "An unknown error occurred",

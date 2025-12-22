@@ -15,6 +15,7 @@ import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/cus
 import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import { DocumentApp } from './document.app';
+import { Upload } from './document.uploads.helper';
 import {
   DocumentDomain,
   loadSeoDocumentBySlug,
@@ -67,24 +68,27 @@ export const loadUnsecureDocumentsBy = async (
   return dbUnsecure<Document[]>('Document').where(field).select('*');
 };
 
-export const uploadNewFile = async (document) => {
+export const uploadNewFile = async (
+  document: Upload,
+  serviceInstanceId: ServiceInstanceId
+) => {
   if (!document || !document.file) {
     return;
   }
-  const { portalContext, user } = requestContext.require();
+  const { user } = requestContext.require();
   const minioName = await MinIOClient.sendFile(
     document.file,
     document.file.name,
     user.id,
-    portalContext.serviceInstanceId as ServiceInstanceId
+    serviceInstanceId
   );
 
   const data: FullDocumentMutator = {
     uploader_id: user.id,
-    name: portalContext.serviceInstanceId,
+    name: serviceInstanceId,
     minio_name: minioName,
     file_name: document.file.name,
-    service_instance_id: null,
+    service_instance_id: serviceInstanceId,
     created_at: new Date(),
     mime_type: document.file.mimetype,
     type: 'service_picture',

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db, QueryOpts } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   OrganizationCapability,
   PlatformContract,
@@ -139,8 +139,7 @@ export const registrationDomain = {
     query: {
       platformIdentifier?: PlatformIdentifier;
       'ServiceInstance.id'?: ServiceInstanceId;
-    } = {},
-    opts: QueryOpts = {}
+    } = {}
   ): Promise<DomainRegisteredPlatform[]> => {
     const { user } = requestContext.require();
     const { platformIdentifier, ...field } = query;
@@ -153,7 +152,7 @@ export const registrationDomain = {
         ]
       : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
-    return db<ServiceInstance>('ServiceInstance', opts)
+    return db<ServiceInstance>('ServiceInstance')
       .leftJoin(
         'Service_Configuration',
         'Service_Configuration.service_instance_id',

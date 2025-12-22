@@ -3,7 +3,6 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../../context/request.context';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
@@ -24,8 +23,6 @@ export const documentVisualizeEndpoint = (app) => {
       try {
         const context: PortalContext = {
           user: user,
-          serviceInstanceId: fromGlobalId(req.params.serviceInstanceId)
-            .id as ServiceInstanceId,
           req,
           res,
         };
@@ -86,12 +83,9 @@ export const documentVisualizeEndpoint = (app) => {
             .json({ message: 'Service definition not found' });
         }
 
-        const [document] = await DocumentDomain.loadDocumentBy(
-          {
-            'Document.id': fromGlobalId(req.params.documentId).id,
-          },
-          { unsecured: true }
-        );
+        const [document] = await DocumentDomain.loadDocumentBy({
+          'Document.id': fromGlobalId(req.params.documentId).id,
+        });
 
         if (!document || !document.mime_type.startsWith('image/')) {
           logApp.error(

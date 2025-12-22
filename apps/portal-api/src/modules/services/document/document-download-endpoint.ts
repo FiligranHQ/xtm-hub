@@ -5,7 +5,6 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import {
@@ -15,7 +14,6 @@ import {
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
-import { extractId } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
@@ -75,9 +73,6 @@ export const documentDownloadEndpoint = (app) => {
 
         const context: PortalContext = {
           user: user,
-          serviceInstanceId: extractId<ServiceInstanceId>(
-            req.params.serviceInstanceId
-          ),
           req,
           res,
         };
