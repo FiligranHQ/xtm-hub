@@ -113,15 +113,17 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
                 <SelectWithEditableField
                   onChange={field.onChange}
                   options={CANCELLATION_REASONS}
-                  placeholder={t(
-                    'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonPlaceholder'
-                  )}
-                  editableFieldLabel={t(
-                    'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOther'
-                  )}
-                  editableFieldPlaceholder={t(
-                    'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOtherPlaceholder'
-                  )}
+                  labels={{
+                    placeholder: t(
+                      'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonPlaceholder'
+                    ),
+                    editableFieldLabel: t(
+                      'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOther'
+                    ),
+                    editableFieldPlaceholder: t(
+                      'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOtherPlaceholder'
+                    ),
+                  }}
                   editableFieldValue="Other"
                 />
                 <FormMessage className="text-sm text-destructive" />

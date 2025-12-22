@@ -93,7 +93,7 @@ export const RegistrationDetails: React.FC<Props> = ({
               <Button
                 variant="link-destructive"
                 onClick={() => setOpenCancelSheet(true)}>
-                Cancel
+                {t('Utils.Cancel')}
               </Button>
             )}
           </li>
@@ -171,7 +171,7 @@ export const RegistrationDetails: React.FC<Props> = ({
       )}
       {platform.deployment_request && (
         <TrialCancelSheet
-          deploymentRequestId={platform.deployment_request?.id}
+          deploymentRequestId={platform.deployment_request.id}
           isCancellationDefinitive={isCancellationDefinitive}
           open={openCancelSheet}
           setOpen={setOpenCancelSheet}

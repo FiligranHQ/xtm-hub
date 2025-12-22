@@ -8,10 +8,12 @@ type Option = { value: string; label: string };
 interface SelectWithEditableFieldProps {
   onChange: (value: string) => void;
   options: Option[];
-  placeholder: string;
-  editableFieldLabel: string;
+  labels: {
+    placeholder: string;
+    editableFieldLabel: string;
+    editableFieldPlaceholder: string;
+  };
   editableFieldValue: string;
-  editableFieldPlaceholder: string;
 }
 
 const OTHER_VALUE = '__other__';
@@ -19,10 +21,8 @@ const OTHER_VALUE = '__other__';
 export function SelectWithEditableField({
   onChange,
   options,
-  placeholder,
-  editableFieldLabel,
+  labels,
   editableFieldValue,
-  editableFieldPlaceholder,
 }: SelectWithEditableFieldProps) {
   const [selectValue, setSelectValue] = useState<string>('');
   const [customValue, setCustomValue] = useState('');
@@ -83,12 +83,9 @@ export function SelectWithEditableField({
   const selectedOption = options.find((o) => o.value === selectValue);
   const isOtherMode = selectValue === OTHER_VALUE;
 
-  let triggerText = '';
-  if (isOtherMode) {
-    triggerText = customValue || editableFieldLabel;
-  } else if (selectedOption) {
-    triggerText = selectedOption.label;
-  }
+  const triggerText = isOtherMode
+    ? customValue || labels.editableFieldLabel
+    : selectedOption?.label;
 
   return (
     <Select
@@ -98,7 +95,7 @@ export function SelectWithEditableField({
       onOpenChange={setOpen}>
       <SelectTrigger>
         <span className={triggerText ? '' : 'text-muted-foreground'}>
-          {triggerText || placeholder}
+          {triggerText || labels.placeholder}
         </span>
       </SelectTrigger>
 
@@ -119,7 +116,7 @@ export function SelectWithEditableField({
               <CheckIcon className="h-4 w-4" />
             </span>
           )}
-          {editableFieldLabel}
+          {labels.editableFieldLabel}
         </div>
 
         <div className="px-2 pb-2 pl-8">
@@ -128,7 +125,7 @@ export function SelectWithEditableField({
             value={customValue}
             onChange={handleCustomChange}
             onKeyDown={handleCustomKeyDown}
-            placeholder={editableFieldPlaceholder}
+            placeholder={labels.editableFieldPlaceholder}
           />
         </div>
       </SelectContent>
