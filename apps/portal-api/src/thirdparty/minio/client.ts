@@ -56,14 +56,17 @@ export const MinIOClient = {
     }
   },
 
-  createFile: async (jsonFile: Upload): Promise<MinioFile> => {
-    const { portalContext, user } = requestContext.require();
+  createFile: async (
+    jsonFile: Upload,
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<MinioFile> => {
+    const { user } = requestContext.require();
     const fileName = normalizeDocumentName(jsonFile.file.filename);
     const minioName = await MinIOClient.sendFile(
       jsonFile.file,
       fileName,
       user.id,
-      portalContext.serviceInstanceId as ServiceInstanceId
+      serviceInstanceId
     );
 
     return { minioName, fileName, mimeType: jsonFile.file.mimetype };

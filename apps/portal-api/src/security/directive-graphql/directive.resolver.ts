@@ -33,9 +33,7 @@ export const createSecureFieldResolver = (
 
     // Load user capabilities if not already loaded
     if (user && !user.capabilities) {
-      user.capabilities = await getCapabilities(user.id, {
-        unsecured: true,
-      });
+      user.capabilities = await getCapabilities(user.id);
     }
 
     // Authentication check

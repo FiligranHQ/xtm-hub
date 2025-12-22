@@ -1,5 +1,6 @@
 export enum ForbiddenErrorCode {
   MissingCapabilityOnOrganization = 'MISSING_CAPABILITY_ON_ORGANIZATION',
+  MissingCapabilityOnService = 'MISSING_CAPABILITY_ON_SERVICE',
   RegistrationOnAnotherOrganizationForbidden = 'REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN',
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
   AlreadySubscribed = 'ALREADY_SUBSCRIBED',

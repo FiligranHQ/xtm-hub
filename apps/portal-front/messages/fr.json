@@ -103,6 +103,7 @@
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
+      "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
       "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "Une erreur inconnue s'est produite",

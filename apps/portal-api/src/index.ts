@@ -5,7 +5,6 @@ import { expressMiddleware } from '@as-integrations/express5';
 import pkg from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 
 import promBundle from 'express-prom-bundle';
 import expressSession, { SessionData } from 'express-session/index.js';
@@ -200,12 +199,9 @@ const middlewareExpress = expressMiddleware(server, {
       req.body.variables.id = extractId(req.body.variables.id);
     }
 
-    const serviceInstanceId = req?.body?.variables?.serviceInstanceId
-      ? fromGlobalId(req?.body?.variables?.serviceInstanceId)?.id
-      : '';
     // TODO Add build session from request authorization
 
-    const portalContext: PortalContext = { user, req, res, serviceInstanceId };
+    const portalContext: PortalContext = { user, req, res };
 
     requestContext.update({ portalContext: portalContext });
     return portalContext;

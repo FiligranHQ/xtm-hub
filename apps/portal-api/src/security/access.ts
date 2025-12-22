@@ -1,13 +1,10 @@
-import { Knex } from 'knex';
 import {
   ActionType,
   DatabaseType,
   KnexQueryBuilder,
   MethodType,
-  QueryOpts,
   SecuryQueryOpts,
 } from '../../knexfile';
-import { PortalContext } from '../model/portal-context';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { TypedNode } from '../pub';
 
@@ -18,7 +15,6 @@ import {
   userPendingSSESecurity,
   userSSESecurity,
 } from './user-security-access';
-import { setDeleteSecurityForUserServiceCapability } from './user-service-capability-access';
 
 import { requestContext } from '../context/request.context';
 import { logApp } from '../utils/app-logger.util';
@@ -101,52 +97,6 @@ export const isNodeAccessible = async (
     throw new Error(`Security behavior must be defined for type ${type}`);
   }
   return selectedFunction({ user, data, type, topic });
-};
-
-export const setQuery = <T>(
-  context: PortalContext,
-  queryContext: Knex.QueryBuilder<T>
-): Knex.QueryBuilder<T> => {
-  return queryContext;
-};
-/**
- * This method will apply queries extra filter depending on the user context
- * Every get or listing will be protected by this method
- */
-export const applyDbSecurity = <T>(
-  context: PortalContext,
-  type: DatabaseType,
-  queryContext: Knex.QueryBuilder<T>,
-  opts: QueryOpts = {}
-) => {
-  const { unsecured = false } = opts;
-
-  // If user is admin, user has no access restriction
-  // TODO We need to filter query that is not a select but the applyDbSecurity is used at the init of the query so we cannot not where it's used and how update/select etC..
-  if (unsecured || isUserGranted(context?.user)) {
-    return queryContext;
-  }
-
-  type UpdateAccessibilityChecker = <T>(
-    context: PortalContext,
-    queryContext: Knex.QueryBuilder<T>,
-    opts: QueryOpts
-  ) => Knex.QueryBuilder<T>;
-
-  if (opts.methodType === 'del') {
-    const updateMapping: Partial<
-      Record<DatabaseType, UpdateAccessibilityChecker>
-    > = {
-      UserService_Capability: setDeleteSecurityForUserServiceCapability,
-    };
-    const selectedFunction = updateMapping[type] || setQuery;
-    if (!selectedFunction) {
-      throw new Error(`Security behavior must be defined for type ${type}`);
-    }
-    return selectedFunction(context, queryContext, opts);
-  }
-
-  return queryContext;
 };
 
 export const applyDbSecurityLayer = async (
