@@ -10,7 +10,7 @@ const smtpOptions = config.get('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
 
 interface SendMailParams<T extends keyof MailTemplates> {
-  to: string;
+  to: string | string[];
   template: T;
   params: MailTemplates[T];
 }

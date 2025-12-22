@@ -1,4 +1,5 @@
 name: Run XTM Hub CI/CD
+
 on:
   workflow_dispatch:
   push:
@@ -6,9 +7,10 @@ on:
       - "main"
       - "development"
     paths:
-      - "apps/portal-api/**"
-      - "apps/portal-front/**"
-      - "apps/portal-e2e-tests/**"
+      - "apps/**"
+      - ".github/workflows/dockerbuild-ci.yml"
+      - "package.json"
+      - "yarn.lock"
     tags:
       - "v*"
   pull_request:
@@ -17,16 +19,19 @@ on:
       - "development"
       - "issue/*"
     paths:
-      - "apps/portal-api/**"
-      - "apps/portal-front/**"
-      - "apps/portal-e2e-tests/**"
+      - "apps/**"
+      - ".github/workflows/dockerbuild-ci.yml"
+      - "package.json"
+      - "yarn.lock"
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-
   build-images-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -43,19 +48,35 @@ jobs:
             dockerfile: apps/portal-api/Dockerfile
           - image: portal-e2e-tests
             dockerfile: apps/portal-e2e-tests/Dockerfile
+          - image: portal-front-test
+            dockerfile: apps/portal-front/test.Dockerfile
+          - image: portal-api-test
+            dockerfile: apps/portal-api/test.Dockerfile
     outputs:
       docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
       docker-labels: ${{ steps.meta.outputs.labels }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Setup Docker layer cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.image }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.image }}-
+            ${{ runner.os }}-buildx-
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Docker meta deps
         id: meta
         uses: docker/metadata-action@v5
@@ -66,10 +87,12 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+
       - name: Copy migrations
         run: |
           cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+
       - name: Build and push portal image
         uses: docker/build-push-action@v6
         with:
@@ -81,10 +104,18 @@ jobs:
           build-args: |
             APP_VERSION=0.0.0-e2e
           cache-from: |
+            type=local,src=/tmp/.buildx-cache
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          cache-to: type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+          cache-to: |
+            type=local,dest=/tmp/.buildx-cache-new,mode=max
+            type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }},mode=max
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   run-e2e-tests:
     needs: build-images-tests
@@ -97,19 +128,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Install docker
         uses: docker/setup-docker-action@v4
+
       - name: Copy migrations
         run: |
           cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+
       - name: Launch docker compose
         run: |
           mkdir -p ctrf
@@ -127,7 +163,7 @@ jobs:
         if: always()
         uses: ctrf-io/github-test-reporter@v1
         with:
-          report-path: './ctrf/*.json'
+          report-path: "./ctrf/*.json"
           pull-request: true
           summary-report: true
           failed-report: true
@@ -135,9 +171,10 @@ jobs:
           insights-report: true
           suite-folded-report: true
           overwrite-comment: true
-          report-order: 'summary-report,failed-report,flaky-report,insights-report,test-report'
+          report-order: "summary-report,failed-report,flaky-report,insights-report,test-report"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Collect service logs on failure
         if: failure()
         run: |
@@ -198,20 +235,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Install docker
         uses: docker/setup-docker-action@v4
-      - name: Launch docker compose
+
+      - name: Run front unit tests
         run: |
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           mkdir -p coverage
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-front-test
+          docker run --rm \
+            -v $(pwd)/coverage:/app/apps/portal-front/coverage \
+            filigran/portal-front-test:${IMAGE_TAGS}
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -229,20 +273,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Install docker
         uses: docker/setup-docker-action@v4
+
       - name: Launch docker compose
         run: |
           mkdir -p coverage
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -253,6 +302,8 @@ jobs:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
     if: |
       github.event_name == 'pull_request' &&
       contains(github.event.pull_request.labels.*.name, 'needs feature env')
@@ -267,6 +318,7 @@ jobs:
             -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
             --inventory eu-west-staging \
             --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"
+
   build-images-prod:
     needs:
       - run-e2e-tests
@@ -294,13 +346,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Setup Docker layer cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-prod-${{ matrix.image }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-prod-${{ matrix.image }}-
+            ${{ runner.os }}-buildx-${{ matrix.image }}-
+            ${{ runner.os }}-buildx-
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Docker meta deps
         id: meta
         uses: docker/metadata-action@v5
@@ -311,7 +376,8 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            ${{ contains(github.ref, 'refs/tags/') && 'latest' }} # Add `latest` only for tags (production)
+            ${{ contains(github.ref, 'refs/tags/') && 'latest' }}
+
       - name: Determine version
         id: version
         run: |
@@ -324,6 +390,7 @@ jobs:
           else
             echo "VERSION=local-${GITHUB_SHA::8}" >> $GITHUB_ENV
           fi
+
       - name: Build and push images
         uses: docker/build-push-action@v6
         with:
@@ -335,16 +402,24 @@ jobs:
             APP_VERSION=${{ env.VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
+            type=local,src=/tmp/.buildx-cache
             type=registry,ref=filigran/${{ matrix.image }}:main
             type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:latest
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   deploy:
     needs: build-images-prod
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
     if: |
       always() &&
       github.event_name != 'pull_request' &&
@@ -352,6 +427,7 @@ jobs:
     steps:
       - name: Install AWX cli
         run: pip install awxkit
+
       - name: Deploy on Production
         if: contains(github.ref, 'refs/tags/')
         run: |
@@ -361,6 +437,7 @@ jobs:
             -f human job_templates launch 'Deploy XTM Hub' \
             --inventory eu-west-production \
             --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"
+
       - name: Send n8n Webhook Notification
         if: contains(github.ref, 'refs/tags/')
         run: |
@@ -379,9 +456,8 @@ jobs:
           else
             echo "⚠️ Webhook notification failed (HTTP $http_code)"
             echo "Response: $response_body"
-            # Optionally fail the workflow if webhook is critical
-            # exit 1
           fi
+
       - name: Deploy on Staging
         if: github.ref == 'refs/heads/main'
         run: |
@@ -390,6 +466,7 @@ jobs:
             -f human job_templates launch 'Deploy XTM Hub' \
             --inventory eu-west-staging \
             --extra_vars '{"env":"Staging"}'
+
       - name: Deploy on Development
         if: github.ref == 'refs/heads/development'
         run: |
@@ -398,6 +475,7 @@ jobs:
             -f human job_templates launch 'Deploy XTM Hub' \
             --inventory eu-west-staging \
             --extra_vars '{"env":"Development"}'
+
       - name: Deploy on Prerelease
         if: github.ref == 'refs/heads/development'
         run: |

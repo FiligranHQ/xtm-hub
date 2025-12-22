@@ -13,7 +13,7 @@ import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
 import { INTEGRATION_FEED_METADATA } from './src/modules/services/integration-feeds/integration-feeds.model';
-import { applyDbSecurity, applyDbSecurityLayer } from './src/security/access';
+import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { compareSemanticVersions } from './src/utils/semantic-versioning';
 import { extractId } from './src/utils/utils';
@@ -167,42 +167,31 @@ export function db<T>(
 ): Knex.QueryBuilder<T, any>;
 
 export function db<T>(
-  type: DatabaseType,
-  opts?: Partial<QueryOpts>
+  type: DatabaseType
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any>;
 
 export function db<T>(
   contextOrType: PortalContext | DatabaseType,
-  typeOrOpts?: DatabaseType | Partial<QueryOpts>,
-  options: Partial<QueryOpts> = {}
+  typeOrOpts?: DatabaseType | Partial<QueryOpts>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any> {
   const isPortalContextProvided = typeof contextOrType !== 'string';
 
-  const { context, type, opts } = isPortalContextProvided
+  const { context, type } = isPortalContextProvided
     ? {
         context: contextOrType as PortalContext,
         type: typeOrOpts as DatabaseType,
-        opts: options,
       }
     : {
         context: requestContext.require().portalContext,
         type: contextOrType as DatabaseType,
-        opts: (typeOrOpts as Partial<QueryOpts>) || {},
       };
 
   const queryContext = database<T>(type).queryContext({
     __typename: type,
     context,
   });
-
-  const securedQueryContext = applyDbSecurity<T>(
-    context,
-    type,
-    queryContext,
-    opts
-  );
 
   const reqContext = requestContext.get();
   if (reqContext?.trx && !reqContext.trx.isCompleted()) {
@@ -211,12 +200,12 @@ export function db<T>(
     queryContext.transacting(databaseContext.getTransaction());
   }
 
-  return securedQueryContext;
+  return queryContext;
 }
 
 export const dbUnsecure = <T>(type: DatabaseType) => {
   const context = { user: null, req: null, res: null };
-  return db<T>(context, type, { unsecured: true });
+  return db<T>(context, type);
 };
 
 export const dbConnections = <T>(
@@ -370,7 +359,7 @@ export const paginate = async <T, U>(
   type: DatabaseType,
   pagination: Pagination,
   opts: Partial<QueryOpts> = {},
-  queryContext = db<T>(type, opts)
+  queryContext = db<T>(type)
 ) => {
   const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
   const columns = Object.keys(await database(type).columnInfo());

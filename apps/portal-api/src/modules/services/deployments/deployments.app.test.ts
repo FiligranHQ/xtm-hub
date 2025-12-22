@@ -322,6 +322,7 @@ describe('Deployment app', () => {
         expect(deployment).toBeDefined();
       });
     });
+
     describe('mail', () => {
       it('should send a mail if status is pending', async () => {
         await DeploymentsApp.createDeploymentRequest({
@@ -333,14 +334,32 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_requested',
           params: {
             firstName: 'Firstname',
           },
         });
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+          to: [DEFAULT_ADMIN_EMAIL],
+          template: 'admin_saas_instance_requested',
+          params: {
+            activitySector: 'cybersecurity',
+            deploymentType: 'Trial',
+            organizationName: 'Filigran',
+            platformIdentifier: 'Opencti',
+            region: DeploymentRequestPlatformRegion.UsEast,
+            useCase: 'use_case',
+            userEmail: 'admin@filigran.io',
+            userName: 'firstName lastName',
+          },
+        });
       });
+
       it('should send a mail if there is no space available', async () => {
         vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
           isPlaceAvailable: false,
@@ -354,11 +373,28 @@ describe('Deployment app', () => {
           type: DeploymentRequestDeploymentType.Trial,
         });
 
-        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_queued',
           params: {
             firstName: 'Firstname',
+          },
+        });
+
+        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+          to: [DEFAULT_ADMIN_EMAIL],
+          template: 'admin_saas_instance_requested',
+          params: {
+            activitySector: 'cybersecurity',
+            deploymentType: 'Trial',
+            organizationName: 'Filigran',
+            platformIdentifier: 'Opencti',
+            region: 'us_east',
+            useCase: 'use_case',
+            userEmail: 'admin@filigran.io',
+            userName: 'firstName lastName',
           },
         });
       });
@@ -741,7 +777,7 @@ describe('Deployment app', () => {
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
-        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+        expect(mockSendMail).toHaveBeenCalledWith({
           to: 'admin@filigran.io',
           template: 'opencti_free_trial_provisioning',
           params: {
@@ -882,9 +918,11 @@ describe('Deployment app', () => {
           hub_status,
           actual_state,
         })) as DeploymentRequest;
+        const cancellationReason = isAdmin ? undefined : 'my reason';
         const deployment = await DeploymentsApp.cancelDeploymentRequest(
           initialDeployment.id,
-          isAdmin
+          isAdmin,
+          cancellationReason
         );
 
         expect(deployment).toMatchObject({
@@ -893,6 +931,7 @@ describe('Deployment app', () => {
           counts_in_orga_quota,
           cancellation_date: expect.any(Date),
           cancellation_user_id: ADMIN_USER_ID,
+          cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
         const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -964,7 +1003,11 @@ describe('Deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      await DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+      await DeploymentsApp.cancelDeploymentRequest(
+        deployment.id,
+        false,
+        'CancellationReason'
+      );
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -980,6 +1023,7 @@ describe('Deployment app', () => {
         start_date: null,
         end_date: null,
         platform_id: null,
+        cancellation_reason: 'CancellationReason',
       });
     });
 
@@ -990,7 +1034,7 @@ describe('Deployment app', () => {
 
       await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
 
-      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+      expect(mockSendMail).toHaveBeenCalledWith({
         to: 'admin@thales.com',
         template: 'opencti_free_trial_cancelled',
         params: {
@@ -1555,7 +1599,7 @@ describe('Deployment app', () => {
 
       await DeploymentsApp.expireTrials();
 
-      expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+      expect(mockSendMail).toHaveBeenCalledWith({
         to: 'admin@thales.com',
         template: 'opencti_free_trial_expired',
         params: {
