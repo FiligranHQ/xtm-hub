@@ -36,9 +36,7 @@ export interface AdminSaasInstanceRequestedModel {
   userName: string;
   userEmail: string;
   region: string;
-  status: string;
   activitySector: string;
-  jobTitle: string;
   useCase: string;
   platformIdentifier: string;
   deploymentType: string;
