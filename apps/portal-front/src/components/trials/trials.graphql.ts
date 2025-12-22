@@ -13,6 +13,7 @@ export const trialsFragment = graphql`
     ordering
     cancellation_date
     cancellation_user_email
+    cancellation_reason
   }
 `;
 
