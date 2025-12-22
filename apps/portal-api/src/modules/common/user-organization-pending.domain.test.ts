@@ -97,6 +97,7 @@ describe('UserOrganizationPendingDomain', () => {
     });
 
     it('should return an empty list when organizations does not have pending users', async () => {
+      await db('User_Organization_Pending').del();
       const result =
         await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
 
