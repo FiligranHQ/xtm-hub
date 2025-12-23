@@ -12,6 +12,9 @@
       "provider": "oidc"
     }
   ],
+  "enabled_emails": {
+    "pending_user_digest": true
+  },
   "enabled_features": ["*"],
   "init_service_definitions": [],
   "init_services": [],

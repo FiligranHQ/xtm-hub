@@ -21,6 +21,12 @@ describe('UsersOrganizationApp', () => {
     });
 
     it('should send email to each organization administrators when email is enabled', async () => {
+      const portalConfig = await import('../../config');
+      portalConfig.default.enabled_emails = {
+        ...originalEnabledEmails,
+        pending_user_digest: true,
+      };
+
       vi.spyOn(
         UserOrganizationPendingDomain,
         'loadOrganizationsWithPendingUsers'

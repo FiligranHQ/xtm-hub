@@ -17,7 +17,7 @@
     "seeds": "tests/seeds"
   },
   "enabled_emails": {
-    "pending_user_digest": true
+    "pending_user_digest": false
   },
   "enabled_features": [],
   "auth0": {
