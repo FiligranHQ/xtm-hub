@@ -50,7 +50,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const filtersMap: Record<ServiceSlug, ServiceListFilterMap> = {
     [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
       [ServiceListFilterKey.Label]: labelFilter,
-      [ServiceListFilterKey.IntegrationsType]: {
+      [ServiceListFilterKey.IntegrationType]: {
         node: <IntegrationFilters />,
         reset: () => {
           removeConnectorTypes();

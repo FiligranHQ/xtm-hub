@@ -84,7 +84,7 @@ const IntegrationsList = ({
   } = useServiceListLocalStorage(localStorageKey);
 
   const filters: ServiceListFilterMap = {
-    [ServiceListFilterKey.IntegrationsType]: {
+    [ServiceListFilterKey.IntegrationType]: {
       node: <IntegrationFilters />,
       reset: () => {
         removeConnectorTypes();

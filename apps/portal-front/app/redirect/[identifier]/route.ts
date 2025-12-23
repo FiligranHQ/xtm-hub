@@ -49,6 +49,5 @@ export async function GET(
     case 'create-free-trial':
       return redirectToCreateFreeTrial(request);
   }
-
   return redirectToResource(awaitedParams, request);
 }
