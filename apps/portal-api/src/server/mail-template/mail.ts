@@ -45,7 +45,7 @@ export interface AdminSaasInstanceRequestedModel {
 export interface OrganizationPendingUserDigestModel {
   adminName: string;
   organizationName: string;
-  userEmails: string;
+  userEmailList: string;
   userCount: number;
 }
 
