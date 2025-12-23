@@ -16,6 +16,9 @@
     "database": "test_database",
     "seeds": "tests/seeds"
   },
+  "enabled_emails": {
+    "pending_user_digest": true
+  },
   "enabled_features": [],
   "auth0": {
     "domain": "filigran.eu.auth0.com",

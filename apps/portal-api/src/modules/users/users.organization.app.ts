@@ -2,6 +2,7 @@ import {
   AddUserInput,
   OrganizationCapability,
 } from '../../__generated__/resolvers-types';
+import portalConfig from '../../config';
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -133,6 +134,11 @@ export const UsersOrganizationApp = {
   },
 
   sendPendingUsersDigest: async (): Promise<void> => {
+    if (!portalConfig.enabled_emails.pending_user_digest) {
+      logApp.info('Pending user digest email disabled.');
+      return;
+    }
+
     const organizationsWithPendingUsers =
       await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
     const promises = organizationsWithPendingUsers.map(async (organization) => {
@@ -141,7 +147,7 @@ export const UsersOrganizationApp = {
         [OrganizationCapability.AdministrateOrganization]
       );
 
-      return Promise.all(
+      return await Promise.all(
         adminUsers.map((adminUser) =>
           sendMail({
             to: adminUser.email,
