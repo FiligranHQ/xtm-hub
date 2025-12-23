@@ -124,6 +124,6 @@ export const templateSubjects: {
   organization_pending_user_digest: () =>
     'XTM Hub - Users Requesting to Join Your Organization',
   admin_saas_instance_requested: (params: AdminSaasInstanceRequestedModel) => {
-    return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Has Been Launch on XTM Hub by ${params.organizationName}`;
+    return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Has Been Launched on XTM Hub by ${params.organizationName}`;
   },
 };
