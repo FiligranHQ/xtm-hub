@@ -46,6 +46,7 @@ export interface OrganizationPendingUserDigestModel {
   adminName: string;
   organizationName: string;
   userEmails: string;
+  userCount: number;
 }
 
 export interface PlatformUnregisteredModel {
@@ -121,8 +122,8 @@ export const templateSubjects: {
   opencti_free_trial_cancelled: () => 'Your OpenCTI Trial Has Been Cancelled',
   opencti_free_trial_expired: () => 'Your OpenCTI Free Trial Has Expired',
   organization_pending_user_digest: () =>
-    'XTM Hub - User Requests to Join Your Organization',
+    'XTM Hub - Users Requesting to Join Your Organization',
   admin_saas_instance_requested: (params: AdminSaasInstanceRequestedModel) => {
-    return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Launch on XTM Hub by ${params.organizationName}`;
+    return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Has Been Launch on XTM Hub by ${params.organizationName}`;
   },
 };

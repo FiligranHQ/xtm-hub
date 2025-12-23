@@ -6,23 +6,22 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import * as MailService from '../../server/mail-service';
 import { UserOrganizationPendingDomain } from '../common/user-organization-pending.domain';
 import { UsersOrganizationApp } from './users.organization.app';
+
 describe('UsersOrganizationApp', () => {
   describe('sendPendingUsersDigest', () => {
     let originalEnabledEmails: typeof portalConfig.enabled_emails;
 
     beforeEach(async () => {
-      const portalConfig = await import('../../config');
-      originalEnabledEmails = portalConfig.default.enabled_emails;
+      originalEnabledEmails = portalConfig.enabled_emails;
     });
 
     afterEach(async () => {
-      const portalConfig = await import('../../config');
-      portalConfig.default.enabled_emails = originalEnabledEmails;
+      portalConfig.enabled_emails = originalEnabledEmails;
+      vi.restoreAllMocks();
     });
 
     it('should send email to each organization administrators when email is enabled', async () => {
-      const portalConfig = await import('../../config');
-      portalConfig.default.enabled_emails = {
+      portalConfig.enabled_emails = {
         ...originalEnabledEmails,
         pending_user_digest: true,
       };
@@ -60,6 +59,7 @@ describe('UsersOrganizationApp', () => {
           adminName: 'Firstname',
           organizationName: 'organization name',
           userEmails: 'user1@test.com, user2@test.com',
+          userCount: 2,
         },
         template: 'organization_pending_user_digest',
         to: 'admin@filigran.io',
@@ -67,8 +67,7 @@ describe('UsersOrganizationApp', () => {
     });
 
     it('should not send any mail when mailing is disabled', async () => {
-      const portalConfig = await import('../../config');
-      portalConfig.default.enabled_emails = {
+      portalConfig.enabled_emails = {
         ...originalEnabledEmails,
         pending_user_digest: false,
       };

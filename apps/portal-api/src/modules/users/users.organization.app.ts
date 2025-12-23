@@ -142,26 +142,34 @@ export const UsersOrganizationApp = {
     const organizationsWithPendingUsers =
       await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
     const promises = organizationsWithPendingUsers.map(async (organization) => {
-      const adminUsers = await loadUsersByCapabilitiesInOrganization(
-        organization.id,
-        [OrganizationCapability.AdministrateOrganization]
-      );
+      try {
+        const adminUsers = await loadUsersByCapabilitiesInOrganization(
+          organization.id,
+          [OrganizationCapability.AdministrateOrganization]
+        );
 
-      return await Promise.all(
-        adminUsers.map((adminUser) =>
-          sendMail({
-            to: adminUser.email,
-            template: 'organization_pending_user_digest',
-            params: {
-              adminName: formatName(adminUser.first_name ?? ''),
-              organizationName: organization.name,
-              userEmails: organization.users
-                .map(({ email }) => email)
-                .join(', '),
-            },
-          })
-        )
-      );
+        return await Promise.all(
+          adminUsers.map((adminUser) =>
+            sendMail({
+              to: adminUser.email,
+              template: 'organization_pending_user_digest',
+              params: {
+                adminName: formatName(adminUser.first_name ?? ''),
+                organizationName: organization.name,
+                userEmails: organization.users
+                  .map(({ email }) => email)
+                  .join(', '),
+                userCount: organization.users.length,
+              },
+            })
+          )
+        );
+      } catch (error) {
+        logApp.error(
+          `An error occurred while sending pending user digest to ${organization.name}`,
+          { error }
+        );
+      }
     });
 
     await Promise.all(promises);
