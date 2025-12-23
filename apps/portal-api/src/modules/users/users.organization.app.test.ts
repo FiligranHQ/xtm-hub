@@ -37,10 +37,14 @@ describe('UsersOrganizationApp', () => {
             {
               id: uuidv4() as UserId,
               email: 'user1@test.com',
+              first_name: 'John',
+              last_name: 'Doe',
             } as User,
             {
               id: uuidv4() as UserId,
               email: 'user2@test.com',
+              first_name: 'Robert',
+              last_name: 'Smith',
             } as User,
           ],
         },
@@ -58,7 +62,8 @@ describe('UsersOrganizationApp', () => {
         params: {
           adminName: 'Firstname',
           organizationName: 'organization name',
-          userEmails: 'user1@test.com, user2@test.com',
+          userEmailList:
+            '<li>John Doe (user1@test.com)</li><li>Robert Smith (user2@test.com)</li>',
           userCount: 2,
         },
         template: 'organization_pending_user_digest',
