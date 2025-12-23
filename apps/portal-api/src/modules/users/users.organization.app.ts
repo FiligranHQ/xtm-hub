@@ -1,21 +1,35 @@
-import { AddUserInput } from '../../__generated__/resolvers-types';
+import {
+  AddUserInput,
+  OrganizationCapability,
+} from '../../__generated__/resolvers-types';
+import portalConfig from '../../config';
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { isUserAdminPlatform } from '../../security/access';
+import { sendMail } from '../../server/mail-service';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { ForbiddenAccess } from '../../utils/error/error.util';
-import { removeUserFromOrganizationPending } from '../common/user-organization-pending.domain';
+import { formatName } from '../../utils/format';
+import {
+  removeUserFromOrganizationPending,
+  UserOrganizationPendingDomain,
+} from '../common/user-organization-pending.domain';
 import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
 } from '../common/user-organization.domain';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
-import { loadUnsecureUser, loadUserBy, updateUser } from './users.domain';
+import {
+  loadUnsecureUser,
+  loadUserBy,
+  loadUsersByCapabilitiesInOrganization,
+  updateUser,
+} from './users.domain';
 import { createUserWithPersonalSpace } from './users.helper';
 
 export const UsersOrganizationApp = {
@@ -117,5 +131,51 @@ export const UsersOrganizationApp = {
     return loadUserBy({
       'User.id': userId,
     });
+  },
+
+  sendPendingUsersDigest: async (): Promise<void> => {
+    if (!portalConfig.enabled_emails.pending_user_digest) {
+      logApp.info('Pending user digest email disabled.');
+      return;
+    }
+
+    const organizationsWithPendingUsers =
+      await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
+    const promises = organizationsWithPendingUsers.map(async (organization) => {
+      try {
+        const adminUsers = await loadUsersByCapabilitiesInOrganization(
+          organization.id,
+          [OrganizationCapability.AdministrateOrganization]
+        );
+
+        return await Promise.all(
+          adminUsers.map((adminUser) =>
+            sendMail({
+              to: adminUser.email,
+              template: 'organization_pending_user_digest',
+              params: {
+                adminName: formatName(adminUser.first_name ?? ''),
+                organizationName: organization.name,
+                userEmailList: organization.users
+                  .sort((a, b) => a.first_name.localeCompare(b.last_name))
+                  .map(
+                    ({ first_name, last_name, email }) =>
+                      `<li>${formatName(first_name)} ${formatName(last_name)} (${email})</li>`
+                  )
+                  .join(''),
+                userCount: organization.users.length,
+              },
+            })
+          )
+        );
+      } catch (error) {
+        logApp.error(
+          `An error occurred while sending pending user digest to ${organization.name}`,
+          { error }
+        );
+      }
+    });
+
+    await Promise.all(promises);
   },
 };

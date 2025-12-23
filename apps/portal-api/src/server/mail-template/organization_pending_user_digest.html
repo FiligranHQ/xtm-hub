@@ -43,10 +43,7 @@
         }
       </style>
     <![endif]-->
-    <title>
-      New {{platformIdentifier}} SaaS {{deploymentType}} Has Been Launched on
-      XTM Hub by {{organizationName}}
-    </title>
+    <title>XTM Hub - Users Requesting to Join Your Organization</title>
     <style>
       @media (max-width: 600px) {
         .sm-my-8 {
@@ -79,7 +76,7 @@
     <div
       role="article"
       aria-roledescription="email"
-      aria-label="New {{platformIdentifier}} SaaS {{deploymentType}} Has Been Launched on XTM Hub by {{organizationName}}"
+      aria-label="XTM Hub - Users Requesting to Join Your Organization"
       lang="en">
       <div
         class="sm-px-4"
@@ -131,59 +128,27 @@
                       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
                     ">
                     <p style="margin: 0; line-height: 24px">
-                      Hi,<br />
+                      Dear {{adminName}},<br />
                       <br />
-                      A new {{ platformIdentifier }} SaaS {{ deploymentType }}
-                      has been launched:<br />
+                      We would like to inform you that there have been
+                      {{userCount}} requests from users seeking to join your
+                      {{organizationName}} organization:
                     </p>
                     <ul>
-                      <li>Company: {{ organizationName }}</li>
-                      <li>User: {{ userName }} ({{ userEmail }})</li>
-                      <li>Region: {{ region }}</li>
-                      <li>Activity sector: {{ activitySector }}</li>
-                      <li>Use case: {{ useCase }}</li>
+                      {{userEmailList}}
                     </ul>
                     <p>
-                      Please feel free to monitor the requests and progress
-                      through the admin panel to stay updated on the trial's
-                      status.
+                      <br />
+                      <br />
+                      These requests are currently pending your review. Please
+                      log in to your account to review and approve or decline
+                      the requests as appropriate.
+                      <br /><br />
+                      Thank you for your understanding.
                     </p>
-                    <div style="text-align: center">
-                      <a
-                        href="{{ base_url_front }}/app/admin/trials"
-                        style="
-                          color: #f4f4f6;
-                          background-color: #001bdb;
-                          display: inline-block;
-                          border-radius: 4px;
-                          padding: 16px 24px;
-                          font-size: 16px;
-                          line-height: 1;
-                          font-weight: 600;
-                          text-decoration: none;
-                        ">
-                        <!--[if mso]>
-                          <i
-                            style="mso-font-width: 150%; mso-text-raise: 30px"
-                            hidden
-                            >&emsp;</i
-                          >
-                        <![endif]-->
-                        <span style="mso-text-raise: 16px">
-                          Go to Admin Dashboard
-                        </span>
-                        <!--[if mso]>
-                          <i
-                            hidden
-                            style="mso-font-width: 150%"
-                            >&emsp;&#8203;</i
-                          >
-                        <![endif]-->
-                      </a>
-                    </div>
                     <p style="margin: 0; padding-top: 16px">
                       Best regards, <br />
-                      <strong>The XTM Hub Team</strong>
+                      <strong>The Filigran Team</strong>
                     </p>
                     <div
                       role="separator"
@@ -193,13 +158,19 @@
                         margin: 24px 0;
                         background-color: #cbd5e1;
                       ">
-                      &nbsp;
+                      &zwj;
                     </div>
+                    <p style="margin: 0; font-size: 14px">
+                      If you have any questions or require support, don’t
+                      hesitate to reach out at
+                      <a href="mailto:{{ contactEmail }}">{{ contactEmail }}</a
+                      >.
+                    </p>
                   </td>
                 </tr>
                 <tr></tr>
                 <tr role="separator">
-                  <td style="line-height: 16px">&nbsp;</td>
+                  <td style="line-height: 16px">&zwj;</td>
                 </tr>
                 <td
                   style="
@@ -307,6 +278,9 @@
                         style="max-width: 100%; vertical-align: middle" />
                     </a>
                   </div>
+                  <p style="margin: 0 0 40px">
+                    New York, Paris, London, Sydney
+                  </p>
                 </td>
               </table>
             </td>
