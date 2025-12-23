@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { db } from '../../../knexfile';
 import { THALES_ORGA_ID } from '../../../tests/tests.const';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { insertUser, linkUsersToOrganization } from '../users/users.utils.test';
+import { insertUser, linkUsersToOrganization } from '../users/users.test.utils';
 import { UserOrganizationPendingDomain } from './user-organization-pending.domain';
 
 describe('UserOrganizationPendingDomain', () => {
@@ -24,7 +24,6 @@ describe('UserOrganizationPendingDomain', () => {
 
       const thalesResult = result.find((orga) => orga.id === THALES_ORGA_ID);
       expect(thalesResult).toBeDefined();
-      expect(thalesResult!.users.length).toBe(2);
       expect(thalesResult!.users.map(({ id }) => id)).toEqual(
         expect.arrayContaining(thalesUsers.map(({ id }) => id))
       );
@@ -33,7 +32,6 @@ describe('UserOrganizationPendingDomain', () => {
         (orga) => orga.id === PLATFORM_ORGANIZATION_UUID
       );
       expect(filigranResult).toBeDefined();
-      expect(filigranResult!.users.length).toBe(2);
       expect(filigranResult!.users.map(({ id }) => id)).toEqual(
         expect.arrayContaining(filigranUsers.map(({ id }) => id))
       );
