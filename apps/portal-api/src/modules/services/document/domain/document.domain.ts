@@ -1,15 +1,9 @@
 import { Knex } from 'knex';
-import {
-  db,
-  dbRaw,
-  dbUnsecure,
-  paginate,
-  QueryOpts,
-} from '../../../../../knexfile';
+import { db, dbRaw, dbUnsecure, paginate } from '../../../../../knexfile';
 import {
   CustomDashboardConnection,
   DocumentConnection,
-  IntegrationFeedConnection,
+  IntegrationConnection,
   Organization,
   QueryDocumentsArgs,
 } from '../../../../__generated__/resolvers-types';
@@ -55,7 +49,7 @@ export const DocumentDomain = {
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
-    const { user, portalContext } = requestContext.require();
+    const { user } = requestContext.require();
     const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
     const uploader_id =
       documentData.uploader_id && extractedId ? extractedId : user.id;
@@ -69,10 +63,6 @@ export const DocumentDomain = {
         active: documentData.active ?? true,
         uploader_id,
         uploader_organization_id: user.selected_organization_id,
-        ...(!!portalContext.serviceInstanceId && {
-          service_instance_id:
-            portalContext.serviceInstanceId as ServiceInstanceId,
-        }),
       })
       .returning('*');
 
@@ -80,12 +70,9 @@ export const DocumentDomain = {
   },
 
   loadDocumentBy: async (
-    field: Record<string, unknown>,
-    opts = {}
+    field: Record<string, unknown>
   ): Promise<DocumentModel[]> => {
-    return db<DocumentModel>('Document', opts)
-      .where(field)
-      .select('Document.*');
+    return db<DocumentModel>('Document').where(field).select('Document.*');
   },
 
   loadDocumentWithMetadataById: async <T extends Document>(
@@ -102,11 +89,8 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
-  loadUploader: async (
-    documentId: string,
-    opts: Partial<QueryOpts> = {}
-  ): Promise<User | null> => {
-    return db<User>('User', opts)
+  loadUploader: async (documentId: string): Promise<User | null> => {
+    return db<User>('User')
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
       .where('Document.id', '=', documentId)
       .select('User.*')
@@ -114,10 +98,9 @@ export const DocumentDomain = {
   },
 
   loadUploaderOrganization: async (
-    documentId: string,
-    opts: Partial<QueryOpts> = {}
+    documentId: string
   ): Promise<Organization> => {
-    const [organization] = await db<Organization>('Organization', opts)
+    const [organization] = await db<Organization>('Organization')
       .leftJoin(
         'Document',
         'Document.uploader_organization_id',
@@ -130,10 +113,7 @@ export const DocumentDomain = {
   },
 
   loadParentDocumentsByServiceInstance: async <
-    T =
-      | DocumentConnection
-      | IntegrationFeedConnection
-      | CustomDashboardConnection,
+    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
   >(
     type: string,
     input: QueryDocumentsArgs,
@@ -156,10 +136,7 @@ export const DocumentDomain = {
   },
 
   loadDocuments: async <
-    T =
-      | DocumentConnection
-      | IntegrationFeedConnection
-      | CustomDashboardConnection,
+    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
   >(
     opts: Partial<QueryDocumentsArgs>,
     field: Record<string, unknown>,
@@ -167,7 +144,7 @@ export const DocumentDomain = {
   ): Promise<T> => {
     const { user } = requestContext.require();
 
-    const loadDocumentQuery = db<Document>('Document', opts)
+    const loadDocumentQuery = db<Document>('Document')
       .select(['Document.*'])
       .tap(restrictDocumentToUserOrganization)
       .where(field);
@@ -266,10 +243,7 @@ export const DocumentDomain = {
   },
 
   loadPaginatedSeoDocumentsByServiceSlug: async <
-    T =
-      | DocumentConnection
-      | IntegrationFeedConnection
-      | CustomDashboardConnection,
+    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
   >(
     type: string,
     serviceSlug: string,

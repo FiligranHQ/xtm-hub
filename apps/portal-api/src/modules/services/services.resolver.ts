@@ -2,7 +2,7 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db } from '../../../knexfile';
 import {
-  IntegrationFeedType,
+  IntegrationType,
   RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
@@ -31,7 +31,7 @@ import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
-import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from './integration-feeds/integration-feeds.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './integrations/integrations.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios/openaev-scenarios.domain';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
@@ -53,19 +53,19 @@ import {
 const resolvers: Resolvers = {
   ServiceInstance: {
     __resolveType(service_instance) {
-      const integrationFeedMapping = {
-        [IntegrationFeedType.Connector]: 'Connector',
-        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+      const integrationMapping = {
+        [IntegrationType.Connector]: 'Connector',
+        [IntegrationType.CsvFeed]: 'CsvFeed',
       };
       const typeMapping = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
-        [OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
+        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
       };
 
-      if (service_instance.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+      if (service_instance.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         return (
-          integrationFeedMapping[service_instance.integration_type] ??
+          integrationMapping[service_instance.integration_type] ??
           typeMapping[service_instance.type]
         );
       }
@@ -197,13 +197,12 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    deleteServiceInstance: async (_, { id }, context) => {
+    deleteServiceInstance: async (_, { id }) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
       };
       const [deletedServiceInstance] = await db<ServiceInstance>(
-        context,
         'ServiceInstance'
       )
         .where({ id: databaseId })
@@ -213,8 +212,14 @@ const resolvers: Resolvers = {
     },
     addServicePicture: async (_, payload) => {
       try {
+        const extractedServiceInstanceId = extractId<ServiceInstanceId>(
+          payload.serviceInstanceId
+        );
         const updatedServiceInstance = await withTransaction(async () => {
-          const document = await uploadNewFile(payload.document);
+          const document = await uploadNewFile(
+            payload.document,
+            extractedServiceInstanceId
+          );
           const update = payload.isLogo
             ? {
                 logo_document_id: document.id,
@@ -226,7 +231,7 @@ const resolvers: Resolvers = {
             'ServiceInstance'
           )
             .where({
-              id: extractId<ServiceInstanceId>(payload.serviceInstanceId),
+              id: extractedServiceInstanceId,
             })
             .update(update)
             .returning('*');
@@ -238,13 +243,12 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    editServiceInstance: async (_, { id, name }, context) => {
+    editServiceInstance: async (_, { id, name }) => {
       const { id: databaseId } = fromGlobalId(id) as {
         type: DatabaseType;
         id: string;
       };
       const [updatedServiceInstance] = await db<ServiceInstance>(
-        context,
         'ServiceInstance'
       )
         .where({ id: databaseId })
@@ -253,7 +257,7 @@ const resolvers: Resolvers = {
       await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
       return updatedServiceInstance;
     },
-    addServiceInstance: async (_, { input }, context) => {
+    addServiceInstance: async (_, { input }) => {
       try {
         const dataService = {
           id: uuidv4(),
@@ -264,7 +268,6 @@ const resolvers: Resolvers = {
 
         return await withTransaction(async () => {
           const [addedServiceInstance] = await db<ServiceInstance>(
-            context,
             'ServiceInstance'
           )
             .insert(dataService)
@@ -279,7 +282,7 @@ const resolvers: Resolvers = {
             price: input.price,
           };
 
-          await db<ServicePrice>(context, 'Service_Price')
+          await db<ServicePrice>('Service_Price')
             .insert(dataServicePrice)
             .returning('*');
 
@@ -291,7 +294,7 @@ const resolvers: Resolvers = {
             name: input.service_instance_name,
           };
 
-          await db<ServiceLink>(context, 'Service_Link')
+          await db<ServiceLink>('Service_Link')
             .insert(dataServiceLink)
             .returning('*');
           await dispatch('ServiceInstance', 'add', addedServiceInstance);
@@ -305,10 +308,7 @@ const resolvers: Resolvers = {
             status: 'ACCEPTED',
           };
 
-          const [addedSubscription] = await db<Subscription>(
-            context,
-            'Subscription'
-          )
+          const [addedSubscription] = await db<Subscription>('Subscription')
             .insert(dataSubscription)
             .returning('*');
           addedSubscription.organization = await loadOrganizationBy({

@@ -31,6 +31,16 @@ export interface OpenCTIFreeTrialRegistered {
 export interface OpenCTIFreeTrialGenericModel {
   firstName: string;
 }
+export interface AdminSaasInstanceRequestedModel {
+  organizationName: string;
+  userName: string;
+  userEmail: string;
+  region: string;
+  activitySector: string;
+  useCase: string;
+  platformIdentifier: string;
+  deploymentType: string;
+}
 
 export interface PlatformUnregisteredModel {
   adminName: string;
@@ -44,10 +54,7 @@ export const ServiceIdentifierToMailTemplate = new Map<
     ServiceDefinitionIdentifier.OpenctiCustomDashboards,
     'opencti_custom_dashboards',
   ],
-  [
-    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
-    'opencti_integration_feeds',
-  ],
+  [ServiceDefinitionIdentifier.OpenctiIntegrations, 'opencti_integrations'],
   [ServiceDefinitionIdentifier.Vault, 'vault'],
 ]);
 // ATTENTION, the key should be the same as the template file
@@ -55,7 +62,7 @@ export type MailTemplates = {
   welcome: WelcomeMailModel;
   vault: GenericServiceMailModel;
   opencti_custom_dashboards: GenericServiceMailModel;
-  opencti_integration_feeds: GenericServiceMailModel;
+  opencti_integrations: GenericServiceMailModel;
   openaev_scenarios: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
   request_transfer_personal_space: RequestTransferPersonalSpaceMailModel;
@@ -69,6 +76,7 @@ export type MailTemplates = {
   opencti_free_trial_provisioning: OpenCTIFreeTrialGenericModel;
   opencti_free_trial_cancelled: OpenCTIFreeTrialGenericModel;
   opencti_free_trial_expired: OpenCTIFreeTrialGenericModel;
+  admin_saas_instance_requested: AdminSaasInstanceRequestedModel;
 };
 
 export const templateSubjects: {
@@ -79,7 +87,7 @@ export const templateSubjects: {
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   opencti_custom_dashboards: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
-  opencti_integration_feeds: (params: GenericServiceMailModel) =>
+  opencti_integrations: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   openaev_scenarios: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
@@ -102,4 +110,7 @@ export const templateSubjects: {
     `Your OpenCTI Platform Is Being Provisioned`,
   opencti_free_trial_cancelled: () => 'Your OpenCTI Trial Has Been Cancelled',
   opencti_free_trial_expired: () => 'Your OpenCTI Free Trial Has Expired',
+  admin_saas_instance_requested: (params: AdminSaasInstanceRequestedModel) => {
+    return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Launch on XTM Hub by ${params.organizationName}`;
+  },
 };

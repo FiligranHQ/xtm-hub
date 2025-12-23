@@ -1,0 +1,120 @@
+enum IntegrationType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  taxii_feed
+  opencti_stream_feed
+  third_party_integration
+}
+
+enum ConnectorType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
+}
+
+interface Integration implements Node & Document {
+  # Node
+  id: ID!
+
+  # Document
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+
+  remover_id: ID
+  integration_type: IntegrationType!
+}
+
+type Connector implements Node & Document & Integration {
+  # Node
+  id: ID!
+  # Document
+  type: String!
+  uploader: User
+  uploader_organization: Organization @auth
+  name: String!
+  short_description: String
+  description: String
+  file_name: String @auth
+  minio_name: String! @auth
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String @auth
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel @auth
+  children_documents: [ShareableResource!]
+  # Integrations
+  remover_id: ID @auth
+  integration_type: IntegrationType!
+  product_version: String!
+  container_image: String
+  verified: Boolean!
+  source_code: String
+  subscription_link: String
+  integration_subtype: ConnectorType!
+  manager_supported: Boolean!
+  playbook_supported: Boolean!
+}
+
+type IntegrationEdge {
+  cursor: String!
+  node: Integration!
+}
+
+type IntegrationConnection {
+  totalCount: Int!
+  edges: [IntegrationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  integrations(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): IntegrationConnection! @auth
+  integration(id: ID, serviceInstanceId: ID): Integration @auth
+  publicIntegrations(
+    slug: String!
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+    serviceInstanceId: String
+  ): IntegrationConnection!
+  publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
+  publicIntegrationBySlug(slug: String): Integration
+}

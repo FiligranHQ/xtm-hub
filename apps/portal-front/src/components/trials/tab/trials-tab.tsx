@@ -301,6 +301,11 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
               accessorKey: 'cancellation_user_email',
               id: 'cancellation_user_email',
             },
+            {
+              header: t('TrialsDashboard.Columns.CancellationReason'),
+              accessorKey: 'cancellation_reason',
+              id: 'cancellation_reason',
+            },
           ]
         : []),
       ...(type === TrialsTabType.Running || type === TrialsTabType.Waiting

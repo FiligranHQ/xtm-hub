@@ -1,5 +1,5 @@
 import {
-  IntegrationFeedType,
+  IntegrationType,
   Organization,
   PlatformContract,
   PlatformIdentifier,
@@ -65,8 +65,8 @@ const ServiceIdentifierToEventService = new Map<
     TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY,
   ],
   [
-    ServiceDefinitionIdentifier.OpenctiIntegrationFeeds,
-    TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+    ServiceDefinitionIdentifier.OpenctiIntegrations,
+    TelemetryEventService.INTEGRATIONS_LIBRARY,
   ],
   [
     ServiceDefinitionIdentifier.OpenctiCustomDashboards,
@@ -88,19 +88,19 @@ export function shouldSendEventForService(
   return ServiceIdentifierToEventService.has(service);
 }
 
-const IntegrationFeedTypeToEventServiceType = new Map<
-  IntegrationFeedType,
+const IntegrationTypeToEventServiceType = new Map<
+  IntegrationType,
   TelemetryEventServiceType
 >([
-  [IntegrationFeedType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
-  [IntegrationFeedType.Connector, TelemetryEventServiceType.CONNECTORS],
+  [IntegrationType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
+  [IntegrationType.Connector, TelemetryEventServiceType.CONNECTORS],
 ]);
 
 const buildServiceTypeEvent = async (resource_id: string) => {
   const integration_type =
     await DocumentMetadataDomain.loadIntegrationType(resource_id);
 
-  return IntegrationFeedTypeToEventServiceType.get(integration_type);
+  return IntegrationTypeToEventServiceType.get(integration_type);
 };
 
 export function buildLoginEvent(

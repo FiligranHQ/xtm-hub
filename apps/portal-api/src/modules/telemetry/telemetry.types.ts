@@ -119,6 +119,7 @@ export interface UpdateDeploymentEvent extends BaseTelemetryEvent {
   end_date: Date;
   platform_id: string;
   status?: DeploymentRequestHubStatus;
+  cancellation_reason?: string;
 }
 
 export type TelemetryEvent =

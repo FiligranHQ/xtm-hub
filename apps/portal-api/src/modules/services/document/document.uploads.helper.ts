@@ -1,5 +1,6 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { DocumentId } from '../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { MinioFile } from '../../../thirdparty/minio/types';
 import { extractId } from '../../../utils/utils';
@@ -22,25 +23,33 @@ export const waitForUploads = async (uploads: Upload[] | Upload) => {
   await Promise.all(uploads.map((upload) => upload.promise));
 };
 
-export const processUploads = async (uploads: Upload[] | Upload) => {
+export const processUploads = async (
+  uploads: Upload[] | Upload,
+  serviceInstanceId: ServiceInstanceId
+) => {
   if (!Array.isArray(uploads)) {
     uploads = [uploads];
   }
   await waitForUploads(uploads);
-  return Promise.all(uploads.map((doc: Upload) => MinIOClient.createFile(doc)));
+  return Promise.all(
+    uploads.map((doc: Upload) => MinIOClient.createFile(doc, serviceInstanceId))
+  );
 };
 
 export const processDocumentUpdateUploads = async (
   document: Upload[] | undefined,
   updateDocument: boolean,
-  images: string[]
+  images: string[],
+  serviceInstanceId: ServiceInstanceId
 ): Promise<UpdateDocumentDocuments> => {
   let documentFile: MinioFile;
   let newImages: MinioFile[] = [];
   if (document && document.length > 0) {
     await waitForUploads(document);
     const files = await Promise.all(
-      document.map((doc: Upload) => MinIOClient.createFile(doc))
+      document.map((doc: Upload) =>
+        MinIOClient.createFile(doc, serviceInstanceId)
+      )
     );
     if (updateDocument) {
       documentFile = files.shift();

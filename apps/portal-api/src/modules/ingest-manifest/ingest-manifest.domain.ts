@@ -2,9 +2,9 @@ import { omit } from '../../utils/utils';
 import { DocumentApp } from '../services/document/document.app';
 import {
   Connector,
-  INTEGRATION_FEED_CONNECTOR_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../services/integration-feeds/integration-feeds.model';
+  INTEGRATION_CONNECTOR_METADATA,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../services/integrations/integrations.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildCreateEvent } from '../telemetry/telemetry.helper';
 import { base64ToUpload } from './ingest-manifest.helper';
@@ -20,10 +20,10 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         `${connector.name}-logo.png`
       );
       const doc = await DocumentApp.upsertDocumentWithChildren<Connector>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         { ...omit(connector, ['logo']) } as Connector,
         uploadLogo,
-        INTEGRATION_FEED_CONNECTOR_METADATA
+        INTEGRATION_CONNECTOR_METADATA
       );
       const newDocIsCreated = !doc.updated_at;
       if (newDocIsCreated) {

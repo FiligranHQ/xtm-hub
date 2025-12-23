@@ -73,8 +73,7 @@ export const DocumentApp = {
     uploads: Upload[] | Upload,
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
-    const files = await processUploads(uploads);
-
+    const files = await processUploads(uploads, input.service_instance_id);
     const docFile = files.shift();
     return await withTransaction(async () => {
       const doc = await DocumentApp.createDocumentWithChildrenAndMetadata<T>(
@@ -88,7 +87,11 @@ export const DocumentApp = {
         metadataKeys
       );
 
-      await DocumentChildrenDomain.createImageDocuments(doc.id, files);
+      await DocumentChildrenDomain.createImageDocuments(
+        doc.id,
+        doc.service_instance_id,
+        files
+      );
 
       return doc;
     });
@@ -158,6 +161,7 @@ export const DocumentApp = {
   updateDocumentWithChildren: async <T extends DocumentModel>(
     type: string,
     parentDocumentId: DocumentId,
+    serviceInstanceId: ServiceInstanceId,
     mutationArgs: MutationUpdateDocumentArgs,
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
@@ -168,7 +172,12 @@ export const DocumentApp = {
       input,
     } = mutationArgs;
     const { documentFile, newImages, existingImageIds } =
-      await processDocumentUpdateUploads(document, isUpdateDoc, images);
+      await processDocumentUpdateUploads(
+        document,
+        isUpdateDoc,
+        images,
+        serviceInstanceId
+      );
     const data = {
       ...input,
       type,
@@ -201,6 +210,7 @@ export const DocumentApp = {
 
       await DocumentChildrenDomain.createImageDocuments(
         parentDocumentId,
+        serviceInstanceId,
         newImages
       );
       return updatedDocument;

@@ -25,24 +25,16 @@ const resolvers: Resolvers = {
   SeoOpenAEVScenario: {
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) =>
-      DocumentDomain.loadUploader(id, {
-        unsecured: true,
-      }),
-    labels: ({ id }) =>
-      labelsDomain.loadLabelsByDocumentId(id, {
-        unsecured: true,
-      }),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
+    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
   },
   OpenAEVScenario: {
-    labels: ({ id }) =>
-      labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
+    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) =>
-      DocumentDomain.loadUploader(id, { unsecured: true }),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
     uploader_organization: ({ id }, _) =>
-      DocumentDomain.loadUploaderOrganization(id, { unsecured: true }),
+      DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
@@ -70,9 +62,19 @@ const resolvers: Resolvers = {
       OpenAEVScenariosApp.loadOpenAEVScenario(extractId<DocumentId>(id)),
   },
   Mutation: {
-    createOpenAEVScenario: async (_, { input, document }) => {
+    createOpenAEVScenario: async (
+      _,
+      { input, document, serviceInstanceId }
+    ) => {
       try {
-        return OpenAEVScenariosApp.createOpenAEVScenario(input, document);
+        return OpenAEVScenariosApp.createOpenAEVScenario(
+          {
+            ...input,
+            service_instance_id:
+              extractId<ServiceInstanceId>(serviceInstanceId),
+          },
+          document
+        );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.OpenAEVScenarioUniqueSlugError, {
@@ -90,6 +92,7 @@ const resolvers: Resolvers = {
         return DocumentApp.updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
           input,
           OPENAEV_SCENARIO_METADATA
         );
@@ -105,11 +108,11 @@ const resolvers: Resolvers = {
         );
       }
     },
-    deleteOpenAEVScenario: async (_, { id }, context) => {
+    deleteOpenAEVScenario: async (_, { id, serviceInstanceId }) => {
       try {
         return DocumentApp.deleteDocument<OpenAEVScenario>(
           extractId<DocumentId>(id),
-          context.serviceInstanceId as ServiceInstanceId,
+          extractId<ServiceInstanceId>(serviceInstanceId),
           true
         );
       } catch (error) {

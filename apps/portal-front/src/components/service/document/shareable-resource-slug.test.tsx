@@ -81,8 +81,8 @@ describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
     shouldShowOneClickComponent | documentType                  | documentActive
     ${true}                     | ${'opencti_custom_dashboard'} | ${true}
     ${false}                    | ${'opencti_custom_dashboard'} | ${false}
-    ${true}                     | ${'opencti_integration_feed'} | ${true}
-    ${false}                    | ${'opencti_integration_feed'} | ${false}
+    ${true}                     | ${'opencti_integration'}      | ${true}
+    ${false}                    | ${'opencti_integration'}      | ${false}
     ${true}                     | ${'openaev_scenario'}         | ${true}
     ${false}                    | ${'openaev_scenario'}         | ${false}
   `(

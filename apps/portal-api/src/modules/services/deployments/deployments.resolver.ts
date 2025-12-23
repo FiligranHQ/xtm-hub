@@ -77,11 +77,15 @@ const resolvers: Resolvers = {
         );
       }
     },
-    cancelDeploymentRequest: async (_, { deploymentRequestId }) => {
+    cancelDeploymentRequest: async (
+      _,
+      { deploymentRequestId, cancellationReason }
+    ) => {
       try {
         return await DeploymentsApp.cancelDeploymentRequest(
           extractId<DeploymentRequestId>(deploymentRequestId),
-          false
+          false,
+          cancellationReason
         );
       } catch (error) {
         throw mapToGraphQLError(

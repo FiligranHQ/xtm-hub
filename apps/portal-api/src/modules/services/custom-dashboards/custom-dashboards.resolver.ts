@@ -23,14 +23,12 @@ import {
 
 const resolvers: Resolvers = {
   CustomDashboard: {
-    labels: ({ id }) =>
-      labelsDomain.loadLabelsByDocumentId(id, { unsecured: true }),
+    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) =>
-      DocumentDomain.loadUploader(id, { unsecured: true }),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
     uploader_organization: ({ id }, _) =>
-      DocumentDomain.loadUploaderOrganization(id, { unsecured: true }),
+      DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: async ({ service_instance_id }, _, context) =>
@@ -46,14 +44,9 @@ const resolvers: Resolvers = {
       for (const dashboard of dashboards) {
         dashboard.children_documents =
           await DocumentChildrenDomain.loadImagesByDocumentId(dashboard.id);
-        dashboard.uploader = await DocumentDomain.loadUploader(dashboard.id, {
-          unsecured: true,
-        });
+        dashboard.uploader = await DocumentDomain.loadUploader(dashboard.id);
         dashboard.labels = await labelsDomain.loadLabelsByDocumentId(
-          dashboard.id,
-          {
-            unsecured: true,
-          }
+          dashboard.id
         );
       }
       return dashboards;
@@ -72,9 +65,19 @@ const resolvers: Resolvers = {
       CustomDashboardsApp.loadCustomDashboard(extractId<DocumentId>(id)),
   },
   Mutation: {
-    createCustomDashboard: async (_, { input, document }) => {
+    createCustomDashboard: async (
+      _,
+      { input, document, serviceInstanceId }
+    ) => {
       try {
-        return CustomDashboardsApp.createCustomDashboard(input, document);
+        return CustomDashboardsApp.createCustomDashboard(
+          {
+            ...input,
+            service_instance_id:
+              extractId<ServiceInstanceId>(serviceInstanceId),
+          },
+          document
+        );
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
@@ -93,6 +96,7 @@ const resolvers: Resolvers = {
         return DocumentApp.updateDocumentWithChildren<CustomDashboard>(
           OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
           input,
           CUSTOM_DASHBOARD_METADATA
         );
@@ -109,11 +113,11 @@ const resolvers: Resolvers = {
         );
       }
     },
-    deleteCustomDashboard: async (_, { id }, context) => {
+    deleteCustomDashboard: async (_, { id, serviceInstanceId }) => {
       try {
         return DocumentApp.deleteDocument<CustomDashboard>(
           extractId<DocumentId>(id),
-          context.serviceInstanceId as ServiceInstanceId,
+          extractId<ServiceInstanceId>(serviceInstanceId),
           true
         );
       } catch (error) {

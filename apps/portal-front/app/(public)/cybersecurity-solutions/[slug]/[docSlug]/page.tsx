@@ -10,9 +10,9 @@ import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
+  isConnectorResource,
   SeoResource,
   ServiceSlug,
-  isConnectorResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
@@ -88,7 +88,7 @@ export async function generateMetadata({
     description: document.short_description
       ? `${document.short_description}${serviceInformation?.description}`
       : document.description?.substring(0, 160) ||
-        `Explore this cybersecurity ${serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ? 'dashboard' : 'integration feed'} for enhanced threat intelligence and monitoring.`,
+        `Explore this cybersecurity ${serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ? 'dashboard' : 'integration'} for enhanced threat intelligence and monitoring.`,
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: document!.name!,
