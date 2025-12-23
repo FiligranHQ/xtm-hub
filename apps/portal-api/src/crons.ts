@@ -28,9 +28,5 @@ const sendPendingUserDigest = async (): Promise<void> => {
 export const initCronJobs = () => {
   logApp.info('Initializing cron jobs');
   cron.schedule('0 2 * * *', expireTrials);
-  // production config
-  // cron.schedule('0 9 * * 1', sendPendingUserDigest);
-
-  // test config, to remove before merging
-  cron.schedule('* * * * *', sendPendingUserDigest);
+  cron.schedule('0 9 * * 1', sendPendingUserDigest);
 };
