@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { db } from '../../../knexfile';
-import { THALES_ORGA_ID } from '../../../tests/tests.const';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
-import { insertUser, linkUsersToOrganization } from '../users/users.test.utils';
+import { db } from '../../../../knexfile';
+import { THALES_ORGA_ID } from '../../../../tests/tests.const';
+import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import {
+  insertUser,
+  linkUsersToOrganization,
+} from '../../users/users.test.utils';
 import { UserOrganizationPendingDomain } from './user-organization-pending.domain';
 
 describe('UserOrganizationPendingDomain', () => {

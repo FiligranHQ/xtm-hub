@@ -4,7 +4,7 @@ import portalConfig from '../../config';
 import User, { UserId } from '../../model/kanel/public/User';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import * as MailService from '../../server/mail-service';
-import { UserOrganizationPendingDomain } from '../common/user-organization-pending.domain';
+import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { UsersOrganizationApp } from './users.organization.app';
 
 describe('UsersOrganizationApp', () => {

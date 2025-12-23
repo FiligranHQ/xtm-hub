@@ -30,7 +30,6 @@ import { hashPassword } from '../../utils/hash-password.util';
 import { isEmpty } from '../../utils/utils';
 import { extractDomain } from '../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
-import { insertNewUserOrganizationPendingUnsecure } from '../common/user-organization-pending.domain';
 import {
   loadUserOrganization,
   updateUserOrgCapabilities,
@@ -47,6 +46,7 @@ import { loadOrganizationsFromEmail } from '../organizations/organizations.helpe
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildCreateOrganizationEvent } from '../telemetry/telemetry.helper';
+import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
@@ -158,7 +158,7 @@ export const createNewUserWithPendingOrga = async (
     first_name,
     picture,
   });
-  await insertNewUserOrganizationPendingUnsecure({
+  await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
     user_id: addedUser.id,
     organization_id: organization.id,
   });

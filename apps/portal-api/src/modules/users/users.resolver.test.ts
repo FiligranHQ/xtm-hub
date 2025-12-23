@@ -40,12 +40,12 @@ import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
-import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import * as UserOrganizationDomain from '../common/user-organization.domain';
 import {
   deleteSubscriptionUnsecure,
   insertUnsecureSubscription,
 } from '../subcription/subscription.helper';
+import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { deleteUserById, loadUnsecureUser, loadUserBy } from './users.domain';
 import { removeUser } from './users.helper';
 import usersResolver from './users.resolver';
@@ -820,9 +820,10 @@ describe('User mutation resolver', () => {
       expect(updatedUser.selected_org_capabilities).to.includes(
         'ADMINISTRATE_ORGANIZATION'
       );
-      const usersPendingOrg = await loadUserOrganizationPending({
-        user_id: updatedUser.id,
-      });
+      const usersPendingOrg =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: updatedUser.id,
+        });
       expect(usersPendingOrg.length).toBe(0);
 
       await removeUser({ email: pendingUser.email });
@@ -965,9 +966,10 @@ describe('User mutation resolver', () => {
         undefined
       );
 
-      const usersPendingOrg = await loadUserOrganizationPending({
-        user_id: pendingUser.id,
-      });
+      const usersPendingOrg =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: pendingUser.id,
+        });
 
       expect(usersPendingOrg.length).toBe(0);
       await removeUser({ email: pendingUser.email });
