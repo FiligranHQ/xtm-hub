@@ -24,34 +24,17 @@ async function switchOrganization(organization_id: string) {
   );
 }
 
-// temporary fix will be fixed in the next release https://github.com/FiligranHQ/xtm-hub/issues/650
-const mapNewIdentifierToOldIdentifier = (
-  identifier: string
-): ServiceDefinitionIdentifierEnum => {
-  const mapValue: Record<string, ServiceDefinitionIdentifierEnum> = {
-    octi_custom_dashboards:
-      ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_DASHBOARDS,
-    octi_integration_feeds:
-      ServiceDefinitionIdentifierEnum.OPENCTI_INTEGRATIONS,
-    obas_scenarios: ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS,
-  };
-  return (
-    mapValue[identifier] ?? (identifier as ServiceDefinitionIdentifierEnum)
-  );
-};
-
 export const redirectToResource = async (
   params: { identifier: string },
   request: NextRequest
 ) => {
   const searchParams = request.nextUrl.searchParams;
-  const identifier = mapNewIdentifierToOldIdentifier(params.identifier);
   const opencti_platform_id = searchParams.get('opencti_platform_id');
   const platform_id = searchParams.get('platform_id');
   const service_instance_id = searchParams.get('service_instance_id');
   const document_id = searchParams.get('document_id');
 
-  if (!isValueInEnum(identifier, ServiceDefinitionIdentifierEnum)) {
+  if (!isValueInEnum(params.identifier, ServiceDefinitionIdentifierEnum)) {
     // Raise a bad request error
     return new Response('Invalid identifier', { status: 400 });
   }
@@ -62,7 +45,10 @@ export const redirectToResource = async (
   // Build the login URL from the settings and the curent URL
   try {
     // The URL to highlight the service in the homepage
-    const highlightUrl = new URL(`/${APP_PATH}?h=${identifier}`, baseUrlFront);
+    const highlightUrl = new URL(
+      `/${APP_PATH}?h=${params.identifier}`,
+      baseUrlFront
+    );
 
     // 1. Load the user
     // ----------------
@@ -79,7 +65,7 @@ export const redirectToResource = async (
 
     // 2. Load the services instances subscribed by the user's organizations
     // ----------------------------------------------------------------------
-    const servicesInstances = await loadOwnedUserServices(identifier);
+    const servicesInstances = await loadOwnedUserServices(params.identifier);
     if (!organizationId) {
       organizationId = servicesInstances.find(
         (instance) => instance.service_instance_id === service_instance_id
@@ -114,7 +100,7 @@ export const redirectToResource = async (
       return NextResponse.redirect(
         getServiceInstanceUrl(
           baseUrlFront,
-          identifier,
+          params.identifier,
           service_instance_id!,
           document_id
         )
@@ -128,7 +114,7 @@ export const redirectToResource = async (
       return NextResponse.redirect(
         getServiceInstanceUrl(
           baseUrlFront,
-          identifier,
+          params.identifier,
           organizationServiceInstances[0]!.service_instance_id
         )
       );
