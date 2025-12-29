@@ -50,11 +50,11 @@ type Query {
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  integrationFeeds(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
-  integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed
-  publicIntegrationFeeds(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationFeedConnection!
-  publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
-  publicIntegrationFeedBySlug(slug: String): IntegrationFeed
+  integrations(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationConnection!
+  integration(id: ID, serviceInstanceId: ID): Integration
+  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationConnection!
+  publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
+  publicIntegrationBySlug(slug: String): Integration
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
@@ -252,7 +252,7 @@ enum ServiceDefinitionIdentifier {
   vault
   link
   opencti_custom_dashboards
-  opencti_integration_feeds
+  opencti_integrations
   openaev_scenarios
   opencti_registration
   openaev_registration
@@ -544,7 +544,7 @@ type ServiceLink implements Node {
   name: String
 }
 
-type CsvFeed implements Node & Document & IntegrationFeed {
+type CsvFeed implements Node & Document & Integration {
   id: ID!
   type: String!
   uploader: User
@@ -567,7 +567,7 @@ type CsvFeed implements Node & Document & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationType!
 }
 
 input CreateCsvFeedInput {
@@ -591,7 +591,7 @@ input UpdateCsvFeedInput {
   uploader_id: String
 }
 
-enum IntegrationFeedType {
+enum IntegrationType {
   csv_feed
   connector
   rss_feed
@@ -609,7 +609,7 @@ enum ConnectorType {
   STREAM
 }
 
-interface IntegrationFeed implements Node & Document {
+interface Integration implements Node & Document {
   id: ID!
   type: String!
   uploader: User
@@ -632,10 +632,10 @@ interface IntegrationFeed implements Node & Document {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationType!
 }
 
-type Connector implements Node & Document & IntegrationFeed {
+type Connector implements Node & Document & Integration {
   id: ID!
   type: String!
   uploader: User
@@ -658,7 +658,7 @@ type Connector implements Node & Document & IntegrationFeed {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationType!
   product_version: String!
   container_image: String
   verified: Boolean!
@@ -669,14 +669,14 @@ type Connector implements Node & Document & IntegrationFeed {
   playbook_supported: Boolean!
 }
 
-type IntegrationFeedEdge {
+type IntegrationEdge {
   cursor: String!
-  node: IntegrationFeed!
+  node: Integration!
 }
 
-type IntegrationFeedConnection {
+type IntegrationConnection {
   totalCount: Int!
-  edges: [IntegrationFeedEdge!]!
+  edges: [IntegrationEdge!]!
   pageInfo: PageInfo!
 }
 

@@ -4,9 +4,9 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import IntegrationFeedsList from '@/components/service/integration-feeds/[serviceInstanceId]/integration-feeds-list';
-import { IntegrationFeedsListQuery } from '@/components/service/integration-feeds/integration-feed.graphql';
-import { integrationFeedsQuery } from '@generated/integrationFeedsQuery.graphql';
+import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/integrations-list';
+import { IntegrationsListQuery } from '@/components/service/integrations/integration.graphql';
+import { integrationsQuery } from '@generated/integrationsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { Skeleton } from 'filigran-ui';
@@ -18,8 +18,8 @@ interface PageLoaderProps {
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
-  const [queryRef, loadQuery] = useQueryLoader<integrationFeedsQuery>(
-    IntegrationFeedsListQuery
+  const [queryRef, loadQuery] = useQueryLoader<integrationsQuery>(
+    IntegrationsListQuery
   );
   const {
     pageSize,
@@ -69,7 +69,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   return (
     <>
       {queryRef ? (
-        <IntegrationFeedsList
+        <IntegrationsList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           search={search}

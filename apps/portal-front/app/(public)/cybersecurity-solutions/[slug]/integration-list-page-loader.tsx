@@ -1,27 +1,27 @@
 'use client';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import PublicIntegrationFeedsList from '@/components/service/integration-feeds/[serviceInstanceId]/public-integration-feeds-list';
+import PublicIntegrationsList from '@/components/service/integrations/[serviceInstanceId]/public-integrations-list';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
-import { seoIntegrationFeedsQuery } from '@generated/seoIntegrationFeedsQuery.graphql';
+import { seoIntegrationsQuery } from '@generated/seoIntegrationsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { Skeleton } from 'filigran-ui';
 import React, { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
-import { SeoIntegrationFeedListQuery } from './seo-integration-feed.graphql';
+import { SeoIntegrationListQuery } from './seo-integration.graphql';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
 }
 
-export const IntegrationFeedListPageLoader: React.FC<Props> = ({
+export const IntegrationListPageLoader: React.FC<Props> = ({
   serviceInstance,
   baseUrl,
 }) => {
-  const [queryRef, loadQuery] = useQueryLoader<seoIntegrationFeedsQuery>(
-    SeoIntegrationFeedListQuery
+  const [queryRef, loadQuery] = useQueryLoader<seoIntegrationsQuery>(
+    SeoIntegrationListQuery
   );
 
   const { localStorageKey } = useShareableResourceMapping(
@@ -72,7 +72,7 @@ export const IntegrationFeedListPageLoader: React.FC<Props> = ({
   return (
     <>
       {queryRef ? (
-        <PublicIntegrationFeedsList
+        <PublicIntegrationsList
           serviceInstance={serviceInstance}
           search={search}
           onSearchChange={setSearch}

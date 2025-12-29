@@ -6,7 +6,7 @@ import {
 import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
-export const IntegrationFeedDeployableFilter = () => {
+export const IntegrationDeployableFilter = () => {
   const { deployable, setDeployable } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );

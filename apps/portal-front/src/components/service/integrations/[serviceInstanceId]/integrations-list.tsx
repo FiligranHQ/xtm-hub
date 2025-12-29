@@ -12,23 +12,24 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import {
-  integrationFeedsFragment,
-  integrationFeedsItem,
-  IntegrationFeedsListQuery,
-} from '@/components/service/integration-feeds/integration-feed.graphql';
+  integrationsFragment,
+  integrationsItem,
+  IntegrationsListQuery,
+} from '@/components/service/integrations/integration.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
-import { IntegrationFeedDeployableFilter } from '@/components/ui/shareable-resource/integration-feed/integration-feed-deployable-filter';
-import { IntegrationFeedFilters } from '@/components/ui/shareable-resource/integration-feed/integration-feed-filters';
+import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/integration-deployable-filter';
+import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/integration-filters';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/product-version-filter';
 import {
-  integrationFeedsItem_fragment$data,
-  integrationFeedsItem_fragment$key,
-} from '@generated/integrationFeedsItem_fragment.graphql';
-import { integrationFeedsList$key } from '@generated/integrationFeedsList.graphql';
+  integrationsItem_fragment$data,
+  integrationsItem_fragment$key,
+} from '@generated/integrationsItem_fragment.graphql';
+import { integrationsList$key } from '@generated/integrationsList.graphql';
+
 import {
-  integrationFeedsQuery,
-  integrationFeedsQuery$variables,
-} from '@generated/integrationFeedsQuery.graphql';
+  integrationsQuery,
+  integrationsQuery$variables,
+} from '@generated/integrationsQuery.graphql';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
@@ -39,35 +40,35 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 
-interface IntegrationFeedsListProps {
-  queryRef: PreloadedQuery<integrationFeedsQuery>;
+interface IntegrationsListProps {
+  queryRef: PreloadedQuery<integrationsQuery>;
   serviceInstance: serviceInstance_fragment$data;
   search: string;
   onSearchChange: (v: string) => void;
 }
 
-const IntegrationFeedsList = ({
+const IntegrationsList = ({
   queryRef,
   serviceInstance,
   search,
   onSearchChange,
-}: IntegrationFeedsListProps) => {
-  const queryData = usePreloadedQuery<integrationFeedsQuery>(
-    IntegrationFeedsListQuery,
+}: IntegrationsListProps) => {
+  const queryData = usePreloadedQuery<integrationsQuery>(
+    IntegrationsListQuery,
     queryRef
   );
 
   const [data, refetch] = useRefetchableFragment<
-    integrationFeedsQuery,
-    integrationFeedsList$key
-  >(integrationFeedsFragment, queryData);
+    integrationsQuery,
+    integrationsList$key
+  >(integrationsFragment, queryData);
 
   const [active, draft] = useActiveAndDraftSplit<
-    integrationFeedsItem_fragment$data,
-    integrationFeedsItem_fragment$key
-  >(data?.integrationFeeds.edges, integrationFeedsItem);
+    integrationsItem_fragment$data,
+    integrationsItem_fragment$key
+  >(data?.integrations.edges, integrationsItem);
 
-  const connectionId = data?.integrationFeeds.__id;
+  const connectionId = data?.integrations.__id;
 
   const context = useCsvFeedContext(serviceInstance, connectionId);
 
@@ -83,8 +84,8 @@ const IntegrationFeedsList = ({
   } = useServiceListLocalStorage(localStorageKey);
 
   const filters: ServiceListFilterMap = {
-    [ServiceListFilterKey.IntegrationFeedType]: {
-      node: <IntegrationFeedFilters />,
+    [ServiceListFilterKey.IntegrationType]: {
+      node: <IntegrationFilters />,
       reset: () => {
         removeConnectorTypes();
         removeIntegrationTypes();
@@ -99,7 +100,7 @@ const IntegrationFeedsList = ({
       reset: removeProductVersions,
     },
     [ServiceListFilterKey.ManagerSupported]: {
-      node: <IntegrationFeedDeployableFilter />,
+      node: <IntegrationDeployableFilter />,
       reset: removeDeployable,
     },
   };
@@ -109,9 +110,7 @@ const IntegrationFeedsList = ({
     pageSize,
   });
 
-  const handleRefetchData = (
-    args?: Partial<integrationFeedsQuery$variables>
-  ) => {
+  const handleRefetchData = (args?: Partial<integrationsQuery$variables>) => {
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
@@ -144,7 +143,7 @@ const IntegrationFeedsList = ({
           additionalFilters={filters}
           paginationControls={
             <PaginationControls
-              totalCount={data.integrationFeeds.totalCount}
+              totalCount={data.integrations.totalCount}
               pageSize={pageSize}
               pageIndex={pagination.pageIndex}
               onPaginationChange={onPaginationChange}
@@ -157,4 +156,4 @@ const IntegrationFeedsList = ({
   );
 };
 
-export default IntegrationFeedsList;
+export default IntegrationsList;

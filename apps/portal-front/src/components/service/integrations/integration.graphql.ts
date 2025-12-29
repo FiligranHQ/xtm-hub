@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
-export const integrationFeedsItem = graphql`
-  fragment integrationFeedsItem_fragment on IntegrationFeed @inline {
+export const integrationsItem = graphql`
+  fragment integrationsItem_fragment on Integration @inline {
     __typename
     id
     active
@@ -45,12 +45,12 @@ export const integrationFeedsItem = graphql`
     }
     integration_type
 
-    ...integrationFeedConnectorsItem_fragment @relay(mask: false)
+    ...integrationConnectorsItem_fragment @relay(mask: false)
   }
 `;
 
 export const connectorsItem = graphql`
-  fragment integrationFeedConnectorsItem_fragment on Connector {
+  fragment integrationConnectorsItem_fragment on Connector {
     verified
     product_version
     container_image
@@ -62,10 +62,10 @@ export const connectorsItem = graphql`
   }
 `;
 
-export const integrationFeedsFragment = graphql`
-  fragment integrationFeedsList on Query
-  @refetchable(queryName: "IntegrationFeedsPaginationQuery") {
-    integrationFeeds(
+export const integrationsFragment = graphql`
+  fragment integrationsList on Query
+  @refetchable(queryName: "IntegrationsPaginationQuery") {
+    integrations(
       first: $count
       after: $cursor
       orderBy: $orderBy
@@ -78,15 +78,15 @@ export const integrationFeedsFragment = graphql`
       totalCount
       edges {
         node {
-          ...integrationFeedsItem_fragment
+          ...integrationsItem_fragment
         }
       }
     }
   }
 `;
 
-export const IntegrationFeedsListQuery = graphql`
-  query integrationFeedsQuery(
+export const IntegrationsListQuery = graphql`
+  query integrationsQuery(
     $count: Int!
     $cursor: ID
     $orderBy: DocumentOrdering!
@@ -95,14 +95,14 @@ export const IntegrationFeedsListQuery = graphql`
     $searchTerm: String
     $serviceInstanceId: String
   ) {
-    ...integrationFeedsList
+    ...integrationsList
   }
 `;
 
-export const IntegrationFeedQuery = graphql`
-  query integrationFeedQuery($documentId: ID, $serviceInstanceId: ID) {
-    integrationFeed(id: $documentId, serviceInstanceId: $serviceInstanceId) {
-      ...integrationFeedsItem_fragment
+export const IntegrationQuery = graphql`
+  query integrationQuery($documentId: ID, $serviceInstanceId: ID) {
+    integration(id: $documentId, serviceInstanceId: $serviceInstanceId) {
+      ...integrationsItem_fragment
     }
   }
 `;

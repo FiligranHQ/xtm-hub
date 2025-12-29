@@ -2,9 +2,9 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
   requestContextAdminUser,
-  SERVICE_INTEGRATIONS_FEEDS_ID,
+  SERVICE_INTEGRATIONS_ID,
 } from '../../../../../tests/tests.const';
-import { IntegrationFeedType } from '../../../../__generated__/resolvers-types';
+import { IntegrationType } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import { DocumentId } from '../../../../model/kanel/public/Document';
 import {
@@ -22,9 +22,9 @@ import { DocumentApp } from '../../document/document.app';
 import * as DocumentUploadsHelper from '../../document/document.uploads.helper';
 import {
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../integration-feeds.model';
+  INTEGRATION_CSV_FEED_METADATA,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../integrations.model';
 import { csvFeedsApp } from './csv-feeds.app';
 
 describe('csv feeds app', () => {
@@ -52,7 +52,7 @@ describe('csv feeds app', () => {
       user: requestContextAdminUser.user,
       portalContext: {
         ...contextAdminUser,
-        serviceInstanceId: SERVICE_INTEGRATIONS_FEEDS_ID,
+        serviceInstanceId: SERVICE_INTEGRATIONS_ID,
       },
     };
     requestContext.set(testContext);
@@ -65,8 +65,8 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
-        type: OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         active: false,
       },
       []
@@ -79,7 +79,7 @@ describe('csv feeds app', () => {
       organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
       user_id: ADMIN_UUID,
-      service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+      service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,
       resource_title: 'myCsvFeed',
@@ -103,7 +103,7 @@ describe('csv feeds app', () => {
     );
 
     await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-      OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       {
         id: documentId,
         uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -111,12 +111,12 @@ describe('csv feeds app', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
         active: false,
-        integration_type: IntegrationFeedType.CsvFeed,
+        integration_type: IntegrationType.CsvFeed,
       },
       [],
-      INTEGRATION_FEED_CSV_FEED_METADATA
+      INTEGRATION_CSV_FEED_METADATA
     );
 
     const documentLoaded = await csvFeedsApp.loadCsvFeed(documentId);

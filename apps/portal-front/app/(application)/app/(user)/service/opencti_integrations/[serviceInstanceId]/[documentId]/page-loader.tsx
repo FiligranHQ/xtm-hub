@@ -1,10 +1,10 @@
 'use client';
 
 import Loader from '@/components/loader';
-import IntegrationFeedSlug from '@/components/service/integration-feeds/[slug]/integration-feed-slug';
-import { IntegrationFeedQuery } from '@/components/service/integration-feeds/integration-feed.graphql';
+import IntegrationSlug from '@/components/service/integrations/[slug]/integration-slug';
+import { IntegrationQuery } from '@/components/service/integrations/integration.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { integrationFeedQuery } from '@generated/integrationFeedQuery.graphql';
+import { integrationQuery } from '@generated/integrationQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
 
@@ -20,14 +20,14 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   serviceInstance,
 }) => {
   const [queryRef, loadQuery] =
-    useQueryLoader<integrationFeedQuery>(IntegrationFeedQuery);
+    useQueryLoader<integrationQuery>(IntegrationQuery);
   useMountingLoader(loadQuery, {
     documentId,
     serviceInstanceId: serviceInstance?.id,
   });
 
   return queryRef && serviceInstance ? (
-    <IntegrationFeedSlug
+    <IntegrationSlug
       serviceInstance={serviceInstance}
       queryRef={queryRef}
     />

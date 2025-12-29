@@ -1,20 +1,19 @@
 import {
   Document as DocumentResolverType,
-  IntegrationFeedType,
+  IntegrationType,
 } from '../../../__generated__/resolvers-types';
 import Document from '../../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 
-export const INTEGRATION_FEEDS_SERVICE_INSTANCE_ID: ServiceInstanceId =
+export const INTEGRATION_SERVICE_INSTANCE_ID: ServiceInstanceId =
   '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc' as ServiceInstanceId;
-export const OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE =
-  'opencti_integration_feed';
+export const OPENCTI_INTEGRATION_DOCUMENT_TYPE = 'opencti_integration';
 
-export type IntegrationFeed = Document & {
-  integration_type: IntegrationFeedType;
+export type Integration = Document & {
+  integration_type: IntegrationType;
 };
-export type CsvFeed = IntegrationFeed;
-export type Connector = IntegrationFeed & {
+export type CsvFeed = Integration;
+export type Connector = Integration & {
   product_version: string;
   container_image?: string | null; // Docker/container identifier
   verified: boolean;
@@ -33,10 +32,10 @@ export type ConnectorMetadataKeys = Array<
   Exclude<keyof Omit<Connector, 'labels'>, keyof DocumentResolverType>
 >;
 
-export const INTEGRATION_FEED_CSV_FEED_METADATA: CsvFeedMetadataKeys = [
+export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadataKeys = [
   'integration_type',
 ];
-export const INTEGRATION_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
+export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadataKeys = [
   'product_version',
   'container_image',
   'verified',
@@ -47,9 +46,6 @@ export const INTEGRATION_FEED_CONNECTOR_METADATA: ConnectorMetadataKeys = [
   'manager_supported',
   'playbook_supported',
 ];
-export const INTEGRATION_FEED_METADATA = Array.from(
-  new Set([
-    ...INTEGRATION_FEED_CSV_FEED_METADATA,
-    ...INTEGRATION_FEED_CONNECTOR_METADATA,
-  ])
+export const INTEGRATION_METADATA = Array.from(
+  new Set([...INTEGRATION_CSV_FEED_METADATA, ...INTEGRATION_CONNECTOR_METADATA])
 );

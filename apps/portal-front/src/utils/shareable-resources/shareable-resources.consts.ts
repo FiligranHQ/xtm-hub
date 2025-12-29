@@ -1,14 +1,14 @@
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-import SeoIntegrationFeedByServiceSlugQuery from '@generated/seoIntegrationFeedByServiceSlugQuery.graphql';
-import SeoIntegrationFeedBySlugQuery from '@generated/seoIntegrationFeedBySlugQuery.graphql';
+import SeoIntegrationBySlugQuery from '@generated/seoIntegrationBySlugQuery.graphql';
+import SeoIntegrationsByServiceSlugQuery from '@generated/seoIntegrationsByServiceSlugQuery.graphql';
 import SeoOpenaevScenarioBySlugQuery from '@generated/seoOpenaevScenarioBySlugQuery.graphql';
 import SeoOpenaevScenariosByServiceSlugQuery from '@generated/seoOpenaevScenariosByServiceSlugQuery.graphql';
 import {
   MakeQueryMapParams,
   QueryMapEntry,
   SeoCustomDashboard,
-  SeoIntegrationFeed,
+  SeoIntegration,
   SeoOpenAEVScenario,
   SeoResource,
   ServiceSlug,
@@ -20,10 +20,10 @@ export interface ServiceConfig {
 }
 
 export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: {
-    redirectPath: 'opencti_integration_feeds',
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
+    redirectPath: 'opencti_integrations',
     description:
-      '. Discover more OpenCTI integration feeds like this in our OpenCTI Integration Feeds Library, available for download on the XTM Hub.',
+      '. Discover more OpenCTI integrations like this in our OpenCTI Integrations Library, available for download on the XTM Hub.',
   },
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
     redirectPath: 'opencti_custom_dashboards',
@@ -60,17 +60,16 @@ function makeSingleQueryMapEntry<TReturn>({
 }
 
 export const localeMap: Record<ServiceSlug, string> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]: 'OpenctiIntegrationFeeds',
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: 'OpenctiIntegrations',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
   [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
 };
 
 export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
-    makeQueryMapEntry<SeoIntegrationFeed>({
-      query: SeoIntegrationFeedByServiceSlugQuery,
-      key: 'publicIntegrationFeedByServiceSlug',
-    }),
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: makeQueryMapEntry<SeoIntegration>({
+    query: SeoIntegrationsByServiceSlugQuery,
+    key: 'publicIntegrationsByServiceSlug',
+  }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeQueryMapEntry<SeoCustomDashboard>({
       query: SeoCustomDashboardsByServiceSlugQuery,
@@ -83,11 +82,10 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
 };
 
 export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS]:
-    makeSingleQueryMapEntry<SeoIntegrationFeed>({
-      query: SeoIntegrationFeedBySlugQuery,
-      key: 'publicIntegrationFeedBySlug',
-    }),
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: makeSingleQueryMapEntry<SeoIntegration>({
+    query: SeoIntegrationBySlugQuery,
+    key: 'publicIntegrationBySlug',
+  }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
     makeSingleQueryMapEntry<SeoCustomDashboard>({
       query: SeoCustomDashboardBySlugQuery,

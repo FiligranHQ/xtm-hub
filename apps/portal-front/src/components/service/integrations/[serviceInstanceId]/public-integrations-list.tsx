@@ -5,10 +5,10 @@ import { PaginationControls } from '@/components/ui/pagination/pagination-contro
 import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
-import { integrationFeedsQuery$variables } from '@generated/integrationFeedsQuery.graphql';
-import { seoIntegrationFeedsItemFragment$key } from '@generated/seoIntegrationFeedsItemFragment.graphql';
-import { seoIntegrationFeedsList$key } from '@generated/seoIntegrationFeedsList.graphql';
-import { seoIntegrationFeedsQuery } from '@generated/seoIntegrationFeedsQuery.graphql';
+import { integrationsQuery$variables } from '@generated/integrationsQuery.graphql';
+import { seoIntegrationsItemFragment$key } from '@generated/seoIntegrationsItemFragment.graphql';
+import { seoIntegrationsList$key } from '@generated/seoIntegrationsList.graphql';
+import { seoIntegrationsQuery } from '@generated/seoIntegrationsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
 import React, { useMemo, useState } from 'react';
@@ -19,44 +19,44 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import {
-  SeoIntegrationFeedListQuery,
-  seoIntegrationFeedsFragment,
-  seoIntegrationFeedsItem,
-} from '../../../../../app/(public)/cybersecurity-solutions/[slug]/seo-integration-feed.graphql';
+  SeoIntegrationListQuery,
+  seoIntegrationsFragment,
+  seoIntegrationsItem,
+} from '../../../../../app/(public)/cybersecurity-solutions/[slug]/seo-integration.graphql';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
   search: string;
   onSearchChange: (v: string) => void;
-  queryRef: PreloadedQuery<seoIntegrationFeedsQuery>;
+  queryRef: PreloadedQuery<seoIntegrationsQuery>;
   baseUrl: string;
 }
 
-const PublicIntegrationFeedsList: React.FC<Props> = ({
+const PublicIntegrationsList: React.FC<Props> = ({
   queryRef,
   serviceInstance,
   baseUrl,
 }) => {
-  const queryData = usePreloadedQuery<seoIntegrationFeedsQuery>(
-    SeoIntegrationFeedListQuery,
+  const queryData = usePreloadedQuery<seoIntegrationsQuery>(
+    SeoIntegrationListQuery,
     queryRef
   );
 
   const [data, refetch] = useRefetchableFragment<
-    seoIntegrationFeedsQuery,
-    seoIntegrationFeedsList$key
-  >(seoIntegrationFeedsFragment, queryData);
+    seoIntegrationsQuery,
+    seoIntegrationsList$key
+  >(seoIntegrationsFragment, queryData);
 
-  const integrationFeeds = useMemo(() => {
-    return (data.publicIntegrationFeeds?.edges ?? [])
+  const integrations = useMemo(() => {
+    return (data.publicIntegrations?.edges ?? [])
       .map(({ node }) =>
-        readInlineData<seoIntegrationFeedsItemFragment$key>(
-          seoIntegrationFeedsItem,
+        readInlineData<seoIntegrationsItemFragment$key>(
+          seoIntegrationsItem,
           node
         )
       )
       .filter((l) => !!l);
-  }, [data.publicIntegrationFeeds?.edges]);
+  }, [data.publicIntegrations?.edges]);
 
   const { filters, localStorageKey } = useShareableResourceMapping(
     serviceInstance.slug as ServiceSlug
@@ -70,9 +70,7 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
     pageSize,
   });
 
-  const handleRefetchData = (
-    args?: Partial<integrationFeedsQuery$variables>
-  ) => {
+  const handleRefetchData = (args?: Partial<integrationsQuery$variables>) => {
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
@@ -103,7 +101,7 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
         className="mb-3"
         paginationControls={
           <PaginationControls
-            totalCount={data.publicIntegrationFeeds.totalCount}
+            totalCount={data.publicIntegrations.totalCount}
             pageSize={pageSize}
             pageIndex={pagination.pageIndex}
             onPaginationChange={onPaginationChange}
@@ -112,7 +110,7 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
         }
       />
       <PublicShareableResourceList
-        documents={integrationFeeds}
+        documents={integrations}
         serviceInstance={serviceInstance}
         baseUrl={baseUrl}
       />
@@ -120,4 +118,4 @@ const PublicIntegrationFeedsList: React.FC<Props> = ({
   );
 };
 
-export default PublicIntegrationFeedsList;
+export default PublicIntegrationsList;

@@ -147,6 +147,6 @@ export function useCustomDashboardsContext(
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: CustomDashboardForm,
-    type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARDS,
+    type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
   };
 }

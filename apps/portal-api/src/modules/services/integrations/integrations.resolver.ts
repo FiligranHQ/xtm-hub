@@ -1,5 +1,5 @@
 import {
-  IntegrationFeedType,
+  IntegrationType,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -13,15 +13,15 @@ import {
   loadUploaderOrganization,
 } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import { integrationFeedsApp } from './integration-feeds.app';
-import { IntegrationFeed } from './integration-feeds.model';
+import { integrationsApp } from './integrations.app';
+import { Integration } from './integrations.model';
 
 const resolvers: Resolvers = {
-  IntegrationFeed: {
-    __resolveType(feed: IntegrationFeed) {
+  Integration: {
+    __resolveType(feed: Integration) {
       const mapping = {
-        [IntegrationFeedType.Connector]: 'Connector',
-        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.Connector]: 'Connector',
+        [IntegrationType.CsvFeed]: 'CsvFeed',
       };
 
       return mapping[feed.integration_type];
@@ -37,17 +37,15 @@ const resolvers: Resolvers = {
       subscriptionApp.loadSubscriptionModel(context, service_instance_id),
   },
   Query: {
-    integrationFeeds: async (_, input) =>
-      integrationFeedsApp.loadIntegrationFeeds(input),
-
-    integrationFeed: async (_, { id }) =>
-      integrationFeedsApp.loadIntegrationFeed(extractId<DocumentId>(id)),
-    publicIntegrationFeeds: async (_, input) =>
-      integrationFeedsApp.loadPaginatedPublicAccessIntegrationFeeds(input),
-    publicIntegrationFeedByServiceSlug: async (_, { serviceSlug }) =>
-      integrationFeedsApp.loadPublicAccessIntegrationFeeds(serviceSlug),
-    publicIntegrationFeedBySlug: async (_, { slug }) =>
-      integrationFeedsApp.loadPublicAccessIntegrationFeed(slug),
+    integrations: async (_, input) => integrationsApp.loadIntegrations(input),
+    integration: async (_, { id }) =>
+      integrationsApp.loadIntegration(extractId<DocumentId>(id)),
+    publicIntegrations: async (_, input) =>
+      integrationsApp.loadPaginatedPublicAccessIntegrations(input),
+    publicIntegrationsByServiceSlug: async (_, { serviceSlug }) =>
+      integrationsApp.loadPublicAccessIntegrations(serviceSlug),
+    publicIntegrationBySlug: async (_, { slug }) =>
+      integrationsApp.loadPublicAccessIntegration(slug),
   },
 };
 

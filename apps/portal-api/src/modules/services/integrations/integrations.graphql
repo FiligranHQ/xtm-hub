@@ -1,4 +1,4 @@
-enum IntegrationFeedType {
+enum IntegrationType {
   csv_feed
   connector
   rss_feed
@@ -16,7 +16,7 @@ enum ConnectorType {
   STREAM
 }
 
-interface IntegrationFeed implements Node & Document {
+interface Integration implements Node & Document {
   # Node
   id: ID!
 
@@ -43,10 +43,10 @@ interface IntegrationFeed implements Node & Document {
   children_documents: [ShareableResource!]
 
   remover_id: ID
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationType!
 }
 
-type Connector implements Node & Document & IntegrationFeed {
+type Connector implements Node & Document & Integration {
   # Node
   id: ID!
   # Document
@@ -70,9 +70,9 @@ type Connector implements Node & Document & IntegrationFeed {
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
-  # Integration Feed
+  # Integrations
   remover_id: ID @auth
-  integration_type: IntegrationFeedType!
+  integration_type: IntegrationType!
   product_version: String!
   container_image: String
   verified: Boolean!
@@ -83,19 +83,19 @@ type Connector implements Node & Document & IntegrationFeed {
   playbook_supported: Boolean!
 }
 
-type IntegrationFeedEdge {
+type IntegrationEdge {
   cursor: String!
-  node: IntegrationFeed!
+  node: Integration!
 }
 
-type IntegrationFeedConnection {
+type IntegrationConnection {
   totalCount: Int!
-  edges: [IntegrationFeedEdge!]!
+  edges: [IntegrationEdge!]!
   pageInfo: PageInfo!
 }
 
 type Query {
-  integrationFeeds(
+  integrations(
     first: Int!
     after: ID
     orderBy: DocumentOrdering!
@@ -103,9 +103,9 @@ type Query {
     searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
-  ): IntegrationFeedConnection! @auth
-  integrationFeed(id: ID, serviceInstanceId: ID): IntegrationFeed @auth
-  publicIntegrationFeeds(
+  ): IntegrationConnection! @auth
+  integration(id: ID, serviceInstanceId: ID): Integration @auth
+  publicIntegrations(
     slug: String!
     first: Int!
     after: ID
@@ -114,7 +114,7 @@ type Query {
     searchTerm: String
     filters: [Filter!]
     serviceInstanceId: String
-  ): IntegrationFeedConnection!
-  publicIntegrationFeedByServiceSlug(serviceSlug: String): [IntegrationFeed]
-  publicIntegrationFeedBySlug(slug: String): IntegrationFeed
+  ): IntegrationConnection!
+  publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
+  publicIntegrationBySlug(slug: String): Integration
 }

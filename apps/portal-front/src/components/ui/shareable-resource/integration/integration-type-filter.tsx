@@ -3,20 +3,20 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { IntegrationFeedTypeEnum } from '@generated/models/IntegrationFeedType.enum';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 
-export const IntegrationFeedTypeFilter: React.FC = () => {
+export const IntegrationTypeFilter: React.FC = () => {
   const { integrationTypes, setIntegrationTypes, removeConnectorTypes } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
     );
   const t = useTranslations();
 
-  const onIntegrationTypeChange = (v: IntegrationFeedTypeEnum[]) => {
-    const hasConnectorType = v.includes(IntegrationFeedTypeEnum.CONNECTOR);
+  const onIntegrationTypeChange = (v: IntegrationTypeEnum[]) => {
+    const hasConnectorType = v.includes(IntegrationTypeEnum.CONNECTOR);
     if (!hasConnectorType) {
       removeConnectorTypes();
     }
@@ -24,13 +24,13 @@ export const IntegrationFeedTypeFilter: React.FC = () => {
   };
 
   const options = useMemo(() => {
-    return Object.values(IntegrationFeedTypeEnum)
+    return Object.values(IntegrationTypeEnum)
       .map((feedType) => ({
         label: t(`Service.OpenctiIntegrationFeeds.Filter.Type.${feedType}`),
         value: feedType.toString(),
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
-  }, [IntegrationFeedTypeEnum]);
+  }, [IntegrationTypeEnum]);
 
   return (
     <ServiceListFilterContainer>
@@ -42,7 +42,7 @@ export const IntegrationFeedTypeFilter: React.FC = () => {
         )}
         noResultString={t('Utils.NotFound')}
         onValueChange={(values) =>
-          onIntegrationTypeChange(values as IntegrationFeedTypeEnum[])
+          onIntegrationTypeChange(values as IntegrationTypeEnum[])
         }
         variant="inverted"
       />

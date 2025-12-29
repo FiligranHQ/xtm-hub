@@ -3,45 +3,44 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import ShareableResourceConnectorSlug from '@/components/service/document/connector/shareable-resource-connector-slug';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
-import {
-  IntegrationFeedQuery,
-  integrationFeedsItem,
-} from '@/components/service/integration-feeds/integration-feed.graphql';
+
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { isConnectorResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { integrationFeedQuery } from '@generated/integrationFeedQuery.graphql';
+
 import {
-  integrationFeedsItem_fragment$data,
-  integrationFeedsItem_fragment$key,
-} from '@generated/integrationFeedsItem_fragment.graphql';
+  IntegrationQuery,
+  integrationsItem,
+} from '@/components/service/integrations/integration.graphql';
+import { integrationQuery } from '@generated/integrationQuery.graphql';
+import {
+  integrationsItem_fragment$data,
+  integrationsItem_fragment$key,
+} from '@generated/integrationsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useContext } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
-interface CsvFeedSlugProps {
-  queryRef: PreloadedQuery<integrationFeedQuery>;
+interface IntegrationSlugProps {
+  queryRef: PreloadedQuery<integrationQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
 // Component
-const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
+const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
   queryRef,
   serviceInstance,
 }) => {
-  const data = usePreloadedQuery<integrationFeedQuery>(
-    IntegrationFeedQuery,
-    queryRef
-  );
+  const data = usePreloadedQuery<integrationQuery>(IntegrationQuery, queryRef);
   const { settings } = useContext(SettingsContext);
 
-  const documentData = readInlineData<integrationFeedsItem_fragment$key>(
-    integrationFeedsItem,
-    data.integrationFeed
+  const documentData = readInlineData<integrationsItem_fragment$key>(
+    integrationsItem,
+    data.integration
   );
 
   const breadcrumbValue = [
@@ -71,7 +70,7 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
             breadcrumbValue={breadcrumbValue}
             documentData={documentData}
             shareUrl={shareUrl}
-            logo={`/document/images/${serviceInstance.id}/${(documentData as integrationFeedsItem_fragment$data).children_documents?.[0]?.id}`}
+            logo={`/document/images/${serviceInstance.id}/${(documentData as integrationsItem_fragment$data).children_documents?.[0]?.id}`}
           />
         ) : (
           <ShareableResourceSlug
@@ -91,4 +90,4 @@ const IntegrationFeedSlug: React.FunctionComponent<CsvFeedSlugProps> = ({
 };
 
 // Component export
-export default IntegrationFeedSlug;
+export default IntegrationSlug;

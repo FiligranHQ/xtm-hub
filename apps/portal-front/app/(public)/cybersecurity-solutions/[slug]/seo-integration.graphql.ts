@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
-export const SeoIntegrationFeedFragment = graphql`
-  fragment seoIntegrationFeedFragment on IntegrationFeed {
+export const SeoIntegrationFragment = graphql`
+  fragment seoIntegrationFragment on Integration {
     __typename
     id
     name
@@ -31,8 +31,8 @@ export const SeoIntegrationFeedFragment = graphql`
   }
 `;
 
-export const SeoIntegrationFeedConnectorFragment = graphql`
-  fragment seoIntegrationFeedConnectorFragment on Connector {
+export const SeoIntegrationConnectorFragment = graphql`
+  fragment seoIntegrationConnectorFragment on Connector {
     verified
     product_version
     container_image
@@ -44,25 +44,25 @@ export const SeoIntegrationFeedConnectorFragment = graphql`
   }
 `;
 
-export const seoIntegrationFeedByServiceSlugQuery = graphql`
-  query seoIntegrationFeedByServiceSlugQuery($serviceSlug: String!) {
-    publicIntegrationFeedByServiceSlug(serviceSlug: $serviceSlug) {
-      ...seoIntegrationFeedFragment
-      ...seoIntegrationFeedConnectorFragment
+export const seoIntegrationsByServiceSlugQuery = graphql`
+  query seoIntegrationsByServiceSlugQuery($serviceSlug: String!) {
+    publicIntegrationsByServiceSlug(serviceSlug: $serviceSlug) {
+      ...seoIntegrationFragment
+      ...seoIntegrationConnectorFragment
     }
   }
 `;
-export const SeoIntegrationFeedBySlugQuery = graphql`
-  query seoIntegrationFeedBySlugQuery($slug: String!) {
-    publicIntegrationFeedBySlug(slug: $slug) {
-      ...seoIntegrationFeedFragment
-      ...seoIntegrationFeedConnectorFragment
+export const SeoIntegrationBySlugQuery = graphql`
+  query seoIntegrationBySlugQuery($slug: String!) {
+    publicIntegrationBySlug(slug: $slug) {
+      ...seoIntegrationFragment
+      ...seoIntegrationConnectorFragment
     }
   }
 `;
 
-export const seoIntegrationFeedsItem = graphql`
-  fragment seoIntegrationFeedsItemFragment on IntegrationFeed @inline {
+export const seoIntegrationsItem = graphql`
+  fragment seoIntegrationsItemFragment on Integration @inline {
     __typename
     id
     name
@@ -94,14 +94,14 @@ export const seoIntegrationFeedsItem = graphql`
     type
     integration_type
 
-    ...seoIntegrationFeedConnectorFragment @relay(mask: false)
+    ...seoIntegrationConnectorFragment @relay(mask: false)
   }
 `;
 
-export const seoIntegrationFeedsFragment = graphql`
-  fragment seoIntegrationFeedsList on Query
-  @refetchable(queryName: "SeoIntegrationFeedsPaginationQuery") {
-    publicIntegrationFeeds(
+export const seoIntegrationsFragment = graphql`
+  fragment seoIntegrationsList on Query
+  @refetchable(queryName: "SeoIntegrationsPaginationQuery") {
+    publicIntegrations(
       slug: $slug
       first: $count
       after: $cursor
@@ -115,15 +115,15 @@ export const seoIntegrationFeedsFragment = graphql`
       totalCount
       edges {
         node {
-          ...seoIntegrationFeedsItemFragment
+          ...seoIntegrationsItemFragment
         }
       }
     }
   }
 `;
 
-export const SeoIntegrationFeedListQuery = graphql`
-  query seoIntegrationFeedsQuery(
+export const SeoIntegrationListQuery = graphql`
+  query seoIntegrationsQuery(
     $slug: String!
     $count: Int!
     $cursor: ID
@@ -133,6 +133,6 @@ export const SeoIntegrationFeedListQuery = graphql`
     $searchTerm: String
     $serviceInstanceId: String
   ) {
-    ...seoIntegrationFeedsList
+    ...seoIntegrationsList
   }
 `;
