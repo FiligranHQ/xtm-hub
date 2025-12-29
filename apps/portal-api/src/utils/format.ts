@@ -1,4 +1,8 @@
-export const formatName = (name: string): string => {
+export const formatName = (name: string | undefined | null): string => {
+  if (!name) {
+    return '';
+  }
+
   return name
     .toLowerCase()
     .trim()

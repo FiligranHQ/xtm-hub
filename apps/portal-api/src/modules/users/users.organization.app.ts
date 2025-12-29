@@ -157,7 +157,7 @@ export const UsersOrganizationApp = {
                 adminName: formatName(adminUser.first_name ?? ''),
                 organizationName: organization.name,
                 userEmailList: organization.users
-                  .sort((a, b) => a.first_name.localeCompare(b.last_name))
+                  .sort((a, b) => a.first_name.localeCompare(b.first_name))
                   .map(
                     ({ first_name, last_name, email }) =>
                       `<li>${formatName(first_name)} ${formatName(last_name)} (${email})</li>`
