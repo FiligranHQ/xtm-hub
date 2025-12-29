@@ -20,12 +20,7 @@ describe('UsersOrganizationApp', () => {
       vi.restoreAllMocks();
     });
 
-    it('should send email to each organization administrators when email is enabled', async () => {
-      portalConfig.enabled_emails = {
-        ...originalEnabledEmails,
-        pending_user_digest: true,
-      };
-
+    const mockLoadOrganizationsWithPendingUsers = (users: User[]) => {
       vi.spyOn(
         UserOrganizationPendingDomain,
         'loadOrganizationsWithPendingUsers'
@@ -33,26 +28,35 @@ describe('UsersOrganizationApp', () => {
         {
           id: PLATFORM_ORGANIZATION_UUID,
           name: 'organization name',
-          users: [
-            {
-              id: uuidv4() as UserId,
-              email: 'user1@test.com',
-              first_name: 'John',
-              last_name: 'Doe',
-            } as User,
-            {
-              id: uuidv4() as UserId,
-              email: 'user2@test.com',
-              first_name: 'Robert',
-              last_name: 'Smith',
-            } as User,
-          ],
+          users,
         },
       ] as Awaited<
         ReturnType<
           (typeof UserOrganizationPendingDomain)['loadOrganizationsWithPendingUsers']
         >
       >);
+    };
+
+    it('should send email to each organization administrators when email is enabled', async () => {
+      portalConfig.enabled_emails = {
+        ...originalEnabledEmails,
+        pending_user_digest: true,
+      };
+
+      mockLoadOrganizationsWithPendingUsers([
+        {
+          id: uuidv4() as UserId,
+          email: 'user1@test.com',
+          first_name: 'John',
+          last_name: 'Doe',
+        } as User,
+        {
+          id: uuidv4() as UserId,
+          email: 'user2@test.com',
+          first_name: 'Robert',
+          last_name: 'Smith',
+        } as User,
+      ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
       await UsersOrganizationApp.sendPendingUsersDigest();
@@ -77,27 +81,14 @@ describe('UsersOrganizationApp', () => {
         pending_user_digest: true,
       };
 
-      vi.spyOn(
-        UserOrganizationPendingDomain,
-        'loadOrganizationsWithPendingUsers'
-      ).mockResolvedValue([
+      mockLoadOrganizationsWithPendingUsers([
         {
-          id: PLATFORM_ORGANIZATION_UUID,
-          name: 'organization name',
-          users: [
-            {
-              id: uuidv4() as UserId,
-              email: 'user1@test.com',
-              first_name: null,
-              last_name: 'Smith',
-            } as User,
-          ],
-        },
-      ] as Awaited<
-        ReturnType<
-          (typeof UserOrganizationPendingDomain)['loadOrganizationsWithPendingUsers']
-        >
-      >);
+          id: uuidv4() as UserId,
+          email: 'user1@test.com',
+          first_name: null,
+          last_name: 'Smith',
+        } as User,
+      ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
       await UsersOrganizationApp.sendPendingUsersDigest();
@@ -121,27 +112,14 @@ describe('UsersOrganizationApp', () => {
         pending_user_digest: true,
       };
 
-      vi.spyOn(
-        UserOrganizationPendingDomain,
-        'loadOrganizationsWithPendingUsers'
-      ).mockResolvedValue([
+      mockLoadOrganizationsWithPendingUsers([
         {
-          id: PLATFORM_ORGANIZATION_UUID,
-          name: 'organization name',
-          users: [
-            {
-              id: uuidv4() as UserId,
-              email: 'user1@test.com',
-              first_name: 'John',
-              last_name: null,
-            } as User,
-          ],
-        },
-      ] as Awaited<
-        ReturnType<
-          (typeof UserOrganizationPendingDomain)['loadOrganizationsWithPendingUsers']
-        >
-      >);
+          id: uuidv4() as UserId,
+          email: 'user1@test.com',
+          first_name: 'John',
+          last_name: null,
+        } as User,
+      ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
       await UsersOrganizationApp.sendPendingUsersDigest();
@@ -165,29 +143,16 @@ describe('UsersOrganizationApp', () => {
         pending_user_digest: false,
       };
 
-      vi.spyOn(
-        UserOrganizationPendingDomain,
-        'loadOrganizationsWithPendingUsers'
-      ).mockResolvedValue([
+      mockLoadOrganizationsWithPendingUsers([
         {
-          id: PLATFORM_ORGANIZATION_UUID,
-          name: 'organization name',
-          users: [
-            {
-              id: uuidv4() as UserId,
-              email: 'user1@test.com',
-            } as User,
-            {
-              id: uuidv4() as UserId,
-              email: 'user2@test.com',
-            } as User,
-          ],
-        },
-      ] as Awaited<
-        ReturnType<
-          (typeof UserOrganizationPendingDomain)['loadOrganizationsWithPendingUsers']
-        >
-      >);
+          id: uuidv4() as UserId,
+          email: 'user1@test.com',
+        } as User,
+        {
+          id: uuidv4() as UserId,
+          email: 'user2@test.com',
+        } as User,
+      ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
       await UsersOrganizationApp.sendPendingUsersDigest();
