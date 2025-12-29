@@ -17,6 +17,24 @@ export async function up(knex) {
         'Explore a range of OpenCTI Integrations shared by the Filigran team.',
     })
     .where('slug', '=', 'open-cti-integration-feeds');
+  await knex('Service_Capability')
+    .update({
+      description: 'The user can upload OpenCTI Integrations in this service.',
+    })
+    .where(
+      'description',
+      '=',
+      'The user can upload OpenCTI Integration Feeds in this service.'
+    );
+  await knex('Service_Capability')
+    .update({
+      description: 'The user can delete OpenCTI Integrations in this service.',
+    })
+    .where(
+      'description',
+      '=',
+      'The user can delete OpenCTI Integration Feeds in this service.'
+    );
   await knex('Document')
     .update({
       type: 'opencti_integration',
@@ -48,4 +66,24 @@ export async function down(knex) {
       type: 'opencti_integration_feed',
     })
     .where('type', '=', 'opencti_integration');
+  await knex('Service_Capability')
+    .update({
+      description:
+        'The user can upload OpenCTI Integration Feeds in this service.',
+    })
+    .where(
+      'description',
+      '=',
+      'The user can upload OpenCTI Integrations in this service.'
+    );
+  await knex('Service_Capability')
+    .update({
+      description:
+        'The user can delete OpenCTI Integration Feeds in this service.',
+    })
+    .where(
+      'description',
+      '=',
+      'The user can delete OpenCTI Integrations in this service.'
+    );
 }

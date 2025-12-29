@@ -33,6 +33,9 @@ interface PortalConfig {
     database: string;
     seeds: string;
   };
+  enabled_emails: {
+    pending_user_digest: boolean;
+  };
   elasticsearch: {
     protocol: string;
     host: string;
@@ -75,6 +78,10 @@ const portalConfig: PortalConfig = {
       process.env.VITEST_MODE || process.env.NODE_ENV === 'test'
         ? config.get<string>('database-test.seeds')
         : 'src/seeds',
+  },
+  enabled_emails: {
+    pending_user_digest:
+      config.get<boolean>('enabled_emails.pending_user_digest') ?? false,
   },
   elasticsearch: {
     protocol: config.get<string | null>('elasticsearch.protocol') ?? 'https',
