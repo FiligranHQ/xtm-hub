@@ -1,5 +1,12 @@
-import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
+  applyFilters,
+  applySearch,
+  db,
+  dbRaw,
+  paginate,
+} from '../../../../knexfile';
+import {
+  Filter,
   QueryUsersArgs,
   UserConnection,
   User as UserGenerated,
@@ -77,5 +84,34 @@ export const UserOrganizationPendingDomain = {
       .where({ user_id, organization_id })
       .delete('*')
       .secureQuery();
+  },
+
+  bulkRemoveUserFromOrganizationPending: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ) => {
+    const qb = db<UserOrganizationPending>('User_Organization_Pending').where(
+      'User_Organization_Pending.organization_id',
+      '=',
+      organizationId
+    );
+    if (searchTerm) {
+      qb.leftJoin('User', 'User.id', 'User_Organization_Pending.user_id');
+      await applySearch('User', qb, searchTerm);
+    }
+
+    if (filters.length > 0) {
+      await applyFilters('User_Organization_Pending', qb, filters);
+    }
+
+    if ((filters.length > 0 || searchTerm) && excludedIds.length > 0) {
+      qb.whereNotIn('user_id', excludedIds);
+    } else if (ids.length > 0) {
+      qb.whereIn('user_id', ids);
+    }
+    return qb.delete('*');
   },
 };

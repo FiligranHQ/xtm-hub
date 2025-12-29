@@ -13,6 +13,7 @@ import { hubspotReachOutSalesHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
 
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
+import { PortalContext } from '../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../utils/error/error.util';
@@ -197,6 +198,23 @@ const resolvers: Resolvers = {
           UnknownErrorCode.RemoveUserFromOrgaError
         );
       }
+    },
+    bulkRemovePendingUserFromOrganization: async (
+      _,
+      { input },
+      context: PortalContext
+    ) => {
+      const { ids, searchTerm, filters, excludedIds } = input;
+      const extractedIds = ids.map(extractId<UserId>);
+      const extractedExcludedIds = excludedIds.map(extractId<UserId>);
+      await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
+        context.user.selected_organization_id,
+        extractedIds,
+        searchTerm,
+        filters,
+        extractedExcludedIds
+      );
+      return { success: true };
     },
     removePendingUserFromOrganization: async (
       _,

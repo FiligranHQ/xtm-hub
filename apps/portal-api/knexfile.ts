@@ -326,24 +326,23 @@ export const applyFilter = (
   handler(queryContext, type, value);
   return queryContext;
 };
-export const paginate = async <T, U>(
-  type: DatabaseType,
-  pagination: Pagination,
-  opts: Partial<QueryOpts> = {},
-  queryContext = db<T>(type)
-) => {
-  const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
-  const columns = Object.keys(await database(type).columnInfo());
-  const currentOffset = after ? Number(atob(after)) : 0;
-  queryContext.queryContext({
-    ...queryContext.queryContext(),
-    ...pagination,
-    connection: true,
-  });
 
+export const applyFilters = async <T>(
+  type: DatabaseType,
+  queryContext = db<T>(type),
+  filters: Filters
+) => {
   if (filters) {
     filters.forEach((filter) => applyFilter(queryContext, type, filter));
   }
+};
+
+export const applySearch = async <T>(
+  type: DatabaseType,
+  queryContext = db<T>(type),
+  searchTerm: string
+) => {
+  const columns = Object.keys(await database(type).columnInfo());
 
   const search = [];
   if (searchTerm) {
@@ -361,6 +360,25 @@ export const paginate = async <T, U>(
       others.forEach((i) => qb.orWhereILike(`${type}.${i}`, `%${searchTerm}%`));
     });
   }
+};
+
+export const paginate = async <T, U>(
+  type: DatabaseType,
+  pagination: Pagination,
+  opts: Partial<QueryOpts> = {},
+  queryContext = db<T>(type)
+) => {
+  const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
+  const currentOffset = after ? Number(atob(after)) : 0;
+  queryContext.queryContext({
+    ...queryContext.queryContext(),
+    ...pagination,
+    connection: true,
+  });
+
+  await applyFilters(type, queryContext, filters);
+
+  await applySearch(type, queryContext, searchTerm);
 
   const totalCountQuery = queryContext
     .clone()
