@@ -17,13 +17,13 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
+import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { usersAdminApp } from './users.admin.app';
 import { UsersAuthApp } from './users.auth.app';
 import {
   getCapabilities,
   getOrganizations,
   getRolesPortal,
-  loadPendingUsers,
   loadUserConnection,
   loadUsersByCapabilitiesInOrganization,
   resetPassword,
@@ -71,7 +71,7 @@ const resolvers: Resolvers = {
       _,
       { first, after, orderMode, orderBy, searchTerm, filters }
     ) => {
-      return loadPendingUsers({
+      return UserOrganizationPendingDomain.loadPendingUsers({
         first,
         after,
         orderMode,

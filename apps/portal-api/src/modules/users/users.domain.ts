@@ -341,29 +341,6 @@ export const loadUserConnection = (opts: QueryUsersArgs) => {
   );
 };
 
-export const loadPendingUsers = (opts: QueryUsersArgs) => {
-  const { user } = requestContext.require();
-  const loadPendingUserQuery = db<UserGenerated>('User');
-  loadPendingUserQuery
-    .leftJoin(
-      'User_Organization_Pending as UserOrgPendingFilter',
-      'User.id',
-      'UserOrgPendingFilter.user_id'
-    )
-    .select('User.*')
-    .where(
-      'UserOrgPendingFilter.organization_id',
-      user.selected_organization_id
-    );
-
-  return paginate<UserGenerated, UserConnection>(
-    'User',
-    opts,
-    { unsecured: true },
-    loadPendingUserQuery
-  );
-};
-
 export const resetPassword = async (): Promise<void> => {
   const { user } = requestContext.require();
   await auth0Client.resetPassword(user.email);

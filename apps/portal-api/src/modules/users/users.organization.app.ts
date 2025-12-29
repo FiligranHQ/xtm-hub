@@ -15,15 +15,12 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { ForbiddenAccess } from '../../utils/error/error.util';
 import { formatName } from '../../utils/format';
 import {
-  removeUserFromOrganizationPending,
-  UserOrganizationPendingDomain,
-} from '../common/user-organization-pending.domain';
-import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
 } from '../common/user-organization.domain';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
+import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
   loadUnsecureUser,
   loadUserBy,
@@ -127,7 +124,10 @@ export const UsersOrganizationApp = {
     userId: UserId;
     organizationId: OrganizationId;
   }): Promise<UserLoadUserBy> => {
-    await removeUserFromOrganizationPending(userId, organizationId);
+    await UserOrganizationPendingDomain.removeUserFromOrganizationPending(
+      userId,
+      organizationId
+    );
     return loadUserBy({
       'User.id': userId,
     });
