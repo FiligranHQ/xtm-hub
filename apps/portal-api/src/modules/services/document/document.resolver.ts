@@ -1,6 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
-  IntegrationFeedType,
+  IntegrationType,
   Resolvers,
   SubscriptionModel,
 } from '../../../__generated__/resolvers-types';
@@ -19,7 +19,7 @@ import {
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
-import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import {
   getServiceInstance,
@@ -150,12 +150,12 @@ const resolvers: Resolvers = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
       };
       const INTEGRATION_MAPPINGS = {
-        [IntegrationFeedType.Connector]: 'Connector',
-        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.Connector]: 'Connector',
+        [IntegrationType.CsvFeed]: 'CsvFeed',
       };
       if (TYPE_MAPPINGS[document.type]) {
         return TYPE_MAPPINGS[document.type];
-      } else if (document.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+      } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
           await DocumentMetadataDomain.loadIntegrationType(document.id);
         const responseType = INTEGRATION_MAPPINGS[integrationType];

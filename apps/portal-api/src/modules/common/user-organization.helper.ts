@@ -3,7 +3,7 @@ import { UserId } from '../../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationInitializer,
 } from '../../model/kanel/public/UserOrganization';
-import { removeUserFromOrganizationPending } from './user-organization-pending.domain';
+import { UserOrganizationPendingDomain } from '../users/users-pending/user-organization-pending.domain';
 import { insertNewUserOrganizationUnsecure } from './user-organization.domain';
 
 export const createUserOrganizationRelationAndRemovePending = async ({
@@ -14,7 +14,10 @@ export const createUserOrganizationRelationAndRemovePending = async ({
   organizations_id: OrganizationId[];
 }): Promise<UserOrganization[]> => {
   organizations_id.map((org) =>
-    removeUserFromOrganizationPending(user_id, org)
+    UserOrganizationPendingDomain.removeUserFromOrganizationPending(
+      user_id,
+      org
+    )
   );
 
   return createUserOrganizationRelation({ user_id, organizations_id });

@@ -14,7 +14,7 @@ import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { IntegrationFeedListPageLoader } from './integration-feed-list-page-loader';
+import { IntegrationListPageLoader } from './integration-list-page-loader';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -198,9 +198,9 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
           {serviceInstance.name}
         </h1>
 
-        {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATION_FEEDS ? (
+        {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATIONS ? (
           <RelayProvider>
-            <IntegrationFeedListPageLoader
+            <IntegrationListPageLoader
               baseUrl={baseUrl}
               serviceInstance={serviceInstance}
             />

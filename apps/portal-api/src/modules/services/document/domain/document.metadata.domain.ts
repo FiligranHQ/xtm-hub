@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import { db, dbRaw } from '../../../../../knexfile';
 import {
   Document as DocumentResolverType,
-  IntegrationFeedType,
+  IntegrationType,
 } from '../../../../__generated__/resolvers-types';
 import {
   DocumentId,
@@ -53,7 +53,7 @@ export const DocumentMetadataDomain = {
 
   loadIntegrationType: async (
     document_id: string
-  ): Promise<IntegrationFeedType | null> => {
+  ): Promise<IntegrationType | null> => {
     const doc = await db('Document_Metadata')
       .select('value')
       .where({

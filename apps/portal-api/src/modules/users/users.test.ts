@@ -6,7 +6,6 @@ import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
-import { loadUserOrganizationPending } from '../common/user-organization-pending.domain';
 import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
 import {
   deleteOrganizationBy,
@@ -15,6 +14,7 @@ import {
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
+import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
@@ -34,9 +34,10 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await loadUserOrganizationPending({
-        user_id: newUser.id,
-      });
+      const newUserPendingOrg =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: newUser.id,
+        });
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities.length).toBe(1);
       expect(newUser.organizations[0].personal_space).toBe(true);
@@ -63,9 +64,10 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await loadUserOrganizationPending({
-        user_id: newUser.id,
-      });
+      const newUserPendingOrg =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: newUser.id,
+        });
 
       expect(newUser).toBeTruthy();
       expect(newUserPendingOrg.length).toBe(0);
@@ -108,9 +110,10 @@ describe('User helpers', async () => {
         email: testMail,
       });
       const newUser = await loadUserBy({ email: testMail });
-      const newUserPendingOrg = await loadUserOrganizationPending({
-        user_id: newUser.id,
-      });
+      const newUserPendingOrg =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: newUser.id,
+        });
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities.length).toBe(1);
 
