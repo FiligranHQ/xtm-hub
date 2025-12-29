@@ -34,14 +34,7 @@ import {
 } from './document.helper';
 import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import {
-  deleteDocument,
-  DocumentDomain,
-  getUploader,
-  loadDocuments,
-  loadUploaderOrganization,
-  updateDocument,
-} from './domain/document.domain';
+import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
@@ -78,7 +71,7 @@ const resolvers: Resolvers = {
     },
     editDocument: async (_, { documentId, input }) => {
       try {
-        return await updateDocument(
+        return await DocumentApp.updateDocument(
           extractId<DocumentId>(documentId),
           input,
           []
@@ -92,7 +85,7 @@ const resolvers: Resolvers = {
       { documentId, forceDelete, service_instance_id }
     ) => {
       try {
-        return await deleteDocument(
+        return await DocumentApp.deleteDocument(
           extractId<DocumentId>(documentId),
           extractId<ServiceInstanceId>(service_instance_id),
           forceDelete
@@ -171,8 +164,9 @@ const resolvers: Resolvers = {
 
     children_documents: ({ id }, _) =>
       DocumentChildrenDomain.loadChildrenDocuments(id),
-    uploader: ({ id }, _) => getUploader(id),
-    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
+    uploader_organization: ({ id }, _) =>
+      DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
       return getServiceInstance(service_instance_id as ServiceInstanceId);
     },
@@ -211,7 +205,7 @@ const resolvers: Resolvers = {
       }
     ) => {
       try {
-        return loadDocuments(
+        return DocumentDomain.loadDocuments(
           {
             first,
             after,

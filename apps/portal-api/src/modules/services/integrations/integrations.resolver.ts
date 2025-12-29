@@ -8,10 +8,7 @@ import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
-import {
-  getUploader,
-  loadUploaderOrganization,
-} from '../document/domain/document.domain';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { integrationsApp } from './integrations.app';
 import { Integration } from './integrations.model';
@@ -29,8 +26,9 @@ const resolvers: Resolvers = {
     labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => getUploader(id),
-    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
+    uploader_organization: ({ id }, _) =>
+      DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>

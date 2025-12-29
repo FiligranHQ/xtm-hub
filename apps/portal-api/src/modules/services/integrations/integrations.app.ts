@@ -9,11 +9,7 @@ import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
 } from '../document/document.helper';
-import {
-  loadPaginatedSeoDocumentsByServiceSlug,
-  loadParentDocumentsByServiceInstance,
-  loadSeoDocumentsByServiceSlug,
-} from '../document/domain/document.domain';
+import { DocumentDomain } from '../document/domain/document.domain';
 import {
   INTEGRATION_METADATA,
   Integration,
@@ -22,7 +18,7 @@ import {
 
 export const integrationsApp = {
   loadIntegrations: async (input: QueryIntegrationsArgs) => {
-    return loadParentDocumentsByServiceInstance<IntegrationConnection>(
+    return DocumentDomain.loadParentDocumentsByServiceInstance<IntegrationConnection>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       INTEGRATION_METADATA
@@ -34,7 +30,7 @@ export const integrationsApp = {
     return loadDocumentWithCountersById(documentId, INTEGRATION_METADATA);
   },
   loadPublicAccessIntegrations: async (serviceSlug: string) =>
-    loadSeoDocumentsByServiceSlug(
+    DocumentDomain.loadSeoDocumentsByServiceSlug(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       serviceSlug,
       INTEGRATION_METADATA
@@ -44,7 +40,7 @@ export const integrationsApp = {
     input: QueryPublicIntegrationsArgs
   ) => {
     const { slug, ...opts } = input;
-    return loadPaginatedSeoDocumentsByServiceSlug<IntegrationConnection>(
+    return DocumentDomain.loadPaginatedSeoDocumentsByServiceSlug<IntegrationConnection>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
       opts,
