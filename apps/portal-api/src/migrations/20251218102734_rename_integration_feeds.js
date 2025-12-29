@@ -13,6 +13,8 @@ export async function up(knex) {
     .update({
       slug: 'open-cti-integrations',
       name: 'OpenCTI Integrations Library',
+      description:
+        'Explore a range of OpenCTI Integrations shared by the Filigran team.',
     })
     .where('slug', '=', 'open-cti-integration-feeds');
   await knex('Document')
@@ -37,6 +39,8 @@ export async function down(knex) {
     .update({
       slug: 'open-cti-integration-feeds',
       name: 'OpenCTI Integration Feeds Library',
+      description:
+        'Explore a range of OpenCTI Integration Feeds shared by the Filigran team.',
     })
     .where('slug', '=', 'open-cti-integrations');
   await knex('Document')
