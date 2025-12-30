@@ -4,9 +4,9 @@ import {
   CustomDashboardForm,
   CustomDashboardFormValues,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
-import { CustomDashboardDeleteMutation } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import {
   DocumentCreateMutation,
+  DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
 import { omit } from '@/lib/omit';
@@ -16,9 +16,9 @@ import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
+import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
@@ -30,7 +30,7 @@ export function useCustomDashboardsContext(
   connectionId?: string
 ): ServiceContextProps {
   const t = useTranslations();
-  const [createCustomDashboards] = useMutation<documentCreateMutation>(
+  const [createMutation] = useMutation<documentCreateMutation>(
     DocumentCreateMutation
   );
 
@@ -54,7 +54,7 @@ export function useCustomDashboardsContext(
       ...Array.from(formValues.images),
     ];
 
-    createCustomDashboards({
+    createMutation({
       variables: {
         input: {
           ...input,
@@ -87,18 +87,20 @@ export function useCustomDashboardsContext(
     });
   };
 
-  const [deleteCustomDashboardMutation] =
-    useMutation<customDashboardDeleteMutation>(CustomDashboardDeleteMutation);
+  const [deleteMutation] = useMutation<documentDeleteMutation>(
+    DocumentDeleteMutation
+  );
 
   const handleDeleteSheet = async (
     document: ShareableResource,
     onCompleted: () => void
   ) => {
-    deleteCustomDashboardMutation({
+    deleteMutation({
       variables: {
         documentId: document.id,
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
+        forceDelete: true,
       },
       onCompleted() {
         onCompleted();

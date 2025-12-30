@@ -581,7 +581,6 @@ export type Mutation = {
   createDocument: Document;
   createOpenAEVScenario: OpenAevScenario;
   deleteCsvFeed: CsvFeed;
-  deleteCustomDashboard: CustomDashboard;
   deleteDocument: Document;
   deleteLabel: Label;
   deleteOpenAEVScenario: OpenAevScenario;
@@ -746,12 +745,6 @@ export type MutationCreateOpenAevScenarioArgs = {
 
 
 export type MutationDeleteCsvFeedArgs = {
-  id: Scalars['ID']['input'];
-  serviceInstanceId: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteCustomDashboardArgs = {
   id: Scalars['ID']['input'];
   serviceInstanceId: Scalars['String']['input'];
 };
@@ -2789,7 +2782,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
   createOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationCreateOpenAevScenarioArgs, 'document' | 'input'>>;
   deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'serviceInstanceId'>>;
-  deleteCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationDeleteCustomDashboardArgs, 'id' | 'serviceInstanceId'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
   deleteOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationDeleteOpenAevScenarioArgs, 'id' | 'serviceInstanceId'>>;

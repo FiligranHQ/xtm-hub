@@ -1,20 +1,5 @@
 import { graphql } from 'react-relay';
 
-export const CustomDashboardDeleteMutation = graphql`
-  mutation customDashboardDeleteMutation(
-    $documentId: ID!
-    $connections: [ID!]!
-    $serviceInstanceId: String!
-  ) {
-    deleteCustomDashboard(
-      id: $documentId
-      serviceInstanceId: $serviceInstanceId
-    ) {
-      id @deleteEdge(connections: $connections)
-    }
-  }
-`;
-
 export const customDashboardsItem = graphql`
   fragment customDashboardsItem_fragment on CustomDashboard @inline {
     id

@@ -49,9 +49,3 @@ type Query {
   ): CustomDashboardConnection! @auth
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
 }
-
-type Mutation {
-  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
-    @auth
-    @service_capa(requires: [DELETE])
-}
