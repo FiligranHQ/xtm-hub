@@ -22,10 +22,10 @@ import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../integrations/integrations.model';
-import { loadParentDocumentsByServiceInstance } from './document.domain';
 
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
+import { DocumentDomain } from './document.domain';
 
 describe('Document domain', () => {
   const minioFileMock = {
@@ -38,7 +38,7 @@ describe('Document domain', () => {
       minioFileMock,
     ]);
   });
-  describe(`${loadParentDocumentsByServiceInstance.name}`, () => {
+  describe(`loadParentDocumentsByServiceInstance`, () => {
     beforeEach(async () => {
       await db<Document>('Document')
         .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
@@ -71,7 +71,7 @@ describe('Document domain', () => {
       ] as ManifestInformation[]);
 
       const connection: IntegrationConnection =
-        await loadParentDocumentsByServiceInstance(
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
             orderBy: DocumentOrdering.CreatedAt,
@@ -134,7 +134,7 @@ describe('Document domain', () => {
 
       // Fetch csv feeds only
       const csvFeedConnection: IntegrationConnection =
-        await loadParentDocumentsByServiceInstance(
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
             orderBy: DocumentOrdering.CreatedAt,
@@ -162,7 +162,7 @@ describe('Document domain', () => {
 
       // Fetch connectors only
       const connectorConnection: IntegrationConnection =
-        await loadParentDocumentsByServiceInstance(
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
             orderBy: DocumentOrdering.CreatedAt,
@@ -200,7 +200,7 @@ describe('Document domain', () => {
         expect(connectors.length).toBe(2);
 
         const secondContractConnection: IntegrationConnection =
-          await loadParentDocumentsByServiceInstance(
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
               orderBy: DocumentOrdering.CreatedAt,
@@ -236,7 +236,7 @@ describe('Document domain', () => {
         expect(connectors.length).toBe(2);
 
         const allContractsConnection: IntegrationConnection =
-          await loadParentDocumentsByServiceInstance(
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
               orderBy: DocumentOrdering.CreatedAt,

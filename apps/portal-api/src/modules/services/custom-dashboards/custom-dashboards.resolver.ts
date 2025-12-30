@@ -10,15 +10,9 @@ import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
+import { DocumentApp } from '../document/document.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
-import {
-  deleteDocument,
-  getUploader,
-  loadParentDocumentsByServiceInstance,
-  loadSeoDocumentsByServiceSlug,
-  loadUploaderOrganization,
-  updateDocumentWithChildren,
-} from '../document/domain/document.domain';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
@@ -32,8 +26,9 @@ const resolvers: Resolvers = {
     labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => getUploader(id),
-    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
+    uploader_organization: ({ id }, _) =>
+      DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: async ({ service_instance_id }, _, context) =>
@@ -41,7 +36,7 @@ const resolvers: Resolvers = {
   },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }) => {
-      const dashboards = await loadSeoDocumentsByServiceSlug(
+      const dashboards = await DocumentDomain.loadSeoDocumentsByServiceSlug(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         serviceSlug,
         CUSTOM_DASHBOARD_METADATA
@@ -49,7 +44,7 @@ const resolvers: Resolvers = {
       for (const dashboard of dashboards) {
         dashboard.children_documents =
           await DocumentChildrenDomain.loadImagesByDocumentId(dashboard.id);
-        dashboard.uploader = await getUploader(dashboard.id);
+        dashboard.uploader = await DocumentDomain.loadUploader(dashboard.id);
         dashboard.labels = await labelsDomain.loadLabelsByDocumentId(
           dashboard.id
         );
@@ -60,7 +55,7 @@ const resolvers: Resolvers = {
       return CustomDashboardsApp.loadSeoCustomDashboard(slug);
     },
     customDashboards: async (_, input) => {
-      return loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
+      return DocumentDomain.loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         input,
         CUSTOM_DASHBOARD_METADATA
@@ -98,7 +93,7 @@ const resolvers: Resolvers = {
     },
     updateCustomDashboard: async (_, input) => {
       try {
-        return updateDocumentWithChildren<CustomDashboard>(
+        return DocumentApp.updateDocumentWithChildren<CustomDashboard>(
           OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           extractId<ServiceInstanceId>(input.serviceInstanceId),
@@ -120,7 +115,7 @@ const resolvers: Resolvers = {
     },
     deleteCustomDashboard: async (_, { id, serviceInstanceId }) => {
       try {
-        return deleteDocument<CustomDashboard>(
+        return DocumentApp.deleteDocument<CustomDashboard>(
           extractId<DocumentId>(id),
           extractId<ServiceInstanceId>(serviceInstanceId),
           true

@@ -10,15 +10,9 @@ import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
+import { DocumentApp } from '../document/document.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
-import {
-  deleteDocument,
-  getUploader,
-  loadParentDocumentsByServiceInstance,
-  loadSeoDocumentsByServiceSlug,
-  loadUploaderOrganization,
-  updateDocumentWithChildren,
-} from '../document/domain/document.domain';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
@@ -31,15 +25,16 @@ const resolvers: Resolvers = {
   SeoOpenAEVScenario: {
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => getUploader(id),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
     labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
   },
   OpenAEVScenario: {
     labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => getUploader(id),
-    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
+    uploader_organization: ({ id }, _) =>
+      DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
@@ -47,7 +42,7 @@ const resolvers: Resolvers = {
   },
   Query: {
     seoOpenAEVScenariosByServiceSlug: async (_, { serviceSlug }) => {
-      return loadSeoDocumentsByServiceSlug(
+      return DocumentDomain.loadSeoDocumentsByServiceSlug(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
         OPENAEV_SCENARIO_METADATA
@@ -57,7 +52,7 @@ const resolvers: Resolvers = {
       return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
     },
     openAEVScenarios: async (_, input) => {
-      return loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
+      return DocumentDomain.loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         input,
         OPENAEV_SCENARIO_METADATA
@@ -94,7 +89,7 @@ const resolvers: Resolvers = {
     },
     updateOpenAEVScenario: async (_, input) => {
       try {
-        return updateDocumentWithChildren<OpenAEVScenario>(
+        return DocumentApp.updateDocumentWithChildren<OpenAEVScenario>(
           OPENAEV_SCENARIO_DOCUMENT_TYPE,
           extractId<DocumentId>(input.documentId),
           extractId<ServiceInstanceId>(input.serviceInstanceId),
@@ -115,7 +110,7 @@ const resolvers: Resolvers = {
     },
     deleteOpenAEVScenario: async (_, { id, serviceInstanceId }) => {
       try {
-        return deleteDocument<OpenAEVScenario>(
+        return DocumentApp.deleteDocument<OpenAEVScenario>(
           extractId<DocumentId>(id),
           extractId<ServiceInstanceId>(serviceInstanceId),
           true
