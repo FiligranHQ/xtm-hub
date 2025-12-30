@@ -94,7 +94,7 @@ export const DocumentChildrenDomain = {
 
   loadImagesByDocumentId: async (documentId: string) => {
     const images = await dbUnsecure<Document>('Document')
-      .select(['Document.id', 'Document.file_name'])
+      .select(['Document.*'])
       .join(
         'Document_Children',
         'Document.id',

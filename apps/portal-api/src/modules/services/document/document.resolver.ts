@@ -39,6 +39,21 @@ import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
+    createDocument: async (
+      _,
+      { input, document, serviceInstanceId, metadata }
+    ) => {
+      try {
+        return await DocumentApp.createDocument(
+          input,
+          metadata,
+          extractId<ServiceInstanceId>(serviceInstanceId),
+          document
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
     addDocument: async (
       _,
       { document, parentDocumentId, service_instance_id, ...payload }

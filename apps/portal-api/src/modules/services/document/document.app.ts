@@ -1,11 +1,14 @@
 import { db } from '../../../../knexfile';
 import {
+  CreateDocumentInput,
+  DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
+  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
-import {
+import Document, {
   DocumentId,
   default as DocumentModel,
 } from '../../../model/kanel/public/Document';
@@ -14,9 +17,22 @@ import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
+import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { extractId, omit } from '../../../utils/utils';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { buildCreateEvent } from '../../telemetry/telemetry.helper';
+import {
+  CUSTOM_DASHBOARD_METADATA,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+} from '../custom-dashboards/custom-dashboards.domain';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import {
+  INTEGRATION_METADATA,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../integrations/integrations.model';
 import {
   processDocumentUpdateUploads,
   processUploads,
@@ -33,7 +49,103 @@ export type MutationUpdateDocumentArgs =
   | MutationUpdateCustomDashboardArgs
   | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
 
+const DocumentTypeMappedByServiceDefinition: Partial<
+  Record<ServiceDefinitionIdentifier, string>
+> = {
+  [ServiceDefinitionIdentifier.OpenctiIntegrations]:
+    OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
+    OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+};
+
+const DocumentMetadataMappedByServiceIdentifier: Partial<
+  Record<ServiceDefinitionIdentifier, string[]>
+> = {
+  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
+    CUSTOM_DASHBOARD_METADATA,
+  [ServiceDefinitionIdentifier.OpenctiIntegrations]: INTEGRATION_METADATA,
+};
+
 export const DocumentApp = {
+  createDocument: async (
+    input: CreateDocumentInput,
+    metadata: DocumentMetadataResolverType[],
+    serviceInstanceId: ServiceInstanceId,
+    document: Upload[]
+  ) => {
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const documentType =
+      DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
+    if (!documentType) {
+      throw new Error(ErrorCode.ServiceDefinitionNotMapped);
+    }
+
+    const metadataKeys: string[] | undefined =
+      DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier];
+    if (!metadataKeys) {
+      throw new Error(ErrorCode.ServiceDefinitionNotMapped);
+    }
+
+    const isMissingMetadata = metadataKeys.some(
+      (key) => !metadata.some((meta) => meta.key === key)
+    );
+    if (isMissingMetadata) {
+      throw new Error(ErrorCode.DocumentMissingMetadata);
+    }
+
+    const files = await processUploads(document, serviceInstanceId);
+    const docFile = files.shift();
+    const documentData = {
+      ...input,
+      service_instance_id: serviceInstanceId,
+      type: documentType,
+      file_name: docFile.fileName,
+      minio_name: docFile.minioName,
+      mime_type: docFile.mimeType,
+    };
+
+    const createdDocument = await withTransaction(async () => {
+      const document = await DocumentDomain.createDocument(
+        documentData,
+        metadataKeys as DocumentMetadataKeys<Document>
+      );
+
+      if (metadataKeys.length) {
+        await DocumentMetadataDomain.insertMetadataNew(document.id, metadata);
+
+        for (const meta of metadata) {
+          document[meta.key] = meta.value;
+        }
+      }
+
+      await DocumentChildrenDomain.createImageDocuments(
+        document.id,
+        document.service_instance_id,
+        files
+      );
+
+      return document;
+    });
+
+    try {
+      const createEvent = await buildCreateEvent(createdDocument);
+      void telemetryApp.sendTelemetryEvent(createEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for document creation', {
+        error,
+      });
+    }
+
+    return createdDocument;
+  },
+
   createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T> = []

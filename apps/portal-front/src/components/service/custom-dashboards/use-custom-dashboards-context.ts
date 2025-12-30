@@ -6,9 +6,9 @@ import {
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
   CustomDashboardDeleteMutation,
-  CustomDashboardsCreateMutation,
   CustomDashboardsUpdateMutation,
 } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
+import { DocumentCreateMutation } from '@/components/service/document/document.graphql';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
@@ -17,9 +17,9 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
-import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
+import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -30,8 +30,8 @@ export function useCustomDashboardsContext(
   connectionId?: string
 ): ServiceContextProps {
   const t = useTranslations();
-  const [createCustomDashboards] = useMutation<customDashboardsCreateMutation>(
-    CustomDashboardsCreateMutation
+  const [createCustomDashboards] = useMutation<documentCreateMutation>(
+    DocumentCreateMutation
   );
 
   const handleAddSheet = async (
@@ -41,7 +41,12 @@ export function useCustomDashboardsContext(
   ) => {
     const formValues = values as CustomDashboardFormValues;
     const input = {
-      ...omit(formValues, ['document', 'images', 'uploader_organization_id']),
+      ...omit(formValues, [
+        'document',
+        'images',
+        'uploader_organization_id',
+        'product_version',
+      ]),
       uploader_id: formValues?.uploader_id ?? '',
     };
     const documents = [
@@ -55,6 +60,9 @@ export function useCustomDashboardsContext(
           ...input,
           active: input.active ?? false,
         },
+        metadata: [
+          { key: 'product_version', value: formValues.product_version },
+        ],
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
         document: documents,
@@ -62,7 +70,7 @@ export function useCustomDashboardsContext(
       uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        if (!response.createCustomDashboard) {
+        if (!response.createDocument) {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),

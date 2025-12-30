@@ -1,5 +1,26 @@
 import { graphql } from 'react-relay';
 
+export const DocumentCreateMutation = graphql`
+  mutation documentCreateMutation(
+    $input: CreateDocumentInput!
+    $document: [Upload!]!
+    $metadata: [Metadata!]!
+    $serviceInstanceId: String!
+    $connections: [ID!]!
+  ) {
+    createDocument(
+      input: $input
+      document: $document
+      metadata: $metadata
+      serviceInstanceId: $serviceInstanceId
+    ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
+      __id
+      name
+      ...documentItem_fragment
+    }
+  }
+`;
+
 export const DocumentAddMutation = graphql`
   mutation documentAddMutation(
     $document: Upload
@@ -133,6 +154,10 @@ export const documentItem = graphql`
     }
     subscription {
       id
+    }
+
+    ... on CustomDashboard {
+      product_version
     }
   }
 `;
