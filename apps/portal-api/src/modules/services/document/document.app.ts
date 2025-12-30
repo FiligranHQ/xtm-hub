@@ -4,6 +4,7 @@ import {
   DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateCsvFeedArgs,
   MutationUpdateCustomDashboardArgs,
+  MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
@@ -144,6 +145,120 @@ export const DocumentApp = {
     }
 
     return createdDocument;
+  },
+
+  updateDocumentWithChildrenNew: async (
+    parentDocumentId: DocumentId,
+    serviceInstanceId: ServiceInstanceId,
+    metadata: DocumentMetadataResolverType[],
+    mutationArgs: MutationUpdateDocumentArgsResolverType
+  ) => {
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const documentType =
+      DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
+    if (!documentType) {
+      throw new Error(ErrorCode.ServiceDefinitionNotMapped);
+    }
+
+    const {
+      document,
+      updateDocument: isUpdateDoc,
+      images,
+      input,
+    } = mutationArgs;
+    const { documentFile, newImages, existingImageIds } =
+      await processDocumentUpdateUploads(
+        document,
+        isUpdateDoc,
+        images,
+        serviceInstanceId
+      );
+    const data = {
+      ...input,
+      ...(documentFile
+        ? {
+            file_name: documentFile.fileName,
+            minio_name: documentFile.minioName,
+            mime_type: documentFile.mimeType,
+          }
+        : {}),
+      type: documentType,
+    };
+
+    return withTransaction(async () => {
+      const { user } = requestContext.require();
+      const uploader_organization_id = data.uploader_organization_id
+        ? extractId<OrganizationId>(data.uploader_organization_id)
+        : null;
+
+      const extractedId = extractId<UserId>(data.uploader_id ?? '');
+      const uploader_id = (
+        data.uploader_id && extractedId ? extractedId : user.id
+      ) as UserId;
+
+      const [updatedDocument] = await db<DocumentModel>('Document')
+        .where('id', '=', parentDocumentId)
+        .update({
+          ...omit(data, ['labels']),
+          uploader_organization_id,
+          uploader_id,
+          updated_at: new Date(),
+          updater_id: user.id,
+        })
+        .returning('*');
+
+      // If label is null => that mean we want to update the field to empty
+      if (data.labels !== undefined) {
+        await objectLabelDomain.deleteObjectLabelBy({
+          object_id: parentDocumentId as unknown as ObjectLabelObjectId,
+        });
+
+        if (data.labels?.length > 0) {
+          await objectLabelDomain.insertObjectLabel(
+            data.labels.map((id) => ({
+              object_id: parentDocumentId as unknown as ObjectLabelObjectId,
+              label_id: extractId(id) as LabelId,
+            }))
+          );
+        }
+      }
+
+      if (metadata.length) {
+        await DocumentMetadataDomain.deleteMetadata({ id: parentDocumentId });
+        await DocumentMetadataDomain.insertMetadataNew(
+          updatedDocument.id,
+          metadata
+        );
+
+        for (const meta of metadata) {
+          updatedDocument[meta.key] = meta.value;
+        }
+      }
+
+      // Delete the images that are not in the existingImages array
+      const childIds = await DocumentChildrenDomain.loadChildrenIds(
+        parentDocumentId,
+        existingImageIds
+      );
+      if (childIds.length > 0) {
+        await DocumentDomain.deleteDocuments(childIds);
+      }
+
+      await DocumentChildrenDomain.createImageDocuments(
+        parentDocumentId,
+        serviceInstanceId,
+        newImages
+      );
+
+      return updatedDocument;
+    });
   },
 
   createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(

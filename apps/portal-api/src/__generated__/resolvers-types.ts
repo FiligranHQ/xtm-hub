@@ -628,6 +628,7 @@ export type Mutation = {
   updateCustomDashboard: CustomDashboard;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
+  updateDocument: Document;
   updateOpenAEVScenario: OpenAevScenario;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
@@ -949,6 +950,17 @@ export type MutationUpdateDeploymentQuotaCapacityArgs = {
 
 export type MutationUpdateDeploymentRequestArgs = {
   input: UpdateDeploymentRequestInput;
+};
+
+
+export type MutationUpdateDocumentArgs = {
+  document: Array<Scalars['Upload']['input']>;
+  documentId: Scalars['ID']['input'];
+  images?: InputMaybe<Array<Scalars['String']['input']>>;
+  input: UpdateDocumentInput;
+  metadata: Array<DocumentMetadata>;
+  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  updateDocument: Scalars['Boolean']['input'];
 };
 
 
@@ -1927,6 +1939,17 @@ export type UpdateDeploymentRequestInput = {
   start_date?: InputMaybe<Scalars['Date']['input']>;
 };
 
+export type UpdateDocumentInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['String']['input']>;
+  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateOpenAevScenarioInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -2292,6 +2315,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
+  UpdateDocumentInput: UpdateDocumentInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
@@ -2426,6 +2450,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
+  UpdateDocumentInput: UpdateDocumentInput;
   UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
@@ -2846,6 +2871,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
+  updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;
   updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;

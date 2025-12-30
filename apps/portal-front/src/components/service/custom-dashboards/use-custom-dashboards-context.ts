@@ -4,11 +4,11 @@ import {
   CustomDashboardForm,
   CustomDashboardFormValues,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
+import { CustomDashboardDeleteMutation } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import {
-  CustomDashboardDeleteMutation,
-  CustomDashboardsUpdateMutation,
-} from '@/components/service/custom-dashboards/custom-dashboard.graphql';
-import { DocumentCreateMutation } from '@/components/service/document/document.graphql';
+  DocumentCreateMutation,
+  DocumentUpdateMutation,
+} from '@/components/service/document/document.graphql';
 import { omit } from '@/lib/omit';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
@@ -18,8 +18,8 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
+import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
@@ -106,8 +106,9 @@ export function useCustomDashboardsContext(
     });
   };
 
-  const [updateCustomDashboardMutation] =
-    useMutation<customDashboardsUpdateMutation>(CustomDashboardsUpdateMutation);
+  const [updateMutation] = useMutation<documentUpdateMutation>(
+    DocumentUpdateMutation
+  );
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
@@ -118,7 +119,7 @@ export function useCustomDashboardsContext(
     const customDashboard = resource as customDashboardsItem_fragment$data;
     const formValues = values as CustomDashboardFormValues;
     const input = {
-      ...omit(formValues, ['document', 'images']),
+      ...omit(formValues, ['document', 'images', 'product_version']),
       uploader_id: formValues?.uploader_id ?? '',
     };
 
@@ -129,12 +130,15 @@ export function useCustomDashboardsContext(
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
-    updateCustomDashboardMutation({
+    updateMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
         document: documentsToUpload,
         documentId: customDashboard.id,
+        metadata: [
+          { key: 'product_version', value: formValues.product_version },
+        ],
         updateDocument: formValues.document !== undefined,
         images: existingImages,
       },

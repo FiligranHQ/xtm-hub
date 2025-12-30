@@ -90,11 +90,31 @@ input CreateDocumentInput {
   uploader_id: String!
 }
 
+input UpdateDocumentInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
+  uploader_id: String
+}
+
 type Mutation {
   createDocument(
     input: CreateDocumentInput!
     metadata: [DocumentMetadata!]!
     document: [Upload!]!
+    serviceInstanceId: String
+  ): Document! @auth @service_capa(requires: [UPLOAD])
+  updateDocument(
+    documentId: ID!
+    input: UpdateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    document: [Upload!]!
+    updateDocument: Boolean!
+    images: [String!]
     serviceInstanceId: String
   ): Document! @auth @service_capa(requires: [UPLOAD])
   addDocument(

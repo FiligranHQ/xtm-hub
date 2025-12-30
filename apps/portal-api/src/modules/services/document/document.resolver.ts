@@ -54,6 +54,18 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+    updateDocument: async (_, input) => {
+      try {
+        return DocumentApp.updateDocumentWithChildrenNew(
+          extractId<DocumentId>(input.documentId),
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.metadata,
+          input
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
     addDocument: async (
       _,
       { document, parentDocumentId, service_instance_id, ...payload }
