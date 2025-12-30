@@ -57,7 +57,7 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
-export type BulkRemovePendingUserFromOrganizationInput = {
+export type BulkPendingUserFromOrganizationInput = {
   excludedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   filters?: InputMaybe<Array<Filter>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
@@ -551,6 +551,7 @@ export type Mutation = {
   adminCancelDeploymentRequest?: Maybe<DeploymentRequest>;
   adminEditUser: User;
   autoRegisterPlatform: Success;
+  bulkAcceptPendingUserInOrganization?: Maybe<Success>;
   bulkRemovePendingUserFromOrganization?: Maybe<Success>;
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
   changeSelectedOrganization?: Maybe<User>;
@@ -665,8 +666,13 @@ export type MutationAutoRegisterPlatformArgs = {
 };
 
 
+export type MutationBulkAcceptPendingUserInOrganizationArgs = {
+  input?: InputMaybe<BulkPendingUserFromOrganizationInput>;
+};
+
+
 export type MutationBulkRemovePendingUserFromOrganizationArgs = {
-  input?: InputMaybe<BulkRemovePendingUserFromOrganizationInput>;
+  input?: InputMaybe<BulkPendingUserFromOrganizationInput>;
 };
 
 
@@ -2050,7 +2056,7 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  BulkRemovePendingUserFromOrganizationInput: BulkRemovePendingUserFromOrganizationInput;
+  BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
@@ -2209,7 +2215,7 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
-  BulkRemovePendingUserFromOrganizationInput: BulkRemovePendingUserFromOrganizationInput;
+  BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
@@ -2683,6 +2689,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationAdminCancelDeploymentRequestArgs>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
+  bulkAcceptPendingUserInOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkAcceptPendingUserInOrganizationArgs>>;
   bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkRemovePendingUserFromOrganizationArgs>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;

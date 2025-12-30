@@ -131,7 +131,8 @@ type Mutation {
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
-  bulkRemovePendingUserFromOrganization(input: BulkRemovePendingUserFromOrganizationInput): Success
+  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   editMeUser(input: EditMeUserInput!): User!
@@ -1220,7 +1221,7 @@ input AdminAddUserInput {
   organization_capabilities: [OrganizationCapabilitiesInput!]
 }
 
-input BulkRemovePendingUserFromOrganizationInput {
+input BulkPendingUserFromOrganizationInput {
   ids: [ID!]
   searchTerm: String
   filters: [Filter!]

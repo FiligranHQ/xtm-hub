@@ -2,6 +2,7 @@ import {
   AdminAddUserInput,
   AdminEditUserInput,
   EditUserCapabilitiesInput,
+  Filter,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
@@ -20,6 +21,7 @@ import {
   updateMultipleUserOrgWithCapabilities,
 } from '../common/user-organization.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
+import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
   loadUser,
   loadUserBy,
@@ -173,5 +175,40 @@ export const usersAdminApp = {
           organization_id: organizationId,
           orgCapabilities: input.capabilities,
         });
+  },
+
+  bulkAcceptPendingUserInOrganization: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ) => {
+    const userIds =
+      await UserOrganizationPendingDomain.bulkGetUserIdsFromOrganizationPending(
+        organizationId,
+        ids,
+        searchTerm,
+        filters,
+        excludedIds
+      );
+
+    await Promise.all(
+      userIds.map(async (userId: UserId) => {
+        try {
+          await acceptPendingUserWithCapabilities({
+            user_id: userId,
+            organization_id: organizationId,
+            orgCapabilities: [],
+          });
+        } catch (error) {
+          logApp.error('Error while accepting user in organization', {
+            error,
+            userId,
+            organizationId,
+          });
+        }
+      })
+    );
   },
 };

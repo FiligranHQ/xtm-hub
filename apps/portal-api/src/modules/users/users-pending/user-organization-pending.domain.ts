@@ -93,25 +93,60 @@ export const UserOrganizationPendingDomain = {
     filters: Filter[],
     excludedIds: UserId[]
   ) => {
-    const qb = db<UserOrganizationPending>('User_Organization_Pending').where(
-      'User_Organization_Pending.organization_id',
-      '=',
-      organizationId
+    const { queryBuilder } = await buildBulkUserFromOrganizationPendingQuery(
+      organizationId,
+      ids,
+      searchTerm,
+      filters,
+      excludedIds
     );
-    if (searchTerm) {
-      qb.leftJoin('User', 'User.id', 'User_Organization_Pending.user_id');
-      await applySearch('User', qb, searchTerm);
-    }
-
-    if (filters.length > 0) {
-      await applyFilters('User_Organization_Pending', qb, filters);
-    }
-
-    if ((filters.length > 0 || searchTerm) && excludedIds.length > 0) {
-      qb.whereNotIn('user_id', excludedIds);
-    } else if (ids.length > 0) {
-      qb.whereIn('user_id', ids);
-    }
-    return qb.delete('*');
+    return queryBuilder.delete('*');
   },
+
+  bulkGetUserIdsFromOrganizationPending: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ): Promise<UserId[]> => {
+    const { queryBuilder } = await buildBulkUserFromOrganizationPendingQuery(
+      organizationId,
+      ids,
+      searchTerm,
+      filters,
+      excludedIds
+    );
+    const results = await queryBuilder.select('user_id');
+    return results.map((row) => row.user_id);
+  },
+};
+
+const buildBulkUserFromOrganizationPendingQuery = async (
+  organizationId: OrganizationId,
+  ids: UserId[],
+  searchTerm: string | undefined,
+  filters: Filter[],
+  excludedIds: UserId[]
+) => {
+  const qb = db<UserOrganizationPending>('User_Organization_Pending').where(
+    'organization_id',
+    '=',
+    organizationId
+  );
+  if (searchTerm) {
+    qb.leftJoin('User', 'User.id', 'User_Organization_Pending.user_id');
+    await applySearch('User', qb, searchTerm);
+  }
+
+  if (filters.length > 0) {
+    await applyFilters('User_Organization_Pending', qb, filters);
+  }
+
+  if ((filters.length > 0 || searchTerm) && excludedIds.length > 0) {
+    qb.whereNotIn('user_id', excludedIds);
+  } else if (ids.length > 0) {
+    qb.whereIn('user_id', ids);
+  }
+  return { queryBuilder: qb };
 };

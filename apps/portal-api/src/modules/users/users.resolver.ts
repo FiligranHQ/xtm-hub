@@ -216,6 +216,24 @@ const resolvers: Resolvers = {
       );
       return { success: true };
     },
+    bulkAcceptPendingUserInOrganization: async (
+      _,
+      { input },
+      context: PortalContext
+    ) => {
+      const { ids, searchTerm, filters, excludedIds } = input;
+      const extractedIds = ids.map(extractId<UserId>);
+      const extractedExcludedIds = excludedIds.map(extractId<UserId>);
+
+      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+        context.user.selected_organization_id,
+        extractedIds,
+        searchTerm,
+        filters,
+        extractedExcludedIds
+      );
+      return { success: true };
+    },
     removePendingUserFromOrganization: async (
       _,
       { user_id, organization_id }

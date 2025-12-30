@@ -113,7 +113,7 @@ input AdminAddUserInput {
   organization_capabilities: [OrganizationCapabilitiesInput!]
 }
 
-input BulkRemovePendingUserFromOrganizationInput {
+input BulkPendingUserFromOrganizationInput {
   ids: [ID!]
   searchTerm: String
   filters: [Filter!]
@@ -135,7 +135,10 @@ type Mutation {
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   changeSelectedOrganization(organization_id: ID!): User @auth
   bulkRemovePendingUserFromOrganization(
-    input: BulkRemovePendingUserFromOrganizationInput
+    input: BulkPendingUserFromOrganizationInput
+  ): Success @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  bulkAcceptPendingUserInOrganization(
+    input: BulkPendingUserFromOrganizationInput
   ): Success @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
