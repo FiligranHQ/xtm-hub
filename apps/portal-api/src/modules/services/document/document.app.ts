@@ -3,7 +3,6 @@ import {
   CreateDocumentInput,
   DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateCsvFeedArgs,
-  MutationUpdateCustomDashboardArgs,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -46,9 +45,9 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
-export type MutationUpdateDocumentArgs =
-  | MutationUpdateCustomDashboardArgs
-  | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
+export type MutationUpdateDocumentArgs = MutationUpdateCsvFeedArgs & {
+  input: { integration_type: string };
+};
 
 const DocumentTypeMappedByServiceDefinition: Partial<
   Record<ServiceDefinitionIdentifier, string>
@@ -408,7 +407,7 @@ export const DocumentApp = {
     const data = {
       ...input,
       type,
-    } as Partial<T>;
+    } as unknown as Partial<T>;
 
     // We are updating the base document
     if (documentFile) {

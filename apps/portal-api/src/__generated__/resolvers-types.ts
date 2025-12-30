@@ -128,17 +128,6 @@ export type CreateCsvFeedInput = {
   uploader_id: Scalars['String']['input'];
 };
 
-export type CreateCustomDashboardInput = {
-  active: Scalars['Boolean']['input'];
-  description: Scalars['String']['input'];
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
-  name: Scalars['String']['input'];
-  product_version: Scalars['String']['input'];
-  short_description: Scalars['String']['input'];
-  slug: Scalars['String']['input'];
-  uploader_id: Scalars['String']['input'];
-};
-
 export type CreateDeploymentRequestInput = {
   activity_sector?: InputMaybe<Scalars['String']['input']>;
   job_title?: InputMaybe<Scalars['String']['input']>;
@@ -588,7 +577,6 @@ export type Mutation = {
   changeSelectedOrganization?: Maybe<User>;
   contactUs: Success;
   createCsvFeed: CsvFeed;
-  createCustomDashboard: CustomDashboard;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
   createOpenAEVScenario: OpenAevScenario;
@@ -625,7 +613,6 @@ export type Mutation = {
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
   updateCsvFeed: CsvFeed;
-  updateCustomDashboard: CustomDashboard;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateDocument: Document;
@@ -735,13 +722,6 @@ export type MutationCreateCsvFeedArgs = {
   document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateCsvFeedInput;
   serviceInstanceId: Scalars['String']['input'];
-};
-
-
-export type MutationCreateCustomDashboardArgs = {
-  document: Array<Scalars['Upload']['input']>;
-  input: CreateCustomDashboardInput;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -928,16 +908,6 @@ export type MutationUpdateCsvFeedArgs = {
   documentId: Scalars['ID']['input'];
   images?: InputMaybe<Array<Scalars['String']['input']>>;
   input: UpdateCsvFeedInput;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-  updateDocument: Scalars['Boolean']['input'];
-};
-
-
-export type MutationUpdateCustomDashboardArgs = {
-  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
-  documentId: Scalars['ID']['input'];
-  images?: InputMaybe<Array<Scalars['String']['input']>>;
-  input: UpdateCustomDashboardInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
 };
@@ -1911,18 +1881,6 @@ export type UpdateCsvFeedInput = {
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateCustomDashboardInput = {
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  product_version?: InputMaybe<Scalars['String']['input']>;
-  short_description?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  uploader_id?: InputMaybe<Scalars['String']['input']>;
-  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateDeploymentQuotaCapacityInput = {
   newCapacity: Scalars['Int']['input'];
   platformIdentifier: PlatformIdentifier;
@@ -2189,7 +2147,6 @@ export type ResolversTypes = ResolversObject<{
   Connector: ResolverTypeWrapper<Connector>;
   ConnectorType: ConnectorType;
   CreateCsvFeedInput: CreateCsvFeedInput;
-  CreateCustomDashboardInput: CreateCustomDashboardInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateOpenAEVScenarioInput: CreateOpenAevScenarioInput;
@@ -2312,7 +2269,6 @@ export type ResolversTypes = ResolversObject<{
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
-  UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
@@ -2352,7 +2308,6 @@ export type ResolversParentTypes = ResolversObject<{
   Capability: Capability;
   Connector: Connector;
   CreateCsvFeedInput: CreateCsvFeedInput;
-  CreateCustomDashboardInput: CreateCustomDashboardInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateOpenAEVScenarioInput: CreateOpenAevScenarioInput;
@@ -2447,7 +2402,6 @@ export type ResolversParentTypes = ResolversObject<{
   TelemetryResponse: TelemetryResponse;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateCsvFeedInput: UpdateCsvFeedInput;
-  UpdateCustomDashboardInput: UpdateCustomDashboardInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
@@ -2831,7 +2785,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
-  createCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationCreateCustomDashboardArgs, 'document' | 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
   createOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationCreateOpenAevScenarioArgs, 'document' | 'input'>>;
@@ -2868,7 +2821,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
   updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
-  updateCustomDashboard?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType, RequireFields<MutationUpdateCustomDashboardArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;

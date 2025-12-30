@@ -93,8 +93,6 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  createCustomDashboard(input: CreateCustomDashboardInput!, document: [Upload!]!, serviceInstanceId: String): CustomDashboard!
-  updateCustomDashboard(documentId: ID!, input: UpdateCustomDashboardInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CustomDashboard!
   deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
@@ -189,29 +187,6 @@ type RolePortal implements Node {
 enum ServiceConfigurationStatus {
   active
   inactive
-}
-
-input CreateCustomDashboardInput {
-  name: String!
-  slug: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-  uploader_id: String!
-  product_version: String!
-}
-
-input UpdateCustomDashboardInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-  product_version: String
 }
 
 type CustomDashboard implements Document & Node {

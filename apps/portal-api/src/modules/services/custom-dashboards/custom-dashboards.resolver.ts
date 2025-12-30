@@ -4,9 +4,8 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
@@ -65,54 +64,6 @@ const resolvers: Resolvers = {
       CustomDashboardsApp.loadCustomDashboard(extractId<DocumentId>(id)),
   },
   Mutation: {
-    createCustomDashboard: async (
-      _,
-      { input, document, serviceInstanceId }
-    ) => {
-      try {
-        return CustomDashboardsApp.createCustomDashboard(
-          {
-            ...input,
-            service_instance_id:
-              extractId<ServiceInstanceId>(serviceInstanceId),
-          },
-          document
-        );
-      } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
-            detail: error,
-          });
-        }
-
-        throw mapToGraphQLError(
-          error,
-          UnknownErrorCode.CustomDashboardInsertionError
-        );
-      }
-    },
-    updateCustomDashboard: async (_, input) => {
-      try {
-        return DocumentApp.updateDocumentWithChildren<CustomDashboard>(
-          OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-          extractId<DocumentId>(input.documentId),
-          extractId<ServiceInstanceId>(input.serviceInstanceId),
-          input,
-          CUSTOM_DASHBOARD_METADATA
-        );
-      } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
-            detail: error,
-          });
-        }
-
-        throw mapToGraphQLError(
-          error,
-          UnknownErrorCode.CustomDashboardUpdateError
-        );
-      }
-    },
     deleteCustomDashboard: async (_, { id, serviceInstanceId }) => {
       try {
         return DocumentApp.deleteDocument<CustomDashboard>(
