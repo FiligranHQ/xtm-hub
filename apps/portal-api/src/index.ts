@@ -23,7 +23,12 @@ import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
-import { operationMetricsPlugin } from './server/apollo-plugins/metrics';
+import {
+  operationMetricsPlugin,
+  sseActiveConnectionsGauge,
+  sseMessageCounter,
+  sseSubscriptionCounter,
+} from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
@@ -219,6 +224,27 @@ const handler = createHandler({
     // if (!user) throw new GraphQLError("You must be logged in", { extensions: { code: 'UNAUTHENTICATED' } });
     // TODO Add build session from request authorization
     return { user, req: _req };
+  },
+
+  onConnect: async (req) => {
+    sseActiveConnectionsGauge.inc({
+      subscription: req.context.res.req.body.operationName ?? 'Unknown',
+    });
+  },
+  onComplete: async (_ctx, msg) => {
+    sseActiveConnectionsGauge.dec({
+      subscription: msg.context.res.req.body.operationName ?? 'Unknown',
+    });
+  },
+  onSubscribe: async (_ctx, msg) => {
+    sseSubscriptionCounter.inc({
+      subscription: msg.operationName ?? 'Unknown',
+    });
+  },
+  onNext: async (_ctx, req) => {
+    sseMessageCounter.inc({
+      subscription: req.context.res.req.body.operationName ?? 'Unknown',
+    });
   },
 });
 
