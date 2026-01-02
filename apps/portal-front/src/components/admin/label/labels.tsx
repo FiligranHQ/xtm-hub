@@ -27,7 +27,7 @@ const Labels = () => {
   const t = useTranslations();
   const queryData = useLazyLoadQuery<labelListQuery>(LabelListQuery, {
     count: 100,
-    orderMode: 'desc',
+    orderMode: 'asc',
     orderBy: 'name',
   });
 

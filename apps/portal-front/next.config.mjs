@@ -16,7 +16,8 @@ const nextConfig = {
 
       // octi integration feeds → opencti integrations
       {
-        source: '/app/service/octi_integration_feeds/:path*',
+        source:
+          '/app/service/(octi_integration_feeds|open-cti-integration-feeds)/:path*',
         destination: '/app/service/opencti_integrations/:path*',
         permanent: true,
       },
@@ -40,7 +41,8 @@ const nextConfig = {
       },
 
       {
-        source: '/cybersecurity-solutions/octi_integration_feeds/:path*',
+        source:
+          '/cybersecurity-solutions/(octi_integration_feeds|open-cti-integration-feeds)/:path*',
         destination: '/cybersecurity-solutions/open-cti-integrations/:path*',
         permanent: true,
       },

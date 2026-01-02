@@ -15,7 +15,7 @@ import {
 export const getLabels = (documentType?: string) => {
   const queryData = useLazyLoadQuery<labelListQuery>(
     LabelListQuery,
-    { count: 500, orderBy: 'name', orderMode: 'desc', documentType },
+    { count: 500, orderBy: 'name', orderMode: 'asc', documentType },
     { fetchPolicy: 'network-only' }
   );
   const [data] = useRefetchableFragment<labelListQuery, labelList_labels$key>(
