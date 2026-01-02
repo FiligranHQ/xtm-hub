@@ -27,7 +27,11 @@ import {
 } from 'react';
 
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { IconActionContext, IconActions, IconActionsItem } from '@/components/ui/icon-actions';
+import {
+  IconActionContext,
+  IconActions,
+  IconActionsItem,
+} from '@/components/ui/icon-actions';
 import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import { useMutation } from 'react-relay';
 
@@ -199,7 +203,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
               GenericCapabilityName.ACCESS
           ) {
             return (
-              <Badge className="uppercase">
+              <Badge className="capitalize">
                 {GenericCapabilityName.ACCESS}
               </Badge>
             );
@@ -241,10 +245,12 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
                       <span className="sr-only">{t('Utils.OpenMenu')}</span>
                     </>
                   }>
-                  <IconActionsItem onClick={() => setEditUserService(row.original)}>
+                  <IconActionsItem
+                    onClick={() => setEditUserService(row.original)}>
                     {t('Utils.Update')}
                   </IconActionsItem>
-                  <IconActionsItem onClick={() => setDeleteUserService(row.original)}>
+                  <IconActionsItem
+                    onClick={() => setDeleteUserService(row.original)}>
                     {t('Utils.Delete')}
                   </IconActionsItem>
                 </IconActions>
@@ -358,7 +364,9 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
           subscription={queryDataSubscription ?? {}}
           open={!!editUserService}
-          setOpen={(open) => setEditUserService(open ? editUserService : undefined)}
+          setOpen={(open) =>
+            setEditUserService(open ? editUserService : undefined)
+          }
         />
       )}
       {deleteUserService && (
@@ -368,7 +376,9 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           actionButtonText={t('Service.Management.RemoveAccess')}
           variantName={'destructive'}
           isOpen={!!deleteUserService}
-          onOpenChange={(open) => setDeleteUserService(open ? deleteUserService : undefined)}
+          onOpenChange={(open) =>
+            setDeleteUserService(open ? deleteUserService : undefined)
+          }
           onClickContinue={() => {
             deleteCurrentUser(deleteUserService.user?.email ?? '');
             setDeleteUserService(undefined);
