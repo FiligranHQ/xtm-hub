@@ -1,6 +1,9 @@
 'use strict';
 
+import knex from 'knex';
+import { baseConfig } from '../../knexconfig.js';
 import { esDbClient } from '../thirdparty/elasticsearch/client.js';
+import { logApp } from '../utils/app-logger.util';
 
 export const up = async function (next) {
   await esDbClient.getIndices().putIndexTemplate({
@@ -119,10 +122,73 @@ export const up = async function (next) {
     },
   });
 
+  try {
+    const database = knex(baseConfig);
+
+    interface PlatformData {
+      platform_id: string;
+      platform_url: string;
+    }
+    const platformData = (await database('Service_Configuration')
+      .select(
+        database.raw("config->>'platform_id' as platform_id"),
+        database.raw("config->>'platform_url' as platform_url")
+      )
+      .whereRaw("config->>'platform_id' IS NOT NULL")
+      .whereRaw("config->>'platform_url' IS NOT NULL")) as PlatformData[];
+    logApp.info(
+      `Updating register events related to ${platformData.length} platforms`
+    );
+
+    for (const { platform_id, platform_url } of platformData) {
+      try {
+        await esDbClient.updateByQuery({
+          index: 'telemetry_v1',
+          refresh: true,
+          conflicts: 'proceed',
+          script: {
+            source: 'ctx._source.platform_url = params.platform_url',
+            params: {
+              platform_url: platform_url,
+            },
+          },
+          query: {
+            bool: {
+              must: [
+                { term: { event_type: 'register' } },
+                { term: { platform_id: platform_id } },
+              ],
+            },
+          },
+        });
+      } catch (error) {
+        logApp.error(`Error updating platform_id ${platform_id}:`, { error });
+      }
+    }
+  } catch (error) {
+    logApp.error('Unable to update register events', { error });
+  }
   next();
 };
 
 export const down = async function (next) {
+  await esDbClient.updateByQuery({
+    index: 'telemetry_v1',
+    refresh: true,
+    conflicts: 'proceed',
+    script: {
+      source: 'ctx._source.remove("platform_url")',
+    },
+    query: {
+      bool: {
+        must: [
+          { term: { event_type: 'register' } },
+          { exists: { field: 'platform_url' } },
+        ],
+      },
+    },
+  });
+
   await esDbClient.getIndices().putIndexTemplate({
     name: 'telemetry-template',
     index_patterns: ['telemetry_v*'], // Will match telemetry_v1, telemetry_v2, etc.
