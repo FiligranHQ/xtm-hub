@@ -203,6 +203,7 @@ export function buildRegisterEvent(
   platform_id: string,
   platform_contract: PlatformContract,
   platform_version: string,
+  platform_url: string,
   timestamp?: Date
 ): RegisterPlatformEvent {
   const baseEvent = buildBaseEvent(organization, user_id, timestamp);
@@ -215,6 +216,7 @@ export function buildRegisterEvent(
     platform_id,
     platform_contract,
     platform_version,
+    platform_url,
   };
 }
 
