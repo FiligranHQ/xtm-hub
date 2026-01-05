@@ -19,7 +19,7 @@ export const SubscriptionStatusBadge: FunctionComponent<
   return (
     <>
       {type && (
-        <Badge className={cn('uppercase', badgeColor[type])}>{type}</Badge>
+        <Badge className={cn('capitalize', badgeColor[type])}>{type}</Badge>
       )}
     </>
   );

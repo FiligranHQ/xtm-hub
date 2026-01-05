@@ -81,9 +81,7 @@ const ShareableResourceCard = ({
             size="sm"
             className="ml-auto"
             variant={document.active ? 'default' : 'warning'}>
-            {t(
-              document.active ? 'Badge.Published' : 'Badge.Draft'
-            ).toUpperCase()}
+            {t(document.active ? 'Badge.Published' : 'Badge.Draft')}
           </Badge>
         </div>
       </div>

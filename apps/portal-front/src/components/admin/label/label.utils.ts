@@ -3,6 +3,7 @@ import {
   labelListFragment,
   LabelListQuery,
 } from '@/components/admin/label/label.graphql';
+import { formatName } from '@/utils/format/name';
 import { labelListQuery } from '@generated/labelListQuery.graphql';
 import { labelList_labels$key } from '@generated/labelList_labels.graphql';
 import { label_fragment$key } from '@generated/label_fragment.graphql';
@@ -24,5 +25,10 @@ export const getLabels = (documentType?: string) => {
   );
   return (data.labels?.edges ?? [])
     .map(({ node }) => readInlineData<label_fragment$key>(labelFragment, node))
-    .filter((l) => !!l);
+    .filter((l) => !!l)
+    .map(({ id, name, color }) => ({
+      id,
+      name: formatName(name),
+      color,
+    }));
 };
