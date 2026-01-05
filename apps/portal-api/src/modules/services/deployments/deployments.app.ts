@@ -203,7 +203,10 @@ export const DeploymentsApp = {
             organizationName: user.organizations.find(
               (o) => o.id === user.selected_organization_id
             ).name,
-            userName: `${user.first_name} ${user.last_name}`,
+            userName:
+              user.first_name && user.last_name
+                ? `${user.first_name} ${user.last_name}`
+                : `${user.email}`,
             userEmail: user.email,
             region: input.region,
             activitySector: input.activity_sector,

@@ -7,6 +7,7 @@ import {
 } from '@/components/admin/label/label.graphql';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { i18nKey } from '@/utils/datatable';
+import { formatName } from '@/utils/format/name';
 import { labelListQuery } from '@generated/labelListQuery.graphql';
 import { labelList_labels$key } from '@generated/labelList_labels.graphql';
 import { ColumnDef } from '@tanstack/react-table';
@@ -49,7 +50,7 @@ const Labels = () => {
           <Badge
             variant="outline"
             color={row.original.color}>
-            {row.original.name.toUpperCase()}
+            {formatName(row.original.name)}
           </Badge>
         );
       },

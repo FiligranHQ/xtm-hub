@@ -1,5 +1,5 @@
 import { ApolloServerPlugin } from '@apollo/server';
-import { Counter, Histogram, Registry } from 'prom-client';
+import { Counter, Gauge, Histogram, Registry } from 'prom-client';
 
 export const registry = new Registry();
 
@@ -22,9 +22,30 @@ export const graphqlOperationDuration = new Histogram({
   buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5],
 });
 
+export const sseSubscriptionCounter = new Counter({
+  name: 'sse_subscription_total',
+  help: 'Total number of GraphQL subscriptions called on XTM Hub',
+  labelNames: ['subscription'],
+});
+export const sseMessageCounter = new Counter({
+  name: 'sse_message_total',
+  help: 'Total number of SSE message sent by XTM Hub',
+  labelNames: ['subscription'],
+});
+export const sseActiveConnectionsGauge = new Gauge({
+  name: 'sse_active_connections',
+  help: 'Total number of active sse connections on XTM Hub',
+  labelNames: ['subscription'],
+});
+
 registry.registerMetric(graphqlMutationCounter);
 registry.registerMetric(graphqlQueryCounter);
 registry.registerMetric(graphqlOperationDuration);
+
+registry.registerMetric(sseSubscriptionCounter);
+registry.registerMetric(sseMessageCounter);
+registry.registerMetric(sseActiveConnectionsGauge);
+
 export const operationMetricsPlugin: ApolloServerPlugin = {
   async requestDidStart() {
     let endTimer: (() => void) | null = null;
