@@ -367,6 +367,7 @@ describe('Registration app', () => {
         platform_contract: 'EE',
         platform_version: 'X.Y.Z',
         platform_id: platform.id,
+        platform_url: platform.url,
         target_product: TelemetryTargetProduct.OPEN_CTI,
         organization_type: 'Professional',
       });
@@ -395,6 +396,7 @@ describe('Registration app', () => {
         platform_contract: 'EE',
         platform_version: 'X.Y.Z',
         platform_id: platform.id,
+        platform_url: platform.url,
         target_product: TelemetryTargetProduct.OPEN_AEV,
         organization_type: 'Professional',
       });
@@ -956,6 +958,7 @@ describe('Registration app', () => {
           platform_contract: PlatformContract.Trial,
           platform_id: platformConfiguration.id,
           platform_version: platformConfiguration.version,
+          platform_url: platformConfiguration.url,
           source: TELEMETRY_SOURCE,
           target_product: 'open-cti',
           user_id: THALES_SIMPLE_USER_ID,
