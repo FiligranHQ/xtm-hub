@@ -69,6 +69,52 @@ describe('UsersOrganizationApp', () => {
           userEmailList:
             '<li>John Doe (user1@test.com)</li><li>Robert Smith (user2@test.com)</li>',
           userCount: 2,
+          requestLabel: 'requests',
+        },
+        template: 'organization_pending_user_digest',
+        to: 'admin@filigran.io',
+      });
+    });
+
+    it('should send email to each organization administrators with the correct grammary', async () => {
+      portalConfig.enabled_emails = {
+        ...originalEnabledEmails,
+        pending_user_digest: true,
+      };
+
+      vi.spyOn(
+        UserOrganizationPendingDomain,
+        'loadOrganizationsWithPendingUsers'
+      ).mockResolvedValue([
+        {
+          id: PLATFORM_ORGANIZATION_UUID,
+          name: 'organization name',
+          users: [
+            {
+              id: uuidv4() as UserId,
+              email: 'user1@test.com',
+              first_name: 'John',
+              last_name: 'Doe',
+            } as User,
+          ],
+        },
+      ] as Awaited<
+        ReturnType<
+          (typeof UserOrganizationPendingDomain)['loadOrganizationsWithPendingUsers']
+        >
+      >);
+
+      const sendMailSpy = vi.spyOn(MailService, 'sendMail');
+      await UsersOrganizationApp.sendPendingUsersDigest();
+
+      expect(sendMailSpy).toHaveBeenCalledTimes(1);
+      expect(sendMailSpy).toHaveBeenCalledWith({
+        params: {
+          adminName: 'Firstname',
+          organizationName: 'organization name',
+          userEmailList: '<li>John Doe (user1@test.com)</li>',
+          userCount: 1,
+          requestLabel: 'request',
         },
         template: 'organization_pending_user_digest',
         to: 'admin@filigran.io',

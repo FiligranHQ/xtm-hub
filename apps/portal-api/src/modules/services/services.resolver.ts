@@ -2,7 +2,7 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseType, db } from '../../../knexfile';
 import {
-  IntegrationFeedType,
+  IntegrationType,
   RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
@@ -31,7 +31,7 @@ import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
-import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from './integration-feeds/integration-feeds.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './integrations/integrations.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios/openaev-scenarios.domain';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
@@ -53,19 +53,19 @@ import {
 const resolvers: Resolvers = {
   ServiceInstance: {
     __resolveType(service_instance) {
-      const integrationFeedMapping = {
-        [IntegrationFeedType.Connector]: 'Connector',
-        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+      const integrationMapping = {
+        [IntegrationType.Connector]: 'Connector',
+        [IntegrationType.CsvFeed]: 'CsvFeed',
       };
       const typeMapping = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
-        [OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE]: 'OpenCTIIntegrationFeed',
+        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
       };
 
-      if (service_instance.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+      if (service_instance.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         return (
-          integrationFeedMapping[service_instance.integration_type] ??
+          integrationMapping[service_instance.integration_type] ??
           typeMapping[service_instance.type]
         );
       }

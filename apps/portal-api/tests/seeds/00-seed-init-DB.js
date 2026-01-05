@@ -165,7 +165,7 @@ export async function seed(knex) {
         name: 'csv feeds',
         description: 'csv description',
         public: true,
-        identifier: 'opencti_integration_feeds',
+        identifier: 'opencti_integrations',
       },
       {
         id: '97280ba3-8587-4a3e-87ad-ed279b0e768f',

@@ -16,7 +16,7 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { getPlatformIdentifier } from '@/utils/platform';
-import { integrationFeedsItem_fragment$data } from '@generated/integrationFeedsItem_fragment.graphql';
+import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
 import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
 import { SimpleTooltip } from 'filigran-ui';
 import { Button } from 'filigran-ui/servers';
@@ -24,7 +24,7 @@ import Image from 'next/image';
 
 // Component interface
 interface ShareableResourceConnectorSlugProps {
-  documentData: integrationFeedsItem_fragment$data;
+  documentData: integrationsItem_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   shareUrl: string;
   logo?: string;

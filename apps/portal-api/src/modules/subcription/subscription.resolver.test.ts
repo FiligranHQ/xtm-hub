@@ -2,7 +2,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   contextAdminUser,
-  SERVICE_INTEGRATIONS_FEEDS_ID,
+  SERVICE_INTEGRATIONS_ID,
   SERVICE_MALWARE_ID,
 } from '../../../tests/tests.const';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -33,7 +33,7 @@ describe('Subscription mutation resolver', () => {
       expect(response).toBeTruthy();
       expect(response?.name).toEqual('Malware analysis');
     });
-    it('should send a telemetry event for subscription integration feeds service', async () => {
+    it('should send a telemetry event for subscription integrations service', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -47,7 +47,7 @@ describe('Subscription mutation resolver', () => {
         {
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_FEEDS_ID
+            SERVICE_INTEGRATIONS_ID
           ),
         },
         contextAdminUser
@@ -60,7 +60,7 @@ describe('Subscription mutation resolver', () => {
         organization_type: 'Professional',
         source: TELEMETRY_SOURCE,
         user_id: ADMIN_UUID,
-        service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+        service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       });
     });
     it('should not send a telemetry event for vault service', async () => {
@@ -86,7 +86,7 @@ describe('Subscription mutation resolver', () => {
         service_instance_id: SERVICE_MALWARE_ID as ServiceInstanceId,
       });
       await deleteSubscriptionUnsecure({
-        service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
+        service_instance_id: SERVICE_INTEGRATIONS_ID,
       });
     });
   });

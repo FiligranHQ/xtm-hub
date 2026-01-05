@@ -351,7 +351,7 @@ const SelectUsersFormField = React.forwardRef<
                           pointerEvents: 'auto',
                           opacity: 1,
                         }}
-                        className="flex-1 cursor-pointer justify-center uppercase">
+                        className="flex-1 cursor-pointer justify-center capitalize">
                         {t('Utils.Clear')}
                       </CommandItem>
                       <Separator
@@ -367,7 +367,7 @@ const SelectUsersFormField = React.forwardRef<
                       pointerEvents: 'auto',
                       opacity: 1,
                     }}
-                    className="flex-1 cursor-pointer justify-center uppercase">
+                    className="flex-1 cursor-pointer justify-center capitalize">
                     {t('Utils.Close')}
                   </CommandItem>
                 </div>

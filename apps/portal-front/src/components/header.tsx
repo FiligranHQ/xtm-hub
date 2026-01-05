@@ -11,13 +11,11 @@ import { cn, isDevelopment } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
 import { NotificationButton } from '@/components/notification/notification-button';
-import { formatPersonNames } from '@/utils/format/name';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { Avatar, Skeleton } from 'filigran-ui';
+import { Avatar } from 'filigran-ui';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -53,13 +51,6 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
     ) ||
       hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
 
-  const User = () =>
-    me ? (
-      <span>{formatPersonNames(me)}</span>
-    ) : (
-      <Skeleton className="h-6 w-56" />
-    );
-
   return (
     <header
       className={cn(
@@ -86,22 +77,21 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
             </>
           }>
           <IconActionsItem asChild>
-            <Link href={`/${APP_PATH}/profile`}>
-              {t('MenuUser.Profile')}
-            </Link>
+            <Link href={`/${APP_PATH}/profile`}>{t('MenuUser.Profile')}</Link>
           </IconActionsItem>
-          <IconActionsItem onClick={() => {
-            commitLogoutMutation({
-              variables: {},
-              updater: (store) => {
-                store.invalidateStore();
-              },
-              onCompleted() {
-                router.push('/');
-                router.refresh();
-              },
-            });
-          }}>
+          <IconActionsItem
+            onClick={() => {
+              commitLogoutMutation({
+                variables: {},
+                updater: (store) => {
+                  store.invalidateStore();
+                },
+                onCompleted() {
+                  router.push('/');
+                  router.refresh();
+                },
+              });
+            }}>
             {t('LoginPage.Logout')}
           </IconActionsItem>
         </IconActions>
@@ -132,9 +122,6 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           <SheetContent side="left">
             <SheetHeader>
               <SheetTitle>Filigran</SheetTitle>
-              <SheetDescription>
-                <User />
-              </SheetDescription>
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
               <NavigationApp open={true} />

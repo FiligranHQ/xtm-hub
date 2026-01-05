@@ -164,6 +164,8 @@ export const UsersOrganizationApp = {
                   )
                   .join(''),
                 userCount: organization.users.length,
+                requestLabel:
+                  organization.users.length === 1 ? 'request' : 'requests',
               },
             })
           )

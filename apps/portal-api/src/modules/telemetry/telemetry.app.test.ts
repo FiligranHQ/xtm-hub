@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SERVICE_INTEGRATIONS_FEEDS_ID } from '../../../tests/tests.const';
+import { SERVICE_INTEGRATIONS_ID } from '../../../tests/tests.const';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -15,7 +15,7 @@ import { LoginEvent, TelemetryEventType } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
-  IntegrationFeedType,
+  IntegrationType,
   PlatformIdentifier,
   ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
@@ -25,9 +25,9 @@ import { DocumentApp } from '../services/document/document.app';
 import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
 import {
   CsvFeed,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../services/integration-feeds/integration-feeds.model';
+  INTEGRATION_CSV_FEED_METADATA,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../services/integrations/integrations.model';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
 
 // Mock the ES Client
@@ -135,7 +135,7 @@ describe('TelemetryApp', () => {
       const fakeResourceId =
         'c07f6909-f8c5-4f61-b17d-b5b2da9b2799' as DocumentId;
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         {
           id: fakeResourceId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -144,12 +144,12 @@ describe('TelemetryApp', () => {
           description: 'description',
           minio_name: 'minioName',
           file_name: 'csvfilename',
-          service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
-          integration_type: IntegrationFeedType.CsvFeed,
+          service_instance_id: SERVICE_INTEGRATIONS_ID,
+          integration_type: IntegrationType.CsvFeed,
           active: true,
         },
         [],
-        INTEGRATION_FEED_CSV_FEED_METADATA
+        INTEGRATION_CSV_FEED_METADATA
       );
 
       await telemetryApp.sendOneClickDeployEvent({
@@ -158,7 +158,7 @@ describe('TelemetryApp', () => {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_FEEDS_ID
+            SERVICE_INTEGRATIONS_ID
           ),
           resource_id: toGlobalId('DocumentId', fakeResourceId),
           resource_title: 'CsvFeed Title',
@@ -177,7 +177,7 @@ describe('TelemetryApp', () => {
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
         user_id: ADMIN_UUID,
-        service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+        service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: fakeResourceId,
         resource_title: 'CsvFeed Title',
@@ -219,7 +219,7 @@ describe('TelemetryApp', () => {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_FEEDS_ID
+            SERVICE_INTEGRATIONS_ID
           ),
           resource_id: toGlobalId('DocumentId', fakeResourceId),
           resource_title: 'CsvFeed Title',
@@ -238,7 +238,7 @@ describe('TelemetryApp', () => {
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
         user_id: ADMIN_UUID,
-        service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+        service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: fakeResourceId,
         resource_title: 'CsvFeed Title',
@@ -275,7 +275,7 @@ describe('TelemetryApp', () => {
       const fakeResourceId =
         'ddd49f48-1a66-4670-9dab-0d247b613969' as DocumentId;
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         {
           id: fakeResourceId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -284,12 +284,12 @@ describe('TelemetryApp', () => {
           description: 'description',
           minio_name: 'minioName',
           file_name: 'connectorFilename',
-          service_instance_id: SERVICE_INTEGRATIONS_FEEDS_ID,
-          integration_type: IntegrationFeedType.CsvFeed,
+          service_instance_id: SERVICE_INTEGRATIONS_ID,
+          integration_type: IntegrationType.CsvFeed,
           active: true,
         },
         [],
-        INTEGRATION_FEED_CSV_FEED_METADATA
+        INTEGRATION_CSV_FEED_METADATA
       );
 
       await telemetryApp.sendOneClickDeployEvent({
@@ -298,7 +298,7 @@ describe('TelemetryApp', () => {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_FEEDS_ID
+            SERVICE_INTEGRATIONS_ID
           ),
           resource_id: toGlobalId('DocumentId', fakeResourceId),
           resource_title: 'Connector Title',
@@ -317,7 +317,7 @@ describe('TelemetryApp', () => {
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
         user_id: ADMIN_UUID,
-        service: TelemetryEventService.INTEGRATION_FEEDS_LIBRARY,
+        service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: fakeResourceId,
         resource_title: 'Connector Title',

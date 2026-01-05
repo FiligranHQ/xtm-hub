@@ -1,6 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
-  IntegrationFeedType,
+  IntegrationType,
   Resolvers,
   SubscriptionModel,
 } from '../../../__generated__/resolvers-types';
@@ -19,7 +19,7 @@ import {
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
-import { OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE } from '../integration-feeds/integration-feeds.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import {
   getServiceInstance,
@@ -34,14 +34,7 @@ import {
 } from './document.helper';
 import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
-import {
-  deleteDocument,
-  DocumentDomain,
-  getUploader,
-  loadDocuments,
-  loadUploaderOrganization,
-  updateDocument,
-} from './domain/document.domain';
+import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
@@ -78,7 +71,7 @@ const resolvers: Resolvers = {
     },
     editDocument: async (_, { documentId, input }) => {
       try {
-        return await updateDocument(
+        return await DocumentApp.updateDocument(
           extractId<DocumentId>(documentId),
           input,
           []
@@ -92,7 +85,7 @@ const resolvers: Resolvers = {
       { documentId, forceDelete, service_instance_id }
     ) => {
       try {
-        return await deleteDocument(
+        return await DocumentApp.deleteDocument(
           extractId<DocumentId>(documentId),
           extractId<ServiceInstanceId>(service_instance_id),
           forceDelete
@@ -150,12 +143,12 @@ const resolvers: Resolvers = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
       };
       const INTEGRATION_MAPPINGS = {
-        [IntegrationFeedType.Connector]: 'Connector',
-        [IntegrationFeedType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.Connector]: 'Connector',
+        [IntegrationType.CsvFeed]: 'CsvFeed',
       };
       if (TYPE_MAPPINGS[document.type]) {
         return TYPE_MAPPINGS[document.type];
-      } else if (document.type === OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE) {
+      } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
           await DocumentMetadataDomain.loadIntegrationType(document.id);
         const responseType = INTEGRATION_MAPPINGS[integrationType];
@@ -171,8 +164,9 @@ const resolvers: Resolvers = {
 
     children_documents: ({ id }, _) =>
       DocumentChildrenDomain.loadChildrenDocuments(id),
-    uploader: ({ id }, _) => getUploader(id),
-    uploader_organization: ({ id }, _) => loadUploaderOrganization(id),
+    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
+    uploader_organization: ({ id }, _) =>
+      DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
       return getServiceInstance(service_instance_id as ServiceInstanceId);
     },
@@ -211,7 +205,7 @@ const resolvers: Resolvers = {
       }
     ) => {
       try {
-        return loadDocuments(
+        return DocumentDomain.loadDocuments(
           {
             first,
             after,

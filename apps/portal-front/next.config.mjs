@@ -5,6 +5,56 @@ const withNextIntl = createNextIntlPlugin();
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+  redirects: async () => {
+    return [
+      // open-bas / obas → openaev
+      {
+        source: '/app/service/(open-bas-scenarios|obas_scenarios)/:path*',
+        destination: '/app/service/openaev_scenarios/:path*',
+        permanent: true,
+      },
+
+      // octi integration feeds → opencti integrations
+      {
+        source:
+          '/app/service/(octi_integration_feeds|open-cti-integration-feeds)/:path*',
+        destination: '/app/service/opencti_integrations/:path*',
+        permanent: true,
+      },
+
+      // octi custom dashboards → opencti custom dashboards
+      {
+        source: '/app/service/octi_custom_dashboards/:path*',
+        destination: '/app/service/opencti_custom_dashboards/:path*',
+        permanent: true,
+      },
+
+      // -------------------------
+      // Cybersecurity solutions
+      // -------------------------
+
+      {
+        source:
+          '/cybersecurity-solutions/(open-bas-scenarios|obas-scenarios)/:path*',
+        destination: '/cybersecurity-solutions/open-aev-scenarios/:path*',
+        permanent: true,
+      },
+
+      {
+        source:
+          '/cybersecurity-solutions/(octi_integration_feeds|open-cti-integration-feeds)/:path*',
+        destination: '/cybersecurity-solutions/open-cti-integrations/:path*',
+        permanent: true,
+      },
+
+      {
+        source: '/cybersecurity-solutions/octi_custom_dashboards/:path*',
+        destination:
+          '/cybersecurity-solutions/open-cti-custom-dashboards/:path*',
+        permanent: true,
+      },
+    ];
+  },
   output: 'standalone',
   logging: {
     fetches: {

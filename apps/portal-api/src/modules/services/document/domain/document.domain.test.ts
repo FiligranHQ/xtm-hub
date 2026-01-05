@@ -5,8 +5,8 @@ import { db } from '../../../../../knexfile';
 import {
   DocumentOrdering,
   FilterKey,
-  IntegrationFeedConnection,
-  IntegrationFeedType,
+  IntegrationConnection,
+  IntegrationType,
   OrderingMode,
 } from '../../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../../model/kanel/public/Document';
@@ -16,16 +16,16 @@ import sampleExtractedManifest from '../../../ingest-manifest/test/sample-extrac
 import {
   Connector,
   CsvFeed,
-  INTEGRATION_FEED_CONNECTOR_METADATA,
-  INTEGRATION_FEED_CSV_FEED_METADATA,
-  INTEGRATION_FEED_METADATA,
-  INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
-  OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
-} from '../../integration-feeds/integration-feeds.model';
-import { loadParentDocumentsByServiceInstance } from './document.domain';
+  INTEGRATION_CONNECTOR_METADATA,
+  INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_METADATA,
+  INTEGRATION_SERVICE_INSTANCE_ID,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../../integrations/integrations.model';
 
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
+import { DocumentDomain } from './document.domain';
 
 describe('Document domain', () => {
   const minioFileMock = {
@@ -38,10 +38,10 @@ describe('Document domain', () => {
       minioFileMock,
     ]);
   });
-  describe(`${loadParentDocumentsByServiceInstance.name}`, () => {
+  describe(`loadParentDocumentsByServiceInstance`, () => {
     beforeEach(async () => {
       await db<Document>('Document')
-        .where('type', OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE)
+        .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
         .delete();
     });
 
@@ -49,7 +49,7 @@ describe('Document domain', () => {
       const documentId = uuidv4() as DocumentId;
 
       await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         {
           id: documentId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -59,46 +59,46 @@ describe('Document domain', () => {
           minio_name: 'minioName',
           file_name: 'csvfilename',
           active: true,
-          integration_type: IntegrationFeedType.CsvFeed,
-          service_instance_id: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
+          integration_type: IntegrationType.CsvFeed,
+          service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         },
         [],
-        INTEGRATION_FEED_CSV_FEED_METADATA
+        INTEGRATION_CSV_FEED_METADATA
       );
 
       await upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 
-      const connection: IntegrationFeedConnection =
-        await loadParentDocumentsByServiceInstance(
-          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      const connection: IntegrationConnection =
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
             first: 10,
             serviceInstanceId: toGlobalId(
               'ServiceInstance',
-              INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+              INTEGRATION_SERVICE_INSTANCE_ID
             ),
           },
-          INTEGRATION_FEED_METADATA
+          INTEGRATION_METADATA
         );
 
       const csvFeeds = connection.edges
         .filter(
-          (feed) => feed.node.integration_type === IntegrationFeedType.CsvFeed
+          (feed) => feed.node.integration_type === IntegrationType.CsvFeed
         )
         .map((feed) => feed.node);
       expect(csvFeeds.length).toBeTruthy();
 
       const connectors = connection.edges.filter(
-        (feed) => feed.node.integration_type === IntegrationFeedType.Connector
+        (feed) => feed.node.integration_type === IntegrationType.Connector
       );
 
       expect(connectors.length).toBeTruthy();
       const connector: Connector = connectors[0]?.node as Connector;
-      INTEGRATION_FEED_CONNECTOR_METADATA.forEach((metadata) => {
+      INTEGRATION_CONNECTOR_METADATA.forEach((metadata) => {
         expect(connector[metadata]).toBeDefined();
       });
     });
@@ -109,7 +109,7 @@ describe('Document domain', () => {
 
       const csvFeed =
         await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
             id: documentId,
             uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
@@ -119,11 +119,11 @@ describe('Document domain', () => {
             minio_name: 'minioName',
             file_name: 'csvfilename',
             active: true,
-            integration_type: IntegrationFeedType.CsvFeed,
-            service_instance_id: INTEGRATION_FEEDS_SERVICE_INSTANCE_ID,
+            integration_type: IntegrationType.CsvFeed,
+            service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
           },
           [],
-          INTEGRATION_FEED_CSV_FEED_METADATA
+          INTEGRATION_CSV_FEED_METADATA
         );
 
       const [connector] = await upsertConnectors([
@@ -133,59 +133,59 @@ describe('Document domain', () => {
       expect(connector).toBeDefined();
 
       // Fetch csv feeds only
-      const csvFeedConnection: IntegrationFeedConnection =
-        await loadParentDocumentsByServiceInstance(
-          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      const csvFeedConnection: IntegrationConnection =
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
             first: 10,
             serviceInstanceId: toGlobalId(
               'ServiceInstance',
-              INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+              INTEGRATION_SERVICE_INSTANCE_ID
             ),
             filters: [
               {
                 key: FilterKey.IntegrationType,
-                value: [IntegrationFeedType.CsvFeed],
+                value: [IntegrationType.CsvFeed],
               },
             ],
           },
-          INTEGRATION_FEED_METADATA
+          INTEGRATION_METADATA
         );
 
       expect(csvFeedConnection.edges.length).toBe(1);
       expect(csvFeedConnection.edges[0]?.node.id).toBe(csvFeed.id);
       expect(csvFeedConnection.edges[0]?.node.integration_type).toBe(
-        IntegrationFeedType.CsvFeed
+        IntegrationType.CsvFeed
       );
 
       // Fetch connectors only
-      const connectorConnection: IntegrationFeedConnection =
-        await loadParentDocumentsByServiceInstance(
-          OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+      const connectorConnection: IntegrationConnection =
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
             first: 10,
             serviceInstanceId: toGlobalId(
               'ServiceInstance',
-              INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+              INTEGRATION_SERVICE_INSTANCE_ID
             ),
             filters: [
               {
                 key: FilterKey.IntegrationType,
-                value: [IntegrationFeedType.Connector],
+                value: [IntegrationType.Connector],
               },
             ],
           },
-          INTEGRATION_FEED_METADATA
+          INTEGRATION_METADATA
         );
 
       expect(connectorConnection.edges.length).toBe(1);
       expect(connectorConnection.edges[0]?.node.id).toBe(connector?.id);
       expect(connectorConnection.edges[0]?.node.integration_type).toBe(
-        IntegrationFeedType.Connector
+        IntegrationType.Connector
       );
     });
 
@@ -199,16 +199,16 @@ describe('Document domain', () => {
         expect(connectors).toBeDefined();
         expect(connectors.length).toBe(2);
 
-        const secondContractConnection: IntegrationFeedConnection =
-          await loadParentDocumentsByServiceInstance(
-            OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        const secondContractConnection: IntegrationConnection =
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,
               first: 10,
               serviceInstanceId: toGlobalId(
                 'ServiceInstance',
-                INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+                INTEGRATION_SERVICE_INSTANCE_ID
               ),
               filters: [
                 {
@@ -217,7 +217,7 @@ describe('Document domain', () => {
                 },
               ],
             },
-            INTEGRATION_FEED_METADATA
+            INTEGRATION_METADATA
           );
 
         expect(secondContractConnection.edges.length).toBe(1);
@@ -235,16 +235,16 @@ describe('Document domain', () => {
         expect(connectors).toBeDefined();
         expect(connectors.length).toBe(2);
 
-        const allContractsConnection: IntegrationFeedConnection =
-          await loadParentDocumentsByServiceInstance(
-            OPENCTI_INTEGRATION_FEED_DOCUMENT_TYPE,
+        const allContractsConnection: IntegrationConnection =
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,
               first: 10,
               serviceInstanceId: toGlobalId(
                 'ServiceInstance',
-                INTEGRATION_FEEDS_SERVICE_INSTANCE_ID
+                INTEGRATION_SERVICE_INSTANCE_ID
               ),
               filters: [
                 {
@@ -253,7 +253,7 @@ describe('Document domain', () => {
                 },
               ],
             },
-            INTEGRATION_FEED_METADATA
+            INTEGRATION_METADATA
           );
 
         expect(allContractsConnection.edges.length).toBe(2);

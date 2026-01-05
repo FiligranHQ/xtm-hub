@@ -279,7 +279,8 @@ export const registrationApp = {
         identifier,
         platform.id,
         platform.contract,
-        platform.version
+        platform.version,
+        platform.url
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
@@ -487,7 +488,8 @@ export const registrationApp = {
         deploymentRequest.platform_identifier,
         platform.id,
         platform.contract,
-        platform.version
+        platform.version,
+        platform.url
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {

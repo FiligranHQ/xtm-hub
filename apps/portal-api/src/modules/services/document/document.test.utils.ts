@@ -13,7 +13,9 @@ export const insertDocument = async (
     file_name: documentData.file_name,
   });
   if (existingDocuments.length > 0) {
-    void DocumentDomain.passOldDocumentsIntoInactive(existingDocuments);
+    void DocumentDomain.deactivateDocuments(
+      existingDocuments.map(({ id }) => id)
+    );
   }
 
   return DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
