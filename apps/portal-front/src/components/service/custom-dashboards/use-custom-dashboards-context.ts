@@ -10,6 +10,7 @@ import {
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
 import { omit } from '@/lib/omit';
+import { pick } from '@/lib/pick';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import {
@@ -24,6 +25,22 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
+
+const documentBaseKeys: Array<keyof CustomDashboardFormValues> = [
+  'name',
+  'slug',
+  'uploader_id',
+  'uploader_organization_id',
+  'short_description',
+  'description',
+  'labels',
+  'active',
+];
+
+const documentFileKeys: Array<keyof CustomDashboardFormValues> = [
+  'document',
+  'images',
+];
 
 export function useCustomDashboardsContext(
   serviceInstance: serviceInstance_fragment$data,
@@ -40,15 +57,19 @@ export function useCustomDashboardsContext(
     onError: (error: Error) => void
   ) => {
     const formValues = values as CustomDashboardFormValues;
-    const input = {
-      ...omit(formValues, [
-        'document',
-        'images',
-        'uploader_organization_id',
-        'product_version',
-      ]),
-      uploader_id: formValues?.uploader_id ?? '',
-    };
+    const input = omit(
+      {
+        ...pick(formValues, documentBaseKeys),
+        uploader_id: formValues?.uploader_id ?? '',
+      },
+      ['uploader_organization_id']
+    );
+    const metadata = omit(formValues, [
+      ...documentBaseKeys,
+      'document',
+      'images',
+    ]);
+
     const documents = [
       ...Array.from(formValues.document),
       ...Array.from(formValues.images),
@@ -60,9 +81,10 @@ export function useCustomDashboardsContext(
           ...input,
           active: input.active ?? false,
         },
-        metadata: [
-          { key: 'product_version', value: formValues.product_version },
-        ],
+        metadata: Object.keys(metadata).map((key) => ({
+          key,
+          value: metadata[key as keyof typeof metadata],
+        })),
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
         document: documents,
@@ -121,15 +143,20 @@ export function useCustomDashboardsContext(
     const customDashboard = resource as customDashboardsItem_fragment$data;
     const formValues = values as CustomDashboardFormValues;
     const input = {
-      ...omit(formValues, ['document', 'images', 'product_version']),
+      ...pick(formValues, documentBaseKeys),
       uploader_id: formValues?.uploader_id ?? '',
     };
+
+    const metadata = omit(formValues, [
+      ...documentBaseKeys,
+      ...documentFileKeys,
+    ]);
 
     // Split images between existing and new ones
     const images = Array.from(formValues.images ?? []) as FormImagesValues;
     const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
-      ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
+      ...Array.from(formValues.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
     updateMutation({
@@ -138,9 +165,10 @@ export function useCustomDashboardsContext(
         serviceInstanceId: serviceInstance.id,
         document: documentsToUpload,
         documentId: customDashboard.id,
-        metadata: [
-          { key: 'product_version', value: formValues.product_version },
-        ],
+        metadata: Object.keys(metadata).map((key) => ({
+          key,
+          value: metadata[key as keyof typeof metadata],
+        })),
         updateDocument: formValues.document !== undefined,
         images: existingImages,
       },
