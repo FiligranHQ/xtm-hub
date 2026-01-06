@@ -144,6 +144,7 @@ describe('UsersOrganizationApp', () => {
         params: {
           adminName: 'Firstname',
           organizationName: 'organization name',
+          requestLabel: 'request',
           userEmailList: '<li> Smith (user1@test.com)</li>',
           userCount: 1,
         },
@@ -175,6 +176,7 @@ describe('UsersOrganizationApp', () => {
         params: {
           adminName: 'Firstname',
           organizationName: 'organization name',
+          requestLabel: 'request',
           userEmailList: '<li>John  (user1@test.com)</li>',
           userCount: 1,
         },
