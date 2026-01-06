@@ -9,6 +9,7 @@ import {
 import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { formatName } from '@/utils/format/name';
 import { APP_PATH } from '@/utils/path/constant';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
@@ -66,7 +67,9 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
             {row.original.service_definition?.identifier ===
               ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION && (
               <Badge>
-                {row.original.subscriptions?.[0]?.organization.name.toUpperCase()}
+                {formatName(
+                  row.original.subscriptions?.[0]?.organization.name ?? ''
+                )}
               </Badge>
             )}
 

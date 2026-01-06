@@ -645,7 +645,7 @@
         "NoOptions": "Pas d'options",
         "Key": {
           "label": "Cas d'utilisation",
-          "integration_feed_type": "Type de flux d'intégration",
+          "integration_type": "Type d'intégration",
           "product_version": "Plateforme",
           "manager_supported": "Type de déploiement"
         }
