@@ -153,6 +153,11 @@ export const documentItem = graphql`
     share_number
     active
     updated_at
+    labels {
+      id
+      name
+      color
+    }
     uploader {
       first_name
       last_name

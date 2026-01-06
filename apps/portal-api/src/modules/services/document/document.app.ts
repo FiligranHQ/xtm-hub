@@ -145,6 +145,15 @@ export const DocumentApp = {
         files
       );
 
+      if (documentData.labels?.length) {
+        await objectLabelDomain.insertObjectLabel(
+          documentData.labels.map((id) => ({
+            object_id: document.id as unknown as ObjectLabelObjectId,
+            label_id: extractId(id) as LabelId,
+          }))
+        );
+      }
+
       return document;
     });
 

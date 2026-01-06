@@ -62,7 +62,7 @@ const resolvers: Resolvers = {
     },
     updateDocument: async (_, input) => {
       try {
-        return DocumentApp.updateDocumentWithChildrenAndMetadata(
+        return await DocumentApp.updateDocumentWithChildrenAndMetadata(
           extractId<DocumentId>(input.documentId),
           extractId<ServiceInstanceId>(input.serviceInstanceId),
           input.metadata,
