@@ -4,6 +4,7 @@ import {
   DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateCsvFeedArgs,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
+  MutationUpdateOpenAevScenarioArgs,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
@@ -34,6 +35,10 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
 import {
+  OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  OPENAEV_SCENARIO_METADATA,
+} from '../openaev-scenarios/openaev-scenarios.domain';
+import {
   processDocumentUpdateUploads,
   processUploads,
   Upload,
@@ -45,25 +50,37 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
-export type MutationUpdateDocumentArgs = MutationUpdateCsvFeedArgs & {
-  input: { integration_type: string };
-};
+export type MutationUpdateDocumentArgs =
+  | MutationUpdateOpenAevScenarioArgs
+  | (MutationUpdateCsvFeedArgs & {
+      input: { integration_type: string };
+    });
 
-const DocumentTypeMappedByServiceDefinition: Partial<
-  Record<ServiceDefinitionIdentifier, string>
+type CreatableServiceDefinition =
+  | ServiceDefinitionIdentifier.OpenctiIntegrations
+  | ServiceDefinitionIdentifier.OpenctiCustomDashboards
+  | ServiceDefinitionIdentifier.OpenaevScenarios;
+
+const DocumentTypeMappedByServiceDefinition: Record<
+  CreatableServiceDefinition,
+  string
 > = {
   [ServiceDefinitionIdentifier.OpenctiIntegrations]:
     OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
     OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.OpenaevScenarios]:
+    OPENAEV_SCENARIO_DOCUMENT_TYPE,
 };
 
-const DocumentMetadataMappedByServiceIdentifier: Partial<
-  Record<ServiceDefinitionIdentifier, string[]>
+const DocumentMetadataMappedByServiceIdentifier: Record<
+  CreatableServiceDefinition,
+  string[]
 > = {
   [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
     CUSTOM_DASHBOARD_METADATA,
   [ServiceDefinitionIdentifier.OpenctiIntegrations]: INTEGRATION_METADATA,
+  [ServiceDefinitionIdentifier.OpenaevScenarios]: OPENAEV_SCENARIO_METADATA,
 };
 
 export const DocumentApp = {
@@ -83,15 +100,9 @@ export const DocumentApp = {
 
     const documentType =
       DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
-    if (!documentType) {
-      throw new Error(ErrorCode.ServiceDefinitionNotMapped);
-    }
 
-    const metadataKeys: string[] | undefined =
+    const metadataKeys: string[] =
       DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier];
-    if (!metadataKeys) {
-      throw new Error(ErrorCode.ServiceDefinitionNotMapped);
-    }
 
     const isMissingMetadata = metadataKeys.some(
       (key) => !metadata.some((meta) => meta.key === key)
@@ -118,7 +129,10 @@ export const DocumentApp = {
       );
 
       if (metadataKeys.length) {
-        await DocumentMetadataDomain.insertMetadataNew(document.id, metadata);
+        await DocumentMetadataDomain.insertMetadataFromKeyValue(
+          document.id,
+          metadata
+        );
 
         for (const meta of metadata) {
           document[meta.key] = meta.value;
@@ -146,7 +160,7 @@ export const DocumentApp = {
     return createdDocument;
   },
 
-  updateDocumentWithChildrenNew: async (
+  updateDocumentWithChildrenAndMetadata: async (
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
     metadata: DocumentMetadataResolverType[],
@@ -162,9 +176,6 @@ export const DocumentApp = {
 
     const documentType =
       DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
-    if (!documentType) {
-      throw new Error(ErrorCode.ServiceDefinitionNotMapped);
-    }
 
     const {
       document,
@@ -231,7 +242,7 @@ export const DocumentApp = {
 
       if (metadata.length) {
         await DocumentMetadataDomain.deleteMetadata({ id: parentDocumentId });
-        await DocumentMetadataDomain.insertMetadataNew(
+        await DocumentMetadataDomain.insertMetadataFromKeyValue(
           updatedDocument.id,
           metadata
         );

@@ -20,7 +20,7 @@ export type DocumentMetadataKeys<T extends DocumentModel> = Array<
 >;
 
 export const DocumentMetadataDomain = {
-  insertMetadataNew: async (
+  insertMetadataFromKeyValue: async (
     id: DocumentId,
     metadataInput: DocumentMetadataResolverType[]
   ): Promise<DocumentMetadata[]> => {

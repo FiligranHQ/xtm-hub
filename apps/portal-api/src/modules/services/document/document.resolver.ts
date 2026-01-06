@@ -8,8 +8,9 @@ import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
-import { UnknownErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -51,19 +52,29 @@ const resolvers: Resolvers = {
           document
         );
       } catch (error) {
-        throw mapToGraphQLError(error);
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
+            detail: error,
+          });
+        }
+        throw mapToGraphQLError(error, UnknownErrorCode.DocumentCreateError);
       }
     },
     updateDocument: async (_, input) => {
       try {
-        return DocumentApp.updateDocumentWithChildrenNew(
+        return DocumentApp.updateDocumentWithChildrenAndMetadata(
           extractId<DocumentId>(input.documentId),
           extractId<ServiceInstanceId>(input.serviceInstanceId),
           input.metadata,
           input
         );
       } catch (error) {
-        throw mapToGraphQLError(error);
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
+            detail: error,
+          });
+        }
+        throw mapToGraphQLError(error, UnknownErrorCode.DocumentUpdateError);
       }
     },
     addDocument: async (

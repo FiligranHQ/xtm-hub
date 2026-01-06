@@ -1,4 +1,4 @@
-import { DocumentUpdateMutation } from '@/components/service/document/document.graphql';
+import { DocumentEditMutation } from '@/components/service/document/document.graphql';
 import {
   newDocumentSchema,
   VaultNewFileForm,
@@ -10,8 +10,8 @@ import { FunctionComponent, useContext } from 'react';
 
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { documentEditMutation } from '@generated/documentEditMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
@@ -28,9 +28,8 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
 }) => {
   const { toast } = useToast();
   const t = useTranslations();
-  const [vaultUpdateDocumentMutation] = useMutation<documentUpdateMutation>(
-    DocumentUpdateMutation
-  );
+  const [vaultUpdateDocumentMutation] =
+    useMutation<documentEditMutation>(DocumentEditMutation);
   const { setMenuOpen } = useContext(IconActionContext);
 
   const { slug } = useDecodedParams();
