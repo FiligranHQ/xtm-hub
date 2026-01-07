@@ -539,7 +539,6 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addDocument: Document;
   addLabel: Label;
   addOrganization?: Maybe<Organization>;
   addServiceInstance?: Maybe<SubscriptionModel>;
@@ -592,19 +591,6 @@ export type Mutation = {
   updateDocument: Document;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
-};
-
-
-export type MutationAddDocumentArgs = {
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  document?: InputMaybe<Scalars['Upload']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
-  short_description?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  type: Scalars['String']['input'];
 };
 
 
@@ -2657,7 +2643,6 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationAddDocumentArgs, 'type'>>;
   addLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationAddLabelArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServiceInstance?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationAddServiceInstanceArgs>>;

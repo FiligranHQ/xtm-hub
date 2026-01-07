@@ -46,39 +46,6 @@ export const DocumentUpdateMutation = graphql`
   }
 `;
 
-export const DocumentAddMutation = graphql`
-  mutation documentAddMutation(
-    $document: Upload
-    $name: String
-    $shortDescription: String
-    $description: String
-    $serviceInstanceId: String
-    $active: Boolean
-    $parentDocumentId: ID
-    $slug: String
-    $connections: [ID!]!
-    $type: String!
-  ) {
-    addDocument(
-      document: $document
-      name: $name
-      short_description: $shortDescription
-      description: $description
-      service_instance_id: $serviceInstanceId
-      active: $active
-      parentDocumentId: $parentDocumentId
-      slug: $slug
-      type: $type
-    ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
-      __id
-      id
-      name
-      file_name
-      ...documentItem_fragment
-    }
-  }
-`;
-
 export const DocumentEditMutation = graphql`
   mutation documentEditMutation(
     $documentId: ID

@@ -101,7 +101,6 @@ type Mutation {
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, serviceInstanceId: String): Document!
   updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, updateDocument: Boolean!, images: [String!], serviceInstanceId: String): Document!
-  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
   editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!

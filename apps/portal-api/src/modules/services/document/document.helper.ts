@@ -50,7 +50,10 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
 type ManageableServiceDefinition =
   | ServiceDefinitionIdentifier.OpenctiIntegrations
   | ServiceDefinitionIdentifier.OpenctiCustomDashboards
-  | ServiceDefinitionIdentifier.OpenaevScenarios;
+  | ServiceDefinitionIdentifier.OpenaevScenarios
+  | ServiceDefinitionIdentifier.Vault;
+
+const VAULT_DOCUMENT_TYPE = 'vault';
 
 const DocumentTypeMappedByServiceDefinition: Record<
   ManageableServiceDefinition,
@@ -62,6 +65,7 @@ const DocumentTypeMappedByServiceDefinition: Record<
     OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
   [ServiceDefinitionIdentifier.OpenaevScenarios]:
     OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.Vault]: VAULT_DOCUMENT_TYPE,
 };
 
 const DocumentMetadataMappedByServiceIdentifier: Record<
@@ -92,6 +96,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
   },
   [ServiceDefinitionIdentifier.OpenaevScenarios]: () =>
     OPENAEV_SCENARIO_METADATA,
+  [ServiceDefinitionIdentifier.Vault]: () => [],
 };
 
 export const retrieveDocumentTypeAndMetadataKeys = async (

@@ -53,7 +53,6 @@ export enum UnknownErrorCode {
   DocumentCreateError = 'DOCUMENT_CREATE_ERROR',
   DocumentUpdateError = 'DOCUMENT_UPDATE_ERROR',
   DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
-  InsertDocumentError = 'INSERT_DOCUMENT_ERROR',
   UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
   IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
   ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',

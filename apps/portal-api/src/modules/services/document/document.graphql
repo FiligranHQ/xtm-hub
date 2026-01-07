@@ -118,17 +118,6 @@ type Mutation {
     images: [String!]
     serviceInstanceId: String
   ): Document! @auth @service_capa(requires: [UPLOAD])
-  addDocument(
-    document: Upload
-    name: String
-    short_description: String
-    description: String
-    service_instance_id: String
-    parentDocumentId: ID
-    active: Boolean
-    slug: String
-    type: String!
-  ): Document! @auth @service_capa(requires: [UPLOAD])
   editDocument(
     documentId: ID
     input: EditDocumentInput!

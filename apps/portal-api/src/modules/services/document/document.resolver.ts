@@ -6,7 +6,6 @@ import {
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
@@ -33,7 +32,6 @@ import {
   normalizeDocumentName,
   updateDocumentWithCounters,
 } from './document.helper';
-import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
@@ -75,36 +73,6 @@ const resolvers: Resolvers = {
           });
         }
         throw mapToGraphQLError(error, UnknownErrorCode.DocumentUpdateError);
-      }
-    },
-    addDocument: async (
-      _,
-      { document, parentDocumentId, service_instance_id, ...payload }
-    ) => {
-      try {
-        await waitForUploads(document);
-        const extractedServiceInstanceId =
-          extractId<ServiceInstanceId>(service_instance_id);
-        const { minioName, fileName, mimeType } = await MinIOClient.createFile(
-          document,
-          extractedServiceInstanceId
-        );
-        return await DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
-          {
-            ...payload,
-            service_instance_id: extractedServiceInstanceId,
-            minio_name: minioName,
-            file_name: fileName,
-            mime_type: mimeType,
-            parent_document_id: parentDocumentId
-              ? extractId<DocumentId>(parentDocumentId)
-              : null,
-          },
-          []
-        );
-      } catch (error) {
-        console.error('Error while adding document:', error);
-        throw mapToGraphQLError(error, UnknownErrorCode.InsertDocumentError);
       }
     },
     editDocument: async (_, { documentId, input }) => {
