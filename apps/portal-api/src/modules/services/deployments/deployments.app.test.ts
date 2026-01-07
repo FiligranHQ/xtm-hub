@@ -35,6 +35,7 @@ import {
   PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
   SYSTEM_USER_UUID,
+  XTM_HUB_SUPPORT_EMAIL,
 } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
@@ -345,7 +346,7 @@ describe('Deployment app', () => {
         });
 
         expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: [DEFAULT_ADMIN_EMAIL],
+          to: XTM_HUB_SUPPORT_EMAIL,
           template: 'admin_saas_instance_requested',
           params: {
             activitySector: 'cybersecurity',
@@ -384,7 +385,7 @@ describe('Deployment app', () => {
         });
 
         expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: [DEFAULT_ADMIN_EMAIL],
+          to: XTM_HUB_SUPPORT_EMAIL,
           template: 'admin_saas_instance_requested',
           params: {
             activitySector: 'cybersecurity',

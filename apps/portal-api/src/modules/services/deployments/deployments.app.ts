@@ -39,7 +39,7 @@ import { DeploymentRequestDomain } from './deployments.domain';
 
 import config from 'config';
 import { UserId } from '../../../model/kanel/public/User';
-import { SYSTEM_USER_UUID } from '../../../portal.const';
+import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { ucfirst } from '../../../utils/utils';
@@ -48,7 +48,7 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { loadAdminUsers, loadUnsecureUser } from '../../users/users.domain';
+import { loadUnsecureUser } from '../../users/users.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
@@ -195,9 +195,8 @@ export const DeploymentsApp = {
       }
 
       try {
-        const adminUsers = await loadAdminUsers();
         sendMail({
-          to: adminUsers.map((user) => user.email),
+          to: XTM_HUB_SUPPORT_EMAIL,
           template: 'admin_saas_instance_requested',
           params: {
             organizationName: user.organizations.find(

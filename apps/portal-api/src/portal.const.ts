@@ -37,6 +37,8 @@ export const ROLE_USER: RolePortal = {
   name: 'USER',
 };
 
+export const XTM_HUB_SUPPORT_EMAIL = 'xtm-hub-support@filigran.io';
+
 export const JOIN_TYPE = {
   JOIN_INVITE: 'JOIN_INVITE',
   JOIN_ASK: 'JOIN_ASK',
