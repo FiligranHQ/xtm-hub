@@ -60,7 +60,7 @@ const resolvers: Resolvers = {
     },
     updateDocument: async (_, input) => {
       try {
-        return await DocumentApp.updateDocumentWithChildrenAndMetadata(
+        return await DocumentApp.updateDocument(
           extractId<DocumentId>(input.documentId),
           extractId<ServiceInstanceId>(input.serviceInstanceId),
           input.metadata,
@@ -73,17 +73,6 @@ const resolvers: Resolvers = {
           });
         }
         throw mapToGraphQLError(error, UnknownErrorCode.DocumentUpdateError);
-      }
-    },
-    editDocument: async (_, { documentId, input }) => {
-      try {
-        return await DocumentApp.updateDocument(
-          extractId<DocumentId>(documentId),
-          input,
-          []
-        );
-      } catch (error) {
-        throw mapToGraphQLError(error, UnknownErrorCode.UpdateDocumentError);
       }
     },
     deleteDocument: async (

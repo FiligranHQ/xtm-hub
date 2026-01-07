@@ -382,15 +382,6 @@ export enum DocumentOrdering {
   Name = 'name'
 }
 
-export type EditDocumentInput = {
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  short_description?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type EditLabelInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -563,7 +554,6 @@ export type Mutation = {
   deleteServiceInstance?: Maybe<ServiceInstance>;
   deleteSubscription?: Maybe<ServiceInstance>;
   deleteUserService?: Maybe<UserService>;
-  editDocument: Document;
   editLabel: Label;
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
@@ -719,13 +709,6 @@ export type MutationDeleteSubscriptionArgs = {
 
 export type MutationDeleteUserServiceArgs = {
   input: UserServiceDeleteInput;
-};
-
-
-export type MutationEditDocumentArgs = {
-  documentId?: InputMaybe<Scalars['ID']['input']>;
-  input: EditDocumentInput;
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2054,7 +2037,6 @@ export type ResolversTypes = ResolversObject<{
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
   DocumentMetadata: DocumentMetadata;
   DocumentOrdering: DocumentOrdering;
-  EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
@@ -2204,7 +2186,6 @@ export type ResolversParentTypes = ResolversObject<{
   DocumentConnection: Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversParentTypes['DocumentEdge']> };
   DocumentEdge: Omit<DocumentEdge, 'node'> & { node: ResolversParentTypes['Document'] };
   DocumentMetadata: DocumentMetadata;
-  EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
@@ -2667,7 +2648,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
-  editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationEditDocumentArgs, 'input'>>;
   editLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationEditLabelArgs, 'id' | 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;

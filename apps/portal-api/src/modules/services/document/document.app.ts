@@ -1,4 +1,3 @@
-import { db } from '../../../../knexfile';
 import {
   CreateDocumentInput,
   DocumentMetadata as DocumentMetadataResolverType,
@@ -16,7 +15,7 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
-import { extractId, omit } from '../../../utils/utils';
+import { extractId } from '../../../utils/utils';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -102,7 +101,7 @@ export const DocumentApp = {
     return createdDocument;
   },
 
-  updateDocumentWithChildrenAndMetadata: async (
+  updateDocument: async (
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
     metadata: DocumentMetadataResolverType[],
@@ -257,68 +256,6 @@ export const DocumentApp = {
       );
 
       return doc;
-    });
-  },
-
-  updateDocument: async <T extends DocumentModel>(
-    documentId: DocumentId,
-    documentData: Omit<Partial<T>, 'labels'> & {
-      labels?: string[];
-    },
-    metadataKeys: DocumentMetadataKeys<T> = []
-  ): Promise<T> => {
-    const { user } = requestContext.require();
-    const uploader_organization_id = documentData.uploader_organization_id
-      ? extractId<OrganizationId>(documentData.uploader_organization_id)
-      : null;
-
-    const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
-    const uploader_id = (
-      documentData.uploader_id && extractedId ? extractedId : user.id
-    ) as UserId;
-
-    return await withTransaction(async () => {
-      const [document] = await db<DocumentModel>('Document')
-        .where('id', '=', documentId)
-        .update({
-          ...omit(documentData, ['labels', ...metadataKeys]),
-          uploader_organization_id,
-          uploader_id,
-          updated_at: new Date(),
-          updater_id: user.id,
-        })
-        .returning('*');
-
-      // If label is null => that mean we want to update the field to empty
-      if (documentData.labels !== undefined) {
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: documentId as unknown as ObjectLabelObjectId,
-        });
-
-        if (documentData.labels?.length > 0) {
-          await objectLabelDomain.insertObjectLabel(
-            documentData.labels.map((id) => ({
-              object_id: documentId as unknown as ObjectLabelObjectId,
-              label_id: extractId(id) as LabelId,
-            }))
-          );
-        }
-      }
-
-      if (metadataKeys.length) {
-        await DocumentMetadataDomain.deleteMetadata({ id: documentId });
-        const metadatas = await DocumentMetadataDomain.insertMetadata(
-          document.id,
-          documentData,
-          metadataKeys
-        );
-
-        for (const metadata of metadatas) {
-          document[metadata.key] = metadata.value;
-        }
-      }
-
-      return document as T;
     });
   },
 

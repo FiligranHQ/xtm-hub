@@ -46,25 +46,6 @@ export const DocumentUpdateMutation = graphql`
   }
 `;
 
-export const DocumentEditMutation = graphql`
-  mutation documentEditMutation(
-    $documentId: ID
-    $input: EditDocumentInput!
-    $serviceInstanceId: String
-  ) {
-    editDocument(
-      documentId: $documentId
-      input: $input
-      service_instance_id: $serviceInstanceId
-    ) {
-      id
-      name
-      file_name
-      ...documentItem_fragment
-    }
-  }
-`;
-
 export const DocumentDeleteMutation = graphql`
   mutation documentDeleteMutation(
     $documentId: ID

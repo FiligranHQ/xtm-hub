@@ -67,15 +67,6 @@ interface Document implements Node {
   children_documents: [ShareableResource!]
 }
 
-input EditDocumentInput {
-  short_description: String
-  description: String
-  uploader_organization_id: String
-  name: String
-  active: Boolean
-  slug: String
-}
-
 input DocumentMetadata {
   key: String!
   value: String!
@@ -117,11 +108,6 @@ type Mutation {
     updateDocument: Boolean!
     images: [String!]
     serviceInstanceId: String
-  ): Document! @auth @service_capa(requires: [UPLOAD])
-  editDocument(
-    documentId: ID
-    input: EditDocumentInput!
-    service_instance_id: String
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID

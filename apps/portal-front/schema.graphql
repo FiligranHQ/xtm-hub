@@ -101,7 +101,6 @@ type Mutation {
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, serviceInstanceId: String): Document!
   updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, updateDocument: Boolean!, images: [String!], serviceInstanceId: String): Document!
-  editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
@@ -470,15 +469,6 @@ interface Document implements Node {
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
-}
-
-input EditDocumentInput {
-  short_description: String
-  description: String
-  uploader_organization_id: String
-  name: String
-  active: Boolean
-  slug: String
 }
 
 input DocumentMetadata {
