@@ -4,7 +4,7 @@ import UserOrganization, {
   UserOrganizationInitializer,
 } from '../../model/kanel/public/UserOrganization';
 import { UserOrganizationPendingDomain } from '../users/users-pending/user-organization-pending.domain';
-import { insertNewUserOrganizationUnsecure } from './user-organization.domain';
+import { insertNewUserOrganization } from './user-organization.domain';
 
 export const createUserOrganizationRelationAndRemovePending = async ({
   user_id,
@@ -36,5 +36,5 @@ export const createUserOrganizationRelation = async ({
       organization_id,
     })
   );
-  return insertNewUserOrganizationUnsecure(usersOrganization);
+  return insertNewUserOrganization(usersOrganization);
 };

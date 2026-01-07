@@ -13,7 +13,7 @@ import {
   TelemetryEventService,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { deleteSubscriptionUnsecure } from './subscription.helper';
+import { deleteSubscription } from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
 describe('Subscription mutation resolver', () => {
@@ -82,10 +82,10 @@ describe('Subscription mutation resolver', () => {
 
     afterEach(async () => {
       vi.useRealTimers();
-      await deleteSubscriptionUnsecure({
+      await deleteSubscription({
         service_instance_id: SERVICE_MALWARE_ID as ServiceInstanceId,
       });
-      await deleteSubscriptionUnsecure({
+      await deleteSubscription({
         service_instance_id: SERVICE_INTEGRATIONS_ID,
       });
     });

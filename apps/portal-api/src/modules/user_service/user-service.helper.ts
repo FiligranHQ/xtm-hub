@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, dbUnsecure } from '../../../knexfile';
+import { db, dbRaw } from '../../../knexfile';
 import { UserServiceCapability } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
 import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
@@ -22,13 +22,13 @@ import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
 } from '../services/service-instance.domain';
-import { loadUnsecureSubscriptionBy } from '../subcription/subscription.helper';
+import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
 import { GenericServiceCapabilityIds } from './service-capability/generic_service_capability.const';
 import { insertCapabilities } from './user-service-capability/user-service-capability.helper';
 
-export const loadUnsecureUserServiceBy = async (field: UserServiceMutator) => {
-  const queryUserServiceCapabilities = dbUnsecure<UserServiceCapability>(
+export const loadUserServiceBy = async (field: UserServiceMutator) => {
+  const queryUserServiceCapabilities = db<UserServiceCapability>(
     'UserService_Capability'
   )
     .leftJoin(
@@ -89,7 +89,7 @@ export const loadUnsecureUserServiceBy = async (field: UserServiceMutator) => {
     .groupBy('UserService_Capability.user_service_id')
     .as('userServiceCapabilities');
 
-  const query = dbUnsecure<UserService>('User_Service')
+  const query = db<UserService>('User_Service')
     .select(
       'User_Service.*',
       dbRaw(
@@ -132,7 +132,7 @@ export const isUserServiceExist = async (
   user_id: UserId,
   subscription_id: SubscriptionId
 ) => {
-  const [existingUserService] = await loadUnsecureUserServiceBy({
+  const [existingUserService] = await loadUserServiceBy({
     user_id,
     subscription_id,
   });
@@ -155,7 +155,7 @@ export const createUserServiceAccess = async ({
   };
 
   // Check the user is in the current organization
-  const [subscription] = await loadUnsecureSubscriptionBy({
+  const [subscription] = await loadSubscriptionBy({
     id: subscription_id as SubscriptionId,
   });
   const userOrganizations = await loadUserOrganization({ user_id });

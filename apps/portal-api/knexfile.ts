@@ -179,10 +179,6 @@ export function db<T>(
   return queryContext;
 }
 
-export const dbUnsecure = <T>(type: DatabaseType) => {
-  return db<T>(type);
-};
-
 export const dbConnections = <T>(
   nodes: T[],
   offset: string | undefined,

@@ -22,7 +22,7 @@ import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
-  loadUnsecureUser,
+  loadUser,
   loadUserBy,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
@@ -58,7 +58,7 @@ export const UsersOrganizationApp = {
       throw ForbiddenAccess(ErrorCode.EmailOutsideOrganizationError);
     }
 
-    const [existingUser] = await loadUnsecureUser({ email: input.email });
+    const [existingUser] = await loadUser({ email: input.email });
 
     const user = await withTransaction(async () => {
       const user = existingUser

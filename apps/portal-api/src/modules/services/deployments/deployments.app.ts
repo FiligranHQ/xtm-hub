@@ -48,7 +48,7 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { loadUnsecureUser } from '../../users/users.domain';
+import { loadUser } from '../../users/users.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
@@ -345,7 +345,7 @@ export const DeploymentsApp = {
         newStatus === DeploymentRequestHubStatus.Provisioning &&
         newStatus !== deploymentRequest.hub_status
       ) {
-        const [user] = await loadUnsecureUser({
+        const [user] = await loadUser({
           id: deploymentRequest.user_requester_id,
         });
 
@@ -577,7 +577,7 @@ export const DeploymentsApp = {
     await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
-      const [requester] = await loadUnsecureUser({
+      const [requester] = await loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
       sendMail({
@@ -635,7 +635,7 @@ export const DeploymentsApp = {
         );
 
         try {
-          const [requester] = await loadUnsecureUser({
+          const [requester] = await loadUser({
             id: trial.user_requester_id,
           });
           sendMail({

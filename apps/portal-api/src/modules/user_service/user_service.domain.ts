@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   Subscription,
   UserServiceCapability,
@@ -270,7 +270,7 @@ export const loadUserServiceCapability = async (
   subscriptionId: SubscriptionId,
   capability: GenericServiceCapabilityName
 ) => {
-  return dbUnsecure('User_Service')
+  return db('User_Service')
     .leftJoin(
       'UserService_Capability',
       'User_Service.id',

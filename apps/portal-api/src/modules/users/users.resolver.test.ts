@@ -42,11 +42,11 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import * as UserOrganizationDomain from '../common/user-organization.domain';
 import {
-  deleteSubscriptionUnsecure,
-  insertUnsecureSubscription,
+  deleteSubscription,
+  insertSubscription,
 } from '../subcription/subscription.helper';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
-import { deleteUserById, loadUnsecureUser, loadUserBy } from './users.domain';
+import { deleteUserById, loadUser, loadUserBy } from './users.domain';
 import { removeUser } from './users.helper';
 import usersResolver from './users.resolver';
 
@@ -56,7 +56,7 @@ const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
 describe('User query resolver', () => {
   describe('userHasOrganizationWithSubscription', () => {
     beforeEach(async () => {
-      await insertUnsecureSubscription({
+      await insertSubscription({
         id: SUBSCRIPTION_ID,
         organization_id: THALES_ORGA_ID,
         service_instance_id: SERVICE_VAULT_ID,
@@ -94,7 +94,7 @@ describe('User query resolver', () => {
       }
     );
     afterEach(async () => {
-      await deleteSubscriptionUnsecure({
+      await deleteSubscription({
         id: SUBSCRIPTION_ID as SubscriptionId,
       });
     });
@@ -871,7 +871,7 @@ describe('User mutation resolver', () => {
       expect(response.picture).toEqual(newPicture);
 
       // assert database
-      const [dbUser] = await loadUnsecureUser({ email: DEFAULT_ADMIN_EMAIL });
+      const [dbUser] = await loadUser({ email: DEFAULT_ADMIN_EMAIL });
       expect(dbUser).toBeDefined();
       expect(dbUser?.first_name).toEqual(newFirstName);
       expect(dbUser?.last_name).toEqual(newLastName);

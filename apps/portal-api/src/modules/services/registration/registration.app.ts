@@ -53,7 +53,7 @@ import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
-  loadUnsecureUser,
+  loadUser,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
@@ -498,7 +498,7 @@ export const registrationApp = {
       });
     }
     try {
-      const [user] = await loadUnsecureUser({
+      const [user] = await loadUser({
         id: deploymentRequest.user_requester_id,
       });
 

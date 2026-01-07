@@ -1,4 +1,4 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { OrganizationCapabilitiesInput } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import Organization, {
@@ -25,9 +25,7 @@ export const insertNewUserOrganization = (
 export const insertNewUserOrganizationUnsecure = (
   field: UserOrganizationInitializer | UserOrganizationInitializer[]
 ): Promise<UserOrganization[]> => {
-  return dbUnsecure<UserOrganization>('User_Organization')
-    .insert(field)
-    .returning('*');
+  return db<UserOrganization>('User_Organization').insert(field).returning('*');
 };
 
 export const loadUserOrganization = (

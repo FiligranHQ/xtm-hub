@@ -19,8 +19,8 @@ import UserTransferRequest, {
 import { ADMIN_UUID } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
 import {
-  deleteSubscriptionUnsecure,
-  insertUnsecureSubscription,
+  deleteSubscription,
+  insertSubscription,
 } from '../subcription/subscription.helper';
 import * as UserTransferRequestDomain from './user_transferRequest/user_transferRequest.domain';
 import {
@@ -125,7 +125,7 @@ describe('User profile app', () => {
       service_instance_id: SERVICE_VAULT_ID,
     };
     beforeEach(async () => {
-      await insertUnsecureSubscription(newSubscription);
+      await insertSubscription(newSubscription);
       await insertNewUserTransfer({
         id: mockTransferRequestData[0]?.id,
         from_user_id: mockTransferRequestData[0]?.from_user_id as UserId,
@@ -134,7 +134,7 @@ describe('User profile app', () => {
     });
     afterEach(async () => {
       vi.restoreAllMocks();
-      await deleteSubscriptionUnsecure({
+      await deleteSubscription({
         id: newSubscription.id as SubscriptionId,
       });
       await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });

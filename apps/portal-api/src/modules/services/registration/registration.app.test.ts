@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db, dbUnsecure } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   contextAdminOrgaThales,
   contextAdminUser,
@@ -488,7 +488,7 @@ describe('Registration app', () => {
         ServiceConfigurationStatus.Inactive
       );
 
-      const subscription = await dbUnsecure<Subscription>('Subscription')
+      const subscription = await db<Subscription>('Subscription')
         .where(
           'service_instance_id',
           '=',
@@ -759,7 +759,7 @@ describe('Registration app', () => {
       requestContext.set(requestContextAdminUser);
       const { token } =
         await registrationApp.refreshUserPlatformToken(contextAdminUser);
-      const user = await dbUnsecure<UserLoadUserBy>('User')
+      const user = await db<UserLoadUserBy>('User')
         .where({ id: contextAdminUser.user.id })
         .first();
 
@@ -767,7 +767,7 @@ describe('Registration app', () => {
 
       const { token: anotherToken } =
         await registrationApp.refreshUserPlatformToken(contextAdminUser);
-      const updatedUser = await dbUnsecure<UserLoadUserBy>('User')
+      const updatedUser = await db<UserLoadUserBy>('User')
         .where({ id: contextAdminUser.user.id })
         .first();
 

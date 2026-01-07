@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../../../knexfile';
+import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
   CustomDashboardConnection,
   DocumentConnection,
@@ -226,7 +226,7 @@ export const DocumentDomain = {
     slug: string,
     include_metadata: string[] = []
   ) => {
-    const docQuery = dbUnsecure<Document>('Document')
+    const docQuery = db<Document>('Document')
       .select('Document.*')
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
@@ -275,7 +275,7 @@ export const DocumentDomain = {
     include_metadata: string[] = [],
     orderResults: boolean = true
   ): Knex.QueryBuilder => {
-    const loadDocumentsQuery = dbUnsecure<Document>('Document')
+    const loadDocumentsQuery = db<Document>('Document')
       .select('Document.*')
       .leftJoin(
         'ServiceInstance',
