@@ -17,20 +17,20 @@ export const IntegrationDeployableFilter = () => {
         options={[
           {
             label: t(
-              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.AutomaticDeploy'
+              'Service.OpenctiIntegrations.Filter.ManagerSupported.AutomaticDeploy'
             ),
             value: 'true',
           },
           {
             label: t(
-              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.ManualDeploy'
+              'Service.OpenctiIntegrations.Filter.ManagerSupported.ManualDeploy'
             ),
             value: 'false',
           },
         ]}
         defaultValue={deployable}
         placeholder={t(
-          'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.Placeholder'
+          'Service.OpenctiIntegrations.Filter.ManagerSupported.Placeholder'
         )}
         noResultString={t('Utils.NotFound')}
         onValueChange={setDeployable}

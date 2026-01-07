@@ -498,7 +498,7 @@
       "UnavailableDeployments": "This connector is not available for automatic deployment."
     },
     "CreationStatus": "Creation status",
-    "OpenctiIntegrationFeeds": {
+    "OpenctiIntegrations": {
       "Actions": {
         "Share": "Share integration Feed"
       },
