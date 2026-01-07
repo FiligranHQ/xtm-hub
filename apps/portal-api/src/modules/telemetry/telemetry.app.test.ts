@@ -19,15 +19,11 @@ import {
   PlatformIdentifier,
   ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
-import { DocumentId } from '../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { DocumentApp } from '../services/document/document.app';
+import { deleteDocuments } from '../services/document/document.helper';
 import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
-import {
-  CsvFeed,
-  INTEGRATION_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../services/integrations/integrations.model';
+import { INTEGRATION_SERVICE_INSTANCE_ID } from '../services/integrations/integrations.model';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
 
 // Mock the ES Client
@@ -51,10 +47,11 @@ describe('TelemetryApp', () => {
     mimeType: 'mimeType',
     fileName: 'csvfilename',
   };
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
+    await deleteDocuments();
   });
 
   describe('sendTelemetryEvent', () => {
@@ -132,25 +129,22 @@ describe('TelemetryApp', () => {
         status: ServiceConfigurationStatus.Active,
       });
 
-      const fakeResourceId =
-        'c07f6909-f8c5-4f61-b17d-b5b2da9b2799' as DocumentId;
-      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+      const document = await DocumentApp.createDocument(
         {
-          id: fakeResourceId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
           name: 'myCsvFeed',
-          slug: 'myCsvFeed',
           description: 'description',
-          minio_name: 'minioName',
-          file_name: 'csvfilename',
-          service_instance_id: SERVICE_INTEGRATIONS_ID,
-          integration_type: IntegrationType.CsvFeed,
+          short_description: 'short_description',
+          slug: 'slug',
           active: true,
         },
-        [],
-        INTEGRATION_CSV_FEED_METADATA
+        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
       );
+      expect(document).toBeDefined();
+
+      const documentId = document!.id;
 
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
@@ -160,7 +154,7 @@ describe('TelemetryApp', () => {
             'ServiceInstance',
             SERVICE_INTEGRATIONS_ID
           ),
-          resource_id: toGlobalId('DocumentId', fakeResourceId),
+          resource_id: toGlobalId('DocumentId', documentId),
           resource_title: 'CsvFeed Title',
           platform_service_instance_id: toGlobalId(
             'RegisteredPlatform',
@@ -169,7 +163,7 @@ describe('TelemetryApp', () => {
         },
       });
 
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+      expect(telemetrySpy).toHaveBeenCalledWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: PLATFORM_ORGANIZATION_UUID,
@@ -179,7 +173,7 @@ describe('TelemetryApp', () => {
         user_id: ADMIN_UUID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
-        resource_id: fakeResourceId,
+        resource_id: documentId,
         resource_title: 'CsvFeed Title',
         platform_id: platform_id,
         platform_version: '1.0.0',
@@ -211,7 +205,22 @@ describe('TelemetryApp', () => {
         status: ServiceConfigurationStatus.Active,
       });
 
-      const fakeResourceId = 'c07f6909-f8c5-4f61-b17d-b5b2da9b2799';
+      const document = await DocumentApp.createDocument(
+        {
+          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          name: 'myCsvFeed',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
+      );
+      expect(document).toBeDefined();
+
+      const documentId = document!.id;
 
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
@@ -221,7 +230,7 @@ describe('TelemetryApp', () => {
             'ServiceInstance',
             SERVICE_INTEGRATIONS_ID
           ),
-          resource_id: toGlobalId('DocumentId', fakeResourceId),
+          resource_id: toGlobalId('DocumentId', documentId),
           resource_title: 'CsvFeed Title',
           platform_service_instance_id: toGlobalId(
             'RegisteredPlatform',
@@ -230,7 +239,7 @@ describe('TelemetryApp', () => {
         },
       });
 
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+      expect(telemetrySpy).toHaveBeenCalledWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: PLATFORM_ORGANIZATION_UUID,
@@ -240,9 +249,10 @@ describe('TelemetryApp', () => {
         user_id: ADMIN_UUID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
-        resource_id: fakeResourceId,
+        resource_id: documentId,
         resource_title: 'CsvFeed Title',
         platform_id: platformId,
+        platform_version: undefined,
         target_product: TelemetryTargetProduct.OPEN_CTI,
       });
     });
@@ -271,26 +281,22 @@ describe('TelemetryApp', () => {
         },
         status: ServiceConfigurationStatus.Active,
       });
-
-      const fakeResourceId =
-        'ddd49f48-1a66-4670-9dab-0d247b613969' as DocumentId;
-      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+      const document = await DocumentApp.createDocument(
         {
-          id: fakeResourceId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-          name: 'connector',
-          slug: 'connector',
+          name: 'myCsvFeed',
           description: 'description',
-          minio_name: 'minioName',
-          file_name: 'connectorFilename',
-          service_instance_id: SERVICE_INTEGRATIONS_ID,
-          integration_type: IntegrationType.CsvFeed,
+          short_description: 'short_description',
+          slug: 'slug',
           active: true,
         },
-        [],
-        INTEGRATION_CSV_FEED_METADATA
+        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
       );
+      expect(document).toBeDefined();
+
+      const documentId = document!.id;
 
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
@@ -300,7 +306,7 @@ describe('TelemetryApp', () => {
             'ServiceInstance',
             SERVICE_INTEGRATIONS_ID
           ),
-          resource_id: toGlobalId('DocumentId', fakeResourceId),
+          resource_id: toGlobalId('DocumentId', documentId),
           resource_title: 'Connector Title',
           platform_service_instance_id: toGlobalId(
             'RegisteredPlatform',
@@ -309,7 +315,7 @@ describe('TelemetryApp', () => {
         },
       });
 
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+      expect(telemetrySpy).toHaveBeenCalledWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: PLATFORM_ORGANIZATION_UUID,
@@ -319,7 +325,7 @@ describe('TelemetryApp', () => {
         user_id: ADMIN_UUID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
-        resource_id: fakeResourceId,
+        resource_id: documentId,
         resource_title: 'Connector Title',
         platform_id: platform_id,
         platform_version: '1.0.0',

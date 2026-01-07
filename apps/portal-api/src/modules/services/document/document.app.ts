@@ -38,11 +38,11 @@ export const DocumentApp = {
     input: CreateDocumentInput,
     metadata: DocumentMetadataResolverType[],
     serviceInstanceId: ServiceInstanceId,
-    document: Upload[]
+    uploads: Upload[]
   ) => {
     const { documentType, metadataKeys } =
       await retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, metadata);
-    const files = await processUploads(document, serviceInstanceId);
+    const files = await processUploads(uploads, serviceInstanceId);
     const docFile = files.shift();
     const documentData = {
       ...input,
@@ -229,37 +229,7 @@ export const DocumentApp = {
     });
   },
 
-  createDocumentWithImageUploadsAndMetadata: async <T extends DocumentModel>(
-    type: string,
-    input: Partial<T>,
-    uploads: Upload[] | Upload,
-    metadataKeys: DocumentMetadataKeys<T>
-  ) => {
-    const files = await processUploads(uploads, input.service_instance_id);
-    const docFile = files.shift();
-    return await withTransaction(async () => {
-      const doc = await DocumentApp.createDocumentWithChildrenAndMetadata<T>(
-        {
-          ...input,
-          type,
-          file_name: docFile.fileName,
-          minio_name: docFile.minioName,
-          mime_type: docFile.mimeType,
-        },
-        metadataKeys
-      );
-
-      await DocumentChildrenDomain.createImageDocuments(
-        doc.id,
-        doc.service_instance_id,
-        files
-      );
-
-      return doc;
-    });
-  },
-
-  upsertDocumentWithChildren: async <T extends DocumentModel>(
+  upsertDocument: async <T extends DocumentModel>(
     type: string,
     input: Partial<T>,
     uploads: Upload[] | Upload,

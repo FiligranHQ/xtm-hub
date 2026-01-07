@@ -1,18 +1,11 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SERVICE_OPENAEV_SCENARIOS_ID } from '../../../../tests/tests.const';
-import { DocumentId } from '../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from '../document/document.app';
 import { deleteDocuments } from '../document/document.helper';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
-import {
-  OPENAEV_SCENARIO_DOCUMENT_TYPE,
-  OPENAEV_SCENARIO_METADATA,
-  OpenAEVScenario,
-} from './openaev-scenarios.domain';
 
 describe('openaev scenarios app', () => {
   const minioFileMock = {
@@ -26,8 +19,23 @@ describe('openaev scenarios app', () => {
     ]);
   });
 
-  it('customDashboard should return the document with elastic search counters', async () => {
-    const documentId = '7705f7bd-ee75-4a16-ad0a-75b0ef55986a' as DocumentId;
+  it('loadOpenAEVScenario should return the document with elastic search counters', async () => {
+    const document = await DocumentApp.createDocument(
+      {
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        name: 'myCsvFeed',
+        description: 'description',
+        short_description: 'short_description',
+        slug: 'slug',
+        active: true,
+      },
+      [{ key: 'product_version', value: '1.2.3' }],
+      SERVICE_OPENAEV_SCENARIOS_ID,
+      []
+    );
+    expect(document).toBeDefined();
+    const documentId = document!.id;
+
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {
         if (
@@ -41,23 +49,6 @@ describe('openaev scenarios app', () => {
       }
     );
 
-    await DocumentApp.createDocumentWithImageUploadsAndMetadata<OpenAEVScenario>(
-      OPENAEV_SCENARIO_DOCUMENT_TYPE,
-      {
-        id: documentId as DocumentId,
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-        name: 'myOpenAEV scenario',
-        description: 'description',
-        minio_name: 'minioName',
-        file_name: 'openAEVfilename',
-        service_instance_id: SERVICE_OPENAEV_SCENARIOS_ID as ServiceInstanceId,
-        type: OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        active: false,
-      },
-      [],
-      OPENAEV_SCENARIO_METADATA
-    );
-
     const documentLoaded =
       await OpenAEVScenariosApp.loadOpenAEVScenario(documentId);
 
@@ -65,8 +56,20 @@ describe('openaev scenarios app', () => {
     expect(documentLoaded.share_number).toBe(12);
   });
 
-  it('customDashboard should return the document with elastic search counters', async () => {
-    const documentId = 'bee63ef6-0919-406e-8432-ce4acd3aaf1c' as DocumentId;
+  it('loadSeoOpenAEVScenario should return the document with elastic search counters', async () => {
+    await DocumentApp.createDocument(
+      {
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        name: 'myCsvFeed',
+        description: 'description',
+        short_description: 'short_description',
+        slug: 'myOpenAEV-scenario',
+        active: true,
+      },
+      [{ key: 'product_version', value: '1.2.3' }],
+      SERVICE_OPENAEV_SCENARIOS_ID,
+      []
+    );
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {
         if (
@@ -78,24 +81,6 @@ describe('openaev scenarios app', () => {
           return 13;
         return 0; // default
       }
-    );
-
-    await DocumentApp.createDocumentWithImageUploadsAndMetadata<OpenAEVScenario>(
-      OPENAEV_SCENARIO_DOCUMENT_TYPE,
-      {
-        id: documentId as DocumentId,
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-        name: 'myOpenAEV scenario',
-        slug: 'myOpenAEV-scenario',
-        description: 'description',
-        minio_name: 'minioName',
-        file_name: 'openAEVfilename',
-        service_instance_id: SERVICE_OPENAEV_SCENARIOS_ID as ServiceInstanceId,
-        type: OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        active: true,
-      },
-      [],
-      OPENAEV_SCENARIO_METADATA
     );
 
     const documentLoaded =

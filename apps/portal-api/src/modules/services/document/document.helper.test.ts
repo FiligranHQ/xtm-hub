@@ -31,7 +31,7 @@ describe('DocumentHelper', () => {
 
     it('should throw when service definition is not manageable', async () => {
       loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
-        identifier: ServiceDefinitionIdentifier.Vault,
+        identifier: ServiceDefinitionIdentifier.Link,
       } as ServiceDefinition);
 
       const call = retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, []);
