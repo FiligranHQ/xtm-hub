@@ -18,6 +18,8 @@ export enum ForbiddenErrorCode {
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
+  IntegrationTypeNotManageable = 'INTEGRATION_TYPE_NOT_MANAGEABLE',
+  ServiceDefinitionNotManageable = 'SERVICE_DEFINITION_NOT_MANAGEABLE',
 }
 
 export enum BadRequestErrorCode {
@@ -35,6 +37,7 @@ export enum BadRequestErrorCode {
   OrganizationDoesNotMatchSelectedOrganization = 'ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION',
   DeploymentRequestHubStatusNotQueued = 'DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED',
   DocumentMissingMetadata = 'DOCUMENT_MISSING_METADATA',
+  IntegrationTypeNotRecognized = 'INTEGRATION_TYPE_NOT_RECOGNIZED',
 }
 
 export enum UnknownErrorCode {

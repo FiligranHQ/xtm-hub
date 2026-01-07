@@ -2,6 +2,7 @@ import { db } from '../../../../knexfile';
 import {
   CreateDocumentInput,
   DocumentMetadata as DocumentMetadataResolverType,
+  IntegrationType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -30,6 +31,7 @@ import {
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   INTEGRATION_CSV_FEED_METADATA,
+  isIntegrationType,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
 import {
@@ -48,13 +50,13 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
-type CreatableServiceDefinition =
+type ManageableServiceDefinition =
   | ServiceDefinitionIdentifier.OpenctiIntegrations
   | ServiceDefinitionIdentifier.OpenctiCustomDashboards
   | ServiceDefinitionIdentifier.OpenaevScenarios;
 
 const DocumentTypeMappedByServiceDefinition: Record<
-  CreatableServiceDefinition,
+  ManageableServiceDefinition,
   string
 > = {
   [ServiceDefinitionIdentifier.OpenctiIntegrations]:
@@ -66,14 +68,33 @@ const DocumentTypeMappedByServiceDefinition: Record<
 };
 
 const DocumentMetadataMappedByServiceIdentifier: Record<
-  CreatableServiceDefinition,
-  string[]
+  ManageableServiceDefinition,
+  (metadata: DocumentMetadataResolverType[]) => string[]
 > = {
-  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
+  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]: () =>
     CUSTOM_DASHBOARD_METADATA,
-  [ServiceDefinitionIdentifier.OpenctiIntegrations]:
-    INTEGRATION_CSV_FEED_METADATA,
-  [ServiceDefinitionIdentifier.OpenaevScenarios]: OPENAEV_SCENARIO_METADATA,
+  [ServiceDefinitionIdentifier.OpenctiIntegrations]: (metadata) => {
+    const integrationTypeMetadata = metadata.find(
+      (data) => data.key === 'integration_type'
+    );
+    if (!integrationTypeMetadata) {
+      logApp.warn(`Integration is missing integration type metadata`);
+      throw new Error(ErrorCode.DocumentMissingMetadata);
+    }
+
+    const integrationType = integrationTypeMetadata.value;
+    if (!isIntegrationType(integrationType)) {
+      logApp.warn(`Integration type is not recognized: ${integrationType}`);
+      throw new Error(ErrorCode.IntegrationTypeNotRecognized);
+    }
+    if (integrationType === IntegrationType.Connector) {
+      throw new Error(ErrorCode.IntegrationTypeNotManageable);
+    }
+
+    return INTEGRATION_CSV_FEED_METADATA;
+  },
+  [ServiceDefinitionIdentifier.OpenaevScenarios]: () =>
+    OPENAEV_SCENARIO_METADATA,
 };
 
 export const DocumentApp = {
@@ -91,11 +112,16 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const documentType =
+    const documentType: string | undefined =
       DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
+    if (!documentType) {
+      throw new Error(ErrorCode.ServiceDefinitionNotManageable);
+    }
 
-    const metadataKeys: string[] =
-      DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier];
+    const metadataKeys: string[] | undefined =
+      DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier](
+        metadata
+      );
 
     const missingMetadataKeys = metadataKeys.filter(
       (key) => !metadata.some((meta) => meta.key === key)
@@ -180,8 +206,26 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const documentType =
+    const documentType: string | undefined =
       DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
+    if (!documentType) {
+      throw new Error(ErrorCode.ServiceDefinitionNotManageable);
+    }
+
+    const metadataKeys: string[] | undefined =
+      DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier](
+        metadata
+      );
+
+    const missingMetadataKeys = metadataKeys.filter(
+      (key) => !metadata.some((meta) => meta.key === key)
+    );
+    if (missingMetadataKeys.length) {
+      logApp.warn(
+        `Document is missing metadata keys: ${missingMetadataKeys.join(', ')}`
+      );
+      throw new Error(ErrorCode.DocumentMissingMetadata);
+    }
 
     const {
       document,
