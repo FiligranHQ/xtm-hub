@@ -15,7 +15,7 @@ const resolvers: Resolvers = {
         type: DatabaseType;
         id: string;
       };
-      return db<Node>(context, type).where({ id: databaseId }).first();
+      return db<Node>(type).where({ id: databaseId }).first();
     },
   },
   Node: {

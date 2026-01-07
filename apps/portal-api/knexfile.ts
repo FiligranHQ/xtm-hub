@@ -160,40 +160,16 @@ export const dbRaw = (
 export const dbTx = () => database.transaction();
 
 export function db<T>(
-  context: PortalContext,
-  type: DatabaseType,
-  opts?: Partial<QueryOpts>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Knex.QueryBuilder<T, any>;
-
-export function db<T>(
   type: DatabaseType
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Knex.QueryBuilder<T, any>;
-
-export function db<T>(
-  contextOrType: PortalContext | DatabaseType,
-  typeOrOpts?: DatabaseType | Partial<QueryOpts>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any> {
-  const isPortalContextProvided = typeof contextOrType !== 'string';
-
-  const { context, type } = isPortalContextProvided
-    ? {
-        context: contextOrType as PortalContext,
-        type: typeOrOpts as DatabaseType,
-      }
-    : {
-        context: requestContext.require().portalContext,
-        type: contextOrType as DatabaseType,
-      };
+  const reqContext = requestContext.get();
 
   const queryContext = database<T>(type).queryContext({
     __typename: type,
-    context,
+    context: reqContext?.portalContext,
   });
 
-  const reqContext = requestContext.get();
   if (reqContext?.trx && !reqContext.trx.isCompleted()) {
     queryContext.transacting(reqContext.trx);
   } else if (databaseContext.isInTransaction()) {
@@ -204,8 +180,7 @@ export function db<T>(
 }
 
 export const dbUnsecure = <T>(type: DatabaseType) => {
-  const context = { user: null, req: null, res: null };
-  return db<T>(context, type);
+  return db<T>(type);
 };
 
 export const dbConnections = <T>(

@@ -140,18 +140,12 @@ describe('User profile app', () => {
       await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });
     });
     it('Should update subscription', async () => {
-      const subsFromBefore = (await db<Subscription>(
-        contextAdminUser,
-        'Subscription'
-      )
+      const subsFromBefore = (await db<Subscription>('Subscription')
         .where({
           organization_id: ADMIN_USER_ID as OrganizationId,
         })
         .select('*')) as unknown as Subscription[];
-      const subsToBefore = (await db<Subscription>(
-        contextAdminUser,
-        'Subscription'
-      )
+      const subsToBefore = (await db<Subscription>('Subscription')
         .where({
           organization_id: FILIGRAN_USER_ID as OrganizationId,
         })
@@ -159,16 +153,12 @@ describe('User profile app', () => {
       await usersProfileApp.transferPersonalSpace(
         mockTransferRequestData[0]?.id as UserTransferRequestId
       );
-      const subsFromAfter = (await db<Subscription>(
-        contextAdminUser,
-        'Subscription'
-      )
+      const subsFromAfter = (await db<Subscription>('Subscription')
         .where({
           organization_id: ADMIN_USER_ID as OrganizationId,
         })
         .select('*')) as unknown as Subscription[];
       const subsToAfter: Subscription[] = (await db<Subscription>(
-        contextAdminUser,
         'Subscription'
       )
         .where({
