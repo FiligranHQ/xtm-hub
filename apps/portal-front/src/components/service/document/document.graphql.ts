@@ -115,22 +115,6 @@ export const DocumentDeleteMutation = graphql`
   }
 `;
 
-export const DocumentDetailDeleteMutation = graphql`
-  mutation documentDetailDeleteMutation(
-    $documentId: ID
-    $serviceInstanceId: String
-    $forceDelete: Boolean
-  ) {
-    deleteDocument(
-      documentId: $documentId
-      service_instance_id: $serviceInstanceId
-      forceDelete: $forceDelete
-    ) {
-      id
-    }
-  }
-`;
-
 export const DocumentExistsQuery = graphql`
   query documentExistsQuery($documentName: String, $serviceInstanceId: String) {
     documentExists(
@@ -229,13 +213,5 @@ export const DocumentsListQuery = graphql`
     $parentsOnly: Boolean
   ) {
     ...documentsList
-  }
-`;
-
-export const DocumentQuery = graphql`
-  query documentQuery($documentId: ID, $serviceInstanceId: ID) {
-    document(documentId: $documentId, serviceInstanceId: $serviceInstanceId) {
-      ...documentItem_fragment
-    }
   }
 `;

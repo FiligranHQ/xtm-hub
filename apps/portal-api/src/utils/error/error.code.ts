@@ -49,16 +49,10 @@ export enum UnknownErrorCode {
   DeleteOrganizationError = 'DELETE_ORGANIZATION_ERROR',
   DocumentCreateError = 'DOCUMENT_CREATE_ERROR',
   DocumentUpdateError = 'DOCUMENT_UPDATE_ERROR',
-  CsvFeedInsertionError = 'CSV_FEED_INSERTION_ERROR',
-  CsvFeedUpdateError = 'CSV_FEED_UPDATE_ERROR',
-  CsvFeedDeletionError = 'CSV_FEED_DELETION_ERROR',
   DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
   InsertDocumentError = 'INSERT_DOCUMENT_ERROR',
   UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
   IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
-  OpenAEVScenarioInsertionError = 'OPENAEV_SCENARIO_INSERTION_ERROR',
-  OpenAEVScenarioUpdateError = 'OPENAEV_SCENARIO_UPDATE_ERROR',
-  OpenAEVScenarioDeleteError = 'OPENAEV_SCENARIO_DELETE_ERROR',
   ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
   EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
@@ -80,9 +74,7 @@ export enum UnknownErrorCode {
 export enum AlreadyExistsErrorCode {
   OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
   OrganizationSameDomainExists = 'ORGANIZATION_SAME_DOMAIN_EXISTS',
-  CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
   DocumentUniqueSlugError = 'DOCUMENT_UNIQUE_SLUG_ERROR',
-  OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
   FreeTrialAlreadyExists = 'FREE_TRIAL_ALREADY_EXISTS',
 }
 

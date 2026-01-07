@@ -15,6 +15,11 @@ import {
   FormLabel,
   FormMessage,
   MultiSelectFormField,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   SheetFooter,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
@@ -30,11 +35,12 @@ const openAEVScenarioFormSchema = z.object({
   product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
     error: 'Product version must be X.Y.Z',
   }),
+  uploader_organization_id: z.string().min(1, 'Required'),
   description: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  illustration: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck),
 });
 export type OpenAEVScenarioFormValues = z.infer<
   typeof openAEVScenarioFormSchema
@@ -58,27 +64,32 @@ export const OpenaevScenarioForm = ({
   const { translationKey } = useServiceContext();
 
   const openAEVScenario = document;
+  const isCreation = !openAEVScenario;
   const { handleCloseSheet } = useDialogContext();
 
   const values = useMemo(
     () =>
       ({
         ...openAEVScenario,
-        illustration: openAEVScenario?.children_documents?.map((doc) => ({
+        images: openAEVScenario?.children_documents?.map((doc) => ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
         labels: openAEVScenario?.labels?.map((label) => label.id),
         uploader_id: openAEVScenario?.uploader?.id ?? me?.id,
+        uploader_organization_id:
+          (isCreation
+            ? me?.selected_organization_id
+            : openAEVScenario?.uploader_organization?.id) ?? '',
       }) as OpenAEVScenarioFormValues,
-    [me, openAEVScenario]
+    [me, openAEVScenario, isCreation]
   );
   const formSchema = useMemo(
     () =>
       openAEVScenario
         ? openAEVScenarioFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            illustration: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(fileListCheck).optional(),
           })
         : openAEVScenarioFormSchema,
     [openAEVScenario]
@@ -164,6 +175,40 @@ export const OpenaevScenarioForm = ({
               </FormItem>
             ),
           },
+          uploader_organization_id: {
+            fieldType: ({ field }) => (
+              <FormItem hidden={isCreation}>
+                <FormLabel>
+                  {t('OrganizationInServiceAction.Organization')}
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t(
+                          'OrganizationInServiceAction.SelectOrganization'
+                        )}
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {me?.organizations.map((node) => {
+                      return (
+                        <SelectItem
+                          key={node?.id}
+                          value={node?.id}>
+                          {node?.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            ),
+          },
           document: {
             label: openAEVScenario
               ? t('Service.OpenAEVScenario.Form.ExistingOpenAEVScenarioFile', {
@@ -176,7 +221,7 @@ export const OpenaevScenarioForm = ({
               multiple: 'multiple',
             },
           },
-          illustration: {
+          images: {
             label: t(
               'Service.OpenAEVScenario.Form.OpenAEVScenarioIllustration'
             ),

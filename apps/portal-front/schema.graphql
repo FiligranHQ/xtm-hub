@@ -106,12 +106,6 @@ type Mutation {
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
-  createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
-  updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
-  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
-  createOpenAEVScenario(input: CreateOpenAEVScenarioInput!, document: [Upload!]!, serviceInstanceId: String): OpenAEVScenario!
-  updateOpenAEVScenario(documentId: ID!, input: UpdateOpenAEVScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): OpenAEVScenario!
-  deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
@@ -573,27 +567,6 @@ type CsvFeed implements Node & Document & Integration {
   integration_type: IntegrationType!
 }
 
-input CreateCsvFeedInput {
-  name: String!
-  slug: String!
-  uploader_id: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-}
-
-input UpdateCsvFeedInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-}
-
 enum IntegrationType {
   csv_feed
   connector
@@ -681,29 +654,6 @@ type IntegrationConnection {
   totalCount: Int!
   edges: [IntegrationEdge!]!
   pageInfo: PageInfo!
-}
-
-input CreateOpenAEVScenarioInput {
-  name: String!
-  slug: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-  uploader_id: String!
-  product_version: String!
-}
-
-input UpdateOpenAEVScenarioInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-  product_version: String
 }
 
 type OpenAEVScenario implements Document & Node {

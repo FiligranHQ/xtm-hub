@@ -2,9 +2,7 @@ import { db } from '../../../../knexfile';
 import {
   CreateDocumentInput,
   DocumentMetadata as DocumentMetadataResolverType,
-  MutationUpdateCsvFeedArgs,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
-  MutationUpdateOpenAevScenarioArgs,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
@@ -31,7 +29,7 @@ import {
 } from '../custom-dashboards/custom-dashboards.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import {
-  INTEGRATION_METADATA,
+  INTEGRATION_CSV_FEED_METADATA,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
 import {
@@ -49,12 +47,6 @@ import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
-
-export type MutationUpdateDocumentArgs =
-  | MutationUpdateOpenAevScenarioArgs
-  | (MutationUpdateCsvFeedArgs & {
-      input: { integration_type: string };
-    });
 
 type CreatableServiceDefinition =
   | ServiceDefinitionIdentifier.OpenctiIntegrations
@@ -79,7 +71,8 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
 > = {
   [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
     CUSTOM_DASHBOARD_METADATA,
-  [ServiceDefinitionIdentifier.OpenctiIntegrations]: INTEGRATION_METADATA,
+  [ServiceDefinitionIdentifier.OpenctiIntegrations]:
+    INTEGRATION_CSV_FEED_METADATA,
   [ServiceDefinitionIdentifier.OpenaevScenarios]: OPENAEV_SCENARIO_METADATA,
 };
 
@@ -104,10 +97,13 @@ export const DocumentApp = {
     const metadataKeys: string[] =
       DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier];
 
-    const isMissingMetadata = metadataKeys.some(
+    const missingMetadataKeys = metadataKeys.filter(
       (key) => !metadata.some((meta) => meta.key === key)
     );
-    if (isMissingMetadata) {
+    if (missingMetadataKeys.length) {
+      logApp.warn(
+        `Document is missing metadata keys: ${missingMetadataKeys.join(', ')}`
+      );
       throw new Error(ErrorCode.DocumentMissingMetadata);
     }
 
@@ -393,64 +389,6 @@ export const DocumentApp = {
       }
 
       return document as T;
-    });
-  },
-  updateDocumentWithChildren: async <T extends DocumentModel>(
-    type: string,
-    parentDocumentId: DocumentId,
-    serviceInstanceId: ServiceInstanceId,
-    mutationArgs: MutationUpdateDocumentArgs,
-    metadataKeys: DocumentMetadataKeys<T>
-  ) => {
-    const {
-      document,
-      updateDocument: isUpdateDoc,
-      images,
-      input,
-    } = mutationArgs;
-    const { documentFile, newImages, existingImageIds } =
-      await processDocumentUpdateUploads(
-        document,
-        isUpdateDoc,
-        images,
-        serviceInstanceId
-      );
-    const data = {
-      ...input,
-      type,
-    } as unknown as Partial<T>;
-
-    // We are updating the base document
-    if (documentFile) {
-      Object.assign(data, {
-        file_name: documentFile.fileName,
-        minio_name: documentFile.minioName,
-        mime_type: documentFile.mimeType,
-      });
-    }
-
-    return withTransaction(async () => {
-      const updatedDocument = await DocumentApp.updateDocument<T>(
-        parentDocumentId,
-        data,
-        metadataKeys
-      );
-
-      // Delete the images that are not in the existingImages array
-      const childIds = await DocumentChildrenDomain.loadChildrenIds(
-        parentDocumentId,
-        existingImageIds
-      );
-      if (childIds.length > 0) {
-        await DocumentDomain.deleteDocuments(childIds);
-      }
-
-      await DocumentChildrenDomain.createImageDocuments(
-        parentDocumentId,
-        serviceInstanceId,
-        newImages
-      );
-      return updatedDocument;
     });
   },
 

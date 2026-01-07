@@ -1,15 +1,15 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
-import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
 import {
-  CsvFeedForm,
-  CsvFeedFormValues,
-} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
+  ServiceForm,
+  ServiceFormValues,
+} from '@/components/service/components/subscribable-services.types';
 import {
-  CsvFeedCreateMutation,
-  CsvFeedDeleteMutation,
-  CsvFeedUpdateMutation,
-} from '@/components/service/csv-feeds/csv-feed.graphql';
+  DocumentCreateMutation,
+  DocumentDeleteMutation,
+  DocumentUpdateMutation,
+} from '@/components/service/document/document.graphql';
 import { omit } from '@/lib/omit';
+import { pick } from '@/lib/pick';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import {
@@ -17,21 +17,44 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
-import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
-import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
-import { csvFeedUpdateMutation } from '@generated/csvFeedUpdateMutation.graphql';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
+import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
+import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
+import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
-export function useCsvFeedContext(
-  serviceInstance: serviceInstance_fragment$data,
-  connectionId?: string
-): ServiceContextProps {
+const documentBaseKeys: Array<keyof ServiceFormValues> = [
+  'name',
+  'slug',
+  'uploader_id',
+  'uploader_organization_id',
+  'short_description',
+  'description',
+  'labels',
+  'active',
+];
+
+const documentFileKeys: Array<keyof ServiceFormValues> = ['document', 'images'];
+
+interface UseDocumentContextProps {
+  serviceInstance: serviceInstance_fragment$data;
+  connectionId?: string;
+  translationKey: string;
+  type: ShareableResourceType;
+  form: ServiceForm;
+}
+
+export function useDocumentContext({
+  serviceInstance,
+  connectionId,
+  translationKey,
+  type,
+  form,
+}: UseDocumentContextProps): ServiceContextProps {
   const t = useTranslations();
-  const [createCsvFeed] = useMutation<csvFeedCreateMutation>(
-    CsvFeedCreateMutation
+  const [createMutation] = useMutation<documentCreateMutation>(
+    DocumentCreateMutation
   );
 
   const handleAddSheet = async (
@@ -39,30 +62,38 @@ export function useCsvFeedContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const formValues = values as CsvFeedFormValues;
-    const input = {
-      ...omit(formValues, ['document', 'illustration']),
-      uploader_id: formValues?.uploader_id ?? '',
-    };
+    const input = omit(
+      {
+        ...pick(values, documentBaseKeys),
+        uploader_id: values?.uploader_id ?? '',
+      },
+      ['uploader_organization_id']
+    );
+    const metadata = omit(values, [...documentBaseKeys, 'document', 'images']);
+
     const documents = [
-      ...Array.from(formValues.document),
-      ...Array.from(formValues.illustration),
+      ...Array.from(values.document),
+      ...Array.from(values.images),
     ];
 
-    createCsvFeed({
+    createMutation({
       variables: {
         input: {
           ...input,
           active: input.active ?? false,
         },
+        metadata: Object.keys(metadata).map((key) => ({
+          key,
+          value: metadata[key as keyof typeof metadata],
+        })),
         serviceInstanceId: serviceInstance.id,
-        connections: [connectionId ?? ''],
+        connections: connectionId ? [connectionId] : [],
         document: documents,
       },
       uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        if (!response.createCsvFeed) {
+        if (!response.createDocument) {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
@@ -79,19 +110,20 @@ export function useCsvFeedContext(
     });
   };
 
-  const [deleteCsvFeedMutation] = useMutation<csvFeedDeleteMutation>(
-    CsvFeedDeleteMutation
+  const [deleteMutation] = useMutation<documentDeleteMutation>(
+    DocumentDeleteMutation
   );
 
   const handleDeleteSheet = async (
     document: ShareableResource,
     onCompleted: () => void
   ) => {
-    deleteCsvFeedMutation({
+    deleteMutation({
       variables: {
         documentId: document.id,
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
+        forceDelete: true,
       },
       onCompleted() {
         onCompleted();
@@ -99,8 +131,8 @@ export function useCsvFeedContext(
     });
   };
 
-  const [updateCsvFeedMutation] = useMutation<csvFeedUpdateMutation>(
-    CsvFeedUpdateMutation
+  const [updateMutation] = useMutation<documentUpdateMutation>(
+    DocumentUpdateMutation
   );
 
   const handleUpdateSheet = async (
@@ -109,34 +141,36 @@ export function useCsvFeedContext(
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const formValues = values as CsvFeedFormValues;
-    const csvFeed = resource as csvFeedsItem_fragment$data;
     const input = {
-      ...omit(formValues, ['document', 'illustration']),
-      uploader_id: formValues?.uploader_id ?? '',
+      ...pick(values, documentBaseKeys),
+      uploader_id: values?.uploader_id ?? '',
     };
 
+    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
+
     // Split images between existing and new ones
-    const images = Array.from(
-      formValues.illustration ?? []
-    ) as FormImagesValues;
+    const images = Array.from(values.images ?? []) as FormImagesValues;
     const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
-    updateCsvFeedMutation({
+    updateMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
         document: documentsToUpload,
-        documentId: csvFeed.id,
-        updateDocument: formValues.document !== undefined,
+        documentId: resource.id,
+        metadata: Object.keys(metadata).map((key) => ({
+          key,
+          value: metadata[key as keyof typeof metadata],
+        })),
+        updateDocument: values.document !== undefined,
         images: existingImages,
       },
       uploadables: fileListToUploadableMap(documentsToUpload),
       onCompleted: () => {
-        onSuccess(formValues.name);
+        onSuccess(values.name);
       },
       onError: (error) => {
         onError(error);
@@ -146,11 +180,11 @@ export function useCsvFeedContext(
 
   return {
     serviceInstance,
-    translationKey: 'Service.CsvFeed',
+    translationKey,
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,
-    ServiceForm: CsvFeedForm,
-    type: ShareableResourceType.OPENCTI_INTEGRATION,
+    ServiceForm: form,
+    type,
   };
 }
