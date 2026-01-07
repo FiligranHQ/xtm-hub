@@ -1,6 +1,5 @@
+import FiligranUIPlugin from '@filigran/ui/plugin';
 import plugin from 'tailwindcss/plugin';
-/* eslint-disable @typescript-eslint/no-require-imports */
-const FiligranUIPlugin = require('filigran-ui/plugin');
 module.exports = {
   darkMode: ['class'],
   content: [
@@ -8,10 +7,11 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-    './node_modules/filigran-ui/dist/**/*.{js,ts,jsx,tsx}',
-    '../../node_modules/filigran-ui/dist/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}',
+    '../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
   plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('tailwindcss-animate'),
     FiligranUIPlugin(),
     plugin(function ({ addVariant }) {
@@ -22,4 +22,3 @@ module.exports = {
     }),
   ],
 };
-/* eslint-enable @typescript-eslint/no-require-imports */

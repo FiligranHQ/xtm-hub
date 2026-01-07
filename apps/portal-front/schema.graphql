@@ -424,6 +424,7 @@ enum DocumentOrdering {
   description
   created_at
   download_number
+  name
 }
 
 """

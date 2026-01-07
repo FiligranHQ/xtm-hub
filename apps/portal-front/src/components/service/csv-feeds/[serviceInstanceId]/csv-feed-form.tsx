@@ -17,7 +17,7 @@ import {
   FormMessage,
   MultiSelectFormField,
   SheetFooter,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';

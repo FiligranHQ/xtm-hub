@@ -2,8 +2,8 @@ import { UserAdminForm } from '@/components/admin/user/forms/admin/user-admin-fo
 import { userAdminFormSchema } from '@/components/admin/user/forms/user-form.schema';
 import { getUserListContext } from '@/components/admin/user/user-list-page';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { Button, useToast } from '@filigran/ui';
 import { adminAddUserMutation } from '@generated/adminAddUserMutation.graphql';
-import { Button, useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';

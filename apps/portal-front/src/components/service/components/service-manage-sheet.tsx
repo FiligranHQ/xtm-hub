@@ -1,6 +1,6 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import { Button, toast } from 'filigran-ui';
+import { Button, toast } from '@filigran/ui';
 
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
@@ -35,8 +35,10 @@ export const ServiceManageSheet = ({
   const [internalOpenSheet, setInternalOpenSheet] = useState(false);
 
   // Use external state if provided, otherwise use internal state
-  const openSheet = externalOpen !== undefined ? externalOpen : internalOpenSheet;
-  const setOpenSheet = externalSetOpen !== undefined ? externalSetOpen : setInternalOpenSheet;
+  const openSheet =
+    externalOpen !== undefined ? externalOpen : internalOpenSheet;
+  const setOpenSheet =
+    externalSetOpen !== undefined ? externalSetOpen : setInternalOpenSheet;
 
   const {
     serviceInstance,
@@ -116,9 +118,11 @@ export const ServiceManageSheet = ({
           <SheetWithPreventingDialog
             open={openSheet}
             setOpen={setOpenSheet}
-            trigger={variant === 'button' ? (
-              <Button variant="outline">{t('Utils.Update')}</Button>
-            ) : undefined}
+            trigger={
+              variant === 'button' ? (
+                <Button variant="outline">{t('Utils.Update')}</Button>
+              ) : undefined
+            }
             title={t(`${translationKey}.UpdateService`, {
               name: document.name,
             })}>
@@ -145,7 +149,11 @@ export const ServiceManageSheet = ({
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
-          trigger={variant === 'button' ? <Button>{t(`${translationKey}.AddService`)}</Button> : undefined}
+          trigger={
+            variant === 'button' ? (
+              <Button>{t(`${translationKey}.AddService`)}</Button>
+            ) : undefined
+          }
           title={t(`${translationKey}.AddService`)}>
           {
             <ServiceForm

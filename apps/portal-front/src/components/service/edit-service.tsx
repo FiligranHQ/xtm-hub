@@ -4,9 +4,9 @@ import {
 } from '@/components/service/service-form';
 import { ServiceAddPicture } from '@/components/service/service.graphql';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
+import { useToast } from '@filigran/ui';
 import { serviceAddPictureMutation } from '@generated/serviceAddPictureMutation.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { useToast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';

@@ -4,8 +4,8 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
+import { MultiSelectFormField } from '@filigran/ui';
 import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
-import { MultiSelectFormField } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 
@@ -34,7 +34,7 @@ export const IntegrationConnectorTypeFilter: React.FC = () => {
         options={options}
         defaultValue={connectorTypes}
         placeholder={t(
-          'Service.OpenctiIntegrationFeeds.Filter.Connector.Type.Placeholder'
+          'Service.OpenctiIntegrations.Filter.Connector.Type.Placeholder'
         )}
         noResultString={t('Utils.NotFound')}
         onValueChange={(values) =>

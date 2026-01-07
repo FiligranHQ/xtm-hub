@@ -16,11 +16,11 @@ import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { toast } from '@filigran/ui';
 import { openaevScenarioCreateMutation } from '@generated/openaevScenarioCreateMutation.graphql';
 import { openaevScenarioDeleteMutation } from '@generated/openaevScenarioDeleteMutation.graphql';
 import { openaevScenarioUpdateMutation } from '@generated/openaevScenarioUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 

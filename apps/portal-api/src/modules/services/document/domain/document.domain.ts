@@ -253,10 +253,12 @@ export const DocumentDomain = {
     opts: Partial<QueryDocumentsArgs>,
     include_metadata?: string[]
   ) => {
+    const useDefaultSort = !opts.orderBy;
     const loadDocumentsQuery = DocumentDomain.loadSeoDocumentsByServiceSlug(
       type,
       serviceSlug,
-      include_metadata
+      include_metadata,
+      useDefaultSort
     );
 
     return paginate<Document, T>(
@@ -270,7 +272,8 @@ export const DocumentDomain = {
   loadSeoDocumentsByServiceSlug: (
     type: string,
     serviceSlug: string,
-    include_metadata: string[] = []
+    include_metadata: string[] = [],
+    orderResults: boolean = true
   ): Knex.QueryBuilder => {
     const loadDocumentsQuery = dbUnsecure<Document>('Document')
       .select('Document.*')
@@ -289,10 +292,14 @@ export const DocumentDomain = {
       .where('ServiceInstance.slug', '=', serviceSlug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
-      .orderBy([
-        { column: 'Document.updated_at', order: 'desc' },
-        { column: 'Document.created_at', order: 'desc' },
-      ])
+      .modify((qb) => {
+        if (orderResults) {
+          qb.orderBy([
+            { column: 'Document.updated_at', order: 'desc' },
+            { column: 'Document.created_at', order: 'desc' },
+          ]);
+        }
+      })
       .groupBy(['Document.id']);
 
     DocumentMetadataDomain.addIncludeMetadataQuery(

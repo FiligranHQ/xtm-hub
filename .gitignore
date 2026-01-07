@@ -12,3 +12,4 @@
 .pnp.loader.mjs
 
 /node_modules/
+/.nx/

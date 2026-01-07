@@ -1,8 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
-import { AspectRatio, Button } from 'filigran-ui/servers';
+import { ArrowOutwardIcon, LogoFiligranIcon } from '@filigran/icon';
+import { AspectRatio, Button } from '@filigran/ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useCallback } from 'react';

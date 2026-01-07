@@ -3,10 +3,10 @@ import { useServiceListLocalStorage } from '@/components/service/components/use-
 import PublicIntegrationsList from '@/components/service/integrations/[serviceInstanceId]/public-integrations-list';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
+import { Skeleton } from '@filigran/ui';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { seoIntegrationsQuery } from '@generated/seoIntegrationsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { Skeleton } from 'filigran-ui';
 import React, { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 import { SeoIntegrationListQuery } from './seo-integration.graphql';
@@ -43,8 +43,8 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
       {
         slug: serviceInstance.slug ?? '',
         count: pageSize,
-        orderBy: 'created_at',
-        orderMode: 'desc',
+        orderBy: 'name',
+        orderMode: 'asc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         filters: [

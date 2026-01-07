@@ -1,6 +1,6 @@
 import { MeTransferPersonalSpaceMutation } from '@/components/me/me.graphql';
-import { FiligranLoader } from 'filigran-icon';
-import { toast } from 'filigran-ui';
+import { FiligranLoader } from '@filigran/icon';
+import { toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FunctionComponent, useEffect } from 'react';

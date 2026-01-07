@@ -8,10 +8,10 @@ import {
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
+import { Badge, DataTable } from '@filigran/ui';
 import { labelListQuery } from '@generated/labelListQuery.graphql';
 import { labelList_labels$key } from '@generated/labelList_labels.graphql';
 import { ColumnDef } from '@tanstack/react-table';
-import { Badge, DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import {

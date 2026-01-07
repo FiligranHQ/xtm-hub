@@ -13,6 +13,7 @@ enum DocumentOrdering {
   description
   created_at
   download_number
+  name
 }
 """
  /!\ WARNING Do not use this type.

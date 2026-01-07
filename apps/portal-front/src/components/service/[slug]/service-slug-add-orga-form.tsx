@@ -3,9 +3,6 @@ import { AddSubscriptionInServiceMutation } from '@/components/subcription/subsc
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Checkbox,
@@ -23,7 +20,10 @@ import {
   SelectValue,
   SheetFooter,
   useToast,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
+import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';

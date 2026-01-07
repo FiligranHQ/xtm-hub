@@ -4,6 +4,7 @@ import {
   TrialsDeploymentRequestsAvailableQuery,
 } from '@/components/trials/trials.graphql';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
+import { DataTable } from '@filigran/ui';
 import { PlatformIdentifier } from '@generated/oneClickDeployMutation.graphql';
 import trialsDeploymentAvailabilityFragmentGraphql, {
   trialsDeploymentAvailabilityFragment$data,
@@ -12,7 +13,6 @@ import trialsDeploymentAvailabilityFragmentGraphql, {
 import { trialsDeploymentRequestsAvailableList$key } from '@generated/trialsDeploymentRequestsAvailableList.graphql';
 import { trialsDeploymentRequestsAvailableQuery } from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import {
