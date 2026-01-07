@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import 'filigran-ui/theme.css';
+import '@filigran/ui/theme.css';
 import '../../styles/embed.css';
 import '../../styles/globals.css';
 
@@ -9,12 +9,12 @@ import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { ContentLayout } from '@/components/content-layout';
 import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
+import { Card } from '@filigran/ui/servers';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
-import { Card } from 'filigran-ui/servers';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';

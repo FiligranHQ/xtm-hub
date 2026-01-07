@@ -2,7 +2,6 @@
 
 import { LoginFormMutation } from '@/components/login/login.graphql';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -12,7 +11,8 @@ import {
   FormLabel,
   Input,
   toast,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';

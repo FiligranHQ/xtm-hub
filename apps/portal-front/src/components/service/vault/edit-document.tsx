@@ -4,7 +4,7 @@ import {
   VaultNewFileForm,
 } from '@/components/service/vault/vault-new-file-form';
 import { IconActionContext } from '@/components/ui/icon-actions';
-import { useToast } from 'filigran-ui';
+import { useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 

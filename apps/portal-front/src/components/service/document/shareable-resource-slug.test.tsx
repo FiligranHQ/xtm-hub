@@ -55,7 +55,7 @@ vi.mock('@/components/service/document/shareable-resource-description', () => ({
   default: () => <div>Description</div>,
 }));
 
-vi.mock('filigran-ui/servers', () => ({
+vi.mock('@filigran/ui/servers', () => ({
   Button: ({ children, onClick, ...props }) => (
     <button
       onClick={onClick}
@@ -65,7 +65,7 @@ vi.mock('filigran-ui/servers', () => ({
   ),
 }));
 
-vi.mock('filigran-icon', () => ({
+vi.mock('@filigran/icon', () => ({
   DownloadIcon: () => <span>DownloadIcon</span>,
 }));
 

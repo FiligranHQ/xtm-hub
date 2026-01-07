@@ -16,12 +16,12 @@ import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { toast } from '@filigran/ui';
 import { csvFeedCreateMutation } from '@generated/csvFeedCreateMutation.graphql';
 import { csvFeedDeleteMutation } from '@generated/csvFeedDeleteMutation.graphql';
 import { csvFeedUpdateMutation } from '@generated/csvFeedUpdateMutation.graphql';
 import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 

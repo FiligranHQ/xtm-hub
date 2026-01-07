@@ -9,9 +9,9 @@ import {
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { Badge } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { Badge } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';

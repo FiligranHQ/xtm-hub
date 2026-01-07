@@ -1,7 +1,5 @@
 import { organizationFormSchema } from '@/components/organization/organization-form.schema';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -14,7 +12,9 @@ import {
   SheetFooter,
   Tag,
   TagInput,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useForm } from 'react-hook-form';

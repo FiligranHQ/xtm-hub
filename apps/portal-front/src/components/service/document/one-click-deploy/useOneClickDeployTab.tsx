@@ -5,11 +5,11 @@ import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { toast } from '@filigran/ui';
 import {
   registerRefreshUserPlatformTokenMutation,
   registerRefreshUserPlatformTokenMutation$data,
 } from '@generated/registerRefreshUserPlatformTokenMutation.graphql';
-import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 

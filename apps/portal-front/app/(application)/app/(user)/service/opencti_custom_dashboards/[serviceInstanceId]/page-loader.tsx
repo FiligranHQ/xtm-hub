@@ -6,9 +6,9 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
 import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
+import { Skeleton } from '@filigran/ui';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 

@@ -5,8 +5,8 @@ import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
+import { DataTable } from '@filigran/ui';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 

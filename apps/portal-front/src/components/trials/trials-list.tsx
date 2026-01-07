@@ -3,7 +3,7 @@
 import { TrialsTabQuotas } from '@/components/trials/tab/quotas/trials-tab-quotas';
 import TrialsTab from '@/components/trials/tab/trials-tab';
 import { TrialsTabType } from '@/components/trials/trials.const';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 

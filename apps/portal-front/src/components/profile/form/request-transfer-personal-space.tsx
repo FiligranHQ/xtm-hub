@@ -10,8 +10,8 @@ import {
   CardTitle,
   Separator,
   toast,
-} from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

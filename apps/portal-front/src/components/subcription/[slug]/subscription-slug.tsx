@@ -8,14 +8,19 @@ import {
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
+import { MoreVertIcon } from '@filigran/icon';
+import {
+  Badge,
+  Button,
+  DataTable,
+  DataTableHeadBarOptions,
+} from '@filigran/ui';
 import { userServiceFromSubscription$key } from '@generated/userServiceFromSubscription.graphql';
 import {
   userServices_fragment$data,
   userServices_fragment$key,
 } from '@generated/userServices_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { MoreVertIcon } from 'filigran-icon';
-import { Badge, Button, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 
 import {

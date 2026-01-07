@@ -17,6 +17,22 @@ import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
+import {
+  ArrowShapeUpIcon,
+  ArrowShapeUpStackIcon,
+  CheckIndeterminateIcon,
+  CloseIcon,
+} from '@filigran/icon';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
+import { toast } from '@filigran/ui/clients';
+import { Button } from '@filigran/ui/servers';
 import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPaginationQuery.graphql';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
@@ -31,22 +47,6 @@ import {
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import {
-  ArrowShapeUpIcon,
-  ArrowShapeUpStackIcon,
-  CheckIndeterminateIcon,
-  CloseIcon,
-} from 'filigran-icon';
-import {
-  DataTable,
-  DataTableHeadBarOptions,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from 'filigran-ui';
-import { toast } from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import {
   FunctionComponent,

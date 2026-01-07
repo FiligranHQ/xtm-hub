@@ -5,9 +5,9 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { Merge } from '@/utils/typescript';
+import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { seoIntegrationConnectorFragment$data } from '@generated/seoIntegrationConnectorFragment.graphql';
 import { seoIntegrationFragment$data } from '@generated/seoIntegrationFragment.graphql';
-import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
 import Image from 'next/image';
 import React from 'react';
 import { MarkdownAsync } from 'react-markdown';
