@@ -34,7 +34,7 @@ export const IntegrationConnectorTypeFilter: React.FC = () => {
         options={options}
         defaultValue={connectorTypes}
         placeholder={t(
-          'Service.OpenctiIntegrationFeeds.Filter.Connector.Type.Placeholder'
+          'Service.OpenctiIntegrations.Filter.Connector.Type.Placeholder'
         )}
         noResultString={t('Utils.NotFound')}
         onValueChange={(values) =>

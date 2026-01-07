@@ -57,7 +57,7 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
               <ShareLinkButton
                 documentId={documentData.id}
                 url={pageUrl}
-                tooltipText={`Service.OpenctiIntegrationFeeds.Actions.Share`}
+                tooltipText={`Service.OpenctiIntegrations.Actions.Share`}
               />
             </div>
           </div>
