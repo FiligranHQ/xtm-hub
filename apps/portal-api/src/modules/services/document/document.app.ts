@@ -163,6 +163,7 @@ export const DocumentApp = {
     } catch (error) {
       logApp.error('Unable to send telemetry event for document creation', {
         error,
+        documentId: createdDocument.id,
       });
     }
 
@@ -199,49 +200,39 @@ export const DocumentApp = {
         images,
         serviceInstanceId
       );
-    const data = {
-      ...input,
-      ...(documentFile
-        ? {
-            file_name: documentFile.fileName,
-            minio_name: documentFile.minioName,
-            mime_type: documentFile.mimeType,
-          }
-        : {}),
-      type: documentType,
-    };
 
     return withTransaction(async () => {
       const { user } = requestContext.require();
-      const uploader_organization_id = data.uploader_organization_id
-        ? extractId<OrganizationId>(data.uploader_organization_id)
+      const uploader_organization_id = input.uploader_organization_id
+        ? extractId<OrganizationId>(input.uploader_organization_id)
         : null;
 
-      const extractedId = extractId<UserId>(data.uploader_id ?? '');
-      const uploader_id = (
-        data.uploader_id && extractedId ? extractedId : user.id
-      ) as UserId;
+      const extractedUploaderId = extractId<UserId>(input.uploader_id ?? '');
+      const uploader_id =
+        input.uploader_id && extractedUploaderId
+          ? extractedUploaderId
+          : user.id;
 
-      const [updatedDocument] = await db<DocumentModel>('Document')
-        .where('id', '=', parentDocumentId)
-        .update({
-          ...omit(data, ['labels']),
-          uploader_organization_id,
-          uploader_id,
-          updated_at: new Date(),
-          updater_id: user.id,
-        })
-        .returning('*');
+      const updatedDocument = await DocumentDomain.updateDocument({
+        parentDocumentId,
+        document: {
+          data: input,
+          file: documentFile,
+          type: documentType,
+        },
+        uploader_organization_id,
+        uploader_id,
+      });
 
       // If label is null => that mean we want to update the field to empty
-      if (data.labels !== undefined) {
+      if (input.labels !== undefined) {
         await objectLabelDomain.deleteObjectLabelBy({
           object_id: parentDocumentId as unknown as ObjectLabelObjectId,
         });
 
-        if (data.labels?.length > 0) {
+        if (input.labels?.length > 0) {
           await objectLabelDomain.insertObjectLabel(
-            data.labels.map((id) => ({
+            input.labels.map((id) => ({
               object_id: parentDocumentId as unknown as ObjectLabelObjectId,
               label_id: extractId(id) as LabelId,
             }))
