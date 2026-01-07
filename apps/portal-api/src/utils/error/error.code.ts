@@ -19,7 +19,7 @@ export enum ForbiddenErrorCode {
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
   IntegrationTypeNotManageable = 'INTEGRATION_TYPE_NOT_MANAGEABLE',
-  ServiceDefinitionNotManageable = 'SERVICE_DEFINITION_NOT_MANAGEABLE',
+  ServiceNotManageable = 'SERVICE_NOT_MANAGEABLE',
 }
 
 export enum BadRequestErrorCode {
