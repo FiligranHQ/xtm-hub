@@ -6,6 +6,7 @@ import {
   IntegrationConnection,
   Organization,
   QueryDocumentsArgs,
+  UpdateDocumentInput,
 } from '../../../../__generated__/resolvers-types';
 import {
   DocumentId,
@@ -18,10 +19,12 @@ import { extractId, omit } from '../../../../utils/utils';
 import { Document, normalizeDocumentName } from '../document.helper';
 
 import { requestContext } from '../../../../context/request.context';
+import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
 } from '../../../../security/restriction/document';
+import { MinioFile } from '../../../../thirdparty/minio/types';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
@@ -305,6 +308,47 @@ export const DocumentDomain = {
     );
 
     return loadDocumentsQuery;
+  },
+
+  updateDocument: async ({
+    parentDocumentId,
+    document,
+    uploader_id,
+    uploader_organization_id,
+  }: {
+    parentDocumentId: string;
+    document: {
+      data: UpdateDocumentInput;
+      file?: MinioFile;
+      type: string;
+    };
+    uploader_organization_id: OrganizationId;
+    uploader_id: UserId;
+  }): Promise<DocumentModel> => {
+    const { user } = requestContext.require();
+    const completeDocumentData = {
+      ...document.data,
+      ...(document.file
+        ? {
+            file_name: document.file.fileName,
+            minio_name: document.file.minioName,
+            mime_type: document.file.mimeType,
+          }
+        : {}),
+      type: document.type,
+    };
+    const [updatedDocument] = await db<DocumentModel>('Document')
+      .where('id', '=', parentDocumentId)
+      .update({
+        ...omit(completeDocumentData, ['labels']),
+        uploader_organization_id,
+        uploader_id,
+        updated_at: new Date(),
+        updater_id: user.id,
+      })
+      .returning('*');
+
+    return updatedDocument;
   },
 
   upsertOnSlug: async <T extends DocumentModel>(

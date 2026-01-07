@@ -11,6 +11,7 @@ module.exports = {
     '../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
   plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('tailwindcss-animate'),
     FiligranUIPlugin(),
     plugin(function ({ addVariant }) {
@@ -21,4 +22,3 @@ module.exports = {
     }),
   ],
 };
-/* eslint-enable @typescript-eslint/no-require-imports */

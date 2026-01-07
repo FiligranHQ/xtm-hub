@@ -5,11 +5,12 @@ import {
   CustomDashboardFormValues,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
-  CustomDashboardDeleteMutation,
-  CustomDashboardsCreateMutation,
-  CustomDashboardsUpdateMutation,
-} from '@/components/service/custom-dashboards/custom-dashboard.graphql';
+  DocumentCreateMutation,
+  DocumentDeleteMutation,
+  DocumentUpdateMutation,
+} from '@/components/service/document/document.graphql';
 import { omit } from '@/lib/omit';
+import { pick } from '@/lib/pick';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import {
@@ -17,21 +18,37 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
-import { customDashboardDeleteMutation } from '@generated/customDashboardDeleteMutation.graphql';
-import { customDashboardsCreateMutation } from '@generated/customDashboardsCreateMutation.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { customDashboardsUpdateMutation } from '@generated/customDashboardsUpdateMutation.graphql';
+import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
+import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
+import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
+
+const documentBaseKeys: Array<keyof CustomDashboardFormValues> = [
+  'name',
+  'slug',
+  'uploader_id',
+  'uploader_organization_id',
+  'short_description',
+  'description',
+  'labels',
+  'active',
+];
+
+const documentFileKeys: Array<keyof CustomDashboardFormValues> = [
+  'document',
+  'images',
+];
 
 export function useCustomDashboardsContext(
   serviceInstance: serviceInstance_fragment$data,
   connectionId?: string
 ): ServiceContextProps {
   const t = useTranslations();
-  const [createCustomDashboards] = useMutation<customDashboardsCreateMutation>(
-    CustomDashboardsCreateMutation
+  const [createMutation] = useMutation<documentCreateMutation>(
+    DocumentCreateMutation
   );
 
   const handleAddSheet = async (
@@ -40,21 +57,34 @@ export function useCustomDashboardsContext(
     onError: (error: Error) => void
   ) => {
     const formValues = values as CustomDashboardFormValues;
-    const input = {
-      ...omit(formValues, ['document', 'images', 'uploader_organization_id']),
-      uploader_id: formValues?.uploader_id ?? '',
-    };
+    const input = omit(
+      {
+        ...pick(formValues, documentBaseKeys),
+        uploader_id: formValues?.uploader_id ?? '',
+      },
+      ['uploader_organization_id']
+    );
+    const metadata = omit(formValues, [
+      ...documentBaseKeys,
+      'document',
+      'images',
+    ]);
+
     const documents = [
       ...Array.from(formValues.document),
       ...Array.from(formValues.images),
     ];
 
-    createCustomDashboards({
+    createMutation({
       variables: {
         input: {
           ...input,
           active: input.active ?? false,
         },
+        metadata: Object.keys(metadata).map((key) => ({
+          key,
+          value: metadata[key as keyof typeof metadata],
+        })),
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
         document: documents,
@@ -62,7 +92,7 @@ export function useCustomDashboardsContext(
       uploadables: fileListToUploadableMap(documents),
 
       onCompleted: (response) => {
-        if (!response.createCustomDashboard) {
+        if (!response.createDocument) {
           toast({
             variant: 'destructive',
             title: t('Utils.Error'),
@@ -79,18 +109,20 @@ export function useCustomDashboardsContext(
     });
   };
 
-  const [deleteCustomDashboardMutation] =
-    useMutation<customDashboardDeleteMutation>(CustomDashboardDeleteMutation);
+  const [deleteMutation] = useMutation<documentDeleteMutation>(
+    DocumentDeleteMutation
+  );
 
   const handleDeleteSheet = async (
     document: ShareableResource,
     onCompleted: () => void
   ) => {
-    deleteCustomDashboardMutation({
+    deleteMutation({
       variables: {
         documentId: document.id,
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
+        forceDelete: true,
       },
       onCompleted() {
         onCompleted();
@@ -98,8 +130,9 @@ export function useCustomDashboardsContext(
     });
   };
 
-  const [updateCustomDashboardMutation] =
-    useMutation<customDashboardsUpdateMutation>(CustomDashboardsUpdateMutation);
+  const [updateMutation] = useMutation<documentUpdateMutation>(
+    DocumentUpdateMutation
+  );
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
@@ -110,23 +143,32 @@ export function useCustomDashboardsContext(
     const customDashboard = resource as customDashboardsItem_fragment$data;
     const formValues = values as CustomDashboardFormValues;
     const input = {
-      ...omit(formValues, ['document', 'images']),
+      ...pick(formValues, documentBaseKeys),
       uploader_id: formValues?.uploader_id ?? '',
     };
+
+    const metadata = omit(formValues, [
+      ...documentBaseKeys,
+      ...documentFileKeys,
+    ]);
 
     // Split images between existing and new ones
     const images = Array.from(formValues.images ?? []) as FormImagesValues;
     const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
-      ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
+      ...Array.from(formValues.document ?? []), // We need null to keep the first place in the uploadables array for the document
       ...newImages,
     ];
-    updateCustomDashboardMutation({
+    updateMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
         document: documentsToUpload,
         documentId: customDashboard.id,
+        metadata: Object.keys(metadata).map((key) => ({
+          key,
+          value: metadata[key as keyof typeof metadata],
+        })),
         updateDocument: formValues.document !== undefined,
         images: existingImages,
       },

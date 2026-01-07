@@ -4,20 +4,15 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
-import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
-import { DocumentApp } from '../document/document.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
   CUSTOM_DASHBOARD_METADATA,
-  CustomDashboard,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './custom-dashboards.domain';
 
@@ -63,67 +58,6 @@ const resolvers: Resolvers = {
     },
     customDashboard: async (_, { id }) =>
       CustomDashboardsApp.loadCustomDashboard(extractId<DocumentId>(id)),
-  },
-  Mutation: {
-    createCustomDashboard: async (
-      _,
-      { input, document, serviceInstanceId }
-    ) => {
-      try {
-        return CustomDashboardsApp.createCustomDashboard(
-          {
-            ...input,
-            service_instance_id:
-              extractId<ServiceInstanceId>(serviceInstanceId),
-          },
-          document
-        );
-      } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
-            detail: error,
-          });
-        }
-
-        throw mapToGraphQLError(
-          error,
-          UnknownErrorCode.CustomDashboardInsertionError
-        );
-      }
-    },
-    updateCustomDashboard: async (_, input) => {
-      try {
-        return DocumentApp.updateDocumentWithChildren<CustomDashboard>(
-          OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-          extractId<DocumentId>(input.documentId),
-          extractId<ServiceInstanceId>(input.serviceInstanceId),
-          input,
-          CUSTOM_DASHBOARD_METADATA
-        );
-      } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
-          throw AlreadyExistsError(ErrorCode.CustomDashboardUniqueSlugError, {
-            detail: error,
-          });
-        }
-
-        throw mapToGraphQLError(
-          error,
-          UnknownErrorCode.CustomDashboardUpdateError
-        );
-      }
-    },
-    deleteCustomDashboard: async (_, { id, serviceInstanceId }) => {
-      try {
-        return DocumentApp.deleteDocument<CustomDashboard>(
-          extractId<DocumentId>(id),
-          extractId<ServiceInstanceId>(serviceInstanceId),
-          true
-        );
-      } catch (error) {
-        throw mapToGraphQLError(error, UnknownErrorCode.DeleteDocumentError);
-      }
-    },
   },
 };
 

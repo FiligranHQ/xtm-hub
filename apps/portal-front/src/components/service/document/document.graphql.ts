@@ -1,5 +1,51 @@
 import { graphql } from 'react-relay';
 
+export const DocumentCreateMutation = graphql`
+  mutation documentCreateMutation(
+    $input: CreateDocumentInput!
+    $document: [Upload!]!
+    $metadata: [DocumentMetadata!]!
+    $serviceInstanceId: String!
+    $connections: [ID!]!
+  ) {
+    createDocument(
+      input: $input
+      document: $document
+      metadata: $metadata
+      serviceInstanceId: $serviceInstanceId
+    ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
+      __id
+      name
+      ...documentItem_fragment
+    }
+  }
+`;
+
+export const DocumentUpdateMutation = graphql`
+  mutation documentUpdateMutation(
+    $documentId: ID!
+    $input: UpdateDocumentInput!
+    $metadata: [DocumentMetadata!]!
+    $document: [Upload!]!
+    $updateDocument: Boolean!
+    $images: [String!]
+    $serviceInstanceId: String!
+  ) {
+    updateDocument(
+      documentId: $documentId
+      input: $input
+      document: $document
+      updateDocument: $updateDocument
+      metadata: $metadata
+      images: $images
+      serviceInstanceId: $serviceInstanceId
+    ) {
+      __id
+      ...documentItem_fragment
+    }
+  }
+`;
+
 export const DocumentAddMutation = graphql`
   mutation documentAddMutation(
     $document: Upload
@@ -33,8 +79,8 @@ export const DocumentAddMutation = graphql`
   }
 `;
 
-export const DocumentUpdateMutation = graphql`
-  mutation documentUpdateMutation(
+export const DocumentEditMutation = graphql`
+  mutation documentEditMutation(
     $documentId: ID
     $input: EditDocumentInput!
     $serviceInstanceId: String
@@ -107,6 +153,11 @@ export const documentItem = graphql`
     share_number
     active
     updated_at
+    labels {
+      id
+      name
+      color
+    }
     uploader {
       first_name
       last_name
@@ -133,6 +184,10 @@ export const documentItem = graphql`
     }
     subscription {
       id
+    }
+
+    ... on CustomDashboard {
+      product_version
     }
   }
 `;
