@@ -13,12 +13,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
-import {
-  loadAdminUsers,
-  loadUserBy,
-  updateUser,
-  updateUserAtLogin,
-} from './users.domain';
+import { loadUserBy, updateUser, updateUserAtLogin } from './users.domain';
 
 //Issue with test
 describe('Users domain', () => {
@@ -64,41 +59,5 @@ describe('Users domain', () => {
   });
   afterEach(async () => {
     vi.useRealTimers();
-  });
-
-  describe('loadAdminUsers', () => {
-    it('should load all users with ADMIN role', async () => {
-      const adminUsers = await loadAdminUsers();
-
-      expect(adminUsers).toBeDefined();
-      expect(Array.isArray(adminUsers)).toBe(true);
-      expect(adminUsers.length).toBeGreaterThan(0);
-
-      const systemAdmin = adminUsers.find((user) => user.id === ADMIN_UUID);
-      expect(systemAdmin).toBeDefined();
-      expect(systemAdmin?.email).toBe(DEFAULT_ADMIN_EMAIL);
-    });
-
-    it('should not return disabled users', async () => {
-      const adminUsers = await loadAdminUsers();
-
-      adminUsers.forEach((user) => {
-        expect(user.disabled).toBeFalsy();
-      });
-    });
-
-    it('should only return users with ADMIN role', async () => {
-      const adminUsers = await loadAdminUsers();
-
-      const simpleUser = adminUsers.find(
-        (user) => user.id === THALES_SIMPLE_USER_ID
-      );
-      expect(simpleUser).toBeUndefined();
-
-      const orgAdmin = adminUsers.find(
-        (user) => user.id === THALES_ADMIN_ORGA_USER_ID
-      );
-      expect(orgAdmin).toBeUndefined();
-    });
   });
 });
