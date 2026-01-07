@@ -38,8 +38,8 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     loadQuery(
       {
         count: pageSize,
-        orderBy: 'created_at',
-        orderMode: 'desc',
+        orderBy: 'name',
+        orderMode: 'asc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         filters: [

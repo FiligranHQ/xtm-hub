@@ -43,8 +43,8 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
       {
         slug: serviceInstance.slug ?? '',
         count: pageSize,
-        orderBy: 'created_at',
-        orderMode: 'desc',
+        orderBy: 'name',
+        orderMode: 'asc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         filters: [
