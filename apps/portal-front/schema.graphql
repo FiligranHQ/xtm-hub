@@ -530,7 +530,25 @@ type ServiceLink implements Node {
   name: String
 }
 
-type CsvFeed implements Node & Document & Integration {
+enum IntegrationType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  taxii_feed
+  opencti_stream_feed
+  third_party_integration
+}
+
+enum ConnectorType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
+}
+
+interface Integration implements Node & Document {
   id: ID!
   type: String!
   uploader: User
@@ -556,25 +574,7 @@ type CsvFeed implements Node & Document & Integration {
   integration_type: IntegrationType!
 }
 
-enum IntegrationType {
-  csv_feed
-  connector
-  rss_feed
-  json_feed
-  taxii_feed
-  opencti_stream_feed
-  third_party_integration
-}
-
-enum ConnectorType {
-  EXTERNAL_IMPORT
-  INTERNAL_ENRICHMENT
-  INTERNAL_EXPORT_FILE
-  INTERNAL_IMPORT_FILE
-  STREAM
-}
-
-interface Integration implements Node & Document {
+type CsvFeed implements Node & Document & Integration {
   id: ID!
   type: String!
   uploader: User
