@@ -2,7 +2,7 @@ import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Readable } from 'stream';
 import z from 'zod';
 import {
-  ConnectorType,
+  IntegrationSubType,
   IntegrationType,
 } from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
@@ -141,7 +141,7 @@ const ContractSchema = z.object({
   use_cases: z.array(z.string()), // At least one use case
   verified: z.boolean(),
   container_image: z.string().min(1),
-  container_type: z.nativeEnum(ConnectorType),
+  container_type: z.nativeEnum(IntegrationSubType),
   source_code: z.string().url(),
   subscription_link: z.string().url().or(z.literal('')).nullish(),
   manager_supported: z.boolean(),

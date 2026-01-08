@@ -19,6 +19,7 @@ const resolvers: Resolvers = {
       const mapping = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
       };
 
       return mapping[feed.integration_type];
