@@ -79,13 +79,12 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
       (data) => data.key === 'integration_type'
     );
     if (!integrationTypeMetadata) {
-      logApp.warn(`Integration is missing integration type metadata`);
       throw new Error(ErrorCode.DocumentMissingMetadata);
     }
 
     const integrationType = integrationTypeMetadata.value;
     if (!isIntegrationType(integrationType)) {
-      logApp.warn(`Integration type is not recognized: ${integrationType}`);
+      logApp.error(`Integration type is not recognized: ${integrationType}`);
       throw new Error(ErrorCode.IntegrationTypeNotRecognized);
     }
     if (integrationType === IntegrationType.Connector) {
@@ -125,7 +124,7 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
     (key) => !metadata.some((meta) => meta.key === key)
   );
   if (missingMetadataKeys.length) {
-    logApp.warn(
+    logApp.error(
       `Document is missing metadata keys: ${missingMetadataKeys.join(', ')}`
     );
     throw new Error(ErrorCode.DocumentMissingMetadata);
