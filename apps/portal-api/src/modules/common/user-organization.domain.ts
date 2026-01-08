@@ -22,12 +22,6 @@ export const insertNewUserOrganization = (
   return db('User_Organization').insert(field).returning('*');
 };
 
-export const insertNewUserOrganizationUnsecure = (
-  field: UserOrganizationInitializer | UserOrganizationInitializer[]
-): Promise<UserOrganization[]> => {
-  return db<UserOrganization>('User_Organization').insert(field).returning('*');
-};
-
 export const loadUserOrganization = (
   field: UserOrganizationMutator
 ): Promise<UserOrganization[]> => {
