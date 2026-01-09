@@ -7,15 +7,15 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { DisplayVersionCard } from '@/components/ui/shareable-resource/display-version-card';
 import { cn } from '@/lib/utils';
-import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
-import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
+import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Badge } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Badge } from '@filigran/ui/servers';
+import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';

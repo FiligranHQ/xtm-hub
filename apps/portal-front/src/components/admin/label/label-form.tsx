@@ -1,6 +1,4 @@
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { label_fragment$data } from '@generated/label_fragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   ColorPicker,
@@ -11,7 +9,9 @@ import {
   FormLabel,
   Input,
   SheetFooter,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { label_fragment$data } from '@generated/label_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';

@@ -1,8 +1,8 @@
 import { formatDate } from '@/utils/date';
-import { LogoFiligranIcon } from 'filigran-icon';
+import { LogoFiligranIcon } from '@filigran/icon';
 import * as React from 'react';
 
-import { Avatar } from 'filigran-ui/clients';
+import { Avatar } from '@filigran/ui/clients';
 
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';

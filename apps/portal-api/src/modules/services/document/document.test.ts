@@ -35,7 +35,7 @@ import {
   deleteDocumentBy,
   deleteDocuments,
   getDocumentName,
-  loadUnsecureDocumentsBy,
+  loadDocumentsBy,
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
@@ -108,7 +108,7 @@ describe('should add new file', () => {
       type: 'vault',
     };
     await insertDocument(data);
-    const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
+    const inDb = await loadDocumentsBy({ file_name: 'filename2' });
     expect(inDb).toBeTruthy();
     expect(inDb[0].file_name).toEqual('filename2');
   });
@@ -124,7 +124,7 @@ describe('should add new file', () => {
       type: 'vault',
     };
     await insertDocument(data);
-    const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
+    const inDb = await loadDocumentsBy({ file_name: 'filename' });
     expect(inDb).toBeTruthy();
     expect(inDb.length).toEqual(2);
     expect(inDb[0].active).toEqual(false);

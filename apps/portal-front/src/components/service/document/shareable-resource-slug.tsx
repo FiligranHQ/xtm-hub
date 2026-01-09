@@ -5,14 +5,14 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { DownloadIcon } from 'filigran-icon';
+import { DownloadIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';

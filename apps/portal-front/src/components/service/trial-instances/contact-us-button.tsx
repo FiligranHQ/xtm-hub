@@ -1,9 +1,9 @@
 'use client';
 import { ContactUsMutation } from '@/components/service/trial-instances/contact-us.graphql';
 import { DialogInformative } from '@/components/ui/dialog';
-import { ArrowRightAltIcon } from 'filigran-icon';
-import { toast } from 'filigran-ui';
-import { Button, GradientButton } from 'filigran-ui/servers';
+import { ArrowRightAltIcon } from '@filigran/icon';
+import { toast } from '@filigran/ui';
+import { Button, GradientButton } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';

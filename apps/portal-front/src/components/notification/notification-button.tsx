@@ -1,4 +1,4 @@
-import { NotificationsIcon } from 'filigran-icon';
+import { NotificationsIcon } from '@filigran/icon';
 
 import { UserFragment } from '@/components/admin/user/user-list';
 import {
@@ -9,6 +9,13 @@ import {
 import { PortalContext } from '@/components/me/app-portal-context';
 import { APP_PATH } from '@/utils/path/constant';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Separator,
+} from '@filigran/ui/clients';
+import { Button } from '@filigran/ui/servers';
+import {
   userList_fragment$data,
   userList_fragment$key,
 } from '@generated/userList_fragment.graphql';
@@ -17,13 +24,6 @@ import {
   userPendingListQuery,
   userPendingListQuery$variables,
 } from '@generated/userPendingListQuery.graphql';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Separator,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';

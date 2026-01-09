@@ -2,7 +2,7 @@ type ShareableResource {
   id: ID!
   file_name: String!
   created_at: Date!
-  name: String!
+  name: String
   description: String
   download_number: Int
   active: Boolean!
@@ -13,6 +13,7 @@ enum DocumentOrdering {
   description
   created_at
   download_number
+  name
 }
 """
  /!\ WARNING Do not use this type.
@@ -75,7 +76,48 @@ input EditDocumentInput {
   slug: String
 }
 
+input DocumentMetadata {
+  key: String!
+  value: String!
+}
+
+input CreateDocumentInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+  uploader_id: String!
+}
+
+input UpdateDocumentInput {
+  name: String
+  slug: String
+  short_description: String
+  description: String
+  active: Boolean
+  labels: [String!]
+  uploader_organization_id: String
+  uploader_id: String
+}
+
 type Mutation {
+  createDocument(
+    input: CreateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    document: [Upload!]!
+    serviceInstanceId: String
+  ): Document! @auth @service_capa(requires: [UPLOAD])
+  updateDocument(
+    documentId: ID!
+    input: UpdateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    document: [Upload!]!
+    updateDocument: Boolean!
+    images: [String!]
+    serviceInstanceId: String
+  ): Document! @auth @service_capa(requires: [UPLOAD])
   addDocument(
     document: Upload
     name: String

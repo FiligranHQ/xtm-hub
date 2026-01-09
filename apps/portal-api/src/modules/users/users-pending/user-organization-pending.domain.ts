@@ -1,4 +1,4 @@
-import { db, dbRaw, dbUnsecure, paginate } from '../../../../knexfile';
+import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
   QueryUsersArgs,
   UserConnection,
@@ -18,7 +18,7 @@ export const UserOrganizationPendingDomain = {
   insertNewUserOrganizationPending: (
     field: UserOrganizationPendingInitializer
   ): Promise<UserOrganizationPending[]> => {
-    return dbUnsecure<UserOrganizationPending>('User_Organization_Pending')
+    return db<UserOrganizationPending>('User_Organization_Pending')
       .insert(field)
       .returning('*');
   },

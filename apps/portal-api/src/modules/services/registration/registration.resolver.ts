@@ -32,12 +32,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    canUnregisterPlatform: async (_, { input }, context) => {
+    canUnregisterPlatform: async (_, { input }) => {
       try {
-        const response = await registrationApp.canUnregisterPlatform(
-          context,
-          input
-        );
+        const response = await registrationApp.canUnregisterPlatform(input);
 
         return {
           ...response,
@@ -80,13 +77,13 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    registerPlatform: async (_, { input }, context) => {
+    registerPlatform: async (_, { input }) => {
       try {
         const payload = {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         };
-        const token = await registrationApp.registerPlatform(context, payload);
+        const token = await registrationApp.registerPlatform(payload);
         return { token };
       } catch (error) {
         throw mapToGraphQLError(
@@ -95,9 +92,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    unregisterPlatform: async (_, { input }, context) => {
+    unregisterPlatform: async (_, { input }) => {
       try {
-        await registrationApp.unregisterPlatform(context, input);
+        await registrationApp.unregisterPlatform(input);
         return { success: true };
       } catch (error) {
         throw mapToGraphQLError(
@@ -108,7 +105,7 @@ const resolvers: Resolvers = {
     },
     refreshUserPlatformToken: async (_, __, context) => {
       try {
-        return await registrationApp.refreshUserPlatformToken(context);
+        return await registrationApp.refreshUserPlatformToken(context.user.id);
       } catch (error) {
         throw mapToGraphQLError(
           error,

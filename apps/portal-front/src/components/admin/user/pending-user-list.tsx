@@ -17,6 +17,9 @@ import { SearchInput } from '@/components/ui/search-input';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { CheckIcon, CloseIcon } from '@filigran/icon';
+import { DataTable, DataTableHeadBarOptions } from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { pendingUserListRemoveUserMutation } from '@generated/pendingUserListRemoveUserMutation.graphql';
 import {
   userList_fragment$data,
@@ -28,9 +31,6 @@ import {
 } from '@generated/userPendingListQuery.graphql';
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { CheckIcon, CloseIcon } from 'filigran-icon';
-import { DataTable, DataTableHeadBarOptions } from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import {
   FunctionComponent,

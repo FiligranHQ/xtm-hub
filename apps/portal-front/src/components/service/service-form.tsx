@@ -12,7 +12,7 @@ import {
   FormLabel,
   FormMessage,
   SheetFooter,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';

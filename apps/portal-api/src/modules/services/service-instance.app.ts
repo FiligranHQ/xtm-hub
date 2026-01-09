@@ -8,11 +8,11 @@ import {
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
 import {
   ServiceInstanceId,
   ServiceInstanceMutator,
 } from '../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy } from '../../model/user';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
@@ -60,14 +60,14 @@ export const serviceInstanceApp = {
   },
 
   updatePlatformServiceMetadata: async (
-    context: PortalContext,
     input: UpdatePlatformServiceMetadataInput,
     upload: Upload | null
   ): Promise<RegisteredPlatform> => {
     const { id } = fromGlobalId(input.serviceInstanceId);
+    const { user } = requestContext.require();
 
     const serviceInstance = await loadPlatformServiceInstance(
-      context.user.selected_organization_id,
+      user.selected_organization_id,
       id
     );
 
@@ -86,7 +86,7 @@ export const serviceInstanceApp = {
 
     // Verify platform type and check capabilities
     await securityGuard.assertUserCanModifyPlatformService(
-      context.user,
+      user,
       serviceDefinition
     );
 

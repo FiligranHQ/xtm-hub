@@ -3,7 +3,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { MultiSelectFormField } from 'filigran-ui';
+import { MultiSelectFormField } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
 export const IntegrationDeployableFilter = () => {
@@ -17,20 +17,20 @@ export const IntegrationDeployableFilter = () => {
         options={[
           {
             label: t(
-              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.AutomaticDeploy'
+              'Service.OpenctiIntegrations.Filter.ManagerSupported.AutomaticDeploy'
             ),
             value: 'true',
           },
           {
             label: t(
-              'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.ManualDeploy'
+              'Service.OpenctiIntegrations.Filter.ManagerSupported.ManualDeploy'
             ),
             value: 'false',
           },
         ]}
         defaultValue={deployable}
         placeholder={t(
-          'Service.OpenctiIntegrationFeeds.Filter.ManagerSupported.Placeholder'
+          'Service.OpenctiIntegrations.Filter.ManagerSupported.Placeholder'
         )}
         noResultString={t('Utils.NotFound')}
         onValueChange={setDeployable}

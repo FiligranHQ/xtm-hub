@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   SeoServiceInstance,
   ServiceConnection,
@@ -254,7 +254,7 @@ export const loadServiceInstanceSubscription = async (
   selectedOrganizationId: OrganizationId,
   id: ServiceInstanceId
 ) => {
-  return dbUnsecure<Subscription>('Subscription')
+  return db<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', id)
     .where('Subscription.organization_id', '=', selectedOrganizationId)
     .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')

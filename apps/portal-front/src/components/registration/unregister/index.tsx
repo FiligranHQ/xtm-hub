@@ -8,12 +8,12 @@ import {
 import { UnregisterConfirm } from '@/components/registration/unregister/confirm';
 import { UnregisterMissingCapability } from '@/components/registration/unregister/missing-capability';
 import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/platform-not-registered';
+import { toast } from '@filigran/ui/clients';
 import { registerCanUnregisterPlatformFragment$key } from '@generated/registerCanUnregisterPlatformFragment.graphql';
 import RegisterCanUnregisterPlatformQueryGraphql, {
   registerCanUnregisterPlatformQuery,
 } from '@generated/registerCanUnregisterPlatformQuery.graphql';
 import { registerUnregisterPlatformMutation } from '@generated/registerUnregisterPlatformMutation.graphql';
-import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useState } from 'react';
 import {

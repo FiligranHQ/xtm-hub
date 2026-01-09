@@ -1,6 +1,6 @@
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { Button } from 'filigran-ui';
+import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
 interface ServiceDeleteProps {

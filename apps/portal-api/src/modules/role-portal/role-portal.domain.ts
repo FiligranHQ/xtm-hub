@@ -1,4 +1,4 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { requestContext } from '../../context/request.context';
 import RolePortal from '../../model/kanel/public/RolePortal';
 import { ROLE_ADMIN } from '../../portal.const';
@@ -16,7 +16,7 @@ export const loadAllRolePortalBy = async (
   field: string,
   value: string[]
 ): Promise<RolePortal[]> => {
-  return dbUnsecure<RolePortal>('RolePortal').whereIn(field, value);
+  return db<RolePortal>('RolePortal').whereIn(field, value);
 };
 
 export const isAdmin = () => {

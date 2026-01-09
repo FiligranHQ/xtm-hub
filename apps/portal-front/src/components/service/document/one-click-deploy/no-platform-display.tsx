@@ -1,4 +1,4 @@
-import { Button } from 'filigran-ui/servers';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Markdown from 'react-markdown';
@@ -21,13 +21,14 @@ const NoPlatformDisplay = ({
             platformIdentifier,
           })}
         </h1>
-          <Markdown>
+        <Markdown>
           {t(
-            'Service.ShareableResources.Deploy.DeployDescriptionNoPlatformThen', {
+            'Service.ShareableResources.Deploy.DeployDescriptionNoPlatformThen',
+            {
               platformIdentifier,
             }
-              )}
-          </Markdown>
+          )}
+        </Markdown>
         <div className="relative border-2 border-solid rounded w-full h-96">
           <Image
             fill

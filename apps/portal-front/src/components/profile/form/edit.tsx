@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
 import { z } from 'zod';

@@ -71,9 +71,6 @@
       "CSV_FEED_INSERTION_ERROR": "An error occurred while creating the CSV Feed.",
       "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use.",
       "CSV_FEED_UPDATE_ERROR": "An error occurred while updating the CSV feed.",
-      "CUSTOM_DASHBOARD_INSERTION_ERROR": "An error occurred while creating the custom dashboard.",
-      "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "The custom dashboard slug is already in use.",
-      "CUSTOM_DASHBOARD_UPDATE_ERROR": "An error occurred while updating the custom dashboard.",
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION_ERROR": "Error while deleting organization",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
@@ -82,6 +79,10 @@
       "DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND": "Deployment request quota was not found.",
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "An unknown error occurred",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "An unknown error occurred",
+      "DOCUMENT_CREATE_ERROR": "An error occurred while creating the resource.",
+      "DOCUMENT_MISSING_METADATA": "Document is missing metadata.",
+      "DOCUMENT_UNIQUE_SLUG_ERROR": "The resource slug is already in use.",
+      "DOCUMENT_UPDATE_ERROR": "An error occurred while updating the resource.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
@@ -498,7 +499,7 @@
       "UnavailableDeployments": "This connector is not available for automatic deployment."
     },
     "CreationStatus": "Creation status",
-    "OpenctiIntegrationFeeds": {
+    "OpenctiIntegrations": {
       "Actions": {
         "Share": "Share integration Feed"
       },

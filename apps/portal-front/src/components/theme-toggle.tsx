@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { MoonIcon, SunIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
