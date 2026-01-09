@@ -107,9 +107,6 @@ describe('TelemetryApp', () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
-      const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
-        .mockResolvedValue();
       const platform_id = '916121bf-d246-4a43-8522-24be19537b91';
       const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
@@ -146,6 +143,10 @@ describe('TelemetryApp', () => {
 
       const documentId = document!.id;
 
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
         input: {
@@ -163,7 +164,7 @@ describe('TelemetryApp', () => {
         },
       });
 
-      expect(telemetrySpy).toHaveBeenCalledWith({
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: PLATFORM_ORGANIZATION_UUID,
@@ -184,9 +185,7 @@ describe('TelemetryApp', () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
-      const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
-        .mockResolvedValue();
+
       const platformId = '916121bf-d246-4a43-8522-24be19537b91';
       const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
@@ -222,6 +221,10 @@ describe('TelemetryApp', () => {
 
       const documentId = document!.id;
 
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
         input: {
@@ -239,7 +242,7 @@ describe('TelemetryApp', () => {
         },
       });
 
-      expect(telemetrySpy).toHaveBeenCalledWith({
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: PLATFORM_ORGANIZATION_UUID,
@@ -260,9 +263,6 @@ describe('TelemetryApp', () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
-      const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
-        .mockResolvedValue();
       const platform_id = '916121bf-d246-4a43-8522-24be19537b91';
       const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
@@ -298,6 +298,9 @@ describe('TelemetryApp', () => {
 
       const documentId = document!.id;
 
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
       await telemetryApp.sendOneClickDeployEvent({
         userId: ADMIN_UUID,
         input: {
@@ -315,7 +318,7 @@ describe('TelemetryApp', () => {
         },
       });
 
-      expect(telemetrySpy).toHaveBeenCalledWith({
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: PLATFORM_ORGANIZATION_UUID,
