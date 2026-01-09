@@ -1,6 +1,6 @@
-import { dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import RolePortal from '../../model/kanel/public/RolePortal';
 
 export const getRolePortalByName = (name: string) => {
-  return dbUnsecure<RolePortal>('RolePortal').where({ name }).first();
+  return db<RolePortal>('RolePortal').where({ name }).first();
 };

@@ -17,7 +17,7 @@ import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import { PortalContext } from '../../model/portal-context';
+import { UserLoadUserBy } from '../../model/user';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
@@ -43,12 +43,12 @@ import {
 
 export const subscriptionApp = {
   loadSubscriptionModel: async (
-    context: PortalContext,
+    user: UserLoadUserBy,
     service_instance_id: string
   ): Promise<SubscriptionModel> => {
     const subscription = await loadSubscriptionBy({
       service_instance_id: service_instance_id as ServiceInstanceId,
-      organization_id: context.user.selected_organization_id,
+      organization_id: user.selected_organization_id,
     });
 
     return subscription as unknown as SubscriptionModel;
@@ -59,7 +59,7 @@ export const subscriptionApp = {
   }: {
     serviceInstanceId: ServiceInstanceId;
   }): Promise<ServiceInstanceGraphQl> => {
-    const { portalContext, user } = requestContext.require();
+    const { user } = requestContext.require();
     await assertOrganizationIsNotAlreadySubscribed({
       serviceInstanceId,
       organizationId: user.selected_organization_id,
@@ -102,7 +102,7 @@ export const subscriptionApp = {
     //   filledSubscription.id
     // );
 
-    sendSubscriptionTelemetryEvent(portalContext, {
+    sendSubscriptionTelemetryEvent({
       selectedOrganization,
       serviceDefinitionIdentifier:
         serviceDefinition.identifier as ServiceDefinitionIdentifier,
@@ -221,21 +221,19 @@ const createSubscriptionWithAdminAccess = async ({
   };
 };
 
-const sendSubscriptionTelemetryEvent = (
-  context: PortalContext,
-  {
-    selectedOrganization,
-    serviceDefinitionIdentifier,
-  }: {
-    selectedOrganization: Organization;
-    serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
-  }
-) => {
+const sendSubscriptionTelemetryEvent = ({
+  selectedOrganization,
+  serviceDefinitionIdentifier,
+}: {
+  selectedOrganization: Organization;
+  serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
+}) => {
+  const { user } = requestContext.require();
   try {
     if (shouldSendEventForService(serviceDefinitionIdentifier)) {
       const subscribeEvent = buildSubscribeEvent(
         selectedOrganization,
-        context.user.id,
+        user.id,
         serviceDefinitionIdentifier
       );
       telemetryApp.sendTelemetryEvent(subscribeEvent);

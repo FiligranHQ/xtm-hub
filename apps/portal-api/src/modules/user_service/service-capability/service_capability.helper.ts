@@ -1,4 +1,4 @@
-import { dbUnsecure } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   Restriction,
   ServiceCapability,
@@ -13,7 +13,7 @@ import { getManageAccessLeft } from './service-capability.domain';
 export const loadServiceCapabilityBy = async (
   field: ServiceCapabilityMutator
 ) => {
-  return dbUnsecure<ServiceCapability>('Service_Capability').where(field);
+  return db<ServiceCapability>('Service_Capability').where(field);
 };
 
 export const willManageAccessBeConserved = async (

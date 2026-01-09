@@ -27,7 +27,7 @@ const resolvers: Resolvers = {
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: async ({ service_instance_id }, _, context) =>
-      subscriptionApp.loadSubscriptionModel(context, service_instance_id),
+      subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
   },
   Query: {
     seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }) => {

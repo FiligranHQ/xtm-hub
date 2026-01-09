@@ -1,4 +1,4 @@
-import { dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import Organization from '../../model/kanel/public/Organization';
 import { extractDomain } from '../../utils/verify-email.util';
 
@@ -12,7 +12,7 @@ export const loadOrganizationsFromEmail = async (
 export const hasDomainOverlap = async (
   domains: string[]
 ): Promise<Organization[]> => {
-  return dbUnsecure<Organization[]>('Organization')
+  return db<Organization[]>('Organization')
     .where(function () {
       domains.forEach((domain) => {
         this.orWhereRaw('? = ANY("domains")', [domain]);

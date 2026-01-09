@@ -350,7 +350,6 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           null
         );
@@ -404,7 +403,6 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           mockUpload
         );
@@ -447,7 +445,6 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           inputWithoutName,
           mockUpload
         );
@@ -469,11 +466,7 @@ describe('Service Instance app', () => {
         loadPlatformServiceInstanceSpy.mockResolvedValue(null);
 
         await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
-            mockInput,
-            null
-          )
+          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
         ).rejects.toThrow();
 
         expect(
@@ -487,11 +480,7 @@ describe('Service Instance app', () => {
         loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(null);
 
         await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
-            mockInput,
-            null
-          )
+          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
         ).rejects.toThrow();
 
         expect(assertUserCanModifyPlatformServiceSpy).not.toHaveBeenCalled();
@@ -507,11 +496,7 @@ describe('Service Instance app', () => {
         assertUserCanModifyPlatformServiceSpy.mockRejectedValue(securityError);
 
         await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
-            mockInput,
-            null
-          )
+          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
         ).rejects.toThrow('Insufficient permissions');
 
         expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
@@ -528,7 +513,6 @@ describe('Service Instance app', () => {
 
         await expect(
           serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
             mockInput,
             mockUpload
           )
@@ -552,7 +536,6 @@ describe('Service Instance app', () => {
         loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(null);
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           null
         );
@@ -586,7 +569,6 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           null
         );

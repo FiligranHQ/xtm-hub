@@ -1,4 +1,4 @@
-import { dbUnsecure } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
@@ -156,7 +156,7 @@ export const checkDocumentExists = async (
   documentName: string,
   serviceInstanceId: ServiceInstanceId
 ) => {
-  const documents: Document[] = await loadUnsecureDocumentsBy({
+  const documents: Document[] = await loadDocumentsBy({
     file_name: normalizeDocumentName(documentName),
     active: true,
     service_instance_id: serviceInstanceId,
@@ -164,10 +164,10 @@ export const checkDocumentExists = async (
   return documents.length > 0;
 };
 
-export const loadUnsecureDocumentsBy = async (
+export const loadDocumentsBy = async (
   field: DocumentMutator
 ): Promise<Document[]> => {
-  return dbUnsecure<Document[]>('Document').where(field).select('*');
+  return db<Document[]>('Document').where(field).select('*');
 };
 
 export const uploadNewFile = async (
@@ -200,11 +200,11 @@ export const uploadNewFile = async (
 };
 
 export const deleteDocuments = async () => {
-  return dbUnsecure<Document>('Document').delete('*');
+  return db<Document>('Document').delete('*');
 };
 
 export const deleteDocumentBy = async (field: DocumentMutator) => {
-  return dbUnsecure<Document>('Document').where(field).delete('*');
+  return db<Document>('Document').where(field).delete('*');
 };
 
 export const updateDocumentWithCounters = async <T extends Document>(
