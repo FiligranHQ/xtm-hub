@@ -60,9 +60,12 @@ const ShareableResourceSlug: React.FunctionComponent<
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
+    if (documentData.type === ShareableResourceType.OPENCTI_INTEGRATION) {
+      return documentData.integration_type === 'csv_feed';
+    }
+
     return [
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
-      ShareableResourceType.OPENCTI_INTEGRATION,
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData.active, documentData.type]);
