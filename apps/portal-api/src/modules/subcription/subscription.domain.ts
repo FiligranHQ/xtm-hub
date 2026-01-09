@@ -1,4 +1,4 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import {
   ServiceCapability,
   UserService,
@@ -13,7 +13,7 @@ import { UserMutator } from '../../model/kanel/public/User';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadServiceInstanceBy } from '../services/service-instance.domain';
-import { loadUnsecureUserServiceBy } from '../user_service/user-service.helper';
+import { loadUserServiceBy } from '../user_service/user-service.helper';
 import { loadUserBy } from '../users/users.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
@@ -67,7 +67,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
     'ServiceInstance.id',
     sub.service_instance_id
   );
-  const userServices = await loadUnsecureUserServiceBy({
+  const userServices = await loadUserServiceBy({
     subscription_id: subscriptionId,
   });
   const populatedUserServices = await fillUserServiceData(userServices);
@@ -134,7 +134,7 @@ export const updateSubscriptionBy = async (
   field: SubscriptionMutator,
   data: SubscriptionMutator
 ): Promise<Subscription[]> => {
-  return dbUnsecure<Subscription>('Subscription')
+  return db<Subscription>('Subscription')
     .where(field)
     .update(data)
     .returning('*');

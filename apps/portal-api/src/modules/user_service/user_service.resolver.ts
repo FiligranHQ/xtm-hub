@@ -15,7 +15,7 @@ import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy, loadUserDetails } from '../users/users.domain';
-import { loadUnsecureUserServiceBy } from './user-service.helper';
+import { loadUserServiceBy } from './user-service.helper';
 import { userServiceApp } from './user_service.app';
 import {
   getSubscription,
@@ -112,7 +112,7 @@ const resolvers: Resolvers = {
         return;
       }
       // Find subscription and remove it if no other userServices
-      const usersServices = await loadUnsecureUserServiceBy({
+      const usersServices = await loadUserServiceBy({
         subscription_id: deletedUserService?.subscription_id,
       });
 

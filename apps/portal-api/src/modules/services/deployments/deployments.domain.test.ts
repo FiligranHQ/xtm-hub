@@ -21,7 +21,7 @@ import DeploymentRequest, {
 } from '../../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../../model/kanel/public/User';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
-import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
+import { deleteSubscription } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 import {
@@ -38,7 +38,7 @@ describe('DeploymentRequestDomain', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await deleteServiceInstanceBy({});
-      await deleteSubscriptionUnsecure({});
+      await deleteSubscription({});
     });
 
     it('should return filtered deployment requests', async () => {
@@ -109,7 +109,7 @@ describe('DeploymentRequestDomain', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await deleteServiceInstanceBy({});
-      await deleteSubscriptionUnsecure({});
+      await deleteSubscription({});
     });
 
     it('should return deployment request when Active trial deployment exists for user', async () => {
@@ -223,7 +223,7 @@ describe('DeploymentRequestDomain', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await deleteServiceInstanceBy({});
-      await deleteSubscriptionUnsecure({});
+      await deleteSubscription({});
     });
 
     it('should return deployment request when Active trial deployment exists with matching token', async () => {

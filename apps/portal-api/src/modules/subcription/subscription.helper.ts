@@ -1,22 +1,18 @@
-import { db, dbRaw, dbUnsecure } from '../../../knexfile';
+import { db, dbRaw } from '../../../knexfile';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { formatRawObject } from '../../utils/queryRaw.util';
 
-export const deleteSubscriptionUnsecure = async (
-  field: SubscriptionMutator
-) => {
-  return dbUnsecure<Subscription>('Subscription')
+export const deleteSubscription = async (field: SubscriptionMutator) => {
+  return db<Subscription>('Subscription')
     .where(field)
     .delete('*')
     .returning('*');
 };
 
-export const loadUnsecureSubscriptionBy = async (
-  field: SubscriptionMutator
-) => {
-  return dbUnsecure<Subscription>('Subscription').where(field);
+export const loadSubscriptionBy = async (field: SubscriptionMutator) => {
+  return db<Subscription>('Subscription').where(field);
 };
 
 export const loadSubscriptionWithOrganizationAndCapabilitiesBy = async (
@@ -116,8 +112,8 @@ export const loadSubscriptionWithOrganizationAndCapabilitiesBy = async (
     ]);
 };
 
-export const insertUnsecureSubscription = async (dataSubscription) => {
-  return dbUnsecure<Subscription>('Subscription')
+export const insertSubscription = async (dataSubscription) => {
+  return db<Subscription>('Subscription')
     .insert(dataSubscription)
     .returning('*');
 };

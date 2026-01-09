@@ -29,7 +29,7 @@ import {
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
-  loadUnsecureDocumentsBy,
+  loadDocumentsBy,
   normalizeDocumentName,
   updateDocumentWithCounters,
 } from './document.helper';
@@ -134,7 +134,7 @@ const resolvers: Resolvers = {
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [document] = await loadUnsecureDocumentsBy({
+        const [document] = await loadDocumentsBy({
           id: extractId<DocumentId>(documentId),
         });
         const documentWithCounters = await updateDocumentWithCounters(document);

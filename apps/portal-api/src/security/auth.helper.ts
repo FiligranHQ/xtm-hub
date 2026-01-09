@@ -1,6 +1,6 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { dbRaw, dbUnsecure } from '../../knexfile';
-import { loadUnsecureSubscriptionBy } from '../modules/subcription/subscription.helper';
+import { db, dbRaw } from '../../knexfile';
+import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
 import { CAPABILITY_BYPASS } from '../portal.const';
 
 import {
@@ -22,7 +22,7 @@ export const loadCapabilitiesByServiceId = async (
 ): Promise<{ capabilities: string[] } | undefined> => {
   const userId = user.id;
   const organizationId = user.selected_organization_id;
-  return dbUnsecure<ServiceInstance>('ServiceInstance')
+  return db<ServiceInstance>('ServiceInstance')
     .leftJoin('Subscription as subscription', function () {
       this.on(
         'subscription.service_instance_id',
@@ -98,7 +98,7 @@ export const getCapabilityUser = (
         user,
         fromGlobalId(args.service_instance_id).id
       )
-    : loadUnsecureSubscriptionBy({
+    : loadSubscriptionBy({
         id: extractId(args.subscription_id),
       } as SubscriptionMutator).then(([subscription]) =>
         loadCapabilitiesByServiceId(user, subscription.service_instance_id)

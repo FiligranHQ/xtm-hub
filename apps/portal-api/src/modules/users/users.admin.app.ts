@@ -21,7 +21,7 @@ import {
 } from '../common/user-organization.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import {
-  loadUnsecureUser,
+  loadUser,
   loadUserBy,
   loadUserDetails,
   updateUser,
@@ -61,7 +61,7 @@ export const usersAdminApp = {
       throw new Error(ErrorCode.EmailOutsideOrganizationError);
     }
 
-    const [existingUser] = await loadUnsecureUser({ email: input.email });
+    const [existingUser] = await loadUser({ email: input.email });
 
     const finalUser = await withTransaction(async () => {
       const user = existingUser
