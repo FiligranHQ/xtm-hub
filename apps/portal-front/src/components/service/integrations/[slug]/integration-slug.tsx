@@ -13,7 +13,6 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 
-import { CsvFeedForm } from '@/components/service/csv-feeds/csv-feed-form';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import {
   IntegrationQuery,
@@ -24,8 +23,9 @@ import {
   integrationsItem_fragment$data,
   integrationsItem_fragment$key,
 } from '@generated/integrationsItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
@@ -63,18 +63,25 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
     },
   ];
 
-  const context = useDocumentContext({
+  const { setIntegrationType, ...context } = useDocumentContext({
     serviceInstance,
-    translationKey: 'Service.CsvFeed',
-    form: CsvFeedForm,
     type: ShareableResourceType.OPENCTI_INTEGRATION,
   });
+
+  useEffect(() => {
+    setIntegrationType(
+      (documentData?.integration_type as IntegrationTypeEnum) ??
+        IntegrationTypeEnum.CSV_FEED
+    );
+  }, [setIntegrationType, documentData?.integration_type]);
 
   const shareUrl = `${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`;
 
   return (
     documentData && (
-      <AppServiceContext {...context}>
+      <AppServiceContext
+        {...context}
+        setIntegrationType={setIntegrationType}>
         {isConnectorResource(documentData) ? (
           <ShareableResourceConnectorSlug
             breadcrumbValue={breadcrumbValue}

@@ -37,7 +37,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   };
   const {
     removeLabels,
-    removeConnectorTypes,
+    removeIntegrationSubTypes,
     removeIntegrationTypes,
     removeDeployable,
   } = useServiceListLocalStorage(localStorageKey);
@@ -53,7 +53,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       [ServiceListFilterKey.IntegrationType]: {
         node: <IntegrationFilters />,
         reset: () => {
-          removeConnectorTypes();
+          removeIntegrationSubTypes();
           removeIntegrationTypes();
         },
       },

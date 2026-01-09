@@ -26,7 +26,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
-    connectorTypes,
+    integrationSubTypes,
     productVersions,
     setSearch,
     deployable,
@@ -45,7 +45,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         filters: [
           { key: FilterKeyEnum.LABEL, value: labels },
           { key: FilterKeyEnum.INTEGRATION_TYPE, value: integrationTypes },
-          { key: FilterKeyEnum.INTEGRATION_SUBTYPE, value: connectorTypes },
+          {
+            key: FilterKeyEnum.INTEGRATION_SUBTYPE,
+            value: integrationSubTypes,
+          },
           { key: FilterKeyEnum.PRODUCT_VERSION, value: productVersions },
           { key: FilterKeyEnum.MANAGER_SUPPORTED, value: deployable },
         ],
@@ -61,7 +64,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
-    connectorTypes,
+    integrationSubTypes,
     productVersions,
     deployable,
   ]);

@@ -9,27 +9,34 @@ import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 
 export const IntegrationTypeFilter: React.FC = () => {
-  const { integrationTypes, setIntegrationTypes, removeConnectorTypes } =
+  const { integrationTypes, setIntegrationTypes, removeIntegrationSubTypes } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
     );
   const t = useTranslations();
 
   const onIntegrationTypeChange = (v: IntegrationTypeEnum[]) => {
-    const hasConnectorType = v.includes(IntegrationTypeEnum.CONNECTOR);
-    if (!hasConnectorType) {
-      removeConnectorTypes();
+    const hasIntegrationSubTypeFilter = v.includes(
+      IntegrationTypeEnum.CONNECTOR
+    );
+    if (!hasIntegrationSubTypeFilter) {
+      removeIntegrationSubTypes();
     }
     setIntegrationTypes(v);
   };
 
   const options = useMemo(() => {
-    return Object.values(IntegrationTypeEnum)
-      .map((feedType) => ({
-        label: t(`Service.OpenctiIntegrations.Filter.Type.${feedType}`),
-        value: feedType.toString(),
-      }))
+    const allOptions = Object.values(IntegrationTypeEnum).map((feedType) => ({
+      label: t(`Service.OpenctiIntegrations.Type.${feedType}`),
+      value: feedType.toString(),
+    }));
+    const notComingSoon = allOptions
+      .filter((option) => !option.label.includes('soon'))
       .sort((a, b) => a.label.localeCompare(b.label));
+    const comingSoon = allOptions
+      .filter((option) => option.label.includes('soon'))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    return [...notComingSoon, ...comingSoon];
   }, [IntegrationTypeEnum]);
 
   return (

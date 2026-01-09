@@ -497,21 +497,14 @@
       "Actions": {
         "Share": "Partager l'intégration Feed"
       },
+      "AddService": "Ajouter une nouvelle intégration",
+      "IntegrationType": "Type d'intégration",
       "Filter": {
-        "Connector": {
-          "Type": {
-            "Placeholder": "Type de connecteur..."
-          }
+        "IntegrationSubType": {
+          "Placeholder": "Sous-type..."
         },
         "Type": {
-          "Placeholder": "Type...",
-          "csv_feed": "Flux CSV",
-          "connector": "Connecteurs",
-          "rss_feed": "Flux RSS",
-          "json_feed": "Flux JSON",
-          "taxii_feed": "Flux TAXII (bientôt disponible)",
-          "opencti_stream_feed": "Flux OpenCTI",
-          "third_party_integration": "Intégrations tierces"
+          "Placeholder": "Type..."
         },
         "ProductVersion": {
           "Placeholder": "Plateforme..."
@@ -521,6 +514,18 @@
           "AutomaticDeploy": "Déploiement automatique",
           "ManualDeploy": "Déploiement manuel"
         }
+      },
+      "Type": {
+        "csv_feed": "Flux CSV",
+        "connector": "Connecteurs",
+        "rss_feed": "Flux RSS (bientôt disponible)",
+        "json_feed": "Flux JSON (bientôt disponible)",
+        "taxii_feed": "Flux TAXII",
+        "opencti_stream_feed": "Flux OpenCTI (bientôt disponible)",
+        "third_party_integration": "Intégrations tierces (bientôt disponible)"
+      },
+      "Form": {
+        "SelectIntegrationSubType": "Sélectionner le sous-type d'intégration"
       }
     },
     "CsvFeed": {
@@ -553,6 +558,37 @@
       "NonActive": "Brouillon",
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
       "UpdateService": "Editer le CSV Feed {name}"
+    },
+    "TaxiiFeed": {
+      "Actions": {
+        "Added": "Le TAXII {name} a été ajouté avec succès",
+        "Deleted": "La TAXII {name} a été supprimée avec succès",
+        "Share": "Partager le flux TAXII",
+        "Updated": "La TAXII {name} a été modifiée avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau flux TAXII",
+      "DeleteService": "Supprimer le flux TAXII {name}",
+      "Form": {
+        "Author": "Auteur",
+        "TaxiiFeedFile": "Fichier de flux Taxii",
+        "TaxiiFeedIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Voici un paragraphe pour décrire l'aliment TAXII.",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "ExistingTaxiiFeedFile": "Fichier Taxii Feed existant : {file_name}",
+        "ExistingTaxiiFeedIllustration": "Illustration existante du flux TAXII : {file_name}",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "PublishedPlaceholder": "Le flux TAXII est-il publié ?",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Mise à jour du fichier JSON"
+      },
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux TAXII {name} ?",
+      "UpdateService": "Mettre à jour le flux TAXII {name}"
     },
     "OpenctiCustomDashboards": {
       "Actions": {

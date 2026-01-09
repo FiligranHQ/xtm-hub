@@ -1,11 +1,11 @@
 import {
-  CsvFeedForm,
-  CsvFeedFormValues,
-} from '@/components/service/csv-feeds/csv-feed-form';
-import {
   CustomDashboardForm,
   CustomDashboardFormValues,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
+import {
+  CsvFeedForm,
+  CsvFeedFormValues,
+} from '@/components/service/integrations/forms/csv-feed-form';
 import {
   OpenaevScenarioForm,
   OpenAEVScenarioFormValues,

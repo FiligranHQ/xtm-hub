@@ -1,13 +1,14 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
-import {
-  ServiceForm,
-  ServiceFormValues,
-} from '@/components/service/components/subscribable-services.types';
+import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
+import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
   DocumentCreateMutation,
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
+import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
+import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
+import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
@@ -20,8 +21,10 @@ import { toast } from '@filigran/ui';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 const documentBaseKeys: Array<keyof ServiceFormValues> = [
@@ -40,18 +43,17 @@ const documentFileKeys: Array<keyof ServiceFormValues> = ['document', 'images'];
 interface UseDocumentContextProps {
   serviceInstance: serviceInstance_fragment$data;
   connectionId?: string;
-  translationKey: string;
   type: ShareableResourceType;
-  form: ServiceForm;
 }
 
 export function useDocumentContext({
   serviceInstance,
   connectionId,
-  translationKey,
   type,
-  form,
 }: UseDocumentContextProps): ServiceContextProps {
+  const [integrationType, setIntegrationType] = useState<IntegrationTypeEnum>(
+    IntegrationTypeEnum.CSV_FEED
+  );
   const t = useTranslations();
   const [createMutation] = useMutation<documentCreateMutation>(
     DocumentCreateMutation
@@ -178,13 +180,46 @@ export function useDocumentContext({
     });
   };
 
+  const form = useMemo(() => {
+    if (type === ShareableResourceType.OPENAEV_SCENARIO) {
+      return OpenaevScenarioForm;
+    }
+
+    if (type === ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD) {
+      return CustomDashboardForm;
+    }
+
+    if (integrationType === IntegrationTypeEnum.CSV_FEED) {
+      return CsvFeedForm;
+    }
+
+    return TaxiiFeedForm;
+  }, [type, integrationType]);
+
+  const translationKey = useMemo(() => {
+    if (type === ShareableResourceType.OPENAEV_SCENARIO) {
+      return 'Service.OpenAEVScenario';
+    }
+
+    if (type === ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD) {
+      return 'Service.OpenctiCustomDashboards';
+    }
+
+    if (integrationType === IntegrationTypeEnum.CSV_FEED) {
+      return 'Service.CsvFeed';
+    }
+
+    return 'Service.TaxiiFeed';
+  }, [type, integrationType]);
+
   return {
     serviceInstance,
-    translationKey,
     handleAddSheet,
     handleUpdateSheet,
     handleDeleteSheet,
     ServiceForm: form,
+    translationKey,
     type,
+    setIntegrationType,
   };
 }
