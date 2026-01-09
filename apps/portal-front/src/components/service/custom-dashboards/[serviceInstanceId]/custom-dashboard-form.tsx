@@ -231,7 +231,11 @@ export const CustomDashboardForm = ({
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}>
+                        defaultValue={
+                          (isCreation
+                            ? me?.selected_organization_id
+                            : customDashboard?.uploader_organization?.id) ?? ''
+                        }>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue

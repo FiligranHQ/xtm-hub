@@ -2,6 +2,7 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceDelete } from '@/components/service/components/service-delete';
+import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
@@ -65,7 +66,7 @@ export const OpenaevScenarioForm = ({
 
   const openAEVScenario = document;
   const isCreation = !openAEVScenario;
-  const { handleCloseSheet } = useDialogContext();
+  const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const values = useMemo(
     () =>
@@ -183,7 +184,11 @@ export const OpenaevScenarioForm = ({
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}>
+                  defaultValue={
+                    (isCreation
+                      ? me?.selected_organization_id
+                      : openAEVScenario?.uploader_organization?.id) ?? ''
+                  }>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
@@ -209,18 +214,50 @@ export const OpenaevScenarioForm = ({
               </FormItem>
             ),
           },
-          document: {
-            label: openAEVScenario
-              ? t('Service.OpenAEVScenario.Form.ExistingOpenAEVScenarioFile', {
-                  file_name: openAEVScenario.file_name ?? '',
-                })
-              : t('Service.OpenAEVScenario.Form.OpenAEVScenarioFile'),
-            fieldType: 'file',
-            inputProps: {
-              allowedTypes: 'application/zip',
-              multiple: 'multiple',
-            },
-          },
+          document: isCreation
+            ? {
+                label: t('Service.OpenAEVScenario.Form.OpenAEVScenarioFile'),
+                fieldType: 'file',
+                inputProps: {
+                  allowedTypes: 'application/zip',
+                  multiple: 'multiple',
+                },
+              }
+            : {
+                fieldType: ({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t(
+                        'Service.OpenAEVScenario.Form.ExistingOpenAEVScenarioFile',
+                        {
+                          file_name:
+                            field.value?.[0].name ?? openAEVScenario?.file_name,
+                        }
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <div onClick={() => setIsDirty(true)}>
+                        <FileInputWithPrevent
+                          field={field}
+                          texts={{
+                            selectFile: t(
+                              'Service.OpenAEVScenario.Form.UpdateZIPFile'
+                            ),
+                            dialogTitle: t(
+                              'Service.OpenAEVScenario.Form.UpdateZIPFile'
+                            ),
+                            dialogDescription: t(
+                              'Service.OpenAEVScenario.Form.DescriptionUpdateZIPFile'
+                            ),
+                          }}
+                          allowedTypes="application/zip"
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                ),
+              },
           images: {
             label: t(
               'Service.OpenAEVScenario.Form.OpenAEVScenarioIllustration'

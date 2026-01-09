@@ -618,7 +618,9 @@
         "ExistingOpenAEVScenarioIllustration": "Existing scenario illustration: {file_name}",
         "PublishedPlaceholder": "Is the scenario published?",
         "Author": "Author",
-        "ProductVersionLabel": "OpenAEV Version"
+        "ProductVersionLabel": "OpenAEV Version",
+        "UpdateZIPFile": "Update ZIP file",
+        "DescriptionUpdateZIPFile": "You're about to upload a new zip file. The previous json file will be deleted. Do you want to continue?"
       },
       "AddService": "Add new scenario",
       "UpdateService": "Update the scenario {name}",

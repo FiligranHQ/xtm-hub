@@ -8,7 +8,6 @@ import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListCheck } from '@/utils/documents';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import {
   AutoForm,
   Button,
@@ -24,6 +23,7 @@ import {
   SelectValue,
   SheetFooter,
 } from '@filigran/ui';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
@@ -174,7 +174,11 @@ export const CsvFeedForm = ({
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}>
+                  defaultValue={
+                    (isCreation
+                      ? me?.selected_organization_id
+                      : csvFeed?.uploader_organization?.id) ?? ''
+                  }>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
