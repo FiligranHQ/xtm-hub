@@ -102,15 +102,14 @@ export default class IntegrationPage {
 
   async deleteTaxiiFeed(updateButtonRole: 'menuitem' | 'button') {
     await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
-    await this.page
-      .getByRole('button', { name: 'Delete the TAXII Feed' })
-      .click();
+    await this.page.getByRole('button', { name: 'Delete' }).click();
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Delete' }).click();
 
     await waitForDrawerToClose(this.page);
     await this.page.waitForTimeout(3000);
   }
+
   async deleteCsvFeed(updateButtonRole: 'menuitem' | 'button') {
     await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
     await this.page
