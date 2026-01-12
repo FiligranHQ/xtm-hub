@@ -54,6 +54,7 @@
       "LoginError": "You are not allowed to login"
     },
     "Server": {
+      "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Error occurred while accepting users",
       "ADD_ORGANIZATION_ERROR": "Error occurred while adding organization",
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "ADDING_USER_ERROR": "Error occurred while creating user",

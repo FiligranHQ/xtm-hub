@@ -369,9 +369,12 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
         };
   };
 
-  const acceptSelected = (selectionState: SelectionState) => {
+  const handleBulkAction = (
+    selectionState: SelectionState,
+    mutation: typeof acceptUserBulkMutation | typeof removeUserBulkMutation
+  ) => {
     const params = buildBulkQueryVariables(selectionState);
-    acceptUserBulkMutation({
+    mutation({
       variables: params,
       onCompleted: () => {
         clearSelection();
@@ -380,16 +383,6 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
     });
   };
 
-  const rejectSelected = (selectionState: SelectionState) => {
-    const params = buildBulkQueryVariables(selectionState);
-    removeUserBulkMutation({
-      variables: params,
-      onCompleted: () => {
-        clearSelection();
-        refetch({}, { fetchPolicy: 'network-only' });
-      },
-    });
-  };
   return (
     <>
       <DataTable
@@ -420,7 +413,9 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
                       <CloseIcon className="h-4 w-4" />
                     </Button>
                   }
-                  onClickContinue={() => rejectSelected(selectionState)}>
+                  onClickContinue={() =>
+                    handleBulkAction(selectionState, removeUserBulkMutation)
+                  }>
                   {t('PendingUserListPage.WarningUsersRejection.Description')}
                 </AlertDialogComponent>
                 <AlertDialogComponent
@@ -436,7 +431,9 @@ const PendingUserList: FunctionComponent<PendingUserListProps> = ({
                       <CheckIcon className="h-4 w-4" />
                     </Button>
                   }
-                  onClickContinue={() => acceptSelected(selectionState)}>
+                  onClickContinue={() =>
+                    handleBulkAction(selectionState, acceptUserBulkMutation)
+                  }>
                   {t('PendingUserListPage.WarningUsersAccept.Description')}
                 </AlertDialogComponent>
               </>

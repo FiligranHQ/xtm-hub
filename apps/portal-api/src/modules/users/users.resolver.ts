@@ -204,39 +204,50 @@ const resolvers: Resolvers = {
       { input },
       context: PortalContext
     ) => {
-      const { ids, searchTerm, filters, excludedIds } = input;
-      const extractedIds = ids.map(extractId<UserId>);
-      const extractedExcludedIds = excludedIds.map(extractId<UserId>);
-      await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        context.user.selected_organization_id,
-        extractedIds,
-        searchTerm,
-        filters,
-        extractedExcludedIds
-      );
-      await dispatch('UserPending', 'invalidate', {
-        id: context.user.selected_organization_id,
-      });
+      try {
+        const { ids, searchTerm, filters, excludedIds } = input;
+        const extractedIds = ids.map(extractId<UserId>);
+        const extractedExcludedIds = excludedIds.map(extractId<UserId>);
+        await usersAdminApp.bulkRemovePendingUserFromOrganization(
+          context.user.selected_organization_id,
+          extractedIds,
+          searchTerm,
+          filters,
+          extractedExcludedIds
+        );
 
-      return { success: true };
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RemoveUserFromPendingOrgaError
+        );
+      }
     },
     bulkAcceptPendingUserInOrganization: async (
       _,
       { input },
       context: PortalContext
     ) => {
-      const { ids, searchTerm, filters, excludedIds } = input;
-      const extractedIds = ids.map(extractId<UserId>);
-      const extractedExcludedIds = excludedIds.map(extractId<UserId>);
+      try {
+        const { ids, searchTerm, filters, excludedIds } = input;
+        const extractedIds = ids.map(extractId<UserId>);
+        const extractedExcludedIds = excludedIds.map(extractId<UserId>);
 
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        context.user.selected_organization_id,
-        extractedIds,
-        searchTerm,
-        filters,
-        extractedExcludedIds
-      );
-      return { success: true };
+        await usersAdminApp.bulkAcceptPendingUserInOrganization(
+          context.user.selected_organization_id,
+          extractedIds,
+          searchTerm,
+          filters,
+          extractedExcludedIds
+        );
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.AcceptUserInPendingOrgaError
+        );
+      }
     },
     removePendingUserFromOrganization: async (
       _,

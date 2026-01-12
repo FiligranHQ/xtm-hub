@@ -54,6 +54,7 @@
       "LoginError": "Vous n'êtes pas autorisé à vous connecter"
     },
     "Server": {
+      "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de l'acceptation des utilisateurs",
       "ADD_ORGANIZATION_ERROR": "Une erreur s'est produite lors de l'ajout d'une organisation",
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",

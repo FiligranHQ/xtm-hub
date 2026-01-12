@@ -194,9 +194,9 @@ export const usersAdminApp = {
       );
 
     await Promise.all(
-      userIds.map(async (userId: UserId) => {
+      userIds.map((userId: UserId) => {
         try {
-          await acceptPendingUserWithCapabilities({
+          acceptPendingUserWithCapabilities({
             user_id: userId,
             organization_id: organizationId,
             orgCapabilities: [],
@@ -210,5 +210,24 @@ export const usersAdminApp = {
         }
       })
     );
+  },
+
+  bulkRemovePendingUserFromOrganization: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ) => {
+    await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
+      organizationId,
+      ids,
+      searchTerm,
+      filters,
+      excludedIds
+    );
+    await dispatch('UserPending', 'invalidate', {
+      id: organizationId,
+    });
   },
 };
