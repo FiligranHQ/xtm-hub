@@ -88,7 +88,7 @@ export type DatabaseType =
   | BaseDatabaseType
   | (typeof process.env.NODE_ENV extends 'test' ? 'TestTable' : never);
 
-export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
+export type ActionType = 'add' | 'edit' | 'delete' | 'merge' | 'invalidate';
 export type MethodType = 'select' | 'insert' | 'update' | 'del';
 
 interface Pagination {

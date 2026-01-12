@@ -3700,9 +3700,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:0.42.2":
-  version: 0.42.2
-  resolution: "@filigran/ui@npm:0.42.2"
+"@filigran/ui@npm:0.43.1":
+  version: 0.43.1
+  resolution: "@filigran/ui@npm:0.43.1"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -3733,18 +3733,18 @@ __metadata:
     date-fns: "npm:4.1.0"
     embla-carousel-react: "npm:8.6.0"
     react-color: "npm:2.19.3"
-    react-day-picker: "npm:9.12.0"
+    react-day-picker: "npm:9.13.0"
     react-easy-sort: "npm:1.8.0"
     react-hook-form: "npm:7.68.0"
     tailwind-merge: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
-    zod: "npm:4.1.13"
+    zod: "npm:4.2.1"
   peerDependencies:
     "@filigran/icon": ^0.21.2
     "@types/react": ^16.8 || ^17.0 || ^18.0 || ^19.0
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
-  checksum: 10c0/77ec0558bae56c7bb6c05bbba4945016d167a5da9155610c9461451d679e504b5fe06a802635f7963c21d8eb10172aab04888fa8925491c5f66ecadb3ec19725
+  checksum: 10c0/539ebc0c1841d83c0a25d1127ea61f7726942a5fd891e6e49370682c951f87e29938bd3bec86c236ec601c2dffbedac355b6cede15bce0972ea08e505af944ef
   languageName: node
   linkType: hard
 
@@ -8756,7 +8756,7 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": "npm:3.3.1"
     "@filigran/icon": "npm:0.21.2"
-    "@filigran/ui": "npm:0.42.2"
+    "@filigran/ui": "npm:0.43.1"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@testing-library/dom": "npm:10.4.1"
@@ -17481,16 +17481,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-day-picker@npm:9.12.0":
-  version: 9.12.0
-  resolution: "react-day-picker@npm:9.12.0"
+"react-day-picker@npm:9.13.0":
+  version: 9.13.0
+  resolution: "react-day-picker@npm:9.13.0"
   dependencies:
     "@date-fns/tz": "npm:^1.4.1"
     date-fns: "npm:^4.1.0"
     date-fns-jalali: "npm:^4.1.0-0"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 10c0/dd83b8f783a86be7d3cddd7f66fd4dfcdcbb70670c9e9e141fe4a99c1010e8611d8370ccdc48240f4767799663f17b44b54fda14c00b5b71ddc03a032bedaf5a
+  checksum: 10c0/e176309a24697f6552c80c7fde257f3dc06506a4e5ec22b11b55bf136bd452ab98d2ca9c2a17632092d67d23d08b3b35daf77d99e95a937ad290d3322abc745c
   languageName: node
   linkType: hard
 
@@ -21101,6 +21101,13 @@ __metadata:
   version: 4.1.13
   resolution: "zod@npm:4.1.13"
   checksum: 10c0/d7e74e82dba81a91ffc3239cd85bc034abe193a28f7087a94ab258a3e48e9a7ca4141920cac979a0d781495b48fc547777394149f26be04c3dc642f58bbc3941
+  languageName: node
+  linkType: hard
+
+"zod@npm:4.2.1":
+  version: 4.2.1
+  resolution: "zod@npm:4.2.1"
+  checksum: 10c0/ecb5219bddf76a42d092a843fb98ad4cb78f1e1077082772b03ef032ee5cbc80790a4051836b962d26fb4af854323bc784d628bd1b8d9898149eba7af21c5560
   languageName: node
   linkType: hard
 

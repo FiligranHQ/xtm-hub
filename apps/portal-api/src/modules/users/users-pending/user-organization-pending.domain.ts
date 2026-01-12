@@ -71,9 +71,9 @@ export const UserOrganizationPendingDomain = {
   loadUserOrganizationPending: (
     field: UserOrganizationPendingMutator
   ): Promise<UserOrganizationPending[]> => {
-    return db<UserOrganizationPending>('User_Organization_Pending')
-      .where(field)
-      .secureQuery();
+    return db<UserOrganizationPending>('User_Organization_Pending').where(
+      field
+    );
   },
 
   removeUserFromOrganizationPending: async (

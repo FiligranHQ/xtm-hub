@@ -317,7 +317,17 @@
     "TabTitle": "Users Requests ({usersCount})",
     "WarningUserRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse this person from your organization. There is no way of going back. Are you sure ?",
+      "Description": "You are about to refuse this user from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Are you sure?"
+    },
+    "WarningUsersRejection": {
+      "Confirm": "Confirm",
+      "Description": "You are about to refuse these users from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Are you sure?"
+    },
+    "WarningUsersAccept": {
+      "Confirm": "Confirm",
+      "Description": "You are about to accept these users in your organization. These users won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
       "Title": "Are you sure?"
     }
   },

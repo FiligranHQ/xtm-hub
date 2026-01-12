@@ -214,6 +214,10 @@ const resolvers: Resolvers = {
         filters,
         extractedExcludedIds
       );
+      await dispatch('UserPending', 'invalidate', {
+        id: context.user.selected_organization_id,
+      });
+
       return { success: true };
     },
     bulkAcceptPendingUserInOrganization: async (
@@ -317,18 +321,19 @@ const resolvers: Resolvers = {
     },
     UserPending: {
       subscribe: (_, args, context, info) => ({
-        [Symbol.asyncIterator]: () =>
-          listen(
+        [Symbol.asyncIterator]: () => {
+          return listen(
             context,
             ['UserPending'],
             info,
             (payload: UserPendingSubscription) => {
-              return (
-                payload.delete.pending_organization_id ===
-                extractId(args.organizationId)
-              );
+              const organizationId = payload.delete
+                ? payload.delete.pending_organization_id
+                : payload.invalidate.id;
+              return organizationId === extractId(args.organizationId);
             }
-          ),
+          );
+        },
       }),
     },
   },
