@@ -3,7 +3,9 @@ import ServiceList from '@/components/service/components/service-list';
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
-import { useCustomDashboardsContext } from '@/components/service/custom-dashboards/use-custom-dashboards-context';
+import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
+import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   customDashboardsItem_fragment$data,
   customDashboardsItem_fragment$key,
@@ -52,7 +54,13 @@ const CustomDashboardsList = ({
 
   const connectionId = data?.customDashboards.__id;
 
-  const context = useCustomDashboardsContext(serviceInstance, connectionId);
+  const context = useDocumentContext({
+    serviceInstance,
+    connectionId,
+    translationKey: 'Service.OpenctiCustomDashboards',
+    type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
+    form: CustomDashboardForm,
+  });
 
   return (
     <AppServiceContext {...context}>

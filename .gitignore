@@ -2,6 +2,7 @@
 .idea
 *.iml
 .zed
+.rules
 
 # System files
 *~

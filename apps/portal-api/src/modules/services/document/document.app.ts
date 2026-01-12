@@ -1,11 +1,7 @@
-import { db } from '../../../../knexfile';
 import {
   CreateDocumentInput,
   DocumentMetadata as DocumentMetadataResolverType,
-  MutationUpdateCsvFeedArgs,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
-  MutationUpdateOpenAevScenarioArgs,
-  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
@@ -19,25 +15,12 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
-import { extractId, omit } from '../../../utils/utils';
+import { extractId } from '../../../utils/utils';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
-import {
-  CUSTOM_DASHBOARD_METADATA,
-  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-} from '../custom-dashboards/custom-dashboards.domain';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
-import {
-  INTEGRATION_METADATA,
-  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../integrations/integrations.model';
-import {
-  OPENAEV_SCENARIO_DOCUMENT_TYPE,
-  OPENAEV_SCENARIO_METADATA,
-} from '../openaev-scenarios/openaev-scenarios.domain';
+import { retrieveDocumentTypeAndMetadataKeys } from './document.helper';
 import {
   processDocumentUpdateUploads,
   processUploads,
@@ -50,68 +33,16 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
-export type MutationUpdateDocumentArgs =
-  | MutationUpdateOpenAevScenarioArgs
-  | (MutationUpdateCsvFeedArgs & {
-      input: { integration_type: string };
-    });
-
-type CreatableServiceDefinition =
-  | ServiceDefinitionIdentifier.OpenctiIntegrations
-  | ServiceDefinitionIdentifier.OpenctiCustomDashboards
-  | ServiceDefinitionIdentifier.OpenaevScenarios;
-
-const DocumentTypeMappedByServiceDefinition: Record<
-  CreatableServiceDefinition,
-  string
-> = {
-  [ServiceDefinitionIdentifier.OpenctiIntegrations]:
-    OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
-    OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-  [ServiceDefinitionIdentifier.OpenaevScenarios]:
-    OPENAEV_SCENARIO_DOCUMENT_TYPE,
-};
-
-const DocumentMetadataMappedByServiceIdentifier: Record<
-  CreatableServiceDefinition,
-  string[]
-> = {
-  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
-    CUSTOM_DASHBOARD_METADATA,
-  [ServiceDefinitionIdentifier.OpenctiIntegrations]: INTEGRATION_METADATA,
-  [ServiceDefinitionIdentifier.OpenaevScenarios]: OPENAEV_SCENARIO_METADATA,
-};
-
 export const DocumentApp = {
   createDocument: async (
     input: CreateDocumentInput,
     metadata: DocumentMetadataResolverType[],
     serviceInstanceId: ServiceInstanceId,
-    document: Upload[]
+    uploads: Upload[]
   ) => {
-    const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
-        serviceInstanceId
-      );
-    if (!serviceDefinition) {
-      throw new Error(ErrorCode.ServiceDefinitionNotFound);
-    }
-
-    const documentType =
-      DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
-
-    const metadataKeys: string[] =
-      DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier];
-
-    const isMissingMetadata = metadataKeys.some(
-      (key) => !metadata.some((meta) => meta.key === key)
-    );
-    if (isMissingMetadata) {
-      throw new Error(ErrorCode.DocumentMissingMetadata);
-    }
-
-    const files = await processUploads(document, serviceInstanceId);
+    const { documentType, metadataKeys } =
+      await retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, metadata);
+    const files = await processUploads(uploads, serviceInstanceId);
     const docFile = files.shift();
     const documentData = {
       ...input,
@@ -170,22 +101,16 @@ export const DocumentApp = {
     return createdDocument;
   },
 
-  updateDocumentWithChildrenAndMetadata: async (
+  updateDocument: async (
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
     metadata: DocumentMetadataResolverType[],
     mutationArgs: MutationUpdateDocumentArgsResolverType
   ) => {
-    const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
-        serviceInstanceId
-      );
-    if (!serviceDefinition) {
-      throw new Error(ErrorCode.ServiceDefinitionNotFound);
-    }
-
-    const documentType =
-      DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
+    const { documentType } = await retrieveDocumentTypeAndMetadataKeys(
+      serviceInstanceId,
+      metadata
+    );
 
     const {
       document,
@@ -304,157 +229,7 @@ export const DocumentApp = {
     });
   },
 
-  createDocumentWithImageUploadsAndMetadata: async <T extends DocumentModel>(
-    type: string,
-    input: Partial<T>,
-    uploads: Upload[] | Upload,
-    metadataKeys: DocumentMetadataKeys<T>
-  ) => {
-    const files = await processUploads(uploads, input.service_instance_id);
-    const docFile = files.shift();
-    return await withTransaction(async () => {
-      const doc = await DocumentApp.createDocumentWithChildrenAndMetadata<T>(
-        {
-          ...input,
-          type,
-          file_name: docFile.fileName,
-          minio_name: docFile.minioName,
-          mime_type: docFile.mimeType,
-        },
-        metadataKeys
-      );
-
-      await DocumentChildrenDomain.createImageDocuments(
-        doc.id,
-        doc.service_instance_id,
-        files
-      );
-
-      return doc;
-    });
-  },
-
-  updateDocument: async <T extends DocumentModel>(
-    documentId: DocumentId,
-    documentData: Omit<Partial<T>, 'labels'> & {
-      labels?: string[];
-    },
-    metadataKeys: DocumentMetadataKeys<T> = []
-  ): Promise<T> => {
-    const { user } = requestContext.require();
-    const uploader_organization_id = documentData.uploader_organization_id
-      ? extractId<OrganizationId>(documentData.uploader_organization_id)
-      : null;
-
-    const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
-    const uploader_id = (
-      documentData.uploader_id && extractedId ? extractedId : user.id
-    ) as UserId;
-
-    return await withTransaction(async () => {
-      const [document] = await db<DocumentModel>('Document')
-        .where('id', '=', documentId)
-        .update({
-          ...omit(documentData, ['labels', ...metadataKeys]),
-          uploader_organization_id,
-          uploader_id,
-          updated_at: new Date(),
-          updater_id: user.id,
-        })
-        .returning('*');
-
-      // If label is null => that mean we want to update the field to empty
-      if (documentData.labels !== undefined) {
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: documentId as unknown as ObjectLabelObjectId,
-        });
-
-        if (documentData.labels?.length > 0) {
-          await objectLabelDomain.insertObjectLabel(
-            documentData.labels.map((id) => ({
-              object_id: documentId as unknown as ObjectLabelObjectId,
-              label_id: extractId(id) as LabelId,
-            }))
-          );
-        }
-      }
-
-      if (metadataKeys.length) {
-        await DocumentMetadataDomain.deleteMetadata({ id: documentId });
-        const metadatas = await DocumentMetadataDomain.insertMetadata(
-          document.id,
-          documentData,
-          metadataKeys
-        );
-
-        for (const metadata of metadatas) {
-          document[metadata.key] = metadata.value;
-        }
-      }
-
-      return document as T;
-    });
-  },
-  updateDocumentWithChildren: async <T extends DocumentModel>(
-    type: string,
-    parentDocumentId: DocumentId,
-    serviceInstanceId: ServiceInstanceId,
-    mutationArgs: MutationUpdateDocumentArgs,
-    metadataKeys: DocumentMetadataKeys<T>
-  ) => {
-    const {
-      document,
-      updateDocument: isUpdateDoc,
-      images,
-      input,
-    } = mutationArgs;
-    const { documentFile, newImages, existingImageIds } =
-      await processDocumentUpdateUploads(
-        document,
-        isUpdateDoc,
-        images,
-        serviceInstanceId
-      );
-    const data = {
-      ...input,
-      type,
-    } as unknown as Partial<T>;
-
-    // We are updating the base document
-    if (documentFile) {
-      Object.assign(data, {
-        file_name: documentFile.fileName,
-        minio_name: documentFile.minioName,
-        mime_type: documentFile.mimeType,
-      });
-    }
-
-    return withTransaction(async () => {
-      const updatedDocument = await DocumentApp.updateDocument<T>(
-        parentDocumentId,
-        data,
-        metadataKeys
-      );
-
-      // Delete the images that are not in the existingImages array
-      const childIds = await DocumentChildrenDomain.loadChildrenIds(
-        parentDocumentId,
-        existingImageIds
-      );
-      if (childIds.length > 0) {
-        await DocumentDomain.deleteDocuments(childIds);
-      }
-
-      await DocumentChildrenDomain.createImageDocuments(
-        parentDocumentId,
-        serviceInstanceId,
-        newImages
-      );
-      return updatedDocument;
-    });
-  },
-
-  upsertDocumentWithChildren: async <T extends DocumentModel>(
+  upsertDocument: async <T extends DocumentModel>(
     type: string,
     input: Partial<T>,
     uploads: Upload[] | Upload,

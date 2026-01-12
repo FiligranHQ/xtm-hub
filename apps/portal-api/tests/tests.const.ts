@@ -34,9 +34,9 @@ export const SERVICE_VAULT_ID =
 export const SERVICE_INTEGRATIONS_ID =
   'ad003d3f-c406-4be8-a650-880d72f952e9' as ServiceInstanceId;
 export const SERVICE_OPENAEV_SCENARIOS_ID =
-  'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2';
+  'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2' as ServiceInstanceId;
 export const SERVICE_CUSTOM_DASHBOARDS_ID =
-  'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4';
+  'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4' as ServiceInstanceId;
 export const SERVICE_OPENCTI_REGISTRATION =
   '6c837a7d-2821-4c3d-9479-d3e7fa02f0cb' as ServiceDefinitionId;
 export const THALES_SIMPLE_USER_ID =

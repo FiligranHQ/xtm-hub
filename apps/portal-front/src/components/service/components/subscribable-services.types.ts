@@ -1,7 +1,7 @@
 import {
   CsvFeedForm,
   CsvFeedFormValues,
-} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
+} from '@/components/service/csv-feeds/csv-feed-form';
 import {
   CustomDashboardForm,
   CustomDashboardFormValues,

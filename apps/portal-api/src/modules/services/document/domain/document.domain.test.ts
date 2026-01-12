@@ -1,5 +1,4 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import {
@@ -9,15 +8,12 @@ import {
   IntegrationType,
   OrderingMode,
 } from '../../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../../model/kanel/public/Document';
 import { upsertConnectors } from '../../../ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../../ingest-manifest/ingest-manifest.model';
 import sampleExtractedManifest from '../../../ingest-manifest/test/sample-extracted-manifest.json';
 import {
   Connector,
-  CsvFeed,
   INTEGRATION_CONNECTOR_METADATA,
-  INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_METADATA,
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -46,24 +42,18 @@ describe('Document domain', () => {
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
-      const documentId = uuidv4() as DocumentId;
-
-      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+      await DocumentApp.createDocument(
         {
-          id: documentId,
           uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
           name: 'myCsvFeed',
-          slug: 'myCsvFeed',
           description: 'description',
-          minio_name: 'minioName',
-          file_name: 'csvfilename',
+          short_description: 'short_description',
+          slug: 'slug',
           active: true,
-          integration_type: IntegrationType.CsvFeed,
-          service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         },
-        [],
-        INTEGRATION_CSV_FEED_METADATA
+        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
       );
 
       await upsertConnectors([
@@ -105,26 +95,19 @@ describe('Document domain', () => {
 
     it('should filter an integration feed with a metadata type', async () => {
       // Create data
-      const documentId = uuidv4() as DocumentId;
-
-      const csvFeed =
-        await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          {
-            id: documentId,
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            name: 'myCsvFeed',
-            slug: 'myCsvFeed',
-            description: 'description',
-            minio_name: 'minioName',
-            file_name: 'csvfilename',
-            active: true,
-            integration_type: IntegrationType.CsvFeed,
-            service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
-          },
-          [],
-          INTEGRATION_CSV_FEED_METADATA
-        );
+      const csvFeed = await DocumentApp.createDocument(
+        {
+          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          name: 'myCsvFeed',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
+      );
 
       const [connector] = await upsertConnectors([
         sampleExtractedManifest[0],
@@ -155,7 +138,7 @@ describe('Document domain', () => {
         );
 
       expect(csvFeedConnection.edges.length).toBe(1);
-      expect(csvFeedConnection.edges[0]?.node.id).toBe(csvFeed.id);
+      expect(csvFeedConnection.edges[0]?.node.id).toBe(csvFeed!.id);
       expect(csvFeedConnection.edges[0]?.node.integration_type).toBe(
         IntegrationType.CsvFeed
       );

@@ -33,8 +33,21 @@ export const redirectToResource = async (
   const platform_id = searchParams.get('platform_id');
   const service_instance_id = searchParams.get('service_instance_id');
   const document_id = searchParams.get('document_id');
+  let identifier = params.identifier;
 
-  if (!isValueInEnum(params.identifier, ServiceDefinitionIdentifierEnum)) {
+  // Legacy identifiers
+  const LEGACY_IDENTIFIERS: Record<string, ServiceDefinitionIdentifierEnum> = {
+    octi_custom_dashboards:
+      ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_DASHBOARDS,
+  };
+  if (LEGACY_IDENTIFIERS[identifier]) {
+    identifier = LEGACY_IDENTIFIERS[
+      identifier
+    ] as ServiceDefinitionIdentifierEnum;
+  }
+
+  if (!isValueInEnum(identifier, ServiceDefinitionIdentifierEnum)) {
+    console.error(`Invalid service definition identifier: ${identifier}`);
     // Raise a bad request error
     return new Response('Invalid identifier', { status: 400 });
   }
@@ -45,10 +58,7 @@ export const redirectToResource = async (
   // Build the login URL from the settings and the curent URL
   try {
     // The URL to highlight the service in the homepage
-    const highlightUrl = new URL(
-      `/${APP_PATH}?h=${params.identifier}`,
-      baseUrlFront
-    );
+    const highlightUrl = new URL(`/${APP_PATH}?h=${identifier}`, baseUrlFront);
 
     // 1. Load the user
     // ----------------
@@ -65,7 +75,7 @@ export const redirectToResource = async (
 
     // 2. Load the services instances subscribed by the user's organizations
     // ----------------------------------------------------------------------
-    const servicesInstances = await loadOwnedUserServices(params.identifier);
+    const servicesInstances = await loadOwnedUserServices(identifier);
     if (!organizationId) {
       organizationId = servicesInstances.find(
         (instance) => instance.service_instance_id === service_instance_id
@@ -100,7 +110,7 @@ export const redirectToResource = async (
       return NextResponse.redirect(
         getServiceInstanceUrl(
           baseUrlFront,
-          params.identifier,
+          identifier,
           service_instance_id!,
           document_id
         )
@@ -114,7 +124,7 @@ export const redirectToResource = async (
       return NextResponse.redirect(
         getServiceInstanceUrl(
           baseUrlFront,
-          params.identifier,
+          identifier,
           organizationServiceInstances[0]!.service_instance_id
         )
       );

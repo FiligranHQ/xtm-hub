@@ -18,6 +18,8 @@ export enum ForbiddenErrorCode {
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
+  IntegrationTypeNotManageable = 'INTEGRATION_TYPE_NOT_MANAGEABLE',
+  ServiceNotManageable = 'SERVICE_NOT_MANAGEABLE',
 }
 
 export enum BadRequestErrorCode {
@@ -35,6 +37,7 @@ export enum BadRequestErrorCode {
   OrganizationDoesNotMatchSelectedOrganization = 'ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION',
   DeploymentRequestHubStatusNotQueued = 'DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED',
   DocumentMissingMetadata = 'DOCUMENT_MISSING_METADATA',
+  IntegrationTypeNotRecognized = 'INTEGRATION_TYPE_NOT_RECOGNIZED',
 }
 
 export enum UnknownErrorCode {
@@ -49,16 +52,9 @@ export enum UnknownErrorCode {
   DeleteOrganizationError = 'DELETE_ORGANIZATION_ERROR',
   DocumentCreateError = 'DOCUMENT_CREATE_ERROR',
   DocumentUpdateError = 'DOCUMENT_UPDATE_ERROR',
-  CsvFeedInsertionError = 'CSV_FEED_INSERTION_ERROR',
-  CsvFeedUpdateError = 'CSV_FEED_UPDATE_ERROR',
-  CsvFeedDeletionError = 'CSV_FEED_DELETION_ERROR',
   DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
-  InsertDocumentError = 'INSERT_DOCUMENT_ERROR',
   UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
   IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
-  OpenAEVScenarioInsertionError = 'OPENAEV_SCENARIO_INSERTION_ERROR',
-  OpenAEVScenarioUpdateError = 'OPENAEV_SCENARIO_UPDATE_ERROR',
-  OpenAEVScenarioDeleteError = 'OPENAEV_SCENARIO_DELETE_ERROR',
   ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
   EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
@@ -80,9 +76,7 @@ export enum UnknownErrorCode {
 export enum AlreadyExistsErrorCode {
   OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
   OrganizationSameDomainExists = 'ORGANIZATION_SAME_DOMAIN_EXISTS',
-  CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
   DocumentUniqueSlugError = 'DOCUMENT_UNIQUE_SLUG_ERROR',
-  OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
   FreeTrialAlreadyExists = 'FREE_TRIAL_ALREADY_EXISTS',
 }
 
