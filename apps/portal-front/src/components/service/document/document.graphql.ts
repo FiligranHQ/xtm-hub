@@ -46,58 +46,6 @@ export const DocumentUpdateMutation = graphql`
   }
 `;
 
-export const DocumentAddMutation = graphql`
-  mutation documentAddMutation(
-    $document: Upload
-    $name: String
-    $shortDescription: String
-    $description: String
-    $serviceInstanceId: String
-    $active: Boolean
-    $parentDocumentId: ID
-    $slug: String
-    $connections: [ID!]!
-    $type: String!
-  ) {
-    addDocument(
-      document: $document
-      name: $name
-      short_description: $shortDescription
-      description: $description
-      service_instance_id: $serviceInstanceId
-      active: $active
-      parentDocumentId: $parentDocumentId
-      slug: $slug
-      type: $type
-    ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
-      __id
-      id
-      name
-      file_name
-      ...documentItem_fragment
-    }
-  }
-`;
-
-export const DocumentEditMutation = graphql`
-  mutation documentEditMutation(
-    $documentId: ID
-    $input: EditDocumentInput!
-    $serviceInstanceId: String
-  ) {
-    editDocument(
-      documentId: $documentId
-      input: $input
-      service_instance_id: $serviceInstanceId
-    ) {
-      id
-      name
-      file_name
-      ...documentItem_fragment
-    }
-  }
-`;
-
 export const DocumentDeleteMutation = graphql`
   mutation documentDeleteMutation(
     $documentId: ID
@@ -111,22 +59,6 @@ export const DocumentDeleteMutation = graphql`
       forceDelete: $forceDelete
     ) {
       id @deleteEdge(connections: $connections)
-    }
-  }
-`;
-
-export const DocumentDetailDeleteMutation = graphql`
-  mutation documentDetailDeleteMutation(
-    $documentId: ID
-    $serviceInstanceId: String
-    $forceDelete: Boolean
-  ) {
-    deleteDocument(
-      documentId: $documentId
-      service_instance_id: $serviceInstanceId
-      forceDelete: $forceDelete
-    ) {
-      id
     }
   }
 `;
@@ -229,13 +161,5 @@ export const DocumentsListQuery = graphql`
     $parentsOnly: Boolean
   ) {
     ...documentsList
-  }
-`;
-
-export const DocumentQuery = graphql`
-  query documentQuery($documentId: ID, $serviceInstanceId: ID) {
-    document(documentId: $documentId, serviceInstanceId: $serviceInstanceId) {
-      ...documentItem_fragment
-    }
   }
 `;

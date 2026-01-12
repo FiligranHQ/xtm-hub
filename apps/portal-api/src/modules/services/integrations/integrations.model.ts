@@ -9,6 +9,14 @@ export const INTEGRATION_SERVICE_INSTANCE_ID: ServiceInstanceId =
   '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc' as ServiceInstanceId;
 export const OPENCTI_INTEGRATION_DOCUMENT_TYPE = 'opencti_integration';
 
+export const isIntegrationType = (
+  maybeIntegrationType: string
+): maybeIntegrationType is IntegrationType => {
+  return (Object.values(IntegrationType) as string[]).includes(
+    maybeIntegrationType
+  );
+};
+
 export type Integration = Document & {
   integration_type: IntegrationType;
 };

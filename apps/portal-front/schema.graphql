@@ -101,17 +101,9 @@ type Mutation {
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, serviceInstanceId: String): Document!
   updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, updateDocument: Boolean!, images: [String!], serviceInstanceId: String): Document!
-  addDocument(document: Upload, name: String, short_description: String, description: String, service_instance_id: String, parentDocumentId: ID, active: Boolean, slug: String, type: String!): Document!
-  editDocument(documentId: ID, input: EditDocumentInput!, service_instance_id: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
-  createCsvFeed(input: CreateCsvFeedInput!, document: [Upload!], serviceInstanceId: String!): CsvFeed!
-  updateCsvFeed(documentId: ID!, input: UpdateCsvFeedInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): CsvFeed!
-  deleteCsvFeed(id: ID!, serviceInstanceId: String!): CsvFeed!
-  createOpenAEVScenario(input: CreateOpenAEVScenarioInput!, document: [Upload!]!, serviceInstanceId: String): OpenAEVScenario!
-  updateOpenAEVScenario(documentId: ID!, input: UpdateOpenAEVScenarioInput!, document: [Upload!], updateDocument: Boolean!, images: [String!], serviceInstanceId: String): OpenAEVScenario!
-  deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
@@ -479,15 +471,6 @@ interface Document implements Node {
   children_documents: [ShareableResource!]
 }
 
-input EditDocumentInput {
-  short_description: String
-  description: String
-  uploader_organization_id: String
-  name: String
-  active: Boolean
-  slug: String
-}
-
 input DocumentMetadata {
   key: String!
   value: String!
@@ -571,27 +554,6 @@ type CsvFeed implements Node & Document & Integration {
   children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationType!
-}
-
-input CreateCsvFeedInput {
-  name: String!
-  slug: String!
-  uploader_id: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-}
-
-input UpdateCsvFeedInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
 }
 
 enum IntegrationType {
@@ -681,29 +643,6 @@ type IntegrationConnection {
   totalCount: Int!
   edges: [IntegrationEdge!]!
   pageInfo: PageInfo!
-}
-
-input CreateOpenAEVScenarioInput {
-  name: String!
-  slug: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-  uploader_id: String!
-  product_version: String!
-}
-
-input UpdateOpenAEVScenarioInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-  product_version: String
 }
 
 type OpenAEVScenario implements Document & Node {

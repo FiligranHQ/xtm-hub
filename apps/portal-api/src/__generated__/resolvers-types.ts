@@ -118,16 +118,6 @@ export enum ConnectorType {
   Stream = 'STREAM'
 }
 
-export type CreateCsvFeedInput = {
-  active: Scalars['Boolean']['input'];
-  description: Scalars['String']['input'];
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
-  name: Scalars['String']['input'];
-  short_description: Scalars['String']['input'];
-  slug: Scalars['String']['input'];
-  uploader_id: Scalars['String']['input'];
-};
-
 export type CreateDeploymentRequestInput = {
   activity_sector?: InputMaybe<Scalars['String']['input']>;
   job_title?: InputMaybe<Scalars['String']['input']>;
@@ -142,17 +132,6 @@ export type CreateDocumentInput = {
   description: Scalars['String']['input'];
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
-  short_description: Scalars['String']['input'];
-  slug: Scalars['String']['input'];
-  uploader_id: Scalars['String']['input'];
-};
-
-export type CreateOpenAevScenarioInput = {
-  active: Scalars['Boolean']['input'];
-  description: Scalars['String']['input'];
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
-  name: Scalars['String']['input'];
-  product_version: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
   uploader_id: Scalars['String']['input'];
@@ -403,15 +382,6 @@ export enum DocumentOrdering {
   Name = 'name'
 }
 
-export type EditDocumentInput = {
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  short_description?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type EditLabelInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -560,7 +530,6 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addDocument: Document;
   addLabel: Label;
   addOrganization?: Maybe<Organization>;
   addServiceInstance?: Maybe<SubscriptionModel>;
@@ -577,19 +546,14 @@ export type Mutation = {
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
   changeSelectedOrganization?: Maybe<User>;
   contactUs: Success;
-  createCsvFeed: CsvFeed;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
-  createOpenAEVScenario: OpenAevScenario;
-  deleteCsvFeed: CsvFeed;
   deleteDocument: Document;
   deleteLabel: Label;
-  deleteOpenAEVScenario: OpenAevScenario;
   deleteOrganization?: Maybe<Organization>;
   deleteServiceInstance?: Maybe<ServiceInstance>;
   deleteSubscription?: Maybe<ServiceInstance>;
   deleteUserService?: Maybe<UserService>;
-  editDocument: Document;
   editLabel: Label;
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
@@ -612,26 +576,11 @@ export type Mutation = {
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
-  updateCsvFeed: CsvFeed;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateDocument: Document;
-  updateOpenAEVScenario: OpenAevScenario;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
-};
-
-
-export type MutationAddDocumentArgs = {
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  document?: InputMaybe<Scalars['Upload']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  parentDocumentId?: InputMaybe<Scalars['ID']['input']>;
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
-  short_description?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  type: Scalars['String']['input'];
 };
 
 
@@ -718,13 +667,6 @@ export type MutationChangeSelectedOrganizationArgs = {
 };
 
 
-export type MutationCreateCsvFeedArgs = {
-  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
-  input: CreateCsvFeedInput;
-  serviceInstanceId: Scalars['String']['input'];
-};
-
-
 export type MutationCreateDeploymentRequestArgs = {
   input?: InputMaybe<CreateDeploymentRequestInput>;
 };
@@ -738,19 +680,6 @@ export type MutationCreateDocumentArgs = {
 };
 
 
-export type MutationCreateOpenAevScenarioArgs = {
-  document: Array<Scalars['Upload']['input']>;
-  input: CreateOpenAevScenarioInput;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationDeleteCsvFeedArgs = {
-  id: Scalars['ID']['input'];
-  serviceInstanceId: Scalars['String']['input'];
-};
-
-
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
@@ -760,12 +689,6 @@ export type MutationDeleteDocumentArgs = {
 
 export type MutationDeleteLabelArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteOpenAevScenarioArgs = {
-  id: Scalars['ID']['input'];
-  serviceInstanceId: Scalars['String']['input'];
 };
 
 
@@ -786,13 +709,6 @@ export type MutationDeleteSubscriptionArgs = {
 
 export type MutationDeleteUserServiceArgs = {
   input: UserServiceDeleteInput;
-};
-
-
-export type MutationEditDocumentArgs = {
-  documentId?: InputMaybe<Scalars['ID']['input']>;
-  input: EditDocumentInput;
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -897,16 +813,6 @@ export type MutationUnregisterPlatformArgs = {
 };
 
 
-export type MutationUpdateCsvFeedArgs = {
-  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
-  documentId: Scalars['ID']['input'];
-  images?: InputMaybe<Array<Scalars['String']['input']>>;
-  input: UpdateCsvFeedInput;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-  updateDocument: Scalars['Boolean']['input'];
-};
-
-
 export type MutationUpdateDeploymentQuotaCapacityArgs = {
   input: UpdateDeploymentQuotaCapacityInput;
 };
@@ -923,16 +829,6 @@ export type MutationUpdateDocumentArgs = {
   images?: InputMaybe<Array<Scalars['String']['input']>>;
   input: UpdateDocumentInput;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-  updateDocument: Scalars['Boolean']['input'];
-};
-
-
-export type MutationUpdateOpenAevScenarioArgs = {
-  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
-  documentId: Scalars['ID']['input'];
-  images?: InputMaybe<Array<Scalars['String']['input']>>;
-  input: UpdateOpenAevScenarioInput;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
 };
@@ -1864,17 +1760,6 @@ export type UnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
-export type UpdateCsvFeedInput = {
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  short_description?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  uploader_id?: InputMaybe<Scalars['String']['input']>;
-  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateDeploymentQuotaCapacityInput = {
   newCapacity: Scalars['Int']['input'];
   platformIdentifier: PlatformIdentifier;
@@ -1896,18 +1781,6 @@ export type UpdateDocumentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
   name?: InputMaybe<Scalars['String']['input']>;
-  short_description?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  uploader_id?: InputMaybe<Scalars['String']['input']>;
-  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpdateOpenAevScenarioInput = {
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  labels?: InputMaybe<Array<Scalars['String']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  product_version?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   uploader_id?: InputMaybe<Scalars['String']['input']>;
@@ -2140,10 +2013,8 @@ export type ResolversTypes = ResolversObject<{
   Capability: ResolverTypeWrapper<Capability>;
   Connector: ResolverTypeWrapper<Connector>;
   ConnectorType: ConnectorType;
-  CreateCsvFeedInput: CreateCsvFeedInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
-  CreateOpenAEVScenarioInput: CreateOpenAevScenarioInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   CustomDashboardConnection: ResolverTypeWrapper<CustomDashboardConnection>;
@@ -2166,7 +2037,6 @@ export type ResolversTypes = ResolversObject<{
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
   DocumentMetadata: DocumentMetadata;
   DocumentOrdering: DocumentOrdering;
-  EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
@@ -2262,11 +2132,9 @@ export type ResolversTypes = ResolversObject<{
   Success: ResolverTypeWrapper<Success>;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   UnregisterPlatformInput: UnregisterPlatformInput;
-  UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
-  UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
@@ -2301,10 +2169,8 @@ export type ResolversParentTypes = ResolversObject<{
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
   Connector: Connector;
-  CreateCsvFeedInput: CreateCsvFeedInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
-  CreateOpenAEVScenarioInput: CreateOpenAevScenarioInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
   CustomDashboardConnection: CustomDashboardConnection;
@@ -2320,7 +2186,6 @@ export type ResolversParentTypes = ResolversObject<{
   DocumentConnection: Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversParentTypes['DocumentEdge']> };
   DocumentEdge: Omit<DocumentEdge, 'node'> & { node: ResolversParentTypes['Document'] };
   DocumentMetadata: DocumentMetadata;
-  EditDocumentInput: EditDocumentInput;
   EditLabelInput: EditLabelInput;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
@@ -2395,11 +2260,9 @@ export type ResolversParentTypes = ResolversObject<{
   Success: Success;
   TelemetryResponse: TelemetryResponse;
   UnregisterPlatformInput: UnregisterPlatformInput;
-  UpdateCsvFeedInput: UpdateCsvFeedInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
-  UpdateOpenAEVScenarioInput: UpdateOpenAevScenarioInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
@@ -2761,7 +2624,6 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  addDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationAddDocumentArgs, 'type'>>;
   addLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationAddLabelArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServiceInstance?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationAddServiceInstanceArgs>>;
@@ -2778,19 +2640,14 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
-  createCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationCreateCsvFeedArgs, 'input' | 'serviceInstanceId'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
-  createOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationCreateOpenAevScenarioArgs, 'document' | 'input'>>;
-  deleteCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationDeleteCsvFeedArgs, 'id' | 'serviceInstanceId'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationDeleteLabelArgs, 'id'>>;
-  deleteOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationDeleteOpenAevScenarioArgs, 'id' | 'serviceInstanceId'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteServiceInstanceArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
-  editDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationEditDocumentArgs, 'input'>>;
   editLabel?: Resolver<ResolversTypes['Label'], ParentType, ContextType, RequireFields<MutationEditLabelArgs, 'id' | 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
@@ -2813,11 +2670,9 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
-  updateCsvFeed?: Resolver<ResolversTypes['CsvFeed'], ParentType, ContextType, RequireFields<MutationUpdateCsvFeedArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;
-  updateOpenAEVScenario?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType, RequireFields<MutationUpdateOpenAevScenarioArgs, 'documentId' | 'input' | 'updateDocument'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
 }>;

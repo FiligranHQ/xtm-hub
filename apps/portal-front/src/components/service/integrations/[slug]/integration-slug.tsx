@@ -1,6 +1,5 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
-import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import ShareableResourceConnectorSlug from '@/components/service/document/connector/shareable-resource-connector-slug';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
@@ -9,8 +8,13 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { isConnectorResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isConnectorResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 
+import { CsvFeedForm } from '@/components/service/csv-feeds/csv-feed-form';
+import { useDocumentContext } from '@/components/service/document/use-document-context';
 import {
   IntegrationQuery,
   integrationsItem,
@@ -59,7 +63,13 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
     },
   ];
 
-  const context = useCsvFeedContext(serviceInstance);
+  const context = useDocumentContext({
+    serviceInstance,
+    translationKey: 'Service.CsvFeed',
+    form: CsvFeedForm,
+    type: ShareableResourceType.OPENCTI_INTEGRATION,
+  });
+
   const shareUrl = `${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`;
 
   return (

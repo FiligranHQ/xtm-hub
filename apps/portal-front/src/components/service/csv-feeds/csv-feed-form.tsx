@@ -16,8 +16,14 @@ import {
   FormLabel,
   FormMessage,
   MultiSelectFormField,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   SheetFooter,
 } from '@filigran/ui';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
@@ -29,10 +35,12 @@ const csvFeedFormSchema = z.object({
   uploader_id: z.string().optional(),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
+  uploader_organization_id: z.string().min(1, 'Required'),
+  integration_type: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  illustration: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck),
 });
 export type CsvFeedFormValues = z.infer<typeof csvFeedFormSchema>;
 
@@ -61,21 +69,26 @@ export const CsvFeedForm = ({
     () =>
       ({
         ...csvFeed,
-        illustration: csvFeed?.children_documents?.map((doc) => ({
+        images: csvFeed?.children_documents?.map((doc) => ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
         labels: csvFeed?.labels?.map((label) => label.id),
         uploader_id: csvFeed?.uploader?.id ?? me!.id,
+        uploader_organization_id:
+          (isCreation
+            ? me?.selected_organization_id
+            : csvFeed?.uploader_organization?.id) ?? '',
+        integration_type: IntegrationTypeEnum.CSV_FEED,
       }) as CsvFeedFormValues,
-    [me, csvFeed]
+    [me, csvFeed, isCreation]
   );
   const formSchema = useMemo(
     () =>
       csvFeed
         ? csvFeedFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            illustration: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(fileListCheck).optional(),
           })
         : csvFeedFormSchema,
     [csvFeed]
@@ -153,6 +166,44 @@ export const CsvFeedForm = ({
               </FormItem>
             ),
           },
+          uploader_organization_id: {
+            fieldType: ({ field }) => (
+              <FormItem hidden={isCreation}>
+                <FormLabel>
+                  {t('OrganizationInServiceAction.Organization')}
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={
+                    (isCreation
+                      ? me?.selected_organization_id
+                      : csvFeed?.uploader_organization?.id) ?? ''
+                  }>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t(
+                          'OrganizationInServiceAction.SelectOrganization'
+                        )}
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {me?.organizations.map((node) => {
+                      return (
+                        <SelectItem
+                          key={node?.id}
+                          value={node?.id}>
+                          {node?.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            ),
+          },
           document: isCreation
             ? {
                 label: t('Service.CsvFeed.Form.CsvFeedFile'),
@@ -193,7 +244,7 @@ export const CsvFeedForm = ({
                   </FormItem>
                 ),
               },
-          illustration: {
+          images: {
             label: t('Service.CsvFeed.Form.CsvFeedIllustration'),
             fieldType: 'file',
             inputProps: {
@@ -212,6 +263,7 @@ export const CsvFeedForm = ({
           name: {
             label: t('Service.CsvFeed.Form.NameLabel'),
           },
+          integration_type: { fieldType: () => <FormItem hidden={true} /> },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
           {csvFeed && (

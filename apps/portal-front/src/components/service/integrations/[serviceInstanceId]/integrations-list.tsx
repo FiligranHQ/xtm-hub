@@ -10,7 +10,6 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import {
   integrationsFragment,
   integrationsItem,
@@ -26,6 +25,9 @@ import {
 } from '@generated/integrationsItem_fragment.graphql';
 import { integrationsList$key } from '@generated/integrationsList.graphql';
 
+import { CsvFeedForm } from '@/components/service/csv-feeds/csv-feed-form';
+import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   integrationsQuery,
   integrationsQuery$variables,
@@ -70,7 +72,13 @@ const IntegrationsList = ({
 
   const connectionId = data?.integrations.__id;
 
-  const context = useCsvFeedContext(serviceInstance, connectionId);
+  const context = useDocumentContext({
+    serviceInstance,
+    connectionId,
+    translationKey: 'Service.CsvFeed',
+    type: ShareableResourceType.OPENCTI_INTEGRATION,
+    form: CsvFeedForm,
+  });
 
   const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
