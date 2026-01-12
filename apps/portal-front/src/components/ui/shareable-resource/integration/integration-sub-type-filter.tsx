@@ -27,7 +27,7 @@ export const IntegrationSubTypeFilter: React.FC = () => {
         value: integrationSubType.toString(),
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
-  }, [IntegrationSubTypeEnum]);
+  }, []);
 
   return (
     <ServiceListFilterContainer>

@@ -282,7 +282,10 @@ export const TaxiiFeedForm = ({
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={taxiiFeed?.integration_subtype}>
+                  defaultValue={
+                    (taxiiFeed as integrationsItem_fragment$data)
+                      ?.integration_subtype
+                  }>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue

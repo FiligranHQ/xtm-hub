@@ -16,9 +16,9 @@ export const IntegrationTypeFilter: React.FC = () => {
   const t = useTranslations();
 
   const onIntegrationTypeChange = (v: IntegrationTypeEnum[]) => {
-    const hasIntegrationSubTypeFilter = v.includes(
-      IntegrationTypeEnum.CONNECTOR
-    );
+    const hasIntegrationSubTypeFilter =
+      v.includes(IntegrationTypeEnum.CONNECTOR) ||
+      v.includes(IntegrationTypeEnum.TAXII_FEED);
     if (!hasIntegrationSubTypeFilter) {
       removeIntegrationSubTypes();
     }
@@ -37,7 +37,7 @@ export const IntegrationTypeFilter: React.FC = () => {
       .filter((option) => option.label.includes('soon'))
       .sort((a, b) => a.label.localeCompare(b.label));
     return [...notComingSoon, ...comingSoon];
-  }, [IntegrationTypeEnum]);
+  }, [t]);
 
   return (
     <ServiceListFilterContainer>

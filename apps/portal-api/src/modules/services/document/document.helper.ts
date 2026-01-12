@@ -13,7 +13,7 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { WithLabels } from '../../../utils/types';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -126,6 +126,9 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
     DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier](
       metadata
     );
+  if (!metadataKeys) {
+    throw new Error(UnknownErrorCode.MissingMetadataMapping);
+  }
   const missingMetadataKeys = metadataKeys.filter(
     (key) => !metadata.some((meta) => meta.key === key)
   );

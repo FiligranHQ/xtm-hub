@@ -53,7 +53,6 @@ export enum UnknownErrorCode {
   DocumentCreateError = 'DOCUMENT_CREATE_ERROR',
   DocumentUpdateError = 'DOCUMENT_UPDATE_ERROR',
   DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
-  UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
   IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
   ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
@@ -71,6 +70,7 @@ export enum UnknownErrorCode {
   CreateDeploymentRequestError = 'CREATE_DEPLOYMENT_REQUEST_ERROR',
   DeploymentRequestUnknownError = 'DEPLOYMENT_REQUEST_UNKNOWN_ERROR',
   HubspotError = 'HUBSPOT_ERROR',
+  MissingMetadataMapping = 'MISSING_METADATA_MAPPING',
 }
 
 export enum AlreadyExistsErrorCode {
