@@ -21,7 +21,7 @@ export const ServiceListIntegrationDropdown: React.FC<Props> = ({
   const t = useTranslations();
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button>{t('Service.OpenctiIntegrations.AddService')}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
