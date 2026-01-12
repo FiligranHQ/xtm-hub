@@ -55,23 +55,23 @@ type CsvFeed implements Node & Document & Integration {
   # Document
   type: String!
   uploader: User
-  uploader_organization: Organization
+  uploader_organization: Organization @auth
   name: String!
   short_description: String
   description: String
-  file_name: String
-  minio_name: String!
+  file_name: String @auth
+  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
-  updater_id: String
+  updater_id: String @auth
   download_number: Int
   share_number: Int
   slug: String!
   labels: [Label!]
   service_instance_id: String!
   service_instance: ServiceInstance
-  subscription: SubscriptionModel
+  subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
   # Integration

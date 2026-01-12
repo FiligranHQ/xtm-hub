@@ -3,6 +3,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
+import { availableIntegrationTypes } from '@/components/service/integrations/integration.utils';
 import { MultiSelectFormField } from '@filigran/ui';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
@@ -30,13 +31,20 @@ export const IntegrationTypeFilter: React.FC = () => {
       label: t(`Service.OpenctiIntegrations.Type.${feedType}`),
       value: feedType.toString(),
     }));
-    const notComingSoon = allOptions
-      .filter((option) => !option.label.includes('soon'))
+    const availableOption = allOptions
+      .filter((option) =>
+        availableIntegrationTypes.includes(option.value as IntegrationTypeEnum)
+      )
       .sort((a, b) => a.label.localeCompare(b.label));
-    const comingSoon = allOptions
-      .filter((option) => option.label.includes('soon'))
+    const comingSoonOption = allOptions
+      .filter(
+        (option) =>
+          !availableIntegrationTypes.includes(
+            option.value as IntegrationTypeEnum
+          )
+      )
       .sort((a, b) => a.label.localeCompare(b.label));
-    return [...notComingSoon, ...comingSoon];
+    return [...availableOption, ...comingSoonOption];
   }, [t]);
 
   return (

@@ -1,4 +1,11 @@
 import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+
+export const availableIntegrationTypes = [
+  IntegrationTypeEnum.TAXII_FEED,
+  IntegrationTypeEnum.CONNECTOR,
+  IntegrationTypeEnum.CSV_FEED,
+];
 
 export const integrationSubTypeMetadata: Record<
   IntegrationSubTypeEnum,
