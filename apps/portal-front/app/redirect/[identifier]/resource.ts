@@ -47,6 +47,7 @@ export const redirectToResource = async (
   }
 
   if (!isValueInEnum(identifier, ServiceDefinitionIdentifierEnum)) {
+    console.error(`Invalid service definition identifier: ${identifier}`);
     // Raise a bad request error
     return new Response('Invalid identifier', { status: 400 });
   }
