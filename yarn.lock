@@ -8823,7 +8823,7 @@ __metadata:
     pg: "npm:8.16.3"
     playwright-ctrf-json-reporter: "npm:0.0.26"
     prettier: "npm:3.6.2"
-    react: "npm:19.2.0"
+    react: "npm:19.2.3"
     uuid: "npm:11.1.0"
   languageName: unknown
   linkType: soft
@@ -17630,13 +17630,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/841938ff16d16a6b76895f4cb2e1fea957e5fe3b30febbf03a54892dae1c9153f2383e231dea0b3ba41192ad2f2849448fa859caccd288943bce32639e971bee
-  languageName: node
-  linkType: hard
-
-"react@npm:19.2.0":
-  version: 19.2.0
-  resolution: "react@npm:19.2.0"
-  checksum: 10c0/1b6d64eacb9324725bfe1e7860cb7a6b8a34bc89a482920765ebff5c10578eb487e6b46b2f0df263bd27a25edbdae2c45e5ea5d81ae61404301c1a7192c38330
   languageName: node
   linkType: hard
 
