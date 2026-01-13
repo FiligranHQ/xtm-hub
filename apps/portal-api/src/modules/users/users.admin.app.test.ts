@@ -1,11 +1,15 @@
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../knexfile';
-import { FILIGRAN_ORGA_ID, THALES_ORGA_ID } from '../../../tests/tests.const';
+import {
+  FILIGRAN_ORGA_ID,
+  requestContextThalesUser,
+  THALES_ORGA_ID,
+} from '../../../tests/tests.const';
 import { FilterKey } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import User from '../../model/kanel/public/User';
-import UserOrganizationPending from '../../model/kanel/public/UserOrganizationPending';
+import { ErrorCode } from '../../utils/error/error.code';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { usersAdminApp } from './users.admin.app';
 import * as UsersHelper from './users.helper';
@@ -18,6 +22,7 @@ describe('Users admin app', () => {
       typeof UsersHelper.acceptPendingUserWithCapabilities
     >;
     beforeEach(async () => {
+      createdUsers = [];
       mockAcceptPendingUser = vi.spyOn(
         UsersHelper,
         'acceptPendingUserWithCapabilities'
@@ -56,15 +61,29 @@ describe('Users admin app', () => {
     });
 
     afterEach(async () => {
-      await db<UserOrganizationPending>('User_Organization_Pending').del();
       await Promise.all(
         createdUsers.map((user) => removeUser({ email: user.email }))
       );
       vi.clearAllMocks();
-      // or mockAcceptPendingUser.mockRestore();
     });
 
+    it('should throw if user is not allowed on orga', async () => {
+      requestContext.set(requestContextThalesUser);
+      const userToRemove = createdUsers[0];
+
+      const call = usersAdminApp.bulkAcceptPendingUserInOrganization(
+        FILIGRAN_ORGA_ID,
+        [userToRemove!.id],
+        undefined,
+        [],
+        []
+      );
+      await expect(call).rejects.toThrow(
+        ErrorCode.MissingCapabilityOnOrganization
+      );
+    });
     it('should accept users by id', async () => {
+      requestContext.set(requestContextThalesUser);
       const userToRemove = createdUsers[0];
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
         THALES_ORGA_ID,
@@ -82,6 +101,7 @@ describe('Users admin app', () => {
     });
 
     it('should accept users by filter', async () => {
+      requestContext.set(requestContextThalesUser);
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
         THALES_ORGA_ID,
         [],
@@ -107,6 +127,7 @@ describe('Users admin app', () => {
       });
     });
     it('should accept users by filters and excludedIds', async () => {
+      requestContext.set(requestContextThalesUser);
       const excludedUser = createdUsers[0];
 
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
@@ -129,6 +150,7 @@ describe('Users admin app', () => {
       });
     });
     it('should accept users by searchTerm', async () => {
+      requestContext.set(requestContextThalesUser);
       const acceptedUser = createdUsers.find(
         (user) => user.email === 'testOne@thales.com'
       );
@@ -149,6 +171,7 @@ describe('Users admin app', () => {
     });
 
     it('should accept users by searchTerm and excludedIds', async () => {
+      requestContext.set(requestContextThalesUser);
       const acceptedUser = createdUsers.find(
         (user) => user.email === 'testTwo@thales.com'
       );
@@ -172,6 +195,7 @@ describe('Users admin app', () => {
     });
 
     it('should accept users by filter, searchTerm and excludedIds', async () => {
+      requestContext.set(requestContextThalesUser);
       const acceptedUser = createdUsers.find(
         (user) => user.email === 'testTwo@thales.com'
       );
@@ -215,6 +239,53 @@ describe('Users admin app', () => {
         organization_id: FILIGRAN_ORGA_ID,
         orgCapabilities: [],
       });
+    });
+  });
+  describe('bulkRemovePendingUserFromOrganization', () => {
+    let createdUsers: User[];
+    beforeEach(async () => {
+      createdUsers = [];
+      const filigranOrga = await loadOrganizationBy({ id: FILIGRAN_ORGA_ID });
+      const filigranUser = await createNewUserWithPendingOrga(
+        {
+          email: 'testFiligranRemoveBulk@filigran.io',
+          first_name: 'test',
+          last_name: 'filigran',
+          picture: null,
+        },
+        filigranOrga
+      );
+      createdUsers.push(filigranUser);
+    });
+
+    afterEach(async () => {
+      await Promise.all(
+        createdUsers.map((user) => removeUser({ email: user.email }))
+      );
+    });
+    it('should throw if user is not allowed on orga', async () => {
+      requestContext.set(requestContextThalesUser);
+      const filigranOrga = await loadOrganizationBy({ id: FILIGRAN_ORGA_ID });
+      const filigranUser = await createNewUserWithPendingOrga(
+        {
+          email: 'testFiligran@filigran.io',
+          first_name: 'test',
+          last_name: 'filigran',
+          picture: null,
+        },
+        filigranOrga
+      );
+
+      const call = usersAdminApp.bulkRemovePendingUserFromOrganization(
+        FILIGRAN_ORGA_ID,
+        [filigranUser!.id],
+        undefined,
+        [],
+        []
+      );
+      await expect(call).rejects.toThrow(
+        ErrorCode.MissingCapabilityOnOrganization
+      );
     });
   });
 });

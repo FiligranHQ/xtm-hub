@@ -3700,14 +3700,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:0.43.1":
-  version: 0.43.1
-  resolution: "@filigran/ui@npm:0.43.1"
+"@filigran/ui@npm:0.44.0":
+  version: 0.44.0
+  resolution: "@filigran/ui@npm:0.44.0"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
     "@dnd-kit/sortable": "npm:10.0.0"
-    "@hookform/resolvers": "npm:5.2.2"
     "@radix-ui/react-accordion": "npm:1.2.12"
     "@radix-ui/react-alert-dialog": "npm:1.1.15"
     "@radix-ui/react-aspect-ratio": "npm:1.1.8"
@@ -3735,16 +3734,17 @@ __metadata:
     react-color: "npm:2.19.3"
     react-day-picker: "npm:9.13.0"
     react-easy-sort: "npm:1.8.0"
-    react-hook-form: "npm:7.68.0"
     tailwind-merge: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
-    zod: "npm:4.2.1"
   peerDependencies:
-    "@filigran/icon": ^0.21.2
+    "@filigran/icon": ^0.22.0
+    "@hookform/resolvers": ^5.0.0
     "@types/react": ^16.8 || ^17.0 || ^18.0 || ^19.0
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
-  checksum: 10c0/539ebc0c1841d83c0a25d1127ea61f7726942a5fd891e6e49370682c951f87e29938bd3bec86c236ec601c2dffbedac355b6cede15bce0972ea08e505af944ef
+    react-hook-form: ^7.68.0
+    zod: ^4.1.13
+  checksum: 10c0/366a2d32e057d760286ef18218774be29582634be6f31e7e9fcb62bd70e6a2251f8baacb4d74264e704cb9b8f9787ddc405d53f38a5db1672b5c4941bd22f439
   languageName: node
   linkType: hard
 
@@ -8756,7 +8756,7 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": "npm:3.3.1"
     "@filigran/icon": "npm:0.21.2"
-    "@filigran/ui": "npm:0.43.1"
+    "@filigran/ui": "npm:0.44.0"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@testing-library/dom": "npm:10.4.1"
