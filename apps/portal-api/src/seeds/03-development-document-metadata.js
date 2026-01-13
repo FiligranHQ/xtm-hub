@@ -27,6 +27,16 @@ export async function seed(knex) {
         key: 'integration_subtype',
         value: 'NATIVE',
       },
+      {
+        document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
+        key: 'integration_type',
+        value: 'stream',
+      },
+      {
+        document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
+        key: 'integration_subtype',
+        value: 'NATIVE',
+      },
     ])
     .onConflict(['document_id', 'key'])
     .ignore();
