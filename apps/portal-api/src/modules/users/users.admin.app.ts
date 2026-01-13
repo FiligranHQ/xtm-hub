@@ -204,9 +204,9 @@ export const usersAdminApp = {
       );
 
     await Promise.all(
-      userIds.map((userId: UserId) => {
+      userIds.map(async (userId: UserId) => {
         try {
-          acceptPendingUserWithCapabilities({
+          await acceptPendingUserWithCapabilities({
             user_id: userId,
             organization_id: organizationId,
             orgCapabilities: [],
