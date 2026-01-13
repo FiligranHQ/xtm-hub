@@ -749,8 +749,11 @@
         "RegionPlaceholder": "Please select your preferred region for hosting",
         "AssociatedEmail": "Associated Email",
         "JobTitle": "Job title",
+        "JobTitlePlaceholder": "Please select your job title",
         "ActivitySector": "Activity sector",
+        "ActivitySectorPlaceholder": "Please select your activity sector",
         "UseCase": "Use case",
+        "UseCasePlaceholder": "Please select your use case",
         "MSSA": "MSSA",
         "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
