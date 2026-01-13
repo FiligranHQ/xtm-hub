@@ -109,7 +109,9 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                     value={field.value}
                     onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue
+                        placeholder={t('Service.Trials.Form.RegionPlaceholder')}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {REGIONS.map((region) => (
