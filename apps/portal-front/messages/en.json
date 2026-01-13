@@ -744,7 +744,7 @@
     "SubscribeService": "Subscribe to {serviceName} service",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
-    "SureWantSubscriptionDirect": "Do you want to subscribe to the {serviceName} service ? This service is free and gives you access to resources built carefully by the Filigran Team.",
+    "SureWantSubscriptionDirect": "Get started with our free {serviceName} service and explore resources created by the Filigran team.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
       "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
