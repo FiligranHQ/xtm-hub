@@ -525,7 +525,7 @@
         "third_party_integration": "Intégrations tierces (bientôt disponible)"
       },
       "Form": {
-        "SelectIntegrationSubType": "Sélectionner le sous-type d'intégration"
+        "SelectIntegrationSubType": "Type"
       }
     },
     "CsvFeed": {

@@ -41,10 +41,10 @@ const taxiiFeedFormSchema = z.object({
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
   labels: z.array(z.string()).optional(),
+  integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck),
-  integration_subtype: z.string().min(1, 'Required'),
 });
 export type TaxiiFeedFormValues = z.infer<typeof taxiiFeedFormSchema>;
 
