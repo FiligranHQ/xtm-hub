@@ -46,6 +46,13 @@ export const integrationsItem = graphql`
     integration_type
 
     ...integrationConnectorsItem_fragment @relay(mask: false)
+    ...integrationTaxiiFeedsItem_fragment @relay(mask: false)
+  }
+`;
+
+export const taxiiFeedsItem = graphql`
+  fragment integrationTaxiiFeedsItem_fragment on TaxiiFeed {
+    integration_subtype
   }
 `;
 

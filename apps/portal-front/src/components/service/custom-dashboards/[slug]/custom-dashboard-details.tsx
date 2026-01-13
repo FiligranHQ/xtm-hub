@@ -1,6 +1,5 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
-import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
@@ -53,9 +52,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
 
   const context = useDocumentContext({
     serviceInstance,
-    translationKey: 'Service.OpenctiCustomDashboards',
     type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
-    form: CustomDashboardForm,
   });
 
   return (

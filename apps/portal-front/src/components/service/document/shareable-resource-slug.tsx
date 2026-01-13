@@ -26,9 +26,11 @@ import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
+  isIntegrationItem,
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 
 // Component interface
 interface ShareableResourceSlugProps {
@@ -60,12 +62,15 @@ const ShareableResourceSlug: React.FunctionComponent<
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
+    if (isIntegrationItem(documentData)) {
+      return documentData.integration_type === IntegrationTypeEnum.CSV_FEED;
+    }
+
     return [
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
-      ShareableResourceType.OPENCTI_INTEGRATION,
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
-  }, [documentData.active, documentData.type]);
+  }, [documentData]);
 
   return (
     <>

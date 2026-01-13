@@ -1,6 +1,6 @@
-import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
 import { Badge, Button } from '@filigran/ui/servers';
@@ -27,7 +27,7 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
 > = ({ connectorDetails, compatibilityItem }) => {
   const t = useTranslations();
 
-  const connectorMetadata = getIngestionConnectorMetadata(
+  const connectorMetadata = getIntegrationSubTypeMetadata(
     connectorDetails?.integration_subtype ?? undefined
   );
 

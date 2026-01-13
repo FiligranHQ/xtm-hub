@@ -1,6 +1,6 @@
 'use client';
-import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -48,7 +48,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
   publicPath = false,
 }) => {
   const t = useTranslations();
-  const connectorMetadata = getIngestionConnectorMetadata(
+  const connectorMetadata = getIntegrationSubTypeMetadata(
     shareableConnector.integration_subtype
   );
 
