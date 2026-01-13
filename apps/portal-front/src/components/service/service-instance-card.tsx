@@ -45,20 +45,21 @@ const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className }) => {
   const renderHoverButton = useCallback((action: PlatformHoverAction) => {
-    if (action.href) {
-      return (
-        <Button
-          key={action.id}
-          {...(action.variant ? { variant: action.variant } : {})}>
-          <Link
-            href={action.href}
-            target={action.target}>
-            {action.label}
-          </Link>
-        </Button>
-      );
+    if (!action.href) {
+      return null;
     }
-    return <></>;
+
+    return (
+      <Button
+        key={action.id}
+        {...(action.variant ? { variant: action.variant } : {})}>
+        <Link
+          href={action.href}
+          target={action.target}>
+          {action.label}
+        </Link>
+      </Button>
+    );
   }, []);
 
   return (

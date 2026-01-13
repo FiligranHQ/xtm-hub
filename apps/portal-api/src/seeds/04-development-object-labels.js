@@ -23,6 +23,14 @@ export async function seed(knex) {
         object_id: 'e02faca0-9d38-4981-94f2-72bf18ca9c53',
         label_id: '6d920874-91b1-4288-95d1-019815400e22',
       },
+      {
+        object_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
+        label_id: '64aed898-bf64-4872-b83c-b7b720d2edb7',
+      },
+      {
+        object_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
+        label_id: 'c3335831-66ee-4302-af74-09f618b76d67',
+      },
     ])
     .onConflict(['object_id', 'label_id'])
     .ignore();

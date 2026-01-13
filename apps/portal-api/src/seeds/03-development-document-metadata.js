@@ -17,6 +17,16 @@ export async function seed(knex) {
         key: 'integration_type',
         value: 'csv_feed',
       },
+      {
+        document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
+        key: 'integration_type',
+        value: 'taxii_feed',
+      },
+      {
+        document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
+        key: 'integration_subtype',
+        value: 'NATIVE',
+      },
     ])
     .onConflict(['document_id', 'key'])
     .ignore();

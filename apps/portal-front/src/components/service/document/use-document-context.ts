@@ -1,5 +1,8 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
-import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
+import {
+  ServiceForm,
+  ServiceFormValues,
+} from '@/components/service/components/subscribable-services.types';
 import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
   DocumentCreateMutation,
@@ -181,35 +184,33 @@ export function useDocumentContext({
   };
 
   const form = useMemo(() => {
-    if (type === ShareableResourceType.OPENAEV_SCENARIO) {
-      return OpenaevScenarioForm;
-    }
+    const formMapping: Record<ShareableResourceType, () => ServiceForm> = {
+      [ShareableResourceType.OPENAEV_SCENARIO]: () => OpenaevScenarioForm,
+      [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
+        CustomDashboardForm,
+      [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
+        return integrationType === IntegrationTypeEnum.CSV_FEED
+          ? CsvFeedForm
+          : TaxiiFeedForm;
+      },
+    };
 
-    if (type === ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD) {
-      return CustomDashboardForm;
-    }
-
-    if (integrationType === IntegrationTypeEnum.CSV_FEED) {
-      return CsvFeedForm;
-    }
-
-    return TaxiiFeedForm;
+    return formMapping[type]();
   }, [type, integrationType]);
 
   const translationKey = useMemo(() => {
-    if (type === ShareableResourceType.OPENAEV_SCENARIO) {
-      return 'Service.OpenAEVScenario';
-    }
+    const translationKeyMapping: Record<ShareableResourceType, () => string> = {
+      [ShareableResourceType.OPENAEV_SCENARIO]: () => 'Service.OpenAEVScenario',
+      [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
+        'Service.OpenctiCustomDashboards',
+      [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
+        return integrationType === IntegrationTypeEnum.CSV_FEED
+          ? 'Service.CsvFeed'
+          : 'Service.TaxiiFeed';
+      },
+    };
 
-    if (type === ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD) {
-      return 'Service.OpenctiCustomDashboards';
-    }
-
-    if (integrationType === IntegrationTypeEnum.CSV_FEED) {
-      return 'Service.CsvFeed';
-    }
-
-    return 'Service.TaxiiFeed';
+    return translationKeyMapping[type]();
   }, [type, integrationType]);
 
   return {
