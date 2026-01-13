@@ -78,7 +78,7 @@ export const NotificationButton: React.FC = () => {
     () => ({
       variables: {
         connections: [connectionID],
-        organizationId: organizationId,
+        organizationId,
       },
       subscription: UserPendingListSubscription,
       onNext: (

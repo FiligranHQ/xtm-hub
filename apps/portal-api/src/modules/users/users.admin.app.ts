@@ -185,7 +185,7 @@ export const usersAdminApp = {
     excludedIds: UserId[]
   ) => {
     const userIds =
-      await UserOrganizationPendingDomain.bulkGetUserIdsFromOrganizationPending(
+      await UserOrganizationPendingDomain.bulkLoadUserIdsFromOrganizationPending(
         organizationId,
         ids,
         searchTerm,

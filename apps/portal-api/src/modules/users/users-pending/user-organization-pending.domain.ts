@@ -103,7 +103,7 @@ export const UserOrganizationPendingDomain = {
     return queryBuilder.delete('*');
   },
 
-  bulkGetUserIdsFromOrganizationPending: async (
+  bulkLoadUserIdsFromOrganizationPending: async (
     organizationId: OrganizationId,
     ids: UserId[],
     searchTerm: string | undefined,
