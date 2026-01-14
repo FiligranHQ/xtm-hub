@@ -89,9 +89,12 @@ export async function createUser({
       .first();
 
     if (existingUser) {
-      throw new Error(
-        `User already exists with email: ${email} or id: ${userId}`
-      );
+      return {
+        userId: existingUser.id,
+        email: existingUser.email,
+        first_name: existingUser.first_name,
+        last_name: existingUser.last_name,
+      };
     }
 
     // Insert User

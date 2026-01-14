@@ -31,16 +31,16 @@ const TrialsList: FunctionComponent = () => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="cancelled">
-          <TrialsTab type={TrialsTabType.Cancelled}></TrialsTab>
+          <TrialsTab type={TrialsTabType.Cancelled} />
         </TabsContent>
         <TabsContent value="expired">
-          <TrialsTab type={TrialsTabType.Expired}></TrialsTab>
+          <TrialsTab type={TrialsTabType.Expired} />
         </TabsContent>
         <TabsContent value="running">
-          <TrialsTab type={TrialsTabType.Running}></TrialsTab>
+          <TrialsTab type={TrialsTabType.Running} />
         </TabsContent>
         <TabsContent value="waiting">
-          <TrialsTab type={TrialsTabType.Waiting}></TrialsTab>
+          <TrialsTab type={TrialsTabType.Waiting} />
         </TabsContent>
         <TabsContent value="quotas">
           <TrialsTabQuotas />

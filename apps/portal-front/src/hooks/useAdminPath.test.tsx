@@ -1,5 +1,5 @@
-import useAdminByPass from '@/hooks/useAdminByPass';
 import useAdminPath from '@/hooks/useAdminPath';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { APP_PATH } from '@/utils/path/constant';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { renderHook } from '@testing-library/react';

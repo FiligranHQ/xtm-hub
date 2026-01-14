@@ -4,6 +4,7 @@ import {
   TrialsDeploymentRequestsAvailableQuery,
 } from '@/components/trials/trials.graphql';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { DataTable } from '@filigran/ui';
 import { PlatformIdentifier } from '@generated/oneClickDeployMutation.graphql';
 import trialsDeploymentAvailabilityFragmentGraphql, {
@@ -29,6 +30,7 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
   platformIdentifier,
 }) => {
   const t = useTranslations();
+  const isAdminByPass = useAdminByPass();
 
   const queryData = useLazyLoadQuery<trialsDeploymentRequestsAvailableQuery>(
     TrialsDeploymentRequestsAvailableQuery,
@@ -123,7 +125,7 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
         data={dataTableData}
         onClickRow={(row) => setQuotaEdit(row.original)}
       />
-      {quotaEdit && (
+      {quotaEdit && isAdminByPass && (
         <TrialsTabQuotasPlatformUpdate
           quota={quotaEdit}
           key={`${quotaEdit.platform_identifier}${quotaEdit.region}`}
