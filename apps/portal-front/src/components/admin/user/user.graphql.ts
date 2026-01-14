@@ -127,6 +127,9 @@ export const UserPendingListSubscription = graphql`
       delete {
         id @deleteEdge(connections: $connections)
       }
+      invalidate {
+        id
+      }
     }
   }
 `;

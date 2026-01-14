@@ -131,6 +131,8 @@ type Mutation {
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
+  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   editMeUser(input: EditMeUserInput!): User!
@@ -144,6 +146,10 @@ type Mutation {
 
 enum OrganizationOrdering {
   name
+}
+
+type OrganizationId implements Node {
+  id: ID!
 }
 
 type Organization implements Node {
@@ -1246,6 +1252,13 @@ input AdminAddUserInput {
   organization_capabilities: [OrganizationCapabilitiesInput!]
 }
 
+input BulkPendingUserFromOrganizationInput {
+  ids: [ID!]
+  searchTerm: String
+  filters: [Filter!]
+  excludedIds: [ID!]
+}
+
 type UserSubscription {
   add: User
   edit: User
@@ -1260,6 +1273,7 @@ type MeUserSubscription {
 
 type UserPendingSubscription {
   delete: User
+  invalidate: OrganizationId
 }
 
 enum Restriction {

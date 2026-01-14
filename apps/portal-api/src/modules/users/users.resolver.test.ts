@@ -1,4 +1,5 @@
 import { MockInstance } from '@vitest/spy';
+import { GraphQLResolveInfo } from 'graphql';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -1019,6 +1020,105 @@ describe('User mutation resolver', () => {
       const events = await subscriptionSpy.waitForEvents(1);
       expect(events).toHaveLength(1);
       expect(events[0].UserPending.delete.email).toBe(email);
+
+      await removeUser({ email: pendingUser.email });
+      await subscriptionSpy.cleanup();
+    });
+  });
+  describe('bulkRemovePendingUserFromOrganization', () => {
+    it('should remove pending users from organization', async () => {
+      const email = `testPending${uuidv4()}@thales.com`;
+      const pendingUser = await loginFromProvider({
+        email: email,
+        first_name: 'testToRemove',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      const testContext = {
+        ...contextAdminOrgaThales,
+        user: {
+          ...contextAdminOrgaThales.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
+
+      await usersResolver.Mutation?.bulkRemovePendingUserFromOrganization!(
+        {},
+        {
+          input: {
+            ids: [],
+            searchTerm: undefined,
+            filters: [],
+            excludedIds: [],
+          },
+        },
+        testContext,
+        {} as GraphQLResolveInfo
+      );
+
+      const usersPendingOrg =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: pendingUser.id,
+        });
+
+      expect(usersPendingOrg.length).toBe(0);
+      await removeUser({ email: pendingUser.email });
+    });
+
+    it('should dispatch event when pending users are removed from organization', async () => {
+      const email = `testPending${uuidv4()}@thales.com`;
+      const pendingUser = await loginFromProvider({
+        email: email,
+        first_name: 'testToRemove',
+        last_name: 'pending',
+        roles: [],
+      });
+
+      const testContext = {
+        ...contextAdminOrgaThales,
+        user: {
+          ...contextAdminOrgaThales.user,
+          selected_organization_id: THALES_ORGA_ID,
+        },
+      };
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
+
+      const organizationId = toGlobalId('Organization', THALES_ORGA_ID);
+      const subscriptionSpy = new SubscriptionSpy();
+      await subscriptionSpy.spy(
+        usersResolver.Subscription?.UserPending,
+        {
+          organizationId: organizationId,
+        },
+        contextAdminOrgaThales,
+        ['invalidate']
+      );
+
+      await usersResolver.Mutation?.bulkRemovePendingUserFromOrganization!(
+        {},
+        {
+          input: {
+            ids: [],
+            searchTerm: undefined,
+            filters: [],
+            excludedIds: [],
+          },
+        },
+        testContext,
+        {} as GraphQLResolveInfo
+      );
+
+      const events = await subscriptionSpy.waitForEvents(1);
+      expect(events).toHaveLength(1);
+      expect(events[0].UserPending.invalidate.id).toBe(THALES_ORGA_ID);
 
       await removeUser({ email: pendingUser.email });
       await subscriptionSpy.cleanup();

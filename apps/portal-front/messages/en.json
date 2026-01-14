@@ -54,6 +54,7 @@
       "LoginError": "You are not allowed to login"
     },
     "Server": {
+      "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Error occurred while accepting users",
       "ADD_ORGANIZATION_ERROR": "Error occurred while adding organization",
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "ADDING_USER_ERROR": "Error occurred while creating user",
@@ -317,7 +318,17 @@
     "TabTitle": "Users Requests ({usersCount})",
     "WarningUserRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse this person from your organization. There is no way of going back. Are you sure ?",
+      "Description": "You are about to refuse this user from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Are you sure?"
+    },
+    "WarningUsersRejection": {
+      "Confirm": "Confirm",
+      "Description": "You are about to refuse these users from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Are you sure?"
+    },
+    "WarningUsersAccept": {
+      "Confirm": "Confirm",
+      "Description": "You are about to accept these users in your organization. These users won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
       "Title": "Are you sure?"
     }
   },
