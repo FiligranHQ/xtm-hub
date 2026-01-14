@@ -13,7 +13,7 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { WithLabels } from '../../../utils/types';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -24,6 +24,7 @@ import {
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_TAXII_FEED_METADATA,
   isIntegrationType,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
@@ -87,11 +88,16 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
       logApp.error(`Integration type is not recognized: ${integrationType}`);
       throw new Error(ErrorCode.IntegrationTypeNotRecognized);
     }
-    if (integrationType === IntegrationType.Connector) {
+
+    const metadataKeysMapping: Partial<Record<IntegrationType, string[]>> = {
+      [IntegrationType.CsvFeed]: INTEGRATION_CSV_FEED_METADATA,
+      [IntegrationType.TaxiiFeed]: INTEGRATION_TAXII_FEED_METADATA,
+    };
+    if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);
     }
 
-    return INTEGRATION_CSV_FEED_METADATA;
+    return metadataKeysMapping[integrationType];
   },
   [ServiceDefinitionIdentifier.OpenaevScenarios]: () =>
     OPENAEV_SCENARIO_METADATA,
@@ -120,6 +126,9 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
     DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier](
       metadata
     );
+  if (!metadataKeys) {
+    throw new Error(UnknownErrorCode.MissingMetadataMapping);
+  }
   const missingMetadataKeys = metadataKeys.filter(
     (key) => !metadata.some((meta) => meta.key === key)
   );

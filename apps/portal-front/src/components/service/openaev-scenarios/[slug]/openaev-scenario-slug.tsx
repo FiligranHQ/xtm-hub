@@ -3,7 +3,6 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
 import { useDocumentContext } from '@/components/service/document/use-document-context';
-import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import {
   OpenaevScenarioQuery,
   openaevScenariosItem,
@@ -52,9 +51,7 @@ const OpenaevScenarioSlug = ({
 
   const context = useDocumentContext({
     serviceInstance,
-    translationKey: 'Service.OpenAEVScenario',
     type: ShareableResourceType.OPENAEV_SCENARIO,
-    form: OpenaevScenarioForm,
   });
 
   return (

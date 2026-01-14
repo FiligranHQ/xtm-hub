@@ -54,6 +54,7 @@
       "LoginError": "Vous n'êtes pas autorisé à vous connecter"
     },
     "Server": {
+      "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de l'acceptation des utilisateurs",
       "ADD_ORGANIZATION_ERROR": "Une erreur s'est produite lors de l'ajout d'une organisation",
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
@@ -102,6 +103,7 @@
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
+      "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
       "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "Une erreur inconnue s'est produite",
@@ -127,7 +129,6 @@
       "TRANSFER_ME_ERROR": "Une erreur s'est produite lors de la requête de transfert de personal space.",
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
-      "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
       "USER_DISABLED": "L'utilisateur est désactivé",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
@@ -317,8 +318,18 @@
     "TabTitle": "Requêtes utilisateurs ({usersCount})",
     "WarningUserRejection": {
       "Confirm": "Confirmer",
-      "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
+      "Description": "Vous êtes sur le point de refuser cet utilisateur dans votre organisation. Cette action ne peut être annulée. Êtes-vous sûr ?",
       "Title": "Êtes-vous sûr?"
+    },
+    "WarningUsersRejection": {
+      "Confirm": "Confirmez",
+      "Description": "Vous êtes sur le point de refuser ces utilisateurs de votre organisation. Cette action ne peut être annulée. Etes-vous sûr ?",
+      "Title": "Etes-vous sûr ?"
+    },
+    "WarningUsersAccept": {
+      "Confirm": "Confirmer",
+      "Description": "Vous êtes sur le point d'accepter ces utilisateurs dans votre organisation. Ces utilisateurs n'auront pas d'autorisations spécifiques par défaut. Si vous souhaitez attribuer ou mettre à jour des permissions, visitez l'onglet Utilisateurs. Êtes-vous sûr ?",
+      "Title": "Êtes-vous sûr ?"
     }
   },
   "PlatformIdentifier": {
@@ -497,21 +508,14 @@
       "Actions": {
         "Share": "Partager l'intégration Feed"
       },
+      "AddService": "Ajouter une nouvelle intégration",
+      "IntegrationType": "Type d'intégration",
       "Filter": {
-        "Connector": {
-          "Type": {
-            "Placeholder": "Type de connecteur..."
-          }
+        "IntegrationSubType": {
+          "Placeholder": "Sous-type..."
         },
         "Type": {
-          "Placeholder": "Type...",
-          "csv_feed": "Flux CSV",
-          "connector": "Connecteurs",
-          "rss_feed": "Flux RSS",
-          "json_feed": "Flux JSON",
-          "taxii_feed": "Flux TAXII (bientôt disponible)",
-          "opencti_stream_feed": "Flux OpenCTI",
-          "third_party_integration": "Intégrations tierces"
+          "Placeholder": "Type..."
         },
         "ProductVersion": {
           "Placeholder": "Plateforme..."
@@ -521,6 +525,18 @@
           "AutomaticDeploy": "Déploiement automatique",
           "ManualDeploy": "Déploiement manuel"
         }
+      },
+      "Type": {
+        "csv_feed": "Flux CSV",
+        "connector": "Connecteurs",
+        "rss_feed": "Flux RSS (bientôt disponible)",
+        "json_feed": "Flux JSON (bientôt disponible)",
+        "taxii_feed": "Flux TAXII",
+        "opencti_stream_feed": "Flux OpenCTI (bientôt disponible)",
+        "third_party_integration": "Intégrations tierces (bientôt disponible)"
+      },
+      "Form": {
+        "SelectIntegrationSubType": "Sous-type"
       }
     },
     "CsvFeed": {
@@ -553,6 +569,37 @@
       "NonActive": "Brouillon",
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
       "UpdateService": "Editer le CSV Feed {name}"
+    },
+    "TaxiiFeed": {
+      "Actions": {
+        "Added": "Le flux TAXII {name} a été ajouté avec succès",
+        "Deleted": "Le flux TAXII {name} a été supprimée avec succès",
+        "Share": "Partager le flux TAXII",
+        "Updated": "Le flux TAXII {name} a été modifiée avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau flux TAXII",
+      "DeleteService": "Supprimer le flux TAXII {name}",
+      "Form": {
+        "Author": "Auteur",
+        "TaxiiFeedFile": "Fichier de flux TAXII",
+        "TaxiiFeedIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Voici un paragraphe pour décrire le flux TAXII.",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "ExistingTaxiiFeedFile": "Fichier de flux TAXII existant : {file_name}",
+        "ExistingTaxiiFeedIllustration": "Illustration existante du flux TAXII : {file_name}",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "PublishedPlaceholder": "Le flux TAXII est-il publié ?",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Mise à jour du fichier JSON"
+      },
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux TAXII {name} ?",
+      "UpdateService": "Mettre à jour le flux TAXII {name}"
     },
     "OpenctiCustomDashboards": {
       "Actions": {

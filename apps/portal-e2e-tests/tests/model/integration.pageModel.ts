@@ -11,10 +11,10 @@ const TEST_IMAGE_FILE = {
   name: 'test.png',
 };
 
-export default class CsvFeedPage {
+export default class IntegrationPage {
   constructor(private page: Page) {}
 
-  async subscribeCsvFeedService() {
+  async subscribeIntegrationsService() {
     await this.page
       .locator('li')
       .filter({ hasText: 'OpenCTI Integrations Library' })
@@ -36,6 +36,37 @@ export default class CsvFeedPage {
     await fileInput.setInputFiles(filePath);
   }
 
+  async fillTaxiiFeed({
+    name,
+    shortDescription,
+    description,
+  }: {
+    name: string;
+    shortDescription: string;
+    description: string;
+  }) {
+    await this.page
+      .getByRole('button', { name: 'Add new Integration' })
+      .click();
+    await this.page.getByRole('menuitem', { name: 'TAXII Feeds' }).click();
+    await this.page.getByRole('textbox', { name: 'Name *' }).fill(name);
+    await this.page
+      .getByRole('textbox', { name: 'Short Description *' })
+      .fill(shortDescription);
+    await this.page
+      .getByRole('textbox', { name: 'This is a paragraph to' })
+      .fill(description);
+    await this.page
+      .getByRole('checkbox', { name: 'Is the TAXII Feed published?' })
+      .click();
+    await this.page.getByLabel('Type').click();
+    await this.page.getByLabel('Native').click();
+    await this.uploadJsonDocument(TEST_JSON_FILE.path);
+    await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await expect(this.page).toHaveScreenshot();
+    await this.page.getByRole('button', { name: 'Validate' }).click();
+  }
+
   async fillCsvFeed({
     name,
     shortDescription,
@@ -45,7 +76,10 @@ export default class CsvFeedPage {
     shortDescription: string;
     description: string;
   }) {
-    await this.page.getByRole('button', { name: 'Add new CSV Feed' }).click();
+    await this.page
+      .getByRole('button', { name: 'Add new Integration' })
+      .click();
+    await this.page.getByRole('menuitem', { name: 'CSV Feeds' }).click();
     await this.page.getByRole('textbox', { name: 'Name *' }).fill(name);
     await this.page
       .getByRole('textbox', { name: 'Short Description *' })
@@ -62,8 +96,18 @@ export default class CsvFeedPage {
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
-  async navigateToCsvFeed(shortDescription: string) {
+  async navigateToIntegration(shortDescription: string) {
     await this.page.getByRole('link', { name: shortDescription }).click();
+  }
+
+  async deleteTaxiiFeed(updateButtonRole: 'menuitem' | 'button') {
+    await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
+    await this.page.getByRole('button', { name: 'Delete' }).click();
+    await expect(this.page).toHaveScreenshot();
+    await this.page.getByRole('button', { name: 'Delete' }).click();
+
+    await waitForDrawerToClose(this.page);
+    await this.page.waitForTimeout(3000);
   }
 
   async deleteCsvFeed(updateButtonRole: 'menuitem' | 'button') {

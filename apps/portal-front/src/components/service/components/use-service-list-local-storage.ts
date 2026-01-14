@@ -1,5 +1,5 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
-import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
+import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -39,8 +39,14 @@ export const useServiceListLocalStorage = (
       []
     );
 
-  const [connectorTypes, setConnectorTypes, removeConnectorTypes] =
-    useLocalStorage<ConnectorTypeEnum[]>(`connectorType${serviceName}List`, []);
+  const [
+    integrationSubTypes,
+    setIntegrationSubTypes,
+    removeIntegrationSubTypes,
+  ] = useLocalStorage<IntegrationSubTypeEnum[]>(
+    `integrationSubType${serviceName}List`,
+    []
+  );
 
   const [productVersions, setProductVersions, removeProductVersions] =
     useLocalStorage<string[]>(`productVersion${serviceName}List`, []);
@@ -61,7 +67,7 @@ export const useServiceListLocalStorage = (
     removeLabels();
     removeSelectedFilters();
     removeIntegrationTypes();
-    removeConnectorTypes();
+    removeIntegrationSubTypes();
     removeDeployable();
   };
 
@@ -80,9 +86,9 @@ export const useServiceListLocalStorage = (
     integrationTypes,
     setIntegrationTypes,
     removeIntegrationTypes,
-    connectorTypes,
-    setConnectorTypes,
-    removeConnectorTypes,
+    integrationSubTypes,
+    setIntegrationSubTypes,
+    removeIntegrationSubTypes,
     selectedFilters,
     setSelectedFilters,
     removeSelectedFilters,

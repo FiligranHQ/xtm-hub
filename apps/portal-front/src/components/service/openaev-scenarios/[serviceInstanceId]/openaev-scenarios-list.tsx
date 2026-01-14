@@ -11,7 +11,6 @@ import { useActiveAndDraftSplit } from '@/components/service/components/service-
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
-import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   openaevScenariosItem_fragment$data,
@@ -59,9 +58,7 @@ const OpenaevScenariosList = ({
   const context = useDocumentContext({
     serviceInstance,
     connectionId,
-    translationKey: 'Service.OpenAEVScenario',
     type: ShareableResourceType.OPENAEV_SCENARIO,
-    form: OpenaevScenarioForm,
   });
 
   return (

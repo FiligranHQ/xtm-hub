@@ -25,7 +25,6 @@ import {
 } from '@generated/integrationsItem_fragment.graphql';
 import { integrationsList$key } from '@generated/integrationsList.graphql';
 
-import { CsvFeedForm } from '@/components/service/csv-feeds/csv-feed-form';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
@@ -75,15 +74,13 @@ const IntegrationsList = ({
   const context = useDocumentContext({
     serviceInstance,
     connectionId,
-    translationKey: 'Service.CsvFeed',
     type: ShareableResourceType.OPENCTI_INTEGRATION,
-    form: CsvFeedForm,
   });
 
   const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
   const {
-    removeConnectorTypes,
+    removeIntegrationSubTypes,
     removeIntegrationTypes,
     removeProductVersions,
     removeDeployable,
@@ -95,7 +92,7 @@ const IntegrationsList = ({
     [ServiceListFilterKey.IntegrationType]: {
       node: <IntegrationFilters />,
       reset: () => {
-        removeConnectorTypes();
+        removeIntegrationSubTypes();
         removeIntegrationTypes();
       },
     },

@@ -33,7 +33,7 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
     search,
     labels,
     integrationTypes,
-    connectorTypes,
+    integrationSubTypes,
     deployable,
     setSearch,
   } = useServiceListLocalStorage(localStorageKey);
@@ -50,7 +50,10 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
         filters: [
           { key: FilterKeyEnum.LABEL, value: labels },
           { key: FilterKeyEnum.INTEGRATION_TYPE, value: integrationTypes },
-          { key: FilterKeyEnum.INTEGRATION_SUBTYPE, value: connectorTypes },
+          {
+            key: FilterKeyEnum.INTEGRATION_SUBTYPE,
+            value: integrationSubTypes,
+          },
           { key: FilterKeyEnum.MANAGER_SUPPORTED, value: deployable },
         ],
       },
@@ -65,7 +68,7 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
     search,
     labels,
     integrationTypes,
-    connectorTypes,
+    integrationSubTypes,
     deployable,
   ]);
 

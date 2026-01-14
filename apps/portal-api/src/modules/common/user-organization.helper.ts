@@ -13,10 +13,12 @@ export const createUserOrganizationRelationAndRemovePending = async ({
   user_id: UserId;
   organizations_id: OrganizationId[];
 }): Promise<UserOrganization[]> => {
-  organizations_id.map((org) =>
-    UserOrganizationPendingDomain.removeUserFromOrganizationPending(
-      user_id,
-      org
+  await Promise.all(
+    organizations_id.map((org) =>
+      UserOrganizationPendingDomain.removeUserFromOrganizationPending(
+        user_id,
+        org
+      )
     )
   );
 

@@ -119,13 +119,13 @@ export const CsvFeedForm = ({
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.CsvFeed.Form.DescriptionLabel')}
+                  {t(`${translationKey}.Form.DescriptionLabel`)}
                 </FormLabel>
                 <FormControl>
                   <MarkdownInput
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder={'Service.CsvFeed.Form.DescriptionPlaceholder'}
+                    placeholder={`${translationKey}.Form.DescriptionPlaceholder`}
                   />
                 </FormControl>
                 <FormMessage />
@@ -135,7 +135,7 @@ export const CsvFeedForm = ({
           labels: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t('Service.CsvFeed.Form.LabelsLabel')}</FormLabel>
+                <FormLabel>{t(`${translationKey}.Form.LabelsLabel`)}</FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
@@ -145,7 +145,7 @@ export const CsvFeedForm = ({
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t('Service.CsvFeed.Form.LabelsPlaceholder')}
+                    placeholder={t(`${translationKey}.Form.LabelsPlaceholder`)}
                     variant="inverted"
                   />
                 </FormControl>
@@ -155,7 +155,7 @@ export const CsvFeedForm = ({
           uploader_id: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t('Service.CsvFeed.Form.Author')}</FormLabel>
+                <FormLabel>{t(`${translationKey}.Form.Author`)}</FormLabel>
                 <FormControl>
                   <SelectUsersFormField
                     defaultValue={csvFeed?.uploader?.email ?? me!.email}
@@ -206,7 +206,7 @@ export const CsvFeedForm = ({
           },
           document: isCreation
             ? {
-                label: t('Service.CsvFeed.Form.CsvFeedFile'),
+                label: t(`${translationKey}.Form.CsvFeedFile`),
                 fieldType: 'file',
                 inputProps: {
                   allowedTypes: 'application/json',
@@ -217,7 +217,7 @@ export const CsvFeedForm = ({
                 fieldType: ({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t('Service.CsvFeed.Form.ExistingCsvFeedFile', {
+                      {t(`${translationKey}.Form.ExistingCsvFeedFile`, {
                         file_name: field.value?.[0].name ?? csvFeed?.file_name,
                       })}
                     </FormLabel>
@@ -227,13 +227,13 @@ export const CsvFeedForm = ({
                           field={field}
                           texts={{
                             selectFile: t(
-                              'Service.CsvFeed.Form.UpdateJSONFile'
+                              `${translationKey}.Form.UpdateJSONFile`
                             ),
                             dialogTitle: t(
-                              'Service.CsvFeed.Form.UpdateJSONFile'
+                              `${translationKey}.Form.UpdateJSONFile`
                             ),
                             dialogDescription: t(
-                              'Service.CsvFeed.Form.DescriptionUpdateJSONFile'
+                              `${translationKey}.Form.DescriptionUpdateJSONFile`
                             ),
                           }}
                           allowedTypes="application/json"
@@ -245,23 +245,23 @@ export const CsvFeedForm = ({
                 ),
               },
           images: {
-            label: t('Service.CsvFeed.Form.CsvFeedIllustration'),
+            label: t(`${translationKey}.Form.CsvFeedIllustration`),
             fieldType: 'file',
             inputProps: {
               allowedTypes: 'image/jpeg, image/png',
             },
           },
           active: {
-            label: t('Service.CsvFeed.Form.PublishedPlaceholder'),
+            label: t(`${translationKey}.Form.PublishedPlaceholder`),
           },
           short_description: {
-            label: t('Service.CsvFeed.Form.ShortDescriptionLabel'),
+            label: t(`${translationKey}.Form.ShortDescriptionLabel`),
           },
           slug: {
-            label: t('Service.CsvFeed.Form.SlugLabel'),
+            label: t(`${translationKey}.Form.SlugLabel`),
           },
           name: {
-            label: t('Service.CsvFeed.Form.NameLabel'),
+            label: t(`${translationKey}.Form.NameLabel`),
           },
           integration_type: { fieldType: () => <FormItem hidden={true} /> },
         }}>

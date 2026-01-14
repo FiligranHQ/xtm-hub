@@ -57,6 +57,13 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
+export type BulkPendingUserFromOrganizationInput = {
+  excludedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  filters?: InputMaybe<Array<Filter>>;
+  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CanUnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
 };
@@ -85,7 +92,7 @@ export type Connector = Document & Integration & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: ConnectorType;
+  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   labels?: Maybe<Array<Label>>;
   manager_supported: Scalars['Boolean']['output'];
@@ -109,14 +116,6 @@ export type Connector = Document & Integration & Node & {
   uploader_organization?: Maybe<Organization>;
   verified: Scalars['Boolean']['output'];
 };
-
-export enum ConnectorType {
-  ExternalImport = 'EXTERNAL_IMPORT',
-  InternalEnrichment = 'INTERNAL_ENRICHMENT',
-  InternalExportFile = 'INTERNAL_EXPORT_FILE',
-  InternalImportFile = 'INTERNAL_IMPORT_FILE',
-  Stream = 'STREAM'
-}
 
 export type CreateDeploymentRequestInput = {
   activity_sector?: InputMaybe<Scalars['String']['input']>;
@@ -464,6 +463,15 @@ export type IntegrationEdge = {
   node: Integration;
 };
 
+export enum IntegrationSubType {
+  ExternalImport = 'EXTERNAL_IMPORT',
+  InternalEnrichment = 'INTERNAL_ENRICHMENT',
+  InternalExportFile = 'INTERNAL_EXPORT_FILE',
+  InternalImportFile = 'INTERNAL_IMPORT_FILE',
+  Native = 'NATIVE',
+  Stream = 'STREAM'
+}
+
 export enum IntegrationType {
   Connector = 'connector',
   CsvFeed = 'csv_feed',
@@ -543,6 +551,8 @@ export type Mutation = {
   adminCancelDeploymentRequest?: Maybe<DeploymentRequest>;
   adminEditUser: User;
   autoRegisterPlatform: Success;
+  bulkAcceptPendingUserInOrganization?: Maybe<Success>;
+  bulkRemovePendingUserFromOrganization?: Maybe<Success>;
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
   changeSelectedOrganization?: Maybe<User>;
   contactUs: Success;
@@ -653,6 +663,16 @@ export type MutationAdminEditUserArgs = {
 
 export type MutationAutoRegisterPlatformArgs = {
   platform: PlatformInput;
+};
+
+
+export type MutationBulkAcceptPendingUserInOrganizationArgs = {
+  input?: InputMaybe<BulkPendingUserFromOrganizationInput>;
+};
+
+
+export type MutationBulkRemovePendingUserFromOrganizationArgs = {
+  input?: InputMaybe<BulkPendingUserFromOrganizationInput>;
 };
 
 
@@ -949,6 +969,11 @@ export type OrganizationEdge = {
   __typename?: 'OrganizationEdge';
   cursor: Scalars['String']['output'];
   node: Organization;
+};
+
+export type OrganizationId = Node & {
+  __typename?: 'OrganizationId';
+  id: Scalars['ID']['output'];
 };
 
 export type OrganizationInput = {
@@ -1749,6 +1774,34 @@ export type Success = {
   success: Scalars['Boolean']['output'];
 };
 
+export type TaxiiFeed = Document & Integration & Node & {
+  __typename?: 'TaxiiFeed';
+  active: Scalars['Boolean']['output'];
+  children_documents?: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  download_number?: Maybe<Scalars['Int']['output']>;
+  file_name?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_subtype: IntegrationSubType;
+  integration_type: IntegrationType;
+  labels?: Maybe<Array<Label>>;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id?: Maybe<Scalars['ID']['output']>;
+  service_instance?: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['String']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
+  short_description?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription?: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader?: Maybe<User>;
+  uploader_organization?: Maybe<Organization>;
+};
+
 export type TelemetryResponse = {
   __typename?: 'TelemetryResponse';
   message?: Maybe<Scalars['String']['output']>;
@@ -1845,6 +1898,7 @@ export enum UserOrdering {
 export type UserPendingSubscription = {
   __typename?: 'UserPendingSubscription';
   delete?: Maybe<User>;
+  invalidate?: Maybe<OrganizationId>;
 };
 
 export type UserService = Node & {
@@ -1995,9 +2049,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( OpenAevScenario );
-  Integration: ( Connector ) | ( CsvFeed );
-  Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( OpenAevScenario ) | ( TaxiiFeed );
+  Integration: ( Connector ) | ( CsvFeed ) | ( TaxiiFeed );
+  Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IsPlatformRegisteredOrganization ) | ( Label ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2008,11 +2062,11 @@ export type ResolversTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
   Connector: ResolverTypeWrapper<Connector>;
-  ConnectorType: ConnectorType;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
@@ -2049,6 +2103,7 @@ export type ResolversTypes = ResolversObject<{
   Integration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integration']>;
   IntegrationConnection: ResolverTypeWrapper<Omit<IntegrationConnection, 'edges'> & { edges: Array<ResolversTypes['IntegrationEdge']> }>;
   IntegrationEdge: ResolverTypeWrapper<Omit<IntegrationEdge, 'node'> & { node: ResolversTypes['Integration'] }>;
+  IntegrationSubType: IntegrationSubType;
   IntegrationType: IntegrationType;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
@@ -2075,6 +2130,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationCapability: OrganizationCapability;
   OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
+  OrganizationId: ResolverTypeWrapper<OrganizationId>;
   OrganizationInput: OrganizationInput;
   OrganizationOrdering: OrganizationOrdering;
   PageInfo: ResolverTypeWrapper<PageInfo>;
@@ -2130,6 +2186,7 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
+  TaxiiFeed: ResolverTypeWrapper<TaxiiFeed>;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
@@ -2165,6 +2222,7 @@ export type ResolversParentTypes = ResolversObject<{
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   Boolean: Scalars['Boolean']['output'];
+  BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
@@ -2219,6 +2277,7 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
   OrganizationConnection: OrganizationConnection;
   OrganizationEdge: OrganizationEdge;
+  OrganizationId: OrganizationId;
   OrganizationInput: OrganizationInput;
   PageInfo: PageInfo;
   PlatformDeploymentRequest: PlatformDeploymentRequest;
@@ -2258,6 +2317,7 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionEdge: SubscriptionEdge;
   SubscriptionModel: SubscriptionModel;
   Success: Success;
+  TaxiiFeed: TaxiiFeed;
   TelemetryResponse: TelemetryResponse;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
@@ -2326,7 +2386,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['ConnectorType'], ParentType, ContextType>;
+  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -2491,7 +2551,7 @@ export type DeploymentRequestEdgeResolvers<ContextType = PortalContext, ParentTy
 }>;
 
 export type DocumentResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'OpenAEVScenario', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'OpenAEVScenario' | 'TaxiiFeed', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -2535,7 +2595,7 @@ export type GenericServiceCapabilityResolvers<ContextType = PortalContext, Paren
 }>;
 
 export type IntegrationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'TaxiiFeed', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -2637,6 +2697,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationAdminCancelDeploymentRequestArgs>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
+  bulkAcceptPendingUserInOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkAcceptPendingUserInOrganizationArgs>>;
+  bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkRemovePendingUserFromOrganizationArgs>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
@@ -2678,7 +2740,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IsPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IsPlatformRegisteredOrganization' | 'Label' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2752,6 +2814,11 @@ export type OrganizationConnectionResolvers<ContextType = PortalContext, ParentT
 export type OrganizationEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationEdge'] = ResolversParentTypes['OrganizationEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type OrganizationIdResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationId'] = ResolversParentTypes['OrganizationId']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3069,6 +3136,34 @@ export type SuccessResolvers<ContextType = PortalContext, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TaxiiFeed'] = ResolversParentTypes['TaxiiFeed']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['Label']>>, ParentType, ContextType>;
+  minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TelemetryResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TelemetryResponse'] = ResolversParentTypes['TelemetryResponse']> = ResolversObject<{
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   result?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -3113,6 +3208,7 @@ export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends Re
 
 export type UserPendingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserPendingSubscription'] = ResolversParentTypes['UserPendingSubscription']> = ResolversObject<{
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  invalidate?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3202,6 +3298,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
+  OrganizationId?: OrganizationIdResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformDeploymentRequest?: PlatformDeploymentRequestResolvers<ContextType>;
   PlatformDeploymentRequestConnection?: PlatformDeploymentRequestConnectionResolvers<ContextType>;
@@ -3232,6 +3329,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
   SubscriptionModel?: SubscriptionModelResolvers<ContextType>;
   Success?: SuccessResolvers<ContextType>;
+  TaxiiFeed?: TaxiiFeedResolvers<ContextType>;
   TelemetryResponse?: TelemetryResponseResolvers<ContextType>;
   Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
