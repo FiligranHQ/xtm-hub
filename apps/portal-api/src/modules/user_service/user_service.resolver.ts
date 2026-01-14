@@ -9,7 +9,7 @@ import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
 import { loadUserDetails } from '../users/users.domain';
-import { userServiceApp } from './user_service.app';
+import { UserServiceApp } from './user_service.app';
 import {
   getSubscription,
   getUserServiceCapabilities,
@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
     addYourselfInUserService: async (_, { input }) => {
       try {
         const { user } = requestContext.require();
-        return await userServiceApp.addYourselfInUserService(
+        return await UserServiceApp.addYourselfInUserService(
           user.selected_organization_id,
           extractId<ServiceInstanceId>(input.serviceInstanceId),
           input.email,
@@ -65,7 +65,7 @@ const resolvers: Resolvers = {
     addUserService: async (_, { input }) => {
       try {
         const { user } = requestContext.require();
-        return await userServiceApp.addUserService(
+        return await UserServiceApp.addUserService(
           user,
           extractId<SubscriptionId>(input.subscriptionId),
           input.email,
@@ -77,7 +77,7 @@ const resolvers: Resolvers = {
     },
     deleteUserService: async (_, { input }) => {
       try {
-        return await userServiceApp.deleteUserService(
+        return await UserServiceApp.deleteUserService(
           input.email,
           extractId<SubscriptionId>(input.subscriptionId)
         );

@@ -14,7 +14,7 @@ import { loadUserBy } from '../users/users.domain';
 import { loadUserServiceBy } from './user-service.helper';
 import { UserServiceDomain } from './user_service.domain';
 
-export const userServiceApp = {
+export const UserServiceApp = {
   addYourselfInUserService: async (
     organizationId: OrganizationId,
     serviceInstanceId: ServiceInstanceId,
