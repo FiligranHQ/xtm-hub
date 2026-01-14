@@ -121,6 +121,22 @@ export const documentItem = graphql`
     ... on CustomDashboard {
       product_version
     }
+
+    ... on CsvFeed {
+      integration_type
+    }
+
+    ... on TaxiiFeed {
+      integration_type
+    }
+
+    ... on Stream {
+      integration_type
+    }
+
+    ... on Connector {
+      integration_type
+    }
   }
 `;
 export const documentsFragment = graphql`
