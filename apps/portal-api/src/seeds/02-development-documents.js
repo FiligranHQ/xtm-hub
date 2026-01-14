@@ -123,6 +123,26 @@ export async function seed(knex) {
         type: 'opencti_integration',
         source_type: 'internal',
       },
+      {
+        id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
+        uploader_id: ADMIN_UUID,
+        service_instance_id: integrationFeedsService?.id || null,
+        description: 'Intrinsec OpenCTI Stream',
+        file_name: 'intrinsec_stream.json',
+        minio_name: 'intrinsec_stream',
+        active: true,
+        created_at: '2025-06-26 09:49:34.912159+00',
+        remover_id: null,
+        mime_type: 'application/json',
+        name: 'Intrinsec Stream',
+        updated_at: '2025-07-24 07:08:32.088+00',
+        updater_id: '63678b35-2f72-4607-89cc-2e06036bf012',
+        short_description: 'A Stream from Intrinsec',
+        slug: 'intrinsec-stream',
+        uploader_organization_id: null,
+        type: 'opencti_integration',
+        source_type: 'internal',
+      },
     ])
     .onConflict('id')
     .ignore();

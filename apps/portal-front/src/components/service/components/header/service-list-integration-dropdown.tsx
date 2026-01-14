@@ -41,12 +41,13 @@ export const ServiceListIntegrationDropdown: React.FC<Props> = ({
           }>
           {t(`Service.OpenctiIntegrations.Type.taxii_feed`)}
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => onIntegrationTypeSelect(IntegrationTypeEnum.STREAM)}>
+          {t(`Service.OpenctiIntegrations.Type.stream`)}
+        </DropdownMenuItem>
 
         <DropdownMenuItem disabled>
           {t(`Service.OpenctiIntegrations.Type.json_feed`)}
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          {t(`Service.OpenctiIntegrations.Type.opencti_stream_feed`)}
         </DropdownMenuItem>
         <DropdownMenuItem disabled>
           {t(`Service.OpenctiIntegrations.Type.third_party_integration`)}

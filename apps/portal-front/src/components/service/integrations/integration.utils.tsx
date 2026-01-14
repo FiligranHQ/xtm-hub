@@ -5,6 +5,7 @@ export const availableIntegrationTypes = [
   IntegrationTypeEnum.TAXII_FEED,
   IntegrationTypeEnum.CONNECTOR,
   IntegrationTypeEnum.CSV_FEED,
+  IntegrationTypeEnum.STREAM,
 ];
 
 export const integrationSubTypeMetadata: Record<
@@ -38,6 +39,8 @@ export const integrationSubTypeMetadata: Record<
 };
 
 export const TaxiiFeedIntegrationSubTypes = [IntegrationSubTypeEnum.NATIVE];
+
+export const StreamIntegrationSubTypes = [IntegrationSubTypeEnum.NATIVE];
 
 export const getIntegrationSubTypeMetadata = (integration_subtype?: string) => {
   return (

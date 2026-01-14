@@ -17,9 +17,13 @@ export const IntegrationTypeFilter: React.FC = () => {
   const t = useTranslations();
 
   const onIntegrationTypeChange = (v: IntegrationTypeEnum[]) => {
-    const hasIntegrationSubTypeFilter =
-      v.includes(IntegrationTypeEnum.CONNECTOR) ||
-      v.includes(IntegrationTypeEnum.TAXII_FEED);
+    const hasIntegrationSubTypeFilter = v.some((type) =>
+      [
+        IntegrationTypeEnum.CONNECTOR,
+        IntegrationTypeEnum.TAXII_FEED,
+        IntegrationTypeEnum.STREAM,
+      ].includes(type)
+    );
     if (!hasIntegrationSubTypeFilter) {
       removeIntegrationSubTypes();
     }
