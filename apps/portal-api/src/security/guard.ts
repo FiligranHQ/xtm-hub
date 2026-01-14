@@ -9,7 +9,7 @@ import { ServiceInstanceId } from '../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../model/user';
 import { loadSubscriptionBy } from '../modules/subcription/subscription.domain';
 import { GenericServiceCapabilityName } from '../modules/user_service/service-capability/generic_service_capability.const';
-import { loadUserServiceCapability } from '../modules/user_service/user_service.domain';
+import { UserServiceDomain } from '../modules/user_service/user_service.domain';
 import { ErrorCode } from '../utils/error/error.code';
 import { BadRequestError, ForbiddenAccess } from '../utils/error/error.util';
 import { isUserGranted } from './access';
@@ -110,13 +110,14 @@ export const assertUserCanManageService = async (
     organization_id: user.selected_organization_id,
   });
 
-  const getUserCapability = await loadUserServiceCapability(
-    user.id,
-    subscription.id,
-    GenericServiceCapabilityName.MANAGE_ACCESS
-  );
+  const userServiceCapability =
+    await UserServiceDomain.loadUserServiceCapability(
+      user.id,
+      subscription.id,
+      GenericServiceCapabilityName.MANAGE_ACCESS
+    );
 
-  if (!getUserCapability) {
+  if (!userServiceCapability) {
     throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);
   }
 };

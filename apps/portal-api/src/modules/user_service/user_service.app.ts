@@ -11,7 +11,6 @@ import { extractId } from '../../utils/utils';
 import { subscriptionDomain } from '../subcription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
-import { loadUserServiceBy } from './user-service.helper';
 import { UserServiceDomain } from './user_service.domain';
 
 export const UserServiceApp = {
@@ -72,9 +71,10 @@ export const UserServiceApp = {
       return;
     }
     // Find subscription and remove it if no other userServices
-    const usersServices = await loadUserServiceBy({
-      subscription_id: deletedUserService?.subscription_id,
-    });
+    const usersServices =
+      await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
+        subscription_id: deletedUserService?.subscription_id,
+      });
 
     if (usersServices.length === 0) {
       const [subscription] =

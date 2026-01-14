@@ -18,6 +18,7 @@ import ServiceInstance, {
   ServiceInstanceMutator,
 } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
+  SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserId, UserMutator } from '../../model/kanel/public/User';
@@ -32,7 +33,7 @@ import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
-import { insertUserService } from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user_service/user_service.domain';
 import { loadUserBy } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
@@ -528,17 +529,16 @@ export const loadServiceWithSubscriptions = async (
 
 export const grantServiceAccess = async (
   capabilitiesIds: string[],
-  usersId: string[],
-  subscriptionId: string
+  usersId: UserId[],
+  subscriptionId: SubscriptionId
 ) => {
   const dataUserServices = usersId.map((userId) => ({
     id: uuidv4() as UserServiceId,
     user_id: userId,
     subscription_id: subscriptionId,
   }));
-  const insertedUserServices = (await insertUserService(dataUserServices)) as [
-    UserService,
-  ];
+  const insertedUserServices =
+    await UserServiceDomain.insertUserService(dataUserServices);
 
   const [subscription] =
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({

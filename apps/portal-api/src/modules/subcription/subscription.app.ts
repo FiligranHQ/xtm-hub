@@ -34,7 +34,7 @@ import {
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
 import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
-import { addAdminAccess } from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
@@ -210,7 +210,7 @@ const createSubscriptionWithAdminAccess = async ({
     subscriptionInitializerData
   );
 
-  await addAdminAccess(
+  await UserServiceDomain.addAdminAccess(
     user.id as UserId,
     createdSubscription.id,
     organization.personal_space

@@ -1,4 +1,3 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Resolvers } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -10,23 +9,19 @@ import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
 import { loadUserDetails } from '../users/users.domain';
 import { UserServiceApp } from './user_service.app';
-import {
-  getSubscription,
-  getUserServiceCapabilities,
-  loadUserServiceBySubscription,
-  loadUserServiceByUser,
-} from './user_service.domain';
+import { UserServiceDomain } from './user_service.domain';
 
 const resolvers: Resolvers = {
   UserService: {
     user: ({ user_id }) => loadUserDetails({ 'User.id': user_id as UserId }),
-    subscription: ({ id }, _) => getSubscription(id),
+    subscription: ({ id }, _) =>
+      UserServiceDomain.loadSubscriptionById(id as SubscriptionId),
     user_service_capability: ({ id }, _) =>
-      getUserServiceCapabilities(id as UserServiceId),
+      UserServiceDomain.loadUserServiceCapabilities(id as UserServiceId),
   },
   Query: {
     userServiceOwned: (_, { first, after, orderMode, orderBy }, context) => {
-      return loadUserServiceByUser(context.user, {
+      return UserServiceDomain.loadUserServiceByUser(context.user, {
         first,
         after,
         orderMode,
@@ -37,14 +32,14 @@ const resolvers: Resolvers = {
       _,
       { first, after, orderMode, orderBy, subscription_id }
     ) => {
-      return loadUserServiceBySubscription(
+      return UserServiceDomain.loadUserServiceBySubscription(
         {
           first,
           after,
           orderMode,
           orderBy,
         },
-        fromGlobalId(subscription_id).id
+        extractId<SubscriptionId>(subscription_id)
       );
     },
   },
