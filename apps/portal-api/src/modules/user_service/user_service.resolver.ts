@@ -15,7 +15,7 @@ const resolvers: Resolvers = {
   UserService: {
     user: ({ user_id }) => loadUserDetails({ 'User.id': user_id as UserId }),
     subscription: ({ id }, _) =>
-      UserServiceDomain.loadSubscriptionById(id as SubscriptionId),
+      UserServiceDomain.loadSubscriptionByUserService(id as UserServiceId),
     user_service_capability: ({ id }, _) =>
       UserServiceDomain.loadUserServiceCapabilities(id as UserServiceId),
   },

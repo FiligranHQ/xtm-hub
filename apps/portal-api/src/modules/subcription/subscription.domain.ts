@@ -17,7 +17,7 @@ import { UserServiceDomain } from '../user_service/user_service.domain';
 import { loadUserBy } from '../users/users.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
-export const subscriptionDomain = {
+export const SubscriptionDomain = {
   deleteSubscription: async (
     id: SubscriptionId
   ): Promise<Subscription | null> => {

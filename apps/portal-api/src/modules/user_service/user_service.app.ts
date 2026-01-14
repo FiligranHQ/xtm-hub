@@ -7,8 +7,7 @@ import {
 import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { ErrorCode } from '../../utils/error/error.code';
-import { extractId } from '../../utils/utils';
-import { subscriptionDomain } from '../subcription/subscription.domain';
+import { SubscriptionDomain } from '../subcription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadUserBy } from '../users/users.domain';
 import { UserServiceDomain } from './user_service.domain';
@@ -48,7 +47,7 @@ export const UserServiceApp = {
     }
     const [subscription] =
       await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-        'Subscription.id': extractId<SubscriptionId>(subscriptionId),
+        'Subscription.id': subscriptionId,
       } as SubscriptionMutator);
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
@@ -81,7 +80,7 @@ export const UserServiceApp = {
         await loadSubscriptionWithOrganizationAndCapabilitiesBy({
           'Subscription.id': deletedUserService?.subscription_id,
         } as SubscriptionMutator);
-      await subscriptionDomain.deleteSubscription(subscription.id);
+      await SubscriptionDomain.deleteSubscription(subscription.id);
     }
 
     return deletedUserService;

@@ -292,8 +292,8 @@ export const UserServiceDomain = {
     return query;
   },
 
-  loadSubscriptionById: async (
-    id: SubscriptionId
+  loadSubscriptionByUserService: async (
+    id: UserServiceId
   ): Promise<SubscriptionModel | undefined> => {
     return db<DBSubscriptionModel>('User_Service')
       .tap(restrictSubscriptionToUserOrganization)

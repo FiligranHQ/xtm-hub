@@ -38,7 +38,7 @@ import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
-  subscriptionDomain,
+  SubscriptionDomain,
 } from './subscription.domain';
 
 export const subscriptionApp = {
@@ -163,7 +163,7 @@ export const subscriptionApp = {
     //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
     // }
 
-    return subscriptionDomain.deleteSubscription(id);
+    return SubscriptionDomain.deleteSubscription(id);
   },
 };
 
