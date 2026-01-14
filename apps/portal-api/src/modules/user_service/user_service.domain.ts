@@ -5,7 +5,10 @@ import {
   UserServiceCapability,
   UserServiceConnection,
 } from '../../__generated__/resolvers-types';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { withTransaction } from '../../context/database.context';
+import SubscriptionModel, {
+  SubscriptionId,
+} from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
@@ -18,9 +21,50 @@ import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
 import {
+  getOrCreateUser,
+  insertUserIntoOrganization,
+} from '../users/users.helper';
+import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
 } from './service-capability/generic_service_capability.const';
+import {
+  createUserServiceAccess,
+  isUserServiceExist,
+} from './user-service.helper';
+
+export const UserServiceDomain = {
+  addServiceToUsers: async (
+    subscription: SubscriptionModel,
+    emails: string[],
+    capabilities: string[]
+  ): Promise<UserService[]> => {
+    const userServices: UserService[] = [];
+    return withTransaction(async () => {
+      for (const email of emails) {
+        const user = await getOrCreateUser({
+          email: email,
+        });
+
+        await insertUserIntoOrganization(user, subscription.id);
+        const userServiceAlreadyExist = await isUserServiceExist(
+          user.id as UserId,
+          subscription.id
+        );
+
+        if (!userServiceAlreadyExist) {
+          const createdUserService = await createUserServiceAccess({
+            subscription_id: subscription.id,
+            user_id: user.id as UserId,
+            capabilities: capabilities,
+          });
+          userServices.push(createdUserService);
+        }
+      }
+      return userServices;
+    });
+  },
+};
 
 export const insertUserService = async (userServiceData) => {
   return db<UserService>('User_Service').insert(userServiceData).returning('*');

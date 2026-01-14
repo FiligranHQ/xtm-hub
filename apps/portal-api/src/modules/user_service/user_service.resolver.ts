@@ -1,6 +1,7 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
@@ -10,7 +11,7 @@ import { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
@@ -56,39 +57,25 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    addYourselfInUserService: async (_, { input }, context) => {
+    addYourselfInUserService: async (_, { input }) => {
       try {
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-            'Subscription.organization_id':
-              context.user.selected_organization_id,
-            'Subscription.service_instance_id': extractId<ServiceInstanceId>(
-              input.serviceInstanceId
-            ),
-          } as SubscriptionMutator);
-
-        if (!subscription) {
-          throw new Error(ErrorCode.SubscriptionNotFound);
-        }
-        return userServiceApp.addUserService(subscription, input.email, []);
+        const { user } = requestContext.require();
+        return await userServiceApp.addYourselfInUserService(
+          user.selected_organization_id,
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.email,
+          []
+        );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
-    addUserService: async (_, { input }, context) => {
+    addUserService: async (_, { input }) => {
       try {
-        if (input.email.some((email) => email === context.user.email)) {
-          throw new Error(ErrorCode.CantSubscribeYourself);
-        }
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-            'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
-          } as SubscriptionMutator);
-        if (!subscription) {
-          throw new Error(ErrorCode.SubscriptionNotFound);
-        }
-        return userServiceApp.addUserService(
-          subscription,
+        const { user } = requestContext.require();
+        return await userServiceApp.addUserService(
+          user,
+          extractId<SubscriptionId>(input.subscriptionId),
           input.email,
           input.capabilities
         );
