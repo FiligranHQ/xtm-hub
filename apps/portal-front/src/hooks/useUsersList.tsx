@@ -9,6 +9,7 @@ import {
   UserOrdering,
 } from '@generated/userListQuery.graphql';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import { FetchPolicy } from 'relay-runtime';
 
 interface Props {
   pageSize: number;
@@ -18,6 +19,7 @@ interface Props {
     search?: string;
     organization?: string;
   };
+  fetchPolicy?: FetchPolicy;
 }
 
 export const useUsersList = ({
@@ -25,16 +27,21 @@ export const useUsersList = ({
   orderMode,
   orderBy,
   filter,
+  fetchPolicy,
 }: Props) => {
-  const queryData = useLazyLoadQuery<userListQuery>(UserListQuery, {
-    count: pageSize,
-    orderMode,
-    orderBy,
-    searchTerm: filter.search,
-    filters: filter.organization
-      ? [{ key: 'organization_id', value: [filter.organization] }]
-      : undefined,
-  });
+  const queryData = useLazyLoadQuery<userListQuery>(
+    UserListQuery,
+    {
+      count: pageSize,
+      orderMode,
+      orderBy,
+      searchTerm: filter.search,
+      filters: filter.organization
+        ? [{ key: 'organization_id', value: [filter.organization] }]
+        : undefined,
+    },
+    { fetchPolicy }
+  );
 
   const [data, refetch] = useRefetchableFragment<
     userListQuery,

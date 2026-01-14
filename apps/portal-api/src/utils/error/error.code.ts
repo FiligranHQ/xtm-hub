@@ -64,6 +64,7 @@ export enum UnknownErrorCode {
   TransferMeError = 'TRANSFER_ME_ERROR',
   RemoveUserFromOrgaError = 'REMOVE_USER_FROM_ORGA_ERROR',
   RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
+  AcceptUserInPendingOrgaError = 'ACCEPT_USER_IN_PENDING_ORGA_ERROR',
   EditUserSessionError = 'EDIT_USER_SESSION_ERROR',
   UpdatePlatformServiceMetadataError = 'UPDATE_PLATFORM_SERVICE_METADATA_ERROR',
   NoAsyncContextAvailableError = 'NO_ASYNC_CONTEXT_AVAILABLE',
