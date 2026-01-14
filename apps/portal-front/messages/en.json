@@ -536,7 +536,7 @@
         "third_party_integration": "Third party integrations (coming soon)"
       },
       "Form": {
-        "SelectIntegrationSubType": "Type"
+        "SelectIntegrationSubType": "Subtype"
       }
     },
     "CsvFeed": {
