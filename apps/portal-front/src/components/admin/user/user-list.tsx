@@ -138,6 +138,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     orderMode,
     orderBy,
     filter,
+    fetchPolicy: 'store-and-network',
   });
 
   const connectionID = data?.users?.__id;

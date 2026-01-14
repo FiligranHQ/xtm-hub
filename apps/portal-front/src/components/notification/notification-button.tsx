@@ -24,6 +24,10 @@ import {
   userPendingListQuery,
   userPendingListQuery$variables,
 } from '@generated/userPendingListQuery.graphql';
+import {
+  userPendingListSubscription,
+  userPendingListSubscription$data,
+} from '@generated/userPendingListSubscription.graphql';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -58,7 +62,7 @@ export const NotificationButton: React.FC = () => {
     notificationPendingUserQueryFilters(me!.selected_organization_id)
   );
 
-  const [data] = useRefetchableFragment<
+  const [data, refetch] = useRefetchableFragment<
     userPendingListQuery,
     userPendingList_users$key
   >(UserPendingListFragment, queryData);
@@ -67,27 +71,40 @@ export const NotificationButton: React.FC = () => {
 
   const environment = useRelayEnvironment();
 
+  const organizationId = me?.selected_organization_id;
+  if (!organizationId) return null;
+
   const pendingUserListSubscriptionConfig = useMemo(
     () => ({
       variables: {
         connections: [connectionID],
-        organizationId: me?.selected_organization_id,
+        organizationId,
       },
       subscription: UserPendingListSubscription,
-      onNext: () => {
-        commitLocalUpdate(environment, (store) => {
-          const connection = store.get(connectionID);
+      onNext: (
+        payload: userPendingListSubscription$data | null | undefined
+      ) => {
+        if (payload?.UserPending?.invalidate) {
+          refetch({}, { fetchPolicy: 'network-only' });
+        }
+        if (payload?.UserPending?.delete) {
+          commitLocalUpdate(environment, (store) => {
+            const connection = store.get(connectionID);
 
-          const totalCount = connection?.getValue('totalCount');
-          if (totalCount) {
-            connection?.setValue((totalCount as number) - 1, 'totalCount');
-          }
-        });
+            const totalCount = connection?.getValue('totalCount');
+            if (totalCount) {
+              connection?.setValue((totalCount as number) - 1, 'totalCount');
+            }
+          });
+        }
       },
     }),
-    [connectionID, environment, me?.selected_organization_id]
+    [connectionID, environment, organizationId, refetch]
   );
-  useSubscription(pendingUserListSubscriptionConfig);
+
+  useSubscription<userPendingListSubscription>(
+    pendingUserListSubscriptionConfig
+  );
 
   const users: userList_fragment$data[] = data.pendingUsers.edges.map(
     ({ node }) => readInlineData<userList_fragment$key>(UserFragment, node)

@@ -13,6 +13,7 @@ import { hubspotReachOutSalesHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
 
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
+import { PortalContext } from '../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../utils/error/error.util';
@@ -198,6 +199,56 @@ const resolvers: Resolvers = {
         );
       }
     },
+    bulkRemovePendingUserFromOrganization: async (
+      _,
+      { input },
+      context: PortalContext
+    ) => {
+      try {
+        const { ids, searchTerm, filters, excludedIds } = input;
+        const extractedIds = ids.map(extractId<UserId>);
+        const extractedExcludedIds = excludedIds.map(extractId<UserId>);
+        await usersAdminApp.bulkRemovePendingUserFromOrganization(
+          context.user.selected_organization_id,
+          extractedIds,
+          searchTerm,
+          filters,
+          extractedExcludedIds
+        );
+
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RemoveUserFromPendingOrgaError
+        );
+      }
+    },
+    bulkAcceptPendingUserInOrganization: async (
+      _,
+      { input },
+      context: PortalContext
+    ) => {
+      try {
+        const { ids, searchTerm, filters, excludedIds } = input;
+        const extractedIds = ids.map(extractId<UserId>);
+        const extractedExcludedIds = excludedIds.map(extractId<UserId>);
+
+        await usersAdminApp.bulkAcceptPendingUserInOrganization(
+          context.user.selected_organization_id,
+          extractedIds,
+          searchTerm,
+          filters,
+          extractedExcludedIds
+        );
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.AcceptUserInPendingOrgaError
+        );
+      }
+    },
     removePendingUserFromOrganization: async (
       _,
       { user_id, organization_id }
@@ -281,18 +332,19 @@ const resolvers: Resolvers = {
     },
     UserPending: {
       subscribe: (_, args, context, info) => ({
-        [Symbol.asyncIterator]: () =>
-          listen(
+        [Symbol.asyncIterator]: () => {
+          return listen(
             context,
             ['UserPending'],
             info,
             (payload: UserPendingSubscription) => {
-              return (
-                payload.delete.pending_organization_id ===
-                extractId(args.organizationId)
-              );
+              const organizationId = payload.delete
+                ? payload.delete.pending_organization_id
+                : payload.invalidate.id;
+              return organizationId === extractId(args.organizationId);
             }
-          ),
+          );
+        },
       }),
     },
   },

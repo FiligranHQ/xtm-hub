@@ -1,6 +1,11 @@
 enum OrganizationOrdering {
   name
 }
+
+type OrganizationId implements Node {
+  id: ID!
+}
+
 type Organization implements Node {
   id: ID!
   name: String!
