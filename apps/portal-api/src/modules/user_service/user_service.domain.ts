@@ -64,6 +64,18 @@ export const UserServiceDomain = {
       return userServices;
     });
   },
+
+  deleteUserService: async (
+    userId: UserId,
+    subscriptionId: SubscriptionId
+  ): Promise<UserService | undefined> => {
+    const [deletedUserService] = await db<UserService>('User_Service')
+      .where('user_id', '=', userId)
+      .where('subscription_id', '=', subscriptionId)
+      .delete('*')
+      .returning('*');
+    return deletedUserService;
+  },
 };
 
 export const insertUserService = async (userServiceData) => {

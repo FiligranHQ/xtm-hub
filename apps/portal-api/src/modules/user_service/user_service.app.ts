@@ -8,7 +8,10 @@ import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
+import { subscriptionDomain } from '../subcription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
+import { loadUserBy } from '../users/users.domain';
+import { loadUserServiceBy } from './user-service.helper';
 import { UserServiceDomain } from './user_service.domain';
 
 export const userServiceApp = {
@@ -57,5 +60,30 @@ export const userServiceApp = {
       emails,
       capabilities
     );
+  },
+
+  deleteUserService: async (email: string, subscriptionId: SubscriptionId) => {
+    const userToDelete = await loadUserBy({ email });
+    const deletedUserService = await UserServiceDomain.deleteUserService(
+      userToDelete.id,
+      subscriptionId
+    );
+    if (!deletedUserService) {
+      return;
+    }
+    // Find subscription and remove it if no other userServices
+    const usersServices = await loadUserServiceBy({
+      subscription_id: deletedUserService?.subscription_id,
+    });
+
+    if (usersServices.length === 0) {
+      const [subscription] =
+        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
+          'Subscription.id': deletedUserService?.subscription_id,
+        } as SubscriptionMutator);
+      await subscriptionDomain.deleteSubscription(subscription.id);
+    }
+
+    return deletedUserService;
   },
 };

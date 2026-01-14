@@ -1,22 +1,14 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-  SubscriptionMutator,
-} from '../../model/kanel/public/Subscription';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import UserService, {
-  UserServiceId,
-} from '../../model/kanel/public/UserService';
+import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
-import { loadUserBy, loadUserDetails } from '../users/users.domain';
-import { loadUserServiceBy } from './user-service.helper';
+import { loadUserDetails } from '../users/users.domain';
 import { userServiceApp } from './user_service.app';
 import {
   getSubscription,
@@ -84,37 +76,14 @@ const resolvers: Resolvers = {
       }
     },
     deleteUserService: async (_, { input }) => {
-      const userToDelete = await loadUserBy({ email: input.email });
-      const [deletedUserService] = await db<UserService>('User_Service')
-        .where('user_id', '=', userToDelete.id)
-        .where(
-          'subscription_id',
-          '=',
+      try {
+        return await userServiceApp.deleteUserService(
+          input.email,
           extractId<SubscriptionId>(input.subscriptionId)
-        )
-        .delete('*')
-        .returning('*');
-
-      if (!deletedUserService) {
-        return;
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
       }
-      // Find subscription and remove it if no other userServices
-      const usersServices = await loadUserServiceBy({
-        subscription_id: deletedUserService?.subscription_id,
-      });
-
-      if (usersServices.length === 0) {
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-            'Subscription.id': deletedUserService?.subscription_id,
-          } as SubscriptionMutator);
-        await db<Subscription>('Subscription')
-          .where('Subscription.id', '=', subscription.id)
-          .delete('*')
-          .returning('*');
-      }
-
-      return deletedUserService;
     },
   },
 };
