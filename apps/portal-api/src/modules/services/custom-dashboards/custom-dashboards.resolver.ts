@@ -12,7 +12,7 @@ import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
 import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
-  CUSTOM_DASHBOARD_METADATA,
+  CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './custom-dashboards.domain';
 
@@ -34,7 +34,7 @@ const resolvers: Resolvers = {
       const dashboards = await DocumentDomain.loadSeoDocumentsByServiceSlug(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         serviceSlug,
-        CUSTOM_DASHBOARD_METADATA
+        CUSTOM_DASHBOARD_METADATA_KEYS
       );
       for (const dashboard of dashboards) {
         dashboard.children_documents =
@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
       return DocumentDomain.loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         input,
-        CUSTOM_DASHBOARD_METADATA
+        CUSTOM_DASHBOARD_METADATA_KEYS
       );
     },
     customDashboard: async (_, { id }) =>

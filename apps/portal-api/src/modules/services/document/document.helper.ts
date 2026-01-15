@@ -14,6 +14,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { OptionalMetadata } from '../../../utils/metadata';
 import { WithLabels } from '../../../utils/types';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -72,7 +73,7 @@ const DocumentTypeMappedByServiceDefinition: Record<
 
 const DocumentMetadataMappedByServiceIdentifier: Record<
   ManageableServiceDefinition,
-  (metadata: DocumentMetadataResolverType[]) => string[]
+  (metadata: DocumentMetadataResolverType[]) => OptionalMetadata[]
 > = {
   [ServiceDefinitionIdentifier.OpenctiCustomDashboards]: () =>
     CUSTOM_DASHBOARD_METADATA,
@@ -90,7 +91,9 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
       throw new Error(ErrorCode.IntegrationTypeNotRecognized);
     }
 
-    const metadataKeysMapping: Partial<Record<IntegrationType, string[]>> = {
+    const metadataKeysMapping: Partial<
+      Record<IntegrationType, OptionalMetadata[]>
+    > = {
       [IntegrationType.CsvFeed]: INTEGRATION_CSV_FEED_METADATA,
       [IntegrationType.TaxiiFeed]: INTEGRATION_TAXII_FEED_METADATA,
       [IntegrationType.Stream]: INTEGRATION_STREAM_METADATA,
@@ -124,7 +127,7 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
     throw new Error(ErrorCode.ServiceNotManageable);
   }
 
-  const metadataKeys: string[] | undefined =
+  const metadataKeys: OptionalMetadata[] | undefined =
     DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier](
       metadata
     );
@@ -132,7 +135,8 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
     throw new Error(UnknownErrorCode.MissingMetadataMapping);
   }
   const missingMetadataKeys = metadataKeys.filter(
-    (key) => !metadata.some((meta) => meta.key === key)
+    ({ key, optional }) =>
+      optional || !metadata.some((meta) => meta.key === key)
   );
   if (missingMetadataKeys.length) {
     logApp.error(
@@ -142,7 +146,7 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
   }
   return {
     documentType,
-    metadataKeys,
+    metadataKeys: metadataKeys.map(({ key }) => key),
   };
 };
 
