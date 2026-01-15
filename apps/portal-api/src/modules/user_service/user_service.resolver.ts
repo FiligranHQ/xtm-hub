@@ -1,5 +1,4 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -44,9 +43,9 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    addYourselfInUserService: async (_, { input }) => {
+    addYourselfInUserService: async (_, { input }, context) => {
       try {
-        const { user } = requestContext.require();
+        const user = context.user;
         return await UserServiceApp.addYourselfInUserService(
           user.selected_organization_id,
           extractId<ServiceInstanceId>(input.serviceInstanceId),
@@ -57,9 +56,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
-    addUserService: async (_, { input }) => {
+    addUserService: async (_, { input }, context) => {
       try {
-        const { user } = requestContext.require();
+        const user = context.user;
         return await UserServiceApp.addUserService(
           user,
           extractId<SubscriptionId>(input.subscriptionId),
