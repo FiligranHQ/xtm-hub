@@ -142,6 +142,7 @@ const resolvers: Resolvers = {
         [IntegrationType.CsvFeed]: 'CsvFeed',
         [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
         [IntegrationType.Stream]: 'Stream',
+        [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
       };
       if (TYPE_MAPPINGS[document.type]) {
         return TYPE_MAPPINGS[document.type];
