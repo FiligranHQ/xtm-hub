@@ -43,12 +43,6 @@ declare module 'knex' {
   }
 }
 
-type FilterHandler = (
-  queryContext: KnexQueryBuilder,
-  type: DatabaseType,
-  value: string[]
-) => void;
-
 type BaseDatabaseType =
   | 'User'
   | 'Organization'
@@ -214,90 +208,143 @@ const searchAttributes = [
   'country',
 ];
 
-const filterHandlers: Record<string, FilterHandler> = {
-  [FilterKey.Label]: (queryContext, type, value) => {
-    if (value.length === 0) return;
+type JoinFn = (qb: Knex.QueryBuilder, type: DatabaseType) => void;
+type WhereFn = (
+  qb: Knex.QueryBuilder,
+  type: DatabaseType,
+  values: string[]
+) => void;
 
-    queryContext
-      .leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`)
-      .whereIn('ol.label_id', value.map(extractId));
+type FilterHandler = {
+  key: string;
+  addJoin?: JoinFn;
+  addWhere: WhereFn;
+};
+
+const createLabelFilter = (): FilterHandler => ({
+  key: FilterKey.Label,
+  addJoin: (qb, type) => {
+    qb.leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`);
   },
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    qb.whereIn('ol.label_id', values.map(extractId));
+  },
+});
 
-  [ServiceInstanceFilterKey.Tags]: (queryContext, type, value) => {
-    if (value.length === 0) return;
+const createTagsFilter = (): FilterHandler => ({
+  key: ServiceInstanceFilterKey.Tags,
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    const formattedValue = values.map((v) => `'${v}'`).join(',');
+    qb.whereRaw(`"ServiceInstance"."tags"::text[] @> array[${formattedValue}]`);
+  },
+});
 
-    const formattedValue = value.map((value) => `'${value}'`).join(',');
-    queryContext.whereRaw(
-      `"ServiceInstance"."tags"::text[] @> array[${formattedValue}]`
+const createServiceDefinitionIdentifierFilter = (): FilterHandler => ({
+  key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
+  addJoin: (qb, type) => {
+    qb.leftJoin(
+      'ServiceDefinition',
+      'ServiceDefinition.id',
+      '=',
+      `${type}.service_definition_id`
     );
   },
-
-  [ServiceInstanceFilterKey.ServiceDefinitionIdentifier]: (
-    queryContext,
-    type,
-    value
-  ) => {
-    if (value.length === 0) return;
-
-    queryContext
-      .leftJoin(
-        'ServiceDefinition',
-        'ServiceDefinition.id',
-        '=',
-        `${type}.service_definition_id`
-      )
-      .whereIn('ServiceDefinition.identifier', value);
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    qb.whereIn('ServiceDefinition.identifier', values);
   },
+});
 
-  [FilterKey.ProductVersion]: (queryContext, type, value) => {
-    if (value.length === 0) return;
-
-    const lowestVersion = value.sort(compareSemanticVersions)[0];
+const createProductVersionFilter = (): FilterHandler => ({
+  key: FilterKey.ProductVersion,
+  addJoin: (qb, _type) => {
     const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
-
-    queryContext
-      .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-          `${metaAlias}.key`,
-          '=',
-          FilterKey.ProductVersion
-        );
-      })
-      .whereRaw(
-        dbRaw(
-          `("${metaAlias}"."value" IS NULL OR string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
-        )
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+        `${metaAlias}.key`,
+        '=',
+        FilterKey.ProductVersion
       );
+    });
   },
-};
-const createIdFilterHandler =
-  (key: string): FilterHandler =>
-  (queryContext, type, value) => {
-    queryContext.whereIn(key, value.map(extractId));
-  };
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    const lowestVersion = [...values].sort(compareSemanticVersions)[0];
+    const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
+    qb.whereRaw(
+      dbRaw(
+        `("${metaAlias}"."value" IS NULL OR string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
+      )
+    );
+  },
+});
 
-const createDefaultFilterHandler =
-  (key: string): FilterHandler =>
-  (queryContext, type, value) => {
-    queryContext.whereIn(key, value);
-  };
-
-const createMetadataFilterHandler =
-  (key: string): FilterHandler =>
-  (queryContext, _, value) => {
-    if (value.length === 0) return;
-
+const createMetadataFilterHandler = (key: string): FilterHandler => ({
+  key,
+  addJoin: (qb, _type) => {
     const metaAlias = `metaFilter${key}`;
-    queryContext
-      .leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-          `${metaAlias}.key`,
-          '=',
-          key
-        );
-      })
-      .whereIn(`${metaAlias}.value`, value);
-  };
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
+        `${metaAlias}.key`,
+        '=',
+        key
+      );
+    });
+  },
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    const metaAlias = `metaFilter${key}`;
+    qb.whereIn(`${metaAlias}.value`, values);
+  },
+});
+
+const createIdFilterHandler = (key: string): FilterHandler => ({
+  key,
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    qb.whereIn(key, values.map(extractId));
+  },
+});
+
+const createDefaultFilterHandler = (key: string): FilterHandler => ({
+  key,
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    qb.whereIn(key, values);
+  },
+});
+
+export const applyFilterJoins = (
+  type: DatabaseType,
+  queryContext: Knex.QueryBuilder,
+  filters: Filters | undefined | null
+) => {
+  if (!filters?.length) return queryContext;
+
+  const keysSet = new Set<string>();
+
+  for (const { key } of filters) {
+    if (!key || keysSet.has(key)) continue;
+    keysSet.add(key);
+
+    const f = getFilterHandler(key);
+    if (f.addJoin) {
+      f.addJoin(queryContext, type);
+    }
+  }
+
+  return queryContext;
+};
+
+const filterHandlers: Record<string, FilterHandler> = {
+  [FilterKey.Label]: createLabelFilter(),
+  [ServiceInstanceFilterKey.Tags]: createTagsFilter(),
+  [ServiceInstanceFilterKey.ServiceDefinitionIdentifier]:
+    createServiceDefinitionIdentifierFilter(),
+  [FilterKey.ProductVersion]: createProductVersionFilter(),
+};
 
 const getFilterHandler = (key: string): FilterHandler => {
   if (filterHandlers[key]) {
@@ -321,21 +368,25 @@ const getFilterHandler = (key: string): FilterHandler => {
 export const applyFilter = (
   queryContext: Knex.QueryBuilder,
   type: DatabaseType,
-  { key, value }: { key: string; value: string[] }
+  filter: Filter
 ) => {
-  const handler = getFilterHandler(key);
-  handler(queryContext, type, value);
+  if (!filter.key) return queryContext;
+  const f = getFilterHandler(filter.key);
+  f.addWhere(queryContext, type, filter.value);
   return queryContext;
 };
 
-export const applyFilters = async <T>(
+export const applyFilters = async (
   type: DatabaseType,
-  queryContext = db<T>(type),
+  queryContext: Knex.QueryBuilder,
   filters: Filters
 ) => {
-  if (filters) {
-    filters.forEach((filter) => applyFilter(queryContext, type, filter));
-  }
+  if (!filters?.length) return queryContext;
+
+  applyFilterJoins(type, queryContext, filters);
+  filters.forEach((filter) => applyFilter(queryContext, type, filter));
+
+  return queryContext;
 };
 
 export const applySearch = async <T>(
