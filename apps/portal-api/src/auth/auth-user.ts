@@ -27,9 +27,9 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
 
   if (userInfo.roles.length > 0) {
     await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
-    for (const role of userInfo.roles) {
-      addRoleToUser(user.id, role);
-    }
+    await Promise.all(
+      userInfo.roles.map((role) => addRoleToUser(user.id, role))
+    );
     return loadUserBy({ 'User.id': user.id });
   }
 

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../knexfile';
 import { withTransaction } from '../context/database.context';
@@ -12,6 +13,7 @@ import {
 } from '../portal.const';
 import { DevUser } from '../utils/config-validation.util';
 import {
+  addRoleToUser,
   ensureCapabilityExists,
   ensureDevOrganizationExists,
   ensureDevUserExists,
@@ -353,5 +355,106 @@ describe('Dev users seeding', () => {
         portalConfig.default.dev_users = originalDevUsers;
       }
     });
+  });
+});
+
+describe('addRoleToUser', () => {
+  const testUserIds: string[] = [];
+  const testRolePortalIds: string[] = [];
+  const user_id = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
+  // Clean up test data after each test
+  afterEach(async () => {
+    if (testUserIds.length > 0) {
+      await db('User_RolePortal').whereIn('user_id', testUserIds).del();
+    }
+    if (testRolePortalIds.length > 0) {
+      await db('RolePortal').whereIn('id', testRolePortalIds).del();
+    }
+    testUserIds.length = 0;
+    testRolePortalIds.length = 0;
+  });
+
+  it('should add role to user when role exists and user does not have it', async () => {
+    // Setup test data
+    const rolePortalId = uuidv4();
+
+    testUserIds.push(user_id);
+    testRolePortalIds.push(rolePortalId);
+
+    await db('RolePortal').insert({
+      id: rolePortalId,
+      name: `test-admin-${rolePortalId}`,
+    });
+
+    // Execute
+    await addRoleToUser(user_id, `test-admin-${rolePortalId}`);
+
+    // Assert
+    const userRole = await db('User_RolePortal')
+      .where({ user_id, role_portal_id: rolePortalId })
+      .first();
+
+    expect(userRole).toBeDefined();
+    expect(userRole.user_id).toBe(user_id);
+    expect(userRole.role_portal_id).toBe(rolePortalId);
+  });
+
+  it('should not duplicate role if user already has it', async () => {
+    // Setup test data
+    const rolePortalId = uuidv4();
+
+    testUserIds.push(user_id);
+    testRolePortalIds.push(rolePortalId);
+
+    await db('RolePortal').insert({
+      id: rolePortalId,
+      name: `test-editor-${rolePortalId}`,
+    });
+
+    // Add role first time
+    await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
+
+    // Add role second time
+    await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
+
+    // Assert - should only have one record
+    const userRoles = await db('User_RolePortal').where({
+      user_id,
+      role_portal_id: rolePortalId,
+    });
+
+    expect(userRoles).toHaveLength(1);
+  });
+
+  it('should handle when role does not exist', async () => {
+    testUserIds.push(user_id);
+
+    // Execute - should not throw
+    await expect(
+      addRoleToUser(user_id, 'non-existent-role')
+    ).resolves.not.toThrow();
+
+    // Assert - no user role should be created
+    const userRoles = await db('User_RolePortal').where({ user_id });
+
+    expect(userRoles).toHaveLength(0);
+  });
+
+  it('should work with existing role names in database', async () => {
+    // This test assumes you have actual roles in your database
+    testUserIds.push(user_id);
+
+    // Get an existing role from database
+    const existingRole = await db('RolePortal').first();
+
+    if (existingRole) {
+      await addRoleToUser(user_id, existingRole.name);
+
+      const userRole = await db('User_RolePortal')
+        .where({ user_id, role_portal_id: existingRole.id })
+        .first();
+
+      expect(userRole).toBeDefined();
+    }
   });
 });
