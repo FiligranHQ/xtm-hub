@@ -24,6 +24,7 @@ import {
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_STREAM_METADATA,
   INTEGRATION_TAXII_FEED_METADATA,
   isIntegrationType,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -92,6 +93,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
     const metadataKeysMapping: Partial<Record<IntegrationType, string[]>> = {
       [IntegrationType.CsvFeed]: INTEGRATION_CSV_FEED_METADATA,
       [IntegrationType.TaxiiFeed]: INTEGRATION_TAXII_FEED_METADATA,
+      [IntegrationType.Stream]: INTEGRATION_STREAM_METADATA,
     };
     if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);
