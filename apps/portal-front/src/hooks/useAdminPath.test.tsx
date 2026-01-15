@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mocking dependencies
-vi.mock('@/hooks/useAdminByPass');
+vi.mock('@/hooks/usePortalCapability');
 vi.mock('next/navigation');
 describe('useAdminPath', () => {
   it.each`
