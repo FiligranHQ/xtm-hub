@@ -15,7 +15,7 @@ import { useMutation } from 'react-relay';
 
 const OPENCTI_URL_CONFIGS = {
   opencti_custom_dashboard: 'deploy-custom-dashboard',
-  opencti_integration_feed: 'deploy-csv-feed',
+  opencti_integration: 'deploy-csv-feed',
 };
 
 interface Props {
