@@ -40,10 +40,14 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
     const openIDStrategy = new OpenIDStrategy(
       options,
       async (_, tokenSet, userinfo, done) => {
-        const roles = extractRole(
+        const extractRoles = extractRole(
           userinfo['https://xtm-hub-development/roles'] as string[]
         );
+        const extractAzureGroup = extractRole(
+          userinfo['https://xtm-hub-development/groups'] as string[]
+        );
 
+        const roles = [...new Set([...extractRoles, ...extractAzureGroup])];
         const {
           email,
           nickname: first_name,
