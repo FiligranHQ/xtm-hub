@@ -1,39 +1,26 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
 import { Resolvers } from '../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-  SubscriptionMutator,
-} from '../../model/kanel/public/Subscription';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import UserService, {
-  UserServiceId,
-} from '../../model/kanel/public/UserService';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { UserServiceId } from '../../model/kanel/public/UserService';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
-import { loadUserBy, loadUserDetails } from '../users/users.domain';
-import { loadUserServiceBy } from './user-service.helper';
-import { userServiceApp } from './user_service.app';
-import {
-  getSubscription,
-  getUserServiceCapabilities,
-  loadUserServiceBySubscription,
-  loadUserServiceByUser,
-} from './user_service.domain';
+import { loadUserDetails } from '../users/users.domain';
+import { UserServiceApp } from './user_service.app';
+import { UserServiceDomain } from './user_service.domain';
 
 const resolvers: Resolvers = {
   UserService: {
     user: ({ user_id }) => loadUserDetails({ 'User.id': user_id as UserId }),
-    subscription: ({ id }, _) => getSubscription(id),
+    subscription: ({ id }, _) =>
+      UserServiceDomain.loadSubscriptionByUserService(id as UserServiceId),
     user_service_capability: ({ id }, _) =>
-      getUserServiceCapabilities(id as UserServiceId),
+      UserServiceDomain.loadUserServiceCapabilities(id as UserServiceId),
   },
   Query: {
     userServiceOwned: (_, { first, after, orderMode, orderBy }, context) => {
-      return loadUserServiceByUser(context.user, {
+      return UserServiceDomain.loadUserServiceByUser(context.user, {
         first,
         after,
         orderMode,
@@ -44,51 +31,37 @@ const resolvers: Resolvers = {
       _,
       { first, after, orderMode, orderBy, subscription_id }
     ) => {
-      return loadUserServiceBySubscription(
+      return UserServiceDomain.loadUserServiceBySubscription(
         {
           first,
           after,
           orderMode,
           orderBy,
         },
-        fromGlobalId(subscription_id).id
+        extractId<SubscriptionId>(subscription_id)
       );
     },
   },
   Mutation: {
     addYourselfInUserService: async (_, { input }, context) => {
       try {
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-            'Subscription.organization_id':
-              context.user.selected_organization_id,
-            'Subscription.service_instance_id': extractId<ServiceInstanceId>(
-              input.serviceInstanceId
-            ),
-          } as SubscriptionMutator);
-
-        if (!subscription) {
-          throw new Error(ErrorCode.SubscriptionNotFound);
-        }
-        return userServiceApp.addUserService(subscription, input.email, []);
+        const user = context.user;
+        return await UserServiceApp.addYourselfInUserService(
+          user.selected_organization_id,
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.email,
+          []
+        );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
     addUserService: async (_, { input }, context) => {
       try {
-        if (input.email.some((email) => email === context.user.email)) {
-          throw new Error(ErrorCode.CantSubscribeYourself);
-        }
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-            'Subscription.id': extractId<SubscriptionId>(input.subscriptionId),
-          } as SubscriptionMutator);
-        if (!subscription) {
-          throw new Error(ErrorCode.SubscriptionNotFound);
-        }
-        return userServiceApp.addUserService(
-          subscription,
+        const user = context.user;
+        return await UserServiceApp.addUserService(
+          user,
+          extractId<SubscriptionId>(input.subscriptionId),
           input.email,
           input.capabilities
         );
@@ -97,37 +70,14 @@ const resolvers: Resolvers = {
       }
     },
     deleteUserService: async (_, { input }) => {
-      const userToDelete = await loadUserBy({ email: input.email });
-      const [deletedUserService] = await db<UserService>('User_Service')
-        .where('user_id', '=', userToDelete.id)
-        .where(
-          'subscription_id',
-          '=',
+      try {
+        return await UserServiceApp.deleteUserService(
+          input.email,
           extractId<SubscriptionId>(input.subscriptionId)
-        )
-        .delete('*')
-        .returning('*');
-
-      if (!deletedUserService) {
-        return;
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
       }
-      // Find subscription and remove it if no other userServices
-      const usersServices = await loadUserServiceBy({
-        subscription_id: deletedUserService?.subscription_id,
-      });
-
-      if (usersServices.length === 0) {
-        const [subscription] =
-          await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-            'Subscription.id': deletedUserService?.subscription_id,
-          } as SubscriptionMutator);
-        await db<Subscription>('Subscription')
-          .where('Subscription.id', '=', subscription.id)
-          .delete('*')
-          .returning('*');
-      }
-
-      return deletedUserService;
     },
   },
 };

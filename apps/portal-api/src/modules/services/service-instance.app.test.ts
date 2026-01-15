@@ -16,7 +16,7 @@ import { UserId } from '../../model/kanel/public/User';
 import * as securityGuard from '../../security/guard';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
-import * as userServiceDomain from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user_service/user_service.domain';
 import * as documentHelper from './document/document.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
@@ -63,7 +63,7 @@ describe('Service Instance app', () => {
         subscriptionDomain,
         'loadSubscriptionBy'
       );
-      loadUserServiceBySpy = vi.spyOn(userServiceDomain, 'loadUserServiceBy');
+      loadUserServiceBySpy = vi.spyOn(UserServiceDomain, 'loadUserServiceBy');
       loadServiceInstanceBySpy = vi.spyOn(
         serviceInstanceDomain,
         'loadServiceInstanceBy'

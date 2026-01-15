@@ -3,7 +3,7 @@ import { requestContext } from '../../../context/request.context';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
-import * as UserServiceDomain from '../../user_service/user_service.domain';
+import { UserServiceDomain } from '../../user_service/user_service.domain';
 import { GenericServiceCapabilityName } from './generic_service_capability.const';
 import * as ServiceCapaDomain from './service-capability.domain';
 import { willManageAccessBeConserved } from './service_capability.helper';
@@ -27,7 +27,7 @@ describe('willManageAccessBeConserved', () => {
       vi.spyOn(ServiceCapaDomain, 'getManageAccessLeft').mockResolvedValueOnce(
         getManageAccessLeft
       );
-      vi.spyOn(UserServiceDomain, 'loadUserServiceById').mockReturnValue({
+      vi.spyOn(UserServiceDomain, 'loadUserServiceById').mockResolvedValue({
         id: 'essai',
         user_id: userId,
       });

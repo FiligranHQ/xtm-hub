@@ -19,7 +19,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
-import { loadUserServiceBy } from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user_service/user_service.domain';
 import { uploadNewFile } from './document/document.helper';
 import { Upload } from './document/document.uploads.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
@@ -42,7 +42,7 @@ export const serviceInstanceApp = {
     const subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
     });
-    const userService = await loadUserServiceBy({
+    const userService = await UserServiceDomain.loadUserServiceBy({
       subscription_id: subscription.id,
       user_id: user.id,
     });
