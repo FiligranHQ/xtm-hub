@@ -47,11 +47,18 @@ export const integrationsItem = graphql`
 
     ...integrationConnectorsItem_fragment @relay(mask: false)
     ...integrationTaxiiFeedsItem_fragment @relay(mask: false)
+    ...integrationStreamsItem_fragment @relay(mask: false)
   }
 `;
 
 export const taxiiFeedsItem = graphql`
   fragment integrationTaxiiFeedsItem_fragment on TaxiiFeed {
+    integration_subtype
+  }
+`;
+
+export const streamsItem = graphql`
+  fragment integrationStreamsItem_fragment on Stream {
     integration_subtype
   }
 `;

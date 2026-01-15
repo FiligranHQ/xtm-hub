@@ -8,10 +8,12 @@ import React from 'react';
 export const IntegrationFilters: React.FC = () => {
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { integrationTypes } = useServiceListLocalStorage(localStorageKey);
-  const shouldDisplayIntegrationSubTypeFilter = integrationTypes.some(
-    (type) =>
-      type === IntegrationTypeEnum.CONNECTOR ||
-      type === IntegrationTypeEnum.TAXII_FEED
+  const shouldDisplayIntegrationSubTypeFilter = integrationTypes.some((type) =>
+    [
+      IntegrationTypeEnum.CONNECTOR,
+      IntegrationTypeEnum.TAXII_FEED,
+      IntegrationTypeEnum.STREAM,
+    ].includes(type)
   );
 
   return (

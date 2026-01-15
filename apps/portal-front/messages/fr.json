@@ -532,7 +532,7 @@
         "rss_feed": "Flux RSS (bientôt disponible)",
         "json_feed": "Flux JSON (bientôt disponible)",
         "taxii_feed": "Flux TAXII",
-        "opencti_stream_feed": "Flux OpenCTI (bientôt disponible)",
+        "stream": "Flux OpenCTI",
         "third_party_integration": "Intégrations tierces (bientôt disponible)"
       },
       "Form": {
@@ -600,6 +600,37 @@
       "NonActive": "Projet",
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux TAXII {name} ?",
       "UpdateService": "Mettre à jour le flux TAXII {name}"
+    },
+    "Stream": {
+      "Actions": {
+        "Added": "Le stream {name} a été ajouté avec succès",
+        "Deleted": "Le stream {name} a été supprimé avec succès",
+        "Share": "Partager le stream",
+        "Updated": "Le stream {name} a été modifié avec succès"
+      },
+      "Active": "Publié",
+      "AddService": "Ajouter un nouveau stream",
+      "DeleteService": "Supprimer le stream {name}",
+      "Form": {
+        "Author": "Auteur",
+        "StreamFile": "Fichier de stream",
+        "StreamIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le stream.",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "ExistingStreamFile": "Fichier Stream existant : {file_name}",
+        "ExistingStreamIllustration": "Illustration de stream existante : {file_name}",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "PublishedPlaceholder": "Le stream est-il publié ?",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Limace",
+        "UpdateJSONFile": "Mise à jour du fichier JSON"
+      },
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux {name} ?",
+      "UpdateService": "Mettre à jour le stream {name}"
     },
     "OpenctiCustomDashboards": {
       "Actions": {

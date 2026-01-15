@@ -24,6 +24,9 @@ export type CsvFeed = Integration;
 export type TaxiiFeed = Integration & {
   integration_subtype: string;
 };
+export type Stream = Integration & {
+  integration_subtype: string;
+};
 export type Connector = Integration & {
   product_version: string;
   container_image?: string | null; // Docker/container identifier
@@ -43,6 +46,10 @@ export type TaxiiFeedMetadataKeys = Array<
   Exclude<keyof Omit<TaxiiFeed, 'labels'>, keyof DocumentResolverType>
 >;
 
+export type StreamFeedMetadataKeys = Array<
+  Exclude<keyof Omit<Stream, 'labels'>, keyof DocumentResolverType>
+>;
+
 export type ConnectorMetadataKeys = Array<
   Exclude<keyof Omit<Connector, 'labels'>, keyof DocumentResolverType>
 >;
@@ -51,6 +58,10 @@ export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadataKeys = [
   'integration_type',
 ];
 export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadataKeys = [
+  'integration_type',
+  'integration_subtype',
+];
+export const INTEGRATION_STREAM_METADATA: StreamFeedMetadataKeys = [
   'integration_type',
   'integration_subtype',
 ];
@@ -70,5 +81,6 @@ export const INTEGRATION_METADATA = Array.from(
     ...INTEGRATION_CSV_FEED_METADATA,
     ...INTEGRATION_TAXII_FEED_METADATA,
     ...INTEGRATION_CONNECTOR_METADATA,
+    ...INTEGRATION_STREAM_METADATA,
   ])
 );

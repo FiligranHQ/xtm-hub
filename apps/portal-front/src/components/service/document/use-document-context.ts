@@ -10,6 +10,7 @@ import {
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
 import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
+import { StreamForm } from '@/components/service/integrations/forms/stream-form';
 import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
 import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
@@ -189,9 +190,15 @@ export function useDocumentContext({
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         CustomDashboardForm,
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
-        return integrationType === IntegrationTypeEnum.CSV_FEED
-          ? CsvFeedForm
-          : TaxiiFeedForm;
+        const integrationMapping: Partial<
+          Record<IntegrationTypeEnum, ServiceForm>
+        > = {
+          [IntegrationTypeEnum.CSV_FEED]: CsvFeedForm,
+          [IntegrationTypeEnum.TAXII_FEED]: TaxiiFeedForm,
+          [IntegrationTypeEnum.STREAM]: StreamForm,
+        };
+
+        return integrationMapping[integrationType] ?? CsvFeedForm;
       },
     };
 
@@ -204,9 +211,14 @@ export function useDocumentContext({
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         'Service.OpenctiCustomDashboards',
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
-        return integrationType === IntegrationTypeEnum.CSV_FEED
-          ? 'Service.CsvFeed'
-          : 'Service.TaxiiFeed';
+        const integrationMapping: Partial<Record<IntegrationTypeEnum, string>> =
+          {
+            [IntegrationTypeEnum.CSV_FEED]: 'Service.CsvFeed',
+            [IntegrationTypeEnum.TAXII_FEED]: 'Service.TaxiiFeed',
+            [IntegrationTypeEnum.STREAM]: 'Service.Stream',
+          };
+
+        return integrationMapping[integrationType] ?? '';
       },
     };
 
