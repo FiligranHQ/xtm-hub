@@ -111,7 +111,7 @@ type Connector implements Node & Document & Integration {
   # Integration
   remover_id: ID @auth
   integration_type: IntegrationType!
-  product_version: String!
+  product_version: String
   container_image: String
   verified: Boolean!
   source_code: String
@@ -216,7 +216,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
   vendor_url: String!
-  product_version: String!
+  product_version: String
   github_url: String
 }
 

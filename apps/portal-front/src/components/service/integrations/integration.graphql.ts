@@ -48,6 +48,7 @@ export const integrationsItem = graphql`
     ...integrationConnectorsItem_fragment @relay(mask: false)
     ...integrationTaxiiFeedsItem_fragment @relay(mask: false)
     ...integrationStreamsItem_fragment @relay(mask: false)
+    ...integrationThirdPartyIntegrationsItem_fragment @relay(mask: false)
   }
 `;
 
@@ -60,6 +61,15 @@ export const taxiiFeedsItem = graphql`
 export const streamsItem = graphql`
   fragment integrationStreamsItem_fragment on Stream {
     integration_subtype
+  }
+`;
+
+export const thirdPartyIntegrationsItem = graphql`
+  fragment integrationThirdPartyIntegrationsItem_fragment on ThirdPartyIntegration {
+    integration_subtype
+    product_version
+    github_url
+    vendor_url
   }
 `;
 

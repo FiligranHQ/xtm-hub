@@ -15,6 +15,10 @@ import {
   TaxiiFeedFormValues,
 } from '@/components/service/integrations/forms/taxii-feed-form';
 import {
+  ThirdPartyIntegrationForm,
+  ThirdPartyIntegrationFormValues,
+} from '@/components/service/integrations/forms/third-party-integration-form';
+import {
   OpenaevScenarioForm,
   OpenAEVScenarioFormValues,
 } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
@@ -24,10 +28,12 @@ export type ServiceFormValues =
   | TaxiiFeedFormValues
   | StreamFormValues
   | OpenAEVScenarioFormValues
-  | CustomDashboardFormValues;
+  | CustomDashboardFormValues
+  | ThirdPartyIntegrationFormValues;
 export type ServiceForm =
   | typeof CsvFeedForm
   | typeof TaxiiFeedForm
   | typeof StreamForm
   | typeof OpenaevScenarioForm
-  | typeof CustomDashboardForm;
+  | typeof CustomDashboardForm
+  | typeof ThirdPartyIntegrationForm;

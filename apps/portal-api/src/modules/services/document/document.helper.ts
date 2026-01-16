@@ -27,6 +27,7 @@ import {
   INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_STREAM_METADATA,
   INTEGRATION_TAXII_FEED_METADATA,
+  INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
   isIntegrationType,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
@@ -97,6 +98,8 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
       [IntegrationType.CsvFeed]: INTEGRATION_CSV_FEED_METADATA,
       [IntegrationType.TaxiiFeed]: INTEGRATION_TAXII_FEED_METADATA,
       [IntegrationType.Stream]: INTEGRATION_STREAM_METADATA,
+      [IntegrationType.ThirdPartyIntegration]:
+        INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
     };
     if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);
@@ -136,7 +139,7 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
   }
   const missingMetadataKeys = metadataKeys.filter(
     ({ key, optional }) =>
-      optional || !metadata.some((meta) => meta.key === key)
+      !optional && !metadata.some((meta) => meta.key === key)
   );
   if (missingMetadataKeys.length) {
     logApp.error(
