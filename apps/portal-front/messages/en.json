@@ -497,7 +497,6 @@
       "LastVerifiedDate": "Last verified at",
       "Name": "OpenCTI Connectors",
       "Search": "Search a connector with name...",
-      "Type": "Type",
       "VendorContact": "Vendor Contact",
       "VisitVendor": "Visit the vendor's page to learn more and get in touch",
       "Incompatible": "{platformToBeUpdated} {count, plural, =1 {needs} other {need}} to be updated to deploy this connector.",
@@ -775,7 +774,9 @@
         "LastUpdatedAt": "Last updated at",
         "Overview": "Overview",
         "ProductVersion": "Product minimum version",
-        "Shares": "Shares"
+        "Shares": "Shares",
+        "IntegrationType": "Type",
+        "IntegrationSubType": "Subtype"
       },
       "Download": "Download",
       "FromVersion": "From version",

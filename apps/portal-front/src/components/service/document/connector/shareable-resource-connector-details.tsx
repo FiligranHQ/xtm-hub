@@ -14,6 +14,7 @@ export interface ShareableResourceConnectorDetailsProps {
     name: string;
     source_code?: string | null;
     subscription_link?: string | null;
+    integration_type?: string | null;
     integration_subtype?: string | null;
     product_version?: string;
     share_number?: number | null;
@@ -66,8 +67,21 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
           </Button>
         </ShareableResourceDetailItem>
       )}
+      {connectorDetails.integration_type && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.IntegrationType')}>
+          <div className="flex items-center gap-s">
+            <span>
+              {t(
+                `Service.OpenctiIntegrations.Type.${connectorDetails.integration_type}`
+              )}
+            </span>
+          </div>
+        </ShareableResourceDetailItem>
+      )}
       {connectorMetadata && (
-        <ShareableResourceDetailItem label={t('Service.Connectors.Type')}>
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.IntegrationSubType')}>
           <span>
             <Badge
               className="mr-auto"
