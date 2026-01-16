@@ -14,6 +14,7 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { SearchInput } from '@/components/ui/search-input';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
@@ -100,6 +101,7 @@ const connectionIDs = new Map<TrialsTabType, string>();
 
 const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   const t = useTranslations();
+  const isAdminByPass = useAdminByPass();
 
   const statuses = trialsTabConfig[type].statuses;
   const defaultOrder =
@@ -323,7 +325,8 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             },
           ]
         : []),
-      ...(type === TrialsTabType.Running || type === TrialsTabType.Waiting
+      ...((type === TrialsTabType.Running || type === TrialsTabType.Waiting) &&
+      isAdminByPass
         ? [
             {
               accessorKey: 'actions',
@@ -357,7 +360,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                         })}
                       </AlertDialogComponent>
                     )}
-                    {type === TrialsTabType.Waiting && (
+                    {type === TrialsTabType.Waiting && isAdminByPass && (
                       <>
                         <TooltipProvider>
                           <Tooltip>

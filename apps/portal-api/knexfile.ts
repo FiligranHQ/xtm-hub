@@ -82,7 +82,8 @@ type BaseDatabaseType =
   | 'DeploymentRequest'
   | 'DeploymentRequestQuota'
   | 'ServiceGroup'
-  | 'ServiceGroup_User';
+  | 'ServiceGroup_User'
+  | 'SSOGroup_RolePortal';
 
 export type DatabaseType =
   | BaseDatabaseType

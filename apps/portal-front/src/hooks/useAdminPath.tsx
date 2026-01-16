@@ -1,4 +1,4 @@
-import useAdminByPass from '@/hooks/useAdminByPass';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { usePathname } from 'next/navigation';
 
 const useAdminPath = () => {
