@@ -800,9 +800,10 @@
       "StartTrial": "Start your free trial",
       "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
-      "ContactUs": "Contact us",
-      "ContactUsSuccessTitle": "Thank you!",
-      "ContactUsSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
+      "ReachOutToSales": "Reach out to Sales",
+      "NeedSupport": "Need support",
+      "ReachOutToSalesSuccessTitle": "Thank you!",
+      "ReachOutToSalesSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",

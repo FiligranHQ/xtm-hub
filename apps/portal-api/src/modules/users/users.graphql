@@ -156,6 +156,7 @@ type Mutation {
   logout: ID! @auth
 
   # Contact
+  ############ USED IN OpenCTI ############ DO NOT RENAME/REMOVE
   contactUs: Success!
 }
 
