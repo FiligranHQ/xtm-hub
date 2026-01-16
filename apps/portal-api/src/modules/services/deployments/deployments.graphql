@@ -172,7 +172,14 @@ extend type Query {
   deploymentRequestsAvailable(
     platformIdentifier: PlatformIdentifier
   ): [DeploymentAvailability!]!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(
+      requires: [
+        BYPASS
+        READ_TRIALS
+        ADMINISTRATE_ORGANIZATION
+        MANAGE_PLATFORM_REGISTRATION
+      ]
+    )
   deploymentRequestsList(
     first: Int!
     after: ID
@@ -180,7 +187,7 @@ extend type Query {
     orderBy: DeploymentRequestOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-  ): DeploymentRequestConnection! @auth(requires: [BYPASS])
+  ): DeploymentRequestConnection! @auth(requires: [BYPASS, READ_TRIALS])
 }
 
 extend type Mutation {

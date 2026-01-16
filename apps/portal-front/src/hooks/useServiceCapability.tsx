@@ -1,5 +1,5 @@
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import useAdminByPass from '@/hooks/useAdminByPass';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useMemo } from 'react';
 

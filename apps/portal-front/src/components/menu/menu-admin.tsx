@@ -1,5 +1,4 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import useAdminByPass from '@/hooks/useAdminByPass';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
@@ -16,7 +15,7 @@ import {
   PopoverTrigger,
   Separator,
 } from '@filigran/ui';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -113,10 +112,6 @@ const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/user`,
     label: t('MenuLinks.Security'),
-    restriction: [
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-      OrganizationCapabilityEnum.MANAGE_ACCESS,
-    ],
   },
   {
     href: `/${APP_PATH}/admin/label`,
@@ -133,6 +128,7 @@ const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/trials`,
     label: t('MenuLinks.Trials'),
+    restriction: [RestrictionEnum.READ_TRIALS],
   },
 ];
 
@@ -143,7 +139,7 @@ const AdminLinks = ({ className }: { className?: string }) => {
       {adminLinksData(t).map(({ href, label, restriction = [] }) => (
         <GuardCapacityComponent
           key={href}
-          capacityRestriction={[...restriction]}>
+          portalCapabilityRestriction={[...restriction]}>
           <li>
             <AdminButton
               className={className}
@@ -186,17 +182,12 @@ const AdminButton = ({
   );
 };
 const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
-  const useGrantedBYPASS = useAdminByPass();
-  if (useGrantedBYPASS) {
-    return (
-      <>
-        <Separator className="my-s" />
-        <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>
-      </>
-    );
-  }
-
-  return null;
+  return (
+    <>
+      <Separator className="my-s" />
+      <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>
+    </>
+  );
 };
 
 export default MenuAdmin;

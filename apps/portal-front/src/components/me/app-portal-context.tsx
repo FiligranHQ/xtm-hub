@@ -1,7 +1,4 @@
-import {
-  meContext_fragment$data,
-  Restriction,
-} from '@generated/meContext_fragment.graphql';
+import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import * as React from 'react';
@@ -10,7 +7,7 @@ import { createContext, FunctionComponent } from 'react';
 export interface Portal {
   me?: meContext_fragment$data | null;
   isPersonalSpace?: boolean;
-  hasCapability?: (capability: Restriction) => boolean;
+  hasCapability?: (capability: RestrictionEnum) => boolean;
   hasOrganizationCapability?: (
     capability: OrganizationCapabilityEnum
   ) => boolean;
@@ -31,8 +28,10 @@ export const generatePortalContext = (
       me?.organizations?.some(
         (org) => org.personal_space && org.id === me?.selected_organization_id
       ) ?? false,
-    hasCapability: (capability: Restriction) => {
-      const userCapabilities = (me?.capabilities ?? []).map((c) => c?.name);
+    hasCapability: (capability: RestrictionEnum) => {
+      const userCapabilities = (me?.capabilities ?? []).map(
+        (c) => c?.name as RestrictionEnum
+      );
       return (
         userCapabilities.includes(RestrictionEnum.BYPASS) ||
         userCapabilities.includes(capability)
