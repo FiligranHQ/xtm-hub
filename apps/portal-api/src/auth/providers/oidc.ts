@@ -48,9 +48,9 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
           userinfo['https://xtm-hub-development/groups'] as string[]
         );
 
-        const rolePortal = loadRolesFromSSOGroup.roles ?? [];
+        const rolePortal = loadedRolesFromSSOGroup.roles ?? [];
 
-        const roles = [...new Set([...extractRoles, ...rolePortal])];
+        const roles = [...new Set([...extractedRoles, ...rolePortal])];
         const {
           email,
           nickname: first_name,
@@ -73,16 +73,7 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
         done(null, tokenSet.claims());
       }
     );
-    // openIDStrategy.logout = (_, callback) => {
-    //   const isSpecificUri = isNotEmptyField(config.logout_callback_url);
-    //   const endpointUri = issuer.end_session_endpoint ? issuer.end_session_endpoint : `${config.issuer}/oidc/logout`;
-    //   if (isSpecificUri) {
-    //     const logoutUri = `${endpointUri}?post_logout_redirect_uri=${config.logout_callback_url}`;
-    //     callback(null, logoutUri);
-    //   } else {
-    //     callback(null, endpointUri);
-    //   }
-    // };
+
     passport.use(providerRef, openIDStrategy);
 
     passport.serializeUser(function (user, done) {
