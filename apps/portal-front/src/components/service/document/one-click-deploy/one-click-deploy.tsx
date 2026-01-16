@@ -21,7 +21,7 @@ import { graphql, useMutation } from 'react-relay';
 
 interface OneClickDeployProps {
   documentData: ShareableResource;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
 }
 
 const OneClickDeploy = ({
