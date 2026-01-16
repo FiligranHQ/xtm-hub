@@ -34,7 +34,7 @@ test.describe('CSV Feeds', () => {
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await integrationPage.deleteCsvFeed('menuitem');
+    await integrationPage.deleteIntegration('menuitem');
 
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
@@ -42,7 +42,7 @@ test.describe('CSV Feeds', () => {
   });
   test('Should delete CSV Feed from the detailed page', async ({ page }) => {
     await integrationPage.navigateToIntegration(CSV_FEED_TEST.shortDescription);
-    await integrationPage.deleteCsvFeed('button');
+    await integrationPage.deleteIntegration('button');
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();

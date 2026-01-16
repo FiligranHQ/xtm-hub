@@ -33,7 +33,7 @@ export interface ShareableResourceConnectorCardProps {
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
   publicPath?: boolean;
 }
 

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 interface Props {
   platforms: useRegisteredPlatformsFragment$data[];
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
 }
 
 export const useBuildCompatibilityTranslationKey = ({
