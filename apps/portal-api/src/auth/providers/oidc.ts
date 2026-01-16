@@ -41,7 +41,7 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
     const openIDStrategy = new OpenIDStrategy(
       options,
       async (_, tokenSet, userinfo, done) => {
-        const extractRoles = extractRole(
+        const extractedRoles = extractRole(
           userinfo['https://xtm-hub-development/roles'] as string[]
         );
         const loadRolesFromSSOGroup = await loadRolePortalsBySSOGroups(
