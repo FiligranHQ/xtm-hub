@@ -44,7 +44,7 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
         const extractedRoles = extractRole(
           userinfo['https://xtm-hub-development/roles'] as string[]
         );
-        const loadRolesFromSSOGroup = await loadRolePortalsBySSOGroups(
+        const loadedRolesFromSSOGroup = await loadRolePortalsBySSOGroups(
           userinfo['https://xtm-hub-development/groups'] as string[]
         );
 
