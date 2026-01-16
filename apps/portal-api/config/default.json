@@ -71,11 +71,7 @@
     "token_reference": "access_token",
     "read_userinfo": false,
     "roles_path": "resource_access.scred-portal-dev.roles",
-    "role_mappings": [
-      "XTMHubAdmin:ADMIN",
-      "Team - XTM Hub:ADMIN",
-      "Revenue - Sales:REVENUE_SALES"
-    ]
+    "role_mappings": ["XTMHubAdmin:ADMIN"]
   },
   "awx": {
     "activate": false,

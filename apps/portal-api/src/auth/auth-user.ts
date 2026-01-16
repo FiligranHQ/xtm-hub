@@ -26,7 +26,9 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   // Check if the user has the admin role, so in creation we create user then add admin role
 
   if (userInfo.roles.length > 0) {
-    await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
+    if (email.endsWith('@filigran.io')) {
+      await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
+    }
     await Promise.all(
       userInfo.roles.map((role) => addRoleToUser(user.id, role))
     );
