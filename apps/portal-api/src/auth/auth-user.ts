@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { UserInfo } from '../model/user';
+import { removeAllUserRolePortal } from '../modules/role-portal/role-portal.domain';
 import { loadUserBy, updateUserAtLogin } from '../modules/users/users.domain';
 import { getOrCreateUser } from '../modules/users/users.helper';
 import { PLATFORM_ORGANIZATION_UUID, ROLE_ADMIN } from '../portal.const';
@@ -24,15 +25,15 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
     throw ForbiddenAccess('You are not allowed to log in');
   }
   // Check if the user has the admin role, so in creation we create user then add admin role
-
-  if (userInfo.roles.length > 0) {
-    if (email.endsWith('@filigran.io')) {
-      await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
+  if (email.endsWith('@filigran.io')) {
+    await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
+    await removeAllUserRolePortal(user.id);
+    if (userInfo.roles.length > 0) {
+      await Promise.all(
+        userInfo.roles.map((role) => addRoleToUser(user.id, role))
+      );
+      return loadUserBy({ 'User.id': user.id });
     }
-    await Promise.all(
-      userInfo.roles.map((role) => addRoleToUser(user.id, role))
-    );
-    return loadUserBy({ 'User.id': user.id });
   }
 
   return user;

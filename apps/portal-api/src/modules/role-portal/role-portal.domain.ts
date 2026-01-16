@@ -12,13 +12,6 @@ export const loadRolePortalBy = async (
     .select('*');
 };
 
-export const loadAllRolePortalBy = async (
-  field: string,
-  value: string[]
-): Promise<RolePortal[]> => {
-  return db<RolePortal>('RolePortal').whereIn(field, value);
-};
-
 export const isAdmin = () => {
   const { user } = requestContext.require();
   return user.roles_portal.some((role) => role.id === ROLE_ADMIN.id);
@@ -36,4 +29,8 @@ export const loadRolePortalsBySSOGroups = async (
     .whereIn('SSOGroup_RolePortal.SSOGroup', ssoGroups)
     .select(dbRaw('array_agg(DISTINCT "RolePortal".name) as roles'))
     .first();
+};
+
+export const removeAllUserRolePortal = (user_id) => {
+  return db('User_RolePortal').where({ user_id }).del();
 };
