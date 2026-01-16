@@ -16,6 +16,7 @@ import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
+import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import { SettingsContext } from '@/components/settings/env-portal-context';
@@ -30,7 +31,6 @@ import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 
 // Component interface
 interface ShareableResourceSlugProps {
@@ -63,7 +63,7 @@ const ShareableResourceSlug: React.FunctionComponent<
     if (!documentData.active) return false;
 
     if (isIntegrationItem(documentData)) {
-      return documentData.integration_type === IntegrationTypeEnum.CSV_FEED;
+      return documentData.integration_type in OPENCTI_INTEGRATION_URL_CONFIGS;
     }
 
     return [
