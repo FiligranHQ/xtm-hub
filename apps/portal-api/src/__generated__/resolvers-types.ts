@@ -1219,7 +1219,6 @@ export type QueryIntegrationArgs = {
 
 export type QueryIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
@@ -1312,7 +1311,6 @@ export type QueryPublicIntegrationBySlugArgs = {
 
 export type QueryPublicIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;

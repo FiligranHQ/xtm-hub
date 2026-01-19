@@ -61,9 +61,9 @@ type Query {
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  integrations(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
+  integrations(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
   integration(id: ID, serviceInstanceId: ID): Integration
-  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
+  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
   publicIntegrationBySlug(slug: String): Integration
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
