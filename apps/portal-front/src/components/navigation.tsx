@@ -6,6 +6,7 @@ import { OrganizationSwitcher } from '@/components/menu/organization-switcher';
 import { APP_PATH } from '@/utils/path/constant';
 import { HomeIcon } from '@filigran/icon';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
@@ -53,7 +54,8 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
           </li>
         )}
 
-        <GuardCapacityComponent>
+        <GuardCapacityComponent
+          portalCapabilityRestriction={[RestrictionEnum.READ_TRIALS]}>
           <MenuAdmin open={open} />
         </GuardCapacityComponent>
       </ul>

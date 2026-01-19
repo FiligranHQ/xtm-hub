@@ -129,6 +129,15 @@ export const ensureUserRoleExist = async (user_id, role_portal_id) => {
   }
 };
 
+export const addRoleToUser = async (user_id, role) => {
+  const rolePortal = await db('RolePortal').where({ name: role }).first();
+  if (!rolePortal) {
+    logApp.warn(`Role portal '${role}' not found for user`);
+    return;
+  }
+  await ensureUserRoleExist(user_id, rolePortal.id);
+};
+
 export const ensureRoleExists = async (role) => {
   const rolePortal = await db('RolePortal');
   if (!rolePortal.find((r) => r.id === role.id)) {

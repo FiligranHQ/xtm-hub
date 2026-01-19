@@ -497,7 +497,6 @@
       "LastVerifiedDate": "Dernière vérification",
       "Name": "Connecteurs OpenCTI",
       "Search": "Rechercher un connecteur par nom...",
-      "Type": "Type",
       "VendorContact": "Contact vendeur",
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
       "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mises à jour pour déployer ce connecteur.",
@@ -775,7 +774,9 @@
         "LastUpdatedAt": "Dernière mise à jour le",
         "Overview": "Vue d'ensemble",
         "ProductVersion": "Version minimale du produit",
-        "Shares": "Actions"
+        "Shares": "Actions",
+        "IntegrationType": "Type",
+        "IntegrationSubType": "Sous-type"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",

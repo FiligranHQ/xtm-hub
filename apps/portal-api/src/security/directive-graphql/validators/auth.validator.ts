@@ -22,6 +22,16 @@ export const hasCapability = (
     return true;
   }
 
+  //TODO rework this function to seperate capability concern
+  // https://github.com/FiligranHQ/xtm-hub/issues/1503
+  if (
+    user.capabilities.some((capability) =>
+      capabilitiesRequired.includes(capability.name)
+    )
+  ) {
+    return true;
+  }
+
   // Allow if user is active and no specific capabilities required
   if (!user.disabled && capabilitiesRequired.length === 0) {
     return true;

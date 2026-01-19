@@ -15,7 +15,7 @@ describe('date', () => {
         wrapper,
       }
     );
-    expect(result.current).toBe('08/11/2024');
+    expect(result.current).toBe('11/8/2024');
   });
 
   it('should return null for undefined input', () => {

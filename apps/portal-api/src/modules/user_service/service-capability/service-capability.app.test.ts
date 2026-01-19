@@ -14,7 +14,7 @@ import UserServiceCapability from '../../../model/kanel/public/UserServiceCapabi
 import { createSubscription } from '../../subcription/subscription.domain';
 import { SubscriptionStatus } from '../../subscription.const';
 import { loadCapabilities } from '../user-service-capability/user-service-capability.helper';
-import { createUserServiceAccess } from '../user-service.helper';
+import { UserServiceDomain } from '../user_service.domain';
 import { GenericServiceCapabilityName } from './generic_service_capability.const';
 import { serviceCapabilityApp } from './service-capability.app';
 
@@ -37,7 +37,7 @@ describe('editServiceCapability', () => {
     await db<UserService>('User_Service').del();
   });
   it('should update capability', async () => {
-    const userService = await createUserServiceAccess({
+    const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
       user_id: requestContextSimpleUserThales.user.id,
       capabilities: [GenericServiceCapabilityName.ACCESS],
@@ -65,7 +65,7 @@ describe('editServiceCapability', () => {
     ]);
   });
   it('should throw an error if user is not allowed', async () => {
-    const userService = await createUserServiceAccess({
+    const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
       user_id: requestContextSimpleUserThales.user.id,
       capabilities: [GenericServiceCapabilityName.ACCESS],
