@@ -5,6 +5,7 @@ import {
   DeploymentRequestFilter,
   Filter,
   FilterKey,
+  LogicalFilterInput,
   ServiceInstanceFilter,
   ServiceInstanceFilterKey,
 } from './src/__generated__/resolvers-types';
@@ -92,6 +93,7 @@ interface Pagination {
   orderMode?: string;
   orderBy?: string;
   filters?: Filters;
+  logicalFilters?: LogicalFilterInput;
   searchTerm?: string;
 }
 
@@ -414,19 +416,104 @@ export const applySearch = async <T>(
   }
 };
 
+const collectLogicalFilterLeaves = (expr: LogicalFilterInput): Filter[] => {
+  if (expr.leaf) {
+    return [expr.leaf];
+  }
+
+  if (expr.children?.length) {
+    return expr.children.flatMap(collectLogicalFilterLeaves);
+  }
+
+  return [];
+};
+
+const applyLogicalFilterJoins = (
+  type: DatabaseType,
+  qb: Knex.QueryBuilder,
+  expr: LogicalFilterInput
+) => {
+  const leaves = collectLogicalFilterLeaves(expr);
+  const seenKeys = new Set<string>();
+
+  for (const leaf of leaves) {
+    if (!leaf.key || seenKeys.has(leaf.key)) continue;
+    seenKeys.add(leaf.key);
+
+    const filter = getFilterHandler(leaf.key);
+    if (filter.addJoin) {
+      filter.addJoin(qb, type);
+    }
+  }
+};
+
+const applyLogicalFilterWhere = (
+  type: DatabaseType,
+  qb: Knex.QueryBuilder,
+  logicalFilter: LogicalFilterInput
+) => {
+  if (logicalFilter.leaf) {
+    const filter = getFilterHandler(logicalFilter.leaf.key);
+    filter.addWhere(qb, type, logicalFilter.leaf.value);
+    return;
+  }
+  if (logicalFilter.operator && logicalFilter.children?.length) {
+    qb.where((groupQb) => {
+      logicalFilter.children.forEach((child, index) => {
+        if (index === 0) {
+          groupQb.where((subQb) => {
+            applyLogicalFilterWhere(type, subQb, child);
+          });
+          return;
+        }
+
+        if (logicalFilter.operator === 'OR') {
+          groupQb.orWhere((subQb) => {
+            applyLogicalFilterWhere(type, subQb, child);
+          });
+        } else {
+          groupQb.andWhere((subQb) => {
+            applyLogicalFilterWhere(type, subQb, child);
+          });
+        }
+      });
+    });
+  }
+};
+
+const applyLogicalFilter = (
+  type: DatabaseType,
+  qb: Knex.QueryBuilder,
+  logicalFilter?: LogicalFilterInput
+) => {
+  if (!logicalFilter) return qb;
+  applyLogicalFilterJoins(type, qb, logicalFilter);
+  applyLogicalFilterWhere(type, qb, logicalFilter);
+};
+
 export const paginate = async <T, U>(
   type: DatabaseType,
   pagination: Pagination,
   opts: Partial<QueryOpts> = {},
   queryContext = db<T>(type)
 ) => {
-  const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
+  const {
+    first,
+    after,
+    orderMode,
+    orderBy,
+    filters,
+    logicalFilters,
+    searchTerm,
+  } = pagination;
   const currentOffset = after ? Number(atob(after)) : 0;
   queryContext.queryContext({
     ...queryContext.queryContext(),
     ...pagination,
     connection: true,
   });
+
+  applyLogicalFilter(type, queryContext, logicalFilters);
 
   await applyFilters(type, queryContext, filters);
 
