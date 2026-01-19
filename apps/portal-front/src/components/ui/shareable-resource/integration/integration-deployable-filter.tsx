@@ -1,9 +1,8 @@
-import { ServiceListFilterContainer } from '@/components/service/components/header/filter/service-list-filter-container';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { MultiSelectFormField } from '@filigran/ui';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
 import { useTranslations } from 'next-intl';
 
 export const IntegrationDeployableFilter = () => {
@@ -12,30 +11,30 @@ export const IntegrationDeployableFilter = () => {
   );
   const t = useTranslations();
   return (
-    <ServiceListFilterContainer>
-      <MultiSelectFormField
-        options={[
-          {
-            label: t(
-              'Service.OpenctiIntegrations.Filter.ManagerSupported.AutomaticDeploy'
-            ),
-            value: 'true',
-          },
-          {
-            label: t(
-              'Service.OpenctiIntegrations.Filter.ManagerSupported.ManualDeploy'
-            ),
-            value: 'false',
-          },
-        ]}
-        defaultValue={deployable}
-        placeholder={t(
-          'Service.OpenctiIntegrations.Filter.ManagerSupported.Placeholder'
-        )}
-        noResultString={t('Utils.NotFound')}
-        onValueChange={setDeployable}
-        variant="inverted"
-      />
-    </ServiceListFilterContainer>
+    <LogicalMultiSelectFormField
+      options={[
+        {
+          label: t(
+            'Service.OpenctiIntegrations.Filter.ManagerSupported.AutomaticDeploy'
+          ),
+          value: 'true',
+        },
+        {
+          label: t(
+            'Service.OpenctiIntegrations.Filter.ManagerSupported.ManualDeploy'
+          ),
+          value: 'false',
+        },
+      ]}
+      initialValue={deployable}
+      placeholder={t(
+        'Service.OpenctiIntegrations.Filter.ManagerSupported.Placeholder'
+      )}
+      noResultString={t('Utils.NotFound')}
+      onValueChange={setDeployable}
+      optionLabel={t(
+        'Service.OpenctiIntegrations.Filter.ManagerSupported.Label'
+      )}
+    />
   );
 };

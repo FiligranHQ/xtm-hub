@@ -139,6 +139,7 @@
   },
   "GenericActions": {
     "FilterUseCases": "Use case...",
+    "FilterUseCasesLabel": "Use case",
     "Search": "Search...",
     "Paginate": {
       "PreviousPage": "Go to previous page",
@@ -511,15 +512,19 @@
       "IntegrationType": "Integration type",
       "Filter": {
         "IntegrationSubType": {
+          "Label": "Subtype",
           "Placeholder": "Subtype..."
         },
         "Type": {
+          "Label": "Type",
           "Placeholder": "Type..."
         },
         "ProductVersion": {
+          "Label": "Platform",
           "Placeholder": "Platform..."
         },
         "ManagerSupported": {
+          "Label": "Deployment type",
           "Placeholder": "Deployment type...",
           "AutomaticDeploy": "Automatic deploy",
           "ManualDeploy": "Manual deploy"

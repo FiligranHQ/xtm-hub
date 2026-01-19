@@ -1,8 +1,7 @@
-import { ServiceListFilterContainer } from '@/components/service/components/header/filter/service-list-filter-container';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
-import { MultiSelectFormField } from '@filigran/ui';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
@@ -31,17 +30,15 @@ export const ProductVersionFilter: React.FC<Props> = ({
     useServiceListLocalStorage(localStorageKey);
 
   return (
-    <ServiceListFilterContainer>
-      <MultiSelectFormField
-        options={options}
-        defaultValue={productVersions}
-        placeholder={t(
-          'Service.OpenctiIntegrations.Filter.ProductVersion.Placeholder'
-        )}
-        noResultString={t('Utils.NotFound')}
-        onValueChange={setProductVersions}
-        variant="inverted"
-      />
-    </ServiceListFilterContainer>
+    <LogicalMultiSelectFormField
+      options={options}
+      initialValue={productVersions}
+      placeholder={t(
+        'Service.OpenctiIntegrations.Filter.ProductVersion.Placeholder'
+      )}
+      noResultString={t('Utils.NotFound')}
+      onValueChange={setProductVersions}
+      optionLabel={t('Service.OpenctiIntegrations.Filter.ProductVersion.Label')}
+    />
   );
 };

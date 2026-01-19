@@ -1,8 +1,7 @@
 import { getLabels } from '@/components/admin/label/label.utils';
-import { ServiceListFilterContainer } from '@/components/service/components/header/filter/service-list-filter-container';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import { MultiSelectFormField } from '@filigran/ui/clients';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
@@ -22,15 +21,13 @@ export const ServiceListFilterLabel: FunctionComponent<
   }));
 
   return (
-    <ServiceListFilterContainer>
-      <MultiSelectFormField
-        options={labelOptions}
-        defaultValue={labels}
-        placeholder={t('GenericActions.FilterUseCases')}
-        noResultString={t('Utils.NotFound')}
-        onValueChange={setLabels}
-        variant="inverted"
-      />
-    </ServiceListFilterContainer>
+    <LogicalMultiSelectFormField
+      options={labelOptions}
+      initialValue={labels}
+      placeholder={t('GenericActions.FilterUseCases')}
+      noResultString={t('Utils.NotFound')}
+      onValueChange={setLabels}
+      optionLabel={t('GenericActions.FilterUseCasesLabel')}
+    />
   );
 };

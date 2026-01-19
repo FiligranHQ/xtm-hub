@@ -58,15 +58,36 @@ export const integrationSubTypeMetadata: Record<
   },
 };
 
+export const SubTypesPerIntegrationType = new Map<
+  IntegrationTypeEnum,
+  IntegrationSubTypeEnum[]
+>([
+  [
+    IntegrationTypeEnum.CONNECTOR,
+    [
+      IntegrationSubTypeEnum.EXTERNAL_IMPORT,
+      IntegrationSubTypeEnum.INTERNAL_ENRICHMENT,
+      IntegrationSubTypeEnum.INTERNAL_EXPORT_FILE,
+      IntegrationSubTypeEnum.INTERNAL_IMPORT_FILE,
+      IntegrationSubTypeEnum.STREAM,
+    ],
+  ],
+  [IntegrationTypeEnum.TAXII_FEED, [IntegrationSubTypeEnum.NATIVE]],
+  [IntegrationTypeEnum.CSV_FEED, []],
+  [IntegrationTypeEnum.STREAM, [IntegrationSubTypeEnum.NATIVE]],
+  [
+    IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
+    [
+      IntegrationSubTypeEnum.ORCHESTRATION,
+      IntegrationSubTypeEnum.DETECTION,
+      IntegrationSubTypeEnum.CASE_MANAGEMENT,
+    ],
+  ],
+]);
+
 export const TaxiiFeedIntegrationSubTypes = [IntegrationSubTypeEnum.NATIVE];
 
 export const StreamIntegrationSubTypes = [IntegrationSubTypeEnum.NATIVE];
-
-export const ThirdPartyIntegrationIntegrationSubTypes = [
-  IntegrationSubTypeEnum.ORCHESTRATION,
-  IntegrationSubTypeEnum.DETECTION,
-  IntegrationSubTypeEnum.CASE_MANAGEMENT,
-];
 
 export const getIntegrationSubTypeMetadata = (integration_subtype?: string) => {
   return (

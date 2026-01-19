@@ -1,6 +1,5 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
-import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
 import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {
@@ -22,10 +21,8 @@ export const useServiceListLocalStorage = (
     ''
   );
 
-  const [labels, setLabels, removeLabels] = useLocalStorage<string[]>(
-    `label${serviceName}List`,
-    []
-  );
+  const [labels, setLabels, removeLabels] =
+    useLocalStorage<LogicalMultiSelectSelection>(`label${serviceName}List`, {});
 
   const [selectedFilters, setSelectedFilters, removeSelectedFilters] =
     useLocalStorage<ServiceListFilterKey[]>(
@@ -34,26 +31,22 @@ export const useServiceListLocalStorage = (
     );
 
   const [integrationTypes, setIntegrationTypes, removeIntegrationTypes] =
-    useLocalStorage<IntegrationTypeEnum[]>(
+    useLocalStorage<LogicalMultiSelectSelection>(
       `integrationType${serviceName}List`,
-      []
+      {}
     );
 
-  const [
-    integrationSubTypes,
-    setIntegrationSubTypes,
-    removeIntegrationSubTypes,
-  ] = useLocalStorage<IntegrationSubTypeEnum[]>(
-    `integrationSubType${serviceName}List`,
-    []
-  );
-
   const [productVersions, setProductVersions, removeProductVersions] =
-    useLocalStorage<string[]>(`productVersion${serviceName}List`, []);
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `productVersion${serviceName}List`,
+      {}
+    );
 
-  const [deployable, setDeployable, removeDeployable] = useLocalStorage<
-    string[]
-  >(`deployable${serviceName}List`, []);
+  const [deployable, setDeployable, removeDeployable] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `deployable${serviceName}List`,
+      {}
+    );
 
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     `count${serviceName}List`,
@@ -67,7 +60,6 @@ export const useServiceListLocalStorage = (
     removeLabels();
     removeSelectedFilters();
     removeIntegrationTypes();
-    removeIntegrationSubTypes();
     removeDeployable();
   };
 
@@ -86,9 +78,6 @@ export const useServiceListLocalStorage = (
     integrationTypes,
     setIntegrationTypes,
     removeIntegrationTypes,
-    integrationSubTypes,
-    setIntegrationSubTypes,
-    removeIntegrationSubTypes,
     selectedFilters,
     setSelectedFilters,
     removeSelectedFilters,

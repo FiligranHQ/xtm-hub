@@ -4,7 +4,7 @@ import {
 } from '@/components/service/components/header/service-list-header';
 import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
 import { CancelIcon } from '@filigran/icon';
-import { Button } from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import React from 'react';
 
 interface Props {
@@ -18,7 +18,7 @@ export const ServiceListFilterItem: React.FC<Props> = ({
 }) => {
   const { removeFilter } = useServiceListFilters();
   return (
-    <div className="flex gap-s">
+    <div className="flex">
       {filter.node}
 
       <Button
