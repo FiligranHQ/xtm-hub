@@ -305,7 +305,7 @@ const getFilterHandler = (key: string): FilterHandler => {
   }
 
   // Check if it's a metadata filter
-  if ((INTEGRATION_METADATA_KEYS as string[]).includes(key)) {
+  if (INTEGRATION_METADATA_KEYS.includes(key)) {
     return createMetadataFilterHandler(key);
   }
 

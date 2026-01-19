@@ -1,4 +1,3 @@
-import { IntegrationSubTypeEnum } from '@xtm-hub/portal-front/__generated__/models/IntegrationSubType.enum';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import {
   afterAll,
@@ -13,7 +12,10 @@ import {
   SERVICE_CUSTOM_DASHBOARDS_ID,
   SERVICE_INTEGRATIONS_ID,
 } from '../../../../tests/tests.const';
-import { IntegrationType } from '../../../__generated__/resolvers-types';
+import {
+  IntegrationSubType,
+  IntegrationType,
+} from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { MinIOClient } from '../../../thirdparty/minio/client';
@@ -93,7 +95,7 @@ describe('DocumentApp', () => {
           },
           {
             key: 'integration_subtype',
-            value: IntegrationSubTypeEnum.ORCHESTRATION,
+            value: IntegrationSubType.Orchestration,
           },
           {
             key: 'vendor_url',
@@ -136,7 +138,7 @@ describe('DocumentApp', () => {
           },
           {
             key: 'integration_subtype',
-            value: IntegrationSubTypeEnum.ORCHESTRATION,
+            value: IntegrationSubType.Orchestration,
           },
           {
             key: 'vendor_url',
@@ -219,7 +221,7 @@ describe('DocumentApp', () => {
           },
           {
             key: 'integration_subtype',
-            value: IntegrationSubTypeEnum.ORCHESTRATION,
+            value: IntegrationSubType.Orchestration,
           },
           {
             key: 'vendor_url',
@@ -242,7 +244,7 @@ describe('DocumentApp', () => {
           },
           {
             key: 'integration_subtype',
-            value: IntegrationSubTypeEnum.ORCHESTRATION,
+            value: IntegrationSubType.Orchestration,
           },
           {
             key: 'vendor_url',
@@ -308,7 +310,7 @@ describe('DocumentApp', () => {
           },
           {
             key: 'integration_subtype',
-            value: IntegrationSubTypeEnum.ORCHESTRATION,
+            value: IntegrationSubType.Orchestration,
           },
           {
             key: 'vendor_url',
@@ -331,7 +333,7 @@ describe('DocumentApp', () => {
           },
           {
             key: 'integration_subtype',
-            value: IntegrationSubTypeEnum.ORCHESTRATION,
+            value: IntegrationSubType.Orchestration,
           },
           {
             key: 'vendor_url',
