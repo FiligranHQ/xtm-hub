@@ -162,14 +162,7 @@ describe('DocumentApp', () => {
         .mockResolvedValue();
 
       await DocumentApp.createDocument(
-        {
-          short_description: 'short_description',
-          slug: 'slug',
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-          name: 'myCustomDashboard',
-          description: 'description',
-          active: true,
-        },
+        documentData,
         [{ key: 'product_version', value: '1.2.3' }],
         SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
         []
@@ -208,14 +201,7 @@ describe('DocumentApp', () => {
         [],
         {
           document: [],
-          input: {
-            short_description: 'short_description',
-            slug: 'slug',
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            name: 'myCustomDashboard',
-            description: 'description',
-            active: true,
-          },
+          input: documentData,
           updateDocument: true,
         }
       );
