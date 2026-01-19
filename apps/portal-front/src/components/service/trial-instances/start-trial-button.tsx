@@ -128,7 +128,7 @@ export const StartTrialButton: React.FC<Props> = ({
         (variant === StartTrialButtonVariant.Default ? (
           <Button
             onClick={() => setOpenSheet(true)}
-            className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
+            className="bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
             {t('Service.Trials.StartTrial')}
             <ArrowRightAltIcon className="ml-s size-4" />
           </Button>

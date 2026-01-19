@@ -15,7 +15,7 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { ContactUsButton } from './contact-us-button';
+import { ReachSalesButton } from './reach-sales-button';
 
 // Component
 export const TryOpenCTIBanner = () => {
@@ -84,7 +84,9 @@ export const TryOpenCTIBanner = () => {
             OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
             OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
           ]}>
-          <StartTrialButton />
+          <div className="ml-xl">
+            <StartTrialButton />
+          </div>
         </GuardCapacityComponent>
       ),
     },
@@ -108,11 +110,11 @@ export const TryOpenCTIBanner = () => {
     },
     expired: {
       text: () => t('Service.Trials.Expired'),
-      button: () => <ContactUsButton variant="default" />,
+      button: () => <ReachSalesButton variant="default" />,
     },
     cancelled: {
       text: () => t('Service.Trials.Cancelled'),
-      button: () => <ContactUsButton variant="default" />,
+      button: () => <ReachSalesButton variant="default" />,
     },
     active: {
       text: () => (
@@ -162,7 +164,7 @@ export const TryOpenCTIBanner = () => {
     <Callout
       variant="destructive"
       className={`rounded-none ${getGradientClass(diffInDays)} text-black justify-center`}>
-      <div>
+      <div className="flex flex-row">
         {content.text()}
         {content.button()}
       </div>

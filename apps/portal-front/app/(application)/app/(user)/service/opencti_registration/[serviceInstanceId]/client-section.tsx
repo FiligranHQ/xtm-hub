@@ -2,7 +2,8 @@
 
 import { registeredPlatformByServiceInstanceId } from '@/components/registration/register/register.graphql';
 import { RegistrationDetails } from '@/components/service/registration/registration-details';
-import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
+import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales-button';
+import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
@@ -50,7 +51,14 @@ const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
     <>
       <BreadcrumbNav value={breadcrumbs} />
       {isTrial && (
-        <TrialsHeader actions={<ContactUsButton variant="gradient" />} />
+        <TrialsHeader
+          actions={
+            <>
+              <SlackSupportButton />
+              <ReachSalesButton variant="gradient" />
+            </>
+          }
+        />
       )}
       <RegistrationDetails registeredPlatform={queryData.registeredPlatform} />
       {isTrial && <TrialsLearnMore />}

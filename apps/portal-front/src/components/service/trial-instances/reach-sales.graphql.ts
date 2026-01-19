@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
-export const ContactUsMutation = graphql`
-  mutation contactUsMutation {
+export const ReachSalesMutation = graphql`
+  mutation reachSalesMutation {
     contactUs {
       success
     }
