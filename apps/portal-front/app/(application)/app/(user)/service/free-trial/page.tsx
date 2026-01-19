@@ -1,6 +1,7 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
-import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
+import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales-button';
+import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
 import {
   StartTrialButton,
   StartTrialButtonVariant,
@@ -41,7 +42,8 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
       <TrialsHeader
         actions={
           <>
-            <ContactUsButton variant="outline-primary" />
+            <SlackSupportButton />
+            <ReachSalesButton variant="outline-primary" />
             <GuardCapacityComponent
               shouldNotBePersonalSpace
               capacityRestriction={[
