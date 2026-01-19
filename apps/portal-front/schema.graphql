@@ -52,7 +52,7 @@ type Query {
   rolesPortal: [RolePortal!]!
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
   seoCustomDashboardBySlug(slug: String): CustomDashboard
-  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String): CustomDashboardConnection!
+  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
@@ -63,12 +63,12 @@ type Query {
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
   integrations(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
   integration(id: ID, serviceInstanceId: ID): Integration
-  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationConnection!
+  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
   publicIntegrationBySlug(slug: String): Integration
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
-  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String): OpenAEVScenarioConnection!
+  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!

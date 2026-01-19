@@ -124,7 +124,7 @@ export const seoIntegrationsFragment = graphql`
       orderBy: $orderBy
       orderMode: $orderMode
       searchTerm: $searchTerm
-      filters: $filters
+      logicalFilters: $logicalFilters
       serviceInstanceId: $serviceInstanceId
     ) {
       __id
@@ -145,7 +145,7 @@ export const SeoIntegrationListQuery = graphql`
     $cursor: ID
     $orderBy: DocumentOrdering!
     $orderMode: OrderingMode!
-    $filters: [Filter!]
+    $logicalFilters: LogicalFilterInput
     $searchTerm: String
     $serviceInstanceId: String
   ) {

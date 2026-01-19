@@ -1155,7 +1155,6 @@ export type QueryCustomDashboardArgs = {
 
 export type QueryCustomDashboardsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
@@ -1263,7 +1262,6 @@ export type QueryOpenAevScenarioArgs = {
 
 export type QueryOpenAevScenariosArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
@@ -1316,6 +1314,7 @@ export type QueryPublicIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;

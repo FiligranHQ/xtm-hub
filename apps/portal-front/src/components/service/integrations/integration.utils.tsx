@@ -1,5 +1,9 @@
+import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
+import { LogicalFilterInput } from '@generated/integrationsQuery.graphql';
+import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 
 export const availableIntegrationTypes: IntegrationTypeEnum[] = [
   IntegrationTypeEnum.TAXII_FEED,
@@ -90,4 +94,60 @@ export const getIntegrationSubTypeMetadata = (integration_subtype?: string) => {
     integrationSubTypeMetadata[integration_subtype as IntegrationSubTypeEnum] ??
     undefined
   );
+};
+
+export const buildTypeSubtypeFilterExpression = (
+  integrationSubtypesByTypes: LogicalMultiSelectSelection
+): LogicalFilterInput | null | undefined => {
+  const entries = Object.entries(integrationSubtypesByTypes);
+
+  if (entries.length === 0) {
+    return null;
+  }
+
+  const typeExpressions: LogicalFilterInput[] = [];
+  const typesWithoutSubtypes: string[] = [];
+
+  for (const [type, subtypes] of entries) {
+    if (subtypes.length === 0) {
+      typesWithoutSubtypes.push(type);
+    } else {
+      const typeFilter: LogicalFilterInput = {
+        leaf: {
+          key: FilterKeyEnum.INTEGRATION_TYPE,
+          value: [type],
+        },
+      };
+      const subtypeFilter: LogicalFilterInput = {
+        leaf: {
+          key: FilterKeyEnum.INTEGRATION_SUBTYPE,
+          value: subtypes,
+        },
+      };
+      const andExpression: LogicalFilterInput = {
+        operator: LogicalOperatorEnum.AND,
+        children: [typeFilter, subtypeFilter],
+      };
+      typeExpressions.push(andExpression);
+    }
+  }
+
+  if (typesWithoutSubtypes.length > 0) {
+    const groupedTypeFilter: LogicalFilterInput = {
+      leaf: {
+        key: FilterKeyEnum.INTEGRATION_TYPE,
+        value: typesWithoutSubtypes,
+      },
+    };
+    typeExpressions.push(groupedTypeFilter);
+  }
+
+  if (typeExpressions.length === 1) {
+    return typeExpressions[0];
+  }
+
+  return {
+    operator: LogicalOperatorEnum.OR,
+    children: typeExpressions,
+  };
 };

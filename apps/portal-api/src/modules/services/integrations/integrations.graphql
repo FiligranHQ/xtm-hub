@@ -251,6 +251,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     filters: [Filter!]
+    logicalFilters: LogicalFilterInput
     serviceInstanceId: String
   ): IntegrationConnection!
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
