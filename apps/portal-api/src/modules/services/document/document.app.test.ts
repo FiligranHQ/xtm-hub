@@ -179,7 +179,7 @@ describe('DocumentApp', () => {
         user_id: ADMIN_UUID,
         service: TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
         resource_id: expect.any(String),
-        resource_title: 'myCustomDashboard',
+        resource_title: documentData.name,
         status: 'published',
         service_type: undefined,
       });
