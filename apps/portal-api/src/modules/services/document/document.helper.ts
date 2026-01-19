@@ -143,7 +143,7 @@ export const retrieveDocumentTypeAndMetadataKeys = async (
   );
   if (missingMetadataKeys.length) {
     logApp.error(
-      `Document is missing metadata keys: ${missingMetadataKeys.join(', ')}`
+      `Document is missing metadata keys: ${missingMetadataKeys.map(({ key }) => key).join(', ')}`
     );
     throw new Error(ErrorCode.DocumentMissingMetadata);
   }

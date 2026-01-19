@@ -117,7 +117,10 @@ export const DocumentApp = {
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
     metadata: DocumentMetadataResolverType[],
-    mutationArgs: MutationUpdateDocumentArgsResolverType
+    mutationArgs: Pick<
+      MutationUpdateDocumentArgsResolverType,
+      'document' | 'updateDocument' | 'images' | 'input'
+    >
   ) => {
     const { documentType } = await retrieveDocumentTypeAndMetadataKeys(
       serviceInstanceId,
