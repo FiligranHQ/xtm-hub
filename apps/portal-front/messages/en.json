@@ -812,7 +812,8 @@
         "IntegrationType": "Type",
         "IntegrationSubType": "Subtype",
         "GithubURL": "Github URL",
-        "VendorURL": "Vendor URL"
+        "VendorURL": "Vendor URL",
+        "FeedURL": "Feed URL"
       },
       "Download": "Download",
       "FromVersion": "From version",

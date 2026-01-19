@@ -21,11 +21,15 @@ export const isIntegrationType = (
 export type Integration = Document & {
   integration_type: IntegrationType;
 };
-export type CsvFeed = Integration;
+export type CsvFeed = Integration & {
+  feed_url: string;
+};
 export type TaxiiFeed = Integration & {
+  feed_url: string;
   integration_subtype: string;
 };
 export type Stream = Integration & {
+  feed_url: string;
   integration_subtype: string;
 };
 export type ThirdPartyIntegration = Integration & {
@@ -69,12 +73,14 @@ export type ConnectorMetadata = MetadataArray<
 >;
 
 export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
+  { key: 'feed_url' },
   { key: 'integration_type' },
 ];
 export const INTEGRATION_CSV_FEED_METADATA_KEYS =
   INTEGRATION_CSV_FEED_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
+  { key: 'feed_url' },
   { key: 'integration_type' },
   { key: 'integration_subtype' },
 ];
@@ -82,6 +88,7 @@ export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
   INTEGRATION_TAXII_FEED_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
+  { key: 'feed_url' },
   { key: 'integration_type' },
   { key: 'integration_subtype' },
 ];
