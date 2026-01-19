@@ -34,11 +34,11 @@ import {
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
 import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
-import { addAdminAccess } from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
-  subscriptionDomain,
+  SubscriptionDomain,
 } from './subscription.domain';
 
 export const subscriptionApp = {
@@ -163,7 +163,7 @@ export const subscriptionApp = {
     //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
     // }
 
-    return subscriptionDomain.deleteSubscription(id);
+    return SubscriptionDomain.deleteSubscription(id);
   },
 };
 
@@ -210,7 +210,7 @@ const createSubscriptionWithAdminAccess = async ({
     subscriptionInitializerData
   );
 
-  await addAdminAccess(
+  await UserServiceDomain.addAdminAccess(
     user.id as UserId,
     createdSubscription.id,
     organization.personal_space

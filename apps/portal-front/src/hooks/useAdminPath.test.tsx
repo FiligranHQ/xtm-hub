@@ -1,5 +1,5 @@
-import useAdminByPass from '@/hooks/useAdminByPass';
 import useAdminPath from '@/hooks/useAdminPath';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { APP_PATH } from '@/utils/path/constant';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { renderHook } from '@testing-library/react';
@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mocking dependencies
-vi.mock('@/hooks/useAdminByPass');
+vi.mock('@/hooks/usePortalCapability');
 vi.mock('next/navigation');
 describe('useAdminPath', () => {
   it.each`

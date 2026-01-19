@@ -1509,7 +1509,8 @@ export enum Restriction {
   Bypass = 'BYPASS',
   ManageAccess = 'MANAGE_ACCESS',
   ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
-  ManageSubscription = 'MANAGE_SUBSCRIPTION'
+  ManageSubscription = 'MANAGE_SUBSCRIPTION',
+  ReadTrials = 'READ_TRIALS'
 }
 
 export type RolePortal = Node & {

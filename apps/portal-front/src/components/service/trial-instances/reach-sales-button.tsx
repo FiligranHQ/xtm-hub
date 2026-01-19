@@ -1,5 +1,5 @@
 'use client';
-import { ContactUsMutation } from '@/components/service/trial-instances/contact-us.graphql';
+import { ReachSalesMutation } from '@/components/service/trial-instances/reach-sales.graphql';
 import { DialogInformative } from '@/components/ui/dialog';
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
@@ -8,18 +8,19 @@ import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
-interface ContactUsButtonProps {
+interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'outline-primary';
 }
 
-export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
+export const ReachSalesButton = ({ variant }: ReachSalesButtonProps) => {
   const t = useTranslations();
-  const [commitContactUsMutation, isInFlight] = useMutation(ContactUsMutation);
+  const [commitReachSalesMutation, isInFlight] =
+    useMutation(ReachSalesMutation);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const contactUsButton = useMemo(() => {
-    const handleContactUs = () => {
-      commitContactUsMutation({
+  const reachSalesButton = useMemo(() => {
+    const handleReachSales = () => {
+      commitReachSalesMutation({
         variables: {},
         onError(error) {
           toast({
@@ -36,9 +37,9 @@ export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
     if ('gradient' === variant) {
       return (
         <GradientButton
-          onClick={handleContactUs}
+          onClick={handleReachSales}
           disabled={isInFlight}>
-          {t('Service.Trials.ContactUs')}
+          {t('Service.Trials.ReachOutToSales')}
         </GradientButton>
       );
     }
@@ -46,33 +47,33 @@ export const ContactUsButton = ({ variant }: ContactUsButtonProps) => {
     if ('outline-primary' === variant) {
       return (
         <Button
-          onClick={handleContactUs}
+          onClick={handleReachSales}
           variant="outline-primary"
           disabled={isInFlight}>
-          {t('Service.Trials.ContactUs')}
+          {t('Service.Trials.ReachOutToSales')}
         </Button>
       );
     }
 
     return (
       <Button
-        onClick={handleContactUs}
+        onClick={handleReachSales}
         className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled={isInFlight}>
-        {t('Service.Trials.ContactUs')}
+        {t('Service.Trials.ReachOutToSales')}
         <ArrowRightAltIcon className="ml-s size-4" />
       </Button>
     );
-  }, [variant, commitContactUsMutation, isInFlight, t]);
+  }, [variant, commitReachSalesMutation, isInFlight, t]);
 
   return (
     <>
-      {contactUsButton}
+      {reachSalesButton}
       <DialogInformative
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        title={t('Service.Trials.ContactUsSuccessTitle')}>
-        {t('Service.Trials.ContactUsSuccessMessage')}
+        title={t('Service.Trials.ReachOutToSalesSuccessTitle')}>
+        {t('Service.Trials.ReachOutToSalesSuccessMessage')}
       </DialogInformative>
     </>
   );

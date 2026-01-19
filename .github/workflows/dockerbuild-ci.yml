@@ -92,6 +92,7 @@ jobs:
         run: |
           cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+          cp ./apps/portal-api/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
 
       - name: Build and push portal image
         uses: docker/build-push-action@v6
@@ -145,6 +146,7 @@ jobs:
         run: |
           cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
           cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+          cp ./apps/portal-api/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
 
       - name: Launch docker compose
         run: |
