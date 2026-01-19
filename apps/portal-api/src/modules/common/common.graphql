@@ -13,9 +13,20 @@ enum FilterKey {
   manager_supported
 }
 
+enum LogicalOperator {
+  AND
+  OR
+}
+
 input Filter {
   key: FilterKey
   value: [String!]!
+}
+
+input LogicalFilterInput {
+  leaf: Filter
+  operator: LogicalOperator
+  children: [LogicalFilterInput!]
 }
 
 type Success {

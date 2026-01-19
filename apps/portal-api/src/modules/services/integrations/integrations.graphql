@@ -239,6 +239,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     filters: [Filter!]
+    logicalFilters: LogicalFilterInput
     serviceInstanceId: String
   ): IntegrationConnection! @auth
   integration(id: ID, serviceInstanceId: ID): Integration @auth

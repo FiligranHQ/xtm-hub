@@ -45,6 +45,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     filters: [Filter!]
+    logicalFilters: LogicalFilterInput
     serviceInstanceId: String
   ): CustomDashboardConnection! @auth
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
