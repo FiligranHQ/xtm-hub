@@ -103,7 +103,7 @@ const ShareableResourceDetails: React.FunctionComponent<
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.VendorURL')}>
           <Button
-            className="p-0 uppercase"
+            className="p-0"
             variant="link"
             asChild>
             <Link
@@ -120,7 +120,7 @@ const ShareableResourceDetails: React.FunctionComponent<
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.GithubURL')}>
           <Button
-            className="p-0 uppercase"
+            className="p-0"
             variant="link"
             asChild>
             <Link

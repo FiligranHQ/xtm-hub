@@ -37,6 +37,31 @@ export async function seed(knex) {
         key: 'integration_subtype',
         value: 'NATIVE',
       },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'integration_type',
+        value: 'third_party_integration',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'integration_subtype',
+        value: 'ORCHESTRATION',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'vendor_url',
+        value: 'http://vendor.url',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'github_url',
+        value: 'http://github.com',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'product_version',
+        value: '1.2.3',
+      },
     ])
     .onConflict(['document_id', 'key'])
     .ignore();
