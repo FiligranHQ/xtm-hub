@@ -85,10 +85,6 @@ export const SubTypesPerIntegrationType = new Map<
   ],
 ]);
 
-export const TaxiiFeedIntegrationSubTypes = [IntegrationSubTypeEnum.NATIVE];
-
-export const StreamIntegrationSubTypes = [IntegrationSubTypeEnum.NATIVE];
-
 export const getIntegrationSubTypeMetadata = (integration_subtype?: string) => {
   return (
     integrationSubTypeMetadata[integration_subtype as IntegrationSubTypeEnum] ??
