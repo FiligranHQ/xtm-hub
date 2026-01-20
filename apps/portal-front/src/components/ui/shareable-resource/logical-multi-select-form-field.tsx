@@ -58,14 +58,14 @@ interface GroupedSelection {
 }
 
 const AndSeparator: React.FC = () => (
-  <span className="flex items-center px-s py-[10px] text-xs bg-gray-400 text-foreground">
+  <span className="flex items-center px-s py-[10px] text-xs bg-gray-400 text-foreground rounded">
     AND
   </span>
 );
 
 const OrSeparator: React.FC = () => (
   <div className="py-0">
-    <span className="flex items-center px-s py-[10px] text-xs bg-gray-400 text-foreground">
+    <span className="flex items-center px-s py-[10px] text-xs bg-gray-400 text-foreground rounded">
       OR
     </span>
   </div>
@@ -330,7 +330,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
     const SelectionChip: React.FC<{ children: React.ReactNode }> = ({
       children,
     }) => (
-      <div className="inline-flex items-center bg-gray-700 px-2 py-0 text-sm">
+      <div className="inline-flex items-center bg-gray-700 px-2 py-0 text-sm rounded">
         {children}
       </div>
     );
@@ -350,10 +350,10 @@ const LogicalMultiSelectFormField = React.forwardRef<
               ref={ref}
               {...props}
               onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-              className="flex h-auto min-h-9 w-full items-center justify-between bg-inherit p-0 hover:bg-hover">
+              className="flex h-auto min-h-9 w-full items-center justify-between border bg-inherit p-0 hover:bg-hover">
               {groupedSelections.length > 0 ? (
                 <div className="flex w-full items-center">
-                  <div className="flex flex-1 flex-wrap items-center gap-s overflow-hidden bg-inherit p-0">
+                  <div className="flex flex-1 flex-wrap items-center gap-xs overflow-hidden bg-inherit p-0">
                     {/* Parents with specific children */}
                     {groupedSelections
                       .filter((g) => g.children.length > 0)
@@ -401,13 +401,13 @@ const LogicalMultiSelectFormField = React.forwardRef<
               ) : (
                 <div className="flex w-full items-center justify-between">
                   <span
-                    className="mx-3 text-sm text-muted-foreground normal-case"
+                    className="mx-3 text-sm text-foreground normal-case"
                     role="textbox"
                     aria-readonly="true">
                     {placeholder}
                   </span>
                   <KeyboardArrowDownIcon
-                    className="mx-2 w-2.5 h-2.5 cursor-pointer text-muted-foreground"
+                    className="mx-2 w-2.5 h-2.5 cursor-pointer text-foreground"
                     aria-hidden="true"
                   />
                 </div>

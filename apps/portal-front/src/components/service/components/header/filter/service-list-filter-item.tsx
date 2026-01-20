@@ -29,7 +29,7 @@ export const ServiceListFilterItem: React.FC<Props> = ({
           filter.reset();
           removeFilter(selectedFilterKey);
         }}>
-        <CancelIcon className="h-6 w-6 text-gray/60" />
+        <CancelIcon className="h-6 w-6 text-gray/60 ml-xs pr-xs" />
       </Button>
     </div>
   );
