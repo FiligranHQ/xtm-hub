@@ -161,7 +161,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
     const getChildIdsForParent = (parentValue: string): string[] => {
       const parent = options.find((o) => String(o[keyValue]) === parentValue);
       if (!parent) return [];
-      const children = parent[keyChildren] ?? [];
+      const children = (parent[keyChildren] ?? []) as typeof options;
       return children.map((child) => String(child[keyValue]));
     };
 
@@ -171,7 +171,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
       for (const parent of options) {
         const parentValue = String(parent[keyValue]);
         const parentLabel = String(parent[keyLabel]);
-        const children = parent[keyChildren];
+        const children = parent[keyChildren] as typeof options;
 
         if (!(parentValue in selectedValues)) continue;
 
