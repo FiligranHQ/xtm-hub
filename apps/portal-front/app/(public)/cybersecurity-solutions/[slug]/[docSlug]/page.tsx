@@ -286,7 +286,7 @@ const Page = async ({
             </h3>
             <section className="border rounded border-border-light bg-page-background">
               <h2 className="p-l">{document?.short_description}</h2>
-              <div className="p-l !bg-page-background">
+              <div className="p-l !bg-page-background markdown-content">
                 <MarkdownAsync>{document?.description ?? ''}</MarkdownAsync>
               </div>
             </section>
