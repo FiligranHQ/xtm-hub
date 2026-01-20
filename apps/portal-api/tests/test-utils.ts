@@ -75,12 +75,12 @@ export async function createUser({
   first_name = 'John',
   last_name = 'Doe',
   selected_organization_id = 'ba091095-418f-4b4f-b150-6c9295e232c4',
+  pending = false,
 }) {
   // Fixed salt and password (same for all users)
   const salt = 'fabc28ed1339f8b34c10bc3b5a650c01';
   const password =
     'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e';
-
   try {
     // Check if user already exists
     const existingUser = await knex('User')
@@ -97,20 +97,6 @@ export async function createUser({
       };
     }
 
-    // Insert User
-    await knex('User')
-      .insert({
-        id: userId,
-        email,
-        salt,
-        password,
-        first_name,
-        last_name,
-        selected_organization_id,
-      })
-      .onConflict('id')
-      .ignore();
-
     // Insert Personal Organization
     await knex('Organization')
       .insert({
@@ -121,16 +107,43 @@ export async function createUser({
       .onConflict('id')
       .ignore();
 
+    // Insert User
+    await knex('User')
+      .insert({
+        id: userId,
+        email,
+        salt,
+        password,
+        first_name,
+        last_name,
+        selected_organization_id: pending ? userId : selected_organization_id,
+      })
+      .onConflict('id')
+      .ignore();
+
     await knex('User_Organization').insert([
-      {
-        user_id: userId,
-        organization_id: selected_organization_id,
-      },
+      ...(pending
+        ? [
+            {
+              user_id: userId,
+              organization_id: userId,
+            },
+          ]
+        : []),
       {
         user_id: userId,
         organization_id: userId,
       },
     ]);
+
+    if (pending) {
+      await knex('User_Organization_Pending').insert([
+        {
+          user_id: userId,
+          organization_id: selected_organization_id,
+        },
+      ]);
+    }
 
     return {
       userId,
