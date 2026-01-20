@@ -1,4 +1,6 @@
+import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
+import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
@@ -26,8 +28,14 @@ export const ProductVersionFilter: React.FC<Props> = ({
   }, [platforms]);
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
-  const { productVersions, setProductVersions } =
+  const { productVersions, setProductVersions, removeProductVersions } =
     useServiceListLocalStorage(localStorageKey);
+
+  const { removeFilter } = useServiceListFilters();
+  const removeProductVersionsFilter = () => {
+    removeProductVersions();
+    removeFilter(ServiceListFilterKey.ProductVersion);
+  };
 
   return (
     <LogicalMultiSelectFormField
@@ -38,6 +46,7 @@ export const ProductVersionFilter: React.FC<Props> = ({
       )}
       noResultString={t('Utils.NotFound')}
       onValueChange={setProductVersions}
+      onRemove={removeProductVersionsFilter}
       optionLabel={t('Service.OpenctiIntegrations.Filter.ProductVersion.Label')}
     />
   );

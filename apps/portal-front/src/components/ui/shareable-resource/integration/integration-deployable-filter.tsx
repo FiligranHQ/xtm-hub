@@ -1,3 +1,5 @@
+import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
+import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -6,10 +8,17 @@ import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/
 import { useTranslations } from 'next-intl';
 
 export const IntegrationDeployableFilter = () => {
-  const { deployable, setDeployable } = useServiceListLocalStorage(
-    ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
-  );
+  const { deployable, setDeployable, removeDeployable } =
+    useServiceListLocalStorage(
+      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+    );
   const t = useTranslations();
+  const { removeFilter } = useServiceListFilters();
+  const removeDeployableFilter = () => {
+    removeDeployable();
+    removeFilter(ServiceListFilterKey.ManagerSupported);
+  };
+
   return (
     <LogicalMultiSelectFormField
       options={[
@@ -32,6 +41,7 @@ export const IntegrationDeployableFilter = () => {
       )}
       noResultString={t('Utils.NotFound')}
       onValueChange={setDeployable}
+      onRemove={removeDeployableFilter}
       optionLabel={t(
         'Service.OpenctiIntegrations.Filter.ManagerSupported.Label'
       )}

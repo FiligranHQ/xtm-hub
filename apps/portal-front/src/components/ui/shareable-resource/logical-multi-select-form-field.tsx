@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils';
-import { CheckIcon, CloseIcon, KeyboardArrowDownIcon } from '@filigran/icon';
+import {
+  CancelIcon,
+  CheckIcon,
+  CloseIcon,
+  KeyboardArrowDownIcon,
+} from '@filigran/icon';
 import {
   Command,
   CommandEmpty,
@@ -34,6 +39,7 @@ interface MultiSelectFormFieldProps<
   noResultString: string;
   onValueChange: (value: Selection) => void;
   onInputChange?: (value: string) => void;
+  onRemove?: () => void;
   optionLabel: string;
   childOptionLabel?: string;
 }
@@ -84,6 +90,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
       initialValue,
       onValueChange,
       onInputChange,
+      onRemove,
       optionLabel,
       childOptionLabel,
       placeholder,
@@ -335,6 +342,16 @@ const LogicalMultiSelectFormField = React.forwardRef<
       </div>
     );
 
+    const RemoveFilterButton = onRemove ? (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onRemove}>
+        <CancelIcon className="h-6 w-6 text-gray/60 ml-xs pr-xs" />
+      </Button>
+    ) : null;
+
     return (
       <TooltipProvider delayDuration={0}>
         <div
@@ -350,7 +367,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
               ref={ref}
               {...props}
               onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-              className="flex h-auto min-h-9 w-full items-center justify-between border bg-inherit p-0 hover:bg-hover">
+              className="flex h-auto min-h-9 w-full items-center justify-between bg-inherit p-0 hover:bg-hover">
               {groupedSelections.length > 0 ? (
                 <div className="flex w-full items-center">
                   <div className="flex flex-1 flex-wrap items-center gap-xs overflow-hidden bg-inherit p-0">
@@ -396,20 +413,24 @@ const LogicalMultiSelectFormField = React.forwardRef<
                         </SelectionChip>
                       </>
                     )}
+                    {RemoveFilterButton}
                   </div>
                 </div>
               ) : (
-                <div className="flex w-full items-center justify-between">
-                  <span
-                    className="mx-3 text-sm text-foreground normal-case"
-                    role="textbox"
-                    aria-readonly="true">
-                    {placeholder}
-                  </span>
-                  <KeyboardArrowDownIcon
-                    className="mx-2 w-2.5 h-2.5 cursor-pointer text-foreground"
-                    aria-hidden="true"
-                  />
+                <div className=" flex">
+                  <div className="flex w-full items-center justify-between border rounded">
+                    <span
+                      className="mx-3 text-sm text-foreground normal-case"
+                      role="textbox"
+                      aria-readonly="true">
+                      {placeholder}
+                    </span>
+                    <KeyboardArrowDownIcon
+                      className="mx-2 w-2.5 h-2.5 cursor-pointer text-foreground"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  {RemoveFilterButton}
                 </div>
               )}
             </Button>

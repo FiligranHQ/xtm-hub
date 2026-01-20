@@ -1,3 +1,5 @@
+import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
+import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -13,9 +15,11 @@ import React, { useMemo } from 'react';
 import { LogicalMultiSelectFormField } from '../logical-multi-select-form-field';
 
 export const IntegrationTypeFilter: React.FC = () => {
-  const { integrationTypes, setIntegrationTypes } = useServiceListLocalStorage(
-    ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
-  );
+  const { integrationTypes, setIntegrationTypes, removeIntegrationTypes } =
+    useServiceListLocalStorage(
+      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+    );
+  const { removeFilter } = useServiceListFilters();
   const t = useTranslations();
 
   const options = useMemo(() => {
@@ -44,6 +48,11 @@ export const IntegrationTypeFilter: React.FC = () => {
     return [...availableOption, ...comingSoonOption];
   }, [t]);
 
+  const removeIntegrationFilter = () => {
+    removeIntegrationTypes();
+    removeFilter(ServiceListFilterKey.IntegrationType);
+  };
+
   return (
     <LogicalMultiSelectFormField
       options={options}
@@ -55,6 +64,7 @@ export const IntegrationTypeFilter: React.FC = () => {
       childOptionLabel={t(
         'Service.OpenctiIntegrations.Filter.IntegrationSubType.Label'
       )}
+      onRemove={removeIntegrationFilter}
     />
   );
 };
