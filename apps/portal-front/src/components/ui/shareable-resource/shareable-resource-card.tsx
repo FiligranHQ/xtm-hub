@@ -1,30 +1,26 @@
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/badge-overflow-counter';
-import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
+'use client';
+import { DisplayFooterCard } from '@/components/ui/shareable-resource/card-design/display-footer-card';
+import { DisplayHeaderCard } from '@/components/ui/shareable-resource/card-design/display-header-card';
 import {
   PublicShareableResource,
-  ServiceSlug,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { Badge } from '@filigran/ui/servers';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-import ShareableResourceCardIllustration from './shareable-resource-illustration';
-
+interface ShareableServiceInstance {
+  id: string;
+  service_definition?: {
+    identifier: ServiceDefinitionIdentifier;
+  } | null;
+}
 interface ShareableResourceCardProps {
   document: ShareableResource | PublicShareableResource;
   detailUrl: string;
   shareLinkUrl: string;
   extraContent?: ReactNode;
-  serviceInstance:
-    | serviceInstance_fragment$data
-    | seoServiceInstanceFragment$data;
+  serviceInstance: ShareableServiceInstance;
+  publicPath?: boolean;
 }
 
 const ShareableResourceCard = ({
@@ -33,59 +29,32 @@ const ShareableResourceCard = ({
   shareLinkUrl,
   extraContent,
   serviceInstance,
+  publicPath = false,
 }: ShareableResourceCardProps) => {
-  const t = useTranslations();
-
   return (
-    <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover">
-      <ShareableResourceCardIllustration
-        document={document}
-        detailUrl={detailUrl}
-        serviceInstance={serviceInstance}
-      />
-      <div className="flex flex-col flex-grow p-l">
-        <div className="space-y-s">
-          <div className="flex items-center">
-            {document?.labels && (
-              <BadgeOverflowCounter
-                badges={document?.labels as BadgeOverflow[]}
-                className="z-[2]"
-              />
-            )}
-            <div className="flex items-center flex-shrink-0 ml-auto">
-              <ShareLinkButton
-                documentId={document.id}
-                url={shareLinkUrl}
-                tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
-              />
-              {extraContent}
-            </div>
-          </div>
-          <Link
-            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring after:cursor-pointer after:content-[' '] after:absolute after:inset-0 after:z-[1]"
-            href={detailUrl}>
-            <h3 className="line-clamp-2 text-ellipsis flex-1 max-h-[10rem] overflow-hidden">
-              {document?.short_description}
-            </h3>
-          </Link>
+    <>
+      <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover">
+        <Link
+          className="flex flex-col h-full"
+          href={detailUrl}>
+          <DisplayHeaderCard
+            document={document}
+            serviceInstanceId={serviceInstance.id}
+          />
+          <p className="p-m text-gray-300 text-sm">
+            {document.short_description}
+          </p>
+        </Link>
+        <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
+          <DisplayFooterCard
+            document={document}
+            publicPath={publicPath}
+            shareLinkUrl={shareLinkUrl}
+            extraContent={extraContent}
+          />
         </div>
-        <div className="txt-mini items-center flex mt-auto space-y-s">
-          {docHasMetadata(document, 'product_version') &&
-            document.product_version && (
-              <div>
-                {t('Service.ShareableResources.FromVersion')} :{' '}
-                {document.product_version}
-              </div>
-            )}
-          <Badge
-            size="sm"
-            className="ml-auto"
-            variant={document.active ? 'default' : 'warning'}>
-            {t(document.active ? 'Badge.Published' : 'Badge.Draft')}
-          </Badge>
-        </div>
-      </div>
-    </li>
+      </li>
+    </>
   );
 };
 

@@ -44,7 +44,6 @@ const taxiiFeedFormSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
 });
 export type TaxiiFeedFormValues = z.infer<typeof taxiiFeedFormSchema>;
 
@@ -73,10 +72,6 @@ export const TaxiiFeedForm = ({
     () =>
       ({
         ...taxiiFeed,
-        images: taxiiFeed?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
         labels: taxiiFeed?.labels?.map((label) => label.id),
         uploader_id: taxiiFeed?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -95,7 +90,6 @@ export const TaxiiFeedForm = ({
       taxiiFeed
         ? taxiiFeedFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            images: z.custom<FileList>(fileListCheck).optional(),
           })
         : taxiiFeedFormSchema,
     [taxiiFeed]
@@ -252,13 +246,6 @@ export const TaxiiFeedForm = ({
                   </FormItem>
                 ),
               },
-          images: {
-            label: t(`${translationKey}.Form.TaxiiFeedIllustration`),
-            fieldType: 'file',
-            inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
-            },
-          },
           active: {
             label: t(`${translationKey}.Form.PublishedPlaceholder`),
           },

@@ -54,7 +54,6 @@ const thirdPartyIntegrationFormSchema = z.object({
     .nullish(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
-  images: z.custom<FileList>(fileListCheck),
 });
 
 export type ThirdPartyIntegrationFormValues = z.infer<
@@ -88,10 +87,6 @@ export const ThirdPartyIntegrationForm = ({
     () =>
       ({
         ...thirdPartyIntegration,
-        images: thirdPartyIntegration?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
         labels: thirdPartyIntegration?.labels?.map((label) => label.id),
         uploader_id: thirdPartyIntegration?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -111,7 +106,6 @@ export const ThirdPartyIntegrationForm = ({
     const extendedSchema = thirdPartyIntegration
       ? thirdPartyIntegrationFormSchema.extend({
           document: z.custom<FileList>(fileListCheck).optional(),
-          images: z.custom<FileList>(fileListCheck).optional(),
         })
       : thirdPartyIntegrationFormSchema;
 
@@ -253,15 +247,6 @@ export const ThirdPartyIntegrationForm = ({
             ),
           },
           document: { fieldType: () => <FormItem hidden={true} /> },
-          images: {
-            label: t(
-              `${translationKey}.Form.ThirdPartyIntegrationIllustration`
-            ),
-            fieldType: 'file',
-            inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
-            },
-          },
           active: {
             label: t(`${translationKey}.Form.PublishedPlaceholder`),
           },

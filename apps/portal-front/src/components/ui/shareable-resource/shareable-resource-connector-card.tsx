@@ -5,7 +5,7 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { DisplayVersionCard } from '@/components/ui/shareable-resource/display-version-card';
+import { DisplayVersionCard } from '@/components/ui/shareable-resource/card-design/display-version-card';
 import { cn } from '@/lib/utils';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import {

@@ -41,7 +41,6 @@ const openAEVScenarioFormSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
 });
 export type OpenAEVScenarioFormValues = z.infer<
   typeof openAEVScenarioFormSchema
@@ -72,10 +71,6 @@ export const OpenaevScenarioForm = ({
     () =>
       ({
         ...openAEVScenario,
-        images: openAEVScenario?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
         labels: openAEVScenario?.labels?.map((label) => label.id),
         uploader_id: openAEVScenario?.uploader?.id ?? me?.id,
         uploader_organization_id:
@@ -90,7 +85,6 @@ export const OpenaevScenarioForm = ({
       openAEVScenario
         ? openAEVScenarioFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            images: z.custom<FileList>(fileListCheck).optional(),
           })
         : openAEVScenarioFormSchema,
     [openAEVScenario]
@@ -258,15 +252,6 @@ export const OpenaevScenarioForm = ({
                   </FormItem>
                 ),
               },
-          images: {
-            label: t(
-              'Service.OpenAEVScenario.Form.OpenAEVScenarioIllustration'
-            ),
-            fieldType: 'file',
-            inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
-            },
-          },
           active: {
             label: t('Service.OpenAEVScenario.Form.PublishedPlaceholder'),
           },

@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseFixtures';
+import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import DashboardPage, {
   TEST_2_IMAGE_FILE,
@@ -113,9 +113,6 @@ test.describe('Custom dashboards', () => {
           exact: true,
         })
       ).toBeVisible();
-      await expect(
-        page.locator('[aria-roledescription="carousel"] div button')
-      ).toHaveCount(3);
     });
 
     await test.step('Delete the old image and add a new one', async () => {
@@ -135,9 +132,6 @@ test.describe('Custom dashboards', () => {
           exact: true,
         })
       ).toBeVisible();
-      await expect(
-        page.locator('[aria-roledescription="carousel"] div button')
-      ).toHaveCount(3);
     });
 
     await test.step('Delete the old image and add a new one', async () => {
