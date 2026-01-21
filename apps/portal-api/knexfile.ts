@@ -362,18 +362,17 @@ export const applySearch = async <T>(
       ? normalizeDocumentName(searchTerm)
       : searchTerm;
     const [first, ...others] = search;
-    const metaAlias = 'metaSearch';
 
     const shouldSearchOnDocumentMetadata = type === 'Document';
-    if (shouldSearchOnDocumentMetadata) {
-      queryContext.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-        this.on(`${metaAlias}.document_id`, '=', 'Document.id');
-      });
-    }
 
     queryContext.andWhere((qb) => {
       if (shouldSearchOnDocumentMetadata) {
-        qb.orWhereILike(`${metaAlias}.value`, `%${searchTerm}%`);
+        qb.orWhereExists(function () {
+          this.select('*')
+            .from('Document_Metadata')
+            .whereRaw('Document_Metadata.document_id = Document.id')
+            .andWhereILike('Document_Metadata.value', `%${searchTerm}%`);
+        });
       }
       qb.orWhereILike(`${type}.${first}`, `%${normalizedSearchTerm}%`);
       others.forEach((i) =>
