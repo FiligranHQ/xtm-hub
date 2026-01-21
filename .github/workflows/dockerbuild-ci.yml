@@ -315,15 +315,24 @@ jobs:
 
       - name: Deploy
         run: |
-          for i in 1 2 3; do
-            awx --conf.host https://awx.filigran.io \
+          max_attempts=5
+          for i in $(seq 1 $max_attempts); do
+            if awx --conf.host https://awx.filigran.io \
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
               --inventory eu-west-staging \
-              --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}" && break
-            echo "Attempt $i failed, retrying in $((i * 3))s..."
-            sleep $((i * 3))
+              --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"; then
+              echo "✅ Deployment successful"
+              exit 0
+            fi
+            if [ $i -lt $max_attempts ]; then
+              delay=$((2 ** i))
+              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
+              sleep $delay
+            fi
           done
+          echo "❌ All $max_attempts attempts failed"
+          exit 1
 
   build-images-prod:
     needs:
@@ -438,15 +447,24 @@ jobs:
         if: contains(github.ref, 'refs/tags/')
         run: |
           export VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//')
-          for i in 1 2 3; do
-            awx --conf.host https://awx.filigran.io \
+          max_attempts=5
+          for i in $(seq 1 $max_attempts); do
+            if awx --conf.host https://awx.filigran.io \
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-production \
-              --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}" && break
-            echo "Attempt $i failed, retrying in $((i * 3))s..."
-            sleep $((i * 3))
+              --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"; then
+              echo "✅ Deployment successful"
+              exit 0
+            fi
+            if [ $i -lt $max_attempts ]; then
+              delay=$((2 ** i))
+              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
+              sleep $delay
+            fi
           done
+          echo "❌ All $max_attempts attempts failed"
+          exit 1
 
       - name: Send n8n Webhook Notification
         if: contains(github.ref, 'refs/tags/')
@@ -471,38 +489,65 @@ jobs:
       - name: Deploy on Staging
         if: github.ref == 'refs/heads/main'
         run: |
-          for i in 1 2 3; do
-            awx --conf.host https://awx.filigran.io \
+          max_attempts=5
+          for i in $(seq 1 $max_attempts); do
+            if awx --conf.host https://awx.filigran.io \
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-staging \
-              --extra_vars '{"env":"Staging"}' && break
-            echo "Attempt $i failed, retrying in $((i * 3))s..."
-            sleep $((i * 3))
+              --extra_vars '{"env":"Staging"}'; then
+              echo "✅ Deployment successful"
+              exit 0
+            fi
+            if [ $i -lt $max_attempts ]; then
+              delay=$((2 ** i))
+              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
+              sleep $delay
+            fi
           done
+          echo "❌ All $max_attempts attempts failed"
+          exit 1
 
       - name: Deploy on Development
         if: github.ref == 'refs/heads/development'
         run: |
-          for i in 1 2 3; do
-            awx --conf.host https://awx.filigran.io \
+          max_attempts=5
+          for i in $(seq 1 $max_attempts); do
+            if awx --conf.host https://awx.filigran.io \
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-staging \
-              --extra_vars '{"env":"Development"}' && break
-            echo "Attempt $i failed, retrying in $((i * 3))s..."
-            sleep $((i * 3))
+              --extra_vars '{"env":"Development"}'; then
+              echo "✅ Deployment successful"
+              exit 0
+            fi
+            if [ $i -lt $max_attempts ]; then
+              delay=$((2 ** i))
+              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
+              sleep $delay
+            fi
           done
+          echo "❌ All $max_attempts attempts failed"
+          exit 1
 
       - name: Deploy on Prerelease
         if: github.ref == 'refs/heads/development'
         run: |
-          for i in 1 2 3; do
-            awx --conf.host https://awx.filigran.io \
+          max_attempts=5
+          for i in $(seq 1 $max_attempts); do
+            if awx --conf.host https://awx.filigran.io \
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-staging \
-              --extra_vars '{"env":"Prerelease"}' && break
-            echo "Attempt $i failed, retrying in $((i * 3))s..."
-            sleep $((i * 3))
+              --extra_vars '{"env":"Prerelease"}'; then
+              echo "✅ Deployment successful"
+              exit 0
+            fi
+            if [ $i -lt $max_attempts ]; then
+              delay=$((2 ** i))
+              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
+              sleep $delay
+            fi
           done
+          echo "❌ All $max_attempts attempts failed"
+          exit 1
