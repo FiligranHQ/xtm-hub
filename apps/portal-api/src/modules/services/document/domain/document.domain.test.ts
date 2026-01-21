@@ -207,7 +207,7 @@ describe('Document domain', () => {
               ],
             },
           },
-          INTEGRATION_METADATA
+          INTEGRATION_METADATA_KEYS
         );
 
       expect(integrationConnection.edges.length).toBe(2);
@@ -266,7 +266,7 @@ describe('Document domain', () => {
                 ],
               },
             },
-            INTEGRATION_METADATA
+            INTEGRATION_METADATA_KEYS
           );
 
         expect(connectorConnection.edges.length).toBe(1);
@@ -339,7 +339,7 @@ describe('Document domain', () => {
                 ],
               },
             },
-            INTEGRATION_METADATA
+            INTEGRATION_METADATA_KEYS
           );
 
         expect(connectorConnection.edges.length).toBe(2);
