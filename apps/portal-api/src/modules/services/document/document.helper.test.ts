@@ -1,24 +1,24 @@
-import { v4 as uuidv4 } from 'uuid';
+import { IntegrationSubTypeEnum } from '@xtm-hub/portal-front/__generated__/models/IntegrationSubType.enum';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   IntegrationType,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
-import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
 import {
-  INTEGRATION_CSV_FEED_METADATA_KEYS,
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import { DocumentApp } from './document.app';
 import {
+  DocumentHelper,
   loadDocumentWithCountersById,
-  retrieveDocumentTypeAndMetadataKeys,
+  ManageableServiceDefinitionIdentifier,
+  VAULT_DOCUMENT_TYPE,
 } from './document.helper';
 import * as DocumentUploadsHelper from './document.uploads.helper';
 
@@ -49,7 +49,10 @@ describe('DocumentHelper', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
         INTEGRATION_SERVICE_INSTANCE_ID,
         []
       );
@@ -80,80 +83,111 @@ describe('DocumentHelper', () => {
     });
   });
 
-  describe('retrieveDocumentTypeAndMetadataKeys', () => {
-    const serviceInstanceId = uuidv4() as ServiceInstanceId;
-    const loadServiceDefinitionByServiceInstanceSpy = vi.spyOn(
-      serviceDefinitionDomain,
-      'loadServiceDefinitionByServiceInstance'
+  describe('retrieveDocumentTypeFromServiceDefinition', () => {
+    it('should throw when service is not manageable', () => {
+      expect(() =>
+        DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+          ServiceDefinitionIdentifier.Link as ManageableServiceDefinitionIdentifier
+        )
+      ).toThrow(ErrorCode.ServiceNotManageable);
+    });
+
+    it.each`
+      identifier                                             | documentType
+      ${ServiceDefinitionIdentifier.OpenctiIntegrations}     | ${OPENCTI_INTEGRATION_DOCUMENT_TYPE}
+      ${ServiceDefinitionIdentifier.OpenctiCustomDashboards} | ${OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE}
+      ${ServiceDefinitionIdentifier.OpenaevScenarios}        | ${OPENAEV_SCENARIO_DOCUMENT_TYPE}
+      ${ServiceDefinitionIdentifier.Vault}                   | ${VAULT_DOCUMENT_TYPE}
+    `(
+      'should return $documentType when service definition identifier is $identifier',
+      ({ identifier, documentType }) => {
+        const result =
+          DocumentHelper.retrieveDocumentTypeFromServiceDefinition(identifier);
+        expect(result).toBe(documentType);
+      }
     );
-    it('should throw when service definition is not found', async () => {
-      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(null);
+  });
 
-      const call = retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, []);
-
-      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+  describe('assertMetadataIsNotMissing', () => {
+    it('should throw error when metadata mapping is missing', () => {
+      expect(() =>
+        DocumentHelper.assertMetadataIsNotMissing(
+          ServiceDefinitionIdentifier.Link as ManageableServiceDefinitionIdentifier,
+          []
+        )
+      ).toThrow(UnknownErrorCode.MissingMetadataMapping);
     });
 
-    it('should throw when service definition is not manageable', async () => {
-      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
-        identifier: ServiceDefinitionIdentifier.Link,
-      } as ServiceDefinition);
-
-      const call = retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, []);
-
-      await expect(call).rejects.toThrow(ErrorCode.ServiceNotManageable);
+    it('should throw error when integration_type is missing in an integration document', () => {
+      expect(() =>
+        DocumentHelper.assertMetadataIsNotMissing(
+          ServiceDefinitionIdentifier.OpenctiIntegrations,
+          [{ key: 'feed_url', value: 'https://example.com' }]
+        )
+      ).toThrowError(ErrorCode.DocumentMissingMetadata);
     });
 
-    it('should throw when document is missing metadata', async () => {
-      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
-        identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
-      } as ServiceDefinition);
-
-      const call = retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, []);
-
-      await expect(call).rejects.toThrow(ErrorCode.DocumentMissingMetadata);
+    it('should throw error when integration_type is not recognized', () => {
+      expect(() =>
+        DocumentHelper.assertMetadataIsNotMissing(
+          ServiceDefinitionIdentifier.OpenctiIntegrations,
+          [{ key: 'integration_type', value: 'test' }]
+        )
+      ).toThrowError(ErrorCode.IntegrationTypeNotRecognized);
     });
 
-    it('should throw when integration type is not recognized', async () => {
-      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
-        identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
-      } as ServiceDefinition);
+    it('should throw error when integration type is not manageable', () => {
+      expect(() =>
+        DocumentHelper.assertMetadataIsNotMissing(
+          ServiceDefinitionIdentifier.OpenctiIntegrations,
+          [{ key: 'integration_type', value: IntegrationType.Connector }]
+        )
+      ).toThrowError(ErrorCode.IntegrationTypeNotManageable);
+    });
 
-      const call = retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, [
-        { key: 'integration_type', value: 'hello' },
-      ]);
+    it('should throw error when a metadata key is missing', () => {
+      expect(() =>
+        DocumentHelper.assertMetadataIsNotMissing(
+          ServiceDefinitionIdentifier.OpenctiIntegrations,
+          [{ key: 'integration_type', value: IntegrationType.CsvFeed }]
+        )
+      ).toThrowError(ErrorCode.DocumentMissingMetadata);
+    });
 
-      await expect(call).rejects.toThrow(
-        ErrorCode.IntegrationTypeNotRecognized
+    it('should not throw an error when a metadata key is missing but is optional', () => {
+      DocumentHelper.assertMetadataIsNotMissing(
+        ServiceDefinitionIdentifier.OpenctiIntegrations,
+        [
+          {
+            key: 'integration_type',
+            value: IntegrationType.ThirdPartyIntegration,
+          },
+          {
+            key: 'integration_subtype',
+            value: IntegrationSubTypeEnum.ORCHESTRATION,
+          },
+          {
+            key: 'vendor_url',
+            value: 'https://example.com',
+          },
+        ]
       );
     });
 
-    it('should throw when integration type is not manageable', async () => {
-      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
-        identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
-      } as ServiceDefinition);
-
-      const call = retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, [
-        { key: 'integration_type', value: IntegrationType.Connector },
-      ]);
-
-      await expect(call).rejects.toThrow(
-        ErrorCode.IntegrationTypeNotManageable
+    it('should not throw when all metadata keys are present', () => {
+      DocumentHelper.assertMetadataIsNotMissing(
+        ServiceDefinitionIdentifier.OpenctiIntegrations,
+        [
+          {
+            key: 'integration_type',
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: 'feed_url',
+            value: 'https://example.com',
+          },
+        ]
       );
-    });
-
-    it('should return document type and metadata', async () => {
-      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
-        identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
-      } as ServiceDefinition);
-
-      const { documentType, metadataKeys } =
-        await retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-        ]);
-
-      expect(documentType).toBe(OPENCTI_INTEGRATION_DOCUMENT_TYPE);
-      expect(metadataKeys).toStrictEqual(INTEGRATION_CSV_FEED_METADATA_KEYS);
     });
   });
 });

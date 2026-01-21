@@ -22,7 +22,6 @@ import {
   CUSTOM_DASHBOARD_METADATA,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from '../custom-dashboards/custom-dashboards.domain';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_STREAM_METADATA,
@@ -51,16 +50,16 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   parent_document_id?: DocumentId;
 };
 
-type ManageableServiceDefinition =
+export type ManageableServiceDefinitionIdentifier =
   | ServiceDefinitionIdentifier.OpenctiIntegrations
   | ServiceDefinitionIdentifier.OpenctiCustomDashboards
   | ServiceDefinitionIdentifier.OpenaevScenarios
   | ServiceDefinitionIdentifier.Vault;
 
-const VAULT_DOCUMENT_TYPE = 'vault';
+export const VAULT_DOCUMENT_TYPE = 'vault';
 
 const DocumentTypeMappedByServiceDefinition: Record<
-  ManageableServiceDefinition,
+  ManageableServiceDefinitionIdentifier,
   string
 > = {
   [ServiceDefinitionIdentifier.OpenctiIntegrations]:
@@ -73,7 +72,7 @@ const DocumentTypeMappedByServiceDefinition: Record<
 };
 
 const DocumentMetadataMappedByServiceIdentifier: Record<
-  ManageableServiceDefinition,
+  ManageableServiceDefinitionIdentifier,
   (metadata: DocumentMetadataResolverType[]) => OptionalMetadata[]
 > = {
   [ServiceDefinitionIdentifier.OpenctiCustomDashboards]: () =>
@@ -112,45 +111,43 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
   [ServiceDefinitionIdentifier.Vault]: () => [],
 };
 
-export const retrieveDocumentTypeAndMetadataKeys = async (
-  serviceInstanceId: ServiceInstanceId,
-  metadata: DocumentMetadataResolverType[]
-): Promise<{ documentType: string; metadataKeys: string[] }> => {
-  const serviceDefinition =
-    await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
-      serviceInstanceId
-    );
-  if (!serviceDefinition) {
-    throw new Error(ErrorCode.ServiceDefinitionNotFound);
-  }
+export const DocumentHelper = {
+  retrieveDocumentTypeFromServiceDefinition: (
+    serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier
+  ): string => {
+    const documentType: string | undefined =
+      DocumentTypeMappedByServiceDefinition[serviceDefinitionIdentifier];
+    if (!documentType) {
+      throw new Error(ErrorCode.ServiceNotManageable);
+    }
 
-  const documentType: string | undefined =
-    DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
-  if (!documentType) {
-    throw new Error(ErrorCode.ServiceNotManageable);
-  }
+    return documentType;
+  },
 
-  const metadataKeys: OptionalMetadata[] | undefined =
-    DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier](
-      metadata
+  assertMetadataIsNotMissing: (
+    serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier,
+    documentMetadata: DocumentMetadataResolverType[]
+  ) => {
+    const optionalMetadataMapper =
+      DocumentMetadataMappedByServiceIdentifier[serviceDefinitionIdentifier];
+    if (!optionalMetadataMapper) {
+      throw new Error(UnknownErrorCode.MissingMetadataMapping);
+    }
+    const optionalMetadata: OptionalMetadata[] =
+      DocumentMetadataMappedByServiceIdentifier[serviceDefinitionIdentifier](
+        documentMetadata
+      );
+    const missingMetadataKeys = optionalMetadata.filter(
+      ({ key, optional }) =>
+        !optional && !documentMetadata.some((meta) => meta.key === key)
     );
-  if (!metadataKeys) {
-    throw new Error(UnknownErrorCode.MissingMetadataMapping);
-  }
-  const missingMetadataKeys = metadataKeys.filter(
-    ({ key, optional }) =>
-      !optional && !metadata.some((meta) => meta.key === key)
-  );
-  if (missingMetadataKeys.length) {
-    logApp.error(
-      `Document is missing metadata keys: ${missingMetadataKeys.map(({ key }) => key).join(', ')}`
-    );
-    throw new Error(ErrorCode.DocumentMissingMetadata);
-  }
-  return {
-    documentType,
-    metadataKeys: metadataKeys.map(({ key }) => key),
-  };
+    if (missingMetadataKeys.length) {
+      logApp.error(
+        `Document is missing metadata keys: ${missingMetadataKeys.map(({ key }) => key).join(', ')}`
+      );
+      throw new Error(ErrorCode.DocumentMissingMetadata);
+    }
+  },
 };
 
 export const getDocumentName = (documentName: string) => {
@@ -196,7 +193,7 @@ export const uploadNewFile = async (
     return;
   }
   const { user } = requestContext.require();
-  const minioName = await MinIOClient.sendFile(
+  const { minioName } = await MinIOClient.sendFile(
     document.file,
     document.file.name,
     user.id,
