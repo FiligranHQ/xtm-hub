@@ -1,6 +1,7 @@
 import {
   CreateDocumentInput,
   DocumentMetadata as DocumentMetadataResolverType,
+  IntegrationType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
@@ -20,6 +21,7 @@ import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
 import { retrieveDocumentTypeAndMetadataKeys } from './document.helper';
 import {
   processDocumentUpdateUploads,
@@ -43,15 +45,25 @@ export const DocumentApp = {
     const { documentType, metadataKeys } =
       await retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, metadata);
     const files = await processUploads(uploads, serviceInstanceId);
-    const docFile = files.shift();
-    const documentData = {
+    const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
+      documentType,
+      metadata
+    );
+    let documentData: DocumentData<Document> = {
       ...input,
       service_instance_id: serviceInstanceId,
       type: documentType,
-      file_name: docFile.fileName,
-      minio_name: docFile.minioName,
-      mime_type: docFile.mimeType,
     };
+
+    if (shouldHandleFirstFile) {
+      const docFile = files.shift();
+      documentData = {
+        ...documentData,
+        file_name: docFile.fileName,
+        minio_name: docFile.minioName,
+        mime_type: docFile.mimeType,
+      };
+    }
 
     const createdDocument = await withTransaction(async () => {
       const document = await DocumentDomain.createDocument(
@@ -105,7 +117,10 @@ export const DocumentApp = {
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
     metadata: DocumentMetadataResolverType[],
-    mutationArgs: MutationUpdateDocumentArgsResolverType
+    mutationArgs: Pick<
+      MutationUpdateDocumentArgsResolverType,
+      'document' | 'updateDocument' | 'images' | 'input'
+    >
   ) => {
     const { documentType } = await retrieveDocumentTypeAndMetadataKeys(
       serviceInstanceId,
@@ -118,10 +133,14 @@ export const DocumentApp = {
       images,
       input,
     } = mutationArgs;
+    const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
+      documentType,
+      metadata
+    );
     const { documentFile, newImages, existingImageIds } =
       await processDocumentUpdateUploads(
         document,
-        isUpdateDoc,
+        isUpdateDoc && shouldHandleFirstFile,
         images,
         serviceInstanceId
       );
@@ -364,4 +383,23 @@ const upsertDocument = async <T extends DocumentModel>(
 
     return document as T;
   });
+};
+
+const shouldHandleFirstFileAsDocument = (
+  documentType: string,
+  metadata: DocumentMetadataResolverType[]
+): boolean => {
+  if (documentType !== OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
+    return true;
+  }
+
+  const integration_type = metadata.find(
+    ({ key }) => key === 'integration_type'
+  );
+
+  if (!integration_type) {
+    return true;
+  }
+
+  return integration_type.value !== IntegrationType.ThirdPartyIntegration;
 };

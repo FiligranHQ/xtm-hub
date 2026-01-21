@@ -3,7 +3,10 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { availableIntegrationTypes } from '@/components/service/integrations/integration.utils';
+import {
+  availableIntegrationTypes,
+  integrationsWithSubtype,
+} from '@/components/service/integrations/integration.utils';
 import { MultiSelectFormField } from '@filigran/ui';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
@@ -18,11 +21,7 @@ export const IntegrationTypeFilter: React.FC = () => {
 
   const onIntegrationTypeChange = (v: IntegrationTypeEnum[]) => {
     const hasIntegrationSubTypeFilter = v.some((type) =>
-      [
-        IntegrationTypeEnum.CONNECTOR,
-        IntegrationTypeEnum.TAXII_FEED,
-        IntegrationTypeEnum.STREAM,
-      ].includes(type)
+      integrationsWithSubtype.includes(type)
     );
     if (!hasIntegrationSubTypeFilter) {
       removeIntegrationSubTypes();

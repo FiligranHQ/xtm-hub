@@ -2,7 +2,7 @@ import { omit } from '../../utils/utils';
 import { DocumentApp } from '../services/document/document.app';
 import {
   Connector,
-  INTEGRATION_CONNECTOR_METADATA,
+  INTEGRATION_CONNECTOR_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../services/integrations/integrations.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -23,7 +23,7 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         { ...omit(connector, ['logo']) } as Connector,
         uploadLogo,
-        INTEGRATION_CONNECTOR_METADATA
+        INTEGRATION_CONNECTOR_METADATA_KEYS
       );
       const newDocIsCreated = !doc.updated_at;
       if (newDocIsCreated) {

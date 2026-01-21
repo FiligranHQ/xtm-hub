@@ -553,6 +553,9 @@ enum IntegrationSubType {
   INTERNAL_IMPORT_FILE
   STREAM
   NATIVE
+  ORCHESTRATION
+  DETECTION
+  CASE_MANAGEMENT
 }
 
 interface Integration implements Node & Document {
@@ -631,7 +634,7 @@ type Connector implements Node & Document & Integration {
   children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationType!
-  product_version: String!
+  product_version: String
   container_image: String
   verified: Boolean!
   source_code: String
@@ -693,6 +696,36 @@ type Stream implements Node & Document & Integration {
   remover_id: ID
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
+}
+
+type ThirdPartyIntegration implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  vendor_url: String!
+  product_version: String
+  github_url: String
 }
 
 type IntegrationEdge {

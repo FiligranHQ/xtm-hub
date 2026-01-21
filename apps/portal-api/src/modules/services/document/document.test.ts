@@ -26,7 +26,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
   CsvFeed,
-  INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_CSV_FEED_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
 import { DocumentApp } from './document.app';
@@ -279,7 +279,7 @@ describe('increment shared counter', () => {
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         integration_type: IntegrationType.CsvFeed,
       },
-      INTEGRATION_CSV_FEED_METADATA
+      INTEGRATION_CSV_FEED_METADATA_KEYS
     );
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {

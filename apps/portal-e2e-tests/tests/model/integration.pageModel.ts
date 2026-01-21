@@ -126,35 +126,56 @@ export default class IntegrationPage {
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
+  async fillThirdPartyIntegration({
+    name,
+    shortDescription,
+    description,
+  }: {
+    name: string;
+    shortDescription: string;
+    description: string;
+  }) {
+    await this.page
+      .getByRole('button', { name: 'Add new Integration' })
+      .click();
+    await this.page
+      .getByRole('menuitem', { name: 'Third party integration' })
+      .click();
+    await this.page.getByRole('textbox', { name: 'Name *' }).fill(name);
+    await this.page
+      .getByRole('textbox', { name: 'Short Description *' })
+      .fill(shortDescription);
+    await this.page
+      .getByRole('textbox', { name: 'This is a paragraph to' })
+      .fill(description);
+    await this.page
+      .getByRole('checkbox', {
+        name: 'Is the Third party integration published?',
+      })
+      .click();
+    await this.page.getByLabel('Type').click();
+    await this.page.getByLabel('Orchestration').click();
+    await this.page
+      .getByRole('textbox', { name: 'Vendor URL' })
+      .fill('https://example.com');
+    await this.page
+      .getByRole('textbox', { name: 'Github URL' })
+      .fill('https://text.com');
+    await this.page
+      .getByRole('textbox', { name: 'OpenCTI version' })
+      .fill('1.2.3');
+    await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await expect(this.page).toHaveScreenshot();
+    await this.page.getByRole('button', { name: 'Validate' }).click();
+  }
+
   async navigateToIntegration(shortDescription: string) {
     await this.page.getByRole('link', { name: shortDescription }).click();
   }
 
-  async deleteTaxiiFeed(updateButtonRole: 'menuitem' | 'button') {
+  async deleteIntegration(updateButtonRole: 'menuitem' | 'button') {
     await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
     await this.page.getByRole('button', { name: 'Delete' }).click();
-    await expect(this.page).toHaveScreenshot();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
-
-    await waitForDrawerToClose(this.page);
-    await this.page.waitForTimeout(3000);
-  }
-
-  async deleteStream(updateButtonRole: 'menuitem' | 'button') {
-    await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
-    await expect(this.page).toHaveScreenshot();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
-
-    await waitForDrawerToClose(this.page);
-    await this.page.waitForTimeout(3000);
-  }
-
-  async deleteCsvFeed(updateButtonRole: 'menuitem' | 'button') {
-    await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
-    await this.page
-      .getByRole('button', { name: 'Delete the CSV Feed' })
-      .click();
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Delete' }).click();
 

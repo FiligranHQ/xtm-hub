@@ -13,8 +13,8 @@ import { ManifestInformation } from '../../../ingest-manifest/ingest-manifest.mo
 import sampleExtractedManifest from '../../../ingest-manifest/test/sample-extracted-manifest.json';
 import {
   Connector,
-  INTEGRATION_CONNECTOR_METADATA,
-  INTEGRATION_METADATA,
+  INTEGRATION_CONNECTOR_METADATA_KEYS,
+  INTEGRATION_METADATA_KEYS,
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../integrations/integrations.model';
@@ -72,7 +72,7 @@ describe('Document domain', () => {
               INTEGRATION_SERVICE_INSTANCE_ID
             ),
           },
-          INTEGRATION_METADATA
+          INTEGRATION_METADATA_KEYS
         );
 
       const csvFeeds = connection.edges
@@ -88,7 +88,7 @@ describe('Document domain', () => {
 
       expect(connectors.length).toBeTruthy();
       const connector: Connector = connectors[0]?.node as Connector;
-      INTEGRATION_CONNECTOR_METADATA.forEach((metadata) => {
+      INTEGRATION_CONNECTOR_METADATA_KEYS.forEach((metadata) => {
         expect(connector[metadata]).toBeDefined();
       });
     });
@@ -134,7 +134,7 @@ describe('Document domain', () => {
               },
             ],
           },
-          INTEGRATION_METADATA
+          INTEGRATION_METADATA_KEYS
         );
 
       expect(csvFeedConnection.edges.length).toBe(1);
@@ -162,7 +162,7 @@ describe('Document domain', () => {
               },
             ],
           },
-          INTEGRATION_METADATA
+          INTEGRATION_METADATA_KEYS
         );
 
       expect(connectorConnection.edges.length).toBe(1);
@@ -200,7 +200,7 @@ describe('Document domain', () => {
                 },
               ],
             },
-            INTEGRATION_METADATA
+            INTEGRATION_METADATA_KEYS
           );
 
         expect(secondContractConnection.edges.length).toBe(1);
@@ -236,7 +236,7 @@ describe('Document domain', () => {
                 },
               ],
             },
-            INTEGRATION_METADATA
+            INTEGRATION_METADATA_KEYS
           );
 
         expect(allContractsConnection.edges.length).toBe(2);

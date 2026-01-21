@@ -16,7 +16,7 @@ export interface ShareableResourceConnectorDetailsProps {
     subscription_link?: string | null;
     integration_type?: string | null;
     integration_subtype?: string | null;
-    product_version?: string;
+    product_version?: string | null;
     share_number?: number | null;
     manager_supported?: boolean;
   };
