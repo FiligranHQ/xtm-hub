@@ -78,14 +78,25 @@ export const MinIOClient = {
     };
   },
 
-  insertFile: async (fileParams) => {
+  insertFile: async (fileParams: {
+    Bucket: string;
+    Key: string;
+    Body: string | Stream.Readable;
+    Metadata: {
+      mimetype: string;
+      filename: string;
+      encoding: string;
+      Uploadinguserid: string;
+      ServiceInstanceId: string;
+    };
+  }) => {
     const fileKey: string = fileParams.Key;
     const s3Upload = new S3Upload({
       client: s3Client,
       params: fileParams,
     });
     await s3Upload.done();
-    logApp.debug('[MinIO] inserted file ', fileParams.Key);
+    logApp.debug(`[MinIO] inserted file ${fileParams.Key}`);
     return fileKey;
   },
 
@@ -104,17 +115,19 @@ export const MinIOClient = {
     };
 
     const stream = file.createReadStream();
-    const fileParams = {
-      Bucket: config.get('minio.bucketName'),
-      Key: getDocumentName(file.filename),
-      Body: stream,
-      Metadata: fullMetadata,
-    };
 
     const jsonContent =
       file.mimetype === 'application/json'
         ? await parseJsonStream(stream)
         : undefined;
+
+    const fileParams = {
+      Bucket: config.get<string>('minio.bucketName'),
+      Key: getDocumentName(file.filename),
+      // Need to pass jsonContent because a stream can't be read twice
+      Body: jsonContent ? JSON.stringify(jsonContent) : stream,
+      Metadata: fullMetadata,
+    };
 
     const minioName = await MinIOClient.insertFile(fileParams);
     return {

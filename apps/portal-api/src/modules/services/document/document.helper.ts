@@ -12,10 +12,12 @@ import {
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
+import { MinioFile } from '../../../thirdparty/minio/types';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { OptionalMetadata } from '../../../utils/metadata';
 import { WithLabels } from '../../../utils/types';
+import { isValidUrl } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
@@ -112,6 +114,40 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
 };
 
 export const DocumentHelper = {
+  buildCompleteMetadataFromDocumentFile: ({
+    files,
+    metadata,
+  }: {
+    files: MinioFile[];
+    metadata: DocumentMetadataResolverType[];
+  }): DocumentMetadataResolverType[] => {
+    const integrationType = metadata.find(
+      (meta) => meta.key === 'integration_type'
+    );
+    const hasFeedDocumentType =
+      integrationType &&
+      [
+        IntegrationType.CsvFeed,
+        IntegrationType.TaxiiFeed,
+        IntegrationType.Stream,
+      ].includes(integrationType.value as IntegrationType);
+    if (!hasFeedDocumentType) {
+      return metadata;
+    }
+
+    const jsonFileContent = files[0]?.jsonContent;
+    if (!jsonFileContent) {
+      return metadata;
+    }
+
+    const uri = extractUriFromIntegrationJsonFile(jsonFileContent);
+    if (!uri || !isValidUrl(uri)) {
+      return metadata;
+    }
+
+    return [...metadata, { key: 'feed_url', value: uri }];
+  },
+
   retrieveDocumentTypeFromServiceDefinition: (
     serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier
   ): string => {
@@ -274,4 +310,20 @@ export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
     include_metadata
   );
   return updateDocumentWithCounters(document);
+};
+
+export const extractUriFromIntegrationJsonFile = (
+  jsonFileContent: MinioFile['jsonContent']
+) => {
+  const configuration = (jsonFileContent as { configuration?: unknown })
+    .configuration;
+  const uri =
+    configuration &&
+    typeof configuration === 'object' &&
+    'uri' in configuration &&
+    typeof (configuration as { uri: unknown }).uri === 'string'
+      ? (configuration as { uri: string }).uri
+      : undefined;
+
+  return uri;
 };

@@ -1,9 +1,10 @@
-import { IntegrationSubTypeEnum } from '@xtm-hub/portal-front/__generated__/models/IntegrationSubType.enum';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  IntegrationSubType,
   IntegrationType,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
+import { MinioFile } from '../../../thirdparty/minio/types';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -80,6 +81,105 @@ describe('DocumentHelper', () => {
 
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);
+    });
+  });
+
+  describe('buildCompleteMetadataFromDocumentFile', () => {
+    it('should return unchanged metadata when document is not a feed', () => {
+      const metadata = [
+        { key: 'integration_type', value: IntegrationType.Connector },
+      ];
+      const files: MinioFile[] = [];
+
+      const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
+
+      expect(result).toEqual(metadata);
+    });
+
+    it('should return unchanged metadata when JSON file is not provided', () => {
+      const metadata = [
+        { key: 'integration_type', value: IntegrationType.CsvFeed },
+      ];
+      const files: MinioFile[] = [];
+
+      const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
+
+      expect(result).toEqual(metadata);
+    });
+
+    it('should return unchanged metadata when JSON file does not contain configuration', () => {
+      const metadata = [
+        { key: 'integration_type', value: IntegrationType.CsvFeed },
+      ];
+      const files: MinioFile[] = [{ jsonContent: {} } as MinioFile];
+
+      const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
+
+      expect(result).toEqual(metadata);
+    });
+
+    it('should return unchanged metadata when JSON file contains no URI', () => {
+      const metadata = [
+        { key: 'integration_type', value: IntegrationType.CsvFeed },
+      ];
+      const files: MinioFile[] = [
+        { jsonContent: { configuration: {} } } as unknown as MinioFile,
+      ];
+
+      const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
+
+      expect(result).toEqual(metadata);
+    });
+
+    it('should return unchanged metadata when URI in the JSON file is not valid', () => {
+      const metadata = [
+        { key: 'integration_type', value: IntegrationType.CsvFeed },
+      ];
+      const files: MinioFile[] = [
+        {
+          jsonContent: { configuration: { uri: 'hello' } },
+        } as unknown as MinioFile,
+      ];
+
+      const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
+
+      expect(result).toEqual(metadata);
+    });
+
+    it('should add feed url to metadata when JSON file contains URI', () => {
+      const metadata = [
+        { key: 'integration_type', value: IntegrationType.CsvFeed },
+      ];
+      const files: MinioFile[] = [
+        {
+          jsonContent: { configuration: { uri: 'https://example.com' } },
+        } as unknown as MinioFile,
+      ];
+
+      const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
+
+      expect(result).toEqual([
+        ...metadata,
+        { key: 'feed_url', value: 'https://example.com' },
+      ]);
     });
   });
 
@@ -164,7 +264,7 @@ describe('DocumentHelper', () => {
           },
           {
             key: 'integration_subtype',
-            value: IntegrationSubTypeEnum.ORCHESTRATION,
+            value: IntegrationSubType.Orchestration,
           },
           {
             key: 'vendor_url',

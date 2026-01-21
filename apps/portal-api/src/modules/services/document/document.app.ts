@@ -15,7 +15,6 @@ import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
-import { MinioFile } from '../../../thirdparty/minio/types';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { extractId } from '../../../utils/utils';
@@ -57,10 +56,11 @@ export const DocumentApp = {
     }
 
     const files = await processUploads(uploads, serviceInstanceId);
-    const completeMetadata = buildCompleteMetadataFromDocumentFile({
-      files,
-      metadata,
-    });
+    const completeMetadata =
+      DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
@@ -182,10 +182,11 @@ export const DocumentApp = {
         serviceInstanceId
       );
 
-    const completeMetadata = buildCompleteMetadataFromDocumentFile({
-      files: [documentFile],
-      metadata,
-    });
+    const completeMetadata =
+      DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files: [documentFile],
+        metadata,
+      });
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
@@ -449,38 +450,4 @@ const shouldHandleFirstFileAsDocument = (
   }
 
   return integration_type.value !== IntegrationType.ThirdPartyIntegration;
-};
-
-const buildCompleteMetadataFromDocumentFile = ({
-  files,
-  metadata,
-}: {
-  files: MinioFile[];
-  metadata: DocumentMetadataResolverType[];
-}): DocumentMetadataResolverType[] => {
-  const integrationType = metadata.find(
-    (meta) => meta.key === 'integration_type'
-  );
-  const hasFeedDocumentType =
-    integrationType &&
-    [
-      IntegrationType.CsvFeed,
-      IntegrationType.TaxiiFeed,
-      IntegrationType.Stream,
-    ].includes(integrationType.value as IntegrationType);
-  if (!hasFeedDocumentType) {
-    return metadata;
-  }
-
-  const jsonFileContent = files[0]?.jsonContent;
-  if (!jsonFileContent) {
-    return metadata;
-  }
-
-  const uri = (jsonFileContent?.configuration as { uri: string })?.uri;
-  if (!uri) {
-    return metadata;
-  }
-
-  return [...metadata, { key: 'feed_url', value: uri }];
 };

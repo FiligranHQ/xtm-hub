@@ -35,14 +35,25 @@ const updateDocument = async (knex, document) => {
   try {
     const stream = await downloadFile(document.minioName);
     const content = await stream.transformToString();
-    const feedUrl = JSON.parse(content).configuration.uri;
+    const parsed = JSON.parse(content);
+    if (!parsed || !parsed.configuration || !parsed.configuration.uri) {
+      console.warn(
+        `Skipping feed_url metadata insert: missing configuration.uri for document ${document.id} (minioName: ${document.minioName}).`
+      );
+      return;
+    }
+
+    const feedUrl = parsed.configuration.uri;
     await knex('Document_Metadata').insert({
       document_id: document.id,
       key: 'feed_url',
       value: feedUrl,
     });
   } catch (err) {
-    console.error(err);
+    console.error(
+      `Failed to update feed_url metadata for document ${document.id} (minioName: ${document.minioName}):`,
+      err
+    );
   }
 };
 
@@ -60,7 +71,8 @@ export async function up(knex) {
     )
     .where('Document_Metadata.key', '=', 'integration_type')
     .whereIn('Document_Metadata.value', ['csv_feed', 'taxii_feed', 'stream'])
-    .select('Document.*');
+    .select('Document.*')
+    .groupBy('Document.id');
 
   await Promise.all(
     documents.map(async (document) => updateDocument(knex, document))
