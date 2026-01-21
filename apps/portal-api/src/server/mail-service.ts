@@ -22,7 +22,7 @@ export const buildServiceLink = ({
   serviceDefinitionIdentifier: string;
   serviceInstanceId: string;
 }) => {
-  return `${config.get('base_url_front')}/service/${serviceDefinitionIdentifier}/${toGlobalId('ServiceInstance', serviceInstanceId)}`;
+  return `${config.get('base_url_front')}/app/service/${serviceDefinitionIdentifier}/${toGlobalId('ServiceInstance', serviceInstanceId)}`;
 };
 
 export async function renderEmail<T extends keyof MailTemplates>(

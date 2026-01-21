@@ -20,7 +20,7 @@ import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { RefetchFnDynamic } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -132,17 +132,14 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     setOpen(true);
   };
 
-  const getServiceDefinitionData = useMemo(() => {
-    return serviceData
-      .map((service) => ({
-        value: service.service_definition?.identifier ?? '',
-        label: service.service_definition?.name ?? '',
-      }))
-      .filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.value === item.value)
-      );
-  }, [serviceData]);
+  const getServiceDefinitionData = Object.values(
+    ServiceDefinitionIdentifierEnum
+  ).map((value) => {
+    return {
+      label: t(`Service.ServiceDefinitionIdentifier.${value}`),
+      value: value,
+    };
+  });
 
   const handleInputChange = (inputValue: string) => {
     refetch({ searchTerm: inputValue });
