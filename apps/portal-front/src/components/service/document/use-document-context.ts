@@ -12,6 +12,7 @@ import {
 import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
 import { StreamForm } from '@/components/service/integrations/forms/stream-form';
 import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
+import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/third-party-integration-form';
 import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
@@ -78,7 +79,7 @@ export function useDocumentContext({
     const metadata = omit(values, [...documentBaseKeys, 'document', 'images']);
 
     const documents = [
-      ...Array.from(values.document),
+      ...Array.from(values?.document ?? []),
       ...Array.from(values.images),
     ];
 
@@ -88,10 +89,12 @@ export function useDocumentContext({
           ...input,
           active: input.active ?? false,
         },
-        metadata: Object.keys(metadata).map((key) => ({
-          key,
-          value: metadata[key as keyof typeof metadata],
-        })),
+        metadata: Object.keys(metadata)
+          .map((key) => ({
+            key,
+            value: metadata[key as keyof typeof metadata],
+          }))
+          .filter(({ value }) => Boolean(value)),
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
         document: documents,
@@ -167,10 +170,12 @@ export function useDocumentContext({
         serviceInstanceId: serviceInstance.id,
         document: documentsToUpload,
         documentId: resource.id,
-        metadata: Object.keys(metadata).map((key) => ({
-          key,
-          value: metadata[key as keyof typeof metadata],
-        })),
+        metadata: Object.keys(metadata)
+          .map((key) => ({
+            key,
+            value: metadata[key as keyof typeof metadata],
+          }))
+          .filter(({ value }) => Boolean(value)),
         updateDocument: values.document !== undefined,
         images: existingImages,
       },
@@ -196,6 +201,8 @@ export function useDocumentContext({
           [IntegrationTypeEnum.CSV_FEED]: CsvFeedForm,
           [IntegrationTypeEnum.TAXII_FEED]: TaxiiFeedForm,
           [IntegrationTypeEnum.STREAM]: StreamForm,
+          [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
+            ThirdPartyIntegrationForm,
         };
 
         return integrationMapping[integrationType] ?? CsvFeedForm;
@@ -216,6 +223,8 @@ export function useDocumentContext({
             [IntegrationTypeEnum.CSV_FEED]: 'Service.CsvFeed',
             [IntegrationTypeEnum.TAXII_FEED]: 'Service.TaxiiFeed',
             [IntegrationTypeEnum.STREAM]: 'Service.Stream',
+            [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
+              'Service.ThirdPartyIntegration',
           };
 
         return integrationMapping[integrationType] ?? '';

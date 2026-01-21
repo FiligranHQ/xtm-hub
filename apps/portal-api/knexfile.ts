@@ -12,7 +12,7 @@ import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
-import { INTEGRATION_METADATA } from './src/modules/services/integrations/integrations.model';
+import { INTEGRATION_METADATA_KEYS } from './src/modules/services/integrations/integrations.model';
 import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { compareSemanticVersions } from './src/utils/semantic-versioning';
@@ -305,7 +305,7 @@ const getFilterHandler = (key: string): FilterHandler => {
   }
 
   // Check if it's a metadata filter
-  if ((INTEGRATION_METADATA as string[]).includes(key)) {
+  if (INTEGRATION_METADATA_KEYS.includes(key)) {
     return createMetadataFilterHandler(key);
   }
 

@@ -35,7 +35,7 @@ test.describe('Streams', () => {
       page.getByText(STREAM_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await integrationPage.deleteStream('menuitem');
+    await integrationPage.deleteIntegration('menuitem');
 
     await expect(
       page.getByText(STREAM_TEST.name, { exact: true })
@@ -43,7 +43,7 @@ test.describe('Streams', () => {
   });
   test('Should delete Stream from the detailed page', async ({ page }) => {
     await integrationPage.navigateToIntegration(STREAM_TEST.shortDescription);
-    await integrationPage.deleteStream('button');
+    await integrationPage.deleteIntegration('button');
     await expect(
       page.getByText(STREAM_TEST.name, { exact: true })
     ).not.toBeVisible();

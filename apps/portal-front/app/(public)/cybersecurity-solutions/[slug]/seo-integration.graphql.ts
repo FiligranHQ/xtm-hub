@@ -38,6 +38,12 @@ export const SeoIntegrationFragment = graphql`
     ... on TaxiiFeed {
       integration_subtype
     }
+    ... on ThirdPartyIntegration {
+      integration_subtype
+      product_version
+      github_url
+      vendor_url
+    }
   }
 `;
 

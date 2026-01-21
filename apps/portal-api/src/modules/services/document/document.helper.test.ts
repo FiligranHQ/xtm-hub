@@ -11,7 +11,7 @@ import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import {
-  INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_CSV_FEED_METADATA_KEYS,
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
@@ -153,7 +153,7 @@ describe('DocumentHelper', () => {
         ]);
 
       expect(documentType).toBe(OPENCTI_INTEGRATION_DOCUMENT_TYPE);
-      expect(metadataKeys).toBe(INTEGRATION_CSV_FEED_METADATA);
+      expect(metadataKeys).toStrictEqual(INTEGRATION_CSV_FEED_METADATA_KEYS);
     });
   });
 });

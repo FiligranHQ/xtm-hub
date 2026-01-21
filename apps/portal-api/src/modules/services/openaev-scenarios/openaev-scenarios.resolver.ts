@@ -13,7 +13,7 @@ import { getServiceInstance } from '../service-instance.domain';
 import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
-  OPENAEV_SCENARIO_METADATA,
+  OPENAEV_SCENARIO_METADATA_KEYS,
 } from './openaev-scenarios.domain';
 
 const resolvers: Resolvers = {
@@ -40,7 +40,7 @@ const resolvers: Resolvers = {
       return DocumentDomain.loadSeoDocumentsByServiceSlug(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         serviceSlug,
-        OPENAEV_SCENARIO_METADATA
+        OPENAEV_SCENARIO_METADATA_KEYS
       );
     },
     seoOpenAEVScenarioBySlug: async (_, { slug }) => {
@@ -50,7 +50,7 @@ const resolvers: Resolvers = {
       return DocumentDomain.loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
         OPENAEV_SCENARIO_DOCUMENT_TYPE,
         input,
-        OPENAEV_SCENARIO_METADATA
+        OPENAEV_SCENARIO_METADATA_KEYS
       );
     },
     openAEVScenario: async (_, { id }) =>

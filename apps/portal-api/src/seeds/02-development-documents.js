@@ -143,6 +143,23 @@ export async function seed(knex) {
         type: 'opencti_integration',
         source_type: 'internal',
       },
+      {
+        id: '00ab5423-1b12-468f-9d67-2af079807205',
+        uploader_id: ADMIN_UUID,
+        service_instance_id: integrationFeedsService?.id || null,
+        description: 'Elastic third party integration long description',
+        active: true,
+        created_at: '2025-06-26 09:49:34.912159+00',
+        remover_id: null,
+        name: 'Elastic',
+        updated_at: '2025-07-24 07:08:32.088+00',
+        updater_id: '63678b35-2f72-4607-89cc-2e06036bf012',
+        short_description: 'Third party integration with ElasticSearch',
+        slug: 'elasticsearch',
+        uploader_organization_id: null,
+        type: 'opencti_integration',
+        source_type: 'internal',
+      },
     ])
     .onConflict('id')
     .ignore();
