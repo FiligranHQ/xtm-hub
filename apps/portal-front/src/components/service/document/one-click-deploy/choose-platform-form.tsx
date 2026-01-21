@@ -28,7 +28,7 @@ interface ChoosePlatformFormProps {
   translatedPlatformIdentifier: string;
   oneClickDeploy: (platformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
 }
 
 export const selectPlatformFormSchema = z.object({

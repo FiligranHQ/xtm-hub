@@ -631,6 +631,40 @@
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux {name} ?",
       "UpdateService": "Mettre à jour le stream {name}"
     },
+    "ThirdPartyIntegration": {
+      "Actions": {
+        "Added": "L'intégration de tiers {name} a été ajoutée avec succès",
+        "Deleted": "L'intégration de tiers {name} a été supprimée avec succès",
+        "Share": "Partager l'intégration de tiers",
+        "Updated": "L'intégration de tiers {name} a été modifiée avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter une nouvelle intégration de tiers",
+      "DeleteService": "Supprimer l'intégration de tiers {name}",
+      "Form": {
+        "Author": "Auteur",
+        "ThirdPartyIntegrationFile": "Fichier d'intégration de tiers",
+        "ThirdPartyIntegrationIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant l'intégration d'un tiers.",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "ExistingThirdPartyIntegrationFile": "Fichier d'intégration tiers existant : {file_name}",
+        "ExistingThirdPartyIntegrationIllustration": "Illustration de l'intégration de tiers existante : {file_name}",
+        "GithubUrlLabel": "URL Github",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "ProductVersionLabel": "Version OpenCTI",
+        "PublishedPlaceholder": "L'intégration de tiers est-elle publiée ?",
+        "ShortDescriptionLabel": "Brève description",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Mise à jour du fichier JSON",
+        "VendorUrlLabel": "Vendeur URL"
+      },
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer l'intégration de tiers {name} ?",
+      "UpdateService": "Mettre à jour l'intégration des tiers {name}"
+    },
     "OpenctiCustomDashboards": {
       "Actions": {
         "Added": "Le tableau de bord personnalisé {name} a été ajouté avec succès",
@@ -663,7 +697,7 @@
         "SelectJSONFile": "Sélectionner le fichier JSON",
         "ShortDescriptionLabel": "Courte description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
-        "SlugLabel": "Slug (url)",
+        "SlugLabel": "Slug (URL)",
         "SlugPlaceholder": "dashboard-slug",
         "UpdateJSONFile": "Mise à jour du fichier JSON",
         "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
@@ -776,7 +810,9 @@
         "ProductVersion": "Version minimale du produit",
         "Shares": "Actions",
         "IntegrationType": "Type",
-        "IntegrationSubType": "Sous-type"
+        "IntegrationSubType": "Sous-type",
+        "GithubURL": "URL Github",
+        "VendorURL": "URL du fournisseur"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",

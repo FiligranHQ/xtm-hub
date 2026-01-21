@@ -13,8 +13,8 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
 interface DisplayVersionCardProps {
-  requiredProductVersion?: string;
-  product_version: string;
+  requiredProductVersion?: string | null;
+  product_version?: string | null;
   className?: string;
 }
 export const DisplayVersionCard: FunctionComponent<DisplayVersionCardProps> = ({

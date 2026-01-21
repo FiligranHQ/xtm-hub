@@ -134,6 +134,14 @@ export const documentItem = graphql`
       integration_type
     }
 
+    ... on ThirdPartyIntegration {
+      integration_type
+      integration_subtype
+      product_version
+      vendor_url
+      github_url
+    }
+
     ... on Connector {
       integration_type
     }
