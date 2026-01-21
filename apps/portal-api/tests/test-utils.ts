@@ -74,7 +74,7 @@ export async function createUser({
   userId = uuidv4(),
   first_name = 'John',
   last_name = 'Doe',
-  selected_organization_id = 'ba091095-418f-4b4f-b150-6c9295e232c4',
+  professional_organization_id = 'ba091095-418f-4b4f-b150-6c9295e232c4',
   pending = false,
 }) {
   // Fixed salt and password (same for all users)
@@ -116,17 +116,19 @@ export async function createUser({
         password,
         first_name,
         last_name,
-        selected_organization_id: pending ? userId : selected_organization_id,
+        selected_organization_id: pending
+          ? userId
+          : professional_organization_id,
       })
       .onConflict('id')
       .ignore();
 
     await knex('User_Organization').insert([
-      ...(pending
+      ...(!pending
         ? [
             {
               user_id: userId,
-              organization_id: userId,
+              organization_id: professional_organization_id,
             },
           ]
         : []),
@@ -140,7 +142,7 @@ export async function createUser({
       await knex('User_Organization_Pending').insert([
         {
           user_id: userId,
-          organization_id: selected_organization_id,
+          organization_id: professional_organization_id,
         },
       ]);
     }
