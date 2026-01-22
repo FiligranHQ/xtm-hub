@@ -96,7 +96,7 @@ export const MinIOClient = {
       params: fileParams,
     });
     await s3Upload.done();
-    logApp.debug(`[MinIO] inserted file ${fileParams.Key}`);
+    logApp.debug('[MinIO] inserted file', { key: fileParams.Key });
     return fileKey;
   },
 
