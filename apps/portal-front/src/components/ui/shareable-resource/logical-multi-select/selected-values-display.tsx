@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { CancelIcon, KeyboardArrowDownIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 export interface GroupedSelection {
@@ -17,19 +18,25 @@ interface SelectedValuesDisplayProps {
   onRemove?: () => void;
 }
 
-export const AndSeparator: React.FC = () => (
-  <span className="flex items-center px-s py-[10px] text-xs bg-gray-400 text-foreground rounded">
-    AND
-  </span>
-);
-
-export const OrSeparator: React.FC = () => (
-  <div className="py-0">
+export const AndSeparator: React.FC = () => {
+  const t = useTranslations();
+  return (
     <span className="flex items-center px-s py-[10px] text-xs bg-gray-400 text-foreground rounded">
-      OR
+      {t('Utils.And')}
     </span>
-  </div>
-);
+  );
+};
+
+export const OrSeparator: React.FC = () => {
+  const t = useTranslations();
+  return (
+    <div className="py-0">
+      <span className="flex items-center px-s py-[10px] text-xs bg-gray-400 text-foreground rounded">
+        {t('Utils.Or')}
+      </span>
+    </div>
+  );
+};
 
 const SelectionChip: React.FC<{ children: React.ReactNode }> = ({
   children,

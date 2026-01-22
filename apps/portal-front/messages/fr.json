@@ -1109,7 +1109,9 @@
     "Verified": "Vérifié",
     "Visualize": "Visualiser",
     "DangerZone": "Zone de danger",
-    "AutomaticDeploy": "Déploiement automatique"
+    "AutomaticDeploy": "Déploiement automatique",
+    "And": "ET",
+    "Or": "OU"
   },
   "Platform": {
     "Update": "Mettre à jour",

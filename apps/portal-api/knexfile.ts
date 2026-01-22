@@ -6,6 +6,7 @@ import {
   Filter,
   FilterKey,
   LogicalFilterInput,
+  LogicalOperator,
   ServiceInstanceFilter,
   ServiceInstanceFilterKey,
 } from './src/__generated__/resolvers-types';
@@ -467,7 +468,7 @@ const applyLogicalFilterWhere = (
           return;
         }
 
-        if (logicalFilter.operator === 'OR') {
+        if (logicalFilter.operator === LogicalOperator.Or) {
           groupQb.orWhere((subQb) => {
             applyLogicalFilterWhere(type, subQb, child);
           });
