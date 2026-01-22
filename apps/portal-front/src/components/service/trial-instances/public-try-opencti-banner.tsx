@@ -1,5 +1,5 @@
 'use client';
-import { Callout } from 'filigran-ui';
+import { Callout } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 

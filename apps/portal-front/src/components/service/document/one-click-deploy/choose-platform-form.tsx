@@ -4,15 +4,21 @@ import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
-import { AutoForm, FormItem, FormLabel, FormMessage, Input } from 'filigran-ui';
+import {
+  AutoForm,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@filigran/ui';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Button } from '@filigran/ui/servers';
+import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
@@ -22,7 +28,7 @@ interface ChoosePlatformFormProps {
   translatedPlatformIdentifier: string;
   oneClickDeploy: (platformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
 }
 
 export const selectPlatformFormSchema = z.object({

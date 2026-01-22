@@ -6,7 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import Link from 'next/link';
 import React, {
   ComponentProps,
@@ -15,7 +15,7 @@ import React, {
   ReactNode,
   useState,
 } from 'react';
-export { DropdownMenuItem as IconActionsItem } from 'filigran-ui/clients';
+export { DropdownMenuItem as IconActionsItem } from '@filigran/ui/clients';
 
 interface IconActionsProps {
   children: ReactNode;
@@ -87,7 +87,11 @@ export const IconActionsLink: FunctionComponent<IconActionsLinkProps> = ({
 }) => {
   return (
     <DropdownMenuItem asChild>
-      <Link {...props} className={className}>{children}</Link>
+      <Link
+        {...props}
+        className={className}>
+        {children}
+      </Link>
     </DropdownMenuItem>
   );
 };

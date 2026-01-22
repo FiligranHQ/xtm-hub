@@ -8,8 +8,6 @@ import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { isEmpty } from '@/lib/utils';
-import { userList_fragment$data } from '@generated/userList_fragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -20,7 +18,9 @@ import {
   FormMessage,
   SheetFooter,
   toast,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { useForm } from 'react-hook-form';

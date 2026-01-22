@@ -2,14 +2,14 @@
 
 import { Locale } from '@/i18n/config';
 import { setUserLocale } from '@/i18n/locale';
-import { CheckIcon, LanguageIcon } from 'filigran-icon';
+import { CheckIcon, LanguageIcon } from '@filigran/icon';
 import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
 export default function I18nSelect() {

@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { FunctionComponent, ReactNode } from 'react';
 
 interface DialogInformativeProps {

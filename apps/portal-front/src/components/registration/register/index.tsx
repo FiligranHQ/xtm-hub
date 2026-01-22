@@ -4,6 +4,7 @@ import { RegistrationLayout } from '@/components/registration/layout';
 import { RegisterStateMissingCapability } from '@/components/registration/register/missing-capability';
 import { RegisterOrganizationForm } from '@/components/registration/register/organization-form';
 import { RegisterPlatform } from '@/components/registration/register/register.graphql';
+import { toast } from '@filigran/ui/clients';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
@@ -21,7 +22,6 @@ import {
   PlatformInput,
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
-import { toast } from 'filigran-ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {

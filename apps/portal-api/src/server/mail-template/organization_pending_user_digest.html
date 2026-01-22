@@ -62,6 +62,14 @@
           line-height: 32px !important;
         }
       }
+      @media (prefers-color-scheme: dark) {
+        .logo-light {
+          display: none !important;
+        }
+        .logo-dark {
+          display: block !important;
+        }
+      }
     </style>
   </head>
   <body
@@ -105,10 +113,21 @@
                 ">
                 <a href="{{ base_url_front }}">
                   <img
-                    src="{{ base_url_front }}/logo.png"
+                    src="{{ base_url_front }}/logo_xtm_hub_light.svg"
+                    class="logo-light"
                     width="320"
                     alt="XTM Hub logo"
                     style="max-width: 100%; vertical-align: middle" />
+                  <img
+                    src="{{ base_url_front }}/logo_xtm_hub_dark.svg"
+                    class="logo-dark"
+                    width="320"
+                    alt="XTM Hub logo"
+                    style="
+                      display: none;
+                      max-width: 100%;
+                      vertical-align: middle;
+                    " />
                 </a>
               </div>
               <table
@@ -131,8 +150,8 @@
                       Dear {{adminName}},<br />
                       <br />
                       We would like to inform you that there have been
-                      {{userCount}} requests from users seeking to join your
-                      {{organizationName}} organization:
+                      {{userCount}} {{requestLabel}} from users seeking to join
+                      your {{organizationName}} organization:
                     </p>
                     <ul>
                       {{userEmailList}}

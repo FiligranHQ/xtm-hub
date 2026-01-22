@@ -5,9 +5,9 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { Merge } from '@/utils/typescript';
+import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { seoIntegrationConnectorFragment$data } from '@generated/seoIntegrationConnectorFragment.graphql';
 import { seoIntegrationFragment$data } from '@generated/seoIntegrationFragment.graphql';
-import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
 import Image from 'next/image';
 import React from 'react';
 import { MarkdownAsync } from 'react-markdown';
@@ -57,7 +57,7 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
               <ShareLinkButton
                 documentId={documentData.id}
                 url={pageUrl}
-                tooltipText={`Service.OpenctiIntegrationFeeds.Actions.Share`}
+                tooltipText={`Service.OpenctiIntegrations.Actions.Share`}
               />
             </div>
           </div>
@@ -77,7 +77,7 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
           </h3>
           <section className="border rounded border-border-light bg-page-background">
             <h2 className="p-l">{documentData?.short_description}</h2>
-            <div className="p-l !bg-page-background">
+            <div className="p-l !bg-page-background markdown-content">
               <MarkdownAsync>{documentData?.description ?? ''}</MarkdownAsync>
             </div>
           </section>

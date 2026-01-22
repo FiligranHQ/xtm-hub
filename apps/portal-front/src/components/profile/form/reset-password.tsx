@@ -6,8 +6,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 

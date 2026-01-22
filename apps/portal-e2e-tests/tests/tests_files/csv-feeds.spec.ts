@@ -1,6 +1,6 @@
 import { test, expect } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
-import CsvFeedPage from '../model/csvFeed.pageModel';
+import IntegrationPage from '../model/integration.pageModel';
 
 const CSV_FEED_TEST = {
   name: 'e2e CSV Feed name',
@@ -11,19 +11,19 @@ const CSV_FEED_TEST = {
 
 test.describe('CSV Feeds', () => {
   let loginPage: LoginPage;
-  let csvFeedPage: CsvFeedPage;
+  let integrationPage: IntegrationPage;
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
-    csvFeedPage = new CsvFeedPage(page);
+    integrationPage = new IntegrationPage(page);
 
     await loginPage.navigateToAndLogin();
-    await csvFeedPage.subscribeCsvFeedService();
-    await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
+    await integrationPage.subscribeIntegrationsService();
+    await integrationPage.fillCsvFeed(CSV_FEED_TEST);
   });
 
   test('Should add CSV Feed', async ({ page }) => {
     await expect(page).toHaveScreenshot();
-    await csvFeedPage.navigateToCsvFeed(CSV_FEED_TEST.shortDescription);
+    await integrationPage.navigateToIntegration(CSV_FEED_TEST.shortDescription);
     await expect(page).toHaveScreenshot();
     await expect(
       page.getByRole('heading', { name: CSV_FEED_TEST.name })
@@ -34,15 +34,15 @@ test.describe('CSV Feeds', () => {
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await csvFeedPage.deleteCsvFeed('menuitem');
+    await integrationPage.deleteIntegration('menuitem');
 
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();
   });
   test('Should delete CSV Feed from the detailed page', async ({ page }) => {
-    await csvFeedPage.navigateToCsvFeed(CSV_FEED_TEST.shortDescription);
-    await csvFeedPage.deleteCsvFeed('button');
+    await integrationPage.navigateToIntegration(CSV_FEED_TEST.shortDescription);
+    await integrationPage.deleteIntegration('button');
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();

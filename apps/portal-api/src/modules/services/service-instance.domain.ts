@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   SeoServiceInstance,
   ServiceConnection,
@@ -18,6 +18,7 @@ import ServiceInstance, {
   ServiceInstanceMutator,
 } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
+  SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { UserId, UserMutator } from '../../model/kanel/public/User';
@@ -32,7 +33,7 @@ import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
-import { insertUserService } from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user_service/user_service.domain';
 import { loadUserBy } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
@@ -254,7 +255,7 @@ export const loadServiceInstanceSubscription = async (
   selectedOrganizationId: OrganizationId,
   id: ServiceInstanceId
 ) => {
-  return dbUnsecure<Subscription>('Subscription')
+  return db<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', id)
     .where('Subscription.organization_id', '=', selectedOrganizationId)
     .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
@@ -528,17 +529,16 @@ export const loadServiceWithSubscriptions = async (
 
 export const grantServiceAccess = async (
   capabilitiesIds: string[],
-  usersId: string[],
-  subscriptionId: string
+  usersId: UserId[],
+  subscriptionId: SubscriptionId
 ) => {
   const dataUserServices = usersId.map((userId) => ({
     id: uuidv4() as UserServiceId,
     user_id: userId,
     subscription_id: subscriptionId,
   }));
-  const insertedUserServices = (await insertUserService(dataUserServices)) as [
-    UserService,
-  ];
+  const insertedUserServices =
+    await UserServiceDomain.insertUserService(dataUserServices);
 
   const [subscription] =
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({

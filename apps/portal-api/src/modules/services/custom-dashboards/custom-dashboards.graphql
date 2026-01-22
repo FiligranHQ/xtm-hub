@@ -1,28 +1,3 @@
-input CreateCustomDashboardInput {
-  name: String!
-  slug: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-  uploader_id: String!
-  # Specific fields for custom dashboards
-  product_version: String!
-}
-
-input UpdateCustomDashboardInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-  # Specific fields for custom dashboards
-  product_version: String
-}
-
 type CustomDashboard implements Document & Node {
   id: ID!
   type: String!
@@ -73,23 +48,4 @@ type Query {
     serviceInstanceId: String
   ): CustomDashboardConnection! @auth
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
-}
-
-type Mutation {
-  createCustomDashboard(
-    input: CreateCustomDashboardInput!
-    document: [Upload!]!
-    serviceInstanceId: String
-  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
-  updateCustomDashboard(
-    documentId: ID!
-    input: UpdateCustomDashboardInput!
-    document: [Upload!]
-    updateDocument: Boolean!
-    images: [String!]
-    serviceInstanceId: String
-  ): CustomDashboard! @auth @service_capa(requires: [UPLOAD])
-  deleteCustomDashboard(id: ID!, serviceInstanceId: String!): CustomDashboard!
-    @auth
-    @service_capa(requires: [DELETE])
 }

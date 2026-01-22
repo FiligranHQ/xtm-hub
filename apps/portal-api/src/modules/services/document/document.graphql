@@ -2,7 +2,7 @@ type ShareableResource {
   id: ID!
   file_name: String!
   created_at: Date!
-  name: String!
+  name: String
   description: String
   download_number: Int
   active: Boolean!
@@ -13,6 +13,7 @@ enum DocumentOrdering {
   description
   created_at
   download_number
+  name
 }
 """
  /!\ WARNING Do not use this type.
@@ -66,31 +67,47 @@ interface Document implements Node {
   children_documents: [ShareableResource!]
 }
 
-input EditDocumentInput {
+input DocumentMetadata {
+  key: String!
+  value: String!
+}
+
+input CreateDocumentInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  labels: [String!]
+  uploader_id: String!
+}
+
+input UpdateDocumentInput {
+  name: String
+  slug: String
   short_description: String
   description: String
-  uploader_organization_id: String
-  name: String
   active: Boolean
-  slug: String
+  labels: [String!]
+  uploader_organization_id: String
+  uploader_id: String
 }
 
 type Mutation {
-  addDocument(
-    document: Upload
-    name: String
-    short_description: String
-    description: String
-    service_instance_id: String
-    parentDocumentId: ID
-    active: Boolean
-    slug: String
-    type: String!
+  createDocument(
+    input: CreateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    document: [Upload!]!
+    serviceInstanceId: String
   ): Document! @auth @service_capa(requires: [UPLOAD])
-  editDocument(
-    documentId: ID
-    input: EditDocumentInput!
-    service_instance_id: String
+  updateDocument(
+    documentId: ID!
+    input: UpdateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    document: [Upload!]!
+    updateDocument: Boolean!
+    images: [String!]
+    serviceInstanceId: String
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID

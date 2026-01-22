@@ -18,6 +18,8 @@ export enum ForbiddenErrorCode {
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
+  IntegrationTypeNotManageable = 'INTEGRATION_TYPE_NOT_MANAGEABLE',
+  ServiceNotManageable = 'SERVICE_NOT_MANAGEABLE',
 }
 
 export enum BadRequestErrorCode {
@@ -34,6 +36,8 @@ export enum BadRequestErrorCode {
   ServiceGroupsLinkedToMultipleServiceInstances = 'SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES',
   OrganizationDoesNotMatchSelectedOrganization = 'ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION',
   DeploymentRequestHubStatusNotQueued = 'DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED',
+  DocumentMissingMetadata = 'DOCUMENT_MISSING_METADATA',
+  IntegrationTypeNotRecognized = 'INTEGRATION_TYPE_NOT_RECOGNIZED',
 }
 
 export enum UnknownErrorCode {
@@ -46,18 +50,10 @@ export enum UnknownErrorCode {
   AddOrganizationError = 'ADD_ORGANIZATION_ERROR',
   EditOrganizationError = 'EDIT_ORGANIZATION_ERROR',
   DeleteOrganizationError = 'DELETE_ORGANIZATION_ERROR',
-  CsvFeedInsertionError = 'CSV_FEED_INSERTION_ERROR',
-  CsvFeedUpdateError = 'CSV_FEED_UPDATE_ERROR',
-  CsvFeedDeletionError = 'CSV_FEED_DELETION_ERROR',
-  CustomDashboardInsertionError = 'CUSTOM_DASHBOARD_INSERTION_ERROR',
-  CustomDashboardUpdateError = 'CUSTOM_DASHBOARD_UPDATE_ERROR',
+  DocumentCreateError = 'DOCUMENT_CREATE_ERROR',
+  DocumentUpdateError = 'DOCUMENT_UPDATE_ERROR',
   DeleteDocumentError = 'DELETE_DOCUMENT_ERROR',
-  InsertDocumentError = 'INSERT_DOCUMENT_ERROR',
-  UpdateDocumentError = 'UPDATE_DOCUMENT_ERROR',
   IncrementShareNumberError = 'INCREMENT_SHARE_NUMBER',
-  OpenAEVScenarioInsertionError = 'OPENAEV_SCENARIO_INSERTION_ERROR',
-  OpenAEVScenarioUpdateError = 'OPENAEV_SCENARIO_UPDATE_ERROR',
-  OpenAEVScenarioDeleteError = 'OPENAEV_SCENARIO_DELETE_ERROR',
   ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
   EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
@@ -68,20 +64,20 @@ export enum UnknownErrorCode {
   TransferMeError = 'TRANSFER_ME_ERROR',
   RemoveUserFromOrgaError = 'REMOVE_USER_FROM_ORGA_ERROR',
   RemoveUserFromPendingOrgaError = 'REMOVE_USER_FROM_PENDING_ORGA_ERROR',
+  AcceptUserInPendingOrgaError = 'ACCEPT_USER_IN_PENDING_ORGA_ERROR',
   EditUserSessionError = 'EDIT_USER_SESSION_ERROR',
   UpdatePlatformServiceMetadataError = 'UPDATE_PLATFORM_SERVICE_METADATA_ERROR',
   NoAsyncContextAvailableError = 'NO_ASYNC_CONTEXT_AVAILABLE',
   CreateDeploymentRequestError = 'CREATE_DEPLOYMENT_REQUEST_ERROR',
   DeploymentRequestUnknownError = 'DEPLOYMENT_REQUEST_UNKNOWN_ERROR',
   HubspotError = 'HUBSPOT_ERROR',
+  MissingMetadataMapping = 'MISSING_METADATA_MAPPING',
 }
 
 export enum AlreadyExistsErrorCode {
   OrganizationSameNameExists = 'ORGANIZATION_SAME_NAME_EXISTS',
   OrganizationSameDomainExists = 'ORGANIZATION_SAME_DOMAIN_EXISTS',
-  CsvFeedUniqueSlugError = 'CSV_FEED_UNIQUE_SLUG_ERROR',
-  CustomDashboardUniqueSlugError = 'CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR',
-  OpenAEVScenarioUniqueSlugError = 'OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR',
+  DocumentUniqueSlugError = 'DOCUMENT_UNIQUE_SLUG_ERROR',
   FreeTrialAlreadyExists = 'FREE_TRIAL_ALREADY_EXISTS',
 }
 

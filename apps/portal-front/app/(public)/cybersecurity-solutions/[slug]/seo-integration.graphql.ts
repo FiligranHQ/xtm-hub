@@ -28,6 +28,22 @@ export const SeoIntegrationFragment = graphql`
     active
     type
     integration_type
+
+    ... on Connector {
+      integration_subtype
+    }
+    ... on Stream {
+      integration_subtype
+    }
+    ... on TaxiiFeed {
+      integration_subtype
+    }
+    ... on ThirdPartyIntegration {
+      integration_subtype
+      product_version
+      github_url
+      vendor_url
+    }
   }
 `;
 

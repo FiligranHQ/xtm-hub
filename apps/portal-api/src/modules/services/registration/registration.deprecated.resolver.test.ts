@@ -41,7 +41,7 @@ describe('Registration query resolver', () => {
       }
 
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform(contextAdminUser, {
+      const token = await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform: {
           id: platformId,

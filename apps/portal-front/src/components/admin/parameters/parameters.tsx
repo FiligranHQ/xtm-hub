@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
   Label,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
 export const Parameters = () => {

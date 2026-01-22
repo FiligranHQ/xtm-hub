@@ -6,9 +6,9 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import OpenaevScenariosList from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenarios-list';
 import { OpenaevScenariosListQuery } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
+import { Skeleton } from '@filigran/ui';
 import { openaevScenariosQuery } from '@generated/openaevScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 

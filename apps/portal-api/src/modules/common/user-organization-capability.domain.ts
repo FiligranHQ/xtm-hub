@@ -1,4 +1,4 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { requestContext } from '../../context/request.context';
 import { UserOrganizationId } from '../../model/kanel/public/UserOrganization';
 import UserOrganizationCapability, {
@@ -20,9 +20,7 @@ export const createUserOrganizationCapability = async ({
       user_organization_id,
       name,
     }));
-  return dbUnsecure('UserOrganization_Capability')
-    .insert(usersOrgCapa)
-    .returning('*');
+  return db('UserOrganization_Capability').insert(usersOrgCapa).returning('*');
 };
 
 export const updateUserOrganizationCapability = async ({

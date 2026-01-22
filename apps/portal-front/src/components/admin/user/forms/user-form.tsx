@@ -3,7 +3,6 @@ import { userFormSchema } from '@/components/admin/user/forms/user-form.schema';
 import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -14,7 +13,8 @@ import {
   FormMessage,
   Input,
   SheetFooter,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';

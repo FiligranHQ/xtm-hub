@@ -5,7 +5,7 @@ import LoginTitleForm from '@/components/login/login-title';
 import { PlatformProviderButton } from '@/components/login/platform-provider-button';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
-import { useToast } from 'filigran-ui/clients';
+import { useToast } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { FunctionComponent, useContext, useEffect } from 'react';

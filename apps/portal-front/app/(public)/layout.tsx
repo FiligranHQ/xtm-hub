@@ -1,7 +1,7 @@
 import { PublicTryOpenCTIBanner } from '@/components/service/trial-instances/public-try-opencti-banner';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
-import { Button } from 'filigran-ui/servers';
-import 'filigran-ui/theme.css';
+import { Button } from '@filigran/ui/servers';
+import '@filigran/ui/theme.css';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import * as React from 'react';

@@ -14,7 +14,7 @@ import {
 } from '../../../model/kanel/public/DeploymentRequest';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
-import { insertUnsecureSubscription } from '../../subcription/subscription.helper';
+import { insertSubscription } from '../../subcription/subscription.helper';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import { insertServiceInstance } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -35,7 +35,7 @@ export async function insertOpenCtiDeploymentRequest(
     ],
     service_definition_id: SERVICE_OPENCTI_REGISTRATION,
   });
-  await insertUnsecureSubscription({
+  await insertSubscription({
     id: uuidv4(),
     organization_id: PLATFORM_ORGANIZATION_UUID,
     service_instance_id: serviceInstanceId,

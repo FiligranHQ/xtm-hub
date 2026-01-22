@@ -11,7 +11,7 @@ import {
 } from '../document/document.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import {
-  INTEGRATION_METADATA,
+  INTEGRATION_METADATA_KEYS,
   Integration,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from './integrations.model';
@@ -21,19 +21,19 @@ export const integrationsApp = {
     return DocumentDomain.loadParentDocumentsByServiceInstance<IntegrationConnection>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
-      INTEGRATION_METADATA
+      INTEGRATION_METADATA_KEYS
     );
   },
   loadIntegration: async (
     documentId: DocumentId
   ): Promise<WithLabels<Integration>> => {
-    return loadDocumentWithCountersById(documentId, INTEGRATION_METADATA);
+    return loadDocumentWithCountersById(documentId, INTEGRATION_METADATA_KEYS);
   },
   loadPublicAccessIntegrations: async (serviceSlug: string) =>
     DocumentDomain.loadSeoDocumentsByServiceSlug(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       serviceSlug,
-      INTEGRATION_METADATA
+      INTEGRATION_METADATA_KEYS
     ),
 
   loadPaginatedPublicAccessIntegrations: async (
@@ -44,7 +44,7 @@ export const integrationsApp = {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
       opts,
-      INTEGRATION_METADATA
+      INTEGRATION_METADATA_KEYS
     );
   },
 
@@ -52,7 +52,7 @@ export const integrationsApp = {
     return loadSeoDocumentWithCountersBySlug<WithLabels<Integration>>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
-      INTEGRATION_METADATA
+      INTEGRATION_METADATA_KEYS
     );
   },
 };

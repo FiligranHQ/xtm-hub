@@ -2,6 +2,7 @@ import ShareableResourceSlug from '@/components/service/document/shareable-resou
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import testRender from '@/utils/test/test-render';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +56,7 @@ vi.mock('@/components/service/document/shareable-resource-description', () => ({
   default: () => <div>Description</div>,
 }));
 
-vi.mock('filigran-ui/servers', () => ({
+vi.mock('@filigran/ui/servers', () => ({
   Button: ({ children, onClick, ...props }) => (
     <button
       onClick={onClick}
@@ -65,7 +66,7 @@ vi.mock('filigran-ui/servers', () => ({
   ),
 }));
 
-vi.mock('filigran-icon', () => ({
+vi.mock('@filigran/icon', () => ({
   DownloadIcon: () => <span>DownloadIcon</span>,
 }));
 
@@ -78,22 +79,31 @@ const mockSettings = {
 
 describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
   it.each`
-    shouldShowOneClickComponent | documentType                  | documentActive
-    ${true}                     | ${'opencti_custom_dashboard'} | ${true}
-    ${false}                    | ${'opencti_custom_dashboard'} | ${false}
-    ${true}                     | ${'opencti_integration'}      | ${true}
-    ${false}                    | ${'opencti_integration'}      | ${false}
-    ${true}                     | ${'openaev_scenario'}         | ${true}
-    ${false}                    | ${'openaev_scenario'}         | ${false}
+    shouldShowOneClickComponent | documentType                  | documentActive | integrationType
+    ${true}                     | ${'opencti_custom_dashboard'} | ${true}        | ${false}
+    ${false}                    | ${'opencti_custom_dashboard'} | ${false}       | ${false}
+    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.CSV_FEED}
+    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.TAXII_FEED}
+    ${false}                    | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.STREAM}
+    ${false}                    | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}
+    ${false}                    | ${'opencti_integration'}      | ${false}       | ${IntegrationTypeEnum.CSV_FEED}
+    ${true}                     | ${'openaev_scenario'}         | ${true}        | ${false}
+    ${false}                    | ${'openaev_scenario'}         | ${false}       | ${false}
   `(
-    'should show OneClickDeploy=$shouldShowOneClickComponent when document is $documentType is $documentActive',
-    ({ shouldShowOneClickComponent, documentType, documentActive }) => {
+    'should show OneClickDeploy=$shouldShowOneClickComponent when document is $documentType is $documentActive and integration type is $integrationType',
+    ({
+      shouldShowOneClickComponent,
+      documentType,
+      documentActive,
+      integrationType,
+    }) => {
       const testDocumentData = {
         active: documentActive,
         description: 'description',
         download_number: 1,
         name: 'Test Document',
         type: documentType,
+        integration_type: integrationType,
       } as unknown as customDashboardsItem_fragment$data;
 
       testRender(

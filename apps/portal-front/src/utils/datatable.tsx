@@ -1,5 +1,5 @@
 import { UseTranslationsProps } from '@/i18n/config';
-import { DatatableI18nKey } from 'filigran-ui';
+import { DatatableI18nKey } from '@filigran/ui';
 
 export const i18nKey = (
   t: UseTranslationsProps

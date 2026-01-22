@@ -6,12 +6,12 @@ import { TrialsManageUsersDialog } from '@/components/service/trial-instances/ma
 import { TrialCancelSheet } from '@/components/service/trial-instances/trial-cancel-sheet';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
+import { Button } from '@filigran/ui/servers';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useContext, useState } from 'react';

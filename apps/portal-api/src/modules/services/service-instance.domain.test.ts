@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { contextAdminUser, SERVICE_VAULT_ID } from '../../../tests/tests.const';
 import {
   PlatformContract,
@@ -108,7 +108,7 @@ describe('Service instance domain', () => {
 
     it('should return an empty array when the service instance exists but has no links', async () => {
       const generateId = uuidv4();
-      const test = await dbUnsecure('ServiceInstance')
+      const test = await db('ServiceInstance')
         .insert([
           {
             id: generateId,
@@ -141,13 +141,13 @@ describe('Service instance domain', () => {
       const serviceDefinitionId = uuidv4();
 
       // Insert test data
-      await dbUnsecure('ServiceDefinition').insert({
+      await db('ServiceDefinition').insert({
         id: serviceDefinitionId,
         name: 'OpenCTI Registration',
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       });
 
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: serviceInstanceId,
         name: 'Test OpenCTI Platform',
         description: 'Test platform',
@@ -155,7 +155,7 @@ describe('Service instance domain', () => {
         creation_status: 'READY',
       });
 
-      await dbUnsecure('Subscription').insert({
+      await db('Subscription').insert({
         id: uuidv4(),
         service_instance_id: serviceInstanceId,
         organization_id: contextAdminUser.user.selected_organization_id,
@@ -186,13 +186,13 @@ describe('Service instance domain', () => {
       const serviceInstanceId = uuidv4();
       const serviceDefinitionId = uuidv4();
 
-      await dbUnsecure('ServiceDefinition').insert({
+      await db('ServiceDefinition').insert({
         id: serviceDefinitionId,
         name: 'OpenCTI Registration',
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       });
 
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: serviceInstanceId,
         name: 'Test Platform No Sub',
         description: 'Test platform without subscription',
@@ -214,7 +214,7 @@ describe('Service instance domain', () => {
     beforeEach(async () => {
       mockServiceInstanceId = uuidv4() as ServiceInstanceId;
       const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59'; // Use existing service definition
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: mockServiceInstanceId,
         name: 'Original Name',
         description: 'Original Description',
@@ -274,7 +274,7 @@ describe('Service instance domain', () => {
       const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59'; // Use existing service definition
 
       // Create ServiceInstance first
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: mockServiceInstanceId,
         name: 'Test Service Config',
         description: 'Test service for configuration',
@@ -292,7 +292,7 @@ describe('Service instance domain', () => {
         token: 'test-token',
       };
 
-      await dbUnsecure('Service_Configuration').insert({
+      await db('Service_Configuration').insert({
         service_instance_id: mockServiceInstanceId,
         config: JSON.stringify(mockConfig),
         status: ServiceConfigurationStatus.Active,
@@ -332,7 +332,7 @@ describe('Service instance domain', () => {
       const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59'; // Use existing service definition
 
       // Create ServiceInstance first
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: mockServiceInstanceId,
         name: 'Test Update Config',
         description: 'Test service for configuration update',
@@ -350,7 +350,7 @@ describe('Service instance domain', () => {
         token: 'original-token',
       };
 
-      await dbUnsecure('Service_Configuration').insert({
+      await db('Service_Configuration').insert({
         service_instance_id: mockServiceInstanceId,
         config: JSON.stringify(originalConfig),
         status: ServiceConfigurationStatus.Active,

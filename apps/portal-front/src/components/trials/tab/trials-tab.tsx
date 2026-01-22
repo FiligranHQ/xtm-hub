@@ -14,9 +14,26 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { SearchInput } from '@/components/ui/search-input';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
+import {
+  ArrowShapeUpIcon,
+  ArrowShapeUpStackIcon,
+  CheckIndeterminateIcon,
+  CloseIcon,
+} from '@filigran/icon';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
+import { toast } from '@filigran/ui/clients';
+import { Button } from '@filigran/ui/servers';
 import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPaginationQuery.graphql';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
@@ -31,22 +48,6 @@ import {
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import {
-  ArrowShapeUpIcon,
-  ArrowShapeUpStackIcon,
-  CheckIndeterminateIcon,
-  CloseIcon,
-} from 'filigran-icon';
-import {
-  DataTable,
-  DataTableHeadBarOptions,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from 'filigran-ui';
-import { toast } from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import {
   FunctionComponent,
@@ -100,6 +101,7 @@ const connectionIDs = new Map<TrialsTabType, string>();
 
 const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   const t = useTranslations();
+  const isAdminByPass = useAdminByPass();
 
   const statuses = trialsTabConfig[type].statuses;
   const defaultOrder =
@@ -287,10 +289,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                 return (
                   <span className="truncate">
                     {row.original.cancellation_date
-                      ? formatDate(
-                          row.original.cancellation_date,
-                          'DATETIME_NUMERIC'
-                        )
+                      ? formatDate(row.original.cancellation_date, 'DATE_FULL')
                       : '-'}
                   </span>
                 );
@@ -305,10 +304,29 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
               header: t('TrialsDashboard.Columns.CancellationReason'),
               accessorKey: 'cancellation_reason',
               id: 'cancellation_reason',
+              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                const reason = row.original.cancellation_reason;
+                if (!reason) return <span>-</span>;
+                return (
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="truncate block cursor-help">
+                          {reason}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-gray-50 max-w-md">
+                        {reason}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                );
+              },
             },
           ]
         : []),
-      ...(type === TrialsTabType.Running || type === TrialsTabType.Waiting
+      ...((type === TrialsTabType.Running || type === TrialsTabType.Waiting) &&
+      isAdminByPass
         ? [
             {
               accessorKey: 'actions',
@@ -342,7 +360,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                         })}
                       </AlertDialogComponent>
                     )}
-                    {type === TrialsTabType.Waiting && (
+                    {type === TrialsTabType.Waiting && isAdminByPass && (
                       <>
                         <TooltipProvider>
                           <Tooltip>

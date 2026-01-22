@@ -3,8 +3,8 @@ import {
   ServiceListFilterKey,
 } from '@/components/service/components/header/service-list-header';
 import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
-import { CancelIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui';
+import { CancelIcon } from '@filigran/icon';
+import { Button } from '@filigran/ui';
 import React from 'react';
 
 interface Props {

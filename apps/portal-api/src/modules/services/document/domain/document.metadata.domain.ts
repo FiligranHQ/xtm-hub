@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { db, dbRaw } from '../../../../../knexfile';
 import {
+  DocumentMetadata as DocumentMetadataResolverType,
   Document as DocumentResolverType,
   IntegrationType,
 } from '../../../../__generated__/resolvers-types';
@@ -19,6 +20,25 @@ export type DocumentMetadataKeys<T extends DocumentModel> = Array<
 >;
 
 export const DocumentMetadataDomain = {
+  insertMetadataFromKeyValue: async (
+    id: DocumentId,
+    metadataInput: DocumentMetadataResolverType[]
+  ): Promise<DocumentMetadata[]> => {
+    if (!metadataInput.length) {
+      return [];
+    }
+
+    const metadataToInsert: DocumentMetadata[] = metadataInput.map((meta) => ({
+      document_id: id,
+      key: meta.key as DocumentMetadataKey,
+      value: meta.value,
+    }));
+
+    return db<DocumentMetadata>('Document_Metadata')
+      .insert(metadataToInsert)
+      .returning('*');
+  },
+
   insertMetadata: async <T extends DocumentModel>(
     id: DocumentId,
     data: DocumentData<T>,

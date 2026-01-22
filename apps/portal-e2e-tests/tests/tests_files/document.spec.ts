@@ -33,7 +33,7 @@ test.describe('Document Management', () => {
     });
 
     await test.step('Filter documents', async () => {
-      await documentPage.searchDocument('a');
+      await documentPage.searchDocument('aazdhakzjdskjqdh');
       await expect(
         page.getByRole('cell', { name: TEST_FILE.name })
       ).not.toBeVisible();

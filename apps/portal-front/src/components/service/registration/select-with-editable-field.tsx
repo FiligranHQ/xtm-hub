@@ -1,6 +1,6 @@
-import { CheckIcon } from 'filigran-icon';
-import { Select, SelectContent, SelectItem, SelectTrigger } from 'filigran-ui';
-import { Input } from 'filigran-ui/servers';
+import { CheckIcon } from '@filigran/icon';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@filigran/ui';
+import { Input } from '@filigran/ui/servers';
 import { useRef, useState } from 'react';
 
 type Option = { value: string; label: string };

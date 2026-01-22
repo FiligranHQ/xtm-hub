@@ -54,6 +54,7 @@
       "LoginError": "Vous n'êtes pas autorisé à vous connecter"
     },
     "Server": {
+      "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de l'acceptation des utilisateurs",
       "ADD_ORGANIZATION_ERROR": "Une erreur s'est produite lors de l'ajout d'une organisation",
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
@@ -67,13 +68,6 @@
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "Vous ne pouvez pas demander d'essai gratuit dans votre espace personnel",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
-      "CSV_FEED_DELETION_ERROR": "Erreur survenue lors de la suppression d'un flux CSV",
-      "CSV_FEED_INSERTION_ERROR": "Erreur lors de la création du CSV Feed.",
-      "CSV_FEED_UNIQUE_SLUG_ERROR": "Le slug du CSV Feed est déjà utilisé.",
-      "CSV_FEED_UPDATE_ERROR": "Erreur lors de la mise à jour du CSV Feed.",
-      "CUSTOM_DASHBOARD_INSERTION_ERROR": "Erreur lors de la création du tableau de bord personnalisé.",
-      "CUSTOM_DASHBOARD_UNIQUE_SLUG_ERROR": "Le slug du tableau de bord personnalisé est déjà utilisé.",
-      "CUSTOM_DASHBOARD_UPDATE_ERROR": "Erreur lors de la mise à jour du tableau de bord personnalisé.",
       "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
       "DELETE_ORGANIZATION_ERROR": "Erreur lors de la suppression de l'organisation",
       "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
@@ -82,6 +76,10 @@
       "DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND": "Le quota de la demande de déploiement n'a pas été trouvé.",
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "Une erreur inconnue s'est produite",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
+      "DOCUMENT_CREATE_ERROR": "Une erreur s'est produite lors de la création de la ressource.",
+      "DOCUMENT_MISSING_METADATA": "Il manque des métadonnées au document.",
+      "DOCUMENT_UNIQUE_SLUG_ERROR": "Le nom de la ressource est déjà utilisé.",
+      "DOCUMENT_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de la ressource.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
       "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
@@ -93,7 +91,8 @@
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "Vous devez d'abord accorder des capacités à l'organisation",
       "HUBSPOT_ERROR": "Une erreur s'est produite lors de la prise de contact",
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du numéro de part",
-      "INSERT_DOCUMENT_ERROR": "Erreur lors de l'insertion du document",
+      "INTEGRATION_TYPE_NOT_MANAGEABLE": "Ce type d'intégration n'est pas gérable.",
+      "INTEGRATION_TYPE_NOT_RECOGNIZED": "Ce type d'intégration n'est pas reconnu",
       "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
       "INVALID_EMAIL": "L'email doit être dans un format valide.",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
@@ -104,13 +103,10 @@
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
+      "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
       "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "Une erreur inconnue s'est produite",
-      "OPENAEV_SCENARIO_DELETE_ERROR": "Une erreur s'est produite lors de la suppression d'un scénario OpenAEV",
-      "OPENAEV_SCENARIO_INSERTION_ERROR": "Une erreur s'est produite lors de la création d'un scénario OpenAEV",
-      "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "Un scénario OpenAEV avec le même slug existe déjà",
-      "OPENAEV_SCENARIO_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour d'un scénario OpenAEV",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
       "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "Vous n'êtes pas autorisé à faire ceci",
@@ -127,12 +123,12 @@
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
       "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
       "SERVICE_NOT_FOUND": "Le service n'a pas été trouvé",
+      "SERVICE_NOT_MANAGEABLE": "Ce service n'est pas gérable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
       "SUBSCRIPTION_NOT_FOUND": "L'abonnement n'a pas été trouvé",
       "TRANSFER_ME_ERROR": "Une erreur s'est produite lors de la requête de transfert de personal space.",
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
-      "UPDATE_DOCUMENT_ERROR": "Erreur lors de la mise à jour du document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
       "USER_DISABLED": "L'utilisateur est désactivé",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
@@ -322,8 +318,18 @@
     "TabTitle": "Requêtes utilisateurs ({usersCount})",
     "WarningUserRejection": {
       "Confirm": "Confirmer",
-      "Description": "Vous êtes sur le point de refuser cette personne de votre organisation. Il n'y a pas de retour possible. Êtes-vous sûr?",
+      "Description": "Vous êtes sur le point de refuser cet utilisateur dans votre organisation. Cette action ne peut être annulée. Êtes-vous sûr ?",
       "Title": "Êtes-vous sûr?"
+    },
+    "WarningUsersRejection": {
+      "Confirm": "Confirmez",
+      "Description": "Vous êtes sur le point de refuser ces utilisateurs de votre organisation. Cette action ne peut être annulée. Etes-vous sûr ?",
+      "Title": "Etes-vous sûr ?"
+    },
+    "WarningUsersAccept": {
+      "Confirm": "Confirmer",
+      "Description": "Vous êtes sur le point d'accepter ces utilisateurs dans votre organisation. Ces utilisateurs n'auront pas d'autorisations spécifiques par défaut. Si vous souhaitez attribuer ou mettre à jour des permissions, visitez l'onglet Utilisateurs. Êtes-vous sûr ?",
+      "Title": "Êtes-vous sûr ?"
     }
   },
   "PlatformIdentifier": {
@@ -475,6 +481,15 @@
   "Reset table": "Remise à zéro de la table",
   "Rows per page": "Lignes par page",
   "Service": {
+    "ServiceDefinitionIdentifier": {
+      "link": "Link",
+      "openaev_registration": "OpenAEV Registration",
+      "openaev_scenarios": "OpenAEV Scenarios",
+      "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
+      "opencti_integrations": "OpenCTI Integrations",
+      "opencti_registration": "OpenCTI Registration",
+      "vault": "Vault"
+    },
     "Capabilities": {
       "AccessServiceDescription": "Vous avez uniquement accès à un service",
       "AccessServiceName": "Access service",
@@ -491,32 +506,24 @@
       "LastVerifiedDate": "Dernière vérification",
       "Name": "Connecteurs OpenCTI",
       "Search": "Rechercher un connecteur par nom...",
-      "Type": "Type",
       "VendorContact": "Contact vendeur",
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
       "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mises à jour pour déployer ce connecteur.",
       "UnavailableDeployments": "Ce connecteur n'est pas disponible pour le déploiement automatique."
     },
     "CreationStatus": "Statut de la création",
-    "OpenctiIntegrationFeeds": {
+    "OpenctiIntegrations": {
       "Actions": {
         "Share": "Partager l'intégration Feed"
       },
+      "AddService": "Ajouter une nouvelle intégration",
+      "IntegrationType": "Type d'intégration",
       "Filter": {
-        "Connector": {
-          "Type": {
-            "Placeholder": "Type de connecteur..."
-          }
+        "IntegrationSubType": {
+          "Placeholder": "Sous-type..."
         },
         "Type": {
-          "Placeholder": "Type...",
-          "csv_feed": "Flux CSV",
-          "connector": "Connecteurs",
-          "rss_feed": "Flux RSS",
-          "json_feed": "Flux JSON",
-          "taxii_feed": "Flux TAXII (bientôt disponible)",
-          "opencti_stream_feed": "Flux OpenCTI",
-          "third_party_integration": "Intégrations tierces"
+          "Placeholder": "Type..."
         },
         "ProductVersion": {
           "Placeholder": "Plateforme..."
@@ -526,6 +533,18 @@
           "AutomaticDeploy": "Déploiement automatique",
           "ManualDeploy": "Déploiement manuel"
         }
+      },
+      "Type": {
+        "csv_feed": "Flux CSV",
+        "connector": "Connecteurs",
+        "rss_feed": "Flux RSS (bientôt disponible)",
+        "json_feed": "Flux JSON (bientôt disponible)",
+        "taxii_feed": "Flux TAXII",
+        "stream": "Flux OpenCTI",
+        "third_party_integration": "Intégrations tierces (bientôt disponible)"
+      },
+      "Form": {
+        "SelectIntegrationSubType": "Sous-type"
       }
     },
     "CsvFeed": {
@@ -559,6 +578,102 @@
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
       "UpdateService": "Editer le CSV Feed {name}"
     },
+    "TaxiiFeed": {
+      "Actions": {
+        "Added": "Le flux TAXII {name} a été ajouté avec succès",
+        "Deleted": "Le flux TAXII {name} a été supprimée avec succès",
+        "Share": "Partager le flux TAXII",
+        "Updated": "Le flux TAXII {name} a été modifiée avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau flux TAXII",
+      "DeleteService": "Supprimer le flux TAXII {name}",
+      "Form": {
+        "Author": "Auteur",
+        "TaxiiFeedFile": "Fichier de flux TAXII",
+        "TaxiiFeedIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Voici un paragraphe pour décrire le flux TAXII.",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "ExistingTaxiiFeedFile": "Fichier de flux TAXII existant : {file_name}",
+        "ExistingTaxiiFeedIllustration": "Illustration existante du flux TAXII : {file_name}",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "PublishedPlaceholder": "Le flux TAXII est-il publié ?",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Mise à jour du fichier JSON"
+      },
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux TAXII {name} ?",
+      "UpdateService": "Mettre à jour le flux TAXII {name}"
+    },
+    "Stream": {
+      "Actions": {
+        "Added": "Le stream {name} a été ajouté avec succès",
+        "Deleted": "Le stream {name} a été supprimé avec succès",
+        "Share": "Partager le stream",
+        "Updated": "Le stream {name} a été modifié avec succès"
+      },
+      "Active": "Publié",
+      "AddService": "Ajouter un nouveau stream",
+      "DeleteService": "Supprimer le stream {name}",
+      "Form": {
+        "Author": "Auteur",
+        "StreamFile": "Fichier de stream",
+        "StreamIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le stream.",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "ExistingStreamFile": "Fichier Stream existant : {file_name}",
+        "ExistingStreamIllustration": "Illustration de stream existante : {file_name}",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "PublishedPlaceholder": "Le stream est-il publié ?",
+        "ShortDescriptionLabel": "Description courte",
+        "SlugLabel": "Limace",
+        "UpdateJSONFile": "Mise à jour du fichier JSON"
+      },
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux {name} ?",
+      "UpdateService": "Mettre à jour le stream {name}"
+    },
+    "ThirdPartyIntegration": {
+      "Actions": {
+        "Added": "L'intégration de tiers {name} a été ajoutée avec succès",
+        "Deleted": "L'intégration de tiers {name} a été supprimée avec succès",
+        "Share": "Partager l'intégration de tiers",
+        "Updated": "L'intégration de tiers {name} a été modifiée avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter une nouvelle intégration de tiers",
+      "DeleteService": "Supprimer l'intégration de tiers {name}",
+      "Form": {
+        "Author": "Auteur",
+        "ThirdPartyIntegrationFile": "Fichier d'intégration de tiers",
+        "ThirdPartyIntegrationIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant l'intégration d'un tiers.",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "ExistingThirdPartyIntegrationFile": "Fichier d'intégration tiers existant : {file_name}",
+        "ExistingThirdPartyIntegrationIllustration": "Illustration de l'intégration de tiers existante : {file_name}",
+        "GithubUrlLabel": "URL Github",
+        "LabelsLabel": "Étiquettes",
+        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "NameLabel": "Nom",
+        "ProductVersionLabel": "Version OpenCTI",
+        "PublishedPlaceholder": "L'intégration de tiers est-elle publiée ?",
+        "ShortDescriptionLabel": "Brève description",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Mise à jour du fichier JSON",
+        "VendorUrlLabel": "Vendeur URL"
+      },
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer l'intégration de tiers {name} ?",
+      "UpdateService": "Mettre à jour l'intégration des tiers {name}"
+    },
     "OpenctiCustomDashboards": {
       "Actions": {
         "Added": "Le tableau de bord personnalisé {name} a été ajouté avec succès",
@@ -591,7 +706,7 @@
         "SelectJSONFile": "Sélectionner le fichier JSON",
         "ShortDescriptionLabel": "Courte description",
         "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
-        "SlugLabel": "Slug (url)",
+        "SlugLabel": "Slug (URL)",
         "SlugPlaceholder": "dashboard-slug",
         "UpdateJSONFile": "Mise à jour du fichier JSON",
         "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
@@ -623,7 +738,9 @@
         "ExistingOpenAEVScenarioIllustration": "Illustration de scénario existante : {file_name}",
         "PublishedPlaceholder": "Le scénario est-il publié?",
         "Author": "Auteur",
-        "ProductVersionLabel": "Version OpenAEV"
+        "ProductVersionLabel": "Version OpenAEV",
+        "UpdateZIPFile": "Mettre à jour le fichier ZIP",
+        "DescriptionUpdateZIPFile": "Vous êtes sur le point de télécharger un nouveau fichier zip. Le fichier json précédent sera supprimé. Voulez-vous continuer ?"
       },
       "AddService": "Ajouter un nouveau scénario",
       "UpdateService": "Mettre à jour le scénario {name}",
@@ -700,7 +817,11 @@
         "LastUpdatedAt": "Dernière mise à jour le",
         "Overview": "Vue d'ensemble",
         "ProductVersion": "Version minimale du produit",
-        "Shares": "Actions"
+        "Shares": "Actions",
+        "IntegrationType": "Type",
+        "IntegrationSubType": "Sous-type",
+        "GithubURL": "URL Github",
+        "VendorURL": "URL du fournisseur"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",
@@ -711,7 +832,7 @@
     "SubscribeService": "Souscrire au service {serviceName}",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
-    "SureWantSubscriptionDirect": "Voulez-vous souscrire au service {serviceName} ? Ce service est gratuit et vous donne accès aux ressources créées par l'équipe Filigran.",
+    "SureWantSubscriptionDirect": "Commencez avec notre service gratuit {serviceName} et explorez les ressources créées par l'équipe Filigran.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
       "Explore": "Explorez tout le potentiel d'OpenCTI Enterprise Edition, commencez votre essai gratuit de 30 jours.",
@@ -725,9 +846,10 @@
       "StartTrial": "Commencez votre essai gratuit",
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
-      "ContactUs": "Contactez nous",
-      "ContactUsSuccessTitle": "Merci !",
-      "ContactUsSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
+      "ReachOutToSales": "Contactez nous",
+      "NeedSupport": "Besoin d'aide",
+      "ReachOutToSalesSuccessTitle": "Merci !",
+      "ReachOutToSalesSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
@@ -749,10 +871,14 @@
       },
       "Form": {
         "Region": "Région",
+        "RegionPlaceholder": "Veuillez sélectionner votre région préférée pour l'hébergement",
         "AssociatedEmail": "Email associé",
         "JobTitle": "Titre du poste",
+        "JobTitlePlaceholder": "Veuillez sélectionner votre titre de poste",
         "ActivitySector": "Secteur d'activité",
+        "ActivitySectorPlaceholder": "Veuillez sélectionner votre secteur d'activité",
         "UseCase": "Cas d'utilisation",
+        "UseCasePlaceholder": "Veuillez sélectionner votre cas d'utilisation",
         "MSSA": "MSSA",
         "MSSAAgreement": "*Je reconnais avoir lu, compris et accepté les conditions du procès de",
         "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"

@@ -9,7 +9,6 @@ import {
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import {
   AutoForm,
   Button,
@@ -22,7 +21,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { FunctionComponent, useContext, useState } from 'react';
@@ -109,7 +109,9 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
                     value={field.value}
                     onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue
+                        placeholder={t('Service.Trials.Form.RegionPlaceholder')}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {REGIONS.map((region) => (
@@ -127,12 +129,21 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
             },
             job_title: {
               label: t('Service.Trials.Form.JobTitle'),
+              inputProps: {
+                placeholder: t('Service.Trials.Form.JobTitlePlaceholder'),
+              },
             },
             activity_sector: {
               label: t('Service.Trials.Form.ActivitySector'),
+              inputProps: {
+                placeholder: t('Service.Trials.Form.ActivitySectorPlaceholder'),
+              },
             },
             use_case: {
               label: t('Service.Trials.Form.UseCase'),
+              inputProps: {
+                placeholder: t('Service.Trials.Form.UseCasePlaceholder'),
+              },
             },
             acceptTerms: {
               fieldType: ({ field }) => (

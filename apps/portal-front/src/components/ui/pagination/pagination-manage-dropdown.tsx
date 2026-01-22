@@ -1,4 +1,4 @@
-import { TableTuneIcon } from 'filigran-icon';
+import { TableTuneIcon } from '@filigran/icon';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,8 +9,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 

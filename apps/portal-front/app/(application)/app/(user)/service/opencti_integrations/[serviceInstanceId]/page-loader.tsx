@@ -6,10 +6,10 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/integrations-list';
 import { IntegrationsListQuery } from '@/components/service/integrations/integration.graphql';
+import { Skeleton } from '@filigran/ui';
 import { integrationsQuery } from '@generated/integrationsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { Skeleton } from 'filigran-ui';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
@@ -26,7 +26,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
-    connectorTypes,
+    integrationSubTypes,
     productVersions,
     setSearch,
     deployable,
@@ -38,14 +38,17 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     loadQuery(
       {
         count: pageSize,
-        orderBy: 'created_at',
-        orderMode: 'desc',
+        orderBy: 'name',
+        orderMode: 'asc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         filters: [
           { key: FilterKeyEnum.LABEL, value: labels },
           { key: FilterKeyEnum.INTEGRATION_TYPE, value: integrationTypes },
-          { key: FilterKeyEnum.INTEGRATION_SUBTYPE, value: connectorTypes },
+          {
+            key: FilterKeyEnum.INTEGRATION_SUBTYPE,
+            value: integrationSubTypes,
+          },
           { key: FilterKeyEnum.PRODUCT_VERSION, value: productVersions },
           { key: FilterKeyEnum.MANAGER_SUPPORTED, value: deployable },
         ],
@@ -61,7 +64,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
-    connectorTypes,
+    integrationSubTypes,
     productVersions,
     deployable,
   ]);

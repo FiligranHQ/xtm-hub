@@ -1,6 +1,6 @@
 'use client';
 
-import { Callout } from 'filigran-ui';
+import { Callout } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import useAdminPath from '../../hooks/useAdminPath';
 

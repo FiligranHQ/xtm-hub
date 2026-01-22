@@ -4,15 +4,18 @@ import {
   VaultNewFileForm,
 } from '@/components/service/vault/vault-new-file-form';
 import { IconActionContext } from '@/components/ui/icon-actions';
-import { useToast } from 'filigran-ui';
+import { useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import DocumentItem_fragmentGraphql, {
+  documentItem_fragment$data,
+  documentItem_fragment$key,
+} from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
-import { useMutation } from 'react-relay';
+import { readInlineData, useMutation } from 'react-relay';
 import { z } from 'zod';
 
 interface EditDocumentProps {
@@ -28,31 +31,45 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
 }) => {
   const { toast } = useToast();
   const t = useTranslations();
-  const [vaultUpdateDocumentMutation] = useMutation<documentUpdateMutation>(
+  const [updateMutation] = useMutation<documentUpdateMutation>(
     DocumentUpdateMutation
   );
   const { setMenuOpen } = useContext(IconActionContext);
-
   const { slug } = useDecodedParams();
+  if (!slug) {
+    return null;
+  }
 
   const updateDocumentDescription = (
     values: z.infer<typeof newDocumentSchema>
   ) => {
-    vaultUpdateDocumentMutation({
+    if (!values.documentId) {
+      return;
+    }
+
+    updateMutation({
       variables: {
         documentId: values.documentId,
         serviceInstanceId: slug,
         input: {
           description: values.description,
         },
+        metadata: [],
+        document: [],
+        updateDocument: false,
+        images: [],
       },
       onCompleted: (response) => {
         setOpen(false);
         setMenuOpen(false);
+        const updatedDocument = readInlineData<documentItem_fragment$key>(
+          DocumentItem_fragmentGraphql,
+          response.updateDocument
+        );
         toast({
           title: t('Utils.Success'),
           description: t('VaultActions.DocumentUpdated', {
-            file_name: response.editDocument.file_name ?? '',
+            file_name: updatedDocument.file_name ?? '',
           }),
         });
       },

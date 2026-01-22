@@ -2,20 +2,29 @@ import { RefreshUserPlatformTokenMutation } from '@/components/registration/regi
 import useExternalTab from '@/hooks/useExternalTab';
 import {
   isConnectorResource,
+  isIntegrationItem,
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { toast } from '@filigran/ui';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import {
   registerRefreshUserPlatformTokenMutation,
   registerRefreshUserPlatformTokenMutation$data,
 } from '@generated/registerRefreshUserPlatformTokenMutation.graphql';
-import { toast } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
 const OPENCTI_URL_CONFIGS = {
   opencti_custom_dashboard: 'deploy-custom-dashboard',
-  opencti_integration_feed: 'deploy-csv-feed',
+  opencti_integration: 'deploy-csv-feed',
+};
+
+export const OPENCTI_INTEGRATION_URL_CONFIGS: Partial<
+  Record<IntegrationTypeEnum, string>
+> = {
+  taxii_feed: 'deploy-taxii-feed',
+  csv_feed: 'deploy-csv-feed',
 };
 
 interface Props {
@@ -39,6 +48,12 @@ function computeDeployUrl(
 
   if (isConnectorResource(documentData)) {
     return `${platformBasePath}/dashboard/xtm-hub/deploy-connector/${documentData.slug}?openConfig=true`;
+  }
+
+  if (isIntegrationItem(documentData)) {
+    const urlIntegrationKey =
+      OPENCTI_INTEGRATION_URL_CONFIGS[documentData.integration_type];
+    return `${platformBasePath}/dashboard/xtm-hub/${urlIntegrationKey}/${service_instance?.id}/${id}`;
   }
 
   const urlKey = OPENCTI_URL_CONFIGS[type as keyof typeof OPENCTI_URL_CONFIGS];

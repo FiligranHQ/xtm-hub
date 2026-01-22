@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import 'filigran-ui/theme.css';
+import '@filigran/ui/theme.css';
 import '../../styles/globals.css';
 
 import Login from '@/components/login/login';

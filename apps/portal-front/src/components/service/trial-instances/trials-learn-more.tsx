@@ -4,7 +4,7 @@ import {
   ArrowRightAltIcon,
   ArrowsInputIcon,
   ArrowsOutputIcon,
-} from 'filigran-icon';
+} from '@filigran/icon';
 import Link from 'next/link';
 import React from 'react';
 

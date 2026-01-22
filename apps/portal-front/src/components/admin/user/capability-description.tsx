@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from 'filigran-ui/servers';
+} from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 

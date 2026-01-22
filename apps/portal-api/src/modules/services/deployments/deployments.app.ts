@@ -39,7 +39,7 @@ import { DeploymentRequestDomain } from './deployments.domain';
 
 import config from 'config';
 import { UserId } from '../../../model/kanel/public/User';
-import { SYSTEM_USER_UUID } from '../../../portal.const';
+import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { ucfirst } from '../../../utils/utils';
@@ -48,7 +48,7 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { loadAdminUsers, loadUnsecureUser } from '../../users/users.domain';
+import { loadUser } from '../../users/users.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
@@ -195,15 +195,17 @@ export const DeploymentsApp = {
       }
 
       try {
-        const adminUsers = await loadAdminUsers();
         sendMail({
-          to: adminUsers.map((user) => user.email),
+          to: XTM_HUB_SUPPORT_EMAIL,
           template: 'admin_saas_instance_requested',
           params: {
             organizationName: user.organizations.find(
               (o) => o.id === user.selected_organization_id
             ).name,
-            userName: `${user.first_name} ${user.last_name}`,
+            userName:
+              user.first_name && user.last_name
+                ? `${user.first_name} ${user.last_name}`
+                : `${user.email}`,
             userEmail: user.email,
             region: input.region,
             activitySector: input.activity_sector,
@@ -343,7 +345,7 @@ export const DeploymentsApp = {
         newStatus === DeploymentRequestHubStatus.Provisioning &&
         newStatus !== deploymentRequest.hub_status
       ) {
-        const [user] = await loadUnsecureUser({
+        const [user] = await loadUser({
           id: deploymentRequest.user_requester_id,
         });
 
@@ -575,7 +577,7 @@ export const DeploymentsApp = {
     await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
-      const [requester] = await loadUnsecureUser({
+      const [requester] = await loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
       sendMail({
@@ -633,7 +635,7 @@ export const DeploymentsApp = {
         );
 
         try {
-          const [requester] = await loadUnsecureUser({
+          const [requester] = await loadUser({
             id: trial.user_requester_id,
           });
           sendMail({

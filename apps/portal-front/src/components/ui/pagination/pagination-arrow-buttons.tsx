@@ -1,6 +1,6 @@
+import { ArrowNextIcon, ArrowPreviousIcon } from '@filigran/icon';
+import { Button } from '@filigran/ui/servers';
 import { PaginationState } from '@tanstack/react-table';
-import { ArrowNextIcon, ArrowPreviousIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 

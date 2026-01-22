@@ -1,7 +1,7 @@
 import LabelForm from '@/components/admin/label/label-form';
 import { AddLabelMutation } from '@/components/admin/label/label.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import { Button, toast } from 'filigran-ui';
+import { Button, toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';

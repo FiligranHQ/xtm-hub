@@ -5,8 +5,8 @@ import {
   PublicShareableResource,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { LogoFiligranIcon } from 'filigran-icon';
-import { Avatar } from 'filigran-ui/clients';
+import { LogoFiligranIcon } from '@filigran/icon';
+import { Avatar } from '@filigran/ui/clients';
 
 const ShareableResourceBento = ({
   document,

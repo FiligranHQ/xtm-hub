@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   buttonVariants,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { FunctionComponent, ReactNode } from 'react';
 

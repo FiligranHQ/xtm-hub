@@ -6,7 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import {
   createContext,
@@ -76,7 +76,7 @@ export const SheetWithPreventingDialog: FunctionComponent<
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
           side={'right'}
-          onInteractOutside={(e) => alertDialogSheetClose(e)}
+          onPointerDownOutside={(e) => alertDialogSheetClose(e)}
           onOpenAutoFocus={onOpenAutoFocus}>
           <SheetHeader className="bg-page-background">
             <SheetTitle>{title}</SheetTitle>

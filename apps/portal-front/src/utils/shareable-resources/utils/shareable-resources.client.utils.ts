@@ -33,4 +33,5 @@ export const docHasMetadata = <T, K extends string>(
   documentData: T,
   metadataKey: K
 ): documentData is T & Record<K, string> =>
-  hasProperty<T, K, string>(documentData, metadataKey);
+  hasProperty<T, K, string>(documentData, metadataKey) &&
+  !!documentData[metadataKey];

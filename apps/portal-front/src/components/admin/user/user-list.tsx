@@ -17,13 +17,13 @@ import { useUsersList } from '@/hooks/useUsersList';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
+import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import {
   userList_fragment$data,
   userList_fragment$key,
 } from '@generated/userList_fragment.graphql';
 import { userListQuery$variables } from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
-import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import {
   FunctionComponent,
@@ -138,6 +138,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
     orderMode,
     orderBy,
     filter,
+    fetchPolicy: 'store-and-network',
   });
 
   const connectionID = data?.users?.__id;

@@ -10,7 +10,6 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import {
   integrationsFragment,
   integrationsItem,
@@ -26,6 +25,8 @@ import {
 } from '@generated/integrationsItem_fragment.graphql';
 import { integrationsList$key } from '@generated/integrationsList.graphql';
 
+import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   integrationsQuery,
   integrationsQuery$variables,
@@ -70,12 +71,16 @@ const IntegrationsList = ({
 
   const connectionId = data?.integrations.__id;
 
-  const context = useCsvFeedContext(serviceInstance, connectionId);
+  const context = useDocumentContext({
+    serviceInstance,
+    connectionId,
+    type: ShareableResourceType.OPENCTI_INTEGRATION,
+  });
 
   const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
   const {
-    removeConnectorTypes,
+    removeIntegrationSubTypes,
     removeIntegrationTypes,
     removeProductVersions,
     removeDeployable,
@@ -87,7 +92,7 @@ const IntegrationsList = ({
     [ServiceListFilterKey.IntegrationType]: {
       node: <IntegrationFilters />,
       reset: () => {
-        removeConnectorTypes();
+        removeIntegrationSubTypes();
         removeIntegrationTypes();
       },
     },

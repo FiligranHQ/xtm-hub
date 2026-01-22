@@ -1,4 +1,4 @@
-import { FiligranLoader } from 'filigran-icon';
+import { FiligranLoader } from '@filigran/icon';
 
 const Loader = () => {
   return (

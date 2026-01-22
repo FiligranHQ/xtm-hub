@@ -16,7 +16,7 @@ import {
   NewFile,
 } from '@/utils/documents';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { AddIcon, DeleteIcon, ReplayIcon } from 'filigran-icon';
+import { AddIcon, DeleteIcon, ReplayIcon } from '@filigran/icon';
 import {
   AutoForm,
   Button,
@@ -36,7 +36,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui';
+} from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useContext, useMemo, useRef, useState } from 'react';
 import slugify from 'slugify';
@@ -231,7 +231,11 @@ export const CustomDashboardForm = ({
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}>
+                        defaultValue={
+                          (isCreation
+                            ? me?.selected_organization_id
+                            : customDashboard?.uploader_organization?.id) ?? ''
+                        }>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue

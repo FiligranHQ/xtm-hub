@@ -1,4 +1,4 @@
-import { Label } from 'filigran-ui/clients';
+import { Label } from '@filigran/ui/clients';
 import React from 'react';
 
 interface Props {

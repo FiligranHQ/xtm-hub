@@ -19,6 +19,9 @@ const resolvers: Resolvers = {
       const mapping = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
+        [IntegrationType.Stream]: 'Stream',
+        [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
       };
 
       return mapping[feed.integration_type];
@@ -32,7 +35,7 @@ const resolvers: Resolvers = {
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
-      subscriptionApp.loadSubscriptionModel(context, service_instance_id),
+      subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
   },
   Query: {
     integrations: async (_, input) => integrationsApp.loadIntegrations(input),

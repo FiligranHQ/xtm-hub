@@ -1,5 +1,12 @@
-import { db, dbRaw, dbUnsecure, paginate } from '../../../../knexfile';
 import {
+  applyFilters,
+  applySearch,
+  db,
+  dbRaw,
+  paginate,
+} from '../../../../knexfile';
+import {
+  Filter,
   QueryUsersArgs,
   UserConnection,
   User as UserGenerated,
@@ -18,7 +25,7 @@ export const UserOrganizationPendingDomain = {
   insertNewUserOrganizationPending: (
     field: UserOrganizationPendingInitializer
   ): Promise<UserOrganizationPending[]> => {
-    return dbUnsecure<UserOrganizationPending>('User_Organization_Pending')
+    return db<UserOrganizationPending>('User_Organization_Pending')
       .insert(field)
       .returning('*');
   },
@@ -64,9 +71,9 @@ export const UserOrganizationPendingDomain = {
   loadUserOrganizationPending: (
     field: UserOrganizationPendingMutator
   ): Promise<UserOrganizationPending[]> => {
-    return db<UserOrganizationPending>('User_Organization_Pending')
-      .where(field)
-      .secureQuery();
+    return db<UserOrganizationPending>('User_Organization_Pending').where(
+      field
+    );
   },
 
   removeUserFromOrganizationPending: async (
@@ -78,4 +85,68 @@ export const UserOrganizationPendingDomain = {
       .delete('*')
       .secureQuery();
   },
+
+  bulkRemoveUserFromOrganizationPending: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ) => {
+    const { queryBuilder } = await buildBulkUserFromOrganizationPendingQuery(
+      organizationId,
+      ids,
+      searchTerm,
+      filters,
+      excludedIds
+    );
+    return queryBuilder.delete('*');
+  },
+
+  bulkLoadUserIdsFromOrganizationPending: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ): Promise<UserId[]> => {
+    const { queryBuilder } = await buildBulkUserFromOrganizationPendingQuery(
+      organizationId,
+      ids,
+      searchTerm,
+      filters,
+      excludedIds
+    );
+    const results = await queryBuilder.select('user_id');
+    return results.map((row) => row.user_id);
+  },
+};
+
+const buildBulkUserFromOrganizationPendingQuery = async (
+  organizationId: OrganizationId,
+  ids: UserId[],
+  searchTerm: string | undefined,
+  filters: Filter[],
+  excludedIds: UserId[]
+) => {
+  const qb = db<UserOrganizationPending>('User_Organization_Pending').where(
+    'organization_id',
+    '=',
+    organizationId
+  );
+  if (searchTerm) {
+    qb.leftJoin('User', 'User.id', 'User_Organization_Pending.user_id');
+    await applySearch('User', qb, searchTerm);
+  }
+
+  if (filters.length > 0) {
+    await applyFilters('User_Organization_Pending', qb, filters);
+  }
+
+  if ((filters.length > 0 || searchTerm) && excludedIds.length > 0) {
+    qb.whereNotIn('user_id', excludedIds);
+  } else if (ids.length > 0) {
+    qb.whereIn('user_id', ids);
+  }
+  return { queryBuilder: qb };
 };

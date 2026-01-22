@@ -47,6 +47,7 @@ export interface OrganizationPendingUserDigestModel {
   organizationName: string;
   userEmailList: string;
   userCount: number;
+  requestLabel: string;
 }
 
 export interface PlatformUnregisteredModel {

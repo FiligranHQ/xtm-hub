@@ -14,12 +14,12 @@ import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { MoreVertIcon } from '@filigran/icon';
+import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import { OrganizationsPaginationQuery$variables } from '@generated/OrganizationsPaginationQuery.graphql';
 import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { MoreVertIcon } from 'filigran-icon';
-import { Badge, DataTable, DataTableHeadBarOptions } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, Suspense, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
@@ -77,7 +77,8 @@ const OrganizationList: FunctionComponent = () => {
             <IconActionsItem onClick={() => setEditOrganization(row.original)}>
               {t('Utils.Update')}
             </IconActionsItem>
-            <IconActionsItem onClick={() => setDeleteOrganization(row.original)}>
+            <IconActionsItem
+              onClick={() => setDeleteOrganization(row.original)}>
               {t('Utils.Delete')}
             </IconActionsItem>
           </IconActions>
@@ -229,7 +230,9 @@ const OrganizationList: FunctionComponent = () => {
           key={`edit-${editOrganization.id}`}
           organization={editOrganization}
           open={!!editOrganization}
-          setOpen={(open) => setEditOrganization(open ? editOrganization : undefined)}
+          setOpen={(open) =>
+            setEditOrganization(open ? editOrganization : undefined)
+          }
         />
       )}
       {deleteOrganization && (
@@ -238,7 +241,9 @@ const OrganizationList: FunctionComponent = () => {
           connectionId={organizationData.organizations.__id}
           organization={deleteOrganization}
           open={!!deleteOrganization}
-          setOpen={(open) => setDeleteOrganization(open ? deleteOrganization : undefined)}
+          setOpen={(open) =>
+            setDeleteOrganization(open ? deleteOrganization : undefined)
+          }
         />
       )}
     </>

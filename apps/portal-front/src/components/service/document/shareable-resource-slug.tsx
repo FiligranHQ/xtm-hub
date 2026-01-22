@@ -5,17 +5,18 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { DownloadIcon } from 'filigran-icon';
+import { DownloadIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
+import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
 import { SettingsContext } from '@/components/settings/env-portal-context';
@@ -26,6 +27,7 @@ import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
+  isIntegrationItem,
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
@@ -60,12 +62,15 @@ const ShareableResourceSlug: React.FunctionComponent<
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
+    if (isIntegrationItem(documentData)) {
+      return documentData.integration_type in OPENCTI_INTEGRATION_URL_CONFIGS;
+    }
+
     return [
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
-      ShareableResourceType.OPENCTI_INTEGRATION,
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
-  }, [documentData.active, documentData.type]);
+  }, [documentData]);
 
   return (
     <>

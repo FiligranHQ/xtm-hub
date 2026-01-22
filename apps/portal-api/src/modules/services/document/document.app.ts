@@ -1,11 +1,12 @@
-import { db } from '../../../../knexfile';
 import {
-  MutationUpdateCsvFeedArgs,
-  MutationUpdateCustomDashboardArgs,
+  CreateDocumentInput,
+  DocumentMetadata as DocumentMetadataResolverType,
+  IntegrationType,
+  MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
-import {
+import Document, {
   DocumentId,
   default as DocumentModel,
 } from '../../../model/kanel/public/Document';
@@ -14,9 +15,14 @@ import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
-import { extractId, omit } from '../../../utils/utils';
+import { logApp } from '../../../utils/app-logger.util';
+import { extractId } from '../../../utils/utils';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { buildCreateEvent } from '../../telemetry/telemetry.helper';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
+import { retrieveDocumentTypeAndMetadataKeys } from './document.helper';
 import {
   processDocumentUpdateUploads,
   processUploads,
@@ -29,11 +35,186 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
-export type MutationUpdateDocumentArgs =
-  | MutationUpdateCustomDashboardArgs
-  | (MutationUpdateCsvFeedArgs & { input: { integration_type: string } });
-
 export const DocumentApp = {
+  createDocument: async (
+    input: CreateDocumentInput,
+    metadata: DocumentMetadataResolverType[],
+    serviceInstanceId: ServiceInstanceId,
+    uploads: Upload[]
+  ) => {
+    const { documentType, metadataKeys } =
+      await retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, metadata);
+    const files = await processUploads(uploads, serviceInstanceId);
+    const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
+      documentType,
+      metadata
+    );
+    let documentData: DocumentData<Document> = {
+      ...input,
+      service_instance_id: serviceInstanceId,
+      type: documentType,
+    };
+
+    if (shouldHandleFirstFile) {
+      const docFile = files.shift();
+      documentData = {
+        ...documentData,
+        file_name: docFile.fileName,
+        minio_name: docFile.minioName,
+        mime_type: docFile.mimeType,
+      };
+    }
+
+    const createdDocument = await withTransaction(async () => {
+      const document = await DocumentDomain.createDocument(
+        documentData,
+        metadataKeys as DocumentMetadataKeys<Document>
+      );
+
+      if (metadataKeys.length) {
+        await DocumentMetadataDomain.insertMetadataFromKeyValue(
+          document.id,
+          metadata
+        );
+
+        for (const meta of metadata) {
+          document[meta.key] = meta.value;
+        }
+      }
+
+      await DocumentChildrenDomain.createImageDocuments(
+        document.id,
+        document.service_instance_id,
+        files
+      );
+
+      if (documentData.labels?.length) {
+        await objectLabelDomain.insertObjectLabel(
+          documentData.labels.map((id) => ({
+            object_id: document.id as unknown as ObjectLabelObjectId,
+            label_id: extractId(id) as LabelId,
+          }))
+        );
+      }
+
+      return document;
+    });
+
+    try {
+      const createEvent = await buildCreateEvent(createdDocument);
+      void telemetryApp.sendTelemetryEvent(createEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for document creation', {
+        error,
+        documentId: createdDocument.id,
+      });
+    }
+
+    return createdDocument;
+  },
+
+  updateDocument: async (
+    parentDocumentId: DocumentId,
+    serviceInstanceId: ServiceInstanceId,
+    metadata: DocumentMetadataResolverType[],
+    mutationArgs: Pick<
+      MutationUpdateDocumentArgsResolverType,
+      'document' | 'updateDocument' | 'images' | 'input'
+    >
+  ) => {
+    const { documentType } = await retrieveDocumentTypeAndMetadataKeys(
+      serviceInstanceId,
+      metadata
+    );
+
+    const {
+      document,
+      updateDocument: isUpdateDoc,
+      images,
+      input,
+    } = mutationArgs;
+    const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
+      documentType,
+      metadata
+    );
+    const { documentFile, newImages, existingImageIds } =
+      await processDocumentUpdateUploads(
+        document,
+        isUpdateDoc && shouldHandleFirstFile,
+        images,
+        serviceInstanceId
+      );
+
+    return withTransaction(async () => {
+      const { user } = requestContext.require();
+      const uploader_organization_id = input.uploader_organization_id
+        ? extractId<OrganizationId>(input.uploader_organization_id)
+        : null;
+
+      const extractedUploaderId = extractId<UserId>(input.uploader_id ?? '');
+      const uploader_id =
+        input.uploader_id && extractedUploaderId
+          ? extractedUploaderId
+          : user.id;
+
+      const updatedDocument = await DocumentDomain.updateDocument({
+        parentDocumentId,
+        document: {
+          data: input,
+          file: documentFile,
+          type: documentType,
+        },
+        uploader_organization_id,
+        uploader_id,
+      });
+
+      // If label is null => that mean we want to update the field to empty
+      if (input.labels !== undefined) {
+        await objectLabelDomain.deleteObjectLabelBy({
+          object_id: parentDocumentId as unknown as ObjectLabelObjectId,
+        });
+
+        if (input.labels?.length > 0) {
+          await objectLabelDomain.insertObjectLabel(
+            input.labels.map((id) => ({
+              object_id: parentDocumentId as unknown as ObjectLabelObjectId,
+              label_id: extractId(id) as LabelId,
+            }))
+          );
+        }
+      }
+
+      if (metadata.length) {
+        await DocumentMetadataDomain.deleteMetadata({ id: parentDocumentId });
+        await DocumentMetadataDomain.insertMetadataFromKeyValue(
+          updatedDocument.id,
+          metadata
+        );
+
+        for (const meta of metadata) {
+          updatedDocument[meta.key] = meta.value;
+        }
+      }
+
+      // Delete the images that are not in the existingImages array
+      const childIds = await DocumentChildrenDomain.loadChildrenIds(
+        parentDocumentId,
+        existingImageIds
+      );
+      if (childIds.length > 0) {
+        await DocumentDomain.deleteDocuments(childIds);
+      }
+
+      await DocumentChildrenDomain.createImageDocuments(
+        parentDocumentId,
+        serviceInstanceId,
+        newImages
+      );
+
+      return updatedDocument;
+    });
+  },
+
   createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T> = []
@@ -67,157 +248,7 @@ export const DocumentApp = {
     });
   },
 
-  createDocumentWithImageUploadsAndMetadata: async <T extends DocumentModel>(
-    type: string,
-    input: Partial<T>,
-    uploads: Upload[] | Upload,
-    metadataKeys: DocumentMetadataKeys<T>
-  ) => {
-    const files = await processUploads(uploads, input.service_instance_id);
-    const docFile = files.shift();
-    return await withTransaction(async () => {
-      const doc = await DocumentApp.createDocumentWithChildrenAndMetadata<T>(
-        {
-          ...input,
-          type,
-          file_name: docFile.fileName,
-          minio_name: docFile.minioName,
-          mime_type: docFile.mimeType,
-        },
-        metadataKeys
-      );
-
-      await DocumentChildrenDomain.createImageDocuments(
-        doc.id,
-        doc.service_instance_id,
-        files
-      );
-
-      return doc;
-    });
-  },
-
-  updateDocument: async <T extends DocumentModel>(
-    documentId: DocumentId,
-    documentData: Omit<Partial<T>, 'labels'> & {
-      labels?: string[];
-    },
-    metadataKeys: DocumentMetadataKeys<T> = []
-  ): Promise<T> => {
-    const { user } = requestContext.require();
-    const uploader_organization_id = documentData.uploader_organization_id
-      ? extractId<OrganizationId>(documentData.uploader_organization_id)
-      : null;
-
-    const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
-    const uploader_id = (
-      documentData.uploader_id && extractedId ? extractedId : user.id
-    ) as UserId;
-
-    return await withTransaction(async () => {
-      const [document] = await db<DocumentModel>('Document')
-        .where('id', '=', documentId)
-        .update({
-          ...omit(documentData, ['labels', ...metadataKeys]),
-          uploader_organization_id,
-          uploader_id,
-          updated_at: new Date(),
-          updater_id: user.id,
-        })
-        .returning('*');
-
-      // If label is null => that mean we want to update the field to empty
-      if (documentData.labels !== undefined) {
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: documentId as unknown as ObjectLabelObjectId,
-        });
-
-        if (documentData.labels?.length > 0) {
-          await objectLabelDomain.insertObjectLabel(
-            documentData.labels.map((id) => ({
-              object_id: documentId as unknown as ObjectLabelObjectId,
-              label_id: extractId(id) as LabelId,
-            }))
-          );
-        }
-      }
-
-      if (metadataKeys.length) {
-        await DocumentMetadataDomain.deleteMetadata({ id: documentId });
-        const metadatas = await DocumentMetadataDomain.insertMetadata(
-          document.id,
-          documentData,
-          metadataKeys
-        );
-
-        for (const metadata of metadatas) {
-          document[metadata.key] = metadata.value;
-        }
-      }
-
-      return document as T;
-    });
-  },
-  updateDocumentWithChildren: async <T extends DocumentModel>(
-    type: string,
-    parentDocumentId: DocumentId,
-    serviceInstanceId: ServiceInstanceId,
-    mutationArgs: MutationUpdateDocumentArgs,
-    metadataKeys: DocumentMetadataKeys<T>
-  ) => {
-    const {
-      document,
-      updateDocument: isUpdateDoc,
-      images,
-      input,
-    } = mutationArgs;
-    const { documentFile, newImages, existingImageIds } =
-      await processDocumentUpdateUploads(
-        document,
-        isUpdateDoc,
-        images,
-        serviceInstanceId
-      );
-    const data = {
-      ...input,
-      type,
-    } as Partial<T>;
-
-    // We are updating the base document
-    if (documentFile) {
-      Object.assign(data, {
-        file_name: documentFile.fileName,
-        minio_name: documentFile.minioName,
-        mime_type: documentFile.mimeType,
-      });
-    }
-
-    return withTransaction(async () => {
-      const updatedDocument = await DocumentApp.updateDocument<T>(
-        parentDocumentId,
-        data,
-        metadataKeys
-      );
-
-      // Delete the images that are not in the existingImages array
-      const childIds = await DocumentChildrenDomain.loadChildrenIds(
-        parentDocumentId,
-        existingImageIds
-      );
-      if (childIds.length > 0) {
-        await DocumentDomain.deleteDocuments(childIds);
-      }
-
-      await DocumentChildrenDomain.createImageDocuments(
-        parentDocumentId,
-        serviceInstanceId,
-        newImages
-      );
-      return updatedDocument;
-    });
-  },
-
-  upsertDocumentWithChildren: async <T extends DocumentModel>(
+  upsertDocument: async <T extends DocumentModel>(
     type: string,
     input: Partial<T>,
     uploads: Upload[] | Upload,
@@ -352,4 +383,23 @@ const upsertDocument = async <T extends DocumentModel>(
 
     return document as T;
   });
+};
+
+const shouldHandleFirstFileAsDocument = (
+  documentType: string,
+  metadata: DocumentMetadataResolverType[]
+): boolean => {
+  if (documentType !== OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
+    return true;
+  }
+
+  const integration_type = metadata.find(
+    ({ key }) => key === 'integration_type'
+  );
+
+  if (!integration_type) {
+    return true;
+  }
+
+  return integration_type.value !== IntegrationType.ThirdPartyIntegration;
 };

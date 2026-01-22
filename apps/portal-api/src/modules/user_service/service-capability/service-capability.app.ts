@@ -5,10 +5,7 @@ import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { assertUserCanManageService } from '../../../security/guard';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
 import { insertCapabilities } from '../user-service-capability/user-service-capability.helper';
-import {
-  deleteUserCapabilityById,
-  loadUserServiceById,
-} from '../user_service.domain';
+import { UserServiceDomain } from '../user_service.domain';
 import { willManageAccessBeConserved } from './service_capability.helper';
 
 export const serviceCapabilityApp = {
@@ -26,9 +23,10 @@ export const serviceCapabilityApp = {
     await willManageAccessBeConserved(user_service_id, capabilities);
 
     const userService = await withTransaction(async () => {
-      await deleteUserCapabilityById(user_service_id);
+      await UserServiceDomain.deleteUserCapabilityById(user_service_id);
 
-      const userService = await loadUserServiceById(user_service_id);
+      const userService =
+        await UserServiceDomain.loadUserServiceById(user_service_id);
 
       await insertCapabilities(capabilities, userService);
       return userService;

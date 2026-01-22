@@ -12,7 +12,7 @@ import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
-import { INTEGRATION_METADATA } from './src/modules/services/integrations/integrations.model';
+import { INTEGRATION_METADATA_KEYS } from './src/modules/services/integrations/integrations.model';
 import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { compareSemanticVersions } from './src/utils/semantic-versioning';
@@ -82,13 +82,14 @@ type BaseDatabaseType =
   | 'DeploymentRequest'
   | 'DeploymentRequestQuota'
   | 'ServiceGroup'
-  | 'ServiceGroup_User';
+  | 'ServiceGroup_User'
+  | 'SSOGroup_RolePortal';
 
 export type DatabaseType =
   | BaseDatabaseType
   | (typeof process.env.NODE_ENV extends 'test' ? 'TestTable' : never);
 
-export type ActionType = 'add' | 'edit' | 'delete' | 'merge';
+export type ActionType = 'add' | 'edit' | 'delete' | 'merge' | 'invalidate';
 export type MethodType = 'select' | 'insert' | 'update' | 'del';
 
 interface Pagination {
@@ -160,40 +161,16 @@ export const dbRaw = (
 export const dbTx = () => database.transaction();
 
 export function db<T>(
-  context: PortalContext,
-  type: DatabaseType,
-  opts?: Partial<QueryOpts>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Knex.QueryBuilder<T, any>;
-
-export function db<T>(
   type: DatabaseType
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Knex.QueryBuilder<T, any>;
-
-export function db<T>(
-  contextOrType: PortalContext | DatabaseType,
-  typeOrOpts?: DatabaseType | Partial<QueryOpts>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any> {
-  const isPortalContextProvided = typeof contextOrType !== 'string';
-
-  const { context, type } = isPortalContextProvided
-    ? {
-        context: contextOrType as PortalContext,
-        type: typeOrOpts as DatabaseType,
-      }
-    : {
-        context: requestContext.require().portalContext,
-        type: contextOrType as DatabaseType,
-      };
+  const reqContext = requestContext.get();
 
   const queryContext = database<T>(type).queryContext({
     __typename: type,
-    context,
+    context: reqContext?.portalContext,
   });
 
-  const reqContext = requestContext.get();
   if (reqContext?.trx && !reqContext.trx.isCompleted()) {
     queryContext.transacting(reqContext.trx);
   } else if (databaseContext.isInTransaction()) {
@@ -202,11 +179,6 @@ export function db<T>(
 
   return queryContext;
 }
-
-export const dbUnsecure = <T>(type: DatabaseType) => {
-  const context = { user: null, req: null, res: null };
-  return db<T>(context, type);
-};
 
 export const dbConnections = <T>(
   nodes: T[],
@@ -333,7 +305,7 @@ const getFilterHandler = (key: string): FilterHandler => {
   }
 
   // Check if it's a metadata filter
-  if ((INTEGRATION_METADATA as string[]).includes(key)) {
+  if (INTEGRATION_METADATA_KEYS.includes(key)) {
     return createMetadataFilterHandler(key);
   }
 
@@ -355,24 +327,23 @@ export const applyFilter = (
   handler(queryContext, type, value);
   return queryContext;
 };
-export const paginate = async <T, U>(
-  type: DatabaseType,
-  pagination: Pagination,
-  opts: Partial<QueryOpts> = {},
-  queryContext = db<T>(type)
-) => {
-  const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
-  const columns = Object.keys(await database(type).columnInfo());
-  const currentOffset = after ? Number(atob(after)) : 0;
-  queryContext.queryContext({
-    ...queryContext.queryContext(),
-    ...pagination,
-    connection: true,
-  });
 
+export const applyFilters = async <T>(
+  type: DatabaseType,
+  queryContext = db<T>(type),
+  filters: Filters
+) => {
   if (filters) {
     filters.forEach((filter) => applyFilter(queryContext, type, filter));
   }
+};
+
+export const applySearch = async <T>(
+  type: DatabaseType,
+  queryContext = db<T>(type),
+  searchTerm: string
+) => {
+  const columns = Object.keys(await database(type).columnInfo());
 
   const search = [];
   if (searchTerm) {
@@ -390,6 +361,25 @@ export const paginate = async <T, U>(
       others.forEach((i) => qb.orWhereILike(`${type}.${i}`, `%${searchTerm}%`));
     });
   }
+};
+
+export const paginate = async <T, U>(
+  type: DatabaseType,
+  pagination: Pagination,
+  opts: Partial<QueryOpts> = {},
+  queryContext = db<T>(type)
+) => {
+  const { first, after, orderMode, orderBy, filters, searchTerm } = pagination;
+  const currentOffset = after ? Number(atob(after)) : 0;
+  queryContext.queryContext({
+    ...queryContext.queryContext(),
+    ...pagination,
+    connection: true,
+  });
+
+  await applyFilters(type, queryContext, filters);
+
+  await applySearch(type, queryContext, searchTerm);
 
   const totalCountQuery = queryContext
     .clone()

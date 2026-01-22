@@ -1,21 +1,21 @@
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import { IntegrationConnectorTypeFilter } from '@/components/ui/shareable-resource/integration/integration-connector-type-filter';
+import { integrationsWithSubtype } from '@/components/service/integrations/integration.utils';
+import { IntegrationSubTypeFilter } from '@/components/ui/shareable-resource/integration/integration-sub-type-filter';
 import { IntegrationTypeFilter } from '@/components/ui/shareable-resource/integration/integration-type-filter';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import React from 'react';
 
 export const IntegrationFilters: React.FC = () => {
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { integrationTypes } = useServiceListLocalStorage(localStorageKey);
-  const shouldDisplayConnectorFilter = integrationTypes.includes(
-    IntegrationTypeEnum.CONNECTOR
+  const shouldDisplayIntegrationSubTypeFilter = integrationTypes.some((type) =>
+    integrationsWithSubtype.includes(type)
   );
 
   return (
     <div className="flex justify-between gap-s">
       <IntegrationTypeFilter />
-      {shouldDisplayConnectorFilter && <IntegrationConnectorTypeFilter />}
+      {shouldDisplayIntegrationSubTypeFilter && <IntegrationSubTypeFilter />}
     </div>
   );
 };

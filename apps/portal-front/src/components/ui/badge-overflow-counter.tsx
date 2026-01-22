@@ -1,12 +1,13 @@
 'use client';
 import { cn } from '@/lib/utils';
+import { formatName } from '@/utils/format/name';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui';
-import { Badge } from 'filigran-ui/servers';
+} from '@filigran/ui';
+import { Badge } from '@filigran/ui/servers';
 import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { useEventListener } from 'usehooks-ts';
 
@@ -85,7 +86,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
           key={firstBadge.id}
           color={firstBadge.color}
           title={firstBadge.name}>
-          <span className="truncate block">{firstBadge.name}</span>
+          <span className="truncate block">{formatName(firstBadge.name)}</span>
         </Badge>
       )}
 
@@ -95,7 +96,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
           aria-hidden={index >= visibleTags}
           key={id}
           color={color}>
-          {name}
+          {formatName(name)}
         </Badge>
       ))}
 
@@ -105,7 +106,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
           aria-hidden={true}
           key={id}
           color={color}>
-          {name}
+          {formatName(name)}
         </Badge>
       ))}
 
@@ -123,7 +124,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
                   <Badge
                     key={id}
                     color={color}>
-                    {name}
+                    {formatName(name)}
                   </Badge>
                 ))}
               </div>

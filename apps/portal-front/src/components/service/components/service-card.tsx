@@ -14,9 +14,11 @@ import {
 } from '@/utils/path/constant';
 import {
   isConnectorResource,
+  isIntegrationItem,
   SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { MoreVertIcon } from 'filigran-icon';
+import { MoreVertIcon } from '@filigran/icon';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
 
@@ -36,7 +38,7 @@ const ServiceCard = ({
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
 
-  const { serviceInstance } = useServiceContext();
+  const { serviceInstance, setIntegrationType } = useServiceContext();
 
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
@@ -46,6 +48,17 @@ const ServiceCard = ({
     ServiceCapabilityName.Delete,
     serviceInstance
   );
+
+  const onClickOnUpdate = () => {
+    if (document && isIntegrationItem(document)) {
+      setIntegrationType(
+        (document.integration_type as IntegrationTypeEnum) ??
+          IntegrationTypeEnum.CSV_FEED
+      );
+    }
+
+    setOpenSheet(true);
+  };
 
   if (isConnectorResource(document)) {
     const docResource: ShareableResourceConnectorType = document;
@@ -78,7 +91,7 @@ const ServiceCard = ({
                   <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
-              <IconActionsItem onClick={() => setOpenSheet(true)}>
+              <IconActionsItem onClick={() => onClickOnUpdate()}>
                 {t('MenuActions.Update')}
               </IconActionsItem>
             </IconActions>

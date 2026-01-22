@@ -1,21 +1,21 @@
 'use client';
-import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { DisplayVersionCard } from '@/components/ui/shareable-resource/display-version-card';
 import { cn } from '@/lib/utils';
-import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
-import { MotionPlayIcon, VerifiedIcon } from 'filigran-icon';
+import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Badge } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Badge } from '@filigran/ui/servers';
+import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ export interface ShareableResourceConnectorCardProps {
   shareLinkUrl: string;
   serviceInstance: ShareableServiceInstance;
   detailUrl: string;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
   publicPath?: boolean;
 }
 
@@ -48,7 +48,7 @@ const ShareableResourceConnectorCard: FunctionComponent<
   publicPath = false,
 }) => {
   const t = useTranslations();
-  const connectorMetadata = getIngestionConnectorMetadata(
+  const connectorMetadata = getIntegrationSubTypeMetadata(
     shareableConnector.integration_subtype
   );
 

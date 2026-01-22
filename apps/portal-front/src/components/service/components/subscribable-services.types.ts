@@ -1,11 +1,23 @@
 import {
-  CsvFeedForm,
-  CsvFeedFormValues,
-} from '@/components/service/csv-feeds/[serviceInstanceId]/csv-feed-form';
-import {
   CustomDashboardForm,
   CustomDashboardFormValues,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
+import {
+  CsvFeedForm,
+  CsvFeedFormValues,
+} from '@/components/service/integrations/forms/csv-feed-form';
+import {
+  StreamForm,
+  StreamFormValues,
+} from '@/components/service/integrations/forms/stream-form';
+import {
+  TaxiiFeedForm,
+  TaxiiFeedFormValues,
+} from '@/components/service/integrations/forms/taxii-feed-form';
+import {
+  ThirdPartyIntegrationForm,
+  ThirdPartyIntegrationFormValues,
+} from '@/components/service/integrations/forms/third-party-integration-form';
 import {
   OpenaevScenarioForm,
   OpenAEVScenarioFormValues,
@@ -13,9 +25,15 @@ import {
 
 export type ServiceFormValues =
   | CsvFeedFormValues
+  | TaxiiFeedFormValues
+  | StreamFormValues
   | OpenAEVScenarioFormValues
-  | CustomDashboardFormValues;
+  | CustomDashboardFormValues
+  | ThirdPartyIntegrationFormValues;
 export type ServiceForm =
   | typeof CsvFeedForm
+  | typeof TaxiiFeedForm
+  | typeof StreamForm
   | typeof OpenaevScenarioForm
-  | typeof CustomDashboardForm;
+  | typeof CustomDashboardForm
+  | typeof ThirdPartyIntegrationForm;

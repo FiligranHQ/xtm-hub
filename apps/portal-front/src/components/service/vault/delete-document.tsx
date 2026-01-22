@@ -1,6 +1,6 @@
 import { DocumentDeleteMutation } from '@/components/service/document/document.graphql';
 import { IconActionContext } from '@/components/ui/icon-actions';
-import { useToast } from 'filigran-ui';
+import { useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { useMutation } from 'react-relay';

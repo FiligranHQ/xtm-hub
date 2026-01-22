@@ -3,8 +3,7 @@
 import { SelectWithEditableField } from '@/components/service/registration/select-with-editable-field';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
-import { CheckIndeterminateIcon } from 'filigran-icon';
+import { CheckIndeterminateIcon } from '@filigran/icon';
 import {
   AutoForm,
   Button,
@@ -12,7 +11,8 @@ import {
   FormLabel,
   FormMessage,
   toast,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';

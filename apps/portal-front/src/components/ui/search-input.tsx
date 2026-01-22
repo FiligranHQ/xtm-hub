@@ -1,5 +1,5 @@
-import { SearchIcon } from 'filigran-icon';
-import { Input, InputProps } from 'filigran-ui/servers';
+import { SearchIcon } from '@filigran/icon';
+import { Input, InputProps } from '@filigran/ui/servers';
 import { FunctionComponent } from 'react';
 
 export const SearchInput: FunctionComponent<InputProps> = (props) => {

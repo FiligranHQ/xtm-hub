@@ -4,9 +4,6 @@ import { translateServiceDefinitionIdentifier } from '@/components/registration/
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
-import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   FileInput,
@@ -19,7 +16,10 @@ import {
   Input,
   SheetFooter,
   useToast,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
+import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';

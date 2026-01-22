@@ -1,6 +1,6 @@
 import useDecodedQuery from '@/hooks/useDecodedQuery';
-import { VpnKeyIcon } from 'filigran-icon';
-import { Button } from 'filigran-ui';
+import { VpnKeyIcon } from '@filigran/icon';
+import { Button } from '@filigran/ui';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
 

@@ -1,20 +1,20 @@
 import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibilityTranslationKey';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
 import { cn } from '@/lib/utils';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { CheckIndeterminateIcon } from 'filigran-icon';
+import { CheckIndeterminateIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
+} from '@filigran/ui/clients';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
 interface DisplayVersionCardProps {
-  requiredProductVersion?: string;
-  product_version: string;
+  requiredProductVersion?: string | null;
+  product_version?: string | null;
   className?: string;
 }
 export const DisplayVersionCard: FunctionComponent<DisplayVersionCardProps> = ({

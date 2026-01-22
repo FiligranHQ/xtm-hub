@@ -17,6 +17,51 @@ export async function seed(knex) {
         key: 'integration_type',
         value: 'csv_feed',
       },
+      {
+        document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
+        key: 'integration_type',
+        value: 'taxii_feed',
+      },
+      {
+        document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
+        key: 'integration_subtype',
+        value: 'NATIVE',
+      },
+      {
+        document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
+        key: 'integration_type',
+        value: 'stream',
+      },
+      {
+        document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
+        key: 'integration_subtype',
+        value: 'NATIVE',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'integration_type',
+        value: 'third_party_integration',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'integration_subtype',
+        value: 'ORCHESTRATION',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'vendor_url',
+        value: 'http://vendor.url',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'github_url',
+        value: 'http://github.com',
+      },
+      {
+        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
+        key: 'product_version',
+        value: '1.2.3',
+      },
     ])
     .onConflict(['document_id', 'key'])
     .ignore();

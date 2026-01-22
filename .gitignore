@@ -2,6 +2,7 @@
 .idea
 *.iml
 .zed
+.rules
 
 # System files
 *~
@@ -12,3 +13,4 @@
 .pnp.loader.mjs
 
 /node_modules/
+/.nx/

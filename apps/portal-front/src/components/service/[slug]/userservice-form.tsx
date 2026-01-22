@@ -10,12 +10,6 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { useUsersList } from '@/hooks/useUsersList';
 import { emailRegex } from '@/lib/regexs';
 import { DEBOUNCE_TIME } from '@/utils/constant';
-import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
-import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
-import { userList_fragment$key } from '@generated/userList_fragment.graphql';
-import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
-import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Checkbox,
@@ -33,7 +27,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
   useToast,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
+import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
+import { userList_fragment$key } from '@generated/userList_fragment.graphql';
+import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
+import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';

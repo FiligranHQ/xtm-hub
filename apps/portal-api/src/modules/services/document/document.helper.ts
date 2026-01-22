@@ -1,4 +1,9 @@
-import { dbUnsecure } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
+import {
+  DocumentMetadata as DocumentMetadataResolverType,
+  IntegrationType,
+  ServiceDefinitionIdentifier,
+} from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -8,12 +13,28 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { OptionalMetadata } from '../../../utils/metadata';
 import { WithLabels } from '../../../utils/types';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
+import {
+  CUSTOM_DASHBOARD_METADATA,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+} from '../custom-dashboards/custom-dashboards.domain';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import {
+  INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_STREAM_METADATA,
+  INTEGRATION_TAXII_FEED_METADATA,
+  INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
+  isIntegrationType,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../integrations/integrations.model';
+import {
+  OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  OPENAEV_SCENARIO_METADATA,
+} from '../openaev-scenarios/openaev-scenarios.domain';
 import { DocumentApp } from './document.app';
 import { Upload } from './document.uploads.helper';
 import { DocumentDomain } from './domain/document.domain';
@@ -28,6 +49,108 @@ export type Document = WithLabels<DocumentModel>;
 export type FullDocumentMutator = Partial<DocumentModel> & {
   labels?: string[];
   parent_document_id?: DocumentId;
+};
+
+type ManageableServiceDefinition =
+  | ServiceDefinitionIdentifier.OpenctiIntegrations
+  | ServiceDefinitionIdentifier.OpenctiCustomDashboards
+  | ServiceDefinitionIdentifier.OpenaevScenarios
+  | ServiceDefinitionIdentifier.Vault;
+
+const VAULT_DOCUMENT_TYPE = 'vault';
+
+const DocumentTypeMappedByServiceDefinition: Record<
+  ManageableServiceDefinition,
+  string
+> = {
+  [ServiceDefinitionIdentifier.OpenctiIntegrations]:
+    OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
+    OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.OpenaevScenarios]:
+    OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.Vault]: VAULT_DOCUMENT_TYPE,
+};
+
+const DocumentMetadataMappedByServiceIdentifier: Record<
+  ManageableServiceDefinition,
+  (metadata: DocumentMetadataResolverType[]) => OptionalMetadata[]
+> = {
+  [ServiceDefinitionIdentifier.OpenctiCustomDashboards]: () =>
+    CUSTOM_DASHBOARD_METADATA,
+  [ServiceDefinitionIdentifier.OpenctiIntegrations]: (metadata) => {
+    const integrationTypeMetadata = metadata.find(
+      (data) => data.key === 'integration_type'
+    );
+    if (!integrationTypeMetadata) {
+      throw new Error(ErrorCode.DocumentMissingMetadata);
+    }
+
+    const integrationType = integrationTypeMetadata.value;
+    if (!isIntegrationType(integrationType)) {
+      logApp.error(`Integration type is not recognized: ${integrationType}`);
+      throw new Error(ErrorCode.IntegrationTypeNotRecognized);
+    }
+
+    const metadataKeysMapping: Partial<
+      Record<IntegrationType, OptionalMetadata[]>
+    > = {
+      [IntegrationType.CsvFeed]: INTEGRATION_CSV_FEED_METADATA,
+      [IntegrationType.TaxiiFeed]: INTEGRATION_TAXII_FEED_METADATA,
+      [IntegrationType.Stream]: INTEGRATION_STREAM_METADATA,
+      [IntegrationType.ThirdPartyIntegration]:
+        INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
+    };
+    if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
+      throw new Error(ErrorCode.IntegrationTypeNotManageable);
+    }
+
+    return metadataKeysMapping[integrationType];
+  },
+  [ServiceDefinitionIdentifier.OpenaevScenarios]: () =>
+    OPENAEV_SCENARIO_METADATA,
+  [ServiceDefinitionIdentifier.Vault]: () => [],
+};
+
+export const retrieveDocumentTypeAndMetadataKeys = async (
+  serviceInstanceId: ServiceInstanceId,
+  metadata: DocumentMetadataResolverType[]
+): Promise<{ documentType: string; metadataKeys: string[] }> => {
+  const serviceDefinition =
+    await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      serviceInstanceId
+    );
+  if (!serviceDefinition) {
+    throw new Error(ErrorCode.ServiceDefinitionNotFound);
+  }
+
+  const documentType: string | undefined =
+    DocumentTypeMappedByServiceDefinition[serviceDefinition.identifier];
+  if (!documentType) {
+    throw new Error(ErrorCode.ServiceNotManageable);
+  }
+
+  const metadataKeys: OptionalMetadata[] | undefined =
+    DocumentMetadataMappedByServiceIdentifier[serviceDefinition.identifier](
+      metadata
+    );
+  if (!metadataKeys) {
+    throw new Error(UnknownErrorCode.MissingMetadataMapping);
+  }
+  const missingMetadataKeys = metadataKeys.filter(
+    ({ key, optional }) =>
+      !optional && !metadata.some((meta) => meta.key === key)
+  );
+  if (missingMetadataKeys.length) {
+    logApp.error(
+      `Document is missing metadata keys: ${missingMetadataKeys.map(({ key }) => key).join(', ')}`
+    );
+    throw new Error(ErrorCode.DocumentMissingMetadata);
+  }
+  return {
+    documentType,
+    metadataKeys: metadataKeys.map(({ key }) => key),
+  };
 };
 
 export const getDocumentName = (documentName: string) => {
@@ -51,7 +174,7 @@ export const checkDocumentExists = async (
   documentName: string,
   serviceInstanceId: ServiceInstanceId
 ) => {
-  const documents: Document[] = await loadUnsecureDocumentsBy({
+  const documents: Document[] = await loadDocumentsBy({
     file_name: normalizeDocumentName(documentName),
     active: true,
     service_instance_id: serviceInstanceId,
@@ -59,10 +182,10 @@ export const checkDocumentExists = async (
   return documents.length > 0;
 };
 
-export const loadUnsecureDocumentsBy = async (
+export const loadDocumentsBy = async (
   field: DocumentMutator
 ): Promise<Document[]> => {
-  return dbUnsecure<Document[]>('Document').where(field).select('*');
+  return db<Document[]>('Document').where(field).select('*');
 };
 
 export const uploadNewFile = async (
@@ -95,11 +218,11 @@ export const uploadNewFile = async (
 };
 
 export const deleteDocuments = async () => {
-  return dbUnsecure<Document>('Document').delete('*');
+  return db<Document>('Document').delete('*');
 };
 
 export const deleteDocumentBy = async (field: DocumentMutator) => {
-  return dbUnsecure<Document>('Document').where(field).delete('*');
+  return db<Document>('Document').where(field).delete('*');
 };
 
 export const updateDocumentWithCounters = async <T extends Document>(

@@ -1,7 +1,7 @@
 import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 
-import CsvFeedPage from '../model/csvFeed.pageModel';
+import IntegrationPage from '../model/integration.pageModel';
 import RegisterPage, { PlatformDetails } from '../model/register.pageModel';
 import { HomePage } from '../model/home.pageModel';
 
@@ -21,13 +21,13 @@ const OPENCTI_PLATFORM_URL: PlatformDetails = {
 
 test.describe('One Click Deploy', () => {
   let loginPage: LoginPage;
-  let csvFeedPage: CsvFeedPage;
+  let csvFeedPage: IntegrationPage;
   let registerPage: RegisterPage;
   let homePage: HomePage;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
-    csvFeedPage = new CsvFeedPage(page);
+    csvFeedPage = new IntegrationPage(page);
     homePage = new HomePage(page);
     await loginPage.navigateToAndLogin();
     await page.waitForURL('/app');
@@ -39,13 +39,13 @@ test.describe('One Click Deploy', () => {
     );
 
     await homePage.navigateTo();
-    await csvFeedPage.subscribeCsvFeedService();
+    await csvFeedPage.subscribeIntegrationsService();
     await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
   });
 
   test('should send telemetry event', async ({ page }) => {
     await test.step('Deploy in OpenCTI button is visible', async () => {
-      await csvFeedPage.navigateToCsvFeed(CSV_FEED_TEST.shortDescription);
+      await csvFeedPage.navigateToIntegration(CSV_FEED_TEST.shortDescription);
       await expect(
         page.getByRole('heading', { name: CSV_FEED_TEST.name })
       ).toBeVisible();

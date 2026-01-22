@@ -1,5 +1,5 @@
 import { getOrganizations } from '@/components/organization/organization.service';
-import { Combobox } from 'filigran-ui/clients';
+import { Combobox } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 

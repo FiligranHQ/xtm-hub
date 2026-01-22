@@ -8,8 +8,7 @@ import { SettingsContext } from '@/components/settings/env-portal-context';
 import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isEmpty } from '@/lib/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteIcon } from 'filigran-icon';
+import { DeleteIcon } from '@filigran/icon';
 import {
   Form,
   FormControl,
@@ -19,8 +18,9 @@ import {
   FormMessage,
   Label,
   SheetFooter,
-} from 'filigran-ui/clients';
-import { Button, Input } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Button, Input } from '@filigran/ui/servers';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -164,7 +164,7 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
         <div
           className={cn(
             '!mt-m px-l py-s space-y-s',
-            fields.length > 0 && 'border border-primary rounded'
+            fields.length > 0 && 'border bg-card rounded'
           )}>
           {fields.map((field, index) => {
             return (

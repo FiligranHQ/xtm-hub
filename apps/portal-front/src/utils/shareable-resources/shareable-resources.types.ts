@@ -1,5 +1,4 @@
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
@@ -8,7 +7,6 @@ import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
   | customDashboardsItem_fragment$data
-  | csvFeedsItem_fragment$data
   | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
   | SeoIntegration
@@ -22,7 +20,6 @@ export type PublicShareableResource =
   | SeoOpenAEVScenario;
 
 export type SubscribableResource =
-  | csvFeedsItem_fragment$data
   | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
   | customDashboardsItem_fragment$data;

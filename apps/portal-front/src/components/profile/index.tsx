@@ -12,7 +12,7 @@ import {
 import { RequestTransferPersonalSpace } from '@/components/profile/form/request-transfer-personal-space';
 import { ProfileFormResetPassword } from '@/components/profile/form/reset-password';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { toast } from 'filigran-ui';
+import { toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useState } from 'react';
 import { useMutation } from 'react-relay';

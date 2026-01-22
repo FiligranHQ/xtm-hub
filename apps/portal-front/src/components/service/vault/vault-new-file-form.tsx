@@ -4,8 +4,6 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { documentExistsQuery } from '@generated/documentExistsQuery.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import {
   Button,
   FileInput,
@@ -18,7 +16,9 @@ import {
   FormMessage,
   SheetFooter,
   Textarea,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { documentExistsQuery } from '@generated/documentExistsQuery.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';

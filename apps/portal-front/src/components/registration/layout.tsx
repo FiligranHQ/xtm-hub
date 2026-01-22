@@ -1,5 +1,5 @@
 import { RegistrationContext } from '@/components/registration/context';
-import { Button } from 'filigran-ui/servers';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
 

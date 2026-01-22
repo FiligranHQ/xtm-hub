@@ -9,11 +9,9 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db, dbUnsecure } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
-  contextAdminOrgaThales,
   contextAdminUser,
-  contextSimpleUserThales,
   FILIGRAN_ORGA_ID,
   requestContextAdminUser,
   requestContextSimpleUserThales,
@@ -270,7 +268,7 @@ describe('Registration app', () => {
 
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
-        const call = registrationApp.registerPlatform(contextAdminUser, {
+        const call = registrationApp.registerPlatform({
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
@@ -285,7 +283,7 @@ describe('Registration app', () => {
       });
 
       it('should throw when platformUrl is not valid', async () => {
-        const call = registrationApp.registerPlatform(contextAdminUser, {
+        const call = registrationApp.registerPlatform({
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             ...platform,
@@ -302,27 +300,18 @@ describe('Registration app', () => {
 
     it('should throw when user does not belong to the organization', async () => {
       requestContext.set(requestContextThalesUser);
-      const call = registrationApp.registerPlatform(
-        {
-          ...contextAdminOrgaThales,
-          user: {
-            ...contextAdminOrgaThales.user,
-            capabilities: [],
-          },
-        },
-        {
-          organizationId: FILIGRAN_ORGA_ID,
-          platform,
-          identifier: PlatformIdentifier.Opencti,
-        }
-      );
+      const call = registrationApp.registerPlatform({
+        organizationId: FILIGRAN_ORGA_ID,
+        platform,
+        identifier: PlatformIdentifier.Opencti,
+      });
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
 
     it('should throw when user does not have the required capabilities', async () => {
       requestContext.set(requestContextSimpleUserThales);
-      const call = registrationApp.registerPlatform(contextSimpleUserThales, {
+      const call = registrationApp.registerPlatform({
         organizationId: THALES_ORGA_ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -334,7 +323,7 @@ describe('Registration app', () => {
     });
 
     it('return token when platform is registered', async () => {
-      const token = await registrationApp.registerPlatform(contextAdminUser, {
+      const token = await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -351,7 +340,7 @@ describe('Registration app', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await registrationApp.registerPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -367,6 +356,7 @@ describe('Registration app', () => {
         platform_contract: 'EE',
         platform_version: 'X.Y.Z',
         platform_id: platform.id,
+        platform_url: platform.url,
         target_product: TelemetryTargetProduct.OPEN_CTI,
         organization_type: 'Professional',
       });
@@ -379,7 +369,7 @@ describe('Registration app', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await registrationApp.registerPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
         identifier: PlatformIdentifier.Openaev,
@@ -395,6 +385,7 @@ describe('Registration app', () => {
         platform_contract: 'EE',
         platform_version: 'X.Y.Z',
         platform_id: platform.id,
+        platform_url: platform.url,
         target_product: TelemetryTargetProduct.OPEN_AEV,
         organization_type: 'Professional',
       });
@@ -417,14 +408,14 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not belong to the organization', async () => {
-      await registrationApp.registerPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
       requestContext.set(requestContextThalesUser);
-      const call = registrationApp.unregisterPlatform(contextAdminOrgaThales, {
+      const call = registrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -434,14 +425,14 @@ describe('Registration app', () => {
 
     it('should throw when user does not have the required capabilities', async () => {
       requestContext.set(requestContextThalesUser);
-      await registrationApp.registerPlatform(contextAdminOrgaThales, {
+      await registrationApp.registerPlatform({
         organizationId: THALES_ORGA_ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
       requestContext.set(requestContextSimpleUserThales);
-      const call = registrationApp.unregisterPlatform(contextSimpleUserThales, {
+      const call = registrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -452,13 +443,13 @@ describe('Registration app', () => {
     });
 
     it('should throw when identifier is not the right type', async () => {
-      await registrationApp.registerPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const call = registrationApp.unregisterPlatform(contextAdminUser, {
+      const call = registrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Openaev,
       });
@@ -467,13 +458,13 @@ describe('Registration app', () => {
     });
 
     it('should unregister platform when the platform is still active', async () => {
-      await registrationApp.registerPlatform(contextAdminUser, {
+      await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterPlatform(contextAdminUser, {
+      await registrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -486,7 +477,7 @@ describe('Registration app', () => {
         ServiceConfigurationStatus.Inactive
       );
 
-      const subscription = await dbUnsecure<Subscription>('Subscription')
+      const subscription = await db<Subscription>('Subscription')
         .where(
           'service_instance_id',
           '=',
@@ -538,7 +529,7 @@ describe('Registration app', () => {
     it('should throw an error when configuration for platform does not exist', async () => {
       loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnregisterPlatform(contextAdminUser, {
+      const call = registrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -551,7 +542,7 @@ describe('Registration app', () => {
       );
       loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnregisterPlatform(contextAdminUser, {
+      const call = registrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -570,10 +561,9 @@ describe('Registration app', () => {
         Promise.resolve({ organization_id: organizationId })
       );
 
-      const result = await registrationApp.canUnregisterPlatform(
-        contextAdminUser,
-        { platformId }
-      );
+      const result = await registrationApp.canUnregisterPlatform({
+        platformId,
+      });
 
       expect(result.isAllowed).toBeTruthy();
       expect(result.organizationId).toBe(organizationId);
@@ -591,10 +581,9 @@ describe('Registration app', () => {
         Promise.resolve({ isAllowed: false, isInOrganization: false })
       );
 
-      const result = await registrationApp.canUnregisterPlatform(
-        contextAdminUser,
-        { platformId }
-      );
+      const result = await registrationApp.canUnregisterPlatform({
+        platformId,
+      });
 
       expect(result.isAllowed).toBeFalsy();
       expect(result.isInOrganization).toBeFalsy();
@@ -616,7 +605,7 @@ describe('Registration app', () => {
 
     it('should return active when platform is registered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform(contextAdminUser, {
+      const token = await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform: {
           id: platformId,
@@ -690,7 +679,7 @@ describe('Registration app', () => {
 
       it('should return active when platform is registered and update version', async () => {
         const platformId = uuidv4();
-        const token = await registrationApp.registerPlatform(contextAdminUser, {
+        const token = await registrationApp.registerPlatform({
           organizationId: PLATFORM_ORGANIZATION_UUID,
           platform: {
             id: platformId,
@@ -724,7 +713,7 @@ describe('Registration app', () => {
 
     it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform(contextAdminUser, {
+      const token = await registrationApp.registerPlatform({
         organizationId: PLATFORM_ORGANIZATION_UUID,
         platform: {
           id: platformId,
@@ -736,7 +725,7 @@ describe('Registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterPlatform(contextAdminUser, {
+      await registrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -755,17 +744,20 @@ describe('Registration app', () => {
   describe('refreshUserPlatformToken', () => {
     it('should generate a token and add it to the user each time it is called', async () => {
       requestContext.set(requestContextAdminUser);
-      const { token } =
-        await registrationApp.refreshUserPlatformToken(contextAdminUser);
-      const user = await dbUnsecure<UserLoadUserBy>('User')
+      const { token } = await registrationApp.refreshUserPlatformToken(
+        contextAdminUser.user.id
+      );
+      const user = await db<UserLoadUserBy>('User')
         .where({ id: contextAdminUser.user.id })
         .first();
 
       expect(token).toBe(user.platform_token);
 
       const { token: anotherToken } =
-        await registrationApp.refreshUserPlatformToken(contextAdminUser);
-      const updatedUser = await dbUnsecure<UserLoadUserBy>('User')
+        await registrationApp.refreshUserPlatformToken(
+          contextAdminUser.user.id
+        );
+      const updatedUser = await db<UserLoadUserBy>('User')
         .where({ id: contextAdminUser.user.id })
         .first();
 
@@ -956,6 +948,7 @@ describe('Registration app', () => {
           platform_contract: PlatformContract.Trial,
           platform_id: platformConfiguration.id,
           platform_version: platformConfiguration.version,
+          platform_url: platformConfiguration.url,
           source: TELEMETRY_SOURCE,
           target_product: 'open-cti',
           user_id: THALES_SIMPLE_USER_ID,

@@ -1,17 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SERVICE_INTEGRATIONS_ID } from '../../../../tests/tests.const';
 import { IntegrationType } from '../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../model/kanel/public/Document';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from '../document/document.app';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { integrationsApp } from './integrations.app';
-import {
-  CsvFeed,
-  INTEGRATION_CSV_FEED_METADATA,
-  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from './integrations.model';
+import { INTEGRATION_SERVICE_INSTANCE_ID } from './integrations.model';
 
 describe('csv feeds app', () => {
   const minioFileMock = {
@@ -26,7 +20,20 @@ describe('csv feeds app', () => {
   });
 
   it('SeoCsvFeed should return the document with elastic search counters', async () => {
-    const documentId = 'b90555a3-d194-4b54-af86-5e6568cc9ce0' as DocumentId;
+    await DocumentApp.createDocument(
+      {
+        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        name: 'myCsvFeed',
+        description: 'description',
+        short_description: 'short_description',
+        slug: 'myCsvFeed',
+        active: true,
+      },
+      [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+      INTEGRATION_SERVICE_INSTANCE_ID,
+      []
+    );
+
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {
         if (
@@ -38,24 +45,6 @@ describe('csv feeds app', () => {
           return 13;
         return 0; // default
       }
-    );
-
-    await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-      {
-        id: documentId,
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-        name: 'myCsvFeed',
-        slug: 'myCsvFeed',
-        description: 'description',
-        minio_name: 'minioName',
-        file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_ID,
-        integration_type: IntegrationType.CsvFeed,
-        active: true,
-      },
-      [],
-      INTEGRATION_CSV_FEED_METADATA
     );
 
     const documentLoaded =

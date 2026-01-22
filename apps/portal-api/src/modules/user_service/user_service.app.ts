@@ -1,45 +1,88 @@
-import { withTransaction } from '../../context/database.context';
-import Subscription from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import {
+  SubscriptionId,
+  SubscriptionMutator,
+} from '../../model/kanel/public/Subscription';
+import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
-import {
-  getOrCreateUser,
-  insertUserIntoOrganization,
-} from '../users/users.helper';
-import {
-  createUserServiceAccess,
-  isUserServiceExist,
-} from './user-service.helper';
+import { ErrorCode } from '../../utils/error/error.code';
+import { SubscriptionDomain } from '../subcription/subscription.domain';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
+import { loadUserBy } from '../users/users.domain';
+import { UserServiceDomain } from './user_service.domain';
 
-export const userServiceApp = {
-  addUserService: async (
-    subscription: Subscription,
+export const UserServiceApp = {
+  addYourselfInUserService: async (
+    organizationId: OrganizationId,
+    serviceInstanceId: ServiceInstanceId,
     emails: string[],
     capabilities: string[]
   ): Promise<UserService[]> => {
-    const userServices: UserService[] = [];
-    return await withTransaction(async () => {
-      for (const email of emails) {
-        const user = await getOrCreateUser({
-          email: email,
-        });
+    const [subscription] =
+      await loadSubscriptionWithOrganizationAndCapabilitiesBy({
+        'Subscription.organization_id': organizationId,
+        'Subscription.service_instance_id': serviceInstanceId,
+      } as SubscriptionMutator);
 
-        await insertUserIntoOrganization(user, subscription.id);
-        const userServiceAlreadyExist = await isUserServiceExist(
-          user.id as UserId,
-          subscription.id
-        );
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
 
-        if (!userServiceAlreadyExist) {
-          const createdUserService = await createUserServiceAccess({
-            subscription_id: subscription.id,
-            user_id: user.id as UserId,
-            capabilities: capabilities,
-          });
-          userServices.push(createdUserService);
-        }
-      }
-      return userServices;
-    });
+    return UserServiceDomain.addServiceToUsers(
+      subscription,
+      emails,
+      capabilities
+    );
+  },
+
+  addUserService: async (
+    user: User,
+    subscriptionId: SubscriptionId,
+    emails: string[],
+    capabilities: string[]
+  ): Promise<UserService[]> => {
+    if (emails.some((email) => email === user.email)) {
+      throw new Error(ErrorCode.CantSubscribeYourself);
+    }
+    const [subscription] =
+      await loadSubscriptionWithOrganizationAndCapabilitiesBy({
+        'Subscription.id': subscriptionId,
+      } as SubscriptionMutator);
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
+
+    return UserServiceDomain.addServiceToUsers(
+      subscription,
+      emails,
+      capabilities
+    );
+  },
+
+  deleteUserService: async (email: string, subscriptionId: SubscriptionId) => {
+    const userToDelete = await loadUserBy({ email });
+    const deletedUserService = await UserServiceDomain.deleteUserService(
+      userToDelete.id,
+      subscriptionId
+    );
+    if (!deletedUserService) {
+      return;
+    }
+    // Find subscription and remove it if no other userServices
+    const usersServices =
+      await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
+        subscription_id: deletedUserService?.subscription_id,
+      });
+
+    if (usersServices.length === 0) {
+      const [subscription] =
+        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
+          'Subscription.id': deletedUserService?.subscription_id,
+        } as SubscriptionMutator);
+      await SubscriptionDomain.deleteSubscription(subscription.id);
+    }
+
+    return deletedUserService;
   },
 };

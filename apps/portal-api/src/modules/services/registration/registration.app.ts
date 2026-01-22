@@ -29,7 +29,7 @@ import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../../model/portal-context';
+import { UserId } from '../../../model/kanel/public/User';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
@@ -53,7 +53,7 @@ import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
-  loadUnsecureUser,
+  loadUser,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
@@ -197,13 +197,15 @@ export const registrationApp = {
     };
   },
 
-  registerPlatform: async (
-    context: PortalContext,
-    { organizationId, platform, identifier }: RegisterPlatformInput
-  ): Promise<string> => {
+  registerPlatform: async ({
+    organizationId,
+    platform,
+    identifier,
+  }: RegisterPlatformInput): Promise<string> => {
+    const { user } = requestContext.require();
     const token = uuidv4();
     const configuration: PlatformConfiguration = {
-      registerer_id: context.user.id,
+      registerer_id: user.id,
       platform_id: platform.id,
       platform_url: platform.url,
       platform_title: platform.title,
@@ -275,11 +277,12 @@ export const registrationApp = {
 
       const registerEvent = buildRegisterEvent(
         selectedOrga,
-        context.user.id,
+        user.id,
         identifier,
         platform.id,
         platform.contract,
-        platform.version
+        platform.version,
+        platform.url
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
@@ -291,10 +294,10 @@ export const registrationApp = {
     return token;
   },
 
-  unregisterPlatform: async (
-    context: PortalContext,
-    { platformId, identifier }: UnregisterPlatformInput
-  ) => {
+  unregisterPlatform: async ({
+    platformId,
+    identifier,
+  }: UnregisterPlatformInput) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         platformId,
@@ -326,8 +329,8 @@ export const registrationApp = {
     if (identifier !== platformIdentifier) {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
-
-    await securityGuard.assertUserIsAllowedOnOrganization(context.user, {
+    const { user } = requestContext.require();
+    await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId: subscription.organization_id,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -390,10 +393,9 @@ export const registrationApp = {
     };
   },
 
-  canUnregisterPlatform: async (
-    context: PortalContext,
-    { platformId }: CanUnregisterPlatformInput
-  ): Promise<{
+  canUnregisterPlatform: async ({
+    platformId,
+  }: CanUnregisterPlatformInput): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId;
     isInOrganization: boolean;
@@ -420,9 +422,9 @@ export const registrationApp = {
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
-
+    const { user } = requestContext.require();
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context.user,
+      user,
       {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -437,11 +439,10 @@ export const registrationApp = {
   },
 
   refreshUserPlatformToken: async (
-    context: PortalContext
+    userId: UserId
   ): Promise<RefreshUserPlatformTokenResponse> => {
     const token = uuidv4();
-
-    await updateUser(context.user.id, { platform_token: token });
+    await updateUser(userId, { platform_token: token });
 
     return { token };
   },
@@ -487,7 +488,8 @@ export const registrationApp = {
         deploymentRequest.platform_identifier,
         platform.id,
         platform.contract,
-        platform.version
+        platform.version,
+        platform.url
       );
       telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
@@ -496,7 +498,7 @@ export const registrationApp = {
       });
     }
     try {
-      const [user] = await loadUnsecureUser({
+      const [user] = await loadUser({
         id: deploymentRequest.user_requester_id,
       });
 

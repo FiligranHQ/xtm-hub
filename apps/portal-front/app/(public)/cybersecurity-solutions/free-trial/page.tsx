@@ -4,8 +4,8 @@ import { TrialsLearnMore } from '@/components/service/trial-instances/trials-lea
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { APP_PATH } from '@/utils/path/constant';
+import { GradientButton } from '@filigran/ui/servers';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
-import { GradientButton } from 'filigran-ui/servers';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import React from 'react';

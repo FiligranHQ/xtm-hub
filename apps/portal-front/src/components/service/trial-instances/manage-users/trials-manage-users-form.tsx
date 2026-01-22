@@ -2,14 +2,6 @@ import { UserFragment } from '@/components/admin/user/user-list';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { serviceGroupFragment } from '@/components/service/service-group.graphql';
 import { useUsersList } from '@/hooks/useUsersList';
-import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { serviceGroup_fragment$key } from '@generated/serviceGroup_fragment.graphql';
-import ServiceGroupsByServiceInstanceIdQueryGraphql, {
-  serviceGroupsByServiceInstanceIdQuery,
-} from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
-import ServiceGroupsUpdateMutationGraphql from '@generated/serviceGroupsUpdateMutation.graphql';
-import { userList_fragment$key } from '@generated/userList_fragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -18,8 +10,16 @@ import {
   FormLabel,
   SheetFooter,
   toast,
-} from 'filigran-ui';
-import { MultiSelectFormField } from 'filigran-ui/clients';
+} from '@filigran/ui';
+import { MultiSelectFormField } from '@filigran/ui/clients';
+import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import { serviceGroup_fragment$key } from '@generated/serviceGroup_fragment.graphql';
+import ServiceGroupsByServiceInstanceIdQueryGraphql, {
+  serviceGroupsByServiceInstanceIdQuery,
+} from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
+import ServiceGroupsUpdateMutationGraphql from '@generated/serviceGroupsUpdateMutation.graphql';
+import { userList_fragment$key } from '@generated/userList_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';

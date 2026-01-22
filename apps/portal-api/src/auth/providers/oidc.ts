@@ -5,6 +5,7 @@ import {
   Issuer as OpenIDIssuer,
   Strategy as OpenIDStrategy,
 } from 'openid-client';
+import { loadRolePortalsBySSOGroups } from '../../modules/role-portal/role-portal.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { providerLoginHandler } from '../login-handle';
 import { extractRole } from '../mapping-roles';
@@ -40,10 +41,16 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
     const openIDStrategy = new OpenIDStrategy(
       options,
       async (_, tokenSet, userinfo, done) => {
-        const roles = extractRole(
+        const extractedRoles = extractRole(
           userinfo['https://xtm-hub-development/roles'] as string[]
         );
+        const loadedRolesFromSSOGroup = await loadRolePortalsBySSOGroups(
+          userinfo['https://xtm-hub-development/groups'] as string[]
+        );
 
+        const rolePortal = loadedRolesFromSSOGroup.roles ?? [];
+
+        const roles = [...new Set([...extractedRoles, ...rolePortal])];
         const {
           email,
           nickname: first_name,
@@ -66,16 +73,7 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
         done(null, tokenSet.claims());
       }
     );
-    // openIDStrategy.logout = (_, callback) => {
-    //   const isSpecificUri = isNotEmptyField(config.logout_callback_url);
-    //   const endpointUri = issuer.end_session_endpoint ? issuer.end_session_endpoint : `${config.issuer}/oidc/logout`;
-    //   if (isSpecificUri) {
-    //     const logoutUri = `${endpointUri}?post_logout_redirect_uri=${config.logout_callback_url}`;
-    //     callback(null, logoutUri);
-    //   } else {
-    //     callback(null, endpointUri);
-    //   }
-    // };
+
     passport.use(providerRef, openIDStrategy);
 
     passport.serializeUser(function (user, done) {

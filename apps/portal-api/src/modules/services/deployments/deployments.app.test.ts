@@ -35,6 +35,7 @@ import {
   PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
   SYSTEM_USER_UUID,
+  XTM_HUB_SUPPORT_EMAIL,
 } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
@@ -44,7 +45,7 @@ import {
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
+import { deleteSubscription } from '../../subcription/subscription.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
@@ -78,7 +79,7 @@ describe('Deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await deleteServiceInstanceBy({});
-    await deleteSubscriptionUnsecure({});
+    await deleteSubscription({});
     vi.resetAllMocks();
   });
 
@@ -345,7 +346,7 @@ describe('Deployment app', () => {
         });
 
         expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: [DEFAULT_ADMIN_EMAIL],
+          to: XTM_HUB_SUPPORT_EMAIL,
           template: 'admin_saas_instance_requested',
           params: {
             activitySector: 'cybersecurity',
@@ -384,7 +385,7 @@ describe('Deployment app', () => {
         });
 
         expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: [DEFAULT_ADMIN_EMAIL],
+          to: XTM_HUB_SUPPORT_EMAIL,
           template: 'admin_saas_instance_requested',
           params: {
             activitySector: 'cybersecurity',

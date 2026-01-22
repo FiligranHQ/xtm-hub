@@ -1,9 +1,9 @@
-import { getIngestionConnectorMetadata } from '@/components/connectors/connector.utils';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import { roundToNearest } from '@/lib/utils';
-import { LogoGitIcon, OpenInNewIcon } from 'filigran-icon';
-import { Badge, Button } from 'filigran-ui/servers';
+import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
+import { Badge, Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';
@@ -14,8 +14,9 @@ export interface ShareableResourceConnectorDetailsProps {
     name: string;
     source_code?: string | null;
     subscription_link?: string | null;
+    integration_type?: string | null;
     integration_subtype?: string | null;
-    product_version?: string;
+    product_version?: string | null;
     share_number?: number | null;
     manager_supported?: boolean;
   };
@@ -27,7 +28,7 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
 > = ({ connectorDetails, compatibilityItem }) => {
   const t = useTranslations();
 
-  const connectorMetadata = getIngestionConnectorMetadata(
+  const connectorMetadata = getIntegrationSubTypeMetadata(
     connectorDetails?.integration_subtype ?? undefined
   );
 
@@ -66,8 +67,21 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
           </Button>
         </ShareableResourceDetailItem>
       )}
+      {connectorDetails.integration_type && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.IntegrationType')}>
+          <div className="flex items-center gap-s">
+            <span>
+              {t(
+                `Service.OpenctiIntegrations.Type.${connectorDetails.integration_type}`
+              )}
+            </span>
+          </div>
+        </ShareableResourceDetailItem>
+      )}
       {connectorMetadata && (
-        <ShareableResourceDetailItem label={t('Service.Connectors.Type')}>
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.IntegrationSubType')}>
           <span>
             <Badge
               className="mr-auto"

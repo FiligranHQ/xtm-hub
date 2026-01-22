@@ -6,10 +6,10 @@ import {
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
-import { UnknownErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -28,56 +28,51 @@ import {
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
-  loadUnsecureDocumentsBy,
+  loadDocumentsBy,
   normalizeDocumentName,
   updateDocumentWithCounters,
 } from './document.helper';
-import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
-    addDocument: async (
+    createDocument: async (
       _,
-      { document, parentDocumentId, service_instance_id, ...payload }
+      { input, document, serviceInstanceId, metadata }
     ) => {
       try {
-        await waitForUploads(document);
-        const extractedServiceInstanceId =
-          extractId<ServiceInstanceId>(service_instance_id);
-        const { minioName, fileName, mimeType } = await MinIOClient.createFile(
-          document,
-          extractedServiceInstanceId
-        );
-        return await DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
-          {
-            ...payload,
-            service_instance_id: extractedServiceInstanceId,
-            minio_name: minioName,
-            file_name: fileName,
-            mime_type: mimeType,
-            parent_document_id: parentDocumentId
-              ? extractId<DocumentId>(parentDocumentId)
-              : null,
-          },
-          []
+        return await DocumentApp.createDocument(
+          input,
+          metadata,
+          extractId<ServiceInstanceId>(serviceInstanceId),
+          document
         );
       } catch (error) {
-        console.error('Error while adding document:', error);
-        throw mapToGraphQLError(error, UnknownErrorCode.InsertDocumentError);
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
+            detail: error,
+          });
+        }
+        throw mapToGraphQLError(error, UnknownErrorCode.DocumentCreateError);
       }
     },
-    editDocument: async (_, { documentId, input }) => {
+    updateDocument: async (_, input) => {
       try {
         return await DocumentApp.updateDocument(
-          extractId<DocumentId>(documentId),
-          input,
-          []
+          extractId<DocumentId>(input.documentId),
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.metadata,
+          input
         );
       } catch (error) {
-        throw mapToGraphQLError(error, UnknownErrorCode.UpdateDocumentError);
+        if (error.message?.includes('document_type_slug_unique')) {
+          throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
+            detail: error,
+          });
+        }
+        throw mapToGraphQLError(error, UnknownErrorCode.DocumentUpdateError);
       }
     },
     deleteDocument: async (
@@ -96,7 +91,7 @@ const resolvers: Resolvers = {
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [document] = await loadUnsecureDocumentsBy({
+        const [document] = await loadDocumentsBy({
           id: extractId<DocumentId>(documentId),
         });
         const documentWithCounters = await updateDocumentWithCounters(document);
@@ -145,6 +140,9 @@ const resolvers: Resolvers = {
       const INTEGRATION_MAPPINGS = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
+        [IntegrationType.Stream]: 'Stream',
+        [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
       };
       if (TYPE_MAPPINGS[document.type]) {
         return TYPE_MAPPINGS[document.type];

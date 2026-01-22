@@ -11,23 +11,27 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { IconActions, IconActionsItem, IconActionsLink } from '@/components/ui/icon-actions';
+import {
+  IconActions,
+  IconActionsItem,
+  IconActionsLink,
+} from '@/components/ui/icon-actions';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
-import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
-import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { MoreVertIcon } from 'filigran-icon';
+import { MoreVertIcon } from '@filigran/icon';
 import {
   Button,
   Checkbox,
   DataTable,
   DataTableHeadBarOptions,
   useToast,
-} from 'filigran-ui';
+} from '@filigran/ui';
+import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
+import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
+import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
@@ -121,7 +125,8 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
                 href={`/${APP_PATH}/admin/service/${row.id}/subscription`}>
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
-              <IconActionsItem onClick={() => setRemoveSubscription(row.original)}>
+              <IconActionsItem
+                onClick={() => setRemoveSubscription(row.original)}>
                 {t('Utils.Delete')}
               </IconActionsItem>
             </IconActions>
@@ -239,7 +244,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
           actionButtonText={t('Service.Management.RemoveAccess')}
           variantName={'destructive'}
           isOpen={!!removeSubscription}
-          onOpenChange={(open) => setRemoveSubscription(open ? removeSubscription : undefined)}
+          onOpenChange={(open) =>
+            setRemoveSubscription(open ? removeSubscription : undefined)
+          }
           onClickContinue={() => {
             removeOrganization(removeSubscription);
             setRemoveSubscription(undefined);

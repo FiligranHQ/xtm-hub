@@ -1,8 +1,8 @@
 'use client';
 
 import { publicServiceInstanceToInstanceCardData } from '@/utils/services';
+import { Separator } from '@filigran/ui';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { Separator } from 'filigran-ui';
 import { Suspense } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 import useGetAction from './hooks/useGetAction';

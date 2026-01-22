@@ -9,9 +9,9 @@ import {
 import { PortalContext } from '@/components/me/app-portal-context';
 import { notificationPendingUserQueryFilters } from '@/components/notification/notification-button';
 import useAdminPath from '@/hooks/useAdminPath';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { userPendingListQuery } from '@generated/userPendingListQuery.graphql';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { createContext, FunctionComponent, useContext, useState } from 'react';

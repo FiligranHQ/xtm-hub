@@ -10,7 +10,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
+import { deleteSubscription } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -20,7 +20,7 @@ describe('Deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await deleteServiceInstanceBy({});
-    await deleteSubscriptionUnsecure({});
+    await deleteSubscription({});
   });
   describe('createDeploymentRequest', () => {
     it('should return the deployment request created', async () => {

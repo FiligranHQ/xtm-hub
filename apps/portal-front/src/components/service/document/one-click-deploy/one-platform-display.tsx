@@ -2,9 +2,9 @@ import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { AlertDialogTitle } from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
-import { AlertDialogTitle } from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
 import { useTranslations } from 'next-intl';
 
 interface OnePlatformDisplayProps {

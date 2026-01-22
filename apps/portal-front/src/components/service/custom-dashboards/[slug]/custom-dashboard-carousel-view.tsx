@@ -1,10 +1,10 @@
 'use client';
-import { Carousel, CarouselItem, DialogContent } from 'filigran-ui/clients';
+import { Carousel, CarouselItem, DialogContent } from '@filigran/ui/clients';
 import * as React from 'react';
 
+import { Dialog } from '@filigran/ui';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { Dialog } from 'filigran-ui';
 import Image from 'next/image';
 import { useState } from 'react';
 

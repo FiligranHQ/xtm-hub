@@ -16,12 +16,12 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
+import { Button } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
-import { Button } from 'filigran-ui/servers';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -286,7 +286,7 @@ const Page = async ({
             </h3>
             <section className="border rounded border-border-light bg-page-background">
               <h2 className="p-l">{document?.short_description}</h2>
-              <div className="p-l !bg-page-background">
+              <div className="p-l !bg-page-background markdown-content">
                 <MarkdownAsync>{document?.description ?? ''}</MarkdownAsync>
               </div>
             </section>

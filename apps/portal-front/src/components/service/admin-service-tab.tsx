@@ -9,17 +9,18 @@ import {
 import { SearchInput } from '@/components/ui/search-input';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { formatName } from '@/utils/format/name';
 import { APP_PATH } from '@/utils/path/constant';
+import { MoreVertIcon } from '@filigran/icon';
+import { Badge, Combobox, DataTable } from '@filigran/ui';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
-import { MoreVertIcon } from 'filigran-icon';
-import { Badge, Combobox, DataTable } from 'filigran-ui';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { RefetchFnDynamic } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -66,7 +67,9 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
             {row.original.service_definition?.identifier ===
               ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION && (
               <Badge>
-                {row.original.subscriptions?.[0]?.organization.name.toUpperCase()}
+                {formatName(
+                  row.original.subscriptions?.[0]?.organization.name ?? ''
+                )}
               </Badge>
             )}
 
@@ -129,17 +132,14 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     setOpen(true);
   };
 
-  const getServiceDefinitionData = useMemo(() => {
-    return serviceData
-      .map((service) => ({
-        value: service.service_definition?.identifier ?? '',
-        label: service.service_definition?.name ?? '',
-      }))
-      .filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.value === item.value)
-      );
-  }, [serviceData]);
+  const getServiceDefinitionData = Object.values(
+    ServiceDefinitionIdentifierEnum
+  ).map((value) => {
+    return {
+      label: t(`Service.ServiceDefinitionIdentifier.${value}`),
+      value: value,
+    };
+  });
 
   const handleInputChange = (inputValue: string) => {
     refetch({ searchTerm: inputValue });

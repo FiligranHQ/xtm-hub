@@ -1,15 +1,15 @@
 'use client';
 import { updateShareNumber } from '@/components/ui/share-link/share-link-actions';
 import usePublicPath from '@/hooks/usePublicPath';
-import { ShareIcon } from 'filigran-icon';
+import { ShareIcon } from '@filigran/icon';
 import {
   toast,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { graphql, useMutation } from 'react-relay';

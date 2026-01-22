@@ -22,7 +22,7 @@ import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
-  loadUnsecureUser,
+  loadUser,
   loadUserBy,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
@@ -58,7 +58,7 @@ export const UsersOrganizationApp = {
       throw ForbiddenAccess(ErrorCode.EmailOutsideOrganizationError);
     }
 
-    const [existingUser] = await loadUnsecureUser({ email: input.email });
+    const [existingUser] = await loadUser({ email: input.email });
 
     const user = await withTransaction(async () => {
       const user = existingUser
@@ -157,13 +157,15 @@ export const UsersOrganizationApp = {
                 adminName: formatName(adminUser.first_name ?? ''),
                 organizationName: organization.name,
                 userEmailList: organization.users
-                  .sort((a, b) => a.first_name.localeCompare(b.last_name))
+                  .sort((a, b) => a.first_name.localeCompare(b.first_name))
                   .map(
                     ({ first_name, last_name, email }) =>
                       `<li>${formatName(first_name)} ${formatName(last_name)} (${email})</li>`
                   )
                   .join(''),
                 userCount: organization.users.length,
+                requestLabel:
+                  organization.users.length === 1 ? 'request' : 'requests',
               },
             })
           )

@@ -5,8 +5,8 @@ import {
 import { ShareableResourceIncompatibleWarning } from '@/components/service/document/shareable-resource-incompatible-warning';
 import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibilityTranslationKey';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
+import { CheckIndeterminateIcon } from '@filigran/icon';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { CheckIndeterminateIcon } from 'filigran-icon';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 

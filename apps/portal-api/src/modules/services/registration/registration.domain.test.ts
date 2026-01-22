@@ -1,7 +1,7 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dbUnsecure } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import {
   PlatformContract,
@@ -61,9 +61,7 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      const serviceInstance = await dbUnsecure<ServiceInstance>(
-        'ServiceInstance'
-      )
+      const serviceInstance = await db<ServiceInstance>('ServiceInstance')
         .where('name', '=', 'OpenCTI Platform')
         .select('*')
         .first();
@@ -73,7 +71,7 @@ describe('Registration domain', () => {
         ServiceInstanceCreationStatus.Ready
       );
 
-      const subscription = await dbUnsecure<Subscription>('Subscription')
+      const subscription = await db<Subscription>('Subscription')
         .where('service_instance_id', '=', serviceInstance.id)
         .select('*')
         .first();
@@ -81,7 +79,7 @@ describe('Registration domain', () => {
       expect(subscription).toBeDefined();
       expect(subscription.organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
 
-      const serviceConfiguration = await dbUnsecure<ServiceConfiguration>(
+      const serviceConfiguration = await db<ServiceConfiguration>(
         'Service_Configuration'
       )
         .where('service_instance_id', '=', serviceInstance.id)
@@ -108,9 +106,7 @@ describe('Registration domain', () => {
         serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
       });
 
-      const serviceInstance = await dbUnsecure<ServiceInstance>(
-        'ServiceInstance'
-      )
+      const serviceInstance = await db<ServiceInstance>('ServiceInstance')
         .where('id', '=', serviceInstanceId)
         .select('*')
         .first();
@@ -120,7 +116,7 @@ describe('Registration domain', () => {
         ServiceInstanceCreationStatus.Pending
       );
 
-      const subscription = await dbUnsecure<Subscription>('Subscription')
+      const subscription = await db<Subscription>('Subscription')
         .where('service_instance_id', '=', serviceInstanceId)
         .select('*')
         .first();
@@ -128,7 +124,7 @@ describe('Registration domain', () => {
       expect(subscription).toBeDefined();
       expect(subscription.organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
 
-      const serviceConfiguration = await dbUnsecure<ServiceConfiguration>(
+      const serviceConfiguration = await db<ServiceConfiguration>(
         'Service_Configuration'
       )
         .where('service_instance_id', '=', serviceInstanceId)

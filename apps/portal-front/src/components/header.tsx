@@ -11,15 +11,15 @@ import { cn, isDevelopment } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
 import { NotificationButton } from '@/components/notification/notification-button';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { Avatar } from 'filigran-ui';
+import { Avatar } from '@filigran/ui';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from 'filigran-ui/clients';
+} from '@filigran/ui/clients';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { MenuIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';

@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import { contextAdminUser } from '../../../../tests/tests.const';
 import ObjectLabel, {
   ObjectLabelObjectId,
 } from '../../../model/kanel/public/ObjectLabel';
@@ -11,11 +10,9 @@ import { labelsDomain } from './labels.domain';
 
 describe('Labels app', () => {
   describe(`${labelsApp.loadOrCreateLabel.name}`, () => {
-    const context = contextAdminUser;
-
     beforeEach(async () => {
       // Clean up the Label table before each test
-      await db(context, 'Label').delete();
+      await db('Label').delete();
     });
 
     it('should create a new label when it does not exist', async () => {
@@ -25,7 +22,7 @@ describe('Labels app', () => {
       });
 
       // Verify the label was created
-      const label = await db(context, 'Label').where('id', newLabel.id).first();
+      const label = await db('Label').where('id', newLabel.id).first();
 
       expect(label.id).toBeDefined();
       expect(label.name).toBe('Test Label');
@@ -49,9 +46,7 @@ describe('Labels app', () => {
       expect(secondLabel.id).toBe(firstLabel.id);
 
       // Verify only one label exists with the original color
-      const labels = await db(context, 'Label')
-        .where('name', 'Existing Label')
-        .select();
+      const labels = await db('Label').where('name', 'Existing Label').select();
 
       expect(labels).toHaveLength(1);
       expect(labels[0].color).toBe('#00ff00'); // Original color preserved
@@ -82,7 +77,7 @@ describe('Labels app', () => {
       expect(mixedCaseLabel.id).toBe(lowercaseLabel.id);
 
       // Verify only one label exists with original name and color
-      const labels = await db(context, 'Label').select();
+      const labels = await db('Label').select();
       expect(labels).toHaveLength(1);
       expect(labels[0].name).toBe('test label'); // Original name preserved
       expect(labels[0].color).toBe('#aaaaaa'); // Original color preserved
@@ -119,7 +114,7 @@ describe('Labels app', () => {
       expect(label1.id).not.toBe(label3.id);
 
       // Verify all labels exist
-      const labels = await db(context, 'Label').select();
+      const labels = await db('Label').select();
       expect(labels).toHaveLength(3);
     });
   });

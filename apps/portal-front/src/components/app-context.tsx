@@ -1,5 +1,5 @@
 'use client';
-import { Toaster } from 'filigran-ui';
+import { Toaster } from '@filigran/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';

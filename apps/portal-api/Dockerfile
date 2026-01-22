@@ -1,4 +1,4 @@
-FROM node:24.11-alpine3.22 AS base
+FROM node:24.13.0-alpine3.22 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -42,7 +42,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=graphql:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/config ./config
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/package.json .
-COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/tests/seeds ./tests/seeds
+COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/tests ./tests
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/src/seeds ./src/seeds
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/dist .
 COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/src/server/mail-template ./src/server/mail-template

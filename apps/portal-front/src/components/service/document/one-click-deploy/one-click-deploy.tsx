@@ -7,21 +7,21 @@ import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibili
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
 import { getPlatformIdentifier } from '@/utils/platform';
 import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogTrigger,
   SimpleTooltip,
-} from 'filigran-ui';
-import { Button } from 'filigran-ui/servers';
+} from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
+import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 
 interface OneClickDeployProps {
   documentData: ShareableResource;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
 }
 
 const OneClickDeploy = ({

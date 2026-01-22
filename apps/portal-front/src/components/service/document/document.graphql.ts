@@ -1,33 +1,21 @@
 import { graphql } from 'react-relay';
 
-export const DocumentAddMutation = graphql`
-  mutation documentAddMutation(
-    $document: Upload
-    $name: String
-    $shortDescription: String
-    $description: String
-    $serviceInstanceId: String
-    $active: Boolean
-    $parentDocumentId: ID
-    $slug: String
+export const DocumentCreateMutation = graphql`
+  mutation documentCreateMutation(
+    $input: CreateDocumentInput!
+    $document: [Upload!]!
+    $metadata: [DocumentMetadata!]!
+    $serviceInstanceId: String!
     $connections: [ID!]!
-    $type: String!
   ) {
-    addDocument(
+    createDocument(
+      input: $input
       document: $document
-      name: $name
-      short_description: $shortDescription
-      description: $description
-      service_instance_id: $serviceInstanceId
-      active: $active
-      parentDocumentId: $parentDocumentId
-      slug: $slug
-      type: $type
+      metadata: $metadata
+      serviceInstanceId: $serviceInstanceId
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
-      id
       name
-      file_name
       ...documentItem_fragment
     }
   }
@@ -35,18 +23,24 @@ export const DocumentAddMutation = graphql`
 
 export const DocumentUpdateMutation = graphql`
   mutation documentUpdateMutation(
-    $documentId: ID
-    $input: EditDocumentInput!
-    $serviceInstanceId: String
+    $documentId: ID!
+    $input: UpdateDocumentInput!
+    $metadata: [DocumentMetadata!]!
+    $document: [Upload!]!
+    $updateDocument: Boolean!
+    $images: [String!]
+    $serviceInstanceId: String!
   ) {
-    editDocument(
+    updateDocument(
       documentId: $documentId
       input: $input
-      service_instance_id: $serviceInstanceId
+      document: $document
+      updateDocument: $updateDocument
+      metadata: $metadata
+      images: $images
+      serviceInstanceId: $serviceInstanceId
     ) {
-      id
-      name
-      file_name
+      __id
       ...documentItem_fragment
     }
   }
@@ -65,22 +59,6 @@ export const DocumentDeleteMutation = graphql`
       forceDelete: $forceDelete
     ) {
       id @deleteEdge(connections: $connections)
-    }
-  }
-`;
-
-export const DocumentDetailDeleteMutation = graphql`
-  mutation documentDetailDeleteMutation(
-    $documentId: ID
-    $serviceInstanceId: String
-    $forceDelete: Boolean
-  ) {
-    deleteDocument(
-      documentId: $documentId
-      service_instance_id: $serviceInstanceId
-      forceDelete: $forceDelete
-    ) {
-      id
     }
   }
 `;
@@ -107,6 +85,11 @@ export const documentItem = graphql`
     share_number
     active
     updated_at
+    labels {
+      id
+      name
+      color
+    }
     uploader {
       first_name
       last_name
@@ -133,6 +116,34 @@ export const documentItem = graphql`
     }
     subscription {
       id
+    }
+
+    ... on CustomDashboard {
+      product_version
+    }
+
+    ... on CsvFeed {
+      integration_type
+    }
+
+    ... on TaxiiFeed {
+      integration_type
+    }
+
+    ... on Stream {
+      integration_type
+    }
+
+    ... on ThirdPartyIntegration {
+      integration_type
+      integration_subtype
+      product_version
+      vendor_url
+      github_url
+    }
+
+    ... on Connector {
+      integration_type
     }
   }
 `;
@@ -174,13 +185,5 @@ export const DocumentsListQuery = graphql`
     $parentsOnly: Boolean
   ) {
     ...documentsList
-  }
-`;
-
-export const DocumentQuery = graphql`
-  query documentQuery($documentId: ID, $serviceInstanceId: ID) {
-    document(documentId: $documentId, serviceInstanceId: $serviceInstanceId) {
-      ...documentItem_fragment
-    }
   }
 `;

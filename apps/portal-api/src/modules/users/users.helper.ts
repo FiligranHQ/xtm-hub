@@ -1,7 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
@@ -71,7 +71,7 @@ export const createUserWithPersonalSpace = async (
     personal_space: true,
   });
 
-  const [addedUser] = await dbUnsecure<User>('User')
+  const [addedUser] = await db<User>('User')
     .insert({
       id: uuid as UserId,
       selected_organization_id:
@@ -210,7 +210,7 @@ export const getOrCreateUser = async (
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
   if (user && upsert) {
-    await dbUnsecure<User>('User')
+    await db<User>('User')
       .where({ id: user.id })
       .update({
         last_login: new Date(),
@@ -388,7 +388,7 @@ const isUserLastOrganizationAdministrator = async (
 const countOrganizationAdministrators = async (
   organizationId: OrganizationId
 ): Promise<number> => {
-  const [administratorsCount] = await dbUnsecure('Organization')
+  const [administratorsCount] = await db('Organization')
     .count('Organization.id')
     .leftJoin(
       'User_Organization',

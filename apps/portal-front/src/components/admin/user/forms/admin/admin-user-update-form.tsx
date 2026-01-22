@@ -8,9 +8,7 @@ import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { CapabilityMultiSelect } from '@/components/ui/capability/multi-select';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { cn, isEmpty } from '@/lib/utils';
-import { userList_fragment$data } from '@generated/userList_fragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteIcon } from 'filigran-icon';
+import { DeleteIcon } from '@filigran/icon';
 import {
   Button,
   Form,
@@ -22,8 +20,10 @@ import {
   Input,
   SheetFooter,
   toast,
-} from 'filigran-ui';
-import { Label } from 'filigran-ui/clients';
+} from '@filigran/ui';
+import { Label } from '@filigran/ui/clients';
+import { userList_fragment$data } from '@generated/userList_fragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -199,7 +199,7 @@ export const AdminUserUpdateForm: FunctionComponent<
         <div
           className={cn(
             '!mt-m px-l py-m space-y-s',
-            fields.length > 0 && 'border border-primary rounded'
+            fields.length > 0 && 'border bg-card rounded'
           )}>
           {fields.map((field, index) => {
             return (

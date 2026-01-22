@@ -1,8 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { ArrowOutwardIcon, LogoFiligranIcon } from 'filigran-icon';
-import { AspectRatio, Button } from 'filigran-ui/servers';
+import { ArrowOutwardIcon, LogoFiligranIcon } from '@filigran/icon';
+import { AspectRatio, Button } from '@filigran/ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useCallback } from 'react';
@@ -45,20 +45,21 @@ const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className }) => {
   const renderHoverButton = useCallback((action: PlatformHoverAction) => {
-    if (action.href) {
-      return (
-        <Button
-          key={action.id}
-          {...(action.variant ? { variant: action.variant } : {})}>
-          <Link
-            href={action.href}
-            target={action.target}>
-            {action.label}
-          </Link>
-        </Button>
-      );
+    if (!action.href) {
+      return null;
     }
-    return <></>;
+
+    return (
+      <Button
+        key={action.id}
+        {...(action.variant ? { variant: action.variant } : {})}>
+        <Link
+          href={action.href}
+          target={action.target}>
+          {action.label}
+        </Link>
+      </Button>
+    );
   }, []);
 
   return (

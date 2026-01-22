@@ -1,8 +1,7 @@
 import { UserFragment } from '@/components/admin/user/user-list';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { DEBOUNCE_TIME } from '@/utils/constant';
-import { userList_fragment$key } from '@generated/userList_fragment.graphql';
-import { CheckIcon, CloseIcon, KeyboardArrowDownIcon } from 'filigran-icon';
+import { CheckIcon, CloseIcon, KeyboardArrowDownIcon } from '@filigran/icon';
 import {
   Command,
   CommandEmpty,
@@ -19,8 +18,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'filigran-ui/clients';
-import { Badge, Button } from 'filigran-ui/servers';
+} from '@filigran/ui/clients';
+import { Badge, Button } from '@filigran/ui/servers';
+import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, {
   useCallback,
@@ -351,7 +351,7 @@ const SelectUsersFormField = React.forwardRef<
                           pointerEvents: 'auto',
                           opacity: 1,
                         }}
-                        className="flex-1 cursor-pointer justify-center uppercase">
+                        className="flex-1 cursor-pointer justify-center capitalize">
                         {t('Utils.Clear')}
                       </CommandItem>
                       <Separator
@@ -367,7 +367,7 @@ const SelectUsersFormField = React.forwardRef<
                       pointerEvents: 'auto',
                       opacity: 1,
                     }}
-                    className="flex-1 cursor-pointer justify-center uppercase">
+                    className="flex-1 cursor-pointer justify-center capitalize">
                     {t('Utils.Close')}
                   </CommandItem>
                 </div>

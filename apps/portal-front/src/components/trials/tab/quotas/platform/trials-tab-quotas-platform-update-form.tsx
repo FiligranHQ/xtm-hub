@@ -2,8 +2,6 @@ import { TrialsUpdateDeploymentQuotaCapacityMutation } from '@/components/trials
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { isEmpty } from '@/lib/utils';
-import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -12,9 +10,11 @@ import {
   FormItem,
   FormLabel,
   SheetFooter,
-} from 'filigran-ui';
-import { toast } from 'filigran-ui/clients';
-import { Input } from 'filigran-ui/servers';
+} from '@filigran/ui';
+import { toast } from '@filigran/ui/clients';
+import { Input } from '@filigran/ui/servers';
+import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';

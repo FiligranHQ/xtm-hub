@@ -7,6 +7,7 @@ import { FunctionComponent, ReactNode } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay/hooks';
 import { EnvironmentConfig } from 'relay-runtime';
 import { createMockEnvironment } from 'relay-test-utils';
+import messages from '../../../messages/en.json';
 
 export interface ProvidersWrapperProps {
   children: ReactNode;
@@ -19,18 +20,24 @@ export const generateMockUser = (
 ) => {
   return {
     id: 'mock_id',
-    email: 'admin@filigran.io',
-    capabilities: [
+    email: 'user@filigran.io',
+    first_name: 'Test',
+    last_name: 'User',
+    country: 'US',
+    picture: '',
+    selected_organization_id: 'org-test-456',
+    capabilities: [],
+    roles_portal: [],
+    organizations: [
       {
-        name: 'ADMIN',
+        id: 'mock_id',
+        name: 'Test Personal Space',
+        personal_space: true,
       },
       {
-        name: 'BYPASS',
-      },
-    ],
-    roles_portal: [
-      {
-        id: 'role_id',
+        id: 'org-test-456',
+        name: 'Test Organization',
+        personal_space: false,
       },
     ],
     ' $fragmentType': 'context_fragment',
@@ -83,11 +90,16 @@ export const TestWrapper: FunctionComponent<TestWrapperProps> = ({
   children,
 }) => {
   const { relayConfig, me } = options ?? {};
+
   return (
     <ProvidersWrapper
       relayConfig={relayConfig}
       me={generateMockUser(me)}>
-      <NextIntlClientProvider locale={'fr'}>{children}</NextIntlClientProvider>
+      <NextIntlClientProvider
+        locale={'en'}
+        messages={messages}>
+        {children}
+      </NextIntlClientProvider>
     </ProvidersWrapper>
   );
 };

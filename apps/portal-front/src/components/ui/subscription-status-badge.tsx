@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Badge } from 'filigran-ui';
+import { Badge } from '@filigran/ui';
 import { FunctionComponent } from 'react';
 
 export type SubscriptionStatusTypeBadge = 'ACCEPTED' | 'REQUESTED' | 'REFUSED';
@@ -19,7 +19,7 @@ export const SubscriptionStatusBadge: FunctionComponent<
   return (
     <>
       {type && (
-        <Badge className={cn('uppercase', badgeColor[type])}>{type}</Badge>
+        <Badge className={cn('capitalize', badgeColor[type])}>{type}</Badge>
       )}
     </>
   );
