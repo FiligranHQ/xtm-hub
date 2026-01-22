@@ -1,8 +1,8 @@
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
-import { DisplayIconCard } from '@/components/ui/shareable-resource/card-design/display-icon-card';
-import { DisplayImageCard } from '@/components/ui/shareable-resource/card-design/display-image-card';
+import { ShareableResourceCardIcon } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-icon';
+import { ShareableResourceCardImage } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-image';
 import {
   PublicShareableResource,
   ShareableResource,
@@ -13,13 +13,12 @@ interface DisplayHeaderCardProps {
   document: ShareableResource | PublicShareableResource;
   serviceInstanceId: string;
 }
-export const DisplayHeaderCard: FunctionComponent<DisplayHeaderCardProps> = ({
-  document,
-  serviceInstanceId,
-}) => {
+export const ShareableResourceCardHeader: FunctionComponent<
+  DisplayHeaderCardProps
+> = ({ document, serviceInstanceId }) => {
   return (
     <div className="flex items-stretch gap-m p-m relative">
-      <DisplayImageCard
+      <ShareableResourceCardImage
         document={document}
         serviceInstanceId={serviceInstanceId}
       />
@@ -28,7 +27,7 @@ export const DisplayHeaderCard: FunctionComponent<DisplayHeaderCardProps> = ({
           <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 pr-xxl">
             {document.name}
           </h2>
-          <DisplayIconCard document={document} />
+          <ShareableResourceCardIcon document={document} />
         </div>
         <div className="mt-s flex flex-wrap gap-s">
           <BadgeOverflowCounter

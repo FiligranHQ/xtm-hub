@@ -1,6 +1,6 @@
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { DisplayVersionCard } from '@/components/ui/shareable-resource/card-design/display-version-card';
+import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-version';
 import { formatDate } from '@/utils/date';
 import { formatPersonNames } from '@/utils/format/name';
 import {
@@ -18,12 +18,9 @@ interface DisplayFooterCardProps {
   shareLinkUrl: string;
   extraContent?: ReactNode;
 }
-export const DisplayFooterCard: FunctionComponent<DisplayFooterCardProps> = ({
-  document,
-  publicPath = false,
-  shareLinkUrl,
-  extraContent,
-}) => {
+export const ShareableResourceCardFooter: FunctionComponent<
+  DisplayFooterCardProps
+> = ({ document, publicPath = false, shareLinkUrl, extraContent }) => {
   let connectorMetadata;
   if (
     'integration_type' in document &&
@@ -50,7 +47,7 @@ export const DisplayFooterCard: FunctionComponent<DisplayFooterCardProps> = ({
             {publicPath || !document.manager_supported ? (
               <span className="text-sm">{document.product_version}</span>
             ) : (
-              <DisplayVersionCard
+              <ShareableResourceCardVersion
                 className="text-sm"
                 product_version={document.product_version ?? ''}
                 requiredProductVersion={document.product_version ?? ''}

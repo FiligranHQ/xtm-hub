@@ -1,6 +1,6 @@
 'use client';
-import { DisplayFooterCard } from '@/components/ui/shareable-resource/card-design/display-footer-card';
-import { DisplayHeaderCard } from '@/components/ui/shareable-resource/card-design/display-header-card';
+import { ShareableResourceCardFooter } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-footer';
+import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-header';
 import {
   PublicShareableResource,
   ShareableResource,
@@ -8,6 +8,7 @@ import {
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+
 interface ShareableServiceInstance {
   id: string;
   service_definition?: {
@@ -37,7 +38,7 @@ const ShareableResourceCard = ({
         <Link
           className="flex flex-col h-full"
           href={detailUrl}>
-          <DisplayHeaderCard
+          <ShareableResourceCardHeader
             document={document}
             serviceInstanceId={serviceInstance.id}
           />
@@ -46,7 +47,7 @@ const ShareableResourceCard = ({
           </p>
         </Link>
         <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
-          <DisplayFooterCard
+          <ShareableResourceCardFooter
             document={document}
             publicPath={publicPath}
             shareLinkUrl={shareLinkUrl}

@@ -16,9 +16,9 @@ import { FunctionComponent } from 'react';
 interface DisplayIconCardProps {
   document: ShareableResource | PublicShareableResource;
 }
-export const DisplayIconCard: FunctionComponent<DisplayIconCardProps> = ({
-  document,
-}) => {
+export const ShareableResourceCardIcon: FunctionComponent<
+  DisplayIconCardProps
+> = ({ document }) => {
   const t = useTranslations();
 
   return (

@@ -11,10 +11,9 @@ interface DisplayImageCardProps {
   document: ShareableResource | PublicShareableResource;
   serviceInstanceId: string;
 }
-export const DisplayImageCard: FunctionComponent<DisplayImageCardProps> = ({
-  document,
-  serviceInstanceId,
-}) => {
+export const ShareableResourceCardImage: FunctionComponent<
+  DisplayImageCardProps
+> = ({ document, serviceInstanceId }) => {
   return (
     <>
       <div className=" items-center self-stretch flex">

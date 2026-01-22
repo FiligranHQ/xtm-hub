@@ -17,11 +17,9 @@ interface DisplayVersionCardProps {
   product_version?: string | null;
   className?: string;
 }
-export const DisplayVersionCard: FunctionComponent<DisplayVersionCardProps> = ({
-  requiredProductVersion,
-  product_version,
-  className,
-}) => {
+export const ShareableResourceCardVersion: FunctionComponent<
+  DisplayVersionCardProps
+> = ({ requiredProductVersion, product_version, className }) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI);
   const { platformToBeUpdated, incompatiblePlatformsCount } =
