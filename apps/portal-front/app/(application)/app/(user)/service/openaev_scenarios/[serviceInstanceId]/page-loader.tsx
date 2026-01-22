@@ -7,6 +7,8 @@ import {
 import OpenaevScenariosList from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenarios-list';
 import { OpenaevScenariosListQuery } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 import { Skeleton } from '@filigran/ui';
+import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
+import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { openaevScenariosQuery } from '@generated/openaevScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
@@ -32,7 +34,14 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
-        filters: [{ key: 'label', value: labels }],
+        logicalFilters: {
+          operator: LogicalOperatorEnum.AND,
+          children: [
+            {
+              leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
+            },
+          ],
+        },
       },
       {
         fetchPolicy: 'store-and-network',

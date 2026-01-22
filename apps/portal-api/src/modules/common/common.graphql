@@ -14,9 +14,20 @@ enum FilterKey {
   feed_url
 }
 
+enum LogicalOperator {
+  AND
+  OR
+}
+
 input Filter {
   key: FilterKey
   value: [String!]!
+}
+
+input LogicalFilterInput {
+  leaf: Filter
+  operator: LogicalOperator
+  children: [LogicalFilterInput!]
 }
 
 type Success {

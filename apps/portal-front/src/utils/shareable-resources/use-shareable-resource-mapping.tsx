@@ -35,12 +35,8 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
     [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
   };
-  const {
-    removeLabels,
-    removeIntegrationSubTypes,
-    removeIntegrationTypes,
-    removeDeployable,
-  } = useServiceListLocalStorage(localStorageKey);
+  const { removeLabels, removeIntegrationTypes, removeDeployable } =
+    useServiceListLocalStorage(localStorageKey);
 
   const labelFilter = {
     node: <ServiceListFilterLabel type={typeFeed[slug]} />,
@@ -52,10 +48,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       [ServiceListFilterKey.Label]: labelFilter,
       [ServiceListFilterKey.IntegrationType]: {
         node: <IntegrationFilters />,
-        reset: () => {
-          removeIntegrationSubTypes();
-          removeIntegrationTypes();
-        },
+        reset: removeIntegrationTypes,
       },
       [ServiceListFilterKey.ManagerSupported]: {
         node: <IntegrationDeployableFilter />,

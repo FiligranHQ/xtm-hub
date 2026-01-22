@@ -45,9 +45,9 @@ export const ServiceListHeader: React.FC<Props> = ({
   return (
     <div className={cn('flex flex-col justify-between gap-m', className)}>
       <div className="flex justify-between gap-s flex-wrap">
-        <div className="flex gap-s flex-wrap">
+        <div className="flex gap-s flex-wrap flex-1 min-w-0">
           <SearchInput
-            containerClass="w-[20rem] flex-1 max-w-[50%]"
+            containerClass="w-[20rem]"
             placeholder={t('GenericActions.Search')}
             defaultValue={search}
             onChange={debounceHandleInput(onSearchChange)}
@@ -58,7 +58,9 @@ export const ServiceListHeader: React.FC<Props> = ({
               filterKeys={Object.keys(filters) as ServiceListFilterKey[]}
             />
           ) : (
-            filters[ServiceListFilterKey.Label]?.node
+            <div className="min-w-[20rem] max-w-full">
+              {filters[ServiceListFilterKey.Label]?.node}
+            </div>
           )}
         </div>
 
