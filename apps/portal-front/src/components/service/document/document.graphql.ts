@@ -124,14 +124,17 @@ export const documentItem = graphql`
 
     ... on CsvFeed {
       integration_type
+      feed_url
     }
 
     ... on TaxiiFeed {
       integration_type
+      feed_url
     }
 
     ... on Stream {
       integration_type
+      feed_url
     }
 
     ... on ThirdPartyIntegration {
