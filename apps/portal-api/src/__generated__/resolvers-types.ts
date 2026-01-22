@@ -555,6 +555,17 @@ export enum LabelOrdering {
   Name = 'name'
 }
 
+export type LogicalFilterInput = {
+  children?: InputMaybe<Array<LogicalFilterInput>>;
+  leaf?: InputMaybe<Filter>;
+  operator?: InputMaybe<LogicalOperator>;
+};
+
+export enum LogicalOperator {
+  And = 'AND',
+  Or = 'OR'
+}
+
 export type MeUserSubscription = {
   __typename?: 'MeUserSubscription';
   delete?: Maybe<User>;
@@ -1173,8 +1184,8 @@ export type QueryCustomDashboardArgs = {
 
 export type QueryCustomDashboardsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -1220,6 +1231,7 @@ export type QueryDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1236,8 +1248,8 @@ export type QueryIntegrationArgs = {
 
 export type QueryIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -1278,8 +1290,8 @@ export type QueryOpenAevScenarioArgs = {
 
 export type QueryOpenAevScenariosArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -1328,8 +1340,8 @@ export type QueryPublicIntegrationBySlugArgs = {
 
 export type QueryPublicIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -2208,6 +2220,8 @@ export type ResolversTypes = ResolversObject<{
   LabelConnection: ResolverTypeWrapper<LabelConnection>;
   LabelEdge: ResolverTypeWrapper<LabelEdge>;
   LabelOrdering: LabelOrdering;
+  LogicalFilterInput: LogicalFilterInput;
+  LogicalOperator: LogicalOperator;
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -2360,6 +2374,7 @@ export type ResolversParentTypes = ResolversObject<{
   Label: Label;
   LabelConnection: LabelConnection;
   LabelEdge: LabelEdge;
+  LogicalFilterInput: LogicalFilterInput;
   MeUserSubscription: MeUserSubscription;
   MergeEvent: MergeEvent;
   Mutation: {};

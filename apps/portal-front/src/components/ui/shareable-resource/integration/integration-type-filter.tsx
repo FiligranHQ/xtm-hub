@@ -1,38 +1,36 @@
-import { ServiceListFilterContainer } from '@/components/service/components/header/filter/service-list-filter-container';
+import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
+import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
 import {
   availableIntegrationTypes,
-  integrationsWithSubtype,
+  getIntegrationSubTypeMetadata,
+  SubTypesPerIntegrationType,
 } from '@/components/service/integrations/integration.utils';
-import { MultiSelectFormField } from '@filigran/ui';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
+import { LogicalMultiSelectFormField } from '../logical-multi-select/logical-multi-select-form-field';
 
 export const IntegrationTypeFilter: React.FC = () => {
-  const { integrationTypes, setIntegrationTypes, removeIntegrationSubTypes } =
+  const { integrationTypes, setIntegrationTypes, removeIntegrationTypes } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
     );
+  const { removeFilter } = useServiceListFilters();
   const t = useTranslations();
-
-  const onIntegrationTypeChange = (v: IntegrationTypeEnum[]) => {
-    const hasIntegrationSubTypeFilter = v.some((type) =>
-      integrationsWithSubtype.includes(type)
-    );
-    if (!hasIntegrationSubTypeFilter) {
-      removeIntegrationSubTypes();
-    }
-    setIntegrationTypes(v);
-  };
 
   const options = useMemo(() => {
     const allOptions = Object.values(IntegrationTypeEnum).map((feedType) => ({
       label: t(`Service.OpenctiIntegrations.Type.${feedType}`),
       value: feedType.toString(),
+      children:
+        SubTypesPerIntegrationType.get(feedType)?.map((subtype) => ({
+          label: getIntegrationSubTypeMetadata(subtype)?.label ?? '',
+          value: subtype.toString(),
+        })) ?? undefined,
     }));
     const availableOption = allOptions
       .filter((option) =>
@@ -50,18 +48,23 @@ export const IntegrationTypeFilter: React.FC = () => {
     return [...availableOption, ...comingSoonOption];
   }, [t]);
 
+  const removeIntegrationFilter = () => {
+    removeIntegrationTypes();
+    removeFilter(ServiceListFilterKey.IntegrationType);
+  };
+
   return (
-    <ServiceListFilterContainer>
-      <MultiSelectFormField
-        options={options}
-        defaultValue={integrationTypes}
-        placeholder={t('Service.OpenctiIntegrations.Filter.Type.Placeholder')}
-        noResultString={t('Utils.NotFound')}
-        onValueChange={(values) =>
-          onIntegrationTypeChange(values as IntegrationTypeEnum[])
-        }
-        variant="inverted"
-      />
-    </ServiceListFilterContainer>
+    <LogicalMultiSelectFormField
+      options={options}
+      initialValue={integrationTypes}
+      placeholder={t('Service.OpenctiIntegrations.Filter.Type.Placeholder')}
+      noResultString={t('Utils.NotFound')}
+      onValueChange={setIntegrationTypes}
+      optionLabel={t('Service.OpenctiIntegrations.Filter.Type.Label')}
+      childOptionLabel={t(
+        'Service.OpenctiIntegrations.Filter.IntegrationSubType.Label'
+      )}
+      onRemove={removeIntegrationFilter}
+    />
   );
 };

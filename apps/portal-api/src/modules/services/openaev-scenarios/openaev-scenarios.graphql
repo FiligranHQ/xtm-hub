@@ -44,7 +44,7 @@ type Query {
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-    filters: [Filter!]
+    logicalFilters: LogicalFilterInput
     serviceInstanceId: String
   ): OpenAEVScenarioConnection! @auth
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario @auth
