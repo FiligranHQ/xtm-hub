@@ -143,7 +143,7 @@ export type CsvFeed = Document & Integration & Node & {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
-  feed_url: Scalars['String']['output'];
+  feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
@@ -1747,7 +1747,7 @@ export type Stream = Document & Integration & Node & {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
-  feed_url: Scalars['String']['output'];
+  feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
@@ -1855,7 +1855,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
-  feed_url: Scalars['String']['output'];
+  feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
@@ -2533,7 +2533,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  feed_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
@@ -3228,7 +3228,7 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  feed_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
@@ -3314,7 +3314,7 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  feed_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
