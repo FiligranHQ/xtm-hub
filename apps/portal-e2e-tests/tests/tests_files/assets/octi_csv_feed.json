@@ -1,1 +1,1 @@
-{"name":"CSVFeed","type":"csv-feed"}
+{"name":"CSVFeed","type":"csv-feed","configuration":{"uri": "https://example.com"}}

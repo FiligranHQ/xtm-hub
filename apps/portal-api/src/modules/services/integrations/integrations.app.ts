@@ -11,8 +11,8 @@ import {
 } from '../document/document.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import {
-  INTEGRATION_METADATA_KEYS,
   Integration,
+  INTEGRATION_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from './integrations.model';
 

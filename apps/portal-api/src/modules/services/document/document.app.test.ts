@@ -35,6 +35,7 @@ describe('DocumentApp', () => {
     minioName: 'minioFile',
     mimeType: 'mimeType',
     fileName: 'csvfilename',
+    jsonContent: { configuration: { uri: 'https://example.com' } },
   };
 
   const mockFileUpload: FileUpload = {
@@ -63,6 +64,7 @@ describe('DocumentApp', () => {
       minioFileMock,
     ]);
     vi.spyOn(MinIOClient, 'createFile').mockResolvedValue(minioFileMock);
+    vi.spyOn(MinIOClient, 'deleteFile').mockResolvedValue();
   });
 
   afterEach(async () => {
@@ -205,6 +207,7 @@ describe('DocumentApp', () => {
           document: [],
           input: documentData,
           updateDocument: true,
+          images: [],
         }
       );
 
@@ -272,7 +275,7 @@ describe('DocumentApp', () => {
           },
         ],
         SERVICE_INTEGRATIONS_ID,
-        []
+        [mockUpload]
       );
 
       expect(createdDocument).toBeDefined();

@@ -29,14 +29,19 @@ export const SeoIntegrationFragment = graphql`
     type
     integration_type
 
+    ... on CsvFeed {
+      feed_url
+    }
     ... on Connector {
       integration_subtype
     }
     ... on Stream {
       integration_subtype
+      feed_url
     }
     ... on TaxiiFeed {
       integration_subtype
+      feed_url
     }
     ... on ThirdPartyIntegration {
       integration_subtype

@@ -29,7 +29,10 @@ describe('csv feeds app', () => {
         slug: 'myCsvFeed',
         active: true,
       },
-      [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+      [
+        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        { key: 'feed_url', value: 'https://example.com' },
+      ],
       INTEGRATION_SERVICE_INSTANCE_ID,
       []
     );
