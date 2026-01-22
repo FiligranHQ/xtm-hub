@@ -51,6 +51,38 @@ interface Integration implements Node & Document {
   integration_type: IntegrationType!
 }
 
+# Strictly equal to Integration. Otherwise we have typing issues because no type overlaps
+type IntegrationHack implements Node & Document & Integration {
+  # Node
+  id: ID!
+
+  # Document
+  type: String!
+  uploader: User
+  uploader_organization: Organization @auth
+  name: String!
+  short_description: String
+  description: String
+  file_name: String @auth
+  minio_name: String! @auth
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String @auth
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel @auth
+  children_documents: [ShareableResource!]
+
+  # Integration
+  remover_id: ID
+  integration_type: IntegrationType!
+}
+
 type CsvFeed implements Node & Document & Integration {
   # Node
   id: ID!
@@ -79,6 +111,7 @@ type CsvFeed implements Node & Document & Integration {
 
   # Integration
   remover_id: ID
+  feed_url: String!
   integration_type: IntegrationType!
 }
 
@@ -149,6 +182,7 @@ type TaxiiFeed implements Node & Document & Integration {
 
   # Integration
   remover_id: ID @auth
+  feed_url: String!
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
@@ -181,6 +215,7 @@ type Stream implements Node & Document & Integration {
 
   # Integration
   remover_id: ID @auth
+  feed_url: String!
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }

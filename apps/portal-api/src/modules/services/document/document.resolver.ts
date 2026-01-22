@@ -29,7 +29,6 @@ import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
   loadDocumentsBy,
-  normalizeDocumentName,
   updateDocumentWithCounters,
 } from './document.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
@@ -211,7 +210,7 @@ const resolvers: Resolvers = {
             orderBy,
             parentsOnly,
             filters,
-            searchTerm: normalizeDocumentName(searchTerm ?? ''),
+            searchTerm: searchTerm ?? '',
           },
           {
             'Document.service_instance_id': fromGlobalId(serviceInstanceId).id,
