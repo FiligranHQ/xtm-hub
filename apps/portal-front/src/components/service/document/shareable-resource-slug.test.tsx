@@ -83,7 +83,7 @@ describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
     ${true}                     | ${'opencti_custom_dashboard'} | ${true}        | ${false}
     ${false}                    | ${'opencti_custom_dashboard'} | ${false}       | ${false}
     ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.CSV_FEED}
-    ${false}                    | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.TAXII_FEED}
+    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.TAXII_FEED}
     ${false}                    | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.STREAM}
     ${false}                    | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}
     ${false}                    | ${'opencti_integration'}      | ${false}       | ${IntegrationTypeEnum.CSV_FEED}

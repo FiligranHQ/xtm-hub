@@ -482,6 +482,15 @@
   "Reset table": "Remise à zéro de la table",
   "Rows per page": "Lignes par page",
   "Service": {
+    "ServiceDefinitionIdentifier": {
+      "link": "Link",
+      "openaev_registration": "OpenAEV Registration",
+      "openaev_scenarios": "OpenAEV Scenarios",
+      "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
+      "opencti_integrations": "OpenCTI Integrations",
+      "opencti_registration": "OpenCTI Registration",
+      "vault": "Vault"
+    },
     "Capabilities": {
       "AccessServiceDescription": "Vous avez uniquement accès à un service",
       "AccessServiceName": "Access service",
