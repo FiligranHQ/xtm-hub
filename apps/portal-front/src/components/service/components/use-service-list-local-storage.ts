@@ -1,5 +1,5 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
-import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
+import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
 import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {

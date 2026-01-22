@@ -4,7 +4,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
 import { useTranslations } from 'next-intl';
 
 export const IntegrationDeployableFilter = () => {

@@ -3,7 +3,7 @@ import { ServiceListFilterKey } from '@/components/service/components/header/ser
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 

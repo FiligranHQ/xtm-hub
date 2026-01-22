@@ -12,7 +12,7 @@ import {
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
-import { LogicalMultiSelectFormField } from '../logical-multi-select-form-field';
+import { LogicalMultiSelectFormField } from '../logical-multi-select/logical-multi-select-form-field';
 
 export const IntegrationTypeFilter: React.FC = () => {
   const { integrationTypes, setIntegrationTypes, removeIntegrationTypes } =

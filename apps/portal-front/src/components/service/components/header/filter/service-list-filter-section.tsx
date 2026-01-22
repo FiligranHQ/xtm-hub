@@ -1,6 +1,7 @@
 import { ServiceListFilterMap } from '@/components/service/components/header/service-list-header';
 import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
-import { AndSeparator } from '@/components/ui/shareable-resource/logical-multi-select-form-field';
+
+import { AndSeparator } from '@/components/ui/shareable-resource/logical-multi-select/selected-values-display';
 import React, { useMemo } from 'react';
 
 interface Props {
