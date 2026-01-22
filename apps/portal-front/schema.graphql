@@ -645,7 +645,7 @@ type CsvFeed implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
 }
 
@@ -706,7 +706,7 @@ type TaxiiFeed implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
@@ -734,7 +734,7 @@ type Stream implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
