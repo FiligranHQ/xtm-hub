@@ -14,6 +14,7 @@ import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
+import { normalizeDocumentName } from './src/modules/services/document/document.helper';
 import { INTEGRATION_METADATA_KEYS } from './src/modules/services/integrations/integrations.model';
 import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
@@ -148,6 +149,7 @@ export interface QueryOpts {
   searchTerm?: string;
   filters?: Filters;
   columns?: string[];
+  normalizeSearchTerm?: boolean;
 }
 
 export const dbRaw = (
@@ -395,7 +397,8 @@ export const applyFilters = async (
 export const applySearch = async <T>(
   type: DatabaseType,
   queryContext = db<T>(type),
-  searchTerm: string
+  searchTerm: string,
+  normalizeSearchTerm: boolean = false
 ) => {
   const columns = Object.keys(await database(type).columnInfo());
 
@@ -409,10 +412,27 @@ export const applySearch = async <T>(
   }
 
   if (search.length > 0) {
+    const normalizedSearchTerm = normalizeSearchTerm
+      ? normalizeDocumentName(searchTerm)
+      : searchTerm;
     const [first, ...others] = search;
+    const metaAlias = 'metaSearch';
+
+    const shouldSearchOnDocumentMetadata = type === 'Document';
+    if (shouldSearchOnDocumentMetadata) {
+      queryContext.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
+        this.on(`${metaAlias}.document_id`, '=', 'Document.id');
+      });
+    }
+
     queryContext.andWhere((qb) => {
-      qb.orWhereILike(`${type}.${first}`, `%${searchTerm}%`);
-      others.forEach((i) => qb.orWhereILike(`${type}.${i}`, `%${searchTerm}%`));
+      if (shouldSearchOnDocumentMetadata) {
+        qb.orWhereILike(`${metaAlias}.value`, `%${searchTerm}%`);
+      }
+      qb.orWhereILike(`${type}.${first}`, `%${normalizedSearchTerm}%`);
+      others.forEach((i) =>
+        qb.orWhereILike(`${type}.${i}`, `%${normalizedSearchTerm}%`)
+      );
     });
   }
 };
@@ -518,7 +538,7 @@ export const paginate = async <T, U>(
 
   await applyFilters(type, queryContext, filters);
 
-  await applySearch(type, queryContext, searchTerm);
+  await applySearch(type, queryContext, searchTerm, opts.normalizeSearchTerm);
 
   const totalCountQuery = queryContext
     .clone()

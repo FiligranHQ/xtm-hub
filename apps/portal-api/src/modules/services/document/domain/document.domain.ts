@@ -16,7 +16,7 @@ import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstanc
 import User, { UserId } from '../../../../model/kanel/public/User';
 import { formatRawObject } from '../../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../../utils/utils';
-import { Document, normalizeDocumentName } from '../document.helper';
+import { Document } from '../document.helper';
 
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
@@ -126,7 +126,7 @@ export const DocumentDomain = {
       {
         ...input,
         parentsOnly: true,
-        searchTerm: normalizeDocumentName(input.searchTerm),
+        searchTerm: input.searchTerm,
       },
       {
         'Document.service_instance_id': extractId<ServiceInstanceId>(
@@ -216,7 +216,7 @@ export const DocumentDomain = {
     return paginate<Document, T>(
       'Document',
       opts,
-      undefined,
+      { normalizeSearchTerm: true },
       loadDocumentQuery
     );
   },

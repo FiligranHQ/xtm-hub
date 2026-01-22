@@ -16,13 +16,18 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { extractId } from '../../../utils/utils';
 import { labelsApp } from '../../settings/labels/labels.app';
 import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
-import { retrieveDocumentTypeAndMetadataKeys } from './document.helper';
+import {
+  DocumentHelper,
+  ManageableServiceDefinitionIdentifier,
+} from './document.helper';
 import {
   processDocumentUpdateUploads,
   processUploads,
@@ -42,9 +47,30 @@ export const DocumentApp = {
     serviceInstanceId: ServiceInstanceId,
     uploads: Upload[]
   ) => {
-    const { documentType, metadataKeys } =
-      await retrieveDocumentTypeAndMetadataKeys(serviceInstanceId, metadata);
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
     const files = await processUploads(uploads, serviceInstanceId);
+    const completeMetadata =
+      DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files,
+        metadata,
+      });
+
+    DocumentHelper.assertMetadataIsNotMissing(
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
+      completeMetadata
+    );
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
+      );
     const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
       documentType,
       metadata
@@ -66,18 +92,21 @@ export const DocumentApp = {
     }
 
     const createdDocument = await withTransaction(async () => {
+      const metadataKeys = completeMetadata.map(
+        ({ key }) => key
+      ) as DocumentMetadataKeys<Document>;
       const document = await DocumentDomain.createDocument(
         documentData,
-        metadataKeys as DocumentMetadataKeys<Document>
+        metadataKeys
       );
 
-      if (metadataKeys.length) {
+      if (completeMetadata.length) {
         await DocumentMetadataDomain.insertMetadataFromKeyValue(
           document.id,
-          metadata
+          completeMetadata
         );
 
-        for (const meta of metadata) {
+        for (const meta of completeMetadata) {
           document[meta.key] = meta.value;
         }
       }
@@ -122,17 +151,25 @@ export const DocumentApp = {
       'document' | 'updateDocument' | 'images' | 'input'
     >
   ) => {
-    const { documentType } = await retrieveDocumentTypeAndMetadataKeys(
-      serviceInstanceId,
-      metadata
-    );
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
 
     const {
       document,
       updateDocument: isUpdateDoc,
-      images,
+      images = [],
       input,
     } = mutationArgs;
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
+      );
     const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
       documentType,
       metadata
@@ -144,6 +181,17 @@ export const DocumentApp = {
         images,
         serviceInstanceId
       );
+
+    const completeMetadata =
+      DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        files: [documentFile],
+        metadata,
+      });
+
+    DocumentHelper.assertMetadataIsNotMissing(
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
+      completeMetadata
+    );
 
     return withTransaction(async () => {
       const { user } = requestContext.require();
@@ -184,14 +232,14 @@ export const DocumentApp = {
         }
       }
 
-      if (metadata.length) {
+      if (completeMetadata.length) {
         await DocumentMetadataDomain.deleteMetadata({ id: parentDocumentId });
         await DocumentMetadataDomain.insertMetadataFromKeyValue(
           updatedDocument.id,
-          metadata
+          completeMetadata
         );
 
-        for (const meta of metadata) {
+        for (const meta of completeMetadata) {
           updatedDocument[meta.key] = meta.value;
         }
       }

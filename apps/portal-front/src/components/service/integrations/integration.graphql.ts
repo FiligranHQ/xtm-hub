@@ -45,6 +45,7 @@ export const integrationsItem = graphql`
     }
     integration_type
 
+    ...integrationCsvFeedsItem_fragment @relay(mask: false)
     ...integrationConnectorsItem_fragment @relay(mask: false)
     ...integrationTaxiiFeedsItem_fragment @relay(mask: false)
     ...integrationStreamsItem_fragment @relay(mask: false)
@@ -52,15 +53,23 @@ export const integrationsItem = graphql`
   }
 `;
 
+export const csvFeedsItem = graphql`
+  fragment integrationCsvFeedsItem_fragment on CsvFeed {
+    feed_url
+  }
+`;
+
 export const taxiiFeedsItem = graphql`
   fragment integrationTaxiiFeedsItem_fragment on TaxiiFeed {
     integration_subtype
+    feed_url
   }
 `;
 
 export const streamsItem = graphql`
   fragment integrationStreamsItem_fragment on Stream {
     integration_subtype
+    feed_url
   }
 `;
 

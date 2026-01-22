@@ -90,6 +90,23 @@ const ShareableResourceDetails: React.FunctionComponent<
           )}
         </>
       )}
+      {docHasMetadata(documentData, 'feed_url') && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.FeedURL')}>
+          <Button
+            className="p-0"
+            variant="link"
+            asChild>
+            <Link
+              href={documentData.feed_url}
+              rel="noopener noreferrer"
+              target="_blank">
+              <OpenInNewIcon className="h-4 w-4 mr-s" />
+              {documentData.feed_url}
+            </Link>
+          </Button>
+        </ShareableResourceDetailItem>
+      )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.LastUpdatedAt')}>
         <span>

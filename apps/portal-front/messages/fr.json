@@ -826,7 +826,8 @@
         "IntegrationType": "Type",
         "IntegrationSubType": "Sous-type",
         "GithubURL": "URL Github",
-        "VendorURL": "URL du fournisseur"
+        "VendorURL": "URL du fournisseur",
+        "FeedURL": "URL du flux"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",

@@ -21,6 +21,7 @@ enum FilterKey {
   slug
   product_version
   manager_supported
+  feed_url
 }
 
 enum LogicalOperator {
@@ -595,6 +596,32 @@ interface Integration implements Node & Document {
   integration_type: IntegrationType!
 }
 
+type IntegrationHack implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  labels: [Label!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+}
+
 type CsvFeed implements Node & Document & Integration {
   id: ID!
   type: String!
@@ -618,6 +645,7 @@ type CsvFeed implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
+  feed_url: String!
   integration_type: IntegrationType!
 }
 
@@ -678,6 +706,7 @@ type TaxiiFeed implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
+  feed_url: String!
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
@@ -705,6 +734,7 @@ type Stream implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
+  feed_url: String!
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
