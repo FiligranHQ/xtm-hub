@@ -40,7 +40,7 @@ const csvFeedFormSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type CsvFeedFormValues = z.infer<typeof csvFeedFormSchema>;
 
@@ -209,8 +209,7 @@ export const CsvFeedForm = ({
                 label: t(`${translationKey}.Form.CsvFeedFile`),
                 fieldType: 'file',
                 inputProps: {
-                  allowedTypes: 'application/json',
-                  multiple: 'multiple',
+                  accept: 'application/json',
                 },
               }
             : {
@@ -248,7 +247,7 @@ export const CsvFeedForm = ({
             label: t(`${translationKey}.Form.CsvFeedIllustration`),
             fieldType: 'file',
             inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
+              accept: 'image/jpeg, image/png',
             },
           },
           active: {

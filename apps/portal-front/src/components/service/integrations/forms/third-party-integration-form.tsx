@@ -54,7 +54,7 @@ const thirdPartyIntegrationFormSchema = z.object({
     .nullish(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 
 export type ThirdPartyIntegrationFormValues = z.infer<
@@ -259,7 +259,7 @@ export const ThirdPartyIntegrationForm = ({
             ),
             fieldType: 'file',
             inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
+              accept: 'image/jpeg, image/png',
             },
           },
           active: {

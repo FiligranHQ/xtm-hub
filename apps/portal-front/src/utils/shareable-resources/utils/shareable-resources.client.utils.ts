@@ -1,11 +1,6 @@
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { hasProperty } from '../../hasProperty';
 import { serviceConfigMap } from '../shareable-resources.consts';
-import {
-  ServiceInfo,
-  ServiceSlug,
-  ShareableResource,
-} from '../shareable-resources.types';
+import { ServiceInfo, ServiceSlug } from '../shareable-resources.types';
 
 export function getServiceInfo(
   serviceInstance: { id: string; slug: ServiceSlug },
@@ -22,12 +17,6 @@ export function getServiceInfo(
     description: config.description,
   };
 }
-
-export const isCustomDashboard = (
-  document: ShareableResource
-): document is customDashboardsItem_fragment$data => {
-  return document.type === 'opencti_custom_dashboards';
-};
 
 export const docHasMetadata = <T, K extends string>(
   documentData: T,
