@@ -41,6 +41,7 @@ export const serviceInstanceApp = {
   ): Promise<ServiceInstance> => {
     const subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
+      organization_id: user.selected_organization_id,
     });
     const userService = await UserServiceDomain.loadUserServiceBy({
       subscription_id: subscription.id,
