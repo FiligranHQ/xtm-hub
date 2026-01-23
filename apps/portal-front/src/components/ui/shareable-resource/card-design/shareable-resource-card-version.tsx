@@ -2,23 +2,19 @@ import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibili
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
 import { cn } from '@/lib/utils';
 import { CheckIndeterminateIcon } from '@filigran/icon';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@filigran/ui/clients';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@filigran/ui/clients';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
-interface DisplayVersionCardProps {
+interface ShareableResourceCardVersionProps {
   requiredProductVersion?: string | null;
   product_version?: string | null;
   className?: string;
 }
+
 export const ShareableResourceCardVersion: FunctionComponent<
-  DisplayVersionCardProps
+  ShareableResourceCardVersionProps
 > = ({ requiredProductVersion, product_version, className }) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI);

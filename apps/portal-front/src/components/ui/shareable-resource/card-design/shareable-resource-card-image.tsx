@@ -6,18 +6,17 @@ import { LogoFiligranIcon } from '@filigran/icon';
 import Image from 'next/image';
 import { FunctionComponent } from 'react';
 
-interface DisplayImageCardProps {
+interface ShareableResourceCardImageProps {
   document: ShareableResource | PublicShareableResource;
   serviceInstanceId: string;
 }
 export const ShareableResourceCardImage: FunctionComponent<
-  DisplayImageCardProps
+  ShareableResourceCardImageProps
 > = ({ document, serviceInstanceId }) => {
   return (
     <>
       <div className=" items-center self-stretch flex">
-        {document?.children_documents &&
-        document?.children_documents.length > 0 ? (
+        {!!document?.children_documents?.length ? (
           <Image
             src={`/document/images/${serviceInstanceId}/${document.children_documents?.[0]?.id}`}
             alt={`${document.name} logo`}

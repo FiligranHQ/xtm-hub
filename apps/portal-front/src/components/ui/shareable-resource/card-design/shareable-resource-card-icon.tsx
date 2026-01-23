@@ -2,6 +2,7 @@ import {
   PublicShareableResource,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { CampaignIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import {
   Tooltip,
@@ -9,25 +10,24 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/ui/clients';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
-interface DisplayIconCardProps {
+interface ShareableResourceCardIconProps {
   document: ShareableResource | PublicShareableResource;
+  shouldDisplayBothIcons: boolean;
 }
 export const ShareableResourceCardIcon: FunctionComponent<
-  DisplayIconCardProps
-> = ({ document }) => {
+  ShareableResourceCardIconProps
+> = ({ document, shouldDisplayBothIcons }) => {
   const t = useTranslations();
 
   return (
     <>
-      {document.active &&
-        'integration_type' in document &&
-        document.integration_type === IntegrationTypeEnum.CONNECTOR && (
-          <TooltipProvider>
-            {document.manager_supported && (
+      {document.active && shouldDisplayBothIcons && (
+        <TooltipProvider>
+          {docHasMetadata(document, 'manager_supported') &&
+            document.manager_supported && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <MotionPlayIcon className="absolute top-l right-[2.75rem] h-6 w-6 shrink-0 text-green-500" />
@@ -37,32 +37,30 @@ export const ShareableResourceCardIcon: FunctionComponent<
                 </TooltipContent>
               </Tooltip>
             )}
-            {document.verified && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
-                </TooltipTrigger>
-                <TooltipContent className="bg-gray-50">
-                  {t('Utils.Verified')}
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </TooltipProvider>
-        )}
-      {document.active &&
-        'integration_type' in document &&
-        document.integration_type !== IntegrationTypeEnum.CONNECTOR && (
-          <TooltipProvider>
+          {docHasMetadata(document, 'verified') && document.verified && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <CampaignIcon className="absolute top-m right-m h-6 w-6 shrink-0 text-green-500" />
+                <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
               </TooltipTrigger>
               <TooltipContent className="bg-gray-50">
-                {t('Badge.Published')}
+                {t('Utils.Verified')}
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-        )}
+          )}
+        </TooltipProvider>
+      )}
+      {document.active && !shouldDisplayBothIcons && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <CampaignIcon className="absolute top-m right-m h-6 w-6 shrink-0 text-green-500" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-gray-50">
+              {t('Badge.Published')}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
     </>
   );
 };

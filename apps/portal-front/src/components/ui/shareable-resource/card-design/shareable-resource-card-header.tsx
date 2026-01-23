@@ -9,13 +9,14 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { FunctionComponent } from 'react';
 
-interface DisplayHeaderCardProps {
+interface ShareableResourceCardHeaderProps {
   document: ShareableResource | PublicShareableResource;
   serviceInstanceId: string;
+  shouldDisplayBothIcons: boolean;
 }
 export const ShareableResourceCardHeader: FunctionComponent<
-  DisplayHeaderCardProps
-> = ({ document, serviceInstanceId }) => {
+  ShareableResourceCardHeaderProps
+> = ({ document, serviceInstanceId, shouldDisplayBothIcons }) => {
   return (
     <div className="flex items-stretch gap-m p-m relative">
       <ShareableResourceCardImage
@@ -27,7 +28,10 @@ export const ShareableResourceCardHeader: FunctionComponent<
           <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 pr-xxl">
             {document.name}
           </h2>
-          <ShareableResourceCardIcon document={document} />
+          <ShareableResourceCardIcon
+            shouldDisplayBothIcons={shouldDisplayBothIcons}
+            document={document}
+          />
         </div>
         <div className="mt-s flex flex-wrap gap-s">
           <BadgeOverflowCounter
