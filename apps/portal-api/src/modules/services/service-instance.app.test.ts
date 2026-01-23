@@ -90,6 +90,7 @@ describe('Service Instance app', () => {
 
       expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
+        organization_id: contextAdminUser.user.selected_organization_id,
       });
       expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
