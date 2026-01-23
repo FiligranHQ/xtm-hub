@@ -1,10 +1,6 @@
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
-import ShareableResourceConnectorCard from '@/components/ui/shareable-resource/shareable-resource-connector-card';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import {
-  isConnectorResource,
-  PublicShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { PublicShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import React, { useMemo } from 'react';
 
@@ -25,26 +21,14 @@ export const PublicShareableResourceList: React.FC<Props> = ({
 
   const resourceCardList = useMemo(() => {
     return documents.map((document) => {
-      if (isConnectorResource(document)) {
-        return (
-          <ShareableResourceConnectorCard
-            key={document.id}
-            shareableConnector={document}
-            serviceInstance={serviceInstance}
-            detailUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
-            shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance?.slug}/${document?.slug}`}
-            publicPath
-          />
-        );
-      }
-
       return (
         <ShareableResourceCard
+          publicPath
           key={document.id}
           document={document}
+          serviceInstance={serviceInstance}
           detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
           shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-          serviceInstance={serviceInstance}
         />
       );
     });

@@ -41,7 +41,7 @@ const openAEVScenarioFormSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type OpenAEVScenarioFormValues = z.infer<
   typeof openAEVScenarioFormSchema
@@ -219,7 +219,7 @@ export const OpenaevScenarioForm = ({
                 label: t('Service.OpenAEVScenario.Form.OpenAEVScenarioFile'),
                 fieldType: 'file',
                 inputProps: {
-                  allowedTypes: 'application/zip',
+                  accept: 'application/zip',
                   multiple: 'multiple',
                 },
               }
@@ -264,7 +264,7 @@ export const OpenaevScenarioForm = ({
             ),
             fieldType: 'file',
             inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
+              accept: 'image/jpeg, image/png',
             },
           },
           active: {
