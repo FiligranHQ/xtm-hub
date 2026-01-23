@@ -10,6 +10,7 @@ import {
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -90,6 +91,7 @@ describe('Service Instance app', () => {
 
       expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
+        organization_id: contextAdminUser.user.selected_organization_id,
       });
       expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
@@ -124,6 +126,61 @@ describe('Service Instance app', () => {
         mockSubscriptionId
       );
       expect(result).toEqual(mockServiceInstance);
+    });
+
+    it('should use subscription from user organization, not from another organization', async () => {
+      const userOrganizationId = contextAdminUser.user.selected_organization_id;
+      const otherOrganizationId = uuidv4() as OrganizationId;
+
+      const userOrgSubscriptionId = uuidv4() as SubscriptionId;
+      const otherOrgSubscriptionId = uuidv4() as SubscriptionId;
+
+      const userOrgSubscription = {
+        id: userOrgSubscriptionId,
+        service_instance_id: mockServiceInstanceId,
+        organization_id: userOrganizationId,
+        joining: 'AUTO_JOIN',
+        start_date: new Date(),
+        end_date: null,
+      };
+
+      const otherOrgSubscription = {
+        id: otherOrgSubscriptionId,
+        service_instance_id: mockServiceInstanceId,
+        organization_id: otherOrganizationId,
+        joining: 'AUTO_JOIN',
+        start_date: new Date(),
+        end_date: null,
+      };
+
+      loadSubscriptionBySpy.mockImplementation((filter) => {
+        if (filter.organization_id === userOrganizationId) {
+          return Promise.resolve(userOrgSubscription);
+        } else if (filter.organization_id === otherOrganizationId) {
+          return Promise.resolve(otherOrgSubscription);
+        }
+        return Promise.resolve(otherOrgSubscription);
+      });
+
+      loadUserServiceBySpy.mockResolvedValue([]);
+      loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
+      grantServiceAccessSpy.mockResolvedValue(undefined);
+
+      await serviceInstanceApp.loadServiceInstance(
+        contextAdminUser.user,
+        mockServiceInstanceId
+      );
+
+      expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
+        service_instance_id: mockServiceInstanceId,
+        organization_id: userOrganizationId,
+      });
+
+      expect(grantServiceAccessSpy).toHaveBeenCalledWith(
+        [GenericServiceCapabilityIds.AccessId],
+        [mockUserId],
+        userOrgSubscriptionId
+      );
     });
 
     it('should not auto-join user when subscription has INVITE_ONLY mode', async () => {
