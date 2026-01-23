@@ -19,6 +19,16 @@ import {
 
 type Selection = Record<string, string[]>;
 
+const isSelection = (item: unknown): item is Selection => {
+  if (typeof item !== 'object' || item === null || Array.isArray(item)) {
+    return false;
+  }
+
+  return Object.values(item).every(
+    (value) => Array.isArray(value) && value.every((v) => typeof v === 'string')
+  );
+};
+
 interface MultiSelectFormFieldProps<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends Record<string, any> = Record<string, any>,
@@ -300,5 +310,8 @@ const LogicalMultiSelectFormField = React.forwardRef<
 
 LogicalMultiSelectFormField.displayName = 'LogicalMultiSelectFormField';
 
-export { LogicalMultiSelectFormField };
+export {
+  isSelection as isLogicalMultiSelectSelection,
+  LogicalMultiSelectFormField,
+};
 export type { Selection as LogicalMultiSelectSelection };

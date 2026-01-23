@@ -20,7 +20,7 @@
     "extract-error-code-translation-key": "tsx scripts/extract-error-code-translation-keys.ts"
   },
   "dependencies": {
-    "@filigran/icon": "0.21.2",
+    "@filigran/icon": "0.22.3",
     "@filigran/ui": "0.44.0",
     "@hookform/resolvers": "5.2.2",
     "@svgr/webpack": "8.1.0",

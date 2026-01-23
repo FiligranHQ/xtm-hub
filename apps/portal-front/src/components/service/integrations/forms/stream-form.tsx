@@ -44,7 +44,7 @@ const streamFormSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type StreamFormValues = z.infer<typeof streamFormSchema>;
 
@@ -254,7 +254,7 @@ export const StreamForm = ({
             label: t(`${translationKey}.Form.StreamIllustration`),
             fieldType: 'file',
             inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
+              accept: 'image/jpeg, image/png',
             },
           },
           active: {

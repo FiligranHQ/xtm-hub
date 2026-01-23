@@ -26,6 +26,7 @@ export const errorLoggingPlugin = (): ApolloServerPlugin<Context> => ({
               user: contextValue?.user,
               serviceId: contextValue?.serviceId,
               codeStack: error.originalError?.stack,
+              variables: contextValue?.req?.body?.variables,
             },
             AppLogsCategory.GRAPHQL
           );
