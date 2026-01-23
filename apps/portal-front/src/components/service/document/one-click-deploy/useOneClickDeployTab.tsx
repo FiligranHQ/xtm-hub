@@ -23,8 +23,9 @@ const OPENCTI_URL_CONFIGS = {
 export const OPENCTI_INTEGRATION_URL_CONFIGS: Partial<
   Record<IntegrationTypeEnum, string>
 > = {
-  taxii_feed: 'deploy-taxii-feed',
-  csv_feed: 'deploy-csv-feed',
+  [IntegrationTypeEnum.TAXII_FEED]: 'deploy-taxii-feed',
+  [IntegrationTypeEnum.CSV_FEED]: 'deploy-csv-feed',
+  [IntegrationTypeEnum.STREAM]: 'deploy-stream',
 };
 
 interface Props {
