@@ -8,6 +8,22 @@ export enum ServiceListLocalStorageKey {
   OpenAEVScenarios = 'OpenAEVScenarios',
 }
 
+const deserializeSelectedFilters = (stored: string): ServiceListFilterKey[] => {
+  try {
+    const parsed = JSON.parse(stored);
+
+    if (!Array.isArray(parsed)) return [];
+
+    const validValues = Object.values(ServiceListFilterKey);
+
+    return parsed.filter((item): item is ServiceListFilterKey =>
+      validValues.includes(item)
+    );
+  } catch {
+    return [];
+  }
+};
+
 export const useServiceListLocalStorage = (
   serviceName: ServiceListLocalStorageKey
 ) => {
@@ -27,7 +43,10 @@ export const useServiceListLocalStorage = (
   const [selectedFilters, setSelectedFilters, removeSelectedFilters] =
     useLocalStorage<ServiceListFilterKey[]>(
       `selectedFilters${serviceName}List`,
-      []
+      [],
+      {
+        deserializer: deserializeSelectedFilters,
+      }
     );
 
   const [integrationTypes, setIntegrationTypes, removeIntegrationTypes] =
