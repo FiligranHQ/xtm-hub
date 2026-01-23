@@ -15,7 +15,7 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { ReachSalesButton } from './reach-sales-button';
+import { ReachSalesButton } from './reach-sales/reach-sales-button';
 
 // Component
 export const TryOpenCTIBanner = () => {
