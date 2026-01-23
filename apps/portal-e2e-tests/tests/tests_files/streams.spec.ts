@@ -35,7 +35,7 @@ test.describe('Streams', () => {
       page.getByText(STREAM_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await integrationPage.deleteIntegration();
+    await integrationPage.deleteIntegration('menuitem');
 
     await expect(
       page.getByText(STREAM_TEST.name, { exact: true })
@@ -43,7 +43,9 @@ test.describe('Streams', () => {
   });
   test('Should delete Stream from the detailed page', async ({ page }) => {
     await integrationPage.navigateToIntegration(STREAM_TEST.shortDescription);
-    await integrationPage.deleteIntegration();
+    await integrationPage.deleteIntegration('button');
+    //  Need to wait for the redirection to be over
+    await page.waitForTimeout(2000);
     await expect(
       page.getByText(STREAM_TEST.name, { exact: true })
     ).not.toBeVisible();

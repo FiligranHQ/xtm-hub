@@ -2,7 +2,7 @@ import { AppServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import ShareableResourceConnectorSlug from '@/components/service/document/connector/shareable-resource-connector-slug';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
-
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import {
   APP_PATH,
@@ -94,10 +94,13 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
             breadcrumbValue={breadcrumbValue}
             documentData={documentData}
             updateActions={
-              <ServiceManageSheet
-                document={documentData}
-                variant={'button'}
-              />
+              <>
+                <DeleteIntegrationSlug document={documentData} />
+                <ServiceManageSheet
+                  document={documentData}
+                  variant={'button'}
+                />
+              </>
             }
           />
         )}

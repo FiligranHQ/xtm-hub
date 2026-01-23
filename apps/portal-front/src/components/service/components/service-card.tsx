@@ -43,13 +43,13 @@ const ServiceCard = ({
 
   const [openSheet, setOpenSheet] = useState(false);
 
-  const { serviceInstance, setIntegrationType } = useServiceContext();
+  const { serviceInstance, setIntegrationType, translationKey } =
+    useServiceContext();
   const context = useDocumentContext({
     serviceInstance,
     connectionId,
     type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
   });
-  const serviceContext = useServiceContext();
 
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
@@ -79,10 +79,9 @@ const ServiceCard = ({
         `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
       );
     });
-    setOpenSheet(false);
     toast({
       title: t('Utils.Success'),
-      description: t(`${serviceContext.translationKey}.Actions.Deleted`, {
+      description: t(`${translationKey}.Actions.Deleted`, {
         name: document?.name ?? '',
       }),
     });
@@ -109,12 +108,13 @@ const ServiceCard = ({
                 {t('MenuActions.Update')}
               </IconActionsItem>
               <ServiceDelete
+                type={'menuitem'}
                 userCanDelete={userCanDelete}
                 onDelete={() =>
                   context.handleDeleteSheet(document, onDeleteCompleted)
                 }
-                serviceName={serviceContext.serviceInstance.name}
-                translationKey={serviceContext.translationKey}
+                serviceName={serviceInstance.name}
+                translationKey={translationKey}
               />
             </IconActions>
             <ServiceManageSheet

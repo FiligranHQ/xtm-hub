@@ -1,5 +1,6 @@
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActionsItem } from '@/components/ui/icon-actions';
+import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
 interface ServiceDeleteProps {
@@ -7,6 +8,7 @@ interface ServiceDeleteProps {
   onDelete?: () => void;
   serviceName: string;
   translationKey: string;
+  type?: 'menuitem' | 'button';
 }
 
 export const ServiceDelete = ({
@@ -14,6 +16,7 @@ export const ServiceDelete = ({
   onDelete,
   serviceName,
   translationKey,
+  type = 'button',
 }: ServiceDeleteProps) => {
   const t = useTranslations();
 
@@ -26,12 +29,16 @@ export const ServiceDelete = ({
           name: serviceName,
         })}
         triggerElement={
-          <IconActionsItem
-            onSelect={(e) => {
-              e.preventDefault();
-            }}>
-            {t('Utils.Delete')}
-          </IconActionsItem>
+          type === 'menuitem' ? (
+            <IconActionsItem
+              onSelect={(e) => {
+                e.preventDefault();
+              }}>
+              {t('Utils.Delete')}
+            </IconActionsItem>
+          ) : (
+            <Button variant={'outline-destructive'}>{t('Utils.Delete')}</Button>
+          )
         }
         onClickContinue={() => {
           onDelete?.();

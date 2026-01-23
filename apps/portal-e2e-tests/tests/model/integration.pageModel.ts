@@ -172,8 +172,8 @@ export default class IntegrationPage {
     await this.page.getByRole('link', { name: shortDescription }).click();
   }
 
-  async deleteIntegration() {
-    await this.page.getByRole('menuitem', { name: 'Delete' }).click();
+  async deleteIntegration(deleteButtonRole: 'menuitem' | 'button') {
+    await this.page.getByRole(deleteButtonRole, { name: 'Delete' }).click();
     await this.page.getByRole('button', { name: 'Delete' }).click();
   }
 }

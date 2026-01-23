@@ -36,7 +36,7 @@ test.describe('TAXII Feeds', () => {
       page.getByText(TAXI_FEED_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await integrationPage.deleteIntegration();
+    await integrationPage.deleteIntegration('menuitem');
 
     await expect(
       page.getByText(TAXI_FEED_TEST.name, { exact: true })
@@ -46,7 +46,9 @@ test.describe('TAXII Feeds', () => {
     await integrationPage.navigateToIntegration(
       TAXI_FEED_TEST.shortDescription
     );
-    await integrationPage.deleteIntegration();
+    await integrationPage.deleteIntegration('button');
+    //  Need to wait for the redirection to be over
+    await page.waitForTimeout(2000);
     await expect(
       page.getByText(TAXI_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();
