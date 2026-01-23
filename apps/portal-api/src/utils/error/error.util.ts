@@ -22,7 +22,7 @@ const errorUtil = (
     message,
     ...(information?.detail instanceof Error
       ? { detail: information.detail }
-      : null),
+      : {}),
   };
   logApp.error(name, errorDetails);
   return new Exception();
