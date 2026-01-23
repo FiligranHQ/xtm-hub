@@ -11,4 +11,5 @@ export interface MinioFile {
   minioName: string;
   fileName: string;
   mimeType: string;
+  jsonContent?: Record<string, unknown>;
 }

@@ -5,7 +5,9 @@ import {
   DocumentOrdering,
   FilterKey,
   IntegrationConnection,
+  IntegrationSubType,
   IntegrationType,
+  LogicalOperator,
   OrderingMode,
 } from '../../../../__generated__/resolvers-types';
 import { upsertConnectors } from '../../../ingest-manifest/ingest-manifest.domain';
@@ -51,7 +53,10 @@ describe('Document domain', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
         INTEGRATION_SERVICE_INSTANCE_ID,
         []
       );
@@ -104,7 +109,10 @@ describe('Document domain', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
         INTEGRATION_SERVICE_INSTANCE_ID,
         []
       );
@@ -127,12 +135,17 @@ describe('Document domain', () => {
               'ServiceInstance',
               INTEGRATION_SERVICE_INSTANCE_ID
             ),
-            filters: [
-              {
-                key: FilterKey.IntegrationType,
-                value: [IntegrationType.CsvFeed],
-              },
-            ],
+            logicalFilters: {
+              operator: LogicalOperator.And,
+              children: [
+                {
+                  leaf: {
+                    key: FilterKey.IntegrationType,
+                    value: [IntegrationType.CsvFeed],
+                  },
+                },
+              ],
+            },
           },
           INTEGRATION_METADATA_KEYS
         );
@@ -155,12 +168,17 @@ describe('Document domain', () => {
               'ServiceInstance',
               INTEGRATION_SERVICE_INSTANCE_ID
             ),
-            filters: [
-              {
-                key: FilterKey.IntegrationType,
-                value: [IntegrationType.Connector],
-              },
-            ],
+            logicalFilters: {
+              operator: LogicalOperator.And,
+              children: [
+                {
+                  leaf: {
+                    key: FilterKey.IntegrationType,
+                    value: [IntegrationType.Connector],
+                  },
+                },
+              ],
+            },
           },
           INTEGRATION_METADATA_KEYS
         );
@@ -170,6 +188,190 @@ describe('Document domain', () => {
       expect(connectorConnection.edges[0]?.node.integration_type).toBe(
         IntegrationType.Connector
       );
+
+      // fetch both
+      const integrationConnection: IntegrationConnection =
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          {
+            orderBy: DocumentOrdering.CreatedAt,
+            orderMode: OrderingMode.Desc,
+            first: 10,
+            serviceInstanceId: toGlobalId(
+              'ServiceInstance',
+              INTEGRATION_SERVICE_INSTANCE_ID
+            ),
+            logicalFilters: {
+              operator: LogicalOperator.And,
+              children: [
+                {
+                  leaf: {
+                    key: FilterKey.IntegrationType,
+                    value: [IntegrationType.Connector, IntegrationType.CsvFeed],
+                  },
+                },
+              ],
+            },
+          },
+          INTEGRATION_METADATA_KEYS
+        );
+
+      expect(integrationConnection.edges.length).toBe(2);
+    });
+
+    describe('multiple filters', () => {
+      it('should handle type and version', async () => {
+        // Create data
+        await DocumentApp.createDocument(
+          {
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            name: 'myCsvFeed',
+            description: 'description',
+            short_description: 'short_description',
+            slug: 'slug',
+            active: true,
+          },
+          [
+            { key: 'integration_type', value: IntegrationType.CsvFeed },
+            { key: 'feed_url', value: 'https://example.com' },
+          ],
+          INTEGRATION_SERVICE_INSTANCE_ID,
+          []
+        );
+
+        const connectors = await upsertConnectors(
+          sampleExtractedManifest as ManifestInformation[]
+        );
+
+        expect(connectors.length).toBe(2);
+
+        // Fetch connectors with version
+        const connectorConnection: IntegrationConnection =
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            {
+              orderBy: DocumentOrdering.CreatedAt,
+              orderMode: OrderingMode.Desc,
+              first: 10,
+              serviceInstanceId: toGlobalId(
+                'ServiceInstance',
+                INTEGRATION_SERVICE_INSTANCE_ID
+              ),
+              logicalFilters: {
+                operator: LogicalOperator.And,
+                children: [
+                  {
+                    leaf: {
+                      key: FilterKey.IntegrationType,
+                      value: [IntegrationType.Connector],
+                    },
+                  },
+                  {
+                    leaf: {
+                      key: FilterKey.ProductVersion,
+                      value: ['1.0.0'],
+                    },
+                  },
+                ],
+              },
+            },
+            INTEGRATION_METADATA_KEYS
+          );
+
+        expect(connectorConnection.edges.length).toBe(1);
+        expect(connectorConnection.edges[0]?.node.id).toBe(connectors[0]?.id);
+        expect(connectorConnection.edges[0]?.node.integration_type).toBe(
+          IntegrationType.Connector
+        );
+      });
+
+      it('should handle type and subtype', async () => {
+        // Create data
+        await DocumentApp.createDocument(
+          {
+            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            name: 'myCsvFeed',
+            description: 'description',
+            short_description: 'short_description',
+            slug: 'slug',
+            active: true,
+          },
+          [
+            { key: 'integration_type', value: IntegrationType.CsvFeed },
+            { key: 'feed_url', value: 'https://example.com' },
+          ],
+          INTEGRATION_SERVICE_INSTANCE_ID,
+          []
+        );
+
+        const connectors = await upsertConnectors(
+          sampleExtractedManifest as ManifestInformation[]
+        );
+
+        expect(connectors.length).toBe(2);
+
+        // Fetch connectors with version
+        const connectorConnection: IntegrationConnection =
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            {
+              orderBy: DocumentOrdering.CreatedAt,
+              orderMode: OrderingMode.Desc,
+              first: 10,
+              serviceInstanceId: toGlobalId(
+                'ServiceInstance',
+                INTEGRATION_SERVICE_INSTANCE_ID
+              ),
+              logicalFilters: {
+                operator: LogicalOperator.Or,
+                children: [
+                  {
+                    operator: LogicalOperator.And,
+                    children: [
+                      {
+                        leaf: {
+                          key: FilterKey.IntegrationType,
+                          value: [IntegrationType.Connector],
+                        },
+                      },
+                      {
+                        leaf: {
+                          key: FilterKey.IntegrationSubtype,
+                          value: [IntegrationSubType.ExternalImport],
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    leaf: {
+                      key: FilterKey.IntegrationType,
+                      value: [IntegrationType.CsvFeed],
+                    },
+                  },
+                ],
+              },
+            },
+            INTEGRATION_METADATA_KEYS
+          );
+
+        expect(connectorConnection.edges.length).toBe(2);
+
+        expect(connectorConnection.edges).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              node: expect.objectContaining({
+                integration_type: IntegrationType.CsvFeed,
+              }),
+            }),
+            expect.objectContaining({
+              node: expect.objectContaining({
+                integration_type: IntegrationType.Connector,
+                integration_subtype: IntegrationSubType.ExternalImport,
+              }),
+            }),
+          ])
+        );
+      });
     });
 
     describe('product version filtering', () => {
@@ -193,12 +395,17 @@ describe('Document domain', () => {
                 'ServiceInstance',
                 INTEGRATION_SERVICE_INSTANCE_ID
               ),
-              filters: [
-                {
-                  key: FilterKey.ProductVersion,
-                  value: ['1.0.0'],
-                },
-              ],
+              logicalFilters: {
+                operator: LogicalOperator.And,
+                children: [
+                  {
+                    leaf: {
+                      key: FilterKey.ProductVersion,
+                      value: ['1.0.0'],
+                    },
+                  },
+                ],
+              },
             },
             INTEGRATION_METADATA_KEYS
           );
@@ -229,12 +436,17 @@ describe('Document domain', () => {
                 'ServiceInstance',
                 INTEGRATION_SERVICE_INSTANCE_ID
               ),
-              filters: [
-                {
-                  key: FilterKey.ProductVersion,
-                  value: ['1.0.54', '1.0.1'],
-                },
-              ],
+              logicalFilters: {
+                operator: LogicalOperator.And,
+                children: [
+                  {
+                    leaf: {
+                      key: FilterKey.ProductVersion,
+                      value: ['1.0.54', '1.0.1'],
+                    },
+                  },
+                ],
+              },
             },
             INTEGRATION_METADATA_KEYS
           );

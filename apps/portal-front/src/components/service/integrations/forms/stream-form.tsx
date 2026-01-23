@@ -2,7 +2,7 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceDelete } from '@/components/service/components/service-delete';
-import { StreamIntegrationSubTypes } from '@/components/service/integrations/integration.utils';
+import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -294,7 +294,9 @@ export const StreamForm = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {StreamIntegrationSubTypes.map((node) => {
+                    {SubTypesPerIntegrationType.get(
+                      IntegrationTypeEnum.STREAM
+                    )?.map((node) => {
                       return (
                         <SelectItem
                           key={node}

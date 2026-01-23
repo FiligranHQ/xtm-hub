@@ -4,7 +4,7 @@ import { useServiceContext } from '@/components/service/components/service-conte
 import { ServiceDelete } from '@/components/service/components/service-delete';
 import {
   getIntegrationSubTypeMetadata,
-  ThirdPartyIntegrationIntegrationSubTypes,
+  SubTypesPerIntegrationType,
 } from '@/components/service/integrations/integration.utils';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -299,18 +299,18 @@ export const ThirdPartyIntegrationForm = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {ThirdPartyIntegrationIntegrationSubTypes.map(
-                      (integrationSubType) => {
-                        return (
-                          <SelectItem
-                            key={integrationSubType}
-                            value={integrationSubType}>
-                            {getIntegrationSubTypeMetadata(integrationSubType)
-                              ?.label ?? formatTitleCase(integrationSubType)}
-                          </SelectItem>
-                        );
-                      }
-                    )}
+                    {SubTypesPerIntegrationType.get(
+                      IntegrationTypeEnum.THIRD_PARTY_INTEGRATION
+                    )?.map((integrationSubType) => {
+                      return (
+                        <SelectItem
+                          key={integrationSubType}
+                          value={integrationSubType}>
+                          {getIntegrationSubTypeMetadata(integrationSubType)
+                            ?.label ?? formatTitleCase(integrationSubType)}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 <FormMessage />

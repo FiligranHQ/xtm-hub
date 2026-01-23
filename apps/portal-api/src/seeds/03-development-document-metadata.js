@@ -18,6 +18,11 @@ export async function seed(knex) {
         value: 'csv_feed',
       },
       {
+        document_id: 'e02faca0-9d38-4981-94f2-72bf18ca9c53',
+        key: 'feed_url',
+        value: 'https://example.com',
+      },
+      {
         document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
         key: 'integration_type',
         value: 'taxii_feed',
@@ -28,6 +33,11 @@ export async function seed(knex) {
         value: 'NATIVE',
       },
       {
+        document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
+        key: 'feed_url',
+        value: 'https://test.fr',
+      },
+      {
         document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
         key: 'integration_type',
         value: 'stream',
@@ -36,6 +46,11 @@ export async function seed(knex) {
         document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
         key: 'integration_subtype',
         value: 'NATIVE',
+      },
+      {
+        document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
+        key: 'feed_url',
+        value: 'https://github.com',
       },
       {
         document_id: '00ab5423-1b12-468f-9d67-2af079807205',
