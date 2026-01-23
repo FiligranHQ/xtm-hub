@@ -1,6 +1,5 @@
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { Button } from '@filigran/ui';
+import { IconActionsItem } from '@/components/ui/icon-actions';
 import { useTranslations } from 'next-intl';
 
 interface ServiceDeleteProps {
@@ -17,7 +16,6 @@ export const ServiceDelete = ({
   translationKey,
 }: ServiceDeleteProps) => {
   const t = useTranslations();
-  const { handleCloseSheet } = useDialogContext();
 
   return (
     userCanDelete && (
@@ -28,18 +26,15 @@ export const ServiceDelete = ({
           name: serviceName,
         })}
         triggerElement={
-          <Button
-            variant="outline-destructive"
-            className=""
-            aria-label={t(`${translationKey}.DeleteService`, {
-              name: serviceName,
-            })}>
+          <IconActionsItem
+            onSelect={(e) => {
+              e.preventDefault();
+            }}>
             {t('Utils.Delete')}
-          </Button>
+          </IconActionsItem>
         }
-        onClickContinue={(e: React.MouseEvent<HTMLButtonElement>) => {
+        onClickContinue={() => {
           onDelete?.();
-          handleCloseSheet(e);
         }}>
         {t(`${translationKey}.SureDeleteService`, {
           name: serviceName,

@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseFixtures';
+import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import IntegrationPage from '../model/integration.pageModel';
 
@@ -36,7 +36,7 @@ test.describe('TAXII Feeds', () => {
       page.getByText(TAXI_FEED_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await integrationPage.deleteIntegration('menuitem');
+    await integrationPage.deleteIntegration();
 
     await expect(
       page.getByText(TAXI_FEED_TEST.name, { exact: true })
@@ -46,7 +46,7 @@ test.describe('TAXII Feeds', () => {
     await integrationPage.navigateToIntegration(
       TAXI_FEED_TEST.shortDescription
     );
-    await integrationPage.deleteIntegration('button');
+    await integrationPage.deleteIntegration();
     await expect(
       page.getByText(TAXI_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();

@@ -144,6 +144,7 @@ const IntegrationsList = ({
           search={search}
           onSearchChange={onSearchChange}
           additionalFilters={filters}
+          connectionId={connectionId}
           paginationControls={
             <PaginationControls
               totalCount={data.integrations.totalCount}

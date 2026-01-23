@@ -2,7 +2,6 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceDelete } from '@/components/service/components/service-delete';
-import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -31,6 +30,7 @@ import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
+import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
 
 const taxiiFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
@@ -49,16 +49,12 @@ const taxiiFeedFormSchema = z.object({
 export type TaxiiFeedFormValues = z.infer<typeof taxiiFeedFormSchema>;
 
 interface TaxiiFeedFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: TaxiiFeedFormValues) => void;
-  onDelete?: () => void;
   document: SubscribableResource | undefined;
 }
 
 export const TaxiiFeedForm = ({
-  userCanDelete,
   handleSubmit,
-  onDelete,
   document,
 }: TaxiiFeedFormProps) => {
   const taxiiFeed = document;
@@ -315,14 +311,6 @@ export const TaxiiFeedForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {taxiiFeed && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={taxiiFeed.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

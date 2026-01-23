@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseFixtures';
+import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import IntegrationPage from '../model/integration.pageModel';
 
@@ -39,7 +39,7 @@ test.describe('Third Party Integrations', () => {
       page.getByText(ThirdPartyIntegration_TEST.name, { exact: true })
     ).toBeVisible();
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
-    await integrationPage.deleteIntegration('menuitem');
+    await integrationPage.deleteIntegration();
 
     await expect(
       page.getByText(ThirdPartyIntegration_TEST.name, { exact: true })
@@ -51,7 +51,7 @@ test.describe('Third Party Integrations', () => {
     await integrationPage.navigateToIntegration(
       ThirdPartyIntegration_TEST.shortDescription
     );
-    await integrationPage.deleteIntegration('button');
+    await integrationPage.deleteIntegration();
     await expect(
       page.getByText(ThirdPartyIntegration_TEST.name, { exact: true })
     ).not.toBeVisible();
