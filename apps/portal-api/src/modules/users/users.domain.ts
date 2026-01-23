@@ -469,8 +469,5 @@ export const updateUserAtLogin = async (
       error,
     });
   }
-  return {
-    ...user,
-    selected_organization_id: updatedUser.selected_organization_id,
-  };
+  return loadUserBy({ 'User.id': user.id });
 };
