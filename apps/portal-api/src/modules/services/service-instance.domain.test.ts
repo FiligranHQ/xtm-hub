@@ -1,7 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
-import { contextAdminUser, SERVICE_VAULT_ID } from '../../../tests/tests.const';
+import {
+  contextAdminUser,
+  FILIGRAN_ORGA_ID,
+  SERVICE_VAULT_ID,
+  THALES_ORGA_ID,
+  THALES_SIMPLE_USER_ID,
+} from '../../../tests/tests.const';
 import {
   PlatformContract,
   ServiceConfigurationStatus,
@@ -15,8 +21,12 @@ import ServiceInstance, {
 import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
+import UserService from '../../model/kanel/public/UserService';
+import * as mailService from '../../server/mail-service';
+import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { PlatformConfiguration } from './registration/registration.domain';
 import {
+  grantServiceAccess,
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
@@ -417,6 +427,91 @@ describe('Service instance domain', () => {
       expect(config.platform_id).toBe('completely-new-platform');
       expect(config.platform_title).toBe('Completely New Title');
       expect(config.platform_contract).toBe(PlatformContract.Ee);
+    });
+  });
+
+  describe('grantServiceAccess', () => {
+    let testServiceInstanceId: ServiceInstanceId;
+    let filigranSubscriptionId: SubscriptionId;
+    let thalesSubscriptionId: SubscriptionId;
+
+    beforeEach(async () => {
+      vi.spyOn(mailService, 'sendMail').mockResolvedValue();
+      testServiceInstanceId = uuidv4() as ServiceInstanceId;
+      filigranSubscriptionId = uuidv4() as SubscriptionId;
+      thalesSubscriptionId = uuidv4() as SubscriptionId;
+
+      const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+
+      await db('ServiceInstance').insert({
+        id: testServiceInstanceId,
+        name: 'Test Service for Grant Access',
+        description: 'Test service',
+        service_definition_id: serviceDefinitionId,
+        creation_status: 'READY',
+      });
+
+      await db('Subscription').insert({
+        id: filigranSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: FILIGRAN_ORGA_ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db('Subscription').insert({
+        id: thalesSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: THALES_ORGA_ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+    });
+
+    afterEach(async () => {
+      vi.restoreAllMocks();
+      await db<UserService>('User_Service')
+        .where('user_id', '=', THALES_SIMPLE_USER_ID)
+        .delete();
+    });
+
+    it('should create user_service linked to the correct subscription', async () => {
+      const result = await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [THALES_SIMPLE_USER_ID],
+        thalesSubscriptionId
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].user_id).toBe(THALES_SIMPLE_USER_ID);
+      expect(result[0].subscription_id).toBe(thalesSubscriptionId);
+
+      const userServiceInDb = await db<UserService>('User_Service')
+        .where('id', '=', result[0].id)
+        .first();
+
+      expect(userServiceInDb).toBeDefined();
+      expect(userServiceInDb?.subscription_id).toBe(thalesSubscriptionId);
+    });
+
+    it('should not link user_service to a different organization subscription', async () => {
+      const result = await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [THALES_SIMPLE_USER_ID],
+        thalesSubscriptionId
+      );
+
+      expect(result[0].subscription_id).toBe(thalesSubscriptionId);
+      expect(result[0].subscription_id).not.toBe(filigranSubscriptionId);
+
+      const userServicesInDb = await db<UserService>('User_Service')
+        .where('user_id', '=', THALES_SIMPLE_USER_ID)
+        .select('*');
+
+      expect(userServicesInDb).toHaveLength(1);
+      expect(userServicesInDb[0].subscription_id).toBe(thalesSubscriptionId);
     });
   });
 });
