@@ -2,6 +2,7 @@ import config from 'config';
 import { GraphQLError } from 'graphql';
 import { createLogger, format, QueryOptions, transports } from 'winston';
 import pjson from '../../package.json';
+import { requestContext } from '../context/request.context';
 import User from '../model/kanel/public/User';
 import { UnknownError } from './error/error.util';
 import { omit } from './utils';
@@ -74,11 +75,18 @@ const addBasicMetaInformation = (
   error: Error,
   meta: Record<string, unknown> & { user?: User }
 ) => {
+  const context = requestContext.get();
+
   const logMeta: Record<string, unknown> = {
     ...omit(meta, ['user']),
-    userId: meta.user?.id,
+    userId: meta.user?.id ?? context?.user?.id,
   };
   if (error) logMeta.errors = buildMetaErrors(error);
+  for (const key of Object.keys(logMeta)) {
+    if (logMeta[key] instanceof Error) {
+      logMeta[key] = buildMetaErrors(logMeta[key] as Error);
+    }
+  }
   return { category, version: pjson.version, ...logMeta };
 };
 
