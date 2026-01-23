@@ -1554,6 +1554,7 @@ export enum Restriction {
   ManageAccess = 'MANAGE_ACCESS',
   ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
   ManageSubscription = 'MANAGE_SUBSCRIPTION',
+  ModifyTrials = 'MODIFY_TRIALS',
   ReadTrials = 'READ_TRIALS'
 }
 

@@ -1357,6 +1357,7 @@ enum Restriction {
   MANAGE_SUBSCRIPTION
   MANAGE_PLATFORM_REGISTRATION
   READ_TRIALS
+  MODIFY_TRIALS
 }
 
 enum OrganizationCapability {
