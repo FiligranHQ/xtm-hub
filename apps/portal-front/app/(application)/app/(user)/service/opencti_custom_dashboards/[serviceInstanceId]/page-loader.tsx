@@ -8,6 +8,8 @@ import CustomDashboardsList from '@/components/service/custom-dashboards/[servic
 import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
 import { Skeleton } from '@filigran/ui';
 import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
+import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
+import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -32,7 +34,14 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'desc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
-        filters: [{ key: 'label', value: labels }],
+        logicalFilters: {
+          operator: LogicalOperatorEnum.AND,
+          children: [
+            {
+              leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
+            },
+          ],
+        },
       },
       {
         fetchPolicy: 'store-and-network',

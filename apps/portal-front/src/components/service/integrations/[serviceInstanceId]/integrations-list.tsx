@@ -80,7 +80,6 @@ const IntegrationsList = ({
   const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
   const {
-    removeIntegrationSubTypes,
     removeIntegrationTypes,
     removeProductVersions,
     removeDeployable,
@@ -92,7 +91,6 @@ const IntegrationsList = ({
     [ServiceListFilterKey.IntegrationType]: {
       node: <IntegrationFilters />,
       reset: () => {
-        removeIntegrationSubTypes();
         removeIntegrationTypes();
       },
     },

@@ -135,7 +135,10 @@ describe('TelemetryApp', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
         INTEGRATION_SERVICE_INSTANCE_ID,
         []
       );
@@ -213,7 +216,10 @@ describe('TelemetryApp', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
         INTEGRATION_SERVICE_INSTANCE_ID,
         []
       );
@@ -290,7 +296,10 @@ describe('TelemetryApp', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'integration_type', value: IntegrationType.CsvFeed }],
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
         INTEGRATION_SERVICE_INSTANCE_ID,
         []
       );

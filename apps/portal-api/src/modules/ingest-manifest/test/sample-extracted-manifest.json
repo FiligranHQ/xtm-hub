@@ -9,7 +9,7 @@
     "product_version": "1.0.0",
     "logo": "data:image/png;base64,abc123",
     "verified": true,
-    "integration_subtype": "docker",
+    "integration_subtype": "EXTERNAL_IMPORT",
     "integration_type": "connector",
     "labels": ["automation", "integration"],
     "source_code": "https://github.com/example/repo",

@@ -7,6 +7,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload as S3Upload } from '@aws-sdk/lib-storage';
 import config from 'config';
+import Stream from 'node:stream';
 import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
@@ -62,24 +63,40 @@ export const MinIOClient = {
   ): Promise<MinioFile> => {
     const { user } = requestContext.require();
     const fileName = normalizeDocumentName(jsonFile.file.filename);
-    const minioName = await MinIOClient.sendFile(
+    const { minioName, jsonContent } = await MinIOClient.sendFile(
       jsonFile.file,
       fileName,
       user.id,
       serviceInstanceId
     );
 
-    return { minioName, fileName, mimeType: jsonFile.file.mimetype };
+    return {
+      minioName,
+      fileName,
+      mimeType: jsonFile.file.mimetype,
+      jsonContent,
+    };
   },
 
-  insertFile: async (fileParams) => {
+  insertFile: async (fileParams: {
+    Bucket: string;
+    Key: string;
+    Body: string | Stream.Readable;
+    Metadata: {
+      mimetype: string;
+      filename: string;
+      encoding: string;
+      Uploadinguserid: string;
+      ServiceInstanceId: string;
+    };
+  }) => {
     const fileKey: string = fileParams.Key;
     const s3Upload = new S3Upload({
       client: s3Client,
       params: fileParams,
     });
     await s3Upload.done();
-    logApp.debug('[MinIO] inserted file ', fileParams.Key);
+    logApp.debug('[MinIO] inserted file', { key: fileParams.Key });
     return fileKey;
   },
 
@@ -88,7 +105,7 @@ export const MinIOClient = {
     filename: string,
     userId: string,
     serviceInstanceId: ServiceInstanceId
-  ) => {
+  ): Promise<{ minioName: string; jsonContent?: Record<string, unknown> }> => {
     const fullMetadata = {
       mimetype: file.mimetype,
       filename,
@@ -97,14 +114,26 @@ export const MinIOClient = {
       ServiceInstanceId: serviceInstanceId,
     };
 
+    const stream = file.createReadStream();
+
+    const jsonContent =
+      file.mimetype === 'application/json'
+        ? await parseJsonStream(stream)
+        : undefined;
+
     const fileParams = {
-      Bucket: config.get('minio.bucketName'),
+      Bucket: config.get<string>('minio.bucketName'),
       Key: getDocumentName(file.filename),
-      Body: file.createReadStream(),
+      // Need to pass jsonContent because a stream can't be read twice
+      Body: jsonContent ? JSON.stringify(jsonContent) : stream,
       Metadata: fullMetadata,
     };
 
-    return MinIOClient.insertFile(fileParams);
+    const minioName = await MinIOClient.insertFile(fileParams);
+    return {
+      minioName,
+      jsonContent,
+    };
   },
 
   downloadFile: async (minioName: string) => {
@@ -131,4 +160,16 @@ export const MinIOClient = {
     });
     await s3Client.send(deleteCommand);
   },
+};
+
+const parseJsonStream = async (
+  stream: Stream.Readable
+): Promise<Record<string, unknown> | undefined> => {
+  const content = await new Response(stream).text();
+  try {
+    return JSON.parse(content);
+  } catch (err) {
+    logApp.error(`unable to parse JSON stream: ${err.message}`);
+    return undefined;
+  }
 };

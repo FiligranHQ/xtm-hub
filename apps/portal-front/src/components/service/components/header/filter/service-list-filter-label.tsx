@@ -1,8 +1,9 @@
 import { getLabels } from '@/components/admin/label/label.utils';
-import { ServiceListFilterContainer } from '@/components/service/components/header/filter/service-list-filter-container';
+import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
+import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import { MultiSelectFormField } from '@filigran/ui/clients';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
@@ -14,7 +15,14 @@ export const ServiceListFilterLabel: FunctionComponent<
 > = ({ type }) => {
   const t = useTranslations();
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
-  const { labels, setLabels } = useServiceListLocalStorage(localStorageKey);
+  const { labels, setLabels, removeLabels } =
+    useServiceListLocalStorage(localStorageKey);
+
+  const { removeFilter } = useServiceListFilters();
+  const removeLabelFilter = () => {
+    removeLabels();
+    removeFilter(ServiceListFilterKey.Label);
+  };
 
   const labelOptions = getLabels(type).map(({ name, id }) => ({
     label: name,
@@ -22,15 +30,14 @@ export const ServiceListFilterLabel: FunctionComponent<
   }));
 
   return (
-    <ServiceListFilterContainer>
-      <MultiSelectFormField
-        options={labelOptions}
-        defaultValue={labels}
-        placeholder={t('GenericActions.FilterUseCases')}
-        noResultString={t('Utils.NotFound')}
-        onValueChange={setLabels}
-        variant="inverted"
-      />
-    </ServiceListFilterContainer>
+    <LogicalMultiSelectFormField
+      options={labelOptions}
+      initialValue={labels}
+      placeholder={t('GenericActions.FilterUseCases')}
+      noResultString={t('Utils.NotFound')}
+      onValueChange={setLabels}
+      onRemove={removeLabelFilter}
+      optionLabel={t('GenericActions.FilterUseCasesLabel')}
+    />
   );
 };

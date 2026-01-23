@@ -274,12 +274,14 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
 
   await runESMigrations();
 
+  await platformInit();
+
   if (process.env.DATA_SEEDING || portalConfig.environment === 'development') {
     logApp.info('[SEEDING] Running development seeds...');
     await dbMigration.seed();
     logApp.info('[SEEDING] Development seeds completed');
   }
-  await platformInit();
+
   logApp.info(
     '[Migration] Database version is now ' + (await dbMigration.version())
   );

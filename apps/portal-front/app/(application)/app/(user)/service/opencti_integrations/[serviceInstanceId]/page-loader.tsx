@@ -6,9 +6,11 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/integrations-list';
 import { IntegrationsListQuery } from '@/components/service/integrations/integration.graphql';
+import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/integration.utils';
 import { Skeleton } from '@filigran/ui';
 import { integrationsQuery } from '@generated/integrationsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
+import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -26,7 +28,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
-    integrationSubTypes,
     productVersions,
     setSearch,
     deployable,
@@ -35,6 +36,9 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   );
 
   useEffect(() => {
+    const typeSubtypeFilter =
+      buildTypeSubtypeFilterExpression(integrationTypes);
+
     loadQuery(
       {
         count: pageSize,
@@ -42,16 +46,27 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'asc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
-        filters: [
-          { key: FilterKeyEnum.LABEL, value: labels },
-          { key: FilterKeyEnum.INTEGRATION_TYPE, value: integrationTypes },
-          {
-            key: FilterKeyEnum.INTEGRATION_SUBTYPE,
-            value: integrationSubTypes,
-          },
-          { key: FilterKeyEnum.PRODUCT_VERSION, value: productVersions },
-          { key: FilterKeyEnum.MANAGER_SUPPORTED, value: deployable },
-        ],
+        logicalFilters: {
+          operator: LogicalOperatorEnum.AND,
+          children: [
+            {
+              leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
+            },
+            ...(typeSubtypeFilter ? [typeSubtypeFilter] : []),
+            {
+              leaf: {
+                key: FilterKeyEnum.PRODUCT_VERSION,
+                value: Object.keys(productVersions),
+              },
+            },
+            {
+              leaf: {
+                key: FilterKeyEnum.MANAGER_SUPPORTED,
+                value: Object.keys(deployable),
+              },
+            },
+          ],
+        },
       },
       {
         fetchPolicy: 'store-and-network',
@@ -64,7 +79,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
-    integrationSubTypes,
     productVersions,
     deployable,
   ]);

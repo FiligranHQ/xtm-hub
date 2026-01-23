@@ -172,13 +172,13 @@ export const createNewUserFromInvitation = async (
     last_name,
     picture,
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
-  isAdminFiligran: boolean = false
+  isFiligranUser: boolean = false
 ) => {
   const [organization] = await loadOrganizationsFromEmail(email);
   let userWithRoles: User;
   if (!organization) {
     userWithRoles = await createOrganisationWithAdminUser(email);
-  } else if (isAdminFiligran) {
+  } else if (isFiligranUser) {
     userWithRoles = await createUserWithPersonalSpace({
       email,
       last_name,
@@ -206,7 +206,7 @@ export const getOrCreateUser = async (
     'email' | 'first_name' | 'last_name' | 'picture'
   >,
   upsert = false,
-  isAdminFiligran = false
+  isFiligranUser = false
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
   if (user && upsert) {
@@ -225,7 +225,7 @@ export const getOrCreateUser = async (
   }
   return user
     ? user
-    : await createNewUserFromInvitation(userInfo, isAdminFiligran);
+    : await createNewUserFromInvitation(userInfo, isFiligranUser);
 };
 
 export const insertUserIntoOrganization = async (

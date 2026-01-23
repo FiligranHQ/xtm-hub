@@ -59,7 +59,7 @@
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
       "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
-      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors du désenregistrement de la plate-forme",
+      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors du désenregistrement de la plateforme",
       "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "Vous ne pouvez pas ajouter un utilisateur à votre espace personnel",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "Vous ne pouvez pas supprimer le dernier administrateur d'une organisation",
@@ -100,7 +100,7 @@
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
-      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
+      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
@@ -112,8 +112,8 @@
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "Vous n'êtes pas autorisé à faire ceci",
       "PLATFORM_NOT_REGISTERED": "La plateforme n'est pas enregistrée",
       "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
-      "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plate-forme de l'utilisateur",
-      "REGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plate-forme",
+      "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plateforme de l'utilisateur",
+      "REGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de la suppression d'un utilisateur d'une organisation en attente",
@@ -139,6 +139,7 @@
   },
   "GenericActions": {
     "FilterUseCases": "Cas d'utilisation...",
+    "FilterUseCasesLabel": "Cas d'utilisation",
     "Search": "Recherche...",
     "Paginate": {
       "PreviousPage": "Page précédente",
@@ -361,17 +362,17 @@
     "AnotherOrganization": {
       "Allowed": {
         "Registered": {
-          "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation. Voulez-vous transférer votre plate-forme ?",
-          "Title": "Plate-forme déjà enregistrée"
+          "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation. Voulez-vous transférer votre plateforme ?",
+          "Title": "Plateforme déjà enregistrée"
         },
         "Unregistered": {
-          "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée dans une autre organisation. Souhaitez-vous réenregistrer votre plate-forme ?",
-          "Title": "La plate-forme a été enregistrée"
+          "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée dans une autre organisation. Souhaitez-vous réenregistrer votre plateforme ?",
+          "Title": "La plateforme a été enregistrée"
         }
       },
       "NotAllowed": {
         "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer.",
-        "Title": "La plate-forme est enregistrée dans une autre organisation"
+        "Title": "La plateforme est enregistrée dans une autre organisation"
       }
     },
     "Back": "Retour à {platformIdentifier}",
@@ -383,9 +384,9 @@
         "EE": "Édition Entreprise"
       },
       "Description": "Cliquez ici pour accéder à votre plateforme privée.",
-      "PlatformID": "ID de la plate-forme",
-      "PlatformURL": "URL de la plate-forme",
-      "PrivatePlatform": "Plate-forme privée"
+      "PlatformID": "ID de la plateforme",
+      "PlatformURL": "URL de la plateforme",
+      "PrivatePlatform": "Plateforme privée"
     },
     "Error": {
       "Capability": {
@@ -448,7 +449,7 @@
       "TooMuchOrganization": {
         "Description1": "Votre plateforme OpenCTI {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
         "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
-        "Title": "Avis de réenregistrement de la plate-forme"
+        "Title": "Avis de réenregistrement de la plateforme"
       }
     },
     "OrganizationForm": {
@@ -461,8 +462,8 @@
         "Title": "Plateforme déjà enregistrée"
       },
       "Unregistered": {
-        "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée. Souhaitez-vous réenregistrer votre plate-forme ?",
-        "Title": "La plate-forme a été enregistrée"
+        "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée. Souhaitez-vous réenregistrer votre plateforme ?",
+        "Title": "La plateforme a été enregistrée"
       }
     },
     "Succeeded": {
@@ -472,7 +473,7 @@
     "TooMuchOrganization": {
       "Description1": "Votre plateforme {platformIdentifier} {platformIdentifier} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
       "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
-      "Title": "Avis de réenregistrement de la plate-forme"
+      "Title": "Avis de réenregistrement de la plateforme"
     }
   },
   "RemoveUserOrgDialog": {
@@ -520,15 +521,19 @@
       "IntegrationType": "Type d'intégration",
       "Filter": {
         "IntegrationSubType": {
+          "Label": "Sous-type",
           "Placeholder": "Sous-type..."
         },
         "Type": {
+          "Label": "Type",
           "Placeholder": "Type..."
         },
         "ProductVersion": {
+          "Label": "Plateforme",
           "Placeholder": "Plateforme..."
         },
         "ManagerSupported": {
+          "Label": "Type de déploiement",
           "Placeholder": "Type de déploiement...",
           "AutomaticDeploy": "Déploiement automatique",
           "ManualDeploy": "Déploiement manuel"
@@ -821,7 +826,8 @@
         "IntegrationType": "Type",
         "IntegrationSubType": "Sous-type",
         "GithubURL": "URL Github",
-        "VendorURL": "URL du fournisseur"
+        "VendorURL": "URL du fournisseur",
+        "FeedURL": "URL du flux"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",
@@ -972,7 +978,7 @@
     "Error": {
       "Capability": {
         "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
-        "Description": "Si vous souhaitez procéder à la désinscription de votre plate-forme {name} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
+        "Description": "Si vous souhaitez procéder à la désinscription de votre plateforme {name} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
         "Title": "Vous n'avez pas l'accès {platformIdentifier} nécessaire sur le XTM Hub."
       },
       "NotInOrganization": {
@@ -984,7 +990,7 @@
       }
     },
     "Failed": {
-      "Description": "Une erreur s'est produite lors de la désinscription de la plate-forme.",
+      "Description": "Une erreur s'est produite lors de la désinscription de la plateforme.",
       "Title": "La désinscription a échoué"
     },
     "OpenCTI": {
@@ -1113,7 +1119,9 @@
     "Verified": "Vérifié",
     "Visualize": "Visualiser",
     "DangerZone": "Zone de danger",
-    "AutomaticDeploy": "Déploiement automatique"
+    "AutomaticDeploy": "Déploiement automatique",
+    "And": "ET",
+    "Or": "OU"
   },
   "Platform": {
     "Update": "Mettre à jour",
