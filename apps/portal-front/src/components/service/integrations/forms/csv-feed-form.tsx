@@ -40,6 +40,7 @@ const csvFeedFormSchema = z.object({
   labels: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type CsvFeedFormValues = z.infer<typeof csvFeedFormSchema>;
 
@@ -68,6 +69,10 @@ export const CsvFeedForm = ({
     () =>
       ({
         ...csvFeed,
+        images: csvFeed?.children_documents?.map((doc) => ({
+          ...doc,
+          name: doc.file_name,
+        })) as unknown as FileList,
         labels: csvFeed?.labels?.map((label) => label.id),
         uploader_id: csvFeed?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -83,6 +88,7 @@ export const CsvFeedForm = ({
       csvFeed
         ? csvFeedFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(fileListCheck).optional(),
           })
         : csvFeedFormSchema,
     [csvFeed]
@@ -203,8 +209,7 @@ export const CsvFeedForm = ({
                 label: t(`${translationKey}.Form.CsvFeedFile`),
                 fieldType: 'file',
                 inputProps: {
-                  allowedTypes: 'application/json',
-                  multiple: 'multiple',
+                  accept: 'application/json',
                 },
               }
             : {
@@ -238,6 +243,13 @@ export const CsvFeedForm = ({
                   </FormItem>
                 ),
               },
+          images: {
+            label: t(`${translationKey}.Form.CsvFeedIllustration`),
+            fieldType: 'file',
+            inputProps: {
+              accept: 'image/jpeg, image/png',
+            },
+          },
           active: {
             label: t(`${translationKey}.Form.PublishedPlaceholder`),
           },

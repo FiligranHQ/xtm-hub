@@ -43,16 +43,8 @@ const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'active',
 ];
 
-const documentFileKeys: Array<keyof ServiceFormValues> = ['document'];
-type DashboardFormValues = ServiceFormValues & {
-  images?: FileList;
-};
-function hasImages(
-  type: ShareableResourceType,
-  values: ServiceFormValues
-): values is DashboardFormValues {
-  return type === ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD;
-}
+const documentFileKeys: Array<keyof ServiceFormValues> = ['document', 'images'];
+
 interface UseDocumentContextProps {
   serviceInstance: serviceInstance_fragment$data;
   connectionId?: string;
@@ -84,14 +76,10 @@ export function useDocumentContext({
       },
       ['uploader_organization_id']
     );
-    const metadataBase = omit(values, [...documentBaseKeys, 'document']);
-
-    const metadata = hasImages(type, values)
-      ? omit(metadataBase as DashboardFormValues, ['images'])
-      : metadataBase;
+    const metadata = omit(values, [...documentBaseKeys, 'document', 'images']);
     const documents = [
-      ...Array.from(values.document ?? []),
-      ...(hasImages(type, values) ? Array.from(values.images ?? []) : []),
+      ...Array.from(values?.document ?? []),
+      ...Array.from(values?.images ?? []),
     ];
 
     createMutation({
@@ -156,7 +144,7 @@ export function useDocumentContext({
   );
 
   const handleUpdateSheet = async (
-    values: ServiceFormValues | DashboardFormValues,
+    values: ServiceFormValues,
     resource: ShareableResource,
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
@@ -166,18 +154,10 @@ export function useDocumentContext({
       uploader_id: values?.uploader_id ?? '',
     };
 
-    const metadataBase = omit(values, [
-      ...documentBaseKeys,
-      ...documentFileKeys,
-    ]);
+    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
+    // Split images between existing and new ones
+    const images = Array.from(values?.images ?? []) as FormImagesValues;
 
-    const metadata = hasImages(type, values)
-      ? omit(metadataBase as DashboardFormValues, ['images'])
-      : metadataBase;
-    // Split images between existing and new ones if Dashboards
-    const images = (
-      hasImages(type, values) ? Array.from(values.images ?? []) : []
-    ) as FormImagesValues;
     const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document

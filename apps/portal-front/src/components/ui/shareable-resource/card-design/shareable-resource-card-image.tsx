@@ -3,7 +3,6 @@ import {
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from '@filigran/icon';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import Image from 'next/image';
 import { FunctionComponent } from 'react';
 
@@ -17,8 +16,8 @@ export const ShareableResourceCardImage: FunctionComponent<
   return (
     <>
       <div className=" items-center self-stretch flex">
-        {'integration_type' in document &&
-        document.integration_type === IntegrationTypeEnum.CONNECTOR ? (
+        {document?.children_documents &&
+        document?.children_documents.length > 0 ? (
           <Image
             src={`/document/images/${serviceInstanceId}/${document.children_documents?.[0]?.id}`}
             alt={`${document.name} logo`}

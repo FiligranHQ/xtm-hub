@@ -44,6 +44,7 @@ const streamFormSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type StreamFormValues = z.infer<typeof streamFormSchema>;
 
@@ -72,6 +73,10 @@ export const StreamForm = ({
     () =>
       ({
         ...stream,
+        images: stream?.children_documents?.map((doc) => ({
+          ...doc,
+          name: doc.file_name,
+        })) as unknown as FileList,
         labels: stream?.labels?.map((label) => label.id),
         uploader_id: stream?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -89,6 +94,7 @@ export const StreamForm = ({
       stream
         ? streamFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(fileListCheck).optional(),
           })
         : streamFormSchema,
     [stream]
@@ -244,6 +250,13 @@ export const StreamForm = ({
                   </FormItem>
                 ),
               },
+          images: {
+            label: t(`${translationKey}.Form.StreamIllustration`),
+            fieldType: 'file',
+            inputProps: {
+              accept: 'image/jpeg, image/png',
+            },
+          },
           active: {
             label: t(`${translationKey}.Form.PublishedPlaceholder`),
           },

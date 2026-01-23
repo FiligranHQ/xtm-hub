@@ -62,6 +62,7 @@ export default class IntegrationPage {
     await this.page.getByLabel('Type').click();
     await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
+    await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -92,6 +93,7 @@ export default class IntegrationPage {
     await this.page.getByLabel('Type').click();
     await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
+    await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -119,6 +121,7 @@ export default class IntegrationPage {
       .getByRole('checkbox', { name: 'Is the CSV Feed published?' })
       .click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
+    await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -161,6 +164,7 @@ export default class IntegrationPage {
     await this.page
       .getByRole('textbox', { name: 'OpenCTI version' })
       .fill('1.2.3');
+    await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
