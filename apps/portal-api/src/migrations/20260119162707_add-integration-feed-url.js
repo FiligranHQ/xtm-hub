@@ -10,7 +10,7 @@ const getEndpoint = () => {
   return `${config.get('minio.useSsl') === 'true' ? 'https' : 'http'}://${config.get('minio.endpoint')}:${config.get('minio.port')}`;
 };
 
-const downloadFile = async (minioName) => {
+const downloadFile = async (minio_name) => {
   const s3Client = new S3Client({
     region: config.get('minio.region'),
     endpoint: getEndpoint(),
@@ -25,20 +25,21 @@ const downloadFile = async (minioName) => {
   const object = await s3Client.send(
     new s3.GetObjectCommand({
       Bucket: config.get('minio.bucketName'),
-      Key: minioName,
+      Key: minio_name,
     })
   );
   return object.Body;
 };
 
 const updateDocument = async (knex, document) => {
+  const minio_name = document.minio_name;
   try {
-    const stream = await downloadFile(document.minioName);
+    const stream = await downloadFile(minio_name);
     const content = await stream.transformToString();
     const parsed = JSON.parse(content);
     if (!parsed || !parsed.configuration || !parsed.configuration.uri) {
       console.warn(
-        `Skipping feed_url metadata insert: missing configuration.uri for document ${document.id} (minioName: ${document.minioName}).`
+        `Skipping feed_url metadata insert: missing configuration.uri for document ${document.id} (minio_name: ${minio_name}).`
       );
       return;
     }
@@ -51,7 +52,7 @@ const updateDocument = async (knex, document) => {
     });
   } catch (err) {
     console.error(
-      `Failed to update feed_url metadata for document ${document.id} (minioName: ${document.minioName}):`,
+      `Failed to update feed_url metadata for document ${document.id} (minio_name: ${minio_name}):`,
       err
     );
   }

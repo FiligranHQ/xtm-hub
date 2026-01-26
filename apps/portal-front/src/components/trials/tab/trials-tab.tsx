@@ -14,7 +14,10 @@ import {
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { SearchInput } from '@/components/ui/search-input';
-import { useAdminByPass } from '@/hooks/usePortalCapability';
+import {
+  useAdminByPass,
+  useUserHasPortalCapability,
+} from '@/hooks/usePortalCapability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
@@ -39,6 +42,7 @@ import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequ
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
+import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
 import { trialsList$key } from '@generated/trialsList.graphql';
 import { trialsListQuery } from '@generated/trialsListQuery.graphql';
@@ -102,7 +106,11 @@ const connectionIDs = new Map<TrialsTabType, string>();
 const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
+  const userHasModifyTrialCapa = useUserHasPortalCapability([
+    RestrictionEnum.MODIFY_TRIALS,
+  ]);
 
+  const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
   const statuses = trialsTabConfig[type].statuses;
   const defaultOrder =
     trialsTabConfig[type].defaultOrder ??
@@ -326,7 +334,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
           ]
         : []),
       ...((type === TrialsTabType.Running || type === TrialsTabType.Waiting) &&
-      isAdminByPass
+      canModifyTrial
         ? [
             {
               accessorKey: 'actions',
@@ -360,7 +368,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                         })}
                       </AlertDialogComponent>
                     )}
-                    {type === TrialsTabType.Waiting && isAdminByPass && (
+                    {type === TrialsTabType.Waiting && canModifyTrial && (
                       <>
                         <TooltipProvider>
                           <Tooltip>

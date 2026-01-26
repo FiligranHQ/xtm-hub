@@ -2,7 +2,7 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceDelete } from '@/components/service/components/service-delete';
-import { StreamIntegrationSubTypes } from '@/components/service/integrations/integration.utils';
+import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -44,7 +44,7 @@ const streamFormSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type StreamFormValues = z.infer<typeof streamFormSchema>;
 
@@ -254,7 +254,7 @@ export const StreamForm = ({
             label: t(`${translationKey}.Form.StreamIllustration`),
             fieldType: 'file',
             inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
+              accept: 'image/jpeg, image/png',
             },
           },
           active: {
@@ -294,7 +294,9 @@ export const StreamForm = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {StreamIntegrationSubTypes.map((node) => {
+                    {SubTypesPerIntegrationType.get(
+                      IntegrationTypeEnum.STREAM
+                    )?.map((node) => {
                       return (
                         <SelectItem
                           key={node}

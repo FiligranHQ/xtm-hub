@@ -1,0 +1,45 @@
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
+import { ShareableResourceCardIcon } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-icon';
+import { ShareableResourceCardImage } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-image';
+import {
+  PublicShareableResource,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
+import { FunctionComponent } from 'react';
+
+interface ShareableResourceCardHeaderProps {
+  document: ShareableResource | PublicShareableResource;
+  serviceInstanceId: string;
+  shouldDisplayBothIcons: boolean;
+}
+export const ShareableResourceCardHeader: FunctionComponent<
+  ShareableResourceCardHeaderProps
+> = ({ document, serviceInstanceId, shouldDisplayBothIcons }) => {
+  return (
+    <div className="flex items-stretch gap-m p-m relative">
+      <ShareableResourceCardImage
+        document={document}
+        serviceInstanceId={serviceInstanceId}
+      />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 pr-xxl">
+            {document.name}
+          </h2>
+          <ShareableResourceCardIcon
+            shouldDisplayBothIcons={shouldDisplayBothIcons}
+            document={document}
+          />
+        </div>
+        <div className="mt-s flex flex-wrap gap-s">
+          <BadgeOverflowCounter
+            badges={document.labels as BadgeOverflow[]}
+            className="z-[2]"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};

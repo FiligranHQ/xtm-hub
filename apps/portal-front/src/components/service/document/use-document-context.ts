@@ -77,10 +77,9 @@ export function useDocumentContext({
       ['uploader_organization_id']
     );
     const metadata = omit(values, [...documentBaseKeys, 'document', 'images']);
-
     const documents = [
       ...Array.from(values?.document ?? []),
-      ...Array.from(values.images),
+      ...Array.from(values?.images ?? []),
     ];
 
     createMutation({
@@ -156,9 +155,9 @@ export function useDocumentContext({
     };
 
     const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
-
     // Split images between existing and new ones
-    const images = Array.from(values.images ?? []) as FormImagesValues;
+    const images = Array.from(values?.images ?? []) as FormImagesValues;
+
     const [existingImages, newImages] = splitExistingAndNewImages(images);
     const documentsToUpload = [
       ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document

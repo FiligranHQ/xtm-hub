@@ -200,14 +200,14 @@ extend type Mutation {
   ): PlatformDeploymentRequest! @system_token
   reorderDeploymentRequestInQueue(
     input: ReorderDeploymentRequestInQueueInput!
-  ): Success! @auth(requires: [BYPASS])
+  ): Success! @auth(requires: [BYPASS, MODIFY_TRIALS])
   cancelDeploymentRequest(
     deploymentRequestId: ID!
     cancellationReason: String
   ): DeploymentRequest
     @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
-    @auth(requires: [BYPASS])
+    @auth(requires: [BYPASS, MODIFY_TRIALS])
   updateDeploymentQuotaCapacity(
     input: UpdateDeploymentQuotaCapacityInput!
   ): Success! @auth(requires: [BYPASS])

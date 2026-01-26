@@ -143,7 +143,7 @@ export type CsvFeed = Document & Integration & Node & {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
-  feed_url: Scalars['String']['output'];
+  feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
@@ -553,6 +553,17 @@ export type LabelEdge = {
 export enum LabelOrdering {
   Color = 'color',
   Name = 'name'
+}
+
+export type LogicalFilterInput = {
+  children?: InputMaybe<Array<LogicalFilterInput>>;
+  leaf?: InputMaybe<Filter>;
+  operator?: InputMaybe<LogicalOperator>;
+};
+
+export enum LogicalOperator {
+  And = 'AND',
+  Or = 'OR'
 }
 
 export type MeUserSubscription = {
@@ -1173,8 +1184,8 @@ export type QueryCustomDashboardArgs = {
 
 export type QueryCustomDashboardsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -1220,6 +1231,7 @@ export type QueryDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1236,8 +1248,8 @@ export type QueryIntegrationArgs = {
 
 export type QueryIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -1278,8 +1290,8 @@ export type QueryOpenAevScenarioArgs = {
 
 export type QueryOpenAevScenariosArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -1328,8 +1340,8 @@ export type QueryPublicIntegrationBySlugArgs = {
 
 export type QueryPublicIntegrationsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
@@ -1542,6 +1554,7 @@ export enum Restriction {
   ManageAccess = 'MANAGE_ACCESS',
   ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
   ManageSubscription = 'MANAGE_SUBSCRIPTION',
+  ModifyTrials = 'MODIFY_TRIALS',
   ReadTrials = 'READ_TRIALS'
 }
 
@@ -1735,7 +1748,7 @@ export type Stream = Document & Integration & Node & {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
-  feed_url: Scalars['String']['output'];
+  feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
@@ -1843,7 +1856,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
-  feed_url: Scalars['String']['output'];
+  feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
@@ -2208,6 +2221,8 @@ export type ResolversTypes = ResolversObject<{
   LabelConnection: ResolverTypeWrapper<LabelConnection>;
   LabelEdge: ResolverTypeWrapper<LabelEdge>;
   LabelOrdering: LabelOrdering;
+  LogicalFilterInput: LogicalFilterInput;
+  LogicalOperator: LogicalOperator;
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -2360,6 +2375,7 @@ export type ResolversParentTypes = ResolversObject<{
   Label: Label;
   LabelConnection: LabelConnection;
   LabelEdge: LabelEdge;
+  LogicalFilterInput: LogicalFilterInput;
   MeUserSubscription: MeUserSubscription;
   MergeEvent: MergeEvent;
   Mutation: {};
@@ -2518,7 +2534,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  feed_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
@@ -3213,7 +3229,7 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  feed_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
@@ -3299,7 +3315,7 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  feed_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;

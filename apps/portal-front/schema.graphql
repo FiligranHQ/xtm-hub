@@ -24,9 +24,20 @@ enum FilterKey {
   feed_url
 }
 
+enum LogicalOperator {
+  AND
+  OR
+}
+
 input Filter {
   key: FilterKey
   value: [String!]!
+}
+
+input LogicalFilterInput {
+  leaf: Filter
+  operator: LogicalOperator
+  children: [LogicalFilterInput!]
 }
 
 type Success {
@@ -42,23 +53,23 @@ type Query {
   rolesPortal: [RolePortal!]!
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
   seoCustomDashboardBySlug(slug: String): CustomDashboard
-  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): CustomDashboardConnection!
+  customDashboards(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): CustomDashboardConnection!
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   documentExists(documentName: String, service_instance_id: String): Boolean
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  integrations(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationConnection!
+  integrations(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
   integration(id: ID, serviceInstanceId: ID): Integration
-  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): IntegrationConnection!
+  publicIntegrations(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): IntegrationConnection!
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
   publicIntegrationBySlug(slug: String): Integration
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
-  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!], serviceInstanceId: String): OpenAEVScenarioConnection!
+  openAEVScenarios(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String): OpenAEVScenarioConnection!
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
@@ -634,7 +645,7 @@ type CsvFeed implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
 }
 
@@ -695,7 +706,7 @@ type TaxiiFeed implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
@@ -723,7 +734,7 @@ type Stream implements Node & Document & Integration {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   remover_id: ID
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
@@ -1346,6 +1357,7 @@ enum Restriction {
   MANAGE_SUBSCRIPTION
   MANAGE_PLATFORM_REGISTRATION
   READ_TRIALS
+  MODIFY_TRIALS
 }
 
 enum OrganizationCapability {

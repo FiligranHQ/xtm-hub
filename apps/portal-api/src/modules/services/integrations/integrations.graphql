@@ -111,7 +111,7 @@ type CsvFeed implements Node & Document & Integration {
 
   # Integration
   remover_id: ID
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
 }
 
@@ -182,7 +182,7 @@ type TaxiiFeed implements Node & Document & Integration {
 
   # Integration
   remover_id: ID @auth
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
@@ -215,7 +215,7 @@ type Stream implements Node & Document & Integration {
 
   # Integration
   remover_id: ID @auth
-  feed_url: String!
+  feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
 }
@@ -273,7 +273,7 @@ type Query {
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-    filters: [Filter!]
+    logicalFilters: LogicalFilterInput
     serviceInstanceId: String
   ): IntegrationConnection! @auth
   integration(id: ID, serviceInstanceId: ID): Integration @auth
@@ -284,7 +284,7 @@ type Query {
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-    filters: [Filter!]
+    logicalFilters: LogicalFilterInput
     serviceInstanceId: String
   ): IntegrationConnection!
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]

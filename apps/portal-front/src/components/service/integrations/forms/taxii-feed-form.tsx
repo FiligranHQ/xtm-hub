@@ -2,7 +2,7 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceDelete } from '@/components/service/components/service-delete';
-import { TaxiiFeedIntegrationSubTypes } from '@/components/service/integrations/integration.utils';
+import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -44,7 +44,7 @@ const taxiiFeedFormSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type TaxiiFeedFormValues = z.infer<typeof taxiiFeedFormSchema>;
 
@@ -256,7 +256,7 @@ export const TaxiiFeedForm = ({
             label: t(`${translationKey}.Form.TaxiiFeedIllustration`),
             fieldType: 'file',
             inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
+              accept: 'image/jpeg, image/png',
             },
           },
           active: {
@@ -296,7 +296,9 @@ export const TaxiiFeedForm = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {TaxiiFeedIntegrationSubTypes.map((node) => {
+                    {SubTypesPerIntegrationType.get(
+                      IntegrationTypeEnum.TAXII_FEED
+                    )?.map((node) => {
                       return (
                         <SelectItem
                           key={node}
