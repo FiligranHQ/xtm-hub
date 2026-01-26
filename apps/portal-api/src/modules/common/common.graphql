@@ -11,7 +11,8 @@ enum FilterKey {
   slug
   product_version
   manager_supported
-  feed_url
+  feed_url,
+  verified
 }
 
 enum LogicalOperator {
