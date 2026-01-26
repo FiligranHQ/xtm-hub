@@ -27,7 +27,7 @@ const resolvers: Resolvers = {
 
       const resolvedType = mapping[feed.integration_type];
       if (!resolvedType) {
-        logApp.warn(
+        logApp.error(
           `Unknown resolve type for integration ${feed.id} and integration type ${feed.integration_type}`
         );
       }
