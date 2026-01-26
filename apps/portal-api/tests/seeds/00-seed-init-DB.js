@@ -289,24 +289,4 @@ export async function seed(knex) {
     ])
     .onConflict('id')
     .ignore();
-
-  await knex('Service_Price')
-    .insert([
-      {
-        id: '7c6c5d07-07d4-4418-b441-bc19f2d14825',
-        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-        fee_type: 'YEARLY',
-        start_date: null,
-        price: 0,
-      },
-      {
-        id: '65ca846b-b4ff-42ec-bafa-cc604eea11f5',
-        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-        fee_type: 'MONTHLY',
-        start_date: '2024-08-08',
-        price: 1000,
-      },
-    ])
-    .onConflict('id')
-    .ignore();
 }

@@ -122,9 +122,6 @@ type Mutation {
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput!): Success!
-  editServiceInstance(id: ID!, name: String!): ServiceInstance
-  addServiceInstance(input: AddServiceInput): SubscriptionModel
-  deleteServiceInstance(id: ID!): ServiceInstance
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addLabel(input: AddLabelInput!): Label!

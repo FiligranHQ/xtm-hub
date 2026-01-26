@@ -93,12 +93,6 @@ input UpdatePlatformServiceMetadataInput {
 }
 
 type Mutation {
-  editServiceInstance(id: ID!, name: String!): ServiceInstance
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
-  addServiceInstance(input: AddServiceInput): SubscriptionModel
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
-  deleteServiceInstance(id: ID!): ServiceInstance
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addServicePicture(
     serviceInstanceId: ID!
     document: Upload
