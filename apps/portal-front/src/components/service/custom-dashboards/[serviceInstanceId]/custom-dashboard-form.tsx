@@ -180,7 +180,9 @@ export const CustomDashboardForm = ({
                   fieldType: ({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('Service.OpenctiCustomDashboards.Form.LabelsLabel')}
+                        {t(
+                          'Service.OpenctiCustomDashboards.Form.UseCasesLabel'
+                        )}
                       </FormLabel>
                       <FormControl>
                         <MultiSelectFormField
@@ -192,7 +194,7 @@ export const CustomDashboardForm = ({
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder={t(
-                            'Service.OpenctiCustomDashboards.Form.LabelsPlaceholder'
+                            'Service.OpenctiCustomDashboards.Form.UseCasesPlaceholder'
                           )}
                           variant="inverted"
                         />

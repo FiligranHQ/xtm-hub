@@ -176,7 +176,9 @@ export const ThirdPartyIntegrationForm = ({
           labels: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t(`${translationKey}.Form.LabelsLabel`)}</FormLabel>
+                <FormLabel>
+                  {t(`${translationKey}.Form.UseCasesLabel`)}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
@@ -186,7 +188,9 @@ export const ThirdPartyIntegrationForm = ({
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t(`${translationKey}.Form.LabelsPlaceholder`)}
+                    placeholder={t(
+                      `${translationKey}.Form.UseCasesPlaceholder`
+                    )}
                     variant="inverted"
                   />
                 </FormControl>

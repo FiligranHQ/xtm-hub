@@ -133,7 +133,7 @@ export const OpenaevScenarioForm = ({
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.OpenAEVScenario.Form.LabelsLabel')}
+                  {t('Service.OpenAEVScenario.Form.UseCasesLabel')}
                 </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
@@ -145,7 +145,7 @@ export const OpenaevScenarioForm = ({
                     value={field.value}
                     onValueChange={field.onChange}
                     placeholder={t(
-                      'Service.OpenAEVScenario.Form.LabelsPlaceholder'
+                      'Service.OpenAEVScenario.Form.UseCasesPlaceholder'
                     )}
                     variant="inverted"
                   />
