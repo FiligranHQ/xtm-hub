@@ -164,10 +164,8 @@ export const TryOpenCTIBanner = () => {
     <Callout
       variant="destructive"
       className={`rounded-none ${getGradientClass(diffInDays)} text-black justify-center`}>
-      <div className="flex flex-row">
-        {content.text()}
-        {content.button()}
-      </div>
+      {content.text()}
+      {content.button()}
     </Callout>
   );
 };
