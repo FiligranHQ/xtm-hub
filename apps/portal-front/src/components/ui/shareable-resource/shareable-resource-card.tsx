@@ -67,6 +67,7 @@ const ShareableResourceCard = ({
             document={document}
             publicPath={publicPath}
             shareLinkUrl={shareLinkUrl}
+            extraContent={extraContent}
           />
         ) : (
           <ShareableResourceCardFooterAuthor

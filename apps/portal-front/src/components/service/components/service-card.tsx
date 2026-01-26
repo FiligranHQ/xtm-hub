@@ -94,19 +94,21 @@ const ServiceCard = ({
       shareLinkUrl={shareLinkUrl}
       serviceInstance={serviceInstance}
       extraContent={
-        (userCanUpdate || userCanDelete) && (
-          <>
-            <IconActions
-              className="z-[2]"
-              icon={
-                <>
-                  <MoreVertIcon className="h-4 w-4 text-primary" />
-                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                </>
-              }>
+        <>
+          <IconActions
+            className="z-[2]"
+            icon={
+              <>
+                <MoreVertIcon className="h-4 w-4 text-primary" />
+                <span className="sr-only">{t('Utils.OpenMenu')}</span>
+              </>
+            }>
+            {userCanUpdate && (
               <IconActionsItem onClick={() => onClickOnUpdate()}>
                 {t('MenuActions.Update')}
               </IconActionsItem>
+            )}
+            {userCanDelete && (
               <ServiceDelete
                 type={'menuitem'}
                 userCanDelete={userCanDelete}
@@ -116,14 +118,16 @@ const ServiceCard = ({
                 serviceName={serviceInstance.name}
                 translationKey={translationKey}
               />
-            </IconActions>
+            )}
+          </IconActions>
+          {userCanUpdate && (
             <ServiceManageSheet
               document={document}
               open={openSheet}
               setOpen={setOpenSheet}
             />
-          </>
-        )
+          )}
+        </>
       }
     />
   );
