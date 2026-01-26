@@ -832,6 +832,7 @@
       "Details": {
         "Author": "Auteur",
         "BasicInformation": "Informations de base",
+        "Documentation": "Documentation",
         "Downloads": "Téléchargements",
         "LastUpdatedAt": "Dernière mise à jour le",
         "Overview": "Vue d'ensemble",
