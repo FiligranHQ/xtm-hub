@@ -16,10 +16,9 @@ import {
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { Badge, Button } from '@filigran/ui/servers';
+import { Badge } from '@filigran/ui/servers';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 
 // Component interface
 interface ShareableResourceDetailsProps {
@@ -27,19 +26,19 @@ interface ShareableResourceDetailsProps {
   downloadNumber?: number;
 }
 
-const DOCUMENTATION_URLS: Record<string, string | null> = {
-  [IntegrationTypeEnum.CSV_FEED]:
-    'https://docs.opencti.io/latest/usage/import/csv-feed/',
-  [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]: null,
-  [IntegrationTypeEnum.STREAM]:
-    'https://docs.opencti.io/latest/usage/import/internal-streams/',
-  [IntegrationTypeEnum.TAXII_FEED]:
-    'https://docs.opencti.io/latest/usage/import/taxii-feed/',
-  [IntegrationTypeEnum.RSS_FEED]: null,
-  [IntegrationTypeEnum.JSON_FEED]: null,
-  [IntegrationTypeEnum.CONNECTOR]:
-    'https://docs.opencti.io/latest/usage/import/external-connectors/',
+const CSV_FEED_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/csv-feed/';
+const STREAM_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/internal-streams/';
+const TAXII_FEED_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/taxii-feed/';
+
+const DOCUMENTATION_URLS: Partial<Record<IntegrationTypeEnum, string>> = {
+  [IntegrationTypeEnum.CSV_FEED]: CSV_FEED_DOCUMENTATION,
+  [IntegrationTypeEnum.STREAM]: STREAM_DOCUMENTATION,
+  [IntegrationTypeEnum.TAXII_FEED]: TAXII_FEED_DOCUMENTATION,
 };
+
 const ShareableResourceDetails: React.FunctionComponent<
   ShareableResourceDetailsProps
 > = ({ documentData, downloadNumber }) => {
@@ -143,19 +142,8 @@ const ShareableResourceDetails: React.FunctionComponent<
       )}
       {documentationUrl && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.Documentation')}>
-          <Button
-            className="p-0"
-            variant="link"
-            asChild>
-            <Link
-              href={documentationUrl}
-              rel="noopener noreferrer"
-              target="_blank">
-              <OpenInNewIcon className="h-4 w-4 mr-s" />
-              {documentationUrl}
-            </Link>
-          </Button>
+          label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
+          <ShareableResourceDetailsLink url={documentationUrl} />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem

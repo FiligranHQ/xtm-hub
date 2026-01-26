@@ -832,7 +832,7 @@
       "Details": {
         "Author": "Author",
         "BasicInformation": "Basic information",
-        "Documentation": "Documentation",
+        "OpenCTIDocumentation": "OpenCTI Documentation",
         "Downloads": "Downloads",
         "LastUpdatedAt": "Last updated at",
         "Overview": "Overview",

@@ -1,3 +1,4 @@
+import { ShareableResourceDetailsLink } from '@/components/service/document/shareable-resource-details-link';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
@@ -23,6 +24,8 @@ export interface ShareableResourceConnectorDetailsProps {
   compatibilityItem?: React.ReactNode;
 }
 
+const CONNECTOR_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/external-connectors/';
 export const ShareableResourceConnectorDetails: FunctionComponent<
   ShareableResourceConnectorDetailsProps
 > = ({ connectorDetails, compatibilityItem }) => {
@@ -95,6 +98,10 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.ProductVersion')}>
         {compatibilityItem || <span>{connectorDetails?.product_version}</span>}
+      </ShareableResourceDetailItem>
+      <ShareableResourceDetailItem
+        label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
+        <ShareableResourceDetailsLink url={CONNECTOR_DOCUMENTATION} />
       </ShareableResourceDetailItem>
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Shares')}>
