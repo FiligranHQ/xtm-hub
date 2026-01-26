@@ -31,6 +31,12 @@ const FOOTER_VERSIONS_INTEGRATION_TYPES: string[] = [
   IntegrationTypeEnum.CONNECTOR,
 ];
 
+const FOOTER_AUTHOR_INTEGRATION_TYPES: string[] = [
+  IntegrationTypeEnum.CSV_FEED,
+  IntegrationTypeEnum.TAXII_FEED,
+  IntegrationTypeEnum.STREAM,
+];
+
 const ShareableResourceCard = ({
   document,
   detailUrl,
@@ -70,6 +76,12 @@ const ShareableResourceCard = ({
           />
         ) : (
           <ShareableResourceCardFooterAuthor
+            shouldDisplayAuthor={
+              docHasMetadata(document, 'integration_type') &&
+              FOOTER_AUTHOR_INTEGRATION_TYPES.includes(
+                document.integration_type
+              )
+            }
             document={document}
             shareLinkUrl={shareLinkUrl}
             extraContent={extraContent}
