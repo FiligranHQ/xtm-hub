@@ -5,6 +5,7 @@ import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/
 import {
   PublicShareableResource,
   ShareableResource,
+  ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -31,10 +32,8 @@ const FOOTER_VERSIONS_INTEGRATION_TYPES: string[] = [
   IntegrationTypeEnum.CONNECTOR,
 ];
 
-const FOOTER_AUTHOR_INTEGRATION_TYPES: string[] = [
-  IntegrationTypeEnum.CSV_FEED,
-  IntegrationTypeEnum.TAXII_FEED,
-  IntegrationTypeEnum.STREAM,
+const FOOTER_NO_AUTHOR_INTEGRATION_TYPES: string[] = [
+  IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
 ];
 
 const ShareableResourceCard = ({
@@ -77,10 +76,11 @@ const ShareableResourceCard = ({
         ) : (
           <ShareableResourceCardFooterAuthor
             shouldDisplayAuthor={
-              docHasMetadata(document, 'integration_type') &&
-              FOOTER_AUTHOR_INTEGRATION_TYPES.includes(
-                document.integration_type
-              )
+              (docHasMetadata(document, 'integration_type') &&
+                !FOOTER_NO_AUTHOR_INTEGRATION_TYPES.includes(
+                  document.integration_type
+                )) ||
+              document.type !== ShareableResourceType.OPENCTI_INTEGRATION
             }
             document={document}
             shareLinkUrl={shareLinkUrl}
