@@ -1,7 +1,10 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
+import {
+  CardTypeEnum,
+  ServiceDelete,
+} from '@/components/service/components/service-delete';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
@@ -48,13 +51,21 @@ const ServiceCard = ({
   const context = useDocumentContext({
     serviceInstance,
     connectionId,
-    type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
+    type: document.type as ShareableResourceType,
   });
-
-  const userCanUpdate = useServiceCapability(
+  const hasUploadCapability = useServiceCapability(
     ServiceCapabilityName.Upload,
     serviceInstance
   );
+  const isAllowedIntegration =
+    isIntegrationItem(document) &&
+    document.integration_type !== IntegrationTypeEnum.CONNECTOR;
+  const isAllowedType =
+    document.type !== ShareableResourceType.OPENCTI_INTEGRATION;
+
+  const userCanUpdate =
+    hasUploadCapability && (isAllowedIntegration || isAllowedType);
+
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
     serviceInstance
@@ -116,7 +127,11 @@ const ServiceCard = ({
                   context.handleDeleteSheet(document, onDeleteCompleted)
                 }
                 serviceName={serviceInstance.name}
-                translationKey={translationKey}
+                integrationType={
+                  (document && isIntegrationItem(document)
+                    ? document.integration_type
+                    : document.type) as CardTypeEnum
+                }
               />
             )}
           </IconActions>

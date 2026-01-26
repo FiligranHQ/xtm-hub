@@ -1,5 +1,8 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
-import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
+import {
+  isLogicalMultiSelectSelection,
+  LogicalMultiSelectSelection,
+} from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
 import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {
@@ -24,6 +27,22 @@ const deserializeSelectedFilters = (stored: string): ServiceListFilterKey[] => {
   }
 };
 
+const deserializeLogicalMultiSelectSelection = (
+  stored: string
+): LogicalMultiSelectSelection => {
+  try {
+    const parsed = JSON.parse(stored);
+
+    if (isLogicalMultiSelectSelection(parsed)) {
+      return parsed;
+    }
+
+    return {};
+  } catch {
+    return {};
+  }
+};
+
 export const useServiceListLocalStorage = (
   serviceName: ServiceListLocalStorageKey
 ) => {
@@ -38,7 +57,13 @@ export const useServiceListLocalStorage = (
   );
 
   const [labels, setLabels, removeLabels] =
-    useLocalStorage<LogicalMultiSelectSelection>(`label${serviceName}List`, {});
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `label${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
 
   const [selectedFilters, setSelectedFilters, removeSelectedFilters] =
     useLocalStorage<ServiceListFilterKey[]>(
@@ -52,19 +77,28 @@ export const useServiceListLocalStorage = (
   const [integrationTypes, setIntegrationTypes, removeIntegrationTypes] =
     useLocalStorage<LogicalMultiSelectSelection>(
       `integrationType${serviceName}List`,
-      {}
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
     );
 
   const [productVersions, setProductVersions, removeProductVersions] =
     useLocalStorage<LogicalMultiSelectSelection>(
       `productVersion${serviceName}List`,
-      {}
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
     );
 
   const [deployable, setDeployable, removeDeployable] =
     useLocalStorage<LogicalMultiSelectSelection>(
       `deployable${serviceName}List`,
-      {}
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
     );
 
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(

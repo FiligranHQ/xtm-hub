@@ -1,31 +1,47 @@
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
 import { IconActionsItem } from '@/components/ui/icon-actions';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { Button } from '@filigran/ui';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 
 interface ServiceDeleteProps {
   userCanDelete?: boolean;
   onDelete?: () => void;
   serviceName: string;
-  translationKey: string;
+  integrationType: CardTypeEnum;
   type?: 'menuitem' | 'button';
 }
+
+export type CardTypeEnum = IntegrationTypeEnum | ShareableResourceType;
+
+const INTEGRATION_TRANSLATION_KEY_MAP: Partial<Record<CardTypeEnum, string>> = {
+  [IntegrationTypeEnum.CSV_FEED]: 'CsvFeed',
+  [IntegrationTypeEnum.CONNECTOR]: 'Connector',
+  [IntegrationTypeEnum.TAXII_FEED]: 'TaxiiFeed',
+  [IntegrationTypeEnum.STREAM]: 'Stream',
+  [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]: 'ThirdPartyIntegration',
+  [ShareableResourceType.OPENAEV_SCENARIO]: 'OpenAEVScenario',
+  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: 'OpenctiCustomDashboards',
+};
 
 export const ServiceDelete = ({
   userCanDelete,
   onDelete,
   serviceName,
-  translationKey,
+  integrationType,
   type = 'button',
 }: ServiceDeleteProps) => {
   const t = useTranslations();
+  const translationKey =
+    INTEGRATION_TRANSLATION_KEY_MAP[integrationType] ?? 'CsvFeed';
 
   return (
     userCanDelete && (
       <AlertDialogComponent
         actionButtonText={t('Utils.Delete')}
         variantName={'destructive'}
-        AlertTitle={t(`${translationKey}.DeleteService`, {
+        AlertTitle={t(`Service.${translationKey}.DeleteService`, {
           name: serviceName,
         })}
         triggerElement={
@@ -43,7 +59,7 @@ export const ServiceDelete = ({
         onClickContinue={() => {
           onDelete?.();
         }}>
-        {t(`${translationKey}.SureDeleteService`, {
+        {t(`Service.${translationKey}.SureDeleteService`, {
           name: serviceName,
         })}
       </AlertDialogComponent>

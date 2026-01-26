@@ -6,11 +6,15 @@ import {
 } from '@/utils/path/constant';
 
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
-import { ServiceDelete } from '@/components/service/components/service-delete';
+import {
+  CardTypeEnum,
+  ServiceDelete,
+} from '@/components/service/components/service-delete';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import {
+  isIntegrationItem,
   ShareableResourceType,
   SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
@@ -63,7 +67,11 @@ const DeleteIntegrationSlug: React.FunctionComponent<
       userCanDelete={userCanDelete}
       onDelete={() => context.handleDeleteSheet(document, onDeleteCompleted)}
       serviceName={serviceContext.serviceInstance.name}
-      translationKey={serviceContext.translationKey}
+      integrationType={
+        (document && isIntegrationItem(document)
+          ? document.integration_type
+          : document.type) as CardTypeEnum
+      }
     />
   );
 };

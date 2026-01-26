@@ -614,6 +614,13 @@
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux TAXII {name} ?",
       "UpdateService": "Mettre à jour le flux TAXII {name}"
     },
+    "Connector": {
+      "Actions": {
+        "Deleted": "Le connecteur {name} a été supprimé avec succès"
+      },
+      "DeleteService": "Supprimer le connecteur {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le connecteur {name} ?"
+    },
     "Stream": {
       "Actions": {
         "Added": "Le stream {name} a été ajouté avec succès",
