@@ -2,7 +2,7 @@
 
 import { registeredPlatformByServiceInstanceId } from '@/components/registration/register/register.graphql';
 import { RegistrationDetails } from '@/components/service/registration/registration-details';
-import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales-button';
+import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/reach-sales-button';
 import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
