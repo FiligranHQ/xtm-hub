@@ -13,11 +13,12 @@ import { FunctionComponent, ReactNode } from 'react';
 interface ShareableResourceCardFooterAuthorProps {
   document: ShareableResource | PublicShareableResource;
   shareLinkUrl: string;
+  shouldDisplayAuthor?: boolean;
   extraContent?: ReactNode;
 }
 export const ShareableResourceCardFooterAuthor: FunctionComponent<
   ShareableResourceCardFooterAuthorProps
-> = ({ document, shareLinkUrl, extraContent }) => {
+> = ({ document, shareLinkUrl, shouldDisplayAuthor = true, extraContent }) => {
   let documentMetadata;
   if (docHasMetadata(document, 'integration_subtype')) {
     documentMetadata = getIntegrationSubTypeMetadata(
@@ -35,14 +36,16 @@ export const ShareableResourceCardFooterAuthor: FunctionComponent<
             {documentMetadata.label}
           </Badge>
         )}
-        <div className="flex items-center gap-s whitespace-nowrap">
-          <div className="size-8 shrink-0">
-            <Avatar src={document.uploader?.picture ?? ''} />
+        {shouldDisplayAuthor && (
+          <div className="flex items-center gap-s whitespace-nowrap">
+            <div className="size-8 shrink-0">
+              <Avatar src={document.uploader?.picture ?? ''} />
+            </div>
+            <span className="truncate max-w-[220px]">
+              {formatPersonNames(document.uploader)}
+            </span>
           </div>
-          <span className="truncate max-w-[220px]">
-            {formatPersonNames(document.uploader)}
-          </span>
-        </div>
+        )}
       </div>
       <div className="flex flex-row self-end pr-m">
         <ShareLinkButton
