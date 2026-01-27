@@ -537,6 +537,12 @@
           "Placeholder": "Type de déploiement...",
           "AutomaticDeploy": "Déploiement automatique",
           "ManualDeploy": "Déploiement manuel"
+        },
+        "Verified": {
+          "Label": "Vérifié",
+          "Placeholder": "Vérifié",
+          "Verified": "Vérifié",
+          "Unverified": "Non vérifié"
         }
       },
       "Type": {
@@ -769,7 +775,8 @@
           "label": "Cas d'utilisation",
           "integration_type": "Type d'intégration",
           "product_version": "Plateforme",
-          "manager_supported": "Type de déploiement"
+          "manager_supported": "Type de déploiement",
+          "verified": "Vérifié"
         }
       }
     },

@@ -101,6 +101,15 @@ export const useServiceListLocalStorage = (
       }
     );
 
+  const [verified, setVerified, removeVerified] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `verified${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
+
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     `count${serviceName}List`,
     50
@@ -140,5 +149,8 @@ export const useServiceListLocalStorage = (
     deployable,
     setDeployable,
     removeDeployable,
+    verified,
+    setVerified,
+    removeVerified,
   };
 };

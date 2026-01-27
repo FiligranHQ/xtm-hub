@@ -417,7 +417,8 @@ export enum FilterKey {
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',
-  Slug = 'slug'
+  Slug = 'slug',
+  Verified = 'verified'
 }
 
 export type GenericServiceCapability = Node & {
