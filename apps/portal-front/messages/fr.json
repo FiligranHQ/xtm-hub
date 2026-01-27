@@ -853,9 +853,11 @@
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
       "ReachOutToSales": "Contactez nous",
+      "ReachOutToSalesMessagePlaceholder": "Votre message",
       "NeedSupport": "Besoin d'aide",
       "ReachOutToSalesSuccessTitle": "Merci !",
       "ReachOutToSalesSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
+      "ReachOutToSalesDefaultMessage": "Veuillez me contacter au sujet de l'essai gratuit d'OpenCTI",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
