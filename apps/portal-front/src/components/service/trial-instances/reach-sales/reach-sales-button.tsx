@@ -1,5 +1,6 @@
 'use client';
 import { ReachSalesMutation } from '@/components/service/trial-instances/reach-sales.graphql';
+import { ReachSalesDialogForm } from '@/components/service/trial-instances/reach-sales/reach-sales-dialog-form';
 import { DialogInformative } from '@/components/ui/dialog';
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
@@ -16,28 +17,34 @@ export const ReachSalesButton = ({ variant }: ReachSalesButtonProps) => {
   const t = useTranslations();
   const [commitReachSalesMutation, isInFlight] =
     useMutation(ReachSalesMutation);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState(false);
+  const [isInformationDialogOpen, setIsInformationDialogOpen] = useState(false);
+
+  const handleReachSales = (message: string) => {
+    commitReachSalesMutation({
+      variables: {
+        message,
+      },
+      onError(error) {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+      onCompleted() {
+        setIsConfirmationDialogOpen(false);
+        setIsInformationDialogOpen(true);
+      },
+    });
+  };
 
   const reachSalesButton = useMemo(() => {
-    const handleReachSales = () => {
-      commitReachSalesMutation({
-        variables: {},
-        onError(error) {
-          toast({
-            variant: 'destructive',
-            title: t('Utils.Error'),
-            description: t(`Error.Server.${error.message}`),
-          });
-        },
-        onCompleted() {
-          setIsDialogOpen(true);
-        },
-      });
-    };
     if ('gradient' === variant) {
       return (
         <GradientButton
-          onClick={handleReachSales}
+          onClick={() => setIsConfirmationDialogOpen(true)}
           disabled={isInFlight}>
           {t('Service.Trials.ReachOutToSales')}
         </GradientButton>
@@ -47,7 +54,7 @@ export const ReachSalesButton = ({ variant }: ReachSalesButtonProps) => {
     if ('outline-primary' === variant) {
       return (
         <Button
-          onClick={handleReachSales}
+          onClick={() => setIsConfirmationDialogOpen(true)}
           variant="outline-primary"
           disabled={isInFlight}>
           {t('Service.Trials.ReachOutToSales')}
@@ -57,21 +64,26 @@ export const ReachSalesButton = ({ variant }: ReachSalesButtonProps) => {
 
     return (
       <Button
-        onClick={handleReachSales}
+        onClick={() => setIsConfirmationDialogOpen(true)}
         className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled={isInFlight}>
         {t('Service.Trials.ReachOutToSales')}
         <ArrowRightAltIcon className="ml-s size-4" />
       </Button>
     );
-  }, [variant, commitReachSalesMutation, isInFlight, t]);
+  }, [variant, setIsConfirmationDialogOpen, isInFlight, t]);
 
   return (
     <>
       {reachSalesButton}
+      <ReachSalesDialogForm
+        isDialogOpen={isConfirmationDialogOpen}
+        setIsDialogOpen={setIsConfirmationDialogOpen}
+        onSubmit={(message) => handleReachSales(message)}
+      />
       <DialogInformative
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+        isOpen={isInformationDialogOpen}
+        onClose={() => setIsInformationDialogOpen(false)}
         title={t('Service.Trials.ReachOutToSalesSuccessTitle')}>
         {t('Service.Trials.ReachOutToSalesSuccessMessage')}
       </DialogInformative>
