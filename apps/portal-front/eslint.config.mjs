@@ -1,4 +1,6 @@
 import { FlatCompat } from '@eslint/eslintrc';
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
+import nextTypescript from 'eslint-config-next/typescript';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -10,9 +12,16 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
+  ...compat.extends('prettier'),
   {
     rules: {
+      'react-hooks/preserve-manual-memoization': 'warn',
+      'react-hooks/error-boundaries': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/immutability': 'warn',
+      'react-hooks/refs': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -49,6 +58,15 @@ const eslintConfig = [
     rules: {
       'no-console': 'off',
     },
+  },
+  {
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+    ],
   },
 ];
 
