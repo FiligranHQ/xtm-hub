@@ -1,0 +1,16 @@
+{{- if .Values.postgres.backup.enabled }}
+apiVersion: barmancloud.cnpg.io/v1
+namespace: {{ .Release.Namespace }}
+kind: ObjectStore
+metadata:
+  name: "{{.Release.Name}}-barman-objectstore"
+spec:
+  retentionPolicy: "{{ .Values.postgres.backup.retentionPolicy }}"
+  configuration:
+    destinationPath: "{{ .Values.postgres.backup.destinationPath }}"
+    endpointURL: "{{ .Values.postgres.backup.endpointURL }}"
+    {{- with .Values.postgres.backup.s3Credentials  }}
+    s3Credentials:
+    {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end }}

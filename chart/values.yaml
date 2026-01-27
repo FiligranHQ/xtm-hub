@@ -45,7 +45,6 @@ xtmhub:
   version: master
   host: localhost
 postgres:
-  username: xtmhub
   version: "17.2"
   replicas: 2
   storage:
@@ -56,6 +55,26 @@ postgres:
       memory: 4Gi
     limits:
       memory: 8Gi
+  backup:
+    enabled: false
+    retentionPolicy: 7d
+    serverName: postgresql
+    destinationPath: "s3://postgres"
+    endpointURL: "https://s3.amazonaws.com"
+    s3Credentials:
+      accessKeyId:
+        name: backup-s3-cred
+        key: accessKey
+      secretAccessKey:
+        name: backup-s3-cred
+        key: secretKey
+  spec:
+    bootstrap:
+      initdb:
+        database: xtmhub
+        owner: xtmhub
+    # externalClusters:
+    # plugins:
   pgadmin:
     whitelistSourceRange: "149.88.28.168/32,10.0.0.0/8"
     version: "8.14"
