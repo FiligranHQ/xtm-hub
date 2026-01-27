@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseFixtures';
+import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import IntegrationPage from '../model/integration.pageModel';
 
@@ -43,6 +43,8 @@ test.describe('CSV Feeds', () => {
   test('Should delete CSV Feed from the detailed page', async ({ page }) => {
     await integrationPage.navigateToIntegration(CSV_FEED_TEST.shortDescription);
     await integrationPage.deleteIntegration('button');
+    //  Need to wait for the redirection to be over
+    await page.waitForTimeout(2000);
     await expect(
       page.getByText(CSV_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();

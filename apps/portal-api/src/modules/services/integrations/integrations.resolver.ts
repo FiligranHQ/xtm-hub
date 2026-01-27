@@ -4,6 +4,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../../utils/app-logger.util';
 import { extractId } from '../../../utils/utils';
 import { labelsDomain } from '../../settings/labels/labels.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
@@ -24,7 +25,14 @@ const resolvers: Resolvers = {
         [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
       };
 
-      return mapping[feed.integration_type];
+      const resolvedType = mapping[feed.integration_type];
+      if (!resolvedType) {
+        logApp.error(
+          `Unknown resolve type for integration ${feed.id} and integration type ${feed.integration_type}`
+        );
+      }
+
+      return resolvedType;
     },
     labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
     children_documents: ({ id }) =>

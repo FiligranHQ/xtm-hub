@@ -30,8 +30,15 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
     serviceInstance.slug as ServiceSlug
   );
 
-  const { pageSize, search, labels, integrationTypes, deployable, setSearch } =
-    useServiceListLocalStorage(localStorageKey);
+  const {
+    pageSize,
+    search,
+    labels,
+    integrationTypes,
+    deployable,
+    verified,
+    setSearch,
+  } = useServiceListLocalStorage(localStorageKey);
 
   useEffect(() => {
     const typeSubtypeFilter =
@@ -57,6 +64,12 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
                 value: Object.keys(deployable),
               },
             },
+            {
+              leaf: {
+                key: FilterKeyEnum.VERIFIED,
+                value: Object.keys(verified),
+              },
+            },
           ],
         },
       },
@@ -72,6 +85,7 @@ export const IntegrationListPageLoader: React.FC<Props> = ({
     labels,
     integrationTypes,
     deployable,
+    verified,
   ]);
 
   return (

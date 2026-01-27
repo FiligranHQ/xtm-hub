@@ -3,6 +3,7 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import {
   OpenaevScenarioQuery,
   openaevScenariosItem,
@@ -61,10 +62,13 @@ const OpenaevScenarioSlug = ({
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={
-            <ServiceManageSheet
-              document={documentData}
-              variant={'button'}
-            />
+            <>
+              <DeleteIntegrationSlug document={documentData} />
+              <ServiceManageSheet
+                document={documentData}
+                variant={'button'}
+              />
+            </>
           }
         />
       </AppServiceContext>

@@ -2,7 +2,6 @@ import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -63,19 +62,15 @@ export type CustomDashboardFormValues = z.infer<typeof customDashboardSchema>;
 interface CustomDashboardFormProps {
   document: SubscribableResource | undefined;
   handleSubmit: (values: CustomDashboardFormValues) => void;
-  onDelete: () => void;
-  userCanDelete: boolean;
 }
 
 export const CustomDashboardForm = ({
   document,
   handleSubmit,
-  userCanDelete,
-  onDelete,
 }: CustomDashboardFormProps) => {
   const customDashboard = document;
   const t = useTranslations();
-  const { translationKey, serviceInstance } = useServiceContext();
+  const { serviceInstance } = useServiceContext();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const { me } = useContext(PortalContext);
@@ -541,14 +536,6 @@ export const CustomDashboardForm = ({
               }),
         }}>
         <SheetFooter className="sm:justify-between pb-0">
-          {customDashboard && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={customDashboard.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

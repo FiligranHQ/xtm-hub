@@ -26,6 +26,7 @@ import {
 import { integrationsList$key } from '@generated/integrationsList.graphql';
 
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/integration-verified-filter';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   integrationsQuery,
@@ -83,6 +84,7 @@ const IntegrationsList = ({
     removeIntegrationTypes,
     removeProductVersions,
     removeDeployable,
+    removeVerified,
     pageSize,
     setPageSize,
   } = useServiceListLocalStorage(localStorageKey);
@@ -105,6 +107,10 @@ const IntegrationsList = ({
     [ServiceListFilterKey.ManagerSupported]: {
       node: <IntegrationDeployableFilter />,
       reset: removeDeployable,
+    },
+    [ServiceListFilterKey.Verified]: {
+      node: <IntegrationVerifiedFilter />,
+      reset: removeVerified,
     },
   };
 
@@ -144,6 +150,7 @@ const IntegrationsList = ({
           search={search}
           onSearchChange={onSearchChange}
           additionalFilters={filters}
+          connectionId={connectionId}
           paginationControls={
             <PaginationControls
               totalCount={data.integrations.totalCount}

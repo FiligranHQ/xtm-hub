@@ -16,11 +16,12 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { getPlatformIdentifier } from '@/utils/platform';
-import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
+import { InfoIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // Component interface
 interface ShareableResourceConnectorSlugProps {
@@ -38,6 +39,9 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const canClickOnDeployButton = documentData.manager_supported;
 
+  const manifest_url = documentData.source_code
+    ? `${documentData.source_code}/__metadata__/connector_manifest.json`
+    : '';
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -101,6 +105,18 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
           </div>
         </div>
       </div>
+      {documentData.verified && (
+        <div className="border border-solid border-blue rounded flex items-center gap-xs p-s text-sm mt-4">
+          <InfoIcon className="shrink-0 h-4 w-4 mr-xs text-blue" />
+          If you would like to improve this integration, please take a look at
+          <Link
+            href={manifest_url}
+            target="_blank"
+            className="underline">
+            the github repository link here
+          </Link>
+        </div>
+      )}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
