@@ -10,6 +10,7 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/integration-deployable-filter';
 import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/integration-filters';
+import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/integration-verified-filter';
 import {
   ServiceSlug,
   ShareableResourceType,
@@ -35,8 +36,12 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
     [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
   };
-  const { removeLabels, removeIntegrationTypes, removeDeployable } =
-    useServiceListLocalStorage(localStorageKey);
+  const {
+    removeLabels,
+    removeIntegrationTypes,
+    removeDeployable,
+    removeVerified,
+  } = useServiceListLocalStorage(localStorageKey);
 
   const labelFilter = {
     node: <ServiceListFilterLabel type={typeFeed[slug]} />,
@@ -53,6 +58,10 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       [ServiceListFilterKey.ManagerSupported]: {
         node: <IntegrationDeployableFilter />,
         reset: removeDeployable,
+      },
+      [ServiceListFilterKey.Verified]: {
+        node: <IntegrationVerifiedFilter />,
+        reset: removeVerified,
       },
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {

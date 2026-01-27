@@ -1,9 +1,10 @@
 import { formatDate } from '@/utils/date';
-import { LogoFiligranIcon, OpenInNewIcon } from '@filigran/icon';
+import { LogoFiligranIcon } from '@filigran/icon';
 import * as React from 'react';
 
 import { Avatar } from '@filigran/ui/clients';
 
+import { ShareableResourceDetailsLink } from '@/components/service/document/shareable-resource-details-link';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
@@ -14,9 +15,8 @@ import {
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { Badge, Button } from '@filigran/ui/servers';
+import { Badge } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useMemo } from 'react';
 
 // Component interface
@@ -93,18 +93,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       {docHasMetadata(documentData, 'feed_url') && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.FeedURL')}>
-          <Button
-            className="p-0"
-            variant="link"
-            asChild>
-            <Link
-              href={documentData.feed_url}
-              rel="noopener noreferrer"
-              target="_blank">
-              <OpenInNewIcon className="h-4 w-4 mr-s" />
-              {documentData.feed_url}
-            </Link>
-          </Button>
+          <ShareableResourceDetailsLink url={documentData.feed_url} />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem
@@ -119,35 +108,13 @@ const ShareableResourceDetails: React.FunctionComponent<
       {docHasMetadata(documentData, 'vendor_url') && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.VendorURL')}>
-          <Button
-            className="p-0"
-            variant="link"
-            asChild>
-            <Link
-              href={documentData.vendor_url}
-              rel="noopener noreferrer"
-              target="_blank">
-              <OpenInNewIcon className="h-4 w-4 mr-s" />
-              {documentData.vendor_url}
-            </Link>
-          </Button>
+          <ShareableResourceDetailsLink url={documentData.vendor_url} />
         </ShareableResourceDetailItem>
       )}
       {docHasMetadata(documentData, 'github_url') && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.GithubURL')}>
-          <Button
-            className="p-0"
-            variant="link"
-            asChild>
-            <Link
-              href={documentData.github_url}
-              rel="noopener noreferrer"
-              target="_blank">
-              <OpenInNewIcon className="h-4 w-4 mr-s" />
-              {documentData.github_url}
-            </Link>
-          </Button>
+          <ShareableResourceDetailsLink url={documentData.github_url} />
         </ShareableResourceDetailItem>
       )}
       {docHasMetadata(documentData, 'product_version') && (

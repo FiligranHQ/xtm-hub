@@ -299,9 +299,9 @@ const resolvers: Resolvers = {
     logout: async (_, __, context) => {
       return UsersAuthApp.logout(context);
     },
-    contactUs: async () => {
+    contactUs: async (_, { message }) => {
       try {
-        await hubspotReachOutSalesHook();
+        await hubspotReachOutSalesHook(message);
         return { success: true };
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.HubspotError);

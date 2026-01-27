@@ -417,7 +417,8 @@ export enum FilterKey {
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',
-  Slug = 'slug'
+  Slug = 'slug',
+  Verified = 'verified'
 }
 
 export type GenericServiceCapability = Node & {
@@ -727,6 +728,11 @@ export type MutationCancelDeploymentRequestArgs = {
 
 export type MutationChangeSelectedOrganizationArgs = {
   organization_id: Scalars['ID']['input'];
+};
+
+
+export type MutationContactUsArgs = {
+  message?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2845,7 +2851,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkRemovePendingUserFromOrganizationArgs>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
-  contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
+  contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;

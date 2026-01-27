@@ -69,7 +69,9 @@ export const hubspotLoginHook = async (userId: string) =>
     };
   });
 
-export const hubspotReachOutSalesHook = async () =>
+export const hubspotReachOutSalesHook = async (
+  message: string = 'Please contact me about the OpenCTI free trial'
+) =>
   hubspotHook('reachOutSales', async () => {
     const { user, portalContext } = requestContext.require();
     const platformToken = portalContext?.req.header('XTM-Hub-Platform-Token');
@@ -91,7 +93,7 @@ export const hubspotReachOutSalesHook = async () =>
               (org) => org.id === user.selected_organization_id
             )?.name || '',
           job_title: '',
-          message: `Please contact me about the OpenCTI free trial`,
+          message,
           use_case: '',
         };
       }
@@ -110,7 +112,7 @@ export const hubspotReachOutSalesHook = async () =>
       lastname: deploymentRequest.requester_last_name,
       company: deploymentRequest.organization_name,
       job_title: deploymentRequest.job_title,
-      message: `Please contact me about my ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}`,
+      message: `Message sent for free trial: ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}\n\n${message}`,
       use_case: deploymentRequest.use_case,
     };
   });

@@ -11,6 +11,7 @@ export enum ServiceListFilterKey {
   IntegrationType = 'integration_type',
   ProductVersion = 'product_version',
   ManagerSupported = 'manager_supported',
+  Verified = 'verified',
 }
 
 export interface ServiceListFilter {

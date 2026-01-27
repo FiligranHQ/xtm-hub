@@ -22,6 +22,7 @@ enum FilterKey {
   product_version
   manager_supported
   feed_url
+  verified
 }
 
 enum LogicalOperator {
@@ -153,7 +154,7 @@ type Mutation {
   transferPersonalSpace(requestId: ID!): Success!
   login(email: String!, password: String): User
   logout: ID!
-  contactUs: Success!
+  contactUs(message: String): Success!
 }
 
 enum OrganizationOrdering {

@@ -537,6 +537,12 @@
           "Placeholder": "Deployment type...",
           "AutomaticDeploy": "Automatic deploy",
           "ManualDeploy": "Manual deploy"
+        },
+        "Verified": {
+          "Label": "Verified",
+          "Placeholder": "Verified",
+          "Verified": "Verified",
+          "Unverified": "Unverified"
         }
       },
       "Type": {
@@ -776,7 +782,8 @@
           "label": "Use case",
           "integration_type": "Integration type",
           "product_version": "Platform",
-          "manager_supported": "Deployment type"
+          "manager_supported": "Deployment type",
+          "verified": "Verified"
         }
       }
     },
@@ -860,9 +867,11 @@
       "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
       "ReachOutToSales": "Reach out to Sales",
+      "ReachOutToSalesMessagePlaceholder": "Your message",
       "NeedSupport": "Need support",
       "ReachOutToSalesSuccessTitle": "Thank you!",
       "ReachOutToSalesSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
+      "ReachOutToSalesDefaultMessage": "Please contact me about the OpenCTI free trial",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",

@@ -1,6 +1,6 @@
 import GuardCapacityComponent from '@/components/admin-guard';
 import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
-import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales-button';
+import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/reach-sales-button';
 import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
 import {
   StartTrialButton,

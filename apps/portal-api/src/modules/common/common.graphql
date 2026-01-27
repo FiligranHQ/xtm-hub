@@ -12,6 +12,7 @@ enum FilterKey {
   product_version
   manager_supported
   feed_url
+  verified
 }
 
 enum LogicalOperator {
