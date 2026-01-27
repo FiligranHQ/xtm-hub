@@ -15,7 +15,7 @@ input UpdateServiceGroupsInput {
 
 type Query {
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
 
 type Mutation {
