@@ -1,7 +1,7 @@
 import { PortalContext } from '../../model/portal-context';
 import { getCapabilities } from '../../modules/users/users.domain';
 import { ForbiddenAccess } from '../../utils/error/error.util';
-import { AuthFn, RoleFn, ServiceFn } from './directive.model';
+import { AuthFn, RoleFn, RoleType, ServiceFn } from './directive.model';
 
 /**
  * Creates a field resolver with authentication and authorization checks
@@ -43,8 +43,14 @@ export const createSecureFieldResolver = (
 
     // Authorization check
     if (authDirective) {
-      const capabilitiesRequired = authDirective.requires || [];
-      if (!hasCapabilityFn(user, capabilitiesRequired)) {
+      const portalCapabilitiesRequired = authDirective.portalCapa || [];
+      const orgaCapabilitiesRequired = authDirective.orgaCapa || [];
+      if (
+        !hasCapabilityFn(user, {
+          [RoleType.PORTAL]: portalCapabilitiesRequired,
+          [RoleType.ORGA]: orgaCapabilitiesRequired,
+        })
+      ) {
         throw ForbiddenAccess(
           'Not authorized: The provided role does not meet schema requirements'
         );

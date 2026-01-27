@@ -9,7 +9,7 @@ enum UserOrdering {
 
 type Capability implements Node {
   id: ID!
-  name: Restriction!
+  name: PortalCapability!
 }
 
 type OrganizationCapabilities implements Node {

@@ -79,7 +79,7 @@ export type CanUnregisterResponse = {
 export type Capability = Node & {
   __typename?: 'Capability';
   id: Scalars['ID']['output'];
-  name: Restriction;
+  name: PortalCapability;
 };
 
 export type Connector = Document & Integration & Node & {
@@ -1118,6 +1118,12 @@ export enum PlatformRegistrationStatus {
   Unregistered = 'unregistered'
 }
 
+export enum PortalCapability {
+  Bypass = 'BYPASS',
+  ModifyTrials = 'MODIFY_TRIALS',
+  ReadTrials = 'READ_TRIALS'
+}
+
 export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
@@ -1553,16 +1559,6 @@ export type ReorderDeploymentRequestInQueueInput = {
   direction: ReorderDeploymentRequestInQueueDirection;
   id: Scalars['ID']['input'];
 };
-
-export enum Restriction {
-  AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
-  Bypass = 'BYPASS',
-  ManageAccess = 'MANAGE_ACCESS',
-  ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
-  ManageSubscription = 'MANAGE_SUBSCRIPTION',
-  ModifyTrials = 'MODIFY_TRIALS',
-  ReadTrials = 'READ_TRIALS'
-}
 
 export type RolePortal = Node & {
   __typename?: 'RolePortal';
@@ -2259,6 +2255,7 @@ export type ResolversTypes = ResolversObject<{
   PlatformProvider: ResolverTypeWrapper<PlatformProvider>;
   PlatformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatus;
   PlatformRegistrationStatus: PlatformRegistrationStatus;
+  PortalCapability: PortalCapability;
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
   RefreshPlatformRegistrationConnectivityStatusResponse: ResolverTypeWrapper<RefreshPlatformRegistrationConnectivityStatusResponse>;
@@ -2270,7 +2267,6 @@ export type ResolversTypes = ResolversObject<{
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   ReorderDeploymentRequestInQueueDirection: ReorderDeploymentRequestInQueueDirection;
   ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
-  Restriction: Restriction;
   RolePortal: ResolverTypeWrapper<RolePortal>;
   SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
@@ -2466,7 +2462,8 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type AuthDirectiveArgs = {
-  requires?: Maybe<Array<Maybe<Restriction>>>;
+  orgaCapa?: Maybe<Array<Maybe<OrganizationCapability>>>;
+  portalCapa?: Maybe<Array<Maybe<PortalCapability>>>;
 };
 
 export type AuthDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
@@ -2495,7 +2492,7 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
 
 export type CapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['Restriction'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['PortalCapability'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
