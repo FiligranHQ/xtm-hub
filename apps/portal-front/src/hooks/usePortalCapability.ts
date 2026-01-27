@@ -1,5 +1,5 @@
 import { PortalContext } from '@/components/me/app-portal-context';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useContext } from 'react';
 
 // Mock the useContext hook
@@ -7,10 +7,12 @@ import { useContext } from 'react';
 export const useAdminByPass = () => {
   const { hasCapability } = useContext(PortalContext);
 
-  return hasCapability && hasCapability(RestrictionEnum.BYPASS);
+  return hasCapability && hasCapability(PortalCapabilityEnum.BYPASS);
 };
 
-export const useUserHasPortalCapability = (restrictions: RestrictionEnum[]) => {
+export const useUserHasPortalCapability = (
+  restrictions: PortalCapabilityEnum[]
+) => {
   const { hasCapability } = useContext(PortalContext);
   return (
     hasCapability &&

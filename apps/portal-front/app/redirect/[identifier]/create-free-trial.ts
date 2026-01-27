@@ -4,7 +4,7 @@ import CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery from '@generated/cre
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { NextRequest, NextResponse } from 'next/server';
 import { loadBaseUrlFront, loadMeUser } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
@@ -21,7 +21,7 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
     const freeTrialUrl = new URL(`/app/service/free-trial`, baseUrlFront);
 
     const isAdmin = user.capabilities.some(
-      ({ name }) => name === RestrictionEnum.BYPASS
+      ({ name }) => name === PortalCapabilityEnum.BYPASS
     );
     const requiredCapabilities: OrganizationCapabilityEnum[] = [
       OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
