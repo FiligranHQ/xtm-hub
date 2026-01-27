@@ -14,6 +14,18 @@ import { authDirectives } from './directive-auth';
 import { RoleType } from './directive.model';
 
 describe('Auth directives', () => {
+  describe('isAuthenticated', () => {
+    it('should return false if user is disabled', () => {
+      const user = {
+        disabled: true,
+      } as UserLoadUserBy;
+
+      const result = authDirectives.isAuthenticated(user);
+
+      expect(result).toBe(false);
+    });
+  });
+
   describe('hasCapability', () => {
     it.each`
       description                                                                   | expected | isUserAdmin | userHasManageAccess | userHasReadTrials | userHasModifyTrials | areOrgaCapaRequired | arePortalCapaRequired | isUserBypass

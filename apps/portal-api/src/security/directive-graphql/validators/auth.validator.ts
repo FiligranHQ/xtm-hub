@@ -8,7 +8,7 @@ export const AUTH_DIRECTIVE_NAME = 'auth';
  * Checks if a user is authenticated
  */
 export const isAuthenticated = (user: UserLoadUserBy): boolean => {
-  return !!user;
+  return !!user && !user.disabled;
 };
 
 /**
@@ -27,7 +27,6 @@ export const hasCapability = (
 
   // Allow if user is active and no specific capabilities required
   if (
-    !user.disabled &&
     portalCapabilitiesRequired.length === 0 &&
     orgaCapabilitiesRequired.length === 0
   ) {
