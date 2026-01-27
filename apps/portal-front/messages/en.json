@@ -758,7 +758,13 @@
         "Author": "Author",
         "ProductVersionLabel": "OpenAEV Version",
         "UpdateZIPFile": "Update ZIP file",
-        "DescriptionUpdateZIPFile": "You're about to upload a new zip file. The previous json file will be deleted. Do you want to continue?"
+        "DescriptionUpdateZIPFile": "You're about to upload a new zip file. The previous json file will be deleted. Do you want to continue?",
+        "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
+        "Restore": "Restore",
+        "UploadImage": "Upload new image(s)",
+        "NoImage": "No image selected",
+        "ImageLabel": "Images",
+        "SelectImage": "Select image(s)"
       },
       "AddService": "Add new scenario",
       "UpdateService": "Update the scenario {name}",
