@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
-import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { doesVersionSatisfy } from '@/utils/versioning';
 import {
   AutoForm,
   FormItem,
@@ -73,11 +73,10 @@ const ChoosePlatformForm = ({
               <FormItem>
                 <>
                   {platforms.map((platform) => {
-                    const isPlatformCompatible =
-                      isCompatibleWithSemanticVersion(
-                        platform.version ?? '0.0.0',
-                        requiredProductVersion ?? '0.0.0'
-                      );
+                    const isPlatformCompatible = doesVersionSatisfy({
+                      givenVersion: platform.version ?? '0.0.0',
+                      requiredVersion: requiredProductVersion ?? '0.0.0',
+                    });
 
                     const input = (
                       <div className="flex items-center gap-2">

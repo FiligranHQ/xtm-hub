@@ -18,8 +18,8 @@ import { normalizeDocumentName } from './src/modules/services/document/document.
 import { INTEGRATION_METADATA_KEYS } from './src/modules/services/integrations/integrations.model';
 import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
-import { compareSemanticVersions } from './src/utils/semantic-versioning';
 import { extractId } from './src/utils/utils';
+import { compareVersions, isValidVersion } from './src/utils/versioning';
 
 type Filters = Filter[] | DeploymentRequestFilter[] | ServiceInstanceFilter[];
 
@@ -276,11 +276,19 @@ const createProductVersionFilter = (): FilterHandler => ({
   },
   addWhere: (qb, _type, values) => {
     if (!values.length) return;
-    const lowestVersion = [...values].sort(compareSemanticVersions)[0];
+    const lowestVersion = [...values]
+      .filter(isValidVersion)
+      .sort(compareVersions)[0]
+      ?.replace('-lts', '');
+
+    if (!lowestVersion) {
+      return;
+    }
+
     const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
     qb.whereRaw(
       dbRaw(
-        `("${metaAlias}"."value" IS NULL OR string_to_array("${metaAlias}"."value",'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
+        `("${metaAlias}"."value" IS NULL OR string_to_array(replace("${metaAlias}"."value", '-lts', ''),'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
       )
     );
   },

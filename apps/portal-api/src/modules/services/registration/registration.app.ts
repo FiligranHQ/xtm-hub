@@ -42,11 +42,8 @@ import {
 } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { RequiredPlatformVersions } from '../../../utils/required-platform-version';
-import {
-  isSemanticVersionString,
-  isVersionAtLeast,
-} from '../../../utils/semantic-versioning';
 import { extractId } from '../../../utils/utils';
+import { doesVersionSatisfy, isValidVersion } from '../../../utils/versioning';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
@@ -148,7 +145,7 @@ export const registrationApp = {
   refreshPlatformRegistrationConnectivityStatus: async (
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    if (!isSemanticVersionString(input.platformVersion)) {
+    if (!isValidVersion(input.platformVersion)) {
       throw new Error(ErrorCode.InvalidPlatformVersion);
     }
 
@@ -164,10 +161,10 @@ export const registrationApp = {
           input.platformIdentifier
         ];
 
-      const shouldSendNotFoundStatus = isVersionAtLeast(
-        input.platformVersion,
-        requiredVersionForNotFoundStatus
-      );
+      const shouldSendNotFoundStatus = doesVersionSatisfy({
+        givenVersion: input.platformVersion,
+        requiredVersion: requiredVersionForNotFoundStatus,
+      });
 
       return {
         status: shouldSendNotFoundStatus
