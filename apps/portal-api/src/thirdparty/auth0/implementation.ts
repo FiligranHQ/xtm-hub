@@ -25,21 +25,25 @@ export const auth0ClientImplementation: Auth0Client = {
     const users_response = await managementClient.usersByEmail.getByEmail({
       email: user.email,
     });
-    const auth0_user = users_response.data[0];
-    if (!auth0_user) {
+    const auth0_users = users_response.data;
+    if (auth0_users.length === 0) {
       throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
     }
 
-    await managementClient.users.update(
-      { id: auth0_user.user_id },
-      {
-        given_name: user.first_name,
-        family_name: user.last_name,
-        user_metadata: {
-          country: user.country,
-        },
-        picture: user.picture,
-      }
+    await Promise.all(
+      auth0_users.map((auth0_user) =>
+        managementClient.users.update(
+          { id: auth0_user.user_id },
+          {
+            given_name: user.first_name,
+            family_name: user.last_name,
+            user_metadata: {
+              country: user.country,
+            },
+            picture: user.picture,
+          }
+        )
+      )
     );
   },
   updateUserRBACInstance: async (
@@ -49,14 +53,18 @@ export const auth0ClientImplementation: Auth0Client = {
     const users_response = await managementClient.usersByEmail.getByEmail({
       email,
     });
-    const auth0_user = users_response.data[0];
-    if (!auth0_user) {
+    const auth0_users = users_response.data;
+    if (auth0_users.length === 0) {
       throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
     }
 
-    await managementClient.users.update(
-      { id: auth0_user.user_id },
-      buildUserMetadataUpdate(auth0_user, userRBACInstance)
+    await Promise.all(
+      auth0_users.map((auth0_user) =>
+        managementClient.users.update(
+          { id: auth0_user.user_id },
+          buildUserMetadataUpdate(auth0_user, userRBACInstance)
+        )
+      )
     );
   },
   resetPassword: async (email: string): Promise<void> => {
