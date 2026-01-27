@@ -620,6 +620,13 @@
       "SureDeleteService": "Are you sure you want to delete the TAXII Feed {name}?",
       "UpdateService": "Update the TAXII Feed {name}"
     },
+    "Connector": {
+      "Actions": {
+        "Deleted": "The Connector {name} has been deleted successfully"
+      },
+      "DeleteService": "Delete the Connector {name}",
+      "SureDeleteService": "Are you sure you want to delete the Connector {name}?"
+    },
     "Stream": {
       "Actions": {
         "Added": "The Stream {name} has been added successfully",

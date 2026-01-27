@@ -3,6 +3,7 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
@@ -62,10 +63,13 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={
-            <ServiceManageSheet
-              document={documentData}
-              variant={'button'}
-            />
+            <>
+              <DeleteIntegrationSlug document={documentData} />
+              <ServiceManageSheet
+                document={documentData}
+                variant={'button'}
+              />
+            </>
           }>
           <DashboardCarousel
             serviceInstance={serviceInstance}

@@ -1,7 +1,6 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
 import {
   getIntegrationSubTypeMetadata,
   SubTypesPerIntegrationType,
@@ -62,16 +61,12 @@ export type ThirdPartyIntegrationFormValues = z.infer<
 >;
 
 interface ThirdPartyIntegrationFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: ThirdPartyIntegrationFormValues) => void;
-  onDelete?: () => void;
   document: SubscribableResource | undefined;
 }
 
 export const ThirdPartyIntegrationForm = ({
-  userCanDelete,
   handleSubmit,
-  onDelete,
   document,
 }: ThirdPartyIntegrationFormProps) => {
   const thirdPartyIntegration = document;
@@ -328,14 +323,6 @@ export const ThirdPartyIntegrationForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {thirdPartyIntegration && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={thirdPartyIntegration.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

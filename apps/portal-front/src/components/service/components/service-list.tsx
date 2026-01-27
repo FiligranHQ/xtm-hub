@@ -27,6 +27,7 @@ export interface ServiceListProps {
   search: string;
   onSearchChange: (v: string) => void;
   additionalFilters?: ServiceListFilterMap;
+  connectionId?: string;
   paginationControls?: React.ReactNode;
 }
 const ServiceList = ({
@@ -35,6 +36,7 @@ const ServiceList = ({
   search,
   onSearchChange,
   additionalFilters,
+  connectionId,
   paginationControls,
 }: ServiceListProps) => {
   const t = useTranslations();
@@ -85,6 +87,7 @@ const ServiceList = ({
               <ServiceCard
                 key={document.id}
                 document={document}
+                connectionId={connectionId}
                 detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
               />

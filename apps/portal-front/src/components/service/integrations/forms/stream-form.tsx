@@ -1,8 +1,9 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
-import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
+import {
+  SubTypesPerIntegrationType,
+} from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -49,18 +50,11 @@ const streamFormSchema = z.object({
 export type StreamFormValues = z.infer<typeof streamFormSchema>;
 
 interface StreamFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: StreamFormValues) => void;
-  onDelete?: () => void;
   document: SubscribableResource | undefined;
 }
 
-export const StreamForm = ({
-  userCanDelete,
-  handleSubmit,
-  onDelete,
-  document,
-}: StreamFormProps) => {
+export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
   const stream = document;
   const t = useTranslations();
   const { me } = useContext(PortalContext);
@@ -313,14 +307,6 @@ export const StreamForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {stream && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={stream.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

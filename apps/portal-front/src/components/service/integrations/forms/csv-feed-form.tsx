@@ -1,7 +1,6 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -45,18 +44,11 @@ const csvFeedFormSchema = z.object({
 export type CsvFeedFormValues = z.infer<typeof csvFeedFormSchema>;
 
 interface CsvFeedFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: CsvFeedFormValues) => void;
-  onDelete?: () => void;
   document: SubscribableResource | undefined;
 }
 
-export const CsvFeedForm = ({
-  userCanDelete,
-  handleSubmit,
-  onDelete,
-  document,
-}: CsvFeedFormProps) => {
+export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
   const csvFeed = document;
   const t = useTranslations();
   const { me } = useContext(PortalContext);
@@ -265,14 +257,6 @@ export const CsvFeedForm = ({
           integration_type: { fieldType: () => <FormItem hidden={true} /> },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {csvFeed && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={csvFeed.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

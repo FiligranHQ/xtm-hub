@@ -1,7 +1,5 @@
 import { getLabels } from '@/components/admin/label/label.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -48,21 +46,16 @@ export type OpenAEVScenarioFormValues = z.infer<
 >;
 
 export interface OpenAEVScenarioFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: OpenAEVScenarioFormValues) => void;
-  onDelete?: () => void;
   document?: SubscribableResource;
 }
 
 export const OpenaevScenarioForm = ({
-  userCanDelete,
   handleSubmit,
-  onDelete,
   document,
 }: OpenAEVScenarioFormProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
-  const { translationKey } = useServiceContext();
 
   const openAEVScenario = document;
   const isCreation = !openAEVScenario;
@@ -284,14 +277,6 @@ export const OpenaevScenarioForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {openAEVScenario && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={openAEVScenario.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

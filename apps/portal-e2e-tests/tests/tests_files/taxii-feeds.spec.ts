@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseFixtures';
+import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 import IntegrationPage from '../model/integration.pageModel';
 
@@ -47,6 +47,8 @@ test.describe('TAXII Feeds', () => {
       TAXI_FEED_TEST.shortDescription
     );
     await integrationPage.deleteIntegration('button');
+    //  Need to wait for the redirection to be over
+    await page.waitForTimeout(2000);
     await expect(
       page.getByText(TAXI_FEED_TEST.name, { exact: true })
     ).not.toBeVisible();

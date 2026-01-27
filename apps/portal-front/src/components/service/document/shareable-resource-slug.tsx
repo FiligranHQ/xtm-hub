@@ -85,37 +85,42 @@ const ShareableResourceSlug: React.FunctionComponent<
             url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
           />
           {shouldShowOneClickDeployComponent ? (
-            <TooltipProvider>
-              <Tooltip
-                delayDuration={50}
-                disableHoverableContent={true}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      incrementDownloadNumber();
-                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                    }}
-                    className="z-[2] text-primary">
-                    <DownloadIcon className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t('Service.ShareableResources.Download')}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <>
+              <TooltipProvider>
+                <Tooltip
+                  delayDuration={50}
+                  disableHoverableContent={true}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        incrementDownloadNumber();
+                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                      }}
+                      className="z-[2] text-primary">
+                      <DownloadIcon className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('Service.ShareableResources.Download')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              {updateActions}
+            </>
           ) : (
-            <Button
-              onClick={() => {
-                incrementDownloadNumber();
-                window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-              }}>
-              {t('Utils.Download')}
-            </Button>
+            <>
+              {updateActions}
+              <Button
+                onClick={() => {
+                  incrementDownloadNumber();
+                  window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                }}>
+                {t('Utils.Download')}
+              </Button>
+            </>
           )}
-          {updateActions}
           {shouldShowOneClickDeployComponent && (
             <OneClickDeploy documentData={documentData} />
           )}
