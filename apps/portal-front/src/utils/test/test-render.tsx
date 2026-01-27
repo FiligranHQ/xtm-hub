@@ -1,18 +1,21 @@
 import { AppPortalContext } from '@/components/me/app-portal-context';
+import { SettingsPortalContext } from '@/components/settings/env-portal-context';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
-import { render } from '@testing-library/react';
+import { settingsContext_fragment$data } from '@generated/settingsContext_fragment.graphql';
+import { render, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { FunctionComponent, ReactNode } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay/hooks';
-import { EnvironmentConfig } from 'relay-runtime';
 import { createMockEnvironment } from 'relay-test-utils';
+import { RelayMockEnvironment } from 'relay-test-utils/lib/RelayModernMockEnvironment';
 import messages from '../../../messages/en.json';
 
 export interface ProvidersWrapperProps {
   children: ReactNode;
   me?: meContext_fragment$data;
-  relayConfig?: Partial<EnvironmentConfig>;
+  settings?: settingsContext_fragment$data;
+  relayConfig?: RelayMockEnvironment;
 }
 
 export const generateMockUser = (
@@ -44,22 +47,50 @@ export const generateMockUser = (
     ...me,
   } as meContext_fragment$data;
 };
+
+export const generateSettings = (
+  settings?: Partial<settingsContext_fragment$data> | null
+) => {
+  return {
+    platform_providers: [
+      {
+        name: 'local',
+        provider: 'local',
+        type: 'FORM',
+      },
+      {
+        name: 'Login',
+        provider: 'oidc',
+        type: 'SSO',
+      },
+    ],
+    environment: 'local',
+    base_url_front: 'http://localhost:3002',
+    platform_feature_flags: ['*'],
+    domains_blacklist: '',
+    ...settings,
+  } as settingsContext_fragment$data;
+};
 export const ProvidersWrapper = ({
   children,
   relayConfig,
   me,
+  settings,
 }: ProvidersWrapperProps) => {
-  const relayEnv = createMockEnvironment(relayConfig);
+  const relayEnv = relayConfig ?? createMockEnvironment();
   return (
     <RelayEnvironmentProvider environment={relayEnv}>
-      <AppPortalContext me={me}>{children}</AppPortalContext>
+      <SettingsPortalContext settings={settings}>
+        <AppPortalContext me={me}>{children}</AppPortalContext>
+      </SettingsPortalContext>
     </RelayEnvironmentProvider>
   );
 };
 
 interface TestRenderOptions {
-  relayConfig?: Partial<EnvironmentConfig>;
+  relayConfig?: RelayMockEnvironment;
   me?: Partial<meContext_fragment$data> | null;
+  settings?: Partial<settingsContext_fragment$data> | null;
 }
 
 /**
@@ -89,12 +120,13 @@ export const TestWrapper: FunctionComponent<TestWrapperProps> = ({
   options,
   children,
 }) => {
-  const { relayConfig, me } = options ?? {};
+  const { relayConfig, me, settings } = options ?? {};
 
   return (
     <ProvidersWrapper
       relayConfig={relayConfig}
-      me={generateMockUser(me)}>
+      me={generateMockUser(me)}
+      settings={generateSettings(settings)}>
       <NextIntlClientProvider
         locale={'en'}
         messages={messages}>
@@ -102,6 +134,23 @@ export const TestWrapper: FunctionComponent<TestWrapperProps> = ({
       </NextIntlClientProvider>
     </ProvidersWrapper>
   );
+};
+
+export const testRenderHook = <Result, Props>(
+  hook: (initialProps: Props) => Result,
+  options?: TestRenderOptions
+) => {
+  const wrapper = ({ children }: ProvidersWrapperProps) => {
+    return (
+      <TestWrapper
+        options={{
+          ...options,
+        }}>
+        {children}
+      </TestWrapper>
+    );
+  };
+  return renderHook(hook, { wrapper });
 };
 
 export default testRender;
