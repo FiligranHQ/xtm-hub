@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
 import {
+  DeploymentRequestHubStatus,
   OrganizationCapability,
   PlatformContract,
   PlatformIdentifier,
@@ -139,10 +140,11 @@ export const registrationDomain = {
     query: {
       platformIdentifier?: PlatformIdentifier;
       'ServiceInstance.id'?: ServiceInstanceId;
+      onlyActiveTrials?: boolean;
     } = {}
   ): Promise<DomainRegisteredPlatform[]> => {
     const { user } = requestContext.require();
-    const { platformIdentifier, ...field } = query;
+    const { platformIdentifier, onlyActiveTrials, ...field } = query;
     const userSelectedOrganization = user.selected_organization_id;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
@@ -171,6 +173,12 @@ export const registrationDomain = {
         '=',
         'ServiceInstance.id'
       )
+      .leftJoin(
+        'DeploymentRequest',
+        'DeploymentRequest.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
       .whereIn('ServiceDefinition.identifier', serviceDefinitionIdentifiers)
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
@@ -179,6 +187,15 @@ export const registrationDomain = {
         this.where('Service_Configuration.status', '=', 'active').orWhereNull(
           'Service_Configuration.service_instance_id'
         );
+      })
+      .where(function () {
+        if (onlyActiveTrials) {
+          this.where(
+            'DeploymentRequest.hub_status',
+            '=',
+            DeploymentRequestHubStatus.Active
+          ).orWhereNull('DeploymentRequest.id');
+        }
       })
       .where(field)
       .select([

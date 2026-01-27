@@ -16,7 +16,9 @@ export const ProductVersionFilter: React.FC<Props> = ({
   platformIdentifier,
 }) => {
   const t = useTranslations();
-  const { platforms } = useRegisteredPlatforms(platformIdentifier);
+  const { platforms } = useRegisteredPlatforms(platformIdentifier, {
+    onlyActiveTrials: true,
+  });
 
   const options = useMemo(() => {
     return platforms
