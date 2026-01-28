@@ -20,14 +20,21 @@ export const UseRegisteredPlatformsQuery = graphql`
   }
 `;
 
+interface UseRegisteredPlatformsOptions {
+  onlyActiveTrials?: boolean;
+}
+
 export const useRegisteredPlatforms = (
-  platformIdentifier: PlatformIdentifierEnum
+  platformIdentifier: PlatformIdentifierEnum,
+  options: UseRegisteredPlatformsOptions = {}
 ) => {
+  const { onlyActiveTrials = false } = options;
   const queryData = useLazyLoadQuery<useRegisteredPlatformsFragmentQuery>(
     UseRegisteredPlatformsQuery,
     {
       input: {
         identifier: platformIdentifier,
+        onlyActiveTrials,
       },
     }
   );

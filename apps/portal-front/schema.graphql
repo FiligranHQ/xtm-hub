@@ -927,6 +927,7 @@ type RefreshUserPlatformTokenResponse {
 
 input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
+  onlyActiveTrials: Boolean
 }
 
 input RegisteredPlatformInput {
