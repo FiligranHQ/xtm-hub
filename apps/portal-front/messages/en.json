@@ -166,7 +166,7 @@
     "Title": "Invite user to the {serviceName} service"
   },
   "UseCaseActions": {
-    "AddLabel": "Add use case",
+    "AddUseCase": "Add use case",
     "SearchLabel": "Search"
   },
   "UseCaseForm": {

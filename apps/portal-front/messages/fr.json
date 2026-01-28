@@ -166,7 +166,7 @@
     "Title": "Inviter l'utilisateur au service {serviceName} "
   },
   "UseCaseActions": {
-    "AddLabel": "Ajouter un cas d'usage",
+    "AddUseCase": "Ajouter un cas d'usage",
     "SearchLabel": "Rechercher"
   },
   "UseCaseForm": {

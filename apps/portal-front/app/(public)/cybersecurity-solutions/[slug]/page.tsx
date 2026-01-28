@@ -152,7 +152,9 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
             '@type': 'Thing',
             name: 'Cybersecurity',
           },
-          keywords: document.use_cases?.map((label) => label.name).join(', '),
+          keywords: document.use_cases
+            ?.map((useCase) => useCase.name)
+            .join(', '),
         };
         if (document.children_documents!.length > 0) {
           dashboardJsonLd.image = document.children_documents!.map(

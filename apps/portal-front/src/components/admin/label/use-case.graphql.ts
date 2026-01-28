@@ -1,15 +1,15 @@
 import { graphql } from 'react-relay';
 
-export const labelFragment = graphql`
-  fragment label_fragment on UseCase @inline {
+export const useCaseFragment = graphql`
+  fragment useCase_fragment on UseCase @inline {
     id
     name
     color
   }
 `;
 
-export const labelListFragment = graphql`
-  fragment labelList_labels on Query
+export const useCaseListFragment = graphql`
+  fragment useCase_list_fragment on Query
   @refetchable(queryName: "UseCasesPaginationQuery") {
     useCases(
       first: $count
@@ -23,15 +23,15 @@ export const labelListFragment = graphql`
       totalCount
       edges {
         node {
-          ...label_fragment
+          ...useCase_fragment
         }
       }
     }
   }
 `;
 
-export const LabelListQuery = graphql`
-  query labelListQuery(
+export const UseCaseListQuery = graphql`
+  query useCaseListQuery(
     $count: Int!
     $cursor: ID
     $orderBy: UseCaseOrdering!
@@ -39,29 +39,29 @@ export const LabelListQuery = graphql`
     $searchTerm: String
     $documentType: String
   ) {
-    ...labelList_labels
+    ...useCase_list_fragment
   }
 `;
 
-export const AddLabelMutation = graphql`
-  mutation labelAddMutation($input: AddUseCaseInput!, $connections: [ID!]!) {
+export const AddUseCaseMutation = graphql`
+  mutation useCaseAddMutation($input: AddUseCaseInput!, $connections: [ID!]!) {
     addUseCase(input: $input)
       @prependNode(connections: $connections, edgeTypeName: "UseCaseEdge") {
-      ...label_fragment
+      ...useCase_fragment
     }
   }
 `;
 
-export const EditLabelMutation = graphql`
-  mutation labelEditMutation($id: ID!, $input: EditUseCaseInput!) {
+export const EditUseCaseMutation = graphql`
+  mutation useCaseEditMutation($id: ID!, $input: EditUseCaseInput!) {
     editUseCase(id: $id, input: $input) {
-      ...label_fragment
+      ...useCase_fragment
     }
   }
 `;
 
-export const DeleteLabelMutation = graphql`
-  mutation labelDeleteMutation($id: ID!, $connections: [ID!]!) {
+export const DeleteUseCaseMutation = graphql`
+  mutation useCaseDeleteMutation($id: ID!, $connections: [ID!]!) {
     deleteUseCase(id: $id) {
       id @deleteEdge(connections: $connections)
     }

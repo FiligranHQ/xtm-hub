@@ -1,6 +1,6 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
-import Labels from '@/components/admin/label/labels';
+import UseCases from '@/components/admin/label/use-cases';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -24,7 +24,7 @@ const Page: React.FunctionComponent = () => {
     <GuardCapacityComponent displayError>
       <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="sr-only">{t('MenuLinks.UseCases')}</h1>
-      <Labels />
+      <UseCases />
     </GuardCapacityComponent>
   );
 };

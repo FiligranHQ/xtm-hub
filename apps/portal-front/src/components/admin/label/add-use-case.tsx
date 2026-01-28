@@ -1,26 +1,26 @@
-import LabelForm from '@/components/admin/label/label-form';
-import { AddLabelMutation } from '@/components/admin/label/label.graphql';
+import UseCaseForm from '@/components/admin/label/use-case-form';
+import { AddUseCaseMutation } from '@/components/admin/label/use-case.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { Button, toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 
-const AddLabel = ({ connectionId }: { connectionId: string }) => {
+const AddUseCase = ({ connectionId }: { connectionId: string }) => {
   const t = useTranslations();
-  const [createLabel] = useMutation(AddLabelMutation);
+  const [createUseCase] = useMutation(AddUseCaseMutation);
   const [openSheet, setOpenSheet] = useState(false);
 
   return (
     <SheetWithPreventingDialog
-      title={t('UseCaseActions.AddLabel')}
+      title={t('UseCaseActions.AddUseCase')}
       setOpen={setOpenSheet}
       open={openSheet}
-      trigger={<Button>{t('UseCaseActions.AddLabel')}</Button>}>
-      <LabelForm
+      trigger={<Button>{t('UseCaseActions.AddUseCase')}</Button>}>
+      <UseCaseForm
         onClose={() => setOpenSheet(false)}
         handleSubmit={(input) =>
-          createLabel({
+          createUseCase({
             variables: {
               input,
               connections: [connectionId],
@@ -45,4 +45,4 @@ const AddLabel = ({ connectionId }: { connectionId: string }) => {
   );
 };
 
-export default AddLabel;
+export default AddUseCase;

@@ -1,4 +1,4 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/label/use-case.utils';
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';
@@ -24,7 +24,7 @@ export const ServiceListFilterLabel: FunctionComponent<
     removeFilter(ServiceListFilterKey.Label);
   };
 
-  const labelOptions = getLabels(type).map(({ name, id }) => ({
+  const labelOptions = getUseCases(type).map(({ name, id }) => ({
     label: name,
     value: id,
   }));

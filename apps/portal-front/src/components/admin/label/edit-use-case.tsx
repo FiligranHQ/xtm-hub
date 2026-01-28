@@ -1,31 +1,31 @@
-import LabelForm from '@/components/admin/label/label-form';
+import UseCaseForm from '@/components/admin/label/use-case-form';
 import {
-  DeleteLabelMutation,
-  EditLabelMutation,
-} from '@/components/admin/label/label.graphql';
+  DeleteUseCaseMutation,
+  EditUseCaseMutation,
+} from '@/components/admin/label/use-case.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { toast } from '@filigran/ui';
-import { label_fragment$data } from '@generated/label_fragment.graphql';
+import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 
-const EditLabel = ({
+const EditUseCase = ({
   open,
   onClose,
-  label,
+  useCase,
   connections,
 }: {
   open: boolean;
   onClose: () => void;
-  label: label_fragment$data;
+  useCase: useCase_fragment$data;
   connections: string[];
 }) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState<boolean>(open);
 
-  const [editLabel] = useMutation(EditLabelMutation);
-  const [deleteLabel] = useMutation(DeleteLabelMutation);
+  const [editUseCase] = useMutation(EditUseCaseMutation);
+  const [deleteUseCase] = useMutation(DeleteUseCaseMutation);
 
   const handleOpenSheet = (open: boolean) => {
     setOpenSheet((prevState) => {
@@ -39,16 +39,16 @@ const EditLabel = ({
 
   return (
     <SheetWithPreventingDialog
-      title={t('UseCaseActions.AddLabel')}
+      title={t('UseCaseActions.AddUseCase')}
       setOpen={handleOpenSheet}
       open={openSheet}>
-      <LabelForm
-        label={label}
+      <UseCaseForm
+        useCase={useCase}
         onClose={() => handleOpenSheet(false)}
         handleDelete={() =>
-          deleteLabel({
+          deleteUseCase({
             variables: {
-              id: label.id,
+              id: useCase.id,
               connections,
             },
             onCompleted: () => {
@@ -67,9 +67,9 @@ const EditLabel = ({
           })
         }
         handleSubmit={(input) =>
-          editLabel({
+          editUseCase({
             variables: {
-              id: label.id,
+              id: useCase.id,
               input,
             },
             onCompleted: () => {
@@ -92,4 +92,4 @@ const EditLabel = ({
   );
 };
 
-export default EditLabel;
+export default EditUseCase;
