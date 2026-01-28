@@ -57,9 +57,7 @@ import {
   FunctionComponent,
   Suspense,
   useCallback,
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -111,7 +109,6 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     PortalCapabilityEnum.MODIFY_TRIALS,
   ]);
 
-  const currentConnectionIDRef = useRef<string | undefined>(undefined);
   const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
   const statuses = trialsTabConfig[type].statuses;
   const defaultOrder =
@@ -119,8 +116,8 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     DeploymentRequestOrderingEnum.REQUEST_DATE;
   const defaultOrderingMode =
     trialsTabConfig[type].defaultOrderingMode ?? OrderingModeEnum.DESC;
-  const [shouldRefreshAfterReorder, setShouldRefreshAfterReorder] =
-    useState(false);
+
+  const [reorderTrigger, setReorderTrigger] = useState(0);
 
   const [commitReorderRequestInQueue] =
     useMutation<trialsReorderRequestInQueueMutation>(
@@ -130,6 +127,29 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     useMutation<trialsAdminCancelDeploymentRequestMutation>(
       TrialsAdminCancelDeploymentRequestMutation
     );
+
+  const queryData = useLazyLoadQuery<trialsListQuery>(TrialsListQuery, {
+    count: 10,
+    orderMode: defaultOrderingMode,
+    orderBy: defaultOrder,
+    filters: [
+      { key: 'type', value: ['trial'] },
+      { key: 'hub_status', value: statuses },
+    ],
+  });
+
+  const [data, refetch] = useRefetchableFragment<
+    trialsListQuery,
+    trialsList$key
+  >(trialsListFragment, queryData);
+
+  const currentConnectionID = data?.deploymentRequestsList?.__id;
+
+  useMemo(() => {
+    if (currentConnectionID) {
+      connectionIDs.set(type, currentConnectionID);
+    }
+  }, [currentConnectionID, type]);
 
   const onReorderClick = useCallback(
     (id: string, direction: ReorderDeploymentRequestInQueueDirectionEnum) => {
@@ -145,7 +165,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             title: t('Utils.Success'),
             description: t('TrialsDashboard.Toast.TrialsReordered'),
           });
-          setShouldRefreshAfterReorder(true);
+          setReorderTrigger((prev) => prev + 1);
         },
         onError: (error) => {
           toast({
@@ -160,11 +180,11 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   );
 
   const onCancelClick = useCallback(
-    (deploymentRequestId: string) => {
+    (deploymentRequestId: string, currentConnectionID: string) => {
       cancelDeploymentRequestMutation({
         variables: {
           deploymentRequestId: deploymentRequestId,
-          removeConnections: [currentConnectionIDRef.current ?? ''],
+          removeConnections: [currentConnectionID],
         },
         updater: (store) => {
           const cancelledConnectionID = connectionIDs.get(
@@ -363,7 +383,12 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                             <CloseIcon className="h-4 w-4" />
                           </Button>
                         }
-                        onClickContinue={() => onCancelClick(row.original.id)}>
+                        onClickContinue={() =>
+                          onCancelClick(
+                            row.original.id,
+                            currentConnectionID ?? ''
+                          )
+                        }>
                         {t('Service.Trials.Cancellation.Confirmation.Admin', {
                           organizationName:
                             row.original.organization_name ?? '',
@@ -393,7 +418,6 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -424,7 +448,14 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
           ]
         : []),
     ],
-    [type, t, canModifyTrial, onCancelClick, onReorderClick]
+    [
+      type,
+      t,
+      canModifyTrial,
+      onCancelClick,
+      onReorderClick,
+      currentConnectionID,
+    ]
   );
 
   const {
@@ -446,33 +477,6 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     pageIndex: 0,
     pageSize,
   });
-
-  const queryData = useLazyLoadQuery<trialsListQuery>(TrialsListQuery, {
-    count: pageSize,
-    orderMode: defaultOrderingMode,
-    orderBy: defaultOrder,
-    filters: [
-      { key: 'type', value: ['trial'] },
-      { key: 'hub_status', value: statuses },
-    ],
-  });
-
-  const [data, refetch] = useRefetchableFragment<
-    trialsListQuery,
-    trialsList$key
-  >(trialsListFragment, queryData);
-
-  useEffect(() => {
-    if (data?.deploymentRequestsList?.__id) {
-      currentConnectionIDRef.current = data.deploymentRequestsList.__id;
-    }
-  }, [data?.deploymentRequestsList?.__id]);
-
-  useEffect(() => {
-    if (currentConnectionIDRef.current) {
-      connectionIDs.set(type, currentConnectionIDRef.current);
-    }
-  }, [type]);
 
   const trialsDataTable = useMemo<trials_fragment$data[]>(
     () =>
@@ -501,14 +505,11 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     [orderBy, orderMode, pagination.pageIndex, pagination.pageSize, refetch]
   );
 
-  useEffect(() => {
-    if (!shouldRefreshAfterReorder) {
-      return;
+  useMemo(() => {
+    if (reorderTrigger > 0) {
+      handleRefetchData();
     }
-
-    setShouldRefreshAfterReorder(false);
-    handleRefetchData();
-  }, [shouldRefreshAfterReorder, handleRefetchData]);
+  }, [reorderTrigger, handleRefetchData]);
 
   const onSortingChange = (updater: unknown) => {
     handleSortingChange<DeploymentRequestOrderingEnum>({

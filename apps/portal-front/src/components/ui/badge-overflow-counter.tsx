@@ -8,8 +8,7 @@ import {
   TooltipTrigger,
 } from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
-import { FunctionComponent, useEffect, useRef, useState } from 'react';
-import { useEventListener } from 'usehooks-ts';
+import { FunctionComponent, useCallback, useRef, useState } from 'react';
 
 interface BadgeOverflowCounterProps {
   badges: Readonly<BadgeOverflow[]>;
@@ -26,45 +25,58 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
   badges = [],
   className,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [visibleTags, setVisibleTags] = useState<number>(badges.length);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
-  const updateVisibility = () => {
-    if (!containerRef.current || badges.length === 0) {
-      return;
-    }
+  const containerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+      }
 
-    const container = containerRef.current;
-    const counterBadgeWidth = 56;
-    let totalWidth = 0;
-    let lastVisibleIndex = 1;
-    const children = Array.from(container.children) as HTMLElement[];
+      if (!node || badges.length === 0) {
+        return;
+      }
 
-    for (let i = 0; i < badges.length; i++) {
-      if (children[i]) {
-        totalWidth += children[i]!.offsetWidth + 8;
+      const updateVisibility = () => {
+        const container = node;
+        const counterBadgeWidth = 56;
+        let totalWidth = 0;
+        let lastVisibleIndex = 1;
+        const children = Array.from(container.children) as HTMLElement[];
 
-        if (i > 0 && totalWidth + counterBadgeWidth > container.offsetWidth) {
-          break;
+        for (let i = 0; i < badges.length; i++) {
+          if (children[i]) {
+            totalWidth += children[i]!.offsetWidth + 8;
+            if (
+              i > 0 &&
+              totalWidth + counterBadgeWidth > container.offsetWidth
+            ) {
+              break;
+            }
+            lastVisibleIndex = i + 1;
+          }
         }
-        lastVisibleIndex = i + 1;
-      }
-    }
 
-    if (lastVisibleIndex === badges.length - 1 && badges.length > 1) {
-      if (totalWidth > container.offsetWidth) {
-        lastVisibleIndex = 1;
-      }
-    }
+        if (lastVisibleIndex === badges.length - 1 && badges.length > 1) {
+          if (totalWidth > container.offsetWidth) {
+            lastVisibleIndex = 1;
+          }
+        }
 
-    setVisibleTags(lastVisibleIndex);
-  };
+        setVisibleTags(lastVisibleIndex);
+      };
 
-  useEffect(() => {
-    updateVisibility();
-  }, [badges]);
+      updateVisibility();
 
-  useEventListener('resize', updateVisibility);
+      resizeObserverRef.current = new ResizeObserver(() => {
+        updateVisibility();
+      });
+
+      resizeObserverRef.current.observe(node);
+    },
+    [badges]
+  );
 
   const hiddenCount = badges.length - visibleTags;
   const firstBadge = badges[0];

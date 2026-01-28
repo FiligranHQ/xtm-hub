@@ -22,13 +22,7 @@ import {
 import { Badge, Button } from '@filigran/ui/servers';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useUsersList } from '@/hooks/useUsersList';
 import { readInlineData } from 'react-relay';
@@ -58,53 +52,52 @@ const SelectUsersFormField = React.forwardRef<
   const [visibleBadges, setVisibleBadges] = useState<number>(
     selectedValues.length
   );
-  const badgesContainerRef = useRef<HTMLDivElement>(null);
   const measurementRef = useRef<HTMLDivElement>(null);
+  const badgesContainerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node || !measurementRef.current) return;
 
-  const updateBadgeVisibility = useCallback(() => {
-    if (!badgesContainerRef.current || !measurementRef.current) {
-      return;
-    }
+      const updateVisibility = () => {
+        const containerWidth = node.offsetWidth - 10; // Save space for controls
+        let totalWidth = 0;
+        let lastVisibleIndex = 0;
 
-    const container = badgesContainerRef.current;
-    const measurementContainer = measurementRef.current;
+        const children = Array.from(
+          measurementRef.current!.children
+        ) as HTMLElement[];
 
-    const containerWidth = container.offsetWidth - 10; // Save space for controls
-
-    let totalWidth = 0;
-    let lastVisibleIndex = 0;
-
-    const children = Array.from(measurementContainer.children) as HTMLElement[];
-
-    for (let i = 0; i < selectedValues.length; i++) {
-      const child = children[i];
-      if (child) {
-        const childWidth = child.offsetWidth + 4; // 4px for gap
-        const overflowBadgeLength = 56;
-
-        if (totalWidth + childWidth + overflowBadgeLength > containerWidth) {
-          break;
+        for (let i = 0; i < selectedValues.length; i++) {
+          const child = children[i];
+          if (child) {
+            const childWidth = child.offsetWidth + 4; // 4px for gap
+            const overflowBadgeLength = 56;
+            if (
+              totalWidth + childWidth + overflowBadgeLength >
+              containerWidth
+            ) {
+              break;
+            }
+            totalWidth += childWidth;
+            lastVisibleIndex = i + 1;
+          }
         }
+        setVisibleBadges(lastVisibleIndex);
+      };
 
-        totalWidth += childWidth;
-        lastVisibleIndex = i + 1;
-      }
-    }
+      updateVisibility();
 
-    setVisibleBadges(lastVisibleIndex);
-  }, [selectedValues, badgesContainerRef, measurementRef, setVisibleBadges]);
+      const resizeObserver = new ResizeObserver(() => {
+        updateVisibility();
+      });
 
-  useEffect(() => {
-    updateBadgeVisibility();
+      resizeObserver.observe(node);
 
-    const handleResize = () => updateBadgeVisibility();
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [selectedValues, updateBadgeVisibility]);
-
+      return () => {
+        resizeObserver.disconnect();
+      };
+    },
+    [selectedValues]
+  );
   const { orderMode, orderBy } = useUserListLocalstorage();
   const filterRef = useRef({ search: '' });
 

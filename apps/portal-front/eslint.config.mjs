@@ -17,7 +17,6 @@ const eslintConfig = [
   ...compat.extends('prettier'),
   {
     rules: {
-      'react-hooks/set-state-in-effect': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {

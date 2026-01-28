@@ -1,5 +1,11 @@
 import { UserFragment } from '@/components/admin/user/user-list';
-import { FunctionComponent, useContext, useState } from 'react';
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { PortalContext } from '@/components/me/app-portal-context';
@@ -35,7 +41,6 @@ import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.
 import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { readInlineData, useMutation } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
@@ -109,6 +114,14 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
         .filter((id) => id !== undefined);
     return currentCapabilities ?? [];
   };
+  const defaultValues = useMemo(() => {
+    const currentCapabilities = isUserCreation ? [] : getCurrentCapabilities();
+    return {
+      email: [{ id: '', text: '' }],
+      capabilities: currentCapabilities,
+      organizationId: organizationId,
+    };
+  }, [subscription.subscriptionById?.id, userService?.id, organizationId]);
 
   const capabilitiesForm = useForm<z.infer<typeof capabilitiesFormSchema>>({
     resolver: zodResolver(capabilitiesFormSchema),
@@ -128,6 +141,10 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   });
 
   const form = userService?.id ? capabilitiesForm : extendedForm;
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [subscription.subscriptionById?.id, defaultValues]);
 
   useEffect(() => {
     setIsDirty(form.formState.isDirty);
@@ -207,27 +224,18 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   };
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
-  const [filter, setFilter] = useState<{
-    search?: string;
-    organization?: string;
-  }>({
-    search: undefined,
-    organization: organizationId,
-  });
-
-  useEffect(() => {
-    setFilter((prevFilter) => ({
-      ...prevFilter,
+  const filter = useMemo(
+    () => ({
+      search: searchTerm,
       organization: organizationId,
-    }));
-  }, [subscription.subscriptionById]);
+    }),
+    [searchTerm, organizationId]
+  );
 
   const handleInputChange = (inputValue: string) => {
-    setFilter((prevFilter) => ({
-      ...prevFilter,
-      search: inputValue,
-    }));
+    setSearchTerm(inputValue);
   };
 
   const debounceHandleInput = useDebounceCallback(

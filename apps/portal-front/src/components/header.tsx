@@ -25,7 +25,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 // Component interface
@@ -42,8 +42,17 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const router = useRouter();
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
-  useEffect(() => setOpen(false), [currentPath]);
 
+  const previousPathRef = useRef(currentPath);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (currentPath !== previousPathRef.current) {
+      previousPathRef.current = currentPath;
+      setOpen(false);
+    } else {
+      setOpen(newOpen);
+    }
+  };
   const canManageUser =
     hasOrganizationCapability &&
     (hasOrganizationCapability(
@@ -111,7 +120,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         )}
         <Sheet
           open={open}
-          onOpenChange={setOpen}>
+          onOpenChange={handleOpenChange}>
           <SheetTrigger>
             <MenuIcon
               aria-hidden={true}
