@@ -122,6 +122,7 @@ export const registrationApp = {
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms({
       platformIdentifier: input?.identifier,
+      onlyActiveTrials: input?.onlyActiveTrials ?? false,
     });
 
     return platforms.map(mapDomainRegisteredPlatformToGraphQL);
