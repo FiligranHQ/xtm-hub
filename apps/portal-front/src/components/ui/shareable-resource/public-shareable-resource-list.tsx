@@ -7,7 +7,7 @@ import {
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface Props {
   documents: PublicShareableResource[];
@@ -26,21 +26,24 @@ export const PublicShareableResourceList: React.FC<Props> = ({
     return <div className="my-4 text-center">No document found</div>;
   }
 
-  const documentsByIntegrationType = documents.reduce<
-    Record<string, PublicShareableResource[]>
-  >((acc, resource) => {
-    const type =
-      isIntegrationItem(resource) && resource.integration_type
-        ? resource.integration_type
-        : resource.type;
+  const documentsByIntegrationType = useMemo(() => {
+    return documents.reduce<Record<string, PublicShareableResource[]>>(
+      (acc, resource) => {
+        const type =
+          isIntegrationItem(resource) && resource.integration_type
+            ? resource.integration_type
+            : resource.type;
 
-    if (!acc[type]) {
-      acc[type] = [];
-    }
+        if (!acc[type]) {
+          acc[type] = [];
+        }
 
-    acc[type].push(resource);
-    return acc;
-  }, {});
+        acc[type].push(resource);
+        return acc;
+      },
+      {}
+    );
+  }, [documents]);
 
   return (
     <>
