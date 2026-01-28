@@ -1,17 +1,5 @@
 import { graphql } from 'react-relay';
 
-export const ServiceListCreateMutation = graphql`
-  mutation serviceListMutation($input: AddServiceInput, $connections: [ID!]!) {
-    addServiceInstance(input: $input)
-      @prependNode(
-        connections: $connections
-        edgeTypeName: "ServiceInstanceEdge"
-      ) {
-      ...subscription_fragment
-    }
-  }
-`;
-
 export const ServiceAddPicture = graphql`
   mutation serviceAddPictureMutation(
     $serviceInstanceId: ID!
