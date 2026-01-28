@@ -1,4 +1,4 @@
-import { Restriction } from './__generated__/resolvers-types';
+import { PortalCapability } from './__generated__/resolvers-types';
 import CapabilityPortal, {
   CapabilityPortalId,
 } from './model/kanel/public/CapabilityPortal';
@@ -21,7 +21,17 @@ export const PLATFORM_ORGANIZATION_UUID: OrganizationId =
   'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId;
 export const CAPABILITY_BYPASS: CapabilityPortal = {
   id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09' as CapabilityPortalId,
-  name: Restriction.Bypass,
+  name: PortalCapability.Bypass,
+};
+
+export const CAPABILITY_READ_TRIALS: CapabilityPortal = {
+  id: 'bb8cadfe-8853-486c-993e-ab0026348fec' as CapabilityPortalId,
+  name: PortalCapability.ReadTrials,
+};
+
+export const CAPABILITY_MODIFY_TRIALS: CapabilityPortal = {
+  id: '9faa68f2-a274-403b-b07f-3c8502239df5' as CapabilityPortalId,
+  name: PortalCapability.ModifyTrials,
 };
 
 export const ROLE_ADMIN: RolePortal = {
@@ -65,7 +75,7 @@ export const SYSTEM_USER_CONTEXT: PortalContext = {
         domains: [],
       },
     ],
-    capabilities: [{ id: CAPABILITY_BYPASS.id, name: Restriction.Bypass }],
+    capabilities: [CAPABILITY_BYPASS],
     roles_portal: [
       {
         ...ROLE_ADMIN,

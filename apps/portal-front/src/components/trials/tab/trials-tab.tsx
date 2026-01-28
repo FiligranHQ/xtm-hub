@@ -41,8 +41,8 @@ import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPagina
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
 import { trialsList$key } from '@generated/trialsList.graphql';
 import { trialsListQuery } from '@generated/trialsListQuery.graphql';
@@ -108,7 +108,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
-    RestrictionEnum.MODIFY_TRIALS,
+    PortalCapabilityEnum.MODIFY_TRIALS,
   ]);
 
   const currentConnectionIDRef = useRef<string | undefined>(undefined);

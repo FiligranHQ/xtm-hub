@@ -3,15 +3,12 @@ directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
 directive @auth(
-  requires: [Restriction] = []
+  portalCapa: [PortalCapability] = []
+  orgaCapa: [OrganizationCapability] = []
 ) repeatable on OBJECT | FIELD_DEFINITION
 
-enum Restriction {
+enum PortalCapability {
   BYPASS
-  ADMINISTRATE_ORGANIZATION
-  MANAGE_ACCESS
-  MANAGE_SUBSCRIPTION
-  MANAGE_PLATFORM_REGISTRATION
   READ_TRIALS
   MODIFY_TRIALS
 }

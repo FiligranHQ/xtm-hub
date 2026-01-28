@@ -1,5 +1,3 @@
-import { Restriction } from '../src/__generated__/resolvers-types';
-
 import { OrganizationId } from '../src/model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../src/model/kanel/public/ServiceCapability';
 import { ServiceDefinitionId } from '../src/model/kanel/public/ServiceDefinition';
@@ -66,7 +64,7 @@ export const contextAdminUser: PortalContext = {
         domains: [],
       },
     ],
-    capabilities: [{ id: CAPABILITY_BYPASS.id, name: Restriction.Bypass }],
+    capabilities: [CAPABILITY_BYPASS],
     roles_portal: [
       {
         ...ROLE_ADMIN,
