@@ -1,48 +1,49 @@
 type UseCase implements Node {
-    id: ID!
-    name: String!
-    color: String!
+  id: ID!
+  name: String!
+  color: String!
 }
 
 enum UseCaseOrdering {
-    name
-    color
+  name
+  color
 }
 
 type UseCaseEdge {
-    cursor: String!
-    node: UseCase!
+  cursor: String!
+  node: UseCase!
 }
 
 type UseCaseConnection {
-    totalCount: Int!
-    edges: [UseCaseEdge!]!
-    pageInfo: PageInfo!
+  totalCount: Int!
+  edges: [UseCaseEdge!]!
+  pageInfo: PageInfo!
 }
 
 input AddUseCaseInput {
-    name: String!
-    color: String!
+  name: String!
+  color: String!
 }
 
 input EditUseCaseInput {
-    name: String
-    color: String
+  name: String
+  color: String
 }
 
 type Query {
-    useCases(
-        first: Int!
-        after: ID
-        orderBy: UseCaseOrdering!
-        orderMode: OrderingMode!
-        searchTerm: String
-        documentType: String
-    ): UseCaseConnection
+  useCases(
+    first: Int!
+    after: ID
+    orderBy: UseCaseOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    documentType: String
+  ): UseCaseConnection
 }
 
 type Mutation {
-    addUseCase(input: AddUseCaseInput!): UseCase! @auth(requires: [BYPASS])
-    editUseCase(id: ID!, input: EditUseCaseInput!): UseCase! @auth(requires: [BYPASS])
-    deleteUseCase(id: ID!): UseCase! @auth(requires: [BYPASS])
+  addUseCase(input: AddUseCaseInput!): UseCase! @auth(requires: [BYPASS])
+  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
+    @auth(requires: [BYPASS])
+  deleteUseCase(id: ID!): UseCase! @auth(requires: [BYPASS])
 }

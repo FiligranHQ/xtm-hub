@@ -9,8 +9,8 @@ import {
   UpdateDocumentInput,
 } from '../../../../__generated__/resolvers-types';
 import {
-  default as DocumentModel,
   DocumentId,
+  default as DocumentModel,
 } from '../../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../../model/kanel/public/User';

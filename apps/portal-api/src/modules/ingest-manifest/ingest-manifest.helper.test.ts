@@ -44,7 +44,7 @@ describe('Ingest manifest helper', () => {
           description: 'This is the second contract',
           short_description: 'Second contract',
           logo: 'https://example.com/logo.png',
-          use_cases: ['monitoring'],
+          labels: ['monitoring'],
           verified: false,
           container_image: 'docker.io/example/image2:latest',
           integration_subtype: IntegrationSubType.ExternalImport,

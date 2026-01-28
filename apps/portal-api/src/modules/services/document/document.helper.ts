@@ -6,8 +6,8 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import {
-  default as DocumentModel,
   DocumentId,
+  default as DocumentModel,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';

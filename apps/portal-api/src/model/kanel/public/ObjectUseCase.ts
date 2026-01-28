@@ -4,7 +4,9 @@
 import type { UseCaseId } from './UseCase';
 
 /** Identifier type for public.Object_UseCase */
-export type ObjectUseCaseObjectId = string & { __brand: 'public.Object_UseCase' };
+export type ObjectUseCaseObjectId = string & {
+  __brand: 'public.Object_UseCase';
+};
 
 /** Represents the table public.Object_UseCase */
 export default interface ObjectUseCase {

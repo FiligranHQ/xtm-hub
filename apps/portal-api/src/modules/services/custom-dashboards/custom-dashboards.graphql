@@ -1,51 +1,51 @@
 type CustomDashboard implements Document & Node {
-    id: ID!
-    type: String!
-    uploader: User
-    uploader_organization: Organization
-    name: String!
-    short_description: String
-    description: String
-    file_name: String!
-    minio_name: String!
-    active: Boolean!
-    created_at: Date!
-    updated_at: Date
-    updater_id: String
-    download_number: Int
-    share_number: Int
-    slug: String!
-    use_cases: [UseCase!]
-    service_instance_id: String!
-    service_instance: ServiceInstance
-    subscription: SubscriptionModel
-    children_documents: [ShareableResource!]
-    # Specific fields for custom dashboards
-    product_version: String
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  # Specific fields for custom dashboards
+  product_version: String
 }
 
 type CustomDashboardEdge {
-    cursor: String!
-    node: CustomDashboard!
+  cursor: String!
+  node: CustomDashboard!
 }
 
 type CustomDashboardConnection {
-    totalCount: Int!
-    edges: [CustomDashboardEdge!]!
-    pageInfo: PageInfo!
+  totalCount: Int!
+  edges: [CustomDashboardEdge!]!
+  pageInfo: PageInfo!
 }
 
 type Query {
-    seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
-    seoCustomDashboardBySlug(slug: String): CustomDashboard
-    customDashboards(
-        first: Int!
-        after: ID
-        orderBy: DocumentOrdering!
-        orderMode: OrderingMode!
-        searchTerm: String
-        logicalFilters: LogicalFilterInput
-        serviceInstanceId: String
-    ): CustomDashboardConnection! @auth
-    customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
+  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
+  seoCustomDashboardBySlug(slug: String): CustomDashboard
+  customDashboards(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    logicalFilters: LogicalFilterInput
+    serviceInstanceId: String
+  ): CustomDashboardConnection! @auth
+  customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
 }

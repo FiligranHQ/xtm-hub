@@ -7,8 +7,8 @@ import {
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import Document, {
-  default as DocumentModel,
   DocumentId,
+  default as DocumentModel,
 } from '../../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
 import { OrganizationId } from '../../../model/kanel/public/Organization';

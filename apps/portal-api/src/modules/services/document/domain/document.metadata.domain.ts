@@ -1,13 +1,13 @@
 import { Knex } from 'knex';
 import { db, dbRaw } from '../../../../../knexfile';
 import {
-  Document as DocumentResolverType,
   DocumentMetadata as DocumentMetadataResolverType,
+  Document as DocumentResolverType,
   IntegrationType,
 } from '../../../../__generated__/resolvers-types';
 import {
-  default as DocumentModel,
   DocumentId,
+  default as DocumentModel,
 } from '../../../../model/kanel/public/Document';
 import DocumentMetadata, {
   DocumentMetadataKey,
