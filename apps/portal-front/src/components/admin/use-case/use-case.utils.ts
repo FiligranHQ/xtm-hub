@@ -2,7 +2,7 @@ import {
   useCaseFragment,
   useCaseListFragment,
   UseCaseListQuery,
-} from '@/components/admin/label/use-case.graphql';
+} from '@/components/admin/use-case/use-case.graphql';
 import { formatName } from '@/utils/format/name';
 import { useCaseListQuery } from '@generated/useCaseListQuery.graphql';
 import { useCase_fragment$key } from '@generated/useCase_fragment.graphql';

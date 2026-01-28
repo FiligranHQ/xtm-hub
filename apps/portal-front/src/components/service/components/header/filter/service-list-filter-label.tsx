@@ -1,4 +1,4 @@
-import { getUseCases } from '@/components/admin/label/use-case.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListFilters } from '@/components/service/components/use-service-list-filters';

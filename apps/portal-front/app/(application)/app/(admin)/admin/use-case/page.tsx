@@ -1,6 +1,6 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
-import UseCases from '@/components/admin/label/use-cases';
+import UseCases from '@/components/admin/use-case/use-cases';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';

@@ -1,10 +1,10 @@
-import AddUseCase from '@/components/admin/label/add-use-case';
-import EditUseCase from '@/components/admin/label/edit-use-case';
+import AddUseCase from '@/components/admin/use-case/add-use-case';
+import EditUseCase from '@/components/admin/use-case/edit-use-case';
 import {
   useCaseFragment,
   useCaseListFragment,
   UseCaseListQuery,
-} from '@/components/admin/label/use-case.graphql';
+} from '@/components/admin/use-case/use-case.graphql';
 import { useExecuteAfterAnimation } from '@/hooks/useExecuteAfterAnimation';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';

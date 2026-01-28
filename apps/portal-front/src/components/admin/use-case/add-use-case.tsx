@@ -1,5 +1,5 @@
-import UseCaseForm from '@/components/admin/label/use-case-form';
-import { AddUseCaseMutation } from '@/components/admin/label/use-case.graphql';
+import UseCaseForm from '@/components/admin/use-case/use-case-form';
+import { AddUseCaseMutation } from '@/components/admin/use-case/use-case.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { Button, toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';

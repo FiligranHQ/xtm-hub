@@ -1,8 +1,8 @@
-import UseCaseForm from '@/components/admin/label/use-case-form';
+import UseCaseForm from '@/components/admin/use-case/use-case-form';
 import {
   DeleteUseCaseMutation,
   EditUseCaseMutation,
-} from '@/components/admin/label/use-case.graphql';
+} from '@/components/admin/use-case/use-case.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { toast } from '@filigran/ui';
 import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';

@@ -1,4 +1,4 @@
-import { getUseCases } from '@/components/admin/label/use-case.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
 import {
