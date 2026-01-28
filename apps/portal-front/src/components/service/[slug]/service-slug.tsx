@@ -27,6 +27,7 @@ import {
   DataTable,
   DataTableHeadBarOptions,
   useToast,
+  Input,
 } from '@filigran/ui';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
@@ -59,6 +60,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [removeSubscription, setRemoveSubscription] = useState<
     subscriptionWithUserService_fragment$data | undefined
   >(undefined);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const isAdminPath = useAdminPath();
 
@@ -163,29 +165,40 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
-      <div className="flex items-center ml-l">
-        <Checkbox
-          checked={shouldDisplayPersonalSpaces}
-          onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
-          id="displayPersonalSpaces"
-          className=""
-        />
-        <label
-          htmlFor="displayPersonalSpaces"
-          className="ml-s">
-          {t('Service.Management.ShowPersonalSpaces')}
-        </label>
+      <div className="flex items-center gap-m ml-l">
+        <div className="flex items-center">
+          <Checkbox
+              checked={shouldDisplayPersonalSpaces}
+              onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
+              id="displayPersonalSpaces"
+              className=""
+          />
+          <label
+              htmlFor="displayPersonalSpaces"
+              className="ml-s">
+            {t('Service.Management.ShowPersonalSpaces')}
+          </label>
+        </div>
+        <div className="flex-1 max-w-sm">
+          <Input
+              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm}
+              id="SearchTerm"
+              placeholder="Search organization..."
+          />
+        </div>
       </div>
+
       <div className="flex gap-s flex-wrap ml-auto">
         {useAdminPath() && (
-          <SheetWithPreventingDialog
-            open={openSheetAddOrga}
-            setOpen={setOpenSheetAddOrga}
-            trigger={<Button>{t('Service.SubscribeOrganization')}</Button>}
-            title={
-              t('OrganizationInServiceAction.AddOrganization') +
-              ' ' +
-              queryData?.serviceInstanceByIdWithSubscriptions?.name
+            <SheetWithPreventingDialog
+                open={openSheetAddOrga}
+                setOpen={setOpenSheetAddOrga}
+                trigger={<Button>{t('Service.SubscribeOrganization')}</Button>}
+                title={
+                    t('OrganizationInServiceAction.AddOrganization') +
+                    ' ' +
+                    queryData?.serviceInstanceByIdWithSubscriptions?.name
             }>
             <ServiceSlugAddOrgaForm
               subscriptions={
@@ -224,12 +237,30 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
         i18nKey={i18nKey(t)}
         columns={columns}
         data={
-          (queryData.serviceInstanceByIdWithSubscriptions?.subscriptions?.filter(
-            (subscription) =>
-              subscription?.organization?.personal_space ===
-              shouldDisplayPersonalSpaces
-          ) as subscriptionWithUserService_fragment$data[]) ??
-          ([] as subscriptionWithUserService_fragment$data[])
+          (() => {
+            const subscriptions = queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? [];
+
+            const filteredBySpace = subscriptions.filter(
+                (subscription) =>
+                    subscription?.organization?.personal_space === shouldDisplayPersonalSpaces
+            );
+
+            const filteredBySearch = searchTerm
+                ? filteredBySpace.filter((subscription) =>
+                    subscription?.organization?.name
+                        ?.toLowerCase()
+                        .includes(searchTerm.toLowerCase())
+                )
+                : filteredBySpace;
+
+            const sorted = [...filteredBySearch].sort((a, b) => {
+              const nameA = a?.organization?.name || '';
+              const nameB = b?.organization?.name || '';
+              return nameA.localeCompare(nameB);
+            });
+
+            return sorted as subscriptionWithUserService_fragment$data[];
+          })()
         }
         toolbar={toolbar}
         tableState={{
