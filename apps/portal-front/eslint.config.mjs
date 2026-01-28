@@ -21,7 +21,6 @@ const eslintConfig = [
       'react-hooks/error-boundaries': 'warn',
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/immutability': 'warn',
-      'react-hooks/refs': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
