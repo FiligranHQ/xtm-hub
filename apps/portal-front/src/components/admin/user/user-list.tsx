@@ -286,7 +286,7 @@ const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
       const defaultColumnOrder = columns.map((c) => c.id!);
       setColumnOrder(defaultColumnOrder);
     }
-  }, []);
+  }, [columnOrder.length, columns, setColumnOrder]);
 
   const userData = data.users.edges.map(({ node }) =>
     readInlineData<userList_fragment$key>(UserFragment, node)

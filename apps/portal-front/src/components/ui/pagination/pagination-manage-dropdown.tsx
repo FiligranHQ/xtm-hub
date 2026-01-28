@@ -32,7 +32,7 @@ export const PaginationManageDropdown: React.FC<Props> = ({
         {pageSize}
       </DropdownMenuRadioItem>
     ));
-  }, [pageSize]);
+  }, []);
 
   return (
     <DropdownMenu>
