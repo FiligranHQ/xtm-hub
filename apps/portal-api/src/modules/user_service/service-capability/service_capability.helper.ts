@@ -1,13 +1,11 @@
 import { db } from '../../../../knexfile';
-import {
-  Restriction,
-  ServiceCapability,
-} from '../../../__generated__/resolvers-types';
+import { ServiceCapability } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { ServiceCapabilityMutator } from '../../../model/kanel/public/ServiceCapability';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { UserServiceDomain } from '../user_service.domain';
+import { GenericServiceCapabilityName } from './generic_service_capability.const';
 import { getManageAccessLeft } from './service-capability.domain';
 
 export const loadServiceCapabilityBy = async (
@@ -27,7 +25,7 @@ export const willManageAccessBeConserved = async (
   // Needed if : the currentUser is the only one with manage access and want to update another user, without manage_access (from upload to delete for instance)
   const isCurrentUserModified = user.id === userService.user_id;
   const isAuthorizedToEditCapabilities =
-    capabilities.includes(Restriction.ManageAccess) ||
+    capabilities.includes(GenericServiceCapabilityName.MANAGE_ACCESS) ||
     manageAccessWillLeft ||
     !isCurrentUserModified;
   if (!isAuthorizedToEditCapabilities) {

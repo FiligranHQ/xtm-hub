@@ -1,5 +1,6 @@
 import { UserLoadUserBy } from '../../../model/user';
 import { userHasBypassCapability } from '../../auth.helper';
+import { RoleType } from '../directive.model';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
 
@@ -7,7 +8,7 @@ export const AUTH_DIRECTIVE_NAME = 'auth';
  * Checks if a user is authenticated
  */
 export const isAuthenticated = (user: UserLoadUserBy): boolean => {
-  return !!user;
+  return !!user && !user.disabled;
 };
 
 /**
@@ -15,31 +16,34 @@ export const isAuthenticated = (user: UserLoadUserBy): boolean => {
  */
 export const hasCapability = (
   user: UserLoadUserBy,
-  capabilitiesRequired: string[]
+  capabilitiesRequired: Record<RoleType, string[]>
 ): boolean => {
   // Admin bypass
   if (userHasBypassCapability(user)) {
     return true;
   }
+  const portalCapabilitiesRequired = capabilitiesRequired.PORTAL;
+  const orgaCapabilitiesRequired = capabilitiesRequired.ORGA;
 
-  //TODO rework this function to seperate capability concern
-  // https://github.com/FiligranHQ/xtm-hub/issues/1503
+  // Allow if user is active and no specific capabilities required
   if (
-    user.capabilities.some((capability) =>
-      capabilitiesRequired.includes(capability.name)
-    )
+    portalCapabilitiesRequired.length === 0 &&
+    orgaCapabilitiesRequired.length === 0
   ) {
     return true;
   }
 
-  // Allow if user is active and no specific capabilities required
-  if (!user.disabled && capabilitiesRequired.length === 0) {
+  if (
+    user.capabilities.some((capability) =>
+      portalCapabilitiesRequired.includes(capability.name)
+    )
+  ) {
     return true;
   }
 
   // Check if user has at least one required capability
   const userCapabilities = user.selected_org_capabilities ?? [];
   return userCapabilities.some((capability) =>
-    capabilitiesRequired.includes(capability)
+    orgaCapabilitiesRequired.includes(capability)
   );
 };

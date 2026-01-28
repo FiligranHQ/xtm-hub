@@ -94,22 +94,22 @@ input UpdatePlatformServiceMetadataInput {
 
 type Mutation {
   editServiceInstance(id: ID!, name: String!): ServiceInstance
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addServiceInstance(input: AddServiceInput): SubscriptionModel
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   deleteServiceInstance(id: ID!): ServiceInstance
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addServicePicture(
     serviceInstanceId: ID!
     document: Upload
     isLogo: Boolean
   ): ServiceInstance
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   updatePlatformServiceMetadata(
     input: UpdatePlatformServiceMetadataInput!
     document: Upload
   ): RegisteredPlatform
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
 
 type Query {
@@ -126,7 +126,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     filters: [ServiceInstanceFilter!]
-  ): ServiceConnection! @auth(requires: [BYPASS])
+  ): ServiceConnection! @auth(portalCapa: [BYPASS])
   serviceInstanceLinksByTags(
     tags: [ServiceInstanceTag!]!
   ): [SeoServiceInstance!]!

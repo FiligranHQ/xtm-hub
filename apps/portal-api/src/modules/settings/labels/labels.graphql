@@ -43,7 +43,7 @@ type Query {
 }
 
 type Mutation {
-  addLabel(input: AddLabelInput!): Label! @auth(requires: [BYPASS])
-  editLabel(id: ID!, input: EditLabelInput!): Label! @auth(requires: [BYPASS])
-  deleteLabel(id: ID!): Label! @auth(requires: [BYPASS])
+  addLabel(input: AddLabelInput!): Label! @auth(portalCapa: [BYPASS])
+  editLabel(id: ID!, input: EditLabelInput!): Label! @auth(portalCapa: [BYPASS])
+  deleteLabel(id: ID!): Label! @auth(portalCapa: [BYPASS])
 }

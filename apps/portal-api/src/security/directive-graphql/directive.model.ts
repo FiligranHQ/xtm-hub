@@ -3,9 +3,14 @@ import { ServiceCapabilityArgs } from './validators/service-capability.validator
 
 export type AuthFn = (user: UserLoadUserBy) => boolean;
 
+export enum RoleType {
+  PORTAL = 'PORTAL',
+  ORGA = 'ORGA',
+}
+
 export type RoleFn = (
   user: UserLoadUserBy,
-  roleRequiredInSchema: string[]
+  roleRequiredInSchema: Record<RoleType, string[]>
 ) => boolean;
 
 export type ServiceFn = (
