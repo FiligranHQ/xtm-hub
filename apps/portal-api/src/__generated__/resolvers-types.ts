@@ -1135,7 +1135,6 @@ export type Query = {
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
   updateOpenCTIManifest: Success;
-  useCase?: Maybe<UseCase>;
   useCases?: Maybe<UseCaseConnection>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
@@ -1414,11 +1413,6 @@ export type QuerySubscriptionByIdArgs = {
 
 export type QueryUpdateOpenCtiManifestArgs = {
   tag?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryUseCaseArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -3035,7 +3029,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
   updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
-  useCase?: Resolver<Maybe<ResolversTypes['UseCase']>, ParentType, ContextType, RequireFields<QueryUseCaseArgs, 'id'>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;

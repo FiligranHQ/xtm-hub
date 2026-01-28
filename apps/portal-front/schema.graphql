@@ -88,7 +88,6 @@ type Query {
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
-  useCase(id: ID!): UseCase
   subscriptionById(subscription_id: ID): SubscriptionModel
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection

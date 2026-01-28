@@ -6,8 +6,6 @@ import { useCaseDomain } from './use-case.domain';
 const resolvers: Resolvers = {
   Query: {
     useCases: (_, opts) => useCaseDomain.loadUseCases(opts),
-    useCase: (_, { id }) =>
-      useCaseDomain.loadUseCaseBy({ id } as UseCaseMutator),
   },
   Mutation: {
     addUseCase: (_, { input }) => useCaseDomain.insertUseCase(input),

@@ -39,8 +39,6 @@ type Query {
         searchTerm: String
         documentType: String
     ): UseCaseConnection
-    #    // TODO : Still Used ?
-    useCase(id: ID!): UseCase @auth
 }
 
 type Mutation {
