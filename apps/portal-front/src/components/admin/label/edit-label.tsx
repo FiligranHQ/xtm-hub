@@ -39,7 +39,7 @@ const EditLabel = ({
 
   return (
     <SheetWithPreventingDialog
-      title={t('LabelActions.AddLabel')}
+      title={t('UseCaseActions.AddLabel')}
       setOpen={handleOpenSheet}
       open={openSheet}>
       <LabelForm

@@ -115,7 +115,7 @@ const adminLinksData = (t: UseTranslationsProps) => [
   },
   {
     href: `/${APP_PATH}/admin/label`,
-    label: t('MenuLinks.Labels'),
+    label: t('MenuLinks.UseCases'),
   },
   {
     href: `/${APP_PATH}/admin/organizations`,

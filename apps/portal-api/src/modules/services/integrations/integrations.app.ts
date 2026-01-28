@@ -4,7 +4,7 @@ import {
   QueryPublicIntegrationsArgs,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
-import { WithLabels } from '../../../utils/types';
+import { WithUseCases } from '../../../utils/types';
 import {
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
@@ -26,7 +26,7 @@ export const integrationsApp = {
   },
   loadIntegration: async (
     documentId: DocumentId
-  ): Promise<WithLabels<Integration>> => {
+  ): Promise<WithUseCases<Integration>> => {
     return loadDocumentWithCountersById(documentId, INTEGRATION_METADATA_KEYS);
   },
   loadPublicAccessIntegrations: async (serviceSlug: string) =>
@@ -49,7 +49,7 @@ export const integrationsApp = {
   },
 
   loadPublicAccessIntegration: async (slug: string) => {
-    return loadSeoDocumentWithCountersBySlug<WithLabels<Integration>>(
+    return loadSeoDocumentWithCountersBySlug<WithUseCases<Integration>>(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       slug,
       INTEGRATION_METADATA_KEYS

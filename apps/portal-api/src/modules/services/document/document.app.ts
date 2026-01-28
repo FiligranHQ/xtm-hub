@@ -7,19 +7,19 @@ import {
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import Document, {
-  DocumentId,
   default as DocumentModel,
+  DocumentId,
 } from '../../../model/kanel/public/Document';
-import { LabelId } from '../../../model/kanel/public/Label';
-import { ObjectLabelObjectId } from '../../../model/kanel/public/ObjectLabel';
+import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { extractId } from '../../../utils/utils';
-import { labelsApp } from '../../settings/labels/labels.app';
-import { objectLabelDomain } from '../../settings/objectLabel/object-label.domain';
+import { objectUseCaseDomain } from '../../settings/objectUseCase/object-useCase.domain';
+import { useCaseApp } from '../../settings/useCase/use-case.app';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
@@ -117,11 +117,11 @@ export const DocumentApp = {
         files
       );
 
-      if (documentData.labels?.length) {
-        await objectLabelDomain.insertObjectLabel(
-          documentData.labels.map((id) => ({
-            object_id: document.id as unknown as ObjectLabelObjectId,
-            label_id: extractId(id) as LabelId,
+      if (documentData.use_cases?.length) {
+        await objectUseCaseDomain.insertObjectUseCase(
+          documentData.use_cases.map((id) => ({
+            object_id: document.id as unknown as ObjectUseCaseObjectId,
+            use_case_id: extractId(id) as UseCaseId,
           }))
         );
       }
@@ -216,17 +216,17 @@ export const DocumentApp = {
         uploader_id,
       });
 
-      // If label is null => that mean we want to update the field to empty
-      if (input.labels !== undefined) {
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: parentDocumentId as unknown as ObjectLabelObjectId,
+      // If use_cases is null => that mean we want to update the field to empty
+      if (input.use_cases !== undefined) {
+        await objectUseCaseDomain.deleteObjectUseCaseBy({
+          object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
         });
 
-        if (input.labels?.length > 0) {
-          await objectLabelDomain.insertObjectLabel(
-            input.labels.map((id) => ({
-              object_id: parentDocumentId as unknown as ObjectLabelObjectId,
-              label_id: extractId(id) as LabelId,
+        if (input.use_cases?.length > 0) {
+          await objectUseCaseDomain.insertObjectUseCase(
+            input.use_cases.map((id) => ({
+              object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
+              use_case_id: extractId(id) as UseCaseId,
             }))
           );
         }
@@ -336,9 +336,9 @@ export const DocumentApp = {
         await DocumentChildrenDomain.deleteChildrenByParent(documentId);
         await DocumentDomain.deleteDocuments([...childIds, documentId]);
 
-        // Labels
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: documentId as unknown as ObjectLabelObjectId,
+        // Use Cases
+        await objectUseCaseDomain.deleteObjectUseCaseBy({
+          object_id: documentId as unknown as ObjectUseCaseObjectId,
         });
       });
       return documentFromDb as T;
@@ -378,23 +378,23 @@ const upsertDocument = async <T extends DocumentModel>(
       });
     }
 
-    if (documentData.labels?.length) {
+    if (documentData.use_cases?.length) {
       if (documentWasUpdated) {
-        await objectLabelDomain.deleteObjectLabelBy({
-          object_id: document.id as unknown as ObjectLabelObjectId,
+        await objectUseCaseDomain.deleteObjectUseCaseBy({
+          object_id: document.id as unknown as ObjectUseCaseObjectId,
         });
       }
-      const insertObjectLabel = [];
-      for (const name of documentData.labels) {
-        const label = await labelsApp.loadOrCreateLabel({
+      const insertObjectUseCase = [];
+      for (const name of documentData.use_cases) {
+        const useCase = await useCaseApp.loadOrCreateUseCase({
           name,
         });
-        insertObjectLabel.push({
-          object_id: document.id as unknown as ObjectLabelObjectId,
-          label_id: label.id,
+        insertObjectUseCase.push({
+          object_id: document.id as unknown as ObjectUseCaseObjectId,
+          use_case_id: useCase.id,
         });
       }
-      await objectLabelDomain.insertObjectLabel(insertObjectLabel);
+      await objectUseCaseDomain.insertObjectUseCase(insertObjectUseCase);
     }
 
     if (metadataKeys.length > 0) {

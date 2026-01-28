@@ -6,8 +6,8 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import {
-  DocumentId,
   default as DocumentModel,
+  DocumentId,
   DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -16,7 +16,7 @@ import { MinioFile } from '../../../thirdparty/minio/types';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { OptionalMetadata } from '../../../utils/metadata';
-import { WithLabels } from '../../../utils/types';
+import { WithUseCases } from '../../../utils/types';
 import { isValidUrl } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -46,9 +46,9 @@ export const BOOLEAN_METADATA = [
   'playbook_supported',
 ];
 
-export type Document = WithLabels<DocumentModel>;
+export type Document = WithUseCases<DocumentModel>;
 export type FullDocumentMutator = Partial<DocumentModel> & {
-  labels?: string[];
+  use_cases?: string[];
   parent_document_id?: DocumentId;
 };
 

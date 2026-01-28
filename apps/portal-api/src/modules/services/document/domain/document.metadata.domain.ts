@@ -1,13 +1,13 @@
 import { Knex } from 'knex';
 import { db, dbRaw } from '../../../../../knexfile';
 import {
-  DocumentMetadata as DocumentMetadataResolverType,
   Document as DocumentResolverType,
+  DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
 } from '../../../../__generated__/resolvers-types';
 import {
-  DocumentId,
   default as DocumentModel,
+  DocumentId,
 } from '../../../../model/kanel/public/Document';
 import DocumentMetadata, {
   DocumentMetadataKey,
@@ -16,7 +16,7 @@ import { BOOLEAN_METADATA } from '../document.helper';
 import { DocumentData } from './document.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
-  Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<T, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export const DocumentMetadataDomain = {

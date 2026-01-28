@@ -13,10 +13,10 @@ const AddLabel = ({ connectionId }: { connectionId: string }) => {
 
   return (
     <SheetWithPreventingDialog
-      title={t('LabelActions.AddLabel')}
+      title={t('UseCaseActions.AddLabel')}
       setOpen={setOpenSheet}
       open={openSheet}
-      trigger={<Button>{t('LabelActions.AddLabel')}</Button>}>
+      trigger={<Button>{t('UseCaseActions.AddLabel')}</Button>}>
       <LabelForm
         onClose={() => setOpenSheet(false)}
         handleSubmit={(input) =>

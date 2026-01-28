@@ -1,6 +1,6 @@
 export async function seed(knex) {
-  // Labels seed data from production
-  await knex('Label')
+  // Use cases seed data from production
+  await knex('UseCase')
     .insert([
       {
         id: '00e8b44d-830a-4066-bc97-f8c4ee5b53a5',

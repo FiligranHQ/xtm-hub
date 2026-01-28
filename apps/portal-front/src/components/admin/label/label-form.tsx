@@ -56,10 +56,10 @@ const LabelForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('LabelForm.Name')}</FormLabel>
+              <FormLabel>{t('UseCaseForm.Name')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('LabelForm.Name')}
+                  placeholder={t('UseCaseForm.Name')}
                   {...field}
                 />
               </FormControl>
@@ -71,7 +71,7 @@ const LabelForm = ({
           name="color"
           render={({ field: { value, onChange } }) => (
             <FormItem>
-              <FormLabel>{t('LabelForm.Color')}</FormLabel>
+              <FormLabel>{t('UseCaseForm.Color')}</FormLabel>
               <ColorPicker
                 value={value ?? ''}
                 onChange={onChange}
@@ -92,7 +92,7 @@ const LabelForm = ({
                 </Button>
               }
               onClickContinue={() => handleDelete!()}>
-              {t('DeleteLabelDialog.TextDeleteLabel', {
+              {t('DeleteUseCaseDialog.TextDeleteUseCase', {
                 name: label.name,
               })}
             </AlertDialogComponent>

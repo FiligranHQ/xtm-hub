@@ -23,7 +23,7 @@ export const getLabels = (documentType?: string) => {
     labelListFragment,
     queryData
   );
-  return (data.labels?.edges ?? [])
+  return (data.useCases?.edges ?? [])
     .map(({ node }) => readInlineData<label_fragment$key>(labelFragment, node))
     .filter((l) => !!l)
     .map(({ id, name, color }) => ({

@@ -37,8 +37,8 @@
     "ResetTable": "Réinitialiser",
     "RowsPerPage": "Lignes par page"
   },
-  "DeleteLabelDialog": {
-    "TextDeleteLabel": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
+  "DeleteUseCaseDialog": {
+    "TextDeleteUseCase": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },
   "DialogActions": {
     "ContinueTitle": "Progrès non sauvegardé",
@@ -165,15 +165,15 @@
     "Organization": "Organisation",
     "Title": "Inviter l'utilisateur au service {serviceName} "
   },
-  "LabelActions": {
-    "AddLabel": "Ajouter une étiquette",
+  "UseCaseActions": {
+    "AddLabel": "Ajouter un cas d'usage",
     "SearchLabel": "Rechercher"
   },
-  "LabelForm": {
+  "UseCaseForm": {
     "Color": "Couleur",
     "Name": "Nom"
   },
-  "LabelListPage": {
+  "UseCaseListPage": {
     "Color": "Couleur",
     "Name": "Nom"
   },
@@ -205,7 +205,7 @@
     "Backoffice": "Backoffice",
     "Connectors": "OpenCTI contrats Connecteurs",
     "Home": "Accueil",
-    "Labels": "Étiquettes",
+    "UseCases": "Cas d'usage",
     "Organizations": "Organisations",
     "Parameters": "Paramètres",
     "Profile": "Profile",

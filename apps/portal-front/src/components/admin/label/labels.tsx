@@ -44,7 +44,7 @@ const Labels = () => {
     {
       accessorKey: 'name',
       id: 'name',
-      header: t('LabelListPage.Name'),
+      header: t('UseCaseListPage.Name'),
       cell: ({ row }) => {
         return (
           <Badge
@@ -58,7 +58,7 @@ const Labels = () => {
     {
       accessorKey: 'color',
       id: 'color',
-      header: t('LabelListPage.Color'),
+      header: t('UseCaseListPage.Color'),
       cell: ({ row }) => {
         return <span className="truncate">{row.original.color}</span>;
       },
@@ -67,7 +67,7 @@ const Labels = () => {
 
   const labelsData = useMemo<label_fragment$data[]>(
     () =>
-      data.labels?.edges?.map?.(({ node }) =>
+      data.useCases?.edges?.map?.(({ node }) =>
         readInlineData<label_fragment$key>(labelFragment, node)
       ) as label_fragment$data[],
     [data]
@@ -92,7 +92,7 @@ const Labels = () => {
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
             <div />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
-              <AddLabel connectionId={data!.labels!.__id} />
+              <AddLabel connectionId={data!.useCases!.__id} />
             </div>
           </div>
         }
@@ -101,7 +101,7 @@ const Labels = () => {
         <EditLabel
           label={labelEdit}
           open={!!labelEdit}
-          connections={[data!.labels!.__id]}
+          connections={[data!.useCases!.__id]}
           onClose={() =>
             useExecuteAfterAnimation(() => setLabelEdit(undefined))
           }

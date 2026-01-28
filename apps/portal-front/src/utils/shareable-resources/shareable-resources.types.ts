@@ -70,7 +70,7 @@ export interface SeoCustomDashboard {
   }[];
   created_at: string;
   updated_at: string;
-  labels: {
+  use_cases: {
     color: string;
     id: string;
     name: string;
@@ -107,7 +107,7 @@ export interface SeoIntegration {
   }[];
   created_at: string;
   updated_at: string;
-  labels: {
+  use_cases: {
     color: string;
     id: string;
     name: string;
@@ -143,7 +143,7 @@ export interface SeoOpenAEVScenario {
   }[];
   created_at: string;
   updated_at: string;
-  labels: {
+  use_cases: {
     color: string;
     id: string;
     name: string;

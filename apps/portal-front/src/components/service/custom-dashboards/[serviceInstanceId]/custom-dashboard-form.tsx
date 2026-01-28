@@ -112,7 +112,7 @@ export const CustomDashboardForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: customDashboard?.labels?.map((label) => label.id),
+        labels: customDashboard?.use_cases?.map((useCase) => useCase.id),
         uploader_id: customDashboard?.uploader?.id ?? me?.id,
         uploader_organization_id:
           (isCreation

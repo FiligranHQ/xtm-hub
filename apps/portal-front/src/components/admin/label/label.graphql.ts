@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
 export const labelFragment = graphql`
-  fragment label_fragment on Label @inline {
+  fragment label_fragment on UseCase @inline {
     id
     name
     color
@@ -10,8 +10,8 @@ export const labelFragment = graphql`
 
 export const labelListFragment = graphql`
   fragment labelList_labels on Query
-  @refetchable(queryName: "LabelsPaginationQuery") {
-    labels(
+  @refetchable(queryName: "UseCasesPaginationQuery") {
+    useCases(
       first: $count
       after: $cursor
       orderBy: $orderBy
@@ -34,7 +34,7 @@ export const LabelListQuery = graphql`
   query labelListQuery(
     $count: Int!
     $cursor: ID
-    $orderBy: LabelOrdering!
+    $orderBy: UseCaseOrdering!
     $orderMode: OrderingMode!
     $searchTerm: String
     $documentType: String
@@ -44,17 +44,17 @@ export const LabelListQuery = graphql`
 `;
 
 export const AddLabelMutation = graphql`
-  mutation labelAddMutation($input: AddLabelInput!, $connections: [ID!]!) {
-    addLabel(input: $input)
-      @prependNode(connections: $connections, edgeTypeName: "LabelEdge") {
+  mutation labelAddMutation($input: AddUseCaseInput!, $connections: [ID!]!) {
+    addUseCase(input: $input)
+      @prependNode(connections: $connections, edgeTypeName: "UseCaseEdge") {
       ...label_fragment
     }
   }
 `;
 
 export const EditLabelMutation = graphql`
-  mutation labelEditMutation($id: ID!, $input: EditLabelInput!) {
-    editLabel(id: $id, input: $input) {
+  mutation labelEditMutation($id: ID!, $input: EditUseCaseInput!) {
+    editUseCase(id: $id, input: $input) {
       ...label_fragment
     }
   }
@@ -62,7 +62,7 @@ export const EditLabelMutation = graphql`
 
 export const DeleteLabelMutation = graphql`
   mutation labelDeleteMutation($id: ID!, $connections: [ID!]!) {
-    deleteLabel(id: $id) {
+    deleteUseCase(id: $id) {
       id @deleteEdge(connections: $connections)
     }
   }

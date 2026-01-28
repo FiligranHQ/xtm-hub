@@ -1,147 +1,147 @@
 type ShareableResource {
-  id: ID!
-  file_name: String!
-  created_at: Date!
-  name: String
-  description: String
-  download_number: Int
-  active: Boolean!
+    id: ID!
+    file_name: String!
+    created_at: Date!
+    name: String
+    description: String
+    download_number: Int
+    active: Boolean!
 }
 
 enum DocumentOrdering {
-  file_name
-  description
-  created_at
-  download_number
-  name
+    file_name
+    description
+    created_at
+    download_number
+    name
 }
 """
- /!\ WARNING Do not use this type.
+/!\ WARNING Do not use this type.
 It exists only to cover cases where we failed to map to a specific Document.
 """
 type DefaultDocument implements Node & Document {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
+    id: ID!
+    type: String!
+    uploader: User
+    uploader_organization: Organization
+    name: String
+    short_description: String
+    description: String
+    file_name: String
+    minio_name: String!
+    active: Boolean!
+    created_at: Date!
+    updated_at: Date
+    updater_id: String
+    download_number: Int
+    share_number: Int
+    slug: String
+    use_cases: [UseCase!]
+    service_instance_id: String!
+    service_instance: ServiceInstance
+    subscription: SubscriptionModel
+    children_documents: [ShareableResource!]
 }
 
 interface Document implements Node {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
+    id: ID!
+    type: String!
+    uploader: User
+    uploader_organization: Organization
+    name: String
+    short_description: String
+    description: String
+    file_name: String
+    minio_name: String!
+    active: Boolean!
+    created_at: Date!
+    updated_at: Date
+    updater_id: String
+    download_number: Int
+    share_number: Int
+    slug: String
+    use_cases: [UseCase!]
+    service_instance_id: String!
+    service_instance: ServiceInstance
+    subscription: SubscriptionModel
+    children_documents: [ShareableResource!]
 }
 
 input DocumentMetadata {
-  key: String!
-  value: String!
+    key: String!
+    value: String!
 }
 
 input CreateDocumentInput {
-  name: String!
-  slug: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-  uploader_id: String!
+    name: String!
+    slug: String!
+    short_description: String!
+    description: String!
+    active: Boolean!
+    use_cases: [String!]
+    uploader_id: String!
 }
 
 input UpdateDocumentInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
+    name: String
+    slug: String
+    short_description: String
+    description: String
+    active: Boolean
+    use_cases: [String!]
+    uploader_organization_id: String
+    uploader_id: String
 }
 
 type Mutation {
-  createDocument(
-    input: CreateDocumentInput!
-    metadata: [DocumentMetadata!]!
-    document: [Upload!]!
-    serviceInstanceId: String
-  ): Document! @auth @service_capa(requires: [UPLOAD])
-  updateDocument(
-    documentId: ID!
-    input: UpdateDocumentInput!
-    metadata: [DocumentMetadata!]!
-    document: [Upload!]!
-    updateDocument: Boolean!
-    images: [String!]
-    serviceInstanceId: String
-  ): Document! @auth @service_capa(requires: [UPLOAD])
-  deleteDocument(
-    documentId: ID
-    service_instance_id: String
-    forceDelete: Boolean
-  ): Document! @auth @service_capa(requires: [DELETE])
-  incrementShareNumberDocument(documentId: ID): Document!
+    createDocument(
+        input: CreateDocumentInput!
+        metadata: [DocumentMetadata!]!
+        document: [Upload!]!
+        serviceInstanceId: String
+    ): Document! @auth @service_capa(requires: [UPLOAD])
+    updateDocument(
+        documentId: ID!
+        input: UpdateDocumentInput!
+        metadata: [DocumentMetadata!]!
+        document: [Upload!]!
+        updateDocument: Boolean!
+        images: [String!]
+        serviceInstanceId: String
+    ): Document! @auth @service_capa(requires: [UPLOAD])
+    deleteDocument(
+        documentId: ID
+        service_instance_id: String
+        forceDelete: Boolean
+    ): Document! @auth @service_capa(requires: [DELETE])
+    incrementShareNumberDocument(documentId: ID): Document!
 }
 
 type DocumentEdge {
-  cursor: String!
-  node: Document!
+    cursor: String!
+    node: Document!
 }
 
 type DocumentConnection {
-  totalCount: Int!
-  edges: [DocumentEdge!]!
-  pageInfo: PageInfo!
+    totalCount: Int!
+    edges: [DocumentEdge!]!
+    pageInfo: PageInfo!
 }
 
 type Query {
-  documentExists(documentName: String, service_instance_id: String): Boolean
+    documentExists(documentName: String, service_instance_id: String): Boolean
     @auth
     @service_capa(requires: [UPLOAD])
-  documents(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    filters: [Filter!]
-    logicalFilters: LogicalFilterInput
-    serviceInstanceId: String
-    parentsOnly: Boolean
-  ): DocumentConnection! @auth
-  document(documentId: ID, serviceInstanceId: ID): Document
+    documents(
+        first: Int!
+        after: ID
+        orderBy: DocumentOrdering!
+        orderMode: OrderingMode!
+        searchTerm: String
+        filters: [Filter!]
+        logicalFilters: LogicalFilterInput
+        serviceInstanceId: String
+        parentsOnly: Boolean
+    ): DocumentConnection! @auth
+    document(documentId: ID, serviceInstanceId: ID): Document
 }
