@@ -5,7 +5,12 @@ import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileToBase64 } from '@/lib/utils';
-import { docIsExistingFile, ExistingFile, fileListCheck, NewFile, } from '@/utils/documents';
+import {
+  docIsExistingFile,
+  ExistingFile,
+  fileListCheck,
+  NewFile,
+} from '@/utils/documents';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { AddIcon, DeleteIcon, ReplayIcon } from '@filigran/icon';
 import {
@@ -27,6 +32,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@filigran/ui';
+import { TooltipProvider } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useContext, useMemo, useRef, useState } from 'react';
 import slugify from 'slugify';
@@ -386,16 +392,18 @@ export const OpenaevScenarioForm = ({
                                       )
                                     );
                                   }}>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <ReplayIcon className="size-4" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="bg-gray-50">
-                                      {t(
-                                        'Service.OpenAEVScenario.Form.Restore'
-                                      )}
-                                    </TooltipContent>
-                                  </Tooltip>
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <ReplayIcon className="size-4" />
+                                      </TooltipTrigger>
+                                      <TooltipContent className="bg-gray-50">
+                                        {t(
+                                          'Service.OpenAEVScenario.Form.Restore'
+                                        )}
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
                                 </Button>
                                 <DeleteIcon
                                   focusable={false}
@@ -421,16 +429,18 @@ export const OpenaevScenarioForm = ({
                                       ]);
                                       setIsDirty(true);
                                     }}>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <DeleteIcon className="size-4" />
-                                      </TooltipTrigger>
-                                      <TooltipContent className="bg-gray-50">
-                                        {t(
-                                          'Service.OpenAEVScenario.Form.DeleteSentence'
-                                        )}
-                                      </TooltipContent>
-                                    </Tooltip>
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <DeleteIcon className="size-4" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-gray-50">
+                                          {t(
+                                            'Service.OpenAEVScenario.Form.DeleteSentence'
+                                          )}
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
                                   </Button>
                                 </div>
                               )}
