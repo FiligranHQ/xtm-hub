@@ -23,7 +23,13 @@ import {
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
 import { useTranslations } from 'next-intl';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   PreloadedQuery,
   useFragment,
@@ -67,22 +73,6 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
       isPlatformRegisteredPreloadedQuery.isPlatformRegistered
     );
 
-  // required to prevent React strict mode double registration
-  const hasRun = useRef(false);
-  useEffect(() => {
-    const shouldRefreshToken =
-      isPlatformRegistered.status === PlatformRegistrationStatusEnum.REGISTERED;
-
-    if (
-      shouldRefreshToken &&
-      isPlatformRegistered.organization &&
-      !hasRun.current
-    ) {
-      hasRun.current = true;
-      register(isPlatformRegistered.organization.id);
-    }
-  }, [isPlatformRegistered]);
-
   const [registrationRequestStatus, setRegistrationRequestStatus] =
     useState<RegistrationRequestStatus>('idle');
 
@@ -115,34 +105,53 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
     window.opener?.postMessage({ action: 'cancel' }, '*');
   };
 
-  const register = (organizationId: string) => {
-    if (!identifier) {
-      return;
+  const register = useCallback(
+    (organizationId: string) => {
+      if (!identifier) {
+        return;
+      }
+
+      setChosenOrganizationId(organizationId);
+      registerPlatform({
+        variables: {
+          input: { organizationId, platform, identifier },
+        },
+        onCompleted: (response) => {
+          setRegisterFragmentRef(response.registerPlatform);
+        },
+        onError: (error) => {
+          if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {
+            setRegistrationRequestStatus('missed-capability');
+            return;
+          }
+
+          setRegistrationRequestStatus('failed');
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: t(`Error.Server.${error.message}`),
+          });
+        },
+      });
+    },
+    [identifier, platform, registerPlatform, t]
+  );
+
+  // required to prevent React strict mode double registration
+  const hasRun = useRef(false);
+  useEffect(() => {
+    const shouldRefreshToken =
+      isPlatformRegistered.status === PlatformRegistrationStatusEnum.REGISTERED;
+
+    if (
+      shouldRefreshToken &&
+      isPlatformRegistered.organization &&
+      !hasRun.current
+    ) {
+      hasRun.current = true;
+      register(isPlatformRegistered.organization.id);
     }
-
-    setChosenOrganizationId(organizationId);
-    registerPlatform({
-      variables: {
-        input: { organizationId, platform, identifier },
-      },
-      onCompleted: (response) => {
-        setRegisterFragmentRef(response.registerPlatform);
-      },
-      onError: (error) => {
-        if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {
-          setRegistrationRequestStatus('missed-capability');
-          return;
-        }
-
-        setRegistrationRequestStatus('failed');
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
-  };
+  }, [isPlatformRegistered, register]);
 
   if (registrationRequestStatus === 'missed-capability') {
     return chosenOrganizationId ? (

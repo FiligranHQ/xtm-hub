@@ -78,7 +78,9 @@ const ShareableResourceSlug: React.FunctionComponent<
       <div className="flex gap-s pb-l flex-col md:flex-row">
         <h1 className="whitespace-nowrap">{documentData.name}</h1>
 
-        <BadgeOverflowCounter badges={documentData.labels as BadgeOverflow[]} />
+        <BadgeOverflowCounter
+          badges={documentData.use_cases as BadgeOverflow[]}
+        />
         <div className="flex items-center gap-2 ml-auto">
           <ShareLinkButton
             documentId={documentData.id}

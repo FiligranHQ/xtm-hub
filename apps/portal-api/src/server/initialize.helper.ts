@@ -14,7 +14,6 @@ import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 import ServiceCapability from '../model/kanel/public/ServiceCapability';
 import ServiceLink from '../model/kanel/public/ServiceLink';
-import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationId,
@@ -59,16 +58,6 @@ export const ensureServiceDefinitionExists = async (service) => {
     await db<ServiceDefinition>('ServiceDefinition')
       .where({ id: service.serviceDefinition.id })
       .update(service.serviceDefinition)
-      .returning('*');
-  }
-
-  const prices = await db('Service_Price');
-  if (!prices.find((price) => price.id === service.price.id)) {
-    await db<ServicePrice>('Service_Price').insert(service.price);
-  } else {
-    await db<ServicePrice>('Service_Price')
-      .where({ id: service.price.id })
-      .update(service.price)
       .returning('*');
   }
 };

@@ -1,26 +1,19 @@
-import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/shareable-resource-connector-slug-public';
+import ShareableResourceConnectorSlugPublic
+  from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/badge-overflow-counter';
+import BadgeOverflowCounter, { BadgeOverflow, } from '@/components/ui/badge-overflow-counter';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
-import {
-  isConnectorResource,
-  SeoResource,
-  ServiceSlug,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { isConnectorResource, SeoResource, ServiceSlug, } from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { Button } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import SeoServiceInstanceQuery, {
-  seoServiceInstanceQuery,
-} from '@generated/seoServiceInstanceQuery.graphql';
+import SeoServiceInstanceQuery, { seoServiceInstanceQuery, } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import Link from 'next/link';
@@ -103,7 +96,7 @@ export async function generateMetadata({
       authors: document.uploader
         ? [formatPersonNames(document.uploader)]
         : undefined,
-      tags: document.labels?.map((label) => label.name),
+      tags: document.use_cases?.map((useCase) => useCase.name),
     },
     twitter: {
       card: 'summary_large_image',
@@ -187,7 +180,7 @@ const Page = async ({
         applicationCategory: 'SecurityApplication',
         url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
       },
-      keywords: document.labels?.map((label) => label.name).join(', '),
+      keywords: document.use_cases?.map((useCase) => useCase.name).join(', '),
       mainEntityOfPage: {
         '@type': 'WebPage',
         '@id': pageUrl,
@@ -256,7 +249,7 @@ const Page = async ({
 
           <div className="flex gap-s overflow-hidden flex-1 items-center">
             <BadgeOverflowCounter
-              badges={document?.labels as BadgeOverflow[]}
+              badges={document?.use_cases as BadgeOverflow[]}
               className="z-[2]"
             />
           </div>

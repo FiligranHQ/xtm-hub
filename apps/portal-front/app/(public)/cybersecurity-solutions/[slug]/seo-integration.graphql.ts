@@ -15,7 +15,7 @@ export const SeoIntegrationFragment = graphql`
     children_documents {
       id
     }
-    labels {
+    use_cases {
       id
       name
       color
@@ -101,7 +101,7 @@ export const seoIntegrationsItem = graphql`
     children_documents {
       id
     }
-    labels {
+    use_cases {
       id
       name
       color

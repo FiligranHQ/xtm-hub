@@ -1,4 +1,4 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
@@ -36,7 +36,7 @@ const openAEVScenarioFormSchema = z.object({
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
   description: z.string().min(1, 'Required'),
-  labels: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck).optional(),
@@ -69,7 +69,7 @@ export const OpenaevScenarioForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: openAEVScenario?.labels?.map((label) => label.id),
+        use_cases: openAEVScenario?.use_cases?.map((useCase) => useCase.id),
         uploader_id: openAEVScenario?.uploader?.id ?? me?.id,
         uploader_organization_id:
           (isCreation
@@ -129,23 +129,23 @@ export const OpenaevScenarioForm = ({
               </FormItem>
             ),
           },
-          labels: {
+          use_cases: {
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.OpenAEVScenario.Form.LabelsLabel')}
+                  {t('Service.OpenAEVScenario.Form.UseCasesLabel')}
                 </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels()}
+                    options={getUseCases()}
                     keyValue="id"
                     keyLabel="name"
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
                     placeholder={t(
-                      'Service.OpenAEVScenario.Form.LabelsPlaceholder'
+                      'Service.OpenAEVScenario.Form.UseCasesPlaceholder'
                     )}
                     variant="inverted"
                   />

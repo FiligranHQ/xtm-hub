@@ -50,7 +50,7 @@ import {
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { APP_PATH } from '@/utils/path/constant';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
@@ -240,7 +240,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           return (
             <div className="flex items-center justify-end">
               {(me?.capabilities?.some(
-                (capa) => capa?.name === RestrictionEnum.BYPASS
+                (capa) => capa?.name === PortalCapabilityEnum.BYPASS
               ) ||
                 canManageService()) && (
                 <IconActions

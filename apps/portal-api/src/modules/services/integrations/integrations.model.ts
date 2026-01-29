@@ -50,26 +50,26 @@ export type Connector = Integration & {
 };
 
 export type CsvFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<CsvFeed, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<CsvFeed, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export type TaxiiFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<TaxiiFeed, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<TaxiiFeed, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export type StreamFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<Stream, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<Stream, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export type ThirdPartyIntegrationMetadata = MetadataArray<
   Exclude<
-    keyof Omit<ThirdPartyIntegration, 'labels'>,
+    keyof Omit<ThirdPartyIntegration, 'use_cases'>,
     keyof DocumentResolverType
   >
 >;
 
 export type ConnectorMetadata = MetadataArray<
-  Exclude<keyof Omit<Connector, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<Connector, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [

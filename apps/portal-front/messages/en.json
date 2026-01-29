@@ -37,8 +37,8 @@
     "ResetTable": "Reset table",
     "RowsPerPage": "Rows per page"
   },
-  "DeleteLabelDialog": {
-    "TextDeleteLabel": "Do you really want to delete this label {name} ?"
+  "DeleteUseCaseDialog": {
+    "TextDeleteUseCase": "Do you really want to delete this use case {name} ?"
   },
   "DialogActions": {
     "ContinueTitle": "Do you want to continue?",
@@ -165,15 +165,15 @@
     "Organization": "Organization",
     "Title": "Invite user to the {serviceName} service"
   },
-  "LabelActions": {
-    "AddLabel": "Add label",
+  "UseCaseActions": {
+    "AddUseCase": "Add use case",
     "SearchLabel": "Search"
   },
-  "LabelForm": {
+  "UseCaseForm": {
     "Color": "Color",
     "Name": "Name"
   },
-  "LabelListPage": {
+  "UseCaseListPage": {
     "Color": "Color",
     "Name": "Name"
   },
@@ -205,7 +205,7 @@
     "Backoffice": "Backoffice",
     "Connectors": "OpenCTI Connectors",
     "Home": "Home",
-    "Labels": "Labels",
+    "UseCases": "Use Cases",
     "Organizations": "Organizations",
     "Parameters": "Parameters",
     "Profile": "Profile",
@@ -529,8 +529,8 @@
           "Placeholder": "Type..."
         },
         "ProductVersion": {
-          "Label": "Platform",
-          "Placeholder": "Platform..."
+          "Label": "Registered platforms",
+          "Placeholder": "Registered platforms..."
         },
         "ManagerSupported": {
           "Label": "Deployment type",
@@ -577,8 +577,8 @@
         "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ExistingCsvFeedFile": "Existing Csv Feed file: {file_name}",
         "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "NameLabel": "Name",
         "PublishedPlaceholder": "Is the CSV Feed published?",
         "ShortDescriptionLabel": "Short Description",
@@ -608,8 +608,8 @@
         "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ExistingTaxiiFeedFile": "Existing TAXII Feed file: {file_name}",
         "ExistingTaxiiFeedIllustration": "Existing TAXII Feed illustration: {file_name}",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "NameLabel": "Name",
         "PublishedPlaceholder": "Is the TAXII Feed published?",
         "ShortDescriptionLabel": "Short Description",
@@ -646,8 +646,8 @@
         "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ExistingStreamFile": "Existing Stream file: {file_name}",
         "ExistingStreamIllustration": "Existing Stream illustration: {file_name}",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "NameLabel": "Name",
         "PublishedPlaceholder": "Is the Stream published?",
         "ShortDescriptionLabel": "Short Description",
@@ -678,8 +678,8 @@
         "ExistingThirdPartyIntegrationFile": "Existing Third Party Integration file: {file_name}",
         "ExistingThirdPartyIntegrationIllustration": "Existing Third Party Integration illustration: {file_name}",
         "GithubUrlLabel": "Github URL",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "NameLabel": "Name",
         "ProductVersionLabel": "OpenCTI version",
         "PublishedPlaceholder": "Is the Third Party Integration published?",
@@ -711,8 +711,8 @@
         "ExistingJSONFile": "Existing JSON file: {file_name}",
         "ImageLabel": "Images",
         "JSONFile": "JSON file",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "NameLabel": "Name",
         "NamePlaceholder": "Dashboard name",
         "NoImage": "No image selected",
@@ -748,8 +748,8 @@
         "SlugLabel": "Slug",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "OpenAEVScenarioFile": "Scenario file",
         "ExistingOpenAEVScenarioFile": "Existing scenario file: {file_name}",
         "OpenAEVScenarioIllustration": "Illustration",
@@ -781,7 +781,7 @@
         "Key": {
           "label": "Use case",
           "integration_type": "Integration type",
-          "product_version": "Platform",
+          "product_version": "Registered platforms",
           "manager_supported": "Deployment type",
           "verified": "Verified"
         }
@@ -832,6 +832,7 @@
       "Details": {
         "Author": "Author",
         "BasicInformation": "Basic information",
+        "OpenCTIDocumentation": "OpenCTI Documentation",
         "Downloads": "Downloads",
         "LastUpdatedAt": "Last updated at",
         "Overview": "Overview",

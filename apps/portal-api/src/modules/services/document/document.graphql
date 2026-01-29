@@ -16,7 +16,7 @@ enum DocumentOrdering {
   name
 }
 """
- /!\ WARNING Do not use this type.
+/!\ WARNING Do not use this type.
 It exists only to cover cases where we failed to map to a specific Document.
 """
 type DefaultDocument implements Node & Document {
@@ -36,7 +36,7 @@ type DefaultDocument implements Node & Document {
   download_number: Int
   share_number: Int
   slug: String
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -60,7 +60,7 @@ interface Document implements Node {
   download_number: Int
   share_number: Int
   slug: String
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -78,7 +78,7 @@ input CreateDocumentInput {
   short_description: String!
   description: String!
   active: Boolean!
-  labels: [String!]
+  use_cases: [String!]
   uploader_id: String!
 }
 
@@ -88,7 +88,7 @@ input UpdateDocumentInput {
   short_description: String
   description: String
   active: Boolean
-  labels: [String!]
+  use_cases: [String!]
   uploader_organization_id: String
   uploader_id: String
 }
