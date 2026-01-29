@@ -1,17 +1,18 @@
 'use client';
 import PublicPathError from '@/components/public-path-error';
 import { RelayProvider } from '@/relay/RelayProvider';
-import '@filigran/ui/theme.css';
 import { usePathname } from 'next/navigation';
-import '../styles/globals.css';
-
-export default function NotFound() {
+export default function Error({
+  error,
+}: {
+  error: Error & { digest?: string; componentStack?: string };
+}) {
   const pathname = usePathname();
   return (
     <RelayProvider>
       <PublicPathError
         error={{
-          name: 'PageNotFoundError',
+          ...error,
           message: `An user try to reach this unknown path: ${pathname}`,
         }}
       />

@@ -18,7 +18,6 @@ const eslintConfig = [
   {
     rules: {
       'react-hooks/preserve-manual-memoization': 'warn',
-      'react-hooks/error-boundaries': 'warn',
       'react-hooks/set-state-in-effect': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
