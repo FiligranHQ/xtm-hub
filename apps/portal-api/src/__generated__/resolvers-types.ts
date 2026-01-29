@@ -584,7 +584,6 @@ export type Mutation = {
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
   editServiceCapability?: Maybe<SubscriptionModel>;
-  editServiceInstance?: Maybe<ServiceInstance>;
   editUseCase: UseCase;
   editUserCapabilities: User;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
@@ -758,12 +757,6 @@ export type MutationEditOrganizationArgs = {
 export type MutationEditServiceCapabilityArgs = {
   input?: InputMaybe<EditServiceCapabilityInput>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationEditServiceInstanceArgs = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
 };
 
 
@@ -2821,7 +2814,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
-  editServiceInstance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationEditServiceInstanceArgs, 'id' | 'name'>>;
   editUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationEditUseCaseArgs, 'id' | 'input'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
