@@ -1,5 +1,4 @@
-import ShareableResourceConnectorSlugPublic
-  from '@/components/service/document/connector/shareable-resource-connector-slug-public';
+import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import BadgeOverflowCounter, { BadgeOverflow, } from '@/components/ui/badge-overflow-counter';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
@@ -12,14 +11,19 @@ import { isConnectorResource, SeoResource, ServiceSlug, } from '@/utils/shareabl
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { Button } from '@filigran/ui/servers';
+import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import SeoServiceInstanceQuery, { seoServiceInstanceQuery, } from '@generated/seoServiceInstanceQuery.graphql';
+import SeoServiceInstanceQuery, {
+  seoServiceInstanceQuery,
+} from '@generated/seoServiceInstanceQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
-import SlugDocument from './slug-document';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -193,7 +197,7 @@ const Page = async ({
         userInteractionCount: document.download_number,
       },
     };
-
+    const mainChild = document.children_documents?.[0];
     if (document.children_documents!.length > 0) {
       jsonLd.image = document.children_documents!.map(
         (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
@@ -226,7 +230,7 @@ const Page = async ({
           />
           <BreadcrumbNav value={breadcrumbValue} />
           <ShareableResourceConnectorSlugPublic
-            logo={`/document/images/${serviceInstance.id}/${document.children_documents?.[0]?.id}`}
+            logo={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
             documentData={document}
             pageUrl={pageUrl}
           />
@@ -245,13 +249,31 @@ const Page = async ({
         <BreadcrumbNav value={breadcrumbValue} />
 
         <div className="flex gap-s pb-l flex-col md:flex-row">
-          <h1 className="whitespace-nowrap">{document?.name}</h1>
-
-          <div className="flex gap-s overflow-hidden flex-1 items-center">
-            <BadgeOverflowCounter
-              badges={document?.use_cases as BadgeOverflow[]}
-              className="z-[2]"
-            />
+          {mainChild?.id && (
+            <div className="w-24 flex-shrink-0 rounded overflow-hidden">
+              <Image
+                src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
+                alt={`${document.name} logo`}
+                width={96}
+                height={96}
+                loading="lazy"
+                className="w-full h-full object-contain rounded"
+              />
+            </div>
+          )}
+          <div
+            className={
+              mainChild?.id
+                ? 'flex flex-col flex-1 justify-center'
+                : 'flex flex-row gap-s w-full'
+            }>
+            <h1 className="whitespace-nowrap">{document.name}</h1>
+            <div className="w-full mt-s mb-xs">
+              <BadgeOverflowCounter
+                badges={document?.use_cases as BadgeOverflow[]}
+                className="z-[2]"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-2 ml-auto">
             {
@@ -268,10 +290,18 @@ const Page = async ({
             </Button>
           </div>
         </div>
-        <SlugDocument
-          serviceInstance={serviceInstance}
-          document={document}
-        />
+        {(serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ||
+          serviceInstance.slug === ServiceSlug.OPEN_AEV_SCENARIOS) &&
+          mainChild && (
+            <ShareableResourceCarousel
+              serviceInstance={
+                serviceInstance as unknown as serviceInstance_fragment$data
+              }
+              documentData={
+                document as unknown as customDashboardsItem_fragment$data
+              }
+            />
+          )}
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
           <div className="flex-[3_3_0%]">
             <h3 className="py-s txt-container-title truncate text-muted-foreground">
