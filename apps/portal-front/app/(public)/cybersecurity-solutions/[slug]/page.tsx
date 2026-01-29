@@ -103,121 +103,114 @@ export async function generateMetadata({
 const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const awaitedParams = await params;
 
-  try {
-    const { baseUrl, serviceInstance, documents } = await getPageData(
-      awaitedParams.slug
-    );
+  const { baseUrl, serviceInstance, documents } = await getPageData(
+    awaitedParams.slug
+  );
 
-    const jsonLd: Record<string, unknown> = {
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: serviceInstance.name,
-      description: serviceInstance.description,
-      applicationCategory: 'SecurityApplication',
-      operatingSystem: 'Web',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: documents.length * 10,
-        bestRating: '5',
-        worstRating: '2',
-      },
-      // datePublished: serviceInstance.created_at,
-      // dateModified: serviceInstance.updated_at,
-      provider: {
-        '@type': 'Organization',
-        name: 'Filigran',
-        url: 'https://filigran.io',
-      },
-      keywords: documents
-        .flatMap(
-          (document) => document.labels?.map((label) => label.name) || []
-        )
-        .join(', '),
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
-      },
-      hasPart: documents.map((document) => {
-        const dashboardJsonLd: Record<string, unknown> = {
-          '@type': 'TechArticle',
-          headline: document.name,
-          description: document.short_description,
-          datePublished: document.created_at,
-          dateModified: document.updated_at,
-          author: document.uploader
-            ? {
-                '@type': 'Person',
-                name: formatPersonNames(document.uploader),
-              }
-            : undefined,
-          about: {
-            '@type': 'Thing',
-            name: 'Cybersecurity',
-          },
-          keywords: document.labels?.map((label) => label.name).join(', '),
-        };
-        if (document.children_documents!.length > 0) {
-          dashboardJsonLd.image = document.children_documents!.map(
-            (image) =>
-              `${baseUrl}/document/images/${serviceInstance.id}/${image.id}`
-          );
-        }
-        return dashboardJsonLd;
-      }),
-    };
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: serviceInstance.name,
+    description: serviceInstance.description,
+    applicationCategory: 'SecurityApplication',
+    operatingSystem: 'Web',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: documents.length * 10,
+      bestRating: '5',
+      worstRating: '2',
+    },
+    // datePublished: serviceInstance.created_at,
+    // dateModified: serviceInstance.updated_at,
+    provider: {
+      '@type': 'Organization',
+      name: 'Filigran',
+      url: 'https://filigran.io',
+    },
+    keywords: documents
+      .flatMap((document) => document.labels?.map((label) => label.name) || [])
+      .join(', '),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+    },
+    hasPart: documents.map((document) => {
+      const dashboardJsonLd: Record<string, unknown> = {
+        '@type': 'TechArticle',
+        headline: document.name,
+        description: document.short_description,
+        datePublished: document.created_at,
+        dateModified: document.updated_at,
+        author: document.uploader
+          ? {
+              '@type': 'Person',
+              name: formatPersonNames(document.uploader),
+            }
+          : undefined,
+        about: {
+          '@type': 'Thing',
+          name: 'Cybersecurity',
+        },
+        keywords: document.labels?.map((label) => label.name).join(', '),
+      };
+      if (document.children_documents!.length > 0) {
+        dashboardJsonLd.image = document.children_documents!.map(
+          (image) =>
+            `${baseUrl}/document/images/${serviceInstance.id}/${image.id}`
+        );
+      }
+      return dashboardJsonLd;
+    }),
+  };
 
-    if (serviceInstance.illustration_document_id) {
-      jsonLd.image = [
-        `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
-      ];
-    }
-
-    const breadcrumbValue = [
-      {
-        label: 'MenuLinks.Home',
-        href: '/',
-      },
-      {
-        label: serviceInstance.name,
-        original: true,
-      },
+  if (serviceInstance.illustration_document_id) {
+    jsonLd.image = [
+      `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
     ];
-
-    return (
-      <>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd),
-          }}
-        />
-        <BreadcrumbNav value={breadcrumbValue} />
-
-        <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
-          {serviceInstance.name}
-        </h1>
-
-        {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATIONS ? (
-          <RelayProvider>
-            <IntegrationListPageLoader
-              baseUrl={baseUrl}
-              serviceInstance={serviceInstance}
-            />
-          </RelayProvider>
-        ) : (
-          <PublicShareableResourceList
-            documents={documents}
-            serviceInstance={serviceInstance}
-            baseUrl={baseUrl}
-          />
-        )}
-      </>
-    );
-  } catch (error) {
-    console.error(error);
-    notFound();
   }
+
+  const breadcrumbValue = [
+    {
+      label: 'MenuLinks.Home',
+      href: '/',
+    },
+    {
+      label: serviceInstance.name,
+      original: true,
+    },
+  ];
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
+      <BreadcrumbNav value={breadcrumbValue} />
+
+      <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
+        {serviceInstance.name}
+      </h1>
+
+      {serviceInstance.slug === ServiceSlug.OPEN_CTI_INTEGRATIONS ? (
+        <RelayProvider>
+          <IntegrationListPageLoader
+            baseUrl={baseUrl}
+            serviceInstance={serviceInstance}
+          />
+        </RelayProvider>
+      ) : (
+        <PublicShareableResourceList
+          documents={documents}
+          serviceInstance={serviceInstance}
+          baseUrl={baseUrl}
+        />
+      )}
+    </>
+  );
 };
 
 export default Page;
