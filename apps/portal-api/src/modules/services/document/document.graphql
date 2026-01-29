@@ -138,7 +138,6 @@ type Query {
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-    filters: [Filter!]
     logicalFilters: LogicalFilterInput
     serviceInstanceId: String
     parentsOnly: Boolean

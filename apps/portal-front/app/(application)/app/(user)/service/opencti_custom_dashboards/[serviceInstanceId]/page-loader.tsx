@@ -5,9 +5,9 @@ import {
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
 import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboards-list';
-import { CustomDashboardsListQuery } from '@/components/service/custom-dashboards/custom-dashboard.graphql';
+import { DocumentsListQuery } from '@/components/service/document/document.graphql';
 import { Skeleton } from '@filigran/ui';
-import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
+import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -19,9 +19,8 @@ interface PageLoaderProps {
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
-  const [queryRef, loadQuery] = useQueryLoader<customDashboardsQuery>(
-    CustomDashboardsListQuery
-  );
+  const [queryRef, loadQuery] =
+    useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, search, setSearch, labels } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTICustomDashboards
   );

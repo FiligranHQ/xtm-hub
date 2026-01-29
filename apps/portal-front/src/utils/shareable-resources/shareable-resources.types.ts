@@ -1,5 +1,6 @@
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
 import { seoIntegrationsItemFragment$data } from '@generated/seoIntegrationsItemFragment.graphql';
@@ -9,6 +10,7 @@ export type ShareableResource =
   | customDashboardsItem_fragment$data
   | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
+  | documentItem_fragment$data
   | SeoIntegration
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
@@ -22,7 +24,8 @@ export type PublicShareableResource =
 export type SubscribableResource =
   | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
-  | customDashboardsItem_fragment$data;
+  | customDashboardsItem_fragment$data
+  | documentItem_fragment$data;
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',

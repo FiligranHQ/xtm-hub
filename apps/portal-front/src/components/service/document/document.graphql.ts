@@ -74,6 +74,7 @@ export const DocumentExistsQuery = graphql`
 
 export const documentItem = graphql`
   fragment documentItem_fragment on Document @inline {
+    __typename
     id
     type
     file_name
@@ -91,6 +92,8 @@ export const documentItem = graphql`
       color
     }
     uploader {
+      id
+      email
       first_name
       last_name
       picture
@@ -147,6 +150,18 @@ export const documentItem = graphql`
 
     ... on Connector {
       integration_type
+      integration_subtype
+      product_version
+      container_image
+      verified
+      source_code
+      subscription_link
+      manager_supported
+      playbook_supported
+    }
+
+    ... on OpenAEVScenario {
+      product_version
     }
   }
 `;
@@ -159,7 +174,7 @@ export const documentsFragment = graphql`
       orderBy: $orderBy
       orderMode: $orderMode
       searchTerm: $searchTerm
-      filters: $filters
+      logicalFilters: $logicalFilters
       serviceInstanceId: $serviceInstanceId
       parentsOnly: $parentsOnly
     ) {
@@ -182,7 +197,7 @@ export const DocumentsListQuery = graphql`
     $cursor: ID
     $orderBy: DocumentOrdering!
     $orderMode: OrderingMode!
-    $filters: [Filter!]
+    $logicalFilters: LogicalFilterInput
     $searchTerm: String
     $serviceInstanceId: String
     $parentsOnly: Boolean

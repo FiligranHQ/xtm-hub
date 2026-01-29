@@ -1,5 +1,5 @@
 import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
-import { LogicalFilterInput } from '@generated/integrationsQuery.graphql';
+import { LogicalFilterInput } from '@generated/documentsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';

@@ -22,10 +22,12 @@ import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
   CUSTOM_DASHBOARD_METADATA,
+  CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from '../custom-dashboards/custom-dashboards.domain';
 import {
   INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_METADATA_KEYS,
   INTEGRATION_STREAM_METADATA,
   INTEGRATION_TAXII_FEED_METADATA,
   INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
@@ -35,6 +37,7 @@ import {
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA,
+  OPENAEV_SCENARIO_METADATA_KEYS,
 } from '../openaev-scenarios/openaev-scenarios.domain';
 import { DocumentApp } from './document.app';
 import { Upload } from './document.uploads.helper';
@@ -51,6 +54,14 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   use_cases?: string[];
   parent_document_id?: DocumentId;
 };
+
+export const ALL_METADATA_KEYS: string[] = Array.from(
+  new Set([
+    ...INTEGRATION_METADATA_KEYS,
+    ...CUSTOM_DASHBOARD_METADATA_KEYS,
+    ...OPENAEV_SCENARIO_METADATA_KEYS,
+  ])
+);
 
 export type ManageableServiceDefinitionIdentifier =
   | ServiceDefinitionIdentifier.OpenctiIntegrations
@@ -158,6 +169,21 @@ export const DocumentHelper = {
     }
 
     return documentType;
+  },
+
+  getMetadataKeysForServiceDefinition: (
+    serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier
+  ): string[] => {
+    const mapping: Partial<Record<ServiceDefinitionIdentifier, string[]>> = {
+      [ServiceDefinitionIdentifier.OpenctiIntegrations]:
+        INTEGRATION_METADATA_KEYS,
+      [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
+        CUSTOM_DASHBOARD_METADATA_KEYS,
+      [ServiceDefinitionIdentifier.OpenaevScenarios]:
+        OPENAEV_SCENARIO_METADATA_KEYS,
+    };
+
+    return mapping[serviceDefinitionIdentifier] ?? [];
   },
 
   assertMetadataIsNotMissing: (

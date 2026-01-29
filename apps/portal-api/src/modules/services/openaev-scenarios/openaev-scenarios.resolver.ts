@@ -1,7 +1,4 @@
-import {
-  OpenAevScenarioConnection,
-  Resolvers,
-} from '../../../__generated__/resolvers-types';
+import { Resolvers } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
@@ -45,13 +42,6 @@ const resolvers: Resolvers = {
     },
     seoOpenAEVScenarioBySlug: async (_, { slug }) => {
       return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
-    },
-    openAEVScenarios: async (_, input) => {
-      return DocumentDomain.loadParentDocumentsByServiceInstance<OpenAevScenarioConnection>(
-        OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        input,
-        OPENAEV_SCENARIO_METADATA_KEYS
-      );
     },
     openAEVScenario: async (_, { id }) =>
       OpenAEVScenariosApp.loadOpenAEVScenario(extractId<DocumentId>(id)),

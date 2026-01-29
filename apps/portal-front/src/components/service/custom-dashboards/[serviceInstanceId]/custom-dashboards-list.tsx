@@ -3,28 +3,28 @@ import ServiceList from '@/components/service/components/service-list';
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
+import {
+  documentItem,
+  documentsFragment,
+  DocumentsListQuery,
+} from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
-  customDashboardsItem_fragment$data,
-  customDashboardsItem_fragment$key,
-} from '@generated/customDashboardsItem_fragment.graphql';
-import { customDashboardsList$key } from '@generated/customDashboardsList.graphql';
-import { customDashboardsQuery } from '@generated/customDashboardsQuery.graphql';
+  documentItem_fragment$data,
+  documentItem_fragment$key,
+} from '@generated/documentItem_fragment.graphql';
+import { documentsList$key } from '@generated/documentsList.graphql';
+import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import {
-  customDashboardsFragment,
-  customDashboardsItem,
-  CustomDashboardsListQuery,
-} from '../custom-dashboard.graphql';
 
 interface CustomDashboardsListProps {
-  queryRef: PreloadedQuery<customDashboardsQuery>;
+  queryRef: PreloadedQuery<documentsQuery>;
   serviceInstance: serviceInstance_fragment$data;
   search: string;
   onSearchChange: (v: string) => void;
@@ -36,22 +36,22 @@ const CustomDashboardsList = ({
   search,
   onSearchChange,
 }: CustomDashboardsListProps) => {
-  const queryData = usePreloadedQuery<customDashboardsQuery>(
-    CustomDashboardsListQuery,
+  const queryData = usePreloadedQuery<documentsQuery>(
+    DocumentsListQuery,
     queryRef
   );
 
-  const [data] = useRefetchableFragment<
-    customDashboardsQuery,
-    customDashboardsList$key
-  >(customDashboardsFragment, queryData);
+  const [data] = useRefetchableFragment<documentsQuery, documentsList$key>(
+    documentsFragment,
+    queryData
+  );
 
   const [active, draft] = useActiveAndDraftSplit<
-    customDashboardsItem_fragment$data,
-    customDashboardsItem_fragment$key
-  >(data?.customDashboards.edges, customDashboardsItem);
+    documentItem_fragment$data,
+    documentItem_fragment$key
+  >(data?.documents.edges, documentItem);
 
-  const connectionId = data?.customDashboards.__id;
+  const connectionId = data?.documents.__id;
 
   const context = useDocumentContext({
     serviceInstance,

@@ -1084,7 +1084,6 @@ export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
   customDashboard?: Maybe<CustomDashboard>;
-  customDashboards: CustomDashboardConnection;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -1092,12 +1091,10 @@ export type Query = {
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
   integration?: Maybe<Integration>;
-  integrations: IntegrationConnection;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me?: Maybe<User>;
   node?: Maybe<Node>;
   openAEVScenario?: Maybe<OpenAevScenario>;
-  openAEVScenarios: OpenAevScenarioConnection;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
@@ -1149,17 +1146,6 @@ export type QueryCustomDashboardArgs = {
 };
 
 
-export type QueryCustomDashboardsArgs = {
-  after?: InputMaybe<Scalars['ID']['input']>;
-  first: Scalars['Int']['input'];
-  logicalFilters?: InputMaybe<LogicalFilterInput>;
-  orderBy: DocumentOrdering;
-  orderMode: OrderingMode;
-  searchTerm?: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryDeploymentRequestsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<DeploymentRequestFilter>>;
@@ -1196,7 +1182,6 @@ export type QueryDocumentExistsArgs = {
 
 export type QueryDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
-  filters?: InputMaybe<Array<Filter>>;
   first: Scalars['Int']['input'];
   logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
@@ -1213,17 +1198,6 @@ export type QueryIntegrationArgs = {
 };
 
 
-export type QueryIntegrationsArgs = {
-  after?: InputMaybe<Scalars['ID']['input']>;
-  first: Scalars['Int']['input'];
-  logicalFilters?: InputMaybe<LogicalFilterInput>;
-  orderBy: DocumentOrdering;
-  orderMode: OrderingMode;
-  searchTerm?: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
 };
@@ -1237,17 +1211,6 @@ export type QueryNodeArgs = {
 export type QueryOpenAevScenarioArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type QueryOpenAevScenariosArgs = {
-  after?: InputMaybe<Scalars['ID']['input']>;
-  first: Scalars['Int']['input'];
-  logicalFilters?: InputMaybe<LogicalFilterInput>;
-  orderBy: DocumentOrdering;
-  orderMode: OrderingMode;
-  searchTerm?: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2978,7 +2941,6 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
-  customDashboards?: Resolver<ResolversTypes['CustomDashboardConnection'], ParentType, ContextType, RequireFields<QueryCustomDashboardsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -2986,12 +2948,10 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   integration?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryIntegrationArgs>>;
-  integrations?: Resolver<ResolversTypes['IntegrationConnection'], ParentType, ContextType, RequireFields<QueryIntegrationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   openAEVScenario?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QueryOpenAevScenarioArgs>>;
-  openAEVScenarios?: Resolver<ResolversTypes['OpenAEVScenarioConnection'], ParentType, ContextType, RequireFields<QueryOpenAevScenariosArgs, 'first' | 'orderBy' | 'orderMode'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;

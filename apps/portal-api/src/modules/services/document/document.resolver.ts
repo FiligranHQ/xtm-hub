@@ -188,34 +188,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    documents: async (
-      _,
-      {
-        first,
-        after,
-        orderMode,
-        orderBy,
-        searchTerm,
-        filters,
-        serviceInstanceId,
-        parentsOnly,
-      }
-    ) => {
+    documents: async (_, input) => {
       try {
-        return DocumentDomain.loadDocuments(
-          {
-            first,
-            after,
-            orderMode,
-            orderBy,
-            parentsOnly,
-            filters,
-            searchTerm: searchTerm ?? '',
-          },
-          {
-            'Document.service_instance_id': fromGlobalId(serviceInstanceId).id,
-          }
-        );
+        return DocumentApp.loadDocuments(input);
       } catch (error) {
         logApp.error('Error while fetching documents:', { error });
         throw mapToGraphQLError(error);

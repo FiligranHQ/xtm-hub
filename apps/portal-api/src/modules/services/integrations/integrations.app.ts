@@ -1,6 +1,5 @@
 import {
   IntegrationConnection,
-  QueryIntegrationsArgs,
   QueryPublicIntegrationsArgs,
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
@@ -17,13 +16,6 @@ import {
 } from './integrations.model';
 
 export const integrationsApp = {
-  loadIntegrations: async (input: QueryIntegrationsArgs) => {
-    return DocumentDomain.loadParentDocumentsByServiceInstance<IntegrationConnection>(
-      OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-      input,
-      INTEGRATION_METADATA_KEYS
-    );
-  },
   loadIntegration: async (
     documentId: DocumentId
   ): Promise<WithUseCases<Integration>> => {

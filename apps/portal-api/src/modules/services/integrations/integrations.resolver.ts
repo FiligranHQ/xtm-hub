@@ -46,7 +46,6 @@ const resolvers: Resolvers = {
       subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
   },
   Query: {
-    integrations: async (_, input) => integrationsApp.loadIntegrations(input),
     integration: async (_, { id }) =>
       integrationsApp.loadIntegration(extractId<DocumentId>(id)),
     publicIntegrations: async (_, input) =>
