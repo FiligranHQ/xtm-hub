@@ -85,7 +85,7 @@ export const documentItem = graphql`
     share_number
     active
     updated_at
-    labels {
+    use_cases {
       id
       name
       color

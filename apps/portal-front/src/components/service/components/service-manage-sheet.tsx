@@ -8,13 +8,9 @@ import { ServiceFormValues } from '@/components/service/components/subscribable-
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
-import {
-  APP_PATH,
-  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
-} from '@/utils/path/constant';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface ServiceManageSheetProps {
@@ -30,7 +26,6 @@ export const ServiceManageSheet = ({
   open: externalOpen,
   setOpen: externalSetOpen,
 }: ServiceManageSheetProps) => {
-  const router = useRouter();
   const t = useTranslations();
   const [internalOpenSheet, setInternalOpenSheet] = useState(false);
 
@@ -45,7 +40,6 @@ export const ServiceManageSheet = ({
     translationKey,
     ServiceForm,
     handleAddSheet,
-    handleDeleteSheet,
     handleUpdateSheet,
   } = useServiceContext();
 
@@ -53,28 +47,6 @@ export const ServiceManageSheet = ({
     ServiceCapabilityName.Upload,
     serviceInstance
   );
-
-  const userCanDelete = useServiceCapability(
-    ServiceCapabilityName.Delete,
-    serviceInstance
-  );
-
-  function onDeleteCompleted() {
-    revalidatePathActions([
-      `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
-    ]).then(() => {
-      router.push(
-        `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
-      );
-    });
-    setOpenSheet(false);
-    toast({
-      title: t('Utils.Success'),
-      description: t(`${translationKey}.Actions.Deleted`, {
-        name: document?.name ?? '',
-      }),
-    });
-  }
 
   function onUpdateSuccess(serviceName: string) {
     // If the service has changed, we need to revalidate the path
@@ -114,7 +86,7 @@ export const ServiceManageSheet = ({
   if (document) {
     return (
       <>
-        {(userCanUpdate || userCanDelete) && (
+        {userCanUpdate && (
           <SheetWithPreventingDialog
             open={openSheet}
             setOpen={setOpenSheet}
@@ -128,8 +100,6 @@ export const ServiceManageSheet = ({
             })}>
             {
               <ServiceForm
-                onDelete={() => handleDeleteSheet(document, onDeleteCompleted)}
-                userCanDelete={userCanDelete}
                 document={document}
                 handleSubmit={(values: ServiceFormValues) =>
                   handleUpdateSheet(values, document, onUpdateSuccess, onError)
@@ -161,8 +131,6 @@ export const ServiceManageSheet = ({
                 handleAddSheet(values, onCreateSuccess, onError)
               }
               document={undefined}
-              onDelete={() => {}}
-              userCanDelete={userCanDelete}
             />
           }
         </SheetWithPreventingDialog>

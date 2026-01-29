@@ -2,7 +2,7 @@ directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
-directive @auth(requires: [Restriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(portalCapa: [PortalCapability] = [], orgaCapa: [OrganizationCapability] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
 
@@ -22,6 +22,7 @@ enum FilterKey {
   product_version
   manager_supported
   feed_url
+  verified
 }
 
 enum LogicalOperator {
@@ -85,9 +86,8 @@ type Query {
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
-  labels(first: Int!, after: ID, orderBy: LabelOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): LabelConnection
-  label(id: ID!): Label
   settings: Settings!
+  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   subscriptionById(subscription_id: ID): SubscriptionModel
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
@@ -121,14 +121,11 @@ type Mutation {
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput!): Success!
-  editServiceInstance(id: ID!, name: String!): ServiceInstance
-  addServiceInstance(input: AddServiceInput): SubscriptionModel
-  deleteServiceInstance(id: ID!): ServiceInstance
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
-  addLabel(input: AddLabelInput!): Label!
-  editLabel(id: ID!, input: EditLabelInput!): Label!
-  deleteLabel(id: ID!): Label!
+  addUseCase(input: AddUseCaseInput!): UseCase!
+  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
+  deleteUseCase(id: ID!): UseCase!
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
@@ -215,7 +212,7 @@ type CustomDashboard implements Document & Node {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -438,7 +435,7 @@ enum DocumentOrdering {
 }
 
 """
- /!\ WARNING Do not use this type.
+/!\ WARNING Do not use this type.
 It exists only to cover cases where we failed to map to a specific Document.
 """
 type DefaultDocument implements Node & Document {
@@ -458,7 +455,7 @@ type DefaultDocument implements Node & Document {
   download_number: Int
   share_number: Int
   slug: String
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -482,7 +479,7 @@ interface Document implements Node {
   download_number: Int
   share_number: Int
   slug: String
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -500,7 +497,7 @@ input CreateDocumentInput {
   short_description: String!
   description: String!
   active: Boolean!
-  labels: [String!]
+  use_cases: [String!]
   uploader_id: String!
 }
 
@@ -510,7 +507,7 @@ input UpdateDocumentInput {
   short_description: String
   description: String
   active: Boolean
-  labels: [String!]
+  use_cases: [String!]
   uploader_organization_id: String
   uploader_id: String
 }
@@ -587,7 +584,7 @@ interface Integration implements Node & Document {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -613,7 +610,7 @@ type IntegrationHack implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -639,7 +636,7 @@ type CsvFeed implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -666,7 +663,7 @@ type Connector implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -700,7 +697,7 @@ type TaxiiFeed implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -728,7 +725,7 @@ type Stream implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -756,7 +753,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -797,7 +794,7 @@ type OpenAEVScenario implements Document & Node {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -926,6 +923,7 @@ type RefreshUserPlatformTokenResponse {
 
 input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
+  onlyActiveTrials: Boolean
 }
 
 input RegisteredPlatformInput {
@@ -1056,38 +1054,6 @@ type Subscription {
   UserPending(organizationId: ID!): UserPendingSubscription
 }
 
-type Label implements Node {
-  id: ID!
-  name: String!
-  color: String!
-}
-
-enum LabelOrdering {
-  name
-  color
-}
-
-type LabelEdge {
-  cursor: String!
-  node: Label!
-}
-
-type LabelConnection {
-  totalCount: Int!
-  edges: [LabelEdge!]!
-  pageInfo: PageInfo!
-}
-
-input AddLabelInput {
-  name: String!
-  color: String!
-}
-
-input EditLabelInput {
-  name: String
-  color: String
-}
-
 type PlatformProvider {
   name: String!
   type: String!
@@ -1100,6 +1066,38 @@ type Settings {
   base_url_front: String!
   environment: String!
   domains_blacklist: String!
+}
+
+type UseCase implements Node {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+enum UseCaseOrdering {
+  name
+  color
+}
+
+type UseCaseEdge {
+  cursor: String!
+  node: UseCase!
+}
+
+type UseCaseConnection {
+  totalCount: Int!
+  edges: [UseCaseEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddUseCaseInput {
+  name: String!
+  color: String!
+}
+
+input EditUseCaseInput {
+  name: String
+  color: String
 }
 
 enum SubscriptionOrdering {
@@ -1245,7 +1243,7 @@ enum UserOrdering {
 
 type Capability implements Node {
   id: ID!
-  name: Restriction!
+  name: PortalCapability!
 }
 
 type OrganizationCapabilities implements Node {
@@ -1350,12 +1348,8 @@ type UserPendingSubscription {
   invalidate: OrganizationId
 }
 
-enum Restriction {
+enum PortalCapability {
   BYPASS
-  ADMINISTRATE_ORGANIZATION
-  MANAGE_ACCESS
-  MANAGE_SUBSCRIPTION
-  MANAGE_PLATFORM_REGISTRATION
   READ_TRIALS
   MODIFY_TRIALS
 }

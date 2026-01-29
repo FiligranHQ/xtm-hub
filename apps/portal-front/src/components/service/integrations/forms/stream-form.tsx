@@ -1,8 +1,9 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
-import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
+import {
+  SubTypesPerIntegrationType,
+} from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -40,7 +41,7 @@ const streamFormSchema = z.object({
   description: z.string().min(1, 'Required'),
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
-  labels: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
@@ -49,18 +50,11 @@ const streamFormSchema = z.object({
 export type StreamFormValues = z.infer<typeof streamFormSchema>;
 
 interface StreamFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: StreamFormValues) => void;
-  onDelete?: () => void;
   document: SubscribableResource | undefined;
 }
 
-export const StreamForm = ({
-  userCanDelete,
-  handleSubmit,
-  onDelete,
-  document,
-}: StreamFormProps) => {
+export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
   const stream = document;
   const t = useTranslations();
   const { me } = useContext(PortalContext);
@@ -77,7 +71,7 @@ export const StreamForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: stream?.labels?.map((label) => label.id),
+        use_cases: stream?.use_cases?.map((label) => label.id),
         uploader_id: stream?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
@@ -138,20 +132,24 @@ export const StreamForm = ({
               </FormItem>
             ),
           },
-          labels: {
+          use_cases: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t(`${translationKey}.Form.LabelsLabel`)}</FormLabel>
+                <FormLabel>
+                  {t(`${translationKey}.Form.UseCasesLabel`)}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels()}
+                    options={getUseCases()}
                     keyValue="id"
                     keyLabel="name"
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t(`${translationKey}.Form.LabelsPlaceholder`)}
+                    placeholder={t(
+                      `${translationKey}.Form.UseCasesPlaceholder`
+                    )}
                     variant="inverted"
                   />
                 </FormControl>
@@ -313,14 +311,6 @@ export const StreamForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {stream && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={stream.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

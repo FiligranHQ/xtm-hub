@@ -9,7 +9,7 @@ enum UserOrdering {
 
 type Capability implements Node {
   id: ID!
-  name: Restriction!
+  name: PortalCapability!
 }
 
 type OrganizationCapabilities implements Node {
@@ -72,7 +72,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     filters: [Filter!]
-  ): UserConnection! @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  ): UserConnection! @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   userHasOrganizationWithSubscription: Boolean! @auth
 }
 
@@ -122,28 +122,28 @@ input BulkPendingUserFromOrganizationInput {
 
 type Mutation {
   # Admin
-  adminAddUser(input: AdminAddUserInput!): User @auth(requires: [BYPASS])
+  adminAddUser(input: AdminAddUserInput!): User @auth(portalCapa: [BYPASS])
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
-    @auth(requires: [BYPASS])
+    @auth(portalCapa: [BYPASS])
 
   # Management
   mergeTest(from: ID!, target: ID!): ID!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   addUser(input: AddUserInput!): User
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   changeSelectedOrganization(organization_id: ID!): User @auth
   bulkRemovePendingUserFromOrganization(
     input: BulkPendingUserFromOrganizationInput
-  ): Success @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   bulkAcceptPendingUserInOrganization(
     input: BulkPendingUserFromOrganizationInput
-  ): Success @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
 
   # Profile
   editMeUser(input: EditMeUserInput!): User! @auth
@@ -179,8 +179,8 @@ type UserPendingSubscription {
 
 type Subscription {
   User(organizationId: ID): UserSubscription
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   MeUser: MeUserSubscription @auth
   UserPending(organizationId: ID!): UserPendingSubscription
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
 }

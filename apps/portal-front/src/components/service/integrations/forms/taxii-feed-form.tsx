@@ -1,7 +1,6 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
 import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
@@ -40,7 +39,7 @@ const taxiiFeedFormSchema = z.object({
   description: z.string().min(1, 'Required'),
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
-  labels: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
@@ -49,16 +48,12 @@ const taxiiFeedFormSchema = z.object({
 export type TaxiiFeedFormValues = z.infer<typeof taxiiFeedFormSchema>;
 
 interface TaxiiFeedFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: TaxiiFeedFormValues) => void;
-  onDelete?: () => void;
   document: SubscribableResource | undefined;
 }
 
 export const TaxiiFeedForm = ({
-  userCanDelete,
   handleSubmit,
-  onDelete,
   document,
 }: TaxiiFeedFormProps) => {
   const taxiiFeed = document;
@@ -77,7 +72,7 @@ export const TaxiiFeedForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: taxiiFeed?.labels?.map((label) => label.id),
+        use_cases: taxiiFeed?.use_cases?.map((useCase) => useCase.id),
         uploader_id: taxiiFeed?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
@@ -139,20 +134,24 @@ export const TaxiiFeedForm = ({
               </FormItem>
             ),
           },
-          labels: {
+          use_cases: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t(`${translationKey}.Form.LabelsLabel`)}</FormLabel>
+                <FormLabel>
+                  {t(`${translationKey}.Form.UseCasesLabel`)}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels()}
+                    options={getUseCases()}
                     keyValue="id"
                     keyLabel="name"
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t(`${translationKey}.Form.LabelsPlaceholder`)}
+                    placeholder={t(
+                      `${translationKey}.Form.UseCasesPlaceholder`
+                    )}
                     variant="inverted"
                   />
                 </FormControl>
@@ -315,14 +314,6 @@ export const TaxiiFeedForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {taxiiFeed && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={taxiiFeed.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

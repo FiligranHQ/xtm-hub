@@ -1,7 +1,6 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
 import {
   getIntegrationSubTypeMetadata,
   SubTypesPerIntegrationType,
@@ -42,7 +41,7 @@ const thirdPartyIntegrationFormSchema = z.object({
   description: z.string().min(1, 'Required'),
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
-  labels: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   vendor_url: z.url().min(1, 'Required'),
   github_url: z.url().nullish(),
@@ -62,16 +61,12 @@ export type ThirdPartyIntegrationFormValues = z.infer<
 >;
 
 interface ThirdPartyIntegrationFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: ThirdPartyIntegrationFormValues) => void;
-  onDelete?: () => void;
   document: SubscribableResource | undefined;
 }
 
 export const ThirdPartyIntegrationForm = ({
-  userCanDelete,
   handleSubmit,
-  onDelete,
   document,
 }: ThirdPartyIntegrationFormProps) => {
   const thirdPartyIntegration = document;
@@ -92,7 +87,9 @@ export const ThirdPartyIntegrationForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: thirdPartyIntegration?.labels?.map((label) => label.id),
+        use_cases: thirdPartyIntegration?.use_cases?.map(
+          (useCase) => useCase.id
+        ),
         uploader_id: thirdPartyIntegration?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
@@ -178,20 +175,24 @@ export const ThirdPartyIntegrationForm = ({
               </FormItem>
             ),
           },
-          labels: {
+          use_cases: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t(`${translationKey}.Form.LabelsLabel`)}</FormLabel>
+                <FormLabel>
+                  {t(`${translationKey}.Form.UseCasesLabel`)}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels()}
+                    options={getUseCases()}
                     keyValue="id"
                     keyLabel="name"
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t(`${translationKey}.Form.LabelsPlaceholder`)}
+                    placeholder={t(
+                      `${translationKey}.Form.UseCasesPlaceholder`
+                    )}
                     variant="inverted"
                   />
                 </FormControl>
@@ -328,14 +329,6 @@ export const ThirdPartyIntegrationForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {thirdPartyIntegration && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={thirdPartyIntegration.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

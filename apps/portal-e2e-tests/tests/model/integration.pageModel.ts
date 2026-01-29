@@ -1,5 +1,4 @@
 import { Page } from '@playwright/test';
-import { waitForDrawerToClose } from './common';
 import { expect } from '../fixtures/baseFixtures';
 
 const TEST_JSON_FILE = {
@@ -173,13 +172,8 @@ export default class IntegrationPage {
     await this.page.getByRole('link', { name: shortDescription }).click();
   }
 
-  async deleteIntegration(updateButtonRole: 'menuitem' | 'button') {
-    await this.page.getByRole(updateButtonRole, { name: 'Update' }).click();
+  async deleteIntegration(deleteButtonRole: 'menuitem' | 'button') {
+    await this.page.getByRole(deleteButtonRole, { name: 'Delete' }).click();
     await this.page.getByRole('button', { name: 'Delete' }).click();
-    await expect(this.page).toHaveScreenshot();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
-
-    await waitForDrawerToClose(this.page);
-    await this.page.waitForTimeout(3000);
   }
 }

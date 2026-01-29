@@ -24,7 +24,7 @@ describe('Ingest manifest helper', () => {
           description: 'This is the first contract',
           short_description: 'First contract',
           logo: 'data:image/png;base64,abc123',
-          labels: ['automation', 'integration'],
+          use_cases: ['automation', 'integration'],
           verified: true,
           container_image: 'docker.io/example/image:latest',
           integration_subtype: IntegrationSubType.InternalEnrichment,
@@ -44,7 +44,7 @@ describe('Ingest manifest helper', () => {
           description: 'This is the second contract',
           short_description: 'Second contract',
           logo: 'https://example.com/logo.png',
-          labels: ['monitoring'],
+          use_cases: ['monitoring'],
           verified: false,
           container_image: 'docker.io/example/image2:latest',
           integration_subtype: IntegrationSubType.ExternalImport,
@@ -91,8 +91,8 @@ describe('Ingest manifest helper', () => {
         expect(typeof firstItem.integration_type).toBe('string');
         expect(firstItem).toHaveProperty('type');
         expect(typeof firstItem.type).toBe('string');
-        expect(firstItem).toHaveProperty('labels');
-        expect(Array.isArray(firstItem.labels)).toBe(true);
+        expect(firstItem).toHaveProperty('use_cases');
+        expect(Array.isArray(firstItem.use_cases)).toBe(true);
         expect(firstItem).toHaveProperty('manager_supported');
         expect(typeof firstItem.manager_supported).toBe('boolean');
         expect(firstItem).toHaveProperty('playbook_supported');

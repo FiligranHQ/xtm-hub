@@ -1,6 +1,7 @@
 import { formatDate } from '@/utils/date';
 import { LogoFiligranIcon } from '@filigran/icon';
 import * as React from 'react';
+import { useMemo } from 'react';
 
 import { Avatar } from '@filigran/ui/clients';
 
@@ -16,14 +17,27 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
 
 // Component interface
 interface ShareableResourceDetailsProps {
   documentData: ShareableResource;
   downloadNumber?: number;
 }
+
+const CSV_FEED_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/csv-feed/';
+const STREAM_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/internal-streams/';
+const TAXII_FEED_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/taxii-feed/';
+
+const DOCUMENTATION_URLS: Partial<Record<IntegrationTypeEnum, string>> = {
+  [IntegrationTypeEnum.CSV_FEED]: CSV_FEED_DOCUMENTATION,
+  [IntegrationTypeEnum.STREAM]: STREAM_DOCUMENTATION,
+  [IntegrationTypeEnum.TAXII_FEED]: TAXII_FEED_DOCUMENTATION,
+};
 
 const ShareableResourceDetails: React.FunctionComponent<
   ShareableResourceDetailsProps
@@ -37,6 +51,9 @@ const ShareableResourceDetails: React.FunctionComponent<
 
     return getIntegrationSubTypeMetadata(documentData.integration_subtype);
   }, [isIntegration, documentData]);
+  const documentationUrl =
+    isIntegrationItem(documentData) &&
+    DOCUMENTATION_URLS[documentData.integration_type];
 
   return (
     <ShareableResourceBasicInformation>
@@ -121,6 +138,12 @@ const ShareableResourceDetails: React.FunctionComponent<
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.ProductVersion')}>
           <span>{documentData.product_version}</span>
+        </ShareableResourceDetailItem>
+      )}
+      {documentationUrl && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
+          <ShareableResourceDetailsLink url={documentationUrl} />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem

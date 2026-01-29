@@ -5,7 +5,7 @@ import {
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
-import { labelsDomain } from '../../settings/labels/labels.domain';
+import { useCaseDomain } from '../../settings/useCase/use-case.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
@@ -21,10 +21,10 @@ const resolvers: Resolvers = {
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
-    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
+    use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
   },
   OpenAEVScenario: {
-    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
+    use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),

@@ -17,7 +17,11 @@ import { useServiceListLocalStorageKeyContext } from '@/components/service/compo
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isIntegrationItem,
+  SubscribableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 
@@ -27,6 +31,7 @@ export interface ServiceListProps {
   search: string;
   onSearchChange: (v: string) => void;
   additionalFilters?: ServiceListFilterMap;
+  connectionId?: string;
   paginationControls?: React.ReactNode;
 }
 const ServiceList = ({
@@ -35,6 +40,7 @@ const ServiceList = ({
   search,
   onSearchChange,
   additionalFilters,
+  connectionId,
   paginationControls,
 }: ServiceListProps) => {
   const t = useTranslations();
@@ -57,6 +63,22 @@ const ServiceList = ({
       reset: removeLabels,
     },
   };
+
+  const activeByIntegrationType = active.reduce<
+    Record<string, SubscribableResource[]>
+  >((acc, resource) => {
+    const type =
+      isIntegrationItem(resource) && resource.integration_type
+        ? resource.integration_type
+        : resource.type;
+
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+
+    acc[type].push(resource);
+    return acc;
+  }, {});
 
   return (
     <div className="flex flex-col gap-xl">
@@ -85,6 +107,7 @@ const ServiceList = ({
               <ServiceCard
                 key={document.id}
                 document={document}
+                connectionId={connectionId}
                 detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
                 shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
               />
@@ -95,19 +118,33 @@ const ServiceList = ({
           )}
         </>
       )}
-      <ul
-        className={
-          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-        }>
-        {active.map((document) => (
-          <ServiceCard
-            key={document.id}
-            document={document}
-            detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
-            shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-          />
-        ))}
-      </ul>
+
+      {Object.entries(activeByIntegrationType).map(
+        ([integrationType, documents]) => (
+          <>
+            {Object.values(IntegrationTypeEnum).includes(
+              integrationType as IntegrationTypeEnum
+            ) && (
+              <h2>
+                {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
+              </h2>
+            )}
+            <ul
+              className={
+                'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
+              }>
+              {documents.map((document) => (
+                <ServiceCard
+                  key={document.id}
+                  document={document}
+                  detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
+                  shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+                />
+              ))}
+            </ul>
+          </>
+        )
+      )}
     </div>
   );
 };

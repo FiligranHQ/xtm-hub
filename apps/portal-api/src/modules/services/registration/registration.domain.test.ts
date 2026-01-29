@@ -4,12 +4,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../knexfile';
 import { contextAdminUser } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
   PlatformContract,
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
@@ -25,6 +29,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import * as organizationDomain from '../../organizations/organizations.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/domain';
+import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import {
   PlatformConfiguration,
@@ -351,6 +356,7 @@ describe('Registration domain', () => {
       });
     });
     afterEach(async () => {
+      await db('DeploymentRequest').delete();
       await serviceContractDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
@@ -414,6 +420,73 @@ describe('Registration domain', () => {
     it('should return only the registered platform linked to the service instance', async () => {
       const platforms = await registrationDomain.loadRegisteredPlatforms({
         'ServiceInstance.id': openCTIServiceInstanceId,
+      });
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
+    });
+    it('should return platforms with non-active trials by default', async () => {
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Cancelled,
+        platform_token: uuidv4(),
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        user_requester_id: contextAdminUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
+    });
+    it('should not return platforms with non-active trials when onlyActiveTrials is true', async () => {
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Provisioning,
+        platform_token: uuidv4(),
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        user_requester_id: contextAdminUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        onlyActiveTrials: true,
+      });
+
+      expect(platforms.length).toBe(0);
+    });
+    it('should return platforms with active trials when onlyActiveTrials is true', async () => {
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Active,
+        platform_token: uuidv4(),
+        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        user_requester_id: contextAdminUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        onlyActiveTrials: true,
       });
 
       expect(platforms.length).toBe(1);

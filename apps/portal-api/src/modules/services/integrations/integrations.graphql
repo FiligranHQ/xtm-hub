@@ -40,7 +40,7 @@ interface Integration implements Node & Document {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -72,7 +72,7 @@ type IntegrationHack implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
@@ -103,7 +103,7 @@ type CsvFeed implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
@@ -135,7 +135,7 @@ type Connector implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
@@ -174,7 +174,7 @@ type TaxiiFeed implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
@@ -207,7 +207,7 @@ type Stream implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth
@@ -240,7 +240,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel @auth

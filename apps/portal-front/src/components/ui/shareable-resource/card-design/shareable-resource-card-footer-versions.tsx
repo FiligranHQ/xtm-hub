@@ -7,16 +7,17 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, ReactNode } from 'react';
 
 interface ShareableResourceCardFooterVersionProps {
   document: ShareableResource | PublicShareableResource;
   publicPath?: boolean;
   shareLinkUrl: string;
+  extraContent?: ReactNode;
 }
 export const ShareableResourceCardFooterVersion: FunctionComponent<
   ShareableResourceCardFooterVersionProps
-> = ({ document, publicPath = false, shareLinkUrl }) => {
+> = ({ document, publicPath = false, shareLinkUrl, extraContent }) => {
   let documentMetadata;
   if (docHasMetadata(document, 'integration_subtype')) {
     documentMetadata = getIntegrationSubTypeMetadata(
@@ -63,6 +64,7 @@ export const ShareableResourceCardFooterVersion: FunctionComponent<
           documentId={document.id}
           url={shareLinkUrl}
         />
+        {extraContent}
       </div>
     </>
   );

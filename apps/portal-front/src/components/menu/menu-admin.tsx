@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
   Separator,
 } from '@filigran/ui';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -114,8 +114,9 @@ const adminLinksData = (t: UseTranslationsProps) => [
     label: t('MenuLinks.Security'),
   },
   {
-    href: `/${APP_PATH}/admin/label`,
-    label: t('MenuLinks.Labels'),
+    href: `/${APP_PATH}/admin/use-case
+    `,
+    label: t('MenuLinks.UseCases'),
   },
   {
     href: `/${APP_PATH}/admin/organizations`,
@@ -128,7 +129,7 @@ const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/trials`,
     label: t('MenuLinks.Trials'),
-    restriction: [RestrictionEnum.READ_TRIALS],
+    restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
 ];
 

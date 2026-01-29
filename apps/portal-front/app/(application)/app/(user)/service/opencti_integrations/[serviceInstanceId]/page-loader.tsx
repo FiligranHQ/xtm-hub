@@ -31,6 +31,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     productVersions,
     setSearch,
     deployable,
+    verified,
   } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );
@@ -65,6 +66,12 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
                 value: Object.keys(deployable),
               },
             },
+            {
+              leaf: {
+                key: FilterKeyEnum.VERIFIED,
+                value: Object.keys(verified),
+              },
+            },
           ],
         },
       },
@@ -81,6 +88,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     integrationTypes,
     productVersions,
     deployable,
+    verified,
   ]);
 
   return (

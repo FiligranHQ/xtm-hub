@@ -114,8 +114,8 @@ export const extractManifestInformation = (
         subscription_link: validContract.subscription_link,
         manager_supported: validContract.manager_supported,
         playbook_supported: validContract.playbook_supported,
-        /*Label and picture*/
-        labels: validContract.use_cases,
+        /*Use case and picture*/
+        use_cases: validContract.use_cases,
         logo: validContract.logo,
       });
     }

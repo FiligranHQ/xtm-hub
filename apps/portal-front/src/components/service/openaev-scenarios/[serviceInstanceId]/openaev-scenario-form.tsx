@@ -1,7 +1,5 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { useServiceContext } from '@/components/service/components/service-context';
-import { ServiceDelete } from '@/components/service/components/service-delete';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
@@ -38,7 +36,7 @@ const openAEVScenarioFormSchema = z.object({
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
   description: z.string().min(1, 'Required'),
-  labels: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck).optional(),
@@ -48,21 +46,16 @@ export type OpenAEVScenarioFormValues = z.infer<
 >;
 
 export interface OpenAEVScenarioFormProps {
-  userCanDelete?: boolean;
   handleSubmit?: (values: OpenAEVScenarioFormValues) => void;
-  onDelete?: () => void;
   document?: SubscribableResource;
 }
 
 export const OpenaevScenarioForm = ({
-  userCanDelete,
   handleSubmit,
-  onDelete,
   document,
 }: OpenAEVScenarioFormProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
-  const { translationKey } = useServiceContext();
 
   const openAEVScenario = document;
   const isCreation = !openAEVScenario;
@@ -76,7 +69,7 @@ export const OpenaevScenarioForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: openAEVScenario?.labels?.map((label) => label.id),
+        use_cases: openAEVScenario?.use_cases?.map((useCase) => useCase.id),
         uploader_id: openAEVScenario?.uploader?.id ?? me?.id,
         uploader_organization_id:
           (isCreation
@@ -136,23 +129,23 @@ export const OpenaevScenarioForm = ({
               </FormItem>
             ),
           },
-          labels: {
+          use_cases: {
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.OpenAEVScenario.Form.LabelsLabel')}
+                  {t('Service.OpenAEVScenario.Form.UseCasesLabel')}
                 </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels()}
+                    options={getUseCases()}
                     keyValue="id"
                     keyLabel="name"
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
                     placeholder={t(
-                      'Service.OpenAEVScenario.Form.LabelsPlaceholder'
+                      'Service.OpenAEVScenario.Form.UseCasesPlaceholder'
                     )}
                     variant="inverted"
                   />
@@ -284,14 +277,6 @@ export const OpenaevScenarioForm = ({
           },
         }}>
         <SheetFooter className="sm:justify-between pt-2">
-          {openAEVScenario && (
-            <ServiceDelete
-              userCanDelete={userCanDelete}
-              onDelete={onDelete}
-              serviceName={openAEVScenario.name}
-              translationKey={translationKey}
-            />
-          )}
           <div className="ml-auto flex gap-s">
             <Button
               variant="outline"

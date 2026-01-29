@@ -15,7 +15,7 @@ export const SeoOpenaevScenarioFragment = graphql`
     children_documents {
       id
     }
-    labels {
+    use_cases {
       id
       name
       color
