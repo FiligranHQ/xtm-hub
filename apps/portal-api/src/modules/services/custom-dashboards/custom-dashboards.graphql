@@ -15,7 +15,7 @@ type CustomDashboard implements Document & Node {
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
+  use_cases: [UseCase!]
   service_instance_id: String!
   service_instance: ServiceInstance
   subscription: SubscriptionModel

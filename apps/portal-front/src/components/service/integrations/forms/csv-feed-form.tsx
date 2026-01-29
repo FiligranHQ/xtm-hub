@@ -1,4 +1,4 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
@@ -36,7 +36,7 @@ const csvFeedFormSchema = z.object({
   description: z.string().min(1, 'Required'),
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
-  labels: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck).optional(),
@@ -65,7 +65,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: csvFeed?.labels?.map((label) => label.id),
+        use_cases: csvFeed?.use_cases?.map((label) => label.id),
         uploader_id: csvFeed?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
@@ -124,20 +124,24 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
               </FormItem>
             ),
           },
-          labels: {
+          use_cases: {
             fieldType: ({ field }) => (
               <FormItem>
-                <FormLabel>{t(`${translationKey}.Form.LabelsLabel`)}</FormLabel>
+                <FormLabel>
+                  {t(`${translationKey}.Form.UseCasesLabel`)}
+                </FormLabel>
                 <FormControl>
                   <MultiSelectFormField
                     noResultString={t('Utils.NotFound')}
-                    options={getLabels()}
+                    options={getUseCases()}
                     keyValue="id"
                     keyLabel="name"
                     defaultValue={field.value}
                     value={field.value}
                     onValueChange={field.onChange}
-                    placeholder={t(`${translationKey}.Form.LabelsPlaceholder`)}
+                    placeholder={t(
+                      `${translationKey}.Form.UseCasesPlaceholder`
+                    )}
                     variant="inverted"
                   />
                 </FormControl>

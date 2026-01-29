@@ -1,8 +1,5 @@
 import { ServiceContextProps } from '@/components/service/components/service-context';
-import {
-  ServiceForm,
-  ServiceFormValues,
-} from '@/components/service/components/subscribable-services.types';
+import { ServiceForm, ServiceFormValues, } from '@/components/service/components/subscribable-services.types';
 import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
   DocumentCreateMutation,
@@ -18,10 +15,7 @@ import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import {
-  ShareableResource,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResource, ShareableResourceType, } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
@@ -39,7 +33,7 @@ const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'uploader_organization_id',
   'short_description',
   'description',
-  'labels',
+  'use_cases',
   'active',
 ];
 
