@@ -3,5 +3,5 @@ type Mutation {
     message: String!
     codeStack: String
     componentStack: String
-  ): Boolean @auth
+  ): Boolean
 }

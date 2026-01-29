@@ -5,7 +5,7 @@ import {
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
-import { labelsDomain } from '../../settings/labels/labels.domain';
+import { useCaseDomain } from '../../settings/useCase/use-case.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
@@ -18,7 +18,7 @@ import {
 
 const resolvers: Resolvers = {
   CustomDashboard: {
-    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
+    use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
@@ -40,7 +40,7 @@ const resolvers: Resolvers = {
         dashboard.children_documents =
           await DocumentChildrenDomain.loadImagesByDocumentId(dashboard.id);
         dashboard.uploader = await DocumentDomain.loadUploader(dashboard.id);
-        dashboard.labels = await labelsDomain.loadLabelsByDocumentId(
+        dashboard.use_cases = await useCaseDomain.loadUseCasesByDocumentId(
           dashboard.id
         );
       }

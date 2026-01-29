@@ -35,7 +35,7 @@ export const ShareableResourceCardHeader: FunctionComponent<
         </div>
         <div className="mt-s flex flex-wrap gap-s">
           <BadgeOverflowCounter
-            badges={document.labels as BadgeOverflow[]}
+            badges={document.use_cases as BadgeOverflow[]}
             className="z-[2]"
           />
         </div>

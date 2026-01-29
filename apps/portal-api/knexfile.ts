@@ -68,8 +68,8 @@ type BaseDatabaseType =
   | 'Document'
   | 'User_Organization'
   | 'User_Organization_Pending'
-  | 'Label'
-  | 'Object_Label'
+  | 'UseCase'
+  | 'Object_UseCase'
   | 'UserOrganization_Capability'
   | 'User_TransferRequest'
   | 'Document_Children'
@@ -229,11 +229,11 @@ type FilterHandler = {
 const createLabelFilter = (): FilterHandler => ({
   key: FilterKey.Label,
   addJoin: (qb, type) => {
-    qb.leftJoin('Object_Label as ol', 'ol.object_id', '=', `${type}.id`);
+    qb.leftJoin('Object_UseCase as ouc', 'ouc.object_id', '=', `${type}.id`);
   },
   addWhere: (qb, _type, values) => {
     if (!values.length) return;
-    qb.whereIn('ol.label_id', values.map(extractId));
+    qb.whereIn('ouc.use_case_id', values.map(extractId));
   },
 });
 

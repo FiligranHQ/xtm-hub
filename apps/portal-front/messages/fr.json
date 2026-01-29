@@ -37,8 +37,8 @@
     "ResetTable": "Réinitialiser",
     "RowsPerPage": "Lignes par page"
   },
-  "DeleteLabelDialog": {
-    "TextDeleteLabel": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
+  "DeleteUseCaseDialog": {
+    "TextDeleteUseCase": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },
   "DialogActions": {
     "ContinueTitle": "Progrès non sauvegardé",
@@ -165,15 +165,15 @@
     "Organization": "Organisation",
     "Title": "Inviter l'utilisateur au service {serviceName} "
   },
-  "LabelActions": {
-    "AddLabel": "Ajouter une étiquette",
+  "UseCaseActions": {
+    "AddUseCase": "Ajouter un cas d'usage",
     "SearchLabel": "Rechercher"
   },
-  "LabelForm": {
+  "UseCaseForm": {
     "Color": "Couleur",
     "Name": "Nom"
   },
-  "LabelListPage": {
+  "UseCaseListPage": {
     "Color": "Couleur",
     "Name": "Nom"
   },
@@ -205,7 +205,7 @@
     "Backoffice": "Backoffice",
     "Connectors": "OpenCTI contrats Connecteurs",
     "Home": "Accueil",
-    "Labels": "Étiquettes",
+    "UseCases": "Cas d'usage",
     "Organizations": "Organisations",
     "Parameters": "Paramètres",
     "Profile": "Profile",
@@ -529,8 +529,8 @@
           "Placeholder": "Type..."
         },
         "ProductVersion": {
-          "Label": "Plateforme",
-          "Placeholder": "Plateforme..."
+          "Label": "Plateformes enregistrées",
+          "Placeholder": "Plateformes enregistrées..."
         },
         "ManagerSupported": {
           "Label": "Type de déploiement",
@@ -577,8 +577,8 @@
         "DescriptionUpdateJSONFile": "Vous allez mettre un nouveau fichier JSON. L'ancien sera écrasé, voulez-vous continuer ?",
         "ExistingCsvFeedFile": "Fichier Csv Feed existant: {file_name}",
         "ExistingCsvFeedIllustration": "Illustration Csv Feed existante: {file_name}",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "UseCasesLabel": "Cas d'usage",
+        "UseCasesPlaceholder": "Ajouter des cas d'usage",
         "NameLabel": "Nom",
         "PublishedPlaceholder": "Le CSV Feed est-il publié?",
         "ShortDescriptionLabel": "Courte Description",
@@ -608,8 +608,8 @@
         "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
         "ExistingTaxiiFeedFile": "Fichier de flux TAXII existant : {file_name}",
         "ExistingTaxiiFeedIllustration": "Illustration existante du flux TAXII : {file_name}",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "UseCasesLabel": "Cas d'usage",
+        "UseCasesPlaceholder": "Ajouter des cas d'usage",
         "NameLabel": "Nom",
         "PublishedPlaceholder": "Le flux TAXII est-il publié ?",
         "ShortDescriptionLabel": "Description courte",
@@ -646,8 +646,8 @@
         "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
         "ExistingStreamFile": "Fichier Stream existant : {file_name}",
         "ExistingStreamIllustration": "Illustration de stream existante : {file_name}",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "UseCasesLabel": "Cas d'usage",
+        "UseCasesPlaceholder": "Ajouter des cas d'usage",
         "NameLabel": "Nom",
         "PublishedPlaceholder": "Le stream est-il publié ?",
         "ShortDescriptionLabel": "Description courte",
@@ -678,8 +678,8 @@
         "ExistingThirdPartyIntegrationFile": "Fichier d'intégration tiers existant : {file_name}",
         "ExistingThirdPartyIntegrationIllustration": "Illustration de l'intégration de tiers existante : {file_name}",
         "GithubUrlLabel": "URL Github",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "UseCasesLabel": "Cas d'usage",
+        "UseCasesPlaceholder": "Ajouter des cas d'usage",
         "NameLabel": "Nom",
         "ProductVersionLabel": "Version OpenCTI",
         "PublishedPlaceholder": "L'intégration de tiers est-elle publiée ?",
@@ -711,8 +711,8 @@
         "ExistingJSONFile": "Fichier JSON existant : {file_name}",
         "ImageLabel": "Images",
         "JSONFile": "Fichier JSON",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "UseCasesLabel": "Cas d'usage",
+        "UseCasesPlaceholder": "Ajouter des cas d'usage",
         "NameLabel": "Nom",
         "NamePlaceholder": "Nom du tableau de bord",
         "NoImage": "Pas d'image sélectionnée",
@@ -748,8 +748,8 @@
         "SlugLabel": "Slug",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "Ceci est un paragraphe pour décrire le scénario",
-        "LabelsLabel": "Étiquettes",
-        "LabelsPlaceholder": "Ajouter des étiquettes",
+        "UseCasesLabel": "Cas d'usage",
+        "UseCasesPlaceholder": "Ajouter des cas d'usage",
         "OpenAEVScenarioFile": "Fichier de scénario",
         "ExistingOpenAEVScenarioFile": "Fichier de scénario existant : {file_name}",
         "OpenAEVScenarioIllustration": "Illustration",
@@ -787,7 +787,7 @@
         "Key": {
           "label": "Cas d'utilisation",
           "integration_type": "Type d'intégration",
-          "product_version": "Plateforme",
+          "product_version": "Plateformes enregistrées",
           "manager_supported": "Type de déploiement",
           "verified": "Vérifié"
         }
@@ -838,6 +838,7 @@
       "Details": {
         "Author": "Auteur",
         "BasicInformation": "Informations de base",
+        "OpenCTIDocumentation": "Documentation OpenCTI",
         "Downloads": "Téléchargements",
         "LastUpdatedAt": "Dernière mise à jour le",
         "Overview": "Vue d'ensemble",

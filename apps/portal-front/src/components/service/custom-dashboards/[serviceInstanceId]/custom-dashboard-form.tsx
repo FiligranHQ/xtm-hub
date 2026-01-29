@@ -1,4 +1,4 @@
-import { getLabels } from '@/components/admin/label/label.utils';
+import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { useServiceContext } from '@/components/service/components/service-context';
@@ -51,7 +51,7 @@ const customDashboardSchema = z.object({
     error: 'Product version must be X.Y.Z',
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
-  labels: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck),
@@ -112,7 +112,7 @@ export const CustomDashboardForm = ({
           ...doc,
           name: doc.file_name,
         })) as unknown as FileList,
-        labels: customDashboard?.labels?.map((label) => label.id),
+        use_cases: customDashboard?.use_cases?.map((useCase) => useCase.id),
         uploader_id: customDashboard?.uploader?.id ?? me?.id,
         uploader_organization_id:
           (isCreation
@@ -176,23 +176,25 @@ export const CustomDashboardForm = ({
                     </FormItem>
                   ),
                 },
-                labels: {
+                use_cases: {
                   fieldType: ({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t('Service.OpenctiCustomDashboards.Form.LabelsLabel')}
+                        {t(
+                          'Service.OpenctiCustomDashboards.Form.UseCasesLabel'
+                        )}
                       </FormLabel>
                       <FormControl>
                         <MultiSelectFormField
                           noResultString={t('Utils.NotFound')}
-                          options={getLabels()}
+                          options={getUseCases()}
                           keyValue="id"
                           keyLabel="name"
                           defaultValue={field.value}
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder={t(
-                            'Service.OpenctiCustomDashboards.Form.LabelsPlaceholder'
+                            'Service.OpenctiCustomDashboards.Form.UseCasesPlaceholder'
                           )}
                           variant="inverted"
                         />
@@ -529,7 +531,7 @@ export const CustomDashboardForm = ({
                 product_version: { fieldType: () => <></> },
                 message: { fieldType: () => <></> },
                 uploader_organization_id: { fieldType: () => <></> },
-                labels: { fieldType: () => <></> },
+                use_cases: { fieldType: () => <></> },
                 active: { fieldType: () => <></> },
                 document: { fieldType: () => <></> },
                 images: { fieldType: () => <></> },

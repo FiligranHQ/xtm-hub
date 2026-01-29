@@ -14,7 +14,7 @@ export const openaevScenariosItem = graphql`
     active
     slug
     updated_at
-    labels {
+    use_cases {
       id
       name
       color

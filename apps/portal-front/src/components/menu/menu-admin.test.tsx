@@ -31,7 +31,7 @@ describe('render MenuAdmin', () => {
     });
     expect(screen.getByText('Parameters')).toBeInTheDocument();
     expect(screen.getByText('Security')).toBeInTheDocument();
-    expect(screen.getByText('Labels')).toBeInTheDocument();
+    expect(screen.getByText('Use Cases')).toBeInTheDocument();
     expect(screen.getByText('Organizations')).toBeInTheDocument();
     expect(screen.getByText('Services')).toBeInTheDocument();
     expect(screen.getByText('Trials dashboard')).toBeInTheDocument();
@@ -63,7 +63,7 @@ describe('render MenuAdmin', () => {
     });
     expect(screen.queryByText('Parameters')).not.toBeInTheDocument();
     expect(screen.queryByText('Security')).not.toBeInTheDocument();
-    expect(screen.queryByText('Labels')).not.toBeInTheDocument();
+    expect(screen.queryByText('Use Cases')).not.toBeInTheDocument();
     expect(screen.queryByText('Organizations')).not.toBeInTheDocument();
     expect(screen.queryByText('Services')).not.toBeInTheDocument();
     expect(screen.getByText('Trials dashboard')).toBeInTheDocument();
