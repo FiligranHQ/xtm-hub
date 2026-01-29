@@ -31,10 +31,13 @@ import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import Image from 'next/image';
 
 // Component interface
 interface ShareableResourceSlugProps {
   documentData: ShareableResource;
+  serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   children?: ReactNode;
   updateActions?: ReactNode;
@@ -43,7 +46,13 @@ interface ShareableResourceSlugProps {
 // Component
 const ShareableResourceSlug: React.FunctionComponent<
   ShareableResourceSlugProps
-> = ({ documentData, breadcrumbValue, children, updateActions }) => {
+> = ({
+  documentData,
+  serviceInstance,
+  breadcrumbValue,
+  children,
+  updateActions,
+}) => {
   const t = useTranslations();
   const { serviceInstanceId } = useDecodedParams();
   const { settings } = useContext(SettingsContext);
@@ -71,12 +80,31 @@ const ShareableResourceSlug: React.FunctionComponent<
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData]);
+  const mainChild = documentData.children_documents?.[0];
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        <h1 className="whitespace-nowrap">{documentData.name}</h1>
+        {mainChild?.id && (
+          <div className="w-24 flex-shrink-0 rounded overflow-hidden">
+            <Image
+              src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
+              alt={`${documentData.name} logo`}
+              width={96}
+              height={96}
+              loading="lazy"
+              className="w-full h-full object-contain rounded"
+            />
+          </div>
+        )}
+        <div
+          className={
+            mainChild?.id
+              ? 'flex flex-col flex-1 justify-center'
+              : 'flex flex-row gap-s w-full'
+          }>
+          <h1 className="whitespace-nowrap">{documentData.name}</h1>
 
         <BadgeOverflowCounter
           badges={documentData.use_cases as BadgeOverflow[]}
