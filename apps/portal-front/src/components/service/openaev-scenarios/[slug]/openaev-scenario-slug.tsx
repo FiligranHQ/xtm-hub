@@ -60,6 +60,7 @@ const OpenaevScenarioSlug = ({
     documentData && (
       <AppServiceContext {...context}>
         <ShareableResourceSlug
+          serviceInstance={serviceInstance}
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={

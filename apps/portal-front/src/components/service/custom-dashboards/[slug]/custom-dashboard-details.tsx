@@ -60,6 +60,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
     documentData && (
       <AppServiceContext {...context}>
         <ShareableResourceSlug
+          serviceInstance={serviceInstance}
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={

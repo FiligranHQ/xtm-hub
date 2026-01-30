@@ -31,10 +31,13 @@ import {
   ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import Image from 'next/image';
 
 // Component interface
 interface ShareableResourceSlugProps {
   documentData: ShareableResource;
+  serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   children?: ReactNode;
   updateActions?: ReactNode;
@@ -43,7 +46,13 @@ interface ShareableResourceSlugProps {
 // Component
 const ShareableResourceSlug: React.FunctionComponent<
   ShareableResourceSlugProps
-> = ({ documentData, breadcrumbValue, children, updateActions }) => {
+> = ({
+  documentData,
+  serviceInstance,
+  breadcrumbValue,
+  children,
+  updateActions,
+}) => {
   const t = useTranslations();
   const { serviceInstanceId } = useDecodedParams();
   const { settings } = useContext(SettingsContext);
@@ -71,61 +80,79 @@ const ShareableResourceSlug: React.FunctionComponent<
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData]);
+  const mainChild = documentData.children_documents?.[0];
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        <h1 className="whitespace-nowrap">{documentData.name}</h1>
-
-        <BadgeOverflowCounter
-          badges={documentData.use_cases as BadgeOverflow[]}
-        />
-        <div className="flex items-center gap-2 ml-auto">
-          <ShareLinkButton
-            documentId={documentData.id}
-            url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
-          />
-          {shouldShowOneClickDeployComponent ? (
-            <>
-              <TooltipProvider>
-                <Tooltip
-                  delayDuration={50}
-                  disableHoverableContent={true}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        incrementDownloadNumber();
-                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                      }}
-                      className="z-[2] text-primary">
-                      <DownloadIcon className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{t('Service.ShareableResources.Download')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              {updateActions}
-            </>
-          ) : (
-            <>
-              {updateActions}
-              <Button
-                onClick={() => {
-                  incrementDownloadNumber();
-                  window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                }}>
-                {t('Utils.Download')}
-              </Button>
-            </>
-          )}
-          {shouldShowOneClickDeployComponent && (
-            <OneClickDeploy documentData={documentData} />
-          )}
+        {mainChild?.id && (
+          <div className="w-24 flex-shrink-0 rounded overflow-hidden">
+            <Image
+              src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
+              alt={`${documentData.name} logo`}
+              width={96}
+              height={96}
+              loading="lazy"
+              className="w-full h-full object-contain rounded"
+            />
+          </div>
+        )}
+        <div className="flex flex-col justify-center w-full">
+          <div className="flex items-start ">
+            <h1 className="whitespace-nowrap mb-s">{documentData.name}</h1>
+            <div className="flex gap-s ml-auto">
+              <ShareLinkButton
+                documentId={documentData.id}
+                url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
+              />
+              {shouldShowOneClickDeployComponent ? (
+                <>
+                  <TooltipProvider>
+                    <Tooltip
+                      delayDuration={50}
+                      disableHoverableContent={true}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            incrementDownloadNumber();
+                            window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                          }}
+                          className="z-[2] text-primary">
+                          <DownloadIcon className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('Service.ShareableResources.Download')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  {updateActions}
+                </>
+              ) : (
+                <>
+                  {updateActions}
+                  <Button
+                    onClick={() => {
+                      incrementDownloadNumber();
+                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                    }}>
+                    {t('Utils.Download')}
+                  </Button>
+                </>
+              )}
+              {shouldShowOneClickDeployComponent && (
+                <OneClickDeploy documentData={documentData} />
+              )}
+            </div>
+          </div>
+          <div>
+            <BadgeOverflowCounter
+              badges={documentData.use_cases as BadgeOverflow[]}
+            />
+          </div>
         </div>
       </div>
       {children}
