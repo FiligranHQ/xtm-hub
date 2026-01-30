@@ -44,8 +44,8 @@ input OrganizationInput {
 
 type Mutation {
   addOrganization(input: OrganizationInput!): Organization
-    @auth(requires: [BYPASS])
+    @auth(portalCapa: [BYPASS])
   editOrganization(id: ID!, input: OrganizationInput!): Organization
-    @auth(requires: [BYPASS])
-  deleteOrganization(id: ID!): Organization @auth(requires: [BYPASS])
+    @auth(portalCapa: [BYPASS])
+  deleteOrganization(id: ID!): Organization @auth(portalCapa: [BYPASS])
 }

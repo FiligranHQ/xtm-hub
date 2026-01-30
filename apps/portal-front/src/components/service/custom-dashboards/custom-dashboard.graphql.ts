@@ -14,7 +14,7 @@ export const customDashboardsItem = graphql`
     active
     slug
     updated_at
-    labels {
+    use_cases {
       id
       name
       color

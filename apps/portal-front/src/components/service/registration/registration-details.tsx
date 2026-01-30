@@ -10,7 +10,7 @@ import { Button } from '@filigran/ui/servers';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ export const RegistrationDetails: React.FC<Props> = ({
 
   const canUpdatePlatform: boolean =
     // Allow BYPASS users to update platforms
-    !!hasCapability?.(RestrictionEnum.BYPASS) ||
+    !!hasCapability?.(PortalCapabilityEnum.BYPASS) ||
     // Check standard organization capabilities
     (!!hasOrganizationCapability &&
       hasOrganizationCapability(

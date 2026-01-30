@@ -8,7 +8,7 @@ export type OpenAEVScenario = Document & {
   product_version: string;
 };
 export type OpenAEVScenarioMetadataKeys = MetadataArray<
-  Exclude<keyof Omit<OpenAEVScenario, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<OpenAEVScenario, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export const OPENAEV_SCENARIO_METADATA: OpenAEVScenarioMetadataKeys = [

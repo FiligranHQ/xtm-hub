@@ -100,7 +100,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
           </div>
           <div className="w-full mt-s mb-xs">
             <BadgeOverflowCounter
-              badges={documentData.labels as BadgeOverflow[]}
+              badges={documentData.use_cases as BadgeOverflow[]}
             />
           </div>
         </div>

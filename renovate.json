@@ -3,17 +3,14 @@
   "extends": [
     "config:recommended"
   ],
-  "timezone": "Europe/Paris",
-  "schedule": [
-    "* * * * 0,6"
-  ],
   "labels": [
     "dependencies",
     "filigran team"
   ],
   "ignorePaths": [
-    "charts/**"
+    "chart/**"
   ],
+  "commitMessagePrefix": "[deps]",
   "prConcurrentLimit": 5,
   "rebaseWhen": "behind-base-branch",
   "minimumReleaseAge": "3 days",
@@ -26,7 +23,7 @@
       "minimumReleaseAge": "30 days"
     },
     {
-      "description": "batch on sunday morning, non-major update of dev dependencies",
+      "description": "batch non-major update of dev dependencies",
       "matchDepTypes": [
         "devDependencies"
       ],
@@ -60,9 +57,9 @@
     }
   ],
   "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": [
-      "* * * * 0,6"
-    ]
+    "schedule": ["* 5 * * 0"],
+    "rebaseWhen": "behind-base-branch",
+    "automerge": false,
+    "enabled": true
   }
 }

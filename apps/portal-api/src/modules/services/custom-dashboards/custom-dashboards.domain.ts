@@ -9,7 +9,7 @@ export type CustomDashboard = Document & {
   product_version: string;
 };
 export type CustomDashboardMetadataKeys = MetadataArray<
-  Exclude<keyof Omit<CustomDashboard, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<CustomDashboard, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export const CUSTOM_DASHBOARD_METADATA: CustomDashboardMetadataKeys = [

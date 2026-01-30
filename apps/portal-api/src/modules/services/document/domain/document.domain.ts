@@ -33,9 +33,9 @@ import {
 
 export type DocumentData<T extends DocumentModel> = Omit<
   Partial<T>,
-  'labels'
+  'use_cases'
 > & {
-  labels?: string[];
+  use_cases?: string[];
   parent_document_id?: DocumentId;
 };
 
@@ -60,7 +60,7 @@ export const DocumentDomain = {
       .insert({
         ...omit(documentData, [
           'parent_document_id',
-          'labels',
+          'use_cases',
           ...metadataKeys,
         ]),
         active: documentData.active ?? true,
@@ -340,7 +340,7 @@ export const DocumentDomain = {
     const [updatedDocument] = await db<DocumentModel>('Document')
       .where('id', '=', parentDocumentId)
       .update({
-        ...omit(completeDocumentData, ['labels']),
+        ...omit(completeDocumentData, ['use_cases']),
         uploader_organization_id,
         uploader_id,
         updated_at: new Date(),
@@ -352,15 +352,19 @@ export const DocumentDomain = {
   },
 
   upsertOnSlug: async <T extends DocumentModel>(
-    documentData: Omit<Partial<T>, 'labels'> & {
-      labels?: string[];
+    documentData: Omit<Partial<T>, 'use_cases'> & {
+      use_cases?: string[];
       parent_document_id?: string;
     },
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<DocumentModel> => {
     const { user } = requestContext.require();
     const insertData = {
-      ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
+      ...omit(documentData, [
+        'parent_document_id',
+        'use_cases',
+        ...metadataKeys,
+      ]),
       uploader_id: user.id,
       uploader_organization_id: user.selected_organization_id,
     };

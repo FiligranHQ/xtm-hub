@@ -1,10 +1,8 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import { APP_PATH } from '@/utils/path/constant';
 import ServiceByIdQuery, {
   serviceByIdQuery,
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
@@ -24,20 +22,15 @@ const Page: FunctionComponent<PageProps> = async ({ params }) => {
       service_instance_id: decodedServiceInstanceId,
     }
   );
-  try {
-    return (
-      <PageLoader
-        subscriptionId={decodedSubscriptionId}
-        serviceInstance={
-          response.data
-            .serviceInstanceById as unknown as serviceInstance_fragment$data
-        }
-      />
-    );
-  } catch (_) {
-    // If error at user loading, redirect to the list
-    redirect(`/${APP_PATH}`);
-  }
+  return (
+    <PageLoader
+      subscriptionId={decodedSubscriptionId}
+      serviceInstance={
+        response.data
+          .serviceInstanceById as unknown as serviceInstance_fragment$data
+      }
+    />
+  );
 };
 
 export default Page;

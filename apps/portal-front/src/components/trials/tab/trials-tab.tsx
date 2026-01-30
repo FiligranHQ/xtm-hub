@@ -41,8 +41,8 @@ import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPagina
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
 import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
 import { trialsList$key } from '@generated/trialsList.graphql';
 import { trialsListQuery } from '@generated/trialsListQuery.graphql';
@@ -59,6 +59,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -107,9 +108,10 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
-    RestrictionEnum.MODIFY_TRIALS,
+    PortalCapabilityEnum.MODIFY_TRIALS,
   ]);
 
+  const currentConnectionIDRef = useRef<string | undefined>(undefined);
   const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
   const statuses = trialsTabConfig[type].statuses;
   const defaultOrder =
@@ -162,7 +164,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
       cancelDeploymentRequestMutation({
         variables: {
           deploymentRequestId: deploymentRequestId,
-          removeConnections: [currentConnectionID],
+          removeConnections: [currentConnectionIDRef.current ?? ''],
         },
         updater: (store) => {
           const cancelledConnectionID = connectionIDs.get(
@@ -422,7 +424,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
           ]
         : []),
     ],
-    [type, t, onCancelClick, onReorderClick]
+    [type, t, canModifyTrial, onCancelClick, onReorderClick]
   );
 
   const {
@@ -460,13 +462,17 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     trialsList$key
   >(trialsListFragment, queryData);
 
-  const currentConnectionID = data?.deploymentRequestsList?.__id;
+  useEffect(() => {
+    if (data?.deploymentRequestsList?.__id) {
+      currentConnectionIDRef.current = data.deploymentRequestsList.__id;
+    }
+  }, [data?.deploymentRequestsList?.__id]);
 
   useEffect(() => {
-    if (currentConnectionID) {
-      connectionIDs.set(type, currentConnectionID);
+    if (currentConnectionIDRef.current) {
+      connectionIDs.set(type, currentConnectionIDRef.current);
     }
-  }, [currentConnectionID, type]);
+  }, [type]);
 
   const trialsDataTable = useMemo<trials_fragment$data[]>(
     () =>

@@ -3865,9 +3865,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:0.44.0":
-  version: 0.44.0
-  resolution: "@filigran/ui@npm:0.44.0"
+"@filigran/ui@npm:0.44.3":
+  version: 0.44.3
+  resolution: "@filigran/ui@npm:0.44.3"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -3896,20 +3896,20 @@ __metadata:
     cmdk: "npm:1.1.1"
     date-fns: "npm:4.1.0"
     embla-carousel-react: "npm:8.6.0"
-    react-color: "npm:2.19.3"
+    react-colorful: "npm:5.6.1"
     react-day-picker: "npm:9.13.0"
     react-easy-sort: "npm:1.8.0"
     tailwind-merge: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
   peerDependencies:
-    "@filigran/icon": ^0.22.0
+    "@filigran/icon": ^0.22.3
     "@hookform/resolvers": ^5.0.0
     "@types/react": ^16.8 || ^17.0 || ^18.0 || ^19.0
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10c0/366a2d32e057d760286ef18218774be29582634be6f31e7e9fcb62bd70e6a2251f8baacb4d74264e704cb9b8f9787ddc405d53f38a5db1672b5c4941bd22f439
+  checksum: 10c0/27a2e84baf4bcc698207fd309a39c0cb358ac2e56cecb48d0c0d34e07edfa95253f3df8a05812959f930823c898eec17d60c927eadded1418b058e1a2cb72ca0
   languageName: node
   linkType: hard
 
@@ -4803,15 +4803,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@icons/material@npm:^0.2.4":
-  version: 0.2.4
-  resolution: "@icons/material@npm:0.2.4"
-  peerDependencies:
-    react: "*"
-  checksum: 10c0/133518adf91010704b716e7671fc28bcc3c461dc4f4a56ad3a73a955b9993dfaa22494579e9377247fd3318baebe8e4ae7962c01bffeaca0044722c09baa9d73
-  languageName: node
-  linkType: hard
-
 "@img/colour@npm:^1.0.0":
   version: 1.0.0
   resolution: "@img/colour@npm:1.0.0"
@@ -5198,10 +5189,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/env@npm:16.1.0"
-  checksum: 10c0/060bc626d9739413ce592b23d45ab347447302701faa00cca4ce567305f1c01a831824aec1bb1a19aefa5294d272fd101282e390b087eb9b7c80e635d58f664e
+"@next/env@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/env@npm:16.1.5"
+  checksum: 10c0/9d6442bee75386593d5da6e952146cf3c4338202e68a0ba9464d70c24ab7abb0c7e4ecd0ab661ca211e544fe7d6bd075270379bee3e97c5da3b6d082f95a04cd
   languageName: node
   linkType: hard
 
@@ -5223,58 +5214,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-arm64@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-darwin-arm64@npm:16.1.0"
+"@next/swc-darwin-arm64@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-darwin-arm64@npm:16.1.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-x64@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-darwin-x64@npm:16.1.0"
+"@next/swc-darwin-x64@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-darwin-x64@npm:16.1.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-gnu@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-linux-arm64-gnu@npm:16.1.0"
+"@next/swc-linux-arm64-gnu@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-linux-arm64-gnu@npm:16.1.5"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-musl@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-linux-arm64-musl@npm:16.1.0"
+"@next/swc-linux-arm64-musl@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-linux-arm64-musl@npm:16.1.5"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-gnu@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-linux-x64-gnu@npm:16.1.0"
+"@next/swc-linux-x64-gnu@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-linux-x64-gnu@npm:16.1.5"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-musl@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-linux-x64-musl@npm:16.1.0"
+"@next/swc-linux-x64-musl@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-linux-x64-musl@npm:16.1.5"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-win32-arm64-msvc@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-win32-arm64-msvc@npm:16.1.0"
+"@next/swc-win32-arm64-msvc@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-win32-arm64-msvc@npm:16.1.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-win32-x64-msvc@npm:16.1.0":
-  version: 16.1.0
-  resolution: "@next/swc-win32-x64-msvc@npm:16.1.0"
+"@next/swc-win32-x64-msvc@npm:16.1.5":
+  version: 16.1.5
+  resolution: "@next/swc-win32-x64-msvc@npm:16.1.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -8069,6 +8060,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-color@npm:3.0.13":
+  version: 3.0.13
+  resolution: "@types/react-color@npm:3.0.13"
+  dependencies:
+    "@types/reactcss": "npm:*"
+  peerDependencies:
+    "@types/react": "*"
+  checksum: 10c0/a26a2a628dc98d2186743a52e18fc1a4622ba9ec69989be1e51614084fd90a52c139ea6689aa9706fcea94356d277c87d69f11a5c1f66c19b45e6b0132db40bb
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:19.2.3":
   version: 19.2.3
   resolution: "@types/react-dom@npm:19.2.3"
@@ -8094,6 +8096,15 @@ __metadata:
   dependencies:
     csstype: "npm:^3.2.2"
   checksum: 10c0/a7b75f1f9fcb34badd6f84098be5e35a0aeca614bc91f93d2698664c0b2ba5ad128422bd470ada598238cebe4f9e604a752aead7dc6f5a92261d0c7f9b27cfd1
+  languageName: node
+  linkType: hard
+
+"@types/reactcss@npm:*":
+  version: 1.2.13
+  resolution: "@types/reactcss@npm:1.2.13"
+  peerDependencies:
+    "@types/react": "*"
+  checksum: 10c0/f1b1e257dd7f02e1b50b2622c05a3fdcdb67045fdbbeab1f6ed7ef91e06f19d8899a3d7bd828c34bd2b243b7b7dd4c35376b947a683f5c0d56ea8a16b482f73d
   languageName: node
   linkType: hard
 
@@ -9055,7 +9066,7 @@ __metadata:
   resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
   dependencies:
     "@filigran/icon": "npm:0.22.3"
-    "@filigran/ui": "npm:0.44.0"
+    "@filigran/ui": "npm:0.44.3"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@testing-library/dom": "npm:10.4.1"
@@ -9066,6 +9077,7 @@ __metadata:
     "@types/config": "npm:3.3.5"
     "@types/node": "npm:24.10.4"
     "@types/react": "npm:19.2.7"
+    "@types/react-color": "npm:3.0.13"
     "@types/react-dom": "npm:19.2.3"
     "@types/react-relay": "npm:18.2.1"
     "@types/relay-test-utils": "npm:19.0.0"
@@ -9089,7 +9101,7 @@ __metadata:
     lint-staged: "npm:16.2.6"
     lucide-react: "npm:0.545.0"
     monocart-reporter: "npm:2.9.23"
-    next: "npm:16.1.0"
+    next: "npm:16.1.5"
     next-intl: "npm:4.5.8"
     next-themes: "npm:0.4.6"
     postcss: "npm:8.5.6"
@@ -15173,13 +15185,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash-es@npm:^4.17.15":
-  version: 4.17.21
-  resolution: "lodash-es@npm:4.17.21"
-  checksum: 10c0/fb407355f7e6cd523a9383e76e6b455321f0f153a6c9625e21a8827d10c54c2a2341bd2ae8d034358b60e07325e1330c14c224ff582d04612a46a4f0479ff2f2
-  languageName: node
-  linkType: hard
-
 "lodash.camelcase@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.camelcase@npm:4.3.0"
@@ -15208,7 +15213,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.0.1, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:~4.17.0":
+"lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:~4.17.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -15451,13 +15456,6 @@ __metadata:
   version: 3.0.4
   resolution: "markdown-table@npm:3.0.4"
   checksum: 10c0/1257b31827629a54c24a5030a3dac952256c559174c95ce3ef89bebd6bff0cb1444b1fd667b1a1bb53307f83278111505b3e26f0c4e7b731e0060d435d2d930b
-  languageName: node
-  linkType: hard
-
-"material-colors@npm:^1.2.1":
-  version: 1.2.6
-  resolution: "material-colors@npm:1.2.6"
-  checksum: 10c0/6502ab25b23b783cca4112946bc28a64fdba8bf8efcfbb1e76028d21ecc4b88a2b1338dacf1b64e4b6af46ab98984080586002cdaa9428dc91f6fdcc6909b12a
   languageName: node
   linkType: hard
 
@@ -16457,19 +16455,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:16.1.0":
-  version: 16.1.0
-  resolution: "next@npm:16.1.0"
+"next@npm:16.1.5":
+  version: 16.1.5
+  resolution: "next@npm:16.1.5"
   dependencies:
-    "@next/env": "npm:16.1.0"
-    "@next/swc-darwin-arm64": "npm:16.1.0"
-    "@next/swc-darwin-x64": "npm:16.1.0"
-    "@next/swc-linux-arm64-gnu": "npm:16.1.0"
-    "@next/swc-linux-arm64-musl": "npm:16.1.0"
-    "@next/swc-linux-x64-gnu": "npm:16.1.0"
-    "@next/swc-linux-x64-musl": "npm:16.1.0"
-    "@next/swc-win32-arm64-msvc": "npm:16.1.0"
-    "@next/swc-win32-x64-msvc": "npm:16.1.0"
+    "@next/env": "npm:16.1.5"
+    "@next/swc-darwin-arm64": "npm:16.1.5"
+    "@next/swc-darwin-x64": "npm:16.1.5"
+    "@next/swc-linux-arm64-gnu": "npm:16.1.5"
+    "@next/swc-linux-arm64-musl": "npm:16.1.5"
+    "@next/swc-linux-x64-gnu": "npm:16.1.5"
+    "@next/swc-linux-x64-musl": "npm:16.1.5"
+    "@next/swc-win32-arm64-msvc": "npm:16.1.5"
+    "@next/swc-win32-x64-msvc": "npm:16.1.5"
     "@swc/helpers": "npm:0.5.15"
     baseline-browser-mapping: "npm:^2.8.3"
     caniuse-lite: "npm:^1.0.30001579"
@@ -16513,7 +16511,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 10c0/e9017c01654d1eeac6d98382585289ff723c723df82a10e47c759b300848ac3fd0dd84deec0b7758acf57ed2478e7bb417a7ba6e2956ab3f1bebdcc5acefd2c5
+  checksum: 10c0/ff9f7dd0cae79f7ba2a64ac0d29ca77c94921dfc37b36899f4f997b948242f72585f4bb75829aaf8704d46c6f7d1a9796b8ff30688a3467c04c738b3a4247a9f
   languageName: node
   linkType: hard
 
@@ -17660,7 +17658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.10, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -17810,20 +17808,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-color@npm:2.19.3":
-  version: 2.19.3
-  resolution: "react-color@npm:2.19.3"
-  dependencies:
-    "@icons/material": "npm:^0.2.4"
-    lodash: "npm:^4.17.15"
-    lodash-es: "npm:^4.17.15"
-    material-colors: "npm:^1.2.1"
-    prop-types: "npm:^15.5.10"
-    reactcss: "npm:^1.2.0"
-    tinycolor2: "npm:^1.4.1"
+"react-colorful@npm:5.6.1":
+  version: 5.6.1
+  resolution: "react-colorful@npm:5.6.1"
   peerDependencies:
-    react: "*"
-  checksum: 10c0/6f9fce9ff3014926d960abccd5d79ecb391a41f835a4b85663fd48ff933554391222f40ed8cfc5417305d47b1e480023981ec22e13c3b16b0d8d718270fa815e
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 10c0/48eb73cf71e10841c2a61b6b06ab81da9fffa9876134c239bfdebcf348ce2a47e56b146338e35dfb03512c85966bfc9a53844fc56bc50154e71f8daee59ff6f0
   languageName: node
   linkType: hard
 
@@ -18017,15 +18008,6 @@ __metadata:
   version: 19.2.3
   resolution: "react@npm:19.2.3"
   checksum: 10c0/094220b3ba3a76c1b668f972ace1dd15509b157aead1b40391d1c8e657e720c201d9719537375eff08f5e0514748c0319063392a6f000e31303aafc4471f1436
-  languageName: node
-  linkType: hard
-
-"reactcss@npm:^1.2.0":
-  version: 1.2.3
-  resolution: "reactcss@npm:1.2.3"
-  dependencies:
-    lodash: "npm:^4.0.1"
-  checksum: 10c0/a3aceb0fbfd58312f0c7fadbe92920e6536ec24d17ebee44fd4a14dd831d413fff5c2df0e85579b440667935e57a06876325cbd1368d3131824a8c2ec43b7978
   languageName: node
   linkType: hard
 
@@ -19970,13 +19952,6 @@ __metadata:
   version: 2.9.0
   resolution: "tinybench@npm:2.9.0"
   checksum: 10c0/c3500b0f60d2eb8db65250afe750b66d51623057ee88720b7f064894a6cb7eb93360ca824a60a31ab16dab30c7b1f06efe0795b352e37914a9d4bad86386a20c
-  languageName: node
-  linkType: hard
-
-"tinycolor2@npm:^1.4.1":
-  version: 1.6.0
-  resolution: "tinycolor2@npm:1.6.0"
-  checksum: 10c0/9aa79a36ba2c2a87cb221453465cabacd04b9e35f9694373e846fdc78b1c768110f81e581ea41440106c0f24d9a023891d0887e8075885e790ac40eb0e74a5c1
   languageName: node
   linkType: hard
 

@@ -50,7 +50,10 @@ const SelectUsersFormField = React.forwardRef<
     defaultValue ?? '',
   ]);
 
-  const selectedValuesSet = useRef(new Set(selectedValues));
+  const selectedValuesSet = useMemo(
+    () => new Set(selectedValues),
+    [selectedValues]
+  );
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [visibleBadges, setVisibleBadges] = useState<number>(
     selectedValues.length
@@ -110,7 +113,7 @@ const SelectUsersFormField = React.forwardRef<
     orderMode,
     pageSize: 50,
     filter: {
-      search: filterRef.current.search,
+      search: '',
     },
   });
 
@@ -155,9 +158,8 @@ const SelectUsersFormField = React.forwardRef<
     } else if (event.key === 'Backspace' && !target.value) {
       if (selectedValues.length > 0) {
         const newValues = [...selectedValues];
-        const lastValue = newValues.pop() || '';
+        newValues.pop();
         setSelectedValues(newValues);
-        selectedValuesSet.current.delete(lastValue);
         onValueChange(newValues[0] ?? '');
       }
     }
@@ -165,18 +167,16 @@ const SelectUsersFormField = React.forwardRef<
 
   const toggleOption = useCallback(
     (value: string) => {
-      if (selectedValuesSet.current.has(value)) {
-        selectedValuesSet.current.clear();
+      if (selectedValuesSet.has(value)) {
         setSelectedValues([]);
         onValueChange('');
       } else {
-        selectedValuesSet.current = new Set([value]);
         setSelectedValues([value]);
         onValueChange(value);
         setIsPopoverOpen(false);
       }
     },
-    [onValueChange, setIsPopoverOpen]
+    [onValueChange, setIsPopoverOpen, selectedValuesSet]
   );
 
   const hiddenCount = selectedValues.length - visibleBadges;
@@ -268,7 +268,6 @@ const SelectUsersFormField = React.forwardRef<
                     className="flex items-center justify-center"
                     onClick={(event) => {
                       setSelectedValues([]);
-                      selectedValuesSet.current.clear();
                       onValueChange('');
                       event.stopPropagation();
                     }}
@@ -314,7 +313,7 @@ const SelectUsersFormField = React.forwardRef<
               <CommandGroup>
                 {users.map((option) => {
                   const optionValue = String(option.value);
-                  const isSelected = selectedValuesSet.current.has(optionValue);
+                  const isSelected = selectedValuesSet.has(optionValue);
                   return (
                     <CommandItem
                       key={optionValue}
@@ -344,7 +343,6 @@ const SelectUsersFormField = React.forwardRef<
                       <CommandItem
                         onSelect={() => {
                           setSelectedValues([]);
-                          selectedValuesSet.current.clear();
                           onValueChange('');
                         }}
                         style={{

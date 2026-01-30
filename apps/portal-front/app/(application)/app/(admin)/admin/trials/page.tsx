@@ -1,6 +1,6 @@
 'use client';
 import GuardCapacityComponent from '@/components/admin-guard';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import * as React from 'react';
 import PageLoader from './page-loader';
 
@@ -8,7 +8,7 @@ import PageLoader from './page-loader';
 const Page: React.FunctionComponent = () => {
   return (
     <GuardCapacityComponent
-      portalCapabilityRestriction={[RestrictionEnum.READ_TRIALS]}
+      portalCapabilityRestriction={[PortalCapabilityEnum.READ_TRIALS]}
       displayError>
       <PageLoader />
     </GuardCapacityComponent>

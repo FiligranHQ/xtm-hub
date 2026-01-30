@@ -15,7 +15,7 @@ export const integrationsItem = graphql`
     share_number
     slug
     updated_at
-    labels {
+    use_cases {
       id
       name
       color

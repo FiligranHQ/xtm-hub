@@ -4,7 +4,7 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import useGranted from '@/hooks/useGranted';
 import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -13,7 +13,7 @@ import { useContext } from 'react';
 interface GuardComponentProps {
   children: React.ReactNode;
   capacityRestriction?: OrganizationCapabilityEnum[];
-  portalCapabilityRestriction?: RestrictionEnum[];
+  portalCapabilityRestriction?: PortalCapabilityEnum[];
   displayError?: boolean;
   shouldNotBePersonalSpace?: boolean;
 }

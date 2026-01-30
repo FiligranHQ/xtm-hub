@@ -10,13 +10,13 @@ import {
   Input,
   SheetFooter,
 } from '@filigran/ui';
-import { label_fragment$data } from '@generated/label_fragment.graphql';
+import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export const labelFormSchema = z.object({
+export const useCaseFormSchema = z.object({
   name: z.string().min(2, {
     error: 'OrganizationForm.Error.Name',
   }),
@@ -25,24 +25,24 @@ export const labelFormSchema = z.object({
     .refine((value) => /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value ?? '')),
 });
 
-const LabelForm = ({
-  label,
+const UseCaseForm = ({
+  useCase,
   handleSubmit,
   handleDelete,
   onClose,
 }: {
-  label?: label_fragment$data;
+  useCase?: useCase_fragment$data;
   handleDelete?: () => void;
-  handleSubmit: (values: z.infer<typeof labelFormSchema>) => void;
+  handleSubmit: (values: z.infer<typeof useCaseFormSchema>) => void;
   onClose: () => void;
 }) => {
   const t = useTranslations();
 
-  const form = useForm<z.infer<typeof labelFormSchema>>({
-    resolver: zodResolver(labelFormSchema),
+  const form = useForm<z.infer<typeof useCaseFormSchema>>({
+    resolver: zodResolver(useCaseFormSchema),
     defaultValues: {
-      name: label?.name ?? '',
-      color: label?.color ?? '',
+      name: useCase?.name ?? '',
+      color: useCase?.color ?? '',
     },
   });
 
@@ -56,10 +56,10 @@ const LabelForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('LabelForm.Name')}</FormLabel>
+              <FormLabel>{t('UseCaseForm.Name')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('LabelForm.Name')}
+                  placeholder={t('UseCaseForm.Name')}
                   {...field}
                 />
               </FormControl>
@@ -71,7 +71,7 @@ const LabelForm = ({
           name="color"
           render={({ field: { value, onChange } }) => (
             <FormItem>
-              <FormLabel>{t('LabelForm.Color')}</FormLabel>
+              <FormLabel>{t('UseCaseForm.Color')}</FormLabel>
               <ColorPicker
                 value={value ?? ''}
                 onChange={onChange}
@@ -80,8 +80,8 @@ const LabelForm = ({
           )}
         />
 
-        <SheetFooter className={label ? 'sm:justify-between pb-0' : 'pt-2'}>
-          {label && (
+        <SheetFooter className={useCase ? 'sm:justify-between pb-0' : 'pt-2'}>
+          {useCase && (
             <AlertDialogComponent
               AlertTitle={t('MenuActions.Delete')}
               actionButtonText={t('MenuActions.Delete')}
@@ -92,8 +92,8 @@ const LabelForm = ({
                 </Button>
               }
               onClickContinue={() => handleDelete!()}>
-              {t('DeleteLabelDialog.TextDeleteLabel', {
-                name: label.name,
+              {t('DeleteUseCaseDialog.TextDeleteUseCase', {
+                name: useCase.name,
               })}
             </AlertDialogComponent>
           )}
@@ -116,4 +116,4 @@ const LabelForm = ({
   );
 };
 
-export default LabelForm;
+export default UseCaseForm;

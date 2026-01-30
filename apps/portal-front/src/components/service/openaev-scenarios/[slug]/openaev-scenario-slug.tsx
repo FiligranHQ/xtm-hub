@@ -2,6 +2,7 @@ import { AppServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import {
@@ -62,15 +63,19 @@ const OpenaevScenarioSlug = ({
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={
-            <>
-              <DeleteIntegrationSlug document={documentData} />
-              <ServiceManageSheet
-                document={documentData}
-                variant={'button'}
-              />
-            </>
-          }
-        />
+          <>
+            <DeleteIntegrationSlug document={documentData} />
+            <ServiceManageSheet
+              document={documentData}
+              variant={'button'}
+            />
+          </>
+          }>
+          <ShareableResourceCarousel
+            serviceInstance={serviceInstance}
+            documentData={documentData}
+          />
+        </ShareableResourceSlug>
       </AppServiceContext>
     )
   );

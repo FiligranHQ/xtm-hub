@@ -16,7 +16,7 @@ import { BOOLEAN_METADATA } from '../document.helper';
 import { DocumentData } from './document.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
-  Exclude<keyof Omit<T, 'labels'>, keyof DocumentResolverType>
+  Exclude<keyof Omit<T, 'use_cases'>, keyof DocumentResolverType>
 >;
 
 export const DocumentMetadataDomain = {

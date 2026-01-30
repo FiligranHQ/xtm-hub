@@ -15,8 +15,8 @@ import integrationsResolver from '../modules/services/integrations/integrations.
 import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
-import labelsResolver from '../modules/settings/labels/labels.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
+import useCaseResolver from '../modules/settings/useCase/use-case.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import serviceCapabilityResolver from '../modules/user_service/service-capability/service-capability.resolver';
@@ -46,7 +46,7 @@ const resolvers = mergeResolvers([
   userServiceResolver,
   serviceCapabilityResolver,
   logResolver,
-  labelsResolver,
+  useCaseResolver,
   customDashboardsResolver,
   openAEVScenariosResolver,
   registrationResolver,
