@@ -56,7 +56,7 @@ const PublicIntegrationsList: React.FC<Props> = ({
         )
       )
       .filter((l) => !!l);
-  }, [data.publicIntegrations?.edges]);
+  }, [data.publicIntegrations]);
 
   const { filters, localStorageKey } = useShareableResourceMapping(
     serviceInstance.slug as ServiceSlug

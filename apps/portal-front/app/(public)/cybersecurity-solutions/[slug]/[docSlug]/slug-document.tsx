@@ -1,4 +1,4 @@
-import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import {
   SeoResource,
   ServiceSlug,
@@ -31,8 +31,9 @@ const SlugDocument = async ({
       );
 
     case ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS:
+    case ServiceSlug.OPEN_AEV_SCENARIOS:
       return (
-        <DashboardCarousel
+        <ShareableResourceCarousel
           serviceInstance={
             serviceInstance as unknown as serviceInstance_fragment$data
           }
