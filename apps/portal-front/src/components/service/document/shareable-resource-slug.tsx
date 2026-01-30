@@ -98,62 +98,61 @@ const ShareableResourceSlug: React.FunctionComponent<
             />
           </div>
         )}
-        <div
-          className={
-            mainChild?.id
-              ? 'flex flex-col flex-1 justify-center'
-              : 'flex flex-row gap-s w-full'
-          }>
-          <h1 className="whitespace-nowrap">{documentData.name}</h1>
-
-        <BadgeOverflowCounter
-          badges={documentData.use_cases as BadgeOverflow[]}
-        />
-        <div className="flex items-center gap-2 ml-auto">
-          <ShareLinkButton
-            documentId={documentData.id}
-            url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
-          />
-          {shouldShowOneClickDeployComponent ? (
-            <>
-              <TooltipProvider>
-                <Tooltip
-                  delayDuration={50}
-                  disableHoverableContent={true}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        incrementDownloadNumber();
-                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                      }}
-                      className="z-[2] text-primary">
-                      <DownloadIcon className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{t('Service.ShareableResources.Download')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              {updateActions}
-            </>
-          ) : (
-            <>
-              {updateActions}
-              <Button
-                onClick={() => {
-                  incrementDownloadNumber();
-                  window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                }}>
-                {t('Utils.Download')}
-              </Button>
-            </>
-          )}
-          {shouldShowOneClickDeployComponent && (
-            <OneClickDeploy documentData={documentData} />
-          )}
+        <div className="flex flex-col justify-center w-full">
+          <div className="flex items-start ">
+            <h1 className="whitespace-nowrap mb-s">{documentData.name}</h1>
+            <div className="flex gap-s ml-auto">
+              <ShareLinkButton
+                documentId={documentData.id}
+                url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
+              />
+              {shouldShowOneClickDeployComponent ? (
+                <>
+                  <TooltipProvider>
+                    <Tooltip
+                      delayDuration={50}
+                      disableHoverableContent={true}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            incrementDownloadNumber();
+                            window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                          }}
+                          className="z-[2] text-primary">
+                          <DownloadIcon className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('Service.ShareableResources.Download')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  {updateActions}
+                </>
+              ) : (
+                <>
+                  {updateActions}
+                  <Button
+                    onClick={() => {
+                      incrementDownloadNumber();
+                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                    }}>
+                    {t('Utils.Download')}
+                  </Button>
+                </>
+              )}
+              {shouldShowOneClickDeployComponent && (
+                <OneClickDeploy documentData={documentData} />
+              )}
+            </div>
+          </div>
+          <div>
+            <BadgeOverflowCounter
+              badges={documentData.use_cases as BadgeOverflow[]}
+            />
+          </div>
         </div>
       </div>
       {children}

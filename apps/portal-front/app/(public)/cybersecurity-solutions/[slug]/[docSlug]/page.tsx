@@ -1,13 +1,20 @@
 import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/shareable-resource-connector-slug-public';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
-import BadgeOverflowCounter, { BadgeOverflow, } from '@/components/ui/badge-overflow-counter';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/badge-overflow-counter';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
-import { isConnectorResource, SeoResource, ServiceSlug, } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isConnectorResource,
+  SeoResource,
+  ServiceSlug,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { Button } from '@filigran/ui/servers';
@@ -23,7 +30,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
-import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -261,33 +267,30 @@ const Page = async ({
               />
             </div>
           )}
-          <div
-            className={
-              mainChild?.id
-                ? 'flex flex-col flex-1 justify-center'
-                : 'flex flex-row gap-s w-full'
-            }>
-            <h1 className="whitespace-nowrap">{document.name}</h1>
-            <div className="w-full mt-s mb-xs">
+          <div className="flex flex-col w-full justify-center">
+            <div className="flex items-start">
+              <h1 className="whitespace-nowrap mb-s">{document.name}</h1>
+              <div className="flex items-center gap-s ml-auto">
+                {
+                  <ShareLinkButton
+                    documentId={document.id}
+                    url={`${pageUrl}`}
+                    tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
+                  />
+                }
+                <Button
+                  asChild
+                  className="whitespace-nowrap">
+                  <Link href={serviceInformation?.link ?? ''}>Download</Link>
+                </Button>
+              </div>
+            </div>
+            <div>
               <BadgeOverflowCounter
                 badges={document?.use_cases as BadgeOverflow[]}
                 className="z-[2]"
               />
             </div>
-          </div>
-          <div className="flex items-center gap-2 ml-auto">
-            {
-              <ShareLinkButton
-                documentId={document.id}
-                url={`${pageUrl}`}
-                tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
-              />
-            }
-            <Button
-              asChild
-              className="whitespace-nowrap">
-              <Link href={serviceInformation?.link ?? ''}>Download</Link>
-            </Button>
           </div>
         </div>
         {(serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ||
