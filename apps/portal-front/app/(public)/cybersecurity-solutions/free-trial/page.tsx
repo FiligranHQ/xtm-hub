@@ -3,7 +3,6 @@ import { TrialsHeader } from '@/components/service/trial-instances/trials-header
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { RelayProvider } from '@/relay/RelayProvider';
-import { APP_PATH } from '@/utils/path/constant';
 import { GradientButton } from '@filigran/ui/servers';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { getTranslations } from 'next-intl/server';
@@ -14,7 +13,7 @@ const Page: React.FC = async () => {
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
-      href: `/${APP_PATH}`,
+      href: `/`,
     },
     {
       label: 'OpenCTI Trial platform',
