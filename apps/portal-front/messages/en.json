@@ -539,8 +539,8 @@
           "ManualDeploy": "Manual deploy"
         },
         "Verified": {
-          "Label": "Verified",
-          "Placeholder": "Verified",
+          "Label": "Verification status",
+          "Placeholder": "Verification status...",
           "Verified": "Verified",
           "Unverified": "Unverified"
         }
@@ -789,7 +789,7 @@
           "integration_type": "Integration type",
           "product_version": "Registered platforms",
           "manager_supported": "Deployment type",
-          "verified": "Verified"
+          "verified": "Verification status"
         }
       }
     },

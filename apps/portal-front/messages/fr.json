@@ -539,8 +539,8 @@
           "ManualDeploy": "Déploiement manuel"
         },
         "Verified": {
-          "Label": "Vérifié",
-          "Placeholder": "Vérifié",
+          "Label": "Statut de vérification",
+          "Placeholder": "Statut de vérification...",
           "Verified": "Vérifié",
           "Unverified": "Non vérifié"
         }
@@ -789,7 +789,7 @@
           "integration_type": "Type d'intégration",
           "product_version": "Plateformes enregistrées",
           "manager_supported": "Type de déploiement",
-          "verified": "Vérifié"
+          "verified": "Statut de vérification"
         }
       }
     },
