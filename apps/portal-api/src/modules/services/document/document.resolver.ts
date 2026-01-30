@@ -184,7 +184,7 @@ const resolvers: Resolvers = {
           fromGlobalId(input.service_instance_id).id as ServiceInstanceId
         );
       } catch (error) {
-        logApp.error('Error while fetching documents:', error);
+        logApp.error('Error while fetching documents:', { error });
         throw mapToGraphQLError(error);
       }
     },
@@ -217,7 +217,7 @@ const resolvers: Resolvers = {
           }
         );
       } catch (error) {
-        logApp.error('Error while fetching documents:', error);
+        logApp.error('Error while fetching documents:', { error });
         throw mapToGraphQLError(error);
       }
     },

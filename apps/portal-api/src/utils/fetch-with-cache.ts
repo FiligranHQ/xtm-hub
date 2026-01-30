@@ -41,7 +41,7 @@ const getFromCache = async (cacheFileName: string) => {
       return JSON.parse(fileContent); // Return just the data, not the whole cache object
     }
   } catch (error) {
-    logApp.error('Error reading cache:', error);
+    logApp.error('Error reading cache:', { error });
   }
   return null;
 };
