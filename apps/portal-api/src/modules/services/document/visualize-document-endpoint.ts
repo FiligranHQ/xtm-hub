@@ -2,11 +2,14 @@ import cors from 'cors';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../../context/request.context';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
+import { extractId } from '../../../utils/utils';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { DocumentDomain } from './domain/document.domain';
 
@@ -60,7 +63,9 @@ export const documentVisualizeEndpoint = (app) => {
     cors(),
     async (req, res) => {
       try {
-        const serviceInstanceId = fromGlobalId(req.params.serviceInstanceId).id;
+        const serviceInstanceId = extractId<ServiceInstanceId>(
+          req.params.serviceInstanceId
+        );
         // Check if the user is authorized to access the document
         const serviceDefinition = (await loadServiceDefinitionByServiceInstance(
           serviceInstanceId
@@ -83,7 +88,7 @@ export const documentVisualizeEndpoint = (app) => {
             .status(404)
             .json({ message: 'Service definition not found' });
         }
-        const documentId = fromGlobalId(req.params.documentId).id;
+        const documentId = extractId<DocumentId>(req.params.documentId);
         const [document] = await DocumentDomain.loadDocumentBy({
           'Document.id': documentId,
         });
