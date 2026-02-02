@@ -1,7 +1,7 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
-import DashboardCarousel from '@/components/service/custom-dashboards/[slug]/custom-dashboard-carousel-view';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import { APP_PATH } from '@/utils/path/constant';
@@ -60,6 +60,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
     documentData && (
       <AppServiceContext {...context}>
         <ShareableResourceSlug
+          serviceInstance={serviceInstance}
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={
@@ -71,7 +72,7 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
               />
             </>
           }>
-          <DashboardCarousel
+          <ShareableResourceCarousel
             serviceInstance={serviceInstance}
             documentData={documentData}
           />

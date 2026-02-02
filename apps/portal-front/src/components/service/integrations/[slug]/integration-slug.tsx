@@ -91,6 +91,7 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
           />
         ) : (
           <ShareableResourceSlug
+            serviceInstance={serviceInstance}
             breadcrumbValue={breadcrumbValue}
             documentData={documentData}
             updateActions={

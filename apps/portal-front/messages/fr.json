@@ -539,8 +539,8 @@
           "ManualDeploy": "Déploiement manuel"
         },
         "Verified": {
-          "Label": "Vérifié",
-          "Placeholder": "Vérifié",
+          "Label": "Statut de vérification",
+          "Placeholder": "Statut de vérification...",
           "Verified": "Vérifié",
           "Unverified": "Non vérifié"
         }
@@ -758,7 +758,13 @@
         "Author": "Auteur",
         "ProductVersionLabel": "Version OpenAEV",
         "UpdateZIPFile": "Mettre à jour le fichier ZIP",
-        "DescriptionUpdateZIPFile": "Vous êtes sur le point de télécharger un nouveau fichier zip. Le fichier json précédent sera supprimé. Voulez-vous continuer ?"
+        "DescriptionUpdateZIPFile": "Vous êtes sur le point de télécharger un nouveau fichier zip. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+        "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
+        "Restore": "Restaurer",
+        "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
+        "NoImage": "Aucune image sélectionnée",
+        "ImageLabel": "Images",
+        "SelectImage": "Sélectionner une (des) image(s)"
       },
       "AddService": "Ajouter un nouveau scénario",
       "UpdateService": "Mettre à jour le scénario {name}",
@@ -783,7 +789,7 @@
           "integration_type": "Type d'intégration",
           "product_version": "Plateformes enregistrées",
           "manager_supported": "Type de déploiement",
-          "verified": "Vérifié"
+          "verified": "Statut de vérification"
         }
       }
     },

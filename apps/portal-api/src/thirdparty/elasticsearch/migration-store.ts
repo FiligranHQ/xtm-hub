@@ -109,7 +109,7 @@ export function createEsStateStorage(
         loadedState = JSON.parse(JSON.stringify(set));
         fn();
       } catch (error) {
-        logApp.error('Error saving state', error);
+        logApp.error('Error saving state', { error });
         fn(error);
       }
     },
@@ -143,7 +143,7 @@ export function createEsStateStorage(
           if (error.statusCode === 404) {
             logApp.warn('Warning: Deleting migration lock but lock not found');
           } else {
-            logApp.error('Error Deleting migration lock', error);
+            logApp.error('Error Deleting migration lock', { error });
           }
         });
     },
