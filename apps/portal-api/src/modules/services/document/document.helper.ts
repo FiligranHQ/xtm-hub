@@ -275,7 +275,7 @@ export const updateDocumentWithCounters = async <T extends Document>(
       ),
     ]);
   } catch (error) {
-    logApp.error('Unable to fetch counters from elastic search', error);
+    logApp.error('Unable to fetch counters from elastic search', { error });
   }
 
   return {

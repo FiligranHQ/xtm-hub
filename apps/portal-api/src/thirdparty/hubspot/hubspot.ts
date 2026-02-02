@@ -44,8 +44,9 @@ async function hubspotHook(
       logApp.info(`Hubspot ${type} hook sent`);
     }
   } catch (error) {
-    logApp.error(`An error occurred while sending the Hubspot ${type} hook`);
-    logApp.error(error);
+    logApp.error(`An error occurred while sending the Hubspot ${type} hook`, {
+      error,
+    });
   }
 }
 

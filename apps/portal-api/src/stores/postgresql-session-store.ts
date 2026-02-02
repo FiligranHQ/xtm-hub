@@ -23,9 +23,9 @@ export class PostgreSQLSessionStore extends Store {
         }
         callback(null, row.sess);
       })
-      .catch((err) => {
-        logApp.error('PostgreSQLSessionStore get error:', err);
-        callback(err);
+      .catch((error) => {
+        logApp.error('PostgreSQLSessionStore get error:', { error });
+        callback(error);
       });
   }
 
@@ -57,9 +57,9 @@ export class PostgreSQLSessionStore extends Store {
       .then(() => {
         if (callback) callback();
       })
-      .catch((err) => {
-        logApp.error('PostgreSQLSessionStore set error:', err);
-        if (callback) callback(err);
+      .catch((error) => {
+        logApp.error('PostgreSQLSessionStore set error:', { error });
+        if (callback) callback(error);
       });
   }
 
@@ -73,9 +73,9 @@ export class PostgreSQLSessionStore extends Store {
       .then(() => {
         if (callback) callback();
       })
-      .catch((err) => {
-        logApp.error('PostgreSQLSessionStore destroy error:', err);
-        if (callback) callback(err);
+      .catch((error) => {
+        logApp.error('PostgreSQLSessionStore destroy error:', { error });
+        if (callback) callback(error);
       });
   }
 
@@ -97,18 +97,18 @@ export class PostgreSQLSessionStore extends Store {
           try {
             sessions[row.sid] =
               typeof row.sess === 'string' ? JSON.parse(row.sess) : row.sess;
-          } catch (err) {
+          } catch (error) {
             logApp.error(
               `PostgreSQLSessionStore parse error for session ${row.sid}:`,
-              err
+              { error }
             );
           }
         });
         callback(null, sessions);
       })
-      .catch((err) => {
-        logApp.error('PostgreSQLSessionStore all error:', err);
-        callback(err);
+      .catch((error) => {
+        logApp.error('PostgreSQLSessionStore all error:', { error });
+        callback(error);
       });
   }
 
@@ -121,9 +121,9 @@ export class PostgreSQLSessionStore extends Store {
       .then(() => {
         if (callback) callback();
       })
-      .catch((err) => {
-        logApp.error('PostgreSQLSessionStore clear error:', err);
-        if (callback) callback(err);
+      .catch((error) => {
+        logApp.error('PostgreSQLSessionStore clear error:', { error });
+        if (callback) callback(error);
       });
   }
 
