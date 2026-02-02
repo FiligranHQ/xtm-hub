@@ -1143,8 +1143,8 @@
     "Visualize": "Visualiser",
     "DangerZone": "Zone de danger",
     "AutomaticDeploy": "Déploiement automatique",
-    "And": "ET",
-    "Or": "OU"
+    "And": "et",
+    "Or": "ou"
   },
   "Platform": {
     "Update": "Mettre à jour",
