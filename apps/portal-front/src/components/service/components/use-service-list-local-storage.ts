@@ -3,6 +3,8 @@ import {
   isLogicalMultiSelectSelection,
   LogicalMultiSelectSelection,
 } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
+import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
+import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {
@@ -115,6 +117,23 @@ export const useServiceListLocalStorage = (
     50
   );
 
+  const defaultOrderBy =
+    serviceName === ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+      ? DocumentOrderingEnum.NAME
+      : DocumentOrderingEnum.CREATED_AT;
+
+  const [orderBy, setOrderBy, removeOrderBy] =
+    useLocalStorage<DocumentOrderingEnum>(
+      `orderBy${serviceName}List`,
+      defaultOrderBy
+    );
+
+  const [orderMode, setOrderMode, removeOrderMode] =
+    useLocalStorage<OrderingModeEnum>(
+      `orderMode${serviceName}List`,
+      OrderingModeEnum.ASC
+    );
+
   const resetAll = () => {
     removeCount();
     removePageSize();
@@ -123,6 +142,8 @@ export const useServiceListLocalStorage = (
     removeSelectedFilters();
     removeIntegrationTypes();
     removeDeployable();
+    removeOrderBy();
+    removeOrderMode();
   };
 
   return {
@@ -152,5 +173,9 @@ export const useServiceListLocalStorage = (
     verified,
     setVerified,
     removeVerified,
+    orderBy,
+    setOrderBy,
+    orderMode,
+    setOrderMode,
   };
 };
