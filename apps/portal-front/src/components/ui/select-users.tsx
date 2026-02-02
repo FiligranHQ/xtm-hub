@@ -53,8 +53,15 @@ const SelectUsersFormField = React.forwardRef<
     selectedValues.length
   );
   const measurementRef = useRef<HTMLDivElement>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+
   const badgesContainerRef = useCallback(
     (node: HTMLDivElement | null) => {
+      if (!node) {
+        resizeObserverRef.current?.disconnect();
+        resizeObserverRef.current = null;
+        return;
+      }
       if (!node || !measurementRef.current) return;
 
       const updateVisibility = () => {
@@ -91,10 +98,6 @@ const SelectUsersFormField = React.forwardRef<
       });
 
       resizeObserver.observe(node);
-
-      return () => {
-        resizeObserver.disconnect();
-      };
     },
     [selectedValues]
   );

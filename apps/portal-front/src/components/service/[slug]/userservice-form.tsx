@@ -102,31 +102,33 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
       }),
   });
 
-  const getCurrentCapabilities = (): string[] => {
-    const currentCapabilities: string[] | undefined =
-      userService?.user_service_capability
-        ?.map((capability) => {
-          return (
-            capability?.generic_service_capability?.name ||
-            capability?.subscription_capability?.service_capability?.id
-          );
-        })
-        .filter((id) => id !== undefined);
-    return currentCapabilities ?? [];
-  };
+  const currentCapabilities = useMemo(() => {
+    if (isUserCreation) {
+      return [];
+    }
+
+    return userService?.user_service_capability
+      ?.map((capability) => {
+        return (
+          capability?.generic_service_capability?.name ||
+          capability?.subscription_capability?.service_capability?.id
+        );
+      })
+      .filter((id) => id !== undefined);
+  }, [isUserCreation, userService]);
+
   const defaultValues = useMemo(() => {
-    const currentCapabilities = isUserCreation ? [] : getCurrentCapabilities();
     return {
       email: [{ id: '', text: '' }],
       capabilities: currentCapabilities,
       organizationId: organizationId,
     };
-  }, [subscription.subscriptionById?.id, userService?.id, organizationId]);
+  }, [organizationId, currentCapabilities]);
 
   const capabilitiesForm = useForm<z.infer<typeof capabilitiesFormSchema>>({
     resolver: zodResolver(capabilitiesFormSchema),
     defaultValues: {
-      capabilities: getCurrentCapabilities(),
+      capabilities: currentCapabilities,
       organizationId: organizationId,
     },
   });
@@ -135,7 +137,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
     resolver: zodResolver(extendedSchema),
     defaultValues: {
       email: [{ id: '', text: '' }],
-      capabilities: getCurrentCapabilities(),
+      capabilities: currentCapabilities,
       organizationId: organizationId,
     },
   });
@@ -149,14 +151,6 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
   useEffect(() => {
     setIsDirty(form.formState.isDirty);
   }, [form.formState.isDirty]);
-
-  useEffect(() => {
-    form.reset({
-      email: [{ id: '', text: '' }],
-      capabilities: isUserCreation ? [] : getCurrentCapabilities(),
-      organizationId: organizationId,
-    });
-  }, [subscription.subscriptionById]);
 
   const onSubmitCapabilitiesSchema = (
     values: z.infer<typeof capabilitiesFormSchema>

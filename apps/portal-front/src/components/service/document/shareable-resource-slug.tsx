@@ -57,14 +57,12 @@ const ShareableResourceSlug: React.FunctionComponent<
   const { serviceInstanceId } = useDecodedParams();
   const { settings } = useContext(SettingsContext);
 
-  const [additionalDownloads, setAdditionalDownloads] = useState(0);
+  const [documentDownloadNumber, setDocumentDownloadNumber] = useState(
+    documentData.download_number ?? 0
+  );
+  const incrementDownloadNumber = () =>
+    setDocumentDownloadNumber((prev) => prev + 1);
 
-  const documentDownloadNumber =
-    (documentData.download_number ?? 0) + additionalDownloads;
-
-  const incrementDownloadNumber = () => {
-    setAdditionalDownloads((prev) => prev + 1);
-  };
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 

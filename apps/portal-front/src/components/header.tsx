@@ -25,7 +25,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 // Component interface
@@ -43,16 +43,10 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
 
-  const previousPathRef = useRef(currentPath);
+  // Legitimate effect: close the menu on route change.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setOpen(false), [currentPath]);
 
-  const handleOpenChange = (newOpen: boolean) => {
-    if (currentPath !== previousPathRef.current) {
-      previousPathRef.current = currentPath;
-      setOpen(false);
-    } else {
-      setOpen(newOpen);
-    }
-  };
   const canManageUser =
     hasOrganizationCapability &&
     (hasOrganizationCapability(
@@ -120,7 +114,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         )}
         <Sheet
           open={open}
-          onOpenChange={handleOpenChange}>
+          onOpenChange={setOpen}>
           <SheetTrigger>
             <MenuIcon
               aria-hidden={true}
