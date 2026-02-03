@@ -63,7 +63,7 @@
     "auth0": "4.31.0",
     "body-parser": "2.2.2",
     "config": "3.3.12",
-    "cors": "2.8.5",
+    "cors": "2.8.6",
     "express": "5.2.1",
     "express-prom-bundle": "8.0.0",
     "express-rate-limit": "8.1.0",

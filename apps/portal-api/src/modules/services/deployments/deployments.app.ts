@@ -225,7 +225,7 @@ export const DeploymentsApp = {
         id: createdDeploymentRequest.id,
       });
     } catch (error) {
-      logApp.error('unable to create deployment request', error);
+      logApp.error('unable to create deployment request', { error });
       throw error;
     }
   },

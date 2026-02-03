@@ -1,6 +1,5 @@
-import { cn } from '@/lib/utils';
-import { CheckIcon } from '@filigran/icon';
 import {
+  Checkbox,
   CommandEmpty,
   CommandGroup,
   CommandItem,
@@ -25,24 +24,6 @@ interface OptionsListProps {
   onClose: () => void;
   showClear: boolean;
 }
-
-const CheckboxIndicator: React.FC<{
-  checked: boolean;
-  indeterminate?: boolean;
-}> = ({ checked, indeterminate }) => (
-  <div
-    className={cn(
-      'mr-2 flex h-4 w-4 min-w-4 items-center justify-center rounded-sm border border-primary',
-      checked && 'bg-primary text-primary-foreground',
-      !checked && !indeterminate && 'opacity-50'
-    )}>
-    {checked ? (
-      <CheckIcon className="h-4 w-4" />
-    ) : indeterminate ? (
-      <div className="h-2 w-2 rounded-sm bg-primary" />
-    ) : null}
-  </div>
-);
 
 export const OptionsList: React.FC<OptionsListProps> = ({
   flatOptions,
@@ -70,9 +51,9 @@ export const OptionsList: React.FC<OptionsListProps> = ({
               onSelect={() => toggleParent(option.value)}
               style={{ pointerEvents: 'auto', opacity: 1 }}
               className="cursor-pointer">
-              <CheckboxIndicator
-                checked={checked}
-                indeterminate={indeterminate}
+              <Checkbox
+                checked={indeterminate ? 'indeterminate' : checked}
+                className="mr-2"
               />
               <span>{option.label}</span>
             </CommandItem>
@@ -87,7 +68,10 @@ export const OptionsList: React.FC<OptionsListProps> = ({
             onSelect={() => toggleChild(option.value, option.parentValue)}
             style={{ pointerEvents: 'auto', opacity: 1 }}
             className="cursor-pointer pl-6">
-            <CheckboxIndicator checked={isSelected} />
+            <Checkbox
+              checked={isSelected}
+              className="mr-2"
+            />
             <span>{option.label}</span>
           </CommandItem>
         );

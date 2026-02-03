@@ -2,11 +2,14 @@ import cors from 'cors';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../../context/request.context';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
+import { extractId } from '../../../utils/utils';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { DocumentDomain } from './domain/document.domain';
 
@@ -49,7 +52,7 @@ export const documentVisualizeEndpoint = (app) => {
 
         stream.pipe(res);
       } catch (error) {
-        logApp.error('Error while retrieving document VISUALIZE: ', error);
+        logApp.error('Error while retrieving document VISUALIZE: ', { error });
         res.status(404).json({ message: 'Document not found' });
       }
     }
@@ -60,13 +63,16 @@ export const documentVisualizeEndpoint = (app) => {
     cors(),
     async (req, res) => {
       try {
+        const serviceInstanceId = extractId<ServiceInstanceId>(
+          req.params.serviceInstanceId
+        );
         // Check if the user is authorized to access the document
         const serviceDefinition = (await loadServiceDefinitionByServiceInstance(
-          fromGlobalId(req.params.serviceInstanceId).id
+          serviceInstanceId
         )) as ServiceDefinition;
         if (!serviceDefinition) {
           logApp.error(
-            `Service definition not found. Required: ${fromGlobalId(req.params.serviceInstanceId).id}`
+            `Service definition not found. Required: ${serviceInstanceId}`
           );
           return res
             .status(404)
@@ -76,20 +82,20 @@ export const documentVisualizeEndpoint = (app) => {
         // Only allow requests on public services
         if (!serviceDefinition.public) {
           logApp.error(
-            `Service definition not found. Required: ${fromGlobalId(req.params.serviceInstanceId).id}`
+            `Service definition not found. Required: ${serviceInstanceId}`
           );
           return res
             .status(404)
             .json({ message: 'Service definition not found' });
         }
-
+        const documentId = extractId<DocumentId>(req.params.documentId);
         const [document] = await DocumentDomain.loadDocumentBy({
-          'Document.id': fromGlobalId(req.params.documentId).id,
+          'Document.id': documentId,
         });
 
         if (!document || !document.mime_type.startsWith('image/')) {
           logApp.error(
-            `Document not found. Required documentId: ${req.params.documentId}`
+            `Document not found. Required documentId: ${documentId}`
           );
           return res.status(404).json({ message: 'Document not found' });
         }
@@ -105,8 +111,7 @@ export const documentVisualizeEndpoint = (app) => {
 
         stream.pipe(res);
       } catch (error) {
-        console.error(error);
-        logApp.error('Error while retrieving document VISUALIZE: ', error);
+        logApp.error('Error while retrieving document VISUALIZE: ', { error });
         res.status(404).json({ message: 'Document not found' });
       }
     }

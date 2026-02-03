@@ -79,7 +79,7 @@ const addBasicMetaInformation = (
 
   const logMeta: Record<string, unknown> = {
     ...omit(meta, ['user']),
-    userId: meta.user?.id ?? context?.user?.id,
+    user_id: meta.user?.id ?? context?.user?.id,
   };
   if (error) logMeta.errors = buildMetaErrors(error);
   for (const key of Object.keys(logMeta)) {
@@ -148,8 +148,11 @@ export const logApp = {
   },
   debug: (message: string, meta: Record<string, unknown> = {}) =>
     logApp._log('debug', message, null, meta),
-  info: (message: string, meta: Record<string, unknown> = {}) =>
-    logApp._log('info', message, null, meta),
+  info: (
+    message: string,
+    meta: Record<string, unknown> = {},
+    category: AppLogsCategory = AppLogsCategory.BACKEND
+  ) => logApp._log('info', message, null, meta, category),
   warn: (messageOrError: string | Error, meta: Record<string, unknown> = {}) =>
     logApp._logWithError('warn', messageOrError, meta),
   error: (
