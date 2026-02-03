@@ -94,7 +94,7 @@ export const DeploymentRequestDomain = {
     return query.first();
   },
 
-  loadProvisionedTrialDeploymentRequestByPlatformIdentifier: async (
+  loadTrialDeploymentRequestByPlatformIdentifierAndUserId: async (
     platformIdentifier: PlatformIdentifier,
     userId: string
   ): Promise<FullyQualifiedDeploymentRequest | undefined> => {
@@ -105,10 +105,6 @@ export const DeploymentRequestDomain = {
         '=',
         'Organization.id'
       )
-      .whereIn('DeploymentRequest.hub_status', [
-        DeploymentRequestHubStatus.Active,
-        DeploymentRequestHubStatus.Expired,
-      ])
       .where(
         'DeploymentRequest.type',
         '=',
@@ -116,17 +112,14 @@ export const DeploymentRequestDomain = {
       )
       .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
       .where('User_Organization.user_id', '=', userId)
+      .orderBy('DeploymentRequest.request_date', 'desc')
       .first();
   },
 
-  loadProvisionedTrialDeploymentRequestByPlatformToken: async (
+  loadTrialDeploymentRequestByPlatformToken: async (
     platformToken: string
   ): Promise<FullyQualifiedDeploymentRequest> => {
     return getDeploymentRequestWithUserDataQuery()
-      .whereIn('DeploymentRequest.hub_status', [
-        DeploymentRequestHubStatus.Active,
-        DeploymentRequestHubStatus.Expired,
-      ])
       .where(
         'DeploymentRequest.type',
         '=',
