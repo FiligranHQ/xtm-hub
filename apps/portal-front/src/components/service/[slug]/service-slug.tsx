@@ -35,7 +35,7 @@ import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutatio
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -48,6 +48,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   queryRef,
   serviceId,
 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
     ServiceByIdWithSubscriptions,
     queryRef
@@ -63,10 +64,9 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [removeSubscription, setRemoveSubscription] = useState<
     subscriptionWithUserService_fragment$data | undefined
   >(undefined);
-  const [searchTerm, setSearchTerm] = useState('');
 
   const debounceHandleInput = useDebounceCallback(
-    (e) => setSearchTerm(e.target.value),
+    (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
     DEBOUNCE_TIME
   );
 
@@ -179,7 +179,6 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
             checked={shouldDisplayPersonalSpaces}
             onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
             id="displayPersonalSpaces"
-            className=""
           />
           <label
             htmlFor="displayPersonalSpaces"
