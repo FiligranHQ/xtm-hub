@@ -272,39 +272,46 @@ describe('Deployment app', () => {
     });
 
     describe('telemetry', () => {
-      it('should send a telemetry event', async () => {
-        vi.useFakeTimers();
-        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-        vi.setSystemTime(date);
+      it.each`
+        product                       | targetProduct
+        ${PlatformIdentifier.Opencti} | ${'open-cti'}
+        ${PlatformIdentifier.Openaev} | ${'open-aev'}
+      `(
+        'should send a telemetry event when trial for $product platform is launched',
+        async ({ product, targetProduct }) => {
+          vi.useFakeTimers();
+          const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+          vi.setSystemTime(date);
 
-        const deployment = await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
+          const deployment = await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: product,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
 
-        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-          '@timestamp': '2025-02-03T13:12:15.000Z',
-          event_type: TelemetryEventType.CREATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
-          organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
-          email: DEFAULT_ADMIN_EMAIL,
-          job_title: 'myJob',
-          user_id: ADMIN_USER_ID,
-          deployment_id: deployment.id,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          use_case: 'use_case',
-          deployment_type: DeploymentRequestDeploymentType.Trial,
-          status: DeploymentRequestHubStatus.Pending,
-          activity_sector: 'cybersecurity',
-          target_product: 'open-cti',
-        });
-      });
+          expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+            '@timestamp': '2025-02-03T13:12:15.000Z',
+            event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+            organization_id: PLATFORM_ORGANIZATION_UUID,
+            organization_name: PLATFORM_NAME,
+            organization_type: TelemetryOrganizationType.PROFESSIONAL,
+            source: TELEMETRY_SOURCE,
+            email: DEFAULT_ADMIN_EMAIL,
+            job_title: 'myJob',
+            user_id: ADMIN_USER_ID,
+            deployment_id: deployment.id,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            use_case: 'use_case',
+            deployment_type: DeploymentRequestDeploymentType.Trial,
+            status: DeploymentRequestHubStatus.Pending,
+            activity_sector: 'cybersecurity',
+            target_product: targetProduct,
+          });
+        }
+      );
       it('should not throw when an error is thrown by telemetry', async () => {
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));

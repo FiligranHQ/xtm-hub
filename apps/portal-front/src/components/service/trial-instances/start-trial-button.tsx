@@ -40,7 +40,7 @@ export enum StartTrialButtonVariant {
 
 interface Props {
   openForm?: boolean;
-  variant?: StartTrialButtonVariant;
+  variant?: string;
 }
 
 // Component
