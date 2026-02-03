@@ -337,8 +337,8 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     [type, t, canModifyTrial, onCancelClick, onReorderClick]
   );
 
-  const actionColumns: ColumnDef<trials_fragment$data>[] = {
-    ...((type === TrialsTabType.Running || type === TrialsTabType.Waiting) &&
+  const actionColumns: ColumnDef<trials_fragment$data>[] =
+    (type === TrialsTabType.Running || type === TrialsTabType.Waiting) &&
     canModifyTrial
       ? [
           {
@@ -428,8 +428,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             },
           },
         ]
-      : []),
-  };
+      : [];
 
   const finalColumns = [...columns, ...actionColumns];
   const {
