@@ -18,6 +18,10 @@ export const PaginationControls: React.FC<Props> = ({
   pageIndex,
   onSetPageSize,
 }) => {
+  if (totalCount <= pageSize) {
+    return null;
+  }
+
   return (
     <div className="flex-0 flex-shrink-0 box-border flex h-9 items-center rounded border border-border-light">
       <PaginationArrowButtons

@@ -188,6 +188,14 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+    publicDocuments: async (_, input) => {
+      try {
+        return DocumentApp.loadPublicDocuments(input);
+      } catch (error) {
+        logApp.error('Error while fetching documents:', { error });
+        throw mapToGraphQLError(error);
+      }
+    },
     documents: async (_, input) => {
       try {
         return DocumentApp.loadDocuments(input);

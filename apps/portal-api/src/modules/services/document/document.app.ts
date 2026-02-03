@@ -1,10 +1,10 @@
 import {
   CreateDocumentInput,
-  DocumentConnection,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   QueryDocumentsArgs,
+  QueryPublicDocumentsArgs,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
@@ -373,9 +373,39 @@ export const DocumentApp = {
         serviceDefinitionIdentifier
       );
 
-    return DocumentDomain.loadParentDocumentsByServiceInstance<DocumentConnection>(
+    return DocumentDomain.loadParentDocumentsByServiceInstance(
       documentType,
       input,
+      metadataKeys
+    );
+  },
+
+  loadPublicDocuments: async (input: QueryPublicDocumentsArgs) => {
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        extractId<ServiceInstanceId>(input.serviceInstanceId)
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+    const serviceDefinitionIdentifier =
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+      serviceDefinitionIdentifier
+    );
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinitionIdentifier
+      );
+
+    const { slug, ...opts } = input;
+
+    return DocumentDomain.loadPaginatedSeoDocumentsByServiceSlug(
+      documentType,
+      slug,
+      opts,
       metadataKeys
     );
   },
