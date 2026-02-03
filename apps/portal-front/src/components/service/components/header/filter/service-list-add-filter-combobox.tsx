@@ -22,7 +22,7 @@ export const ServiceListAddFilterCombobox: React.FC<Props> = ({
       value: filterKey,
       label: t(`Service.List.Filter.Key.${filterKey}`),
     }));
-  }, [availableFilterKeys, addFilter, t]);
+  }, [availableFilterKeys, t]);
 
   return (
     <Combobox

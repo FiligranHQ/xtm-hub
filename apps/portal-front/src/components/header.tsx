@@ -42,6 +42,9 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const router = useRouter();
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
+
+  // Legitimate effect: close the menu on route change.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setOpen(false), [currentPath]);
 
   const canManageUser =
