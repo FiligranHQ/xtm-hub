@@ -28,7 +28,7 @@ export const EditUserService: FunctionComponent<EditUserServiceProps> = ({
 
   useEffect(() => {
     if (!open) setMenuOpen(false);
-  }, [open]);
+  }, [open, setMenuOpen]);
 
   return (
     <SheetWithPreventingDialog

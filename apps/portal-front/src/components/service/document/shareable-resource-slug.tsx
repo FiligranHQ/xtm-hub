@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useContext, useMemo, useState } from 'react';
 
 import {
   BreadcrumbNav,
@@ -58,16 +58,11 @@ const ShareableResourceSlug: React.FunctionComponent<
   const { settings } = useContext(SettingsContext);
 
   const [documentDownloadNumber, setDocumentDownloadNumber] = useState(
-    documentData.download_number
+    documentData.download_number ?? 0
   );
+  const incrementDownloadNumber = () =>
+    setDocumentDownloadNumber((prev) => prev + 1);
 
-  useEffect(() => {
-    setDocumentDownloadNumber(documentData.download_number ?? 0);
-  }, [documentData.download_number]);
-
-  const incrementDownloadNumber = () => {
-    setDocumentDownloadNumber((documentDownloadNumber ?? 0) + 1);
-  };
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 

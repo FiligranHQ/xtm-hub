@@ -77,7 +77,7 @@ const useExternalTab = ({
         window.removeEventListener('beforeunload', beforeUnloadHandler);
       }
     };
-  }, [isTabOpen]);
+  }, [isTabOpen, closeTab, onClosingTab, onMessage, preventUnload]);
 
   return {
     isTabOpen,
