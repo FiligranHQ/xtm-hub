@@ -1,4 +1,3 @@
-import { CloseIcon } from '@filigran/icon';
 import {
   Command,
   CommandInput,
@@ -6,7 +5,6 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  TooltipProvider,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import * as React from 'react';
@@ -44,7 +42,6 @@ interface MultiSelectFormFieldProps<
   onInputChange?: (value: string) => void;
   onRemove?: () => void;
   optionLabel: string;
-  childOptionLabel?: string;
 }
 
 const LogicalMultiSelectFormField = React.forwardRef<
@@ -62,7 +59,6 @@ const LogicalMultiSelectFormField = React.forwardRef<
       onInputChange,
       onRemove,
       optionLabel,
-      childOptionLabel,
       placeholder,
       noResultString = 'No results found',
       ...props
@@ -253,57 +249,49 @@ const LogicalMultiSelectFormField = React.forwardRef<
     };
 
     return (
-      <TooltipProvider delayDuration={0}>
-        <div
-          className="sr-only"
-          aria-hidden="true">
-          <CloseIcon />
-        </div>
-        <Popover
-          open={isPopoverOpen}
-          onOpenChange={setIsPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              ref={ref}
-              {...props}
-              onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-              className="flex h-auto min-h-9 w-full items-center justify-between bg-inherit p-0 hover:bg-hover">
-              <SelectedValuesDisplay
-                groupedSelections={groupedSelections}
-                optionLabel={optionLabel}
-                childOptionLabel={childOptionLabel}
-                placeholder={placeholder}
-                onRemove={onRemove}
+      <Popover
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            ref={ref}
+            {...props}
+            onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+            className="flex h-auto min-h-9 w-full items-center justify-between bg-inherit p-0 hover:bg-hover">
+            <SelectedValuesDisplay
+              groupedSelections={groupedSelections}
+              optionLabel={optionLabel}
+              placeholder={placeholder}
+              onRemove={onRemove}
+            />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[300px] p-0 drop-shadow-sm"
+          align="start"
+          onEscapeKeyDown={() => setIsPopoverOpen(false)}>
+          <Command onChange={handleSearchInputChange}>
+            <CommandInput
+              placeholder="Search..."
+              onKeyDown={handleInputKeyDown}
+            />
+            <CommandList>
+              <OptionsList
+                flatOptions={flatOptions}
+                noResultString={noResultString}
+                isParentFullySelected={isParentFullySelected}
+                isParentPartiallySelected={isParentPartiallySelected}
+                isChildSelected={isChildSelected}
+                toggleParent={toggleParent}
+                toggleChild={toggleChild}
+                onClear={handleClearAll}
+                onClose={() => setIsPopoverOpen(false)}
+                showClear={groupedSelections.length > 0}
               />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-[300px] p-0 drop-shadow-sm"
-            align="start"
-            onEscapeKeyDown={() => setIsPopoverOpen(false)}>
-            <Command onChange={handleSearchInputChange}>
-              <CommandInput
-                placeholder="Search..."
-                onKeyDown={handleInputKeyDown}
-              />
-              <CommandList>
-                <OptionsList
-                  flatOptions={flatOptions}
-                  noResultString={noResultString}
-                  isParentFullySelected={isParentFullySelected}
-                  isParentPartiallySelected={isParentPartiallySelected}
-                  isChildSelected={isChildSelected}
-                  toggleParent={toggleParent}
-                  toggleChild={toggleChild}
-                  onClear={handleClearAll}
-                  onClose={() => setIsPopoverOpen(false)}
-                  showClear={groupedSelections.length > 0}
-                />
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </TooltipProvider>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     );
   }
 );
