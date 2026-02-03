@@ -1,4 +1,4 @@
-import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
+import { doesVersionSatisfy } from '@/utils/versioning';
 import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
 import { useMemo } from 'react';
 
@@ -24,10 +24,10 @@ export const useBuildCompatibilityTranslationKey = ({
 
     const incompatiblePlatforms = platforms.filter(
       (platform) =>
-        !isCompatibleWithSemanticVersion(
-          platform.version,
-          requiredProductVersion
-        )
+        !doesVersionSatisfy({
+          givenVersion: platform.version ?? '0.0.0',
+          requiredVersion: requiredProductVersion,
+        })
     );
 
     const platformToBeUpdated = incompatiblePlatforms
