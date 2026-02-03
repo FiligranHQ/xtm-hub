@@ -22,10 +22,10 @@ const SERVICE_CAPABILITY = {
 const TEST_CAPABILITY = {
   vaultServiceDefId: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
   vaultServiceInstanceId: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
-  adminThalesEmail: 'admin@thales.com',
-  userThalesEmail: 'user@thales.com',
+  adminThalesEmail: 'admin@second-orga.com',
+  userThalesEmail: 'user@second-orga.com',
   thalesOrgaId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
-  organizationName: 'Thales',
+  organizationName: 'SECOND ORGA',
 };
 test.describe('Capabilities', () => {
   let loginPage: LoginPage;

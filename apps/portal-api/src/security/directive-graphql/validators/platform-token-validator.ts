@@ -12,10 +12,11 @@ import {
   loadOrganizationBy,
   organizationDomain,
 } from '../../../modules/organizations/organizations.domain';
-import { serviceContractDomain } from '../../../modules/services/contract/domain';
+import { serviceContractDomain } from '../../../modules/services/contract/service-configuration.domain';
 import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
 import { logApp } from '../../../utils/app-logger.util';
+
 export const PLATFORM_TOKEN_HEADER = 'xtm-hub-platform-token';
 export const PLATFORM_ID_HEADER = 'xtm-hub-platform-id';
 export const PLATFORM_TOKEN_DIRECTIVE_NAME = 'platform_token';

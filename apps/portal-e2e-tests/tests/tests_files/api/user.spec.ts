@@ -22,7 +22,7 @@ test.describe('User API', () => {
     test('should prevent user to update another one when he does not have MANAGE_ACCESS', async () => {
       const agent = await TestAgent.init(THALES_USER.EMAIL);
 
-      await agent.assertUserHasCapabilities('Thales', {
+      await agent.assertUserHasCapabilities('SECOND ORGA', {
         disallowedCapabilities: ['ADMINISTRATE_ORGANIZATION', 'MANAGE_ACCESS'],
       });
 
@@ -41,7 +41,7 @@ test.describe('User API', () => {
     test('should allow user to update another one when he has ADMINISTRATE_ORGANIZATION', async () => {
       const agent = await TestAgent.init(THALES_ADMIN_USER.EMAIL);
 
-      await agent.assertUserHasCapabilities('Thales', {
+      await agent.assertUserHasCapabilities('SECOND ORGA', {
         requiredCapability: 'ADMINISTRATE_ORGANIZATION',
       });
 

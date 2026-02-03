@@ -54,7 +54,7 @@ import {
   loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
-import { serviceContractDomain } from '../contract/domain';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import {

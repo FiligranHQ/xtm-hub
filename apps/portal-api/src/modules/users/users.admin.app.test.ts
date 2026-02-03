@@ -2,9 +2,8 @@ import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  FILIGRAN_ORGA_ID,
-  requestContextThalesUser,
-  THALES_ORGA_ID,
+  TEST_ORGANIZATIONS,
+  requestContextAdminSecondOrga,
 } from '../../../tests/tests.const';
 import { FilterKey } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
@@ -29,25 +28,29 @@ describe('Users admin app', () => {
       );
       const userList = [
         {
-          email: 'testOne@thales.com',
+          email: 'testOne@second-orga.com',
           first_name: 'test',
           last_name: 'one',
           picture: null,
         },
         {
-          email: 'testTwo@thales.com',
+          email: 'testTwo@second-orga.com',
           first_name: 'test',
           last_name: 'two',
           picture: null,
         },
       ];
-      const thalesOrga = await loadOrganizationBy({ id: THALES_ORGA_ID });
+      const secondOrga = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
 
       createdUsers = await Promise.all(
-        userList.map((user) => createNewUserWithPendingOrga(user, thalesOrga))
+        userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
       );
 
-      const filigranOrga = await loadOrganizationBy({ id: FILIGRAN_ORGA_ID });
+      const filigranOrga = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
@@ -68,11 +71,11 @@ describe('Users admin app', () => {
     });
 
     it('should throw if user is not allowed on orga', async () => {
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
 
       const call = usersAdminApp.bulkAcceptPendingUserInOrganization(
-        FILIGRAN_ORGA_ID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
         [userToRemove!.id],
         undefined,
         [],
@@ -83,10 +86,10 @@ describe('Users admin app', () => {
       );
     });
     it('should accept users by id', async () => {
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [userToRemove!.id],
         undefined,
         [],
@@ -95,21 +98,26 @@ describe('Users admin app', () => {
 
       expect(mockAcceptPendingUser).toHaveBeenCalledExactlyOnceWith({
         user_id: userToRemove!.id,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         orgCapabilities: [],
       });
     });
 
     it('should accept users by filter', async () => {
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
         [
           {
             key: FilterKey.OrganizationId,
-            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+            value: [
+              toGlobalId(
+                'Organization',
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+              ),
+            ],
           },
         ],
         []
@@ -117,27 +125,32 @@ describe('Users admin app', () => {
 
       expect(mockAcceptPendingUser).toHaveBeenCalledWith({
         user_id: createdUsers[0]!.id,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         orgCapabilities: [],
       });
       expect(mockAcceptPendingUser).toHaveBeenCalledWith({
         user_id: createdUsers[1]!.id,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         orgCapabilities: [],
       });
     });
     it('should accept users by filters and excludedIds', async () => {
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const excludedUser = createdUsers[0];
 
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
         [
           {
             key: FilterKey.OrganizationId,
-            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+            value: [
+              toGlobalId(
+                'Organization',
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+              ),
+            ],
           },
         ],
         [excludedUser!.id]
@@ -145,18 +158,18 @@ describe('Users admin app', () => {
 
       expect(mockAcceptPendingUser).toHaveBeenCalledExactlyOnceWith({
         user_id: createdUsers[1]!.id,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         orgCapabilities: [],
       });
     });
     it('should accept users by searchTerm', async () => {
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const acceptedUser = createdUsers.find(
-        (user) => user.email === 'testOne@thales.com'
+        (user) => user.email === 'testOne@second-orga.com'
       );
 
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'One',
         [],
@@ -165,22 +178,22 @@ describe('Users admin app', () => {
 
       expect(mockAcceptPendingUser).toHaveBeenCalledExactlyOnceWith({
         user_id: acceptedUser!.id,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         orgCapabilities: [],
       });
     });
 
     it('should accept users by searchTerm and excludedIds', async () => {
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const acceptedUser = createdUsers.find(
-        (user) => user.email === 'testTwo@thales.com'
+        (user) => user.email === 'testTwo@second-orga.com'
       );
       const nonAcceptedUser = createdUsers.find(
-        (user) => user.email === 'testOne@thales.com'
+        (user) => user.email === 'testOne@second-orga.com'
       );
 
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
         [],
@@ -189,27 +202,32 @@ describe('Users admin app', () => {
 
       expect(mockAcceptPendingUser).toHaveBeenCalledExactlyOnceWith({
         user_id: acceptedUser!.id,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         orgCapabilities: [],
       });
     });
 
     it('should accept users by filter, searchTerm and excludedIds', async () => {
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const acceptedUser = createdUsers.find(
-        (user) => user.email === 'testTwo@thales.com'
+        (user) => user.email === 'testTwo@second-orga.com'
       );
       const nonAcceptedUser = createdUsers.find(
-        (user) => user.email === 'testOne@thales.com'
+        (user) => user.email === 'testOne@second-orga.com'
       );
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
         [
           {
             key: FilterKey.OrganizationId,
-            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+            value: [
+              toGlobalId(
+                'Organization',
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+              ),
+            ],
           },
         ],
         [nonAcceptedUser!.id]
@@ -217,7 +235,7 @@ describe('Users admin app', () => {
 
       expect(mockAcceptPendingUser).toHaveBeenCalledExactlyOnceWith({
         user_id: acceptedUser!.id,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         orgCapabilities: [],
       });
     });
@@ -227,7 +245,7 @@ describe('Users admin app', () => {
       );
 
       await usersAdminApp.bulkAcceptPendingUserInOrganization(
-        FILIGRAN_ORGA_ID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
         [],
         undefined,
         [],
@@ -236,7 +254,7 @@ describe('Users admin app', () => {
 
       expect(mockAcceptPendingUser).toHaveBeenCalledExactlyOnceWith({
         user_id: acceptedUser!.id,
-        organization_id: FILIGRAN_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         orgCapabilities: [],
       });
     });
@@ -245,7 +263,9 @@ describe('Users admin app', () => {
     let createdUsers: User[];
     beforeEach(async () => {
       createdUsers = [];
-      const filigranOrga = await loadOrganizationBy({ id: FILIGRAN_ORGA_ID });
+      const filigranOrga = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligranRemoveBulk@filigran.io',
@@ -264,8 +284,10 @@ describe('Users admin app', () => {
       );
     });
     it('should throw if user is not allowed on orga', async () => {
-      requestContext.set(requestContextThalesUser);
-      const filigranOrga = await loadOrganizationBy({ id: FILIGRAN_ORGA_ID });
+      requestContext.set(requestContextAdminSecondOrga);
+      const filigranOrga = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
@@ -277,7 +299,7 @@ describe('Users admin app', () => {
       );
 
       const call = usersAdminApp.bulkRemovePendingUserFromOrganization(
-        FILIGRAN_ORGA_ID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
         [filigranUser!.id],
         undefined,
         [],
