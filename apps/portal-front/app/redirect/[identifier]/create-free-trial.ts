@@ -18,7 +18,10 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
       return NextResponse.redirect(redirectionUrl);
     }
 
-    const freeTrialUrl = new URL(`/app/service/free-trial`, baseUrlFront);
+    const freeTrialUrl = new URL(
+      `/app/service/opencti-free-trial`,
+      baseUrlFront
+    );
 
     const isAdmin = user.capabilities.some(
       ({ name }) => name === PortalCapabilityEnum.BYPASS
