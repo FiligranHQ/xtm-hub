@@ -267,15 +267,6 @@ type IntegrationConnection {
 }
 
 type Query {
-  integrations(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    logicalFilters: LogicalFilterInput
-    serviceInstanceId: String
-  ): IntegrationConnection! @auth
   integration(id: ID, serviceInstanceId: ID): Integration @auth
   publicIntegrations(
     slug: String!

@@ -46,45 +46,6 @@ export const openaevScenariosItem = graphql`
   }
 `;
 
-export const openaevScenariosFragment = graphql`
-  fragment openaevScenariosList on Query
-  @refetchable(queryName: "OpenAEVScenariosPaginationQuery") {
-    openAEVScenarios(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      searchTerm: $searchTerm
-      logicalFilters: $logicalFilters
-      serviceInstanceId: $serviceInstanceId
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          id
-          active
-          ...openaevScenariosItem_fragment
-        }
-      }
-    }
-  }
-`;
-
-export const OpenaevScenariosListQuery = graphql`
-  query openaevScenariosQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: DocumentOrdering!
-    $orderMode: OrderingMode!
-    $logicalFilters: LogicalFilterInput
-    $searchTerm: String
-    $serviceInstanceId: String
-  ) {
-    ...openaevScenariosList
-  }
-`;
-
 export const OpenaevScenarioQuery = graphql`
   query openaevScenarioQuery($documentId: ID, $serviceInstanceId: ID) {
     openAEVScenario(id: $documentId, serviceInstanceId: $serviceInstanceId) {

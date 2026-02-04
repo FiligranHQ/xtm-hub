@@ -71,7 +71,7 @@ const OneClickDeploy = ({
               platform_identifier: platformIdentifier,
               service_instance_id: documentData.service_instance!.id,
               resource_id: documentData.id,
-              resource_title: documentData.name,
+              resource_title: documentData.name ?? '',
               platform_service_instance_id: platform!.id,
             },
           },

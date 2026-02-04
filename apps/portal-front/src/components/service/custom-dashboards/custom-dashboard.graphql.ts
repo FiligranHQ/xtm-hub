@@ -47,43 +47,6 @@ export const customDashboardsItem = graphql`
   }
 `;
 
-export const customDashboardsFragment = graphql`
-  fragment customDashboardsList on Query
-  @refetchable(queryName: "CustomDashboardsPaginationQuery") {
-    customDashboards(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      searchTerm: $searchTerm
-      logicalFilters: $logicalFilters
-      serviceInstanceId: $serviceInstanceId
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          ...customDashboardsItem_fragment
-        }
-      }
-    }
-  }
-`;
-
-export const CustomDashboardsListQuery = graphql`
-  query customDashboardsQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: DocumentOrdering!
-    $orderMode: OrderingMode!
-    $logicalFilters: LogicalFilterInput
-    $searchTerm: String
-    $serviceInstanceId: String
-  ) {
-    ...customDashboardsList
-  }
-`;
-
 export const CustomDashboardQuery = graphql`
   query customDashboardQuery($documentId: ID, $serviceInstanceId: ID) {
     customDashboard(id: $documentId, serviceInstanceId: $serviceInstanceId) {

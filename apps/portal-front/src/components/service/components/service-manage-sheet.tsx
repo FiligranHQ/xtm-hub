@@ -96,7 +96,7 @@ export const ServiceManageSheet = ({
               ) : undefined
             }
             title={t(`${translationKey}.UpdateService`, {
-              name: document.name,
+              name: document.name ?? '',
             })}>
             {
               <ServiceForm

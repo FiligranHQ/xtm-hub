@@ -5,7 +5,7 @@ import { PaginationControls } from '@/components/ui/pagination/pagination-contro
 import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
-import { integrationsQuery$variables } from '@generated/integrationsQuery.graphql';
+import { documentsQuery$variables } from '@generated/documentsQuery.graphql';
 import { seoIntegrationsItemFragment$key } from '@generated/seoIntegrationsItemFragment.graphql';
 import { seoIntegrationsList$key } from '@generated/seoIntegrationsList.graphql';
 import { seoIntegrationsQuery } from '@generated/seoIntegrationsQuery.graphql';
@@ -70,7 +70,7 @@ const PublicIntegrationsList: React.FC<Props> = ({
     pageSize,
   });
 
-  const handleRefetchData = (args?: Partial<integrationsQuery$variables>) => {
+  const handleRefetchData = (args?: Partial<documentsQuery$variables>) => {
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),

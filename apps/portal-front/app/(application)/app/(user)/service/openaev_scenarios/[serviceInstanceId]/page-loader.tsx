@@ -4,12 +4,12 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
+import { DocumentsListQuery } from '@/components/service/document/document.graphql';
 import OpenaevScenariosList from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenarios-list';
-import { OpenaevScenariosListQuery } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 import { Skeleton } from '@filigran/ui';
+import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
-import { openaevScenariosQuery } from '@generated/openaevScenariosQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -19,9 +19,8 @@ interface PageLoaderProps {
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
-  const [queryRef, loadQuery] = useQueryLoader<openaevScenariosQuery>(
-    OpenaevScenariosListQuery
-  );
+  const [queryRef, loadQuery] =
+    useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, search, labels, setSearch } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenAEVScenarios
   );

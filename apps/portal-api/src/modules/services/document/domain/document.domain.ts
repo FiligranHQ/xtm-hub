@@ -125,7 +125,7 @@ export const DocumentDomain = {
     return DocumentDomain.loadDocuments<T>(
       {
         ...input,
-        parentsOnly: true,
+        parentsOnly: input.parentsOnly ?? true,
         searchTerm: input.searchTerm,
       },
       {

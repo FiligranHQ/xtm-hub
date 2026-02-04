@@ -1,8 +1,10 @@
 import {
   CreateDocumentInput,
+  DocumentConnection,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
+  QueryDocumentsArgs,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
@@ -348,6 +350,34 @@ export const DocumentApp = {
     await DocumentDomain.deactivateDocuments([documentId, ...childIds]);
 
     return documentFromDb as T;
+  },
+
+  loadDocuments: async (input: QueryDocumentsArgs) => {
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        extractId<ServiceInstanceId>(input.serviceInstanceId)
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const serviceDefinitionIdentifier =
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+      serviceDefinitionIdentifier
+    );
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinitionIdentifier
+      );
+
+    return DocumentDomain.loadParentDocumentsByServiceInstance<DocumentConnection>(
+      documentType,
+      input,
+      metadataKeys
+    );
   },
 };
 
