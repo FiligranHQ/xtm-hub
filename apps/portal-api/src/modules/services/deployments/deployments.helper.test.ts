@@ -102,6 +102,10 @@ describe('isPlatformStateTransitionValid', () => {
       DeploymentRequestPlatformState.Removing,
       DeploymentRequestPlatformState.Removed,
     ],
+    [
+      DeploymentRequestPlatformState.Removed,
+      DeploymentRequestPlatformState.Provisioning,
+    ],
   ] as const;
 
   it.each(validTransitions)(
