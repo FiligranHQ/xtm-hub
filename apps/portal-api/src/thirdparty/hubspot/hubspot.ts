@@ -104,7 +104,9 @@ export const hubspotReachOutSalesHook = async (
           platformToken
         );
       if (!deploymentRequest) {
-        throw new Error(`No deployment request found for platform token: ${platformToken}`);
+        throw new Error(
+          `No deployment request found for platform token: ${platformToken}`
+        );
       }
     } else {
       throw new Error('Either userId or platformToken must be provided');
