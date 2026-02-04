@@ -1,7 +1,4 @@
-import {
-  CustomDashboardConnection,
-  Resolvers,
-} from '../../../__generated__/resolvers-types';
+import { Resolvers } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
@@ -48,13 +45,6 @@ const resolvers: Resolvers = {
     },
     seoCustomDashboardBySlug: async (_, { slug }) => {
       return CustomDashboardsApp.loadSeoCustomDashboard(slug);
-    },
-    customDashboards: async (_, input) => {
-      return DocumentDomain.loadParentDocumentsByServiceInstance<CustomDashboardConnection>(
-        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-        input,
-        CUSTOM_DASHBOARD_METADATA_KEYS
-      );
     },
     customDashboard: async (_, { id }) =>
       CustomDashboardsApp.loadCustomDashboard(extractId<DocumentId>(id)),

@@ -95,43 +95,6 @@ export const connectorsItem = graphql`
   }
 `;
 
-export const integrationsFragment = graphql`
-  fragment integrationsList on Query
-  @refetchable(queryName: "IntegrationsPaginationQuery") {
-    integrations(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      searchTerm: $searchTerm
-      logicalFilters: $logicalFilters
-      serviceInstanceId: $serviceInstanceId
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          ...integrationsItem_fragment
-        }
-      }
-    }
-  }
-`;
-
-export const IntegrationsListQuery = graphql`
-  query integrationsQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: DocumentOrdering!
-    $orderMode: OrderingMode!
-    $logicalFilters: LogicalFilterInput
-    $searchTerm: String
-    $serviceInstanceId: String
-  ) {
-    ...integrationsList
-  }
-`;
-
 export const IntegrationQuery = graphql`
   query integrationQuery($documentId: ID, $serviceInstanceId: ID) {
     integration(id: $documentId, serviceInstanceId: $serviceInstanceId) {

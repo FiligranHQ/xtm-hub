@@ -38,14 +38,5 @@ type OpenAEVScenarioConnection {
 type Query {
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
-  openAEVScenarios(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    logicalFilters: LogicalFilterInput
-    serviceInstanceId: String
-  ): OpenAEVScenarioConnection! @auth
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario @auth
 }

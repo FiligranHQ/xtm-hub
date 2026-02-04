@@ -2,6 +2,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformState,
+  PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
@@ -127,12 +128,16 @@ export const isPlatformStateTransitionValid = (
   );
 };
 
-export const assertFreeTrialsLimit = async (organizationId: OrganizationId) => {
+export const assertFreeTrialsLimit = async (
+  organizationId: OrganizationId,
+  platformIdentifier: PlatformIdentifier
+) => {
   const freeTrialsRequests =
     await DeploymentRequestDomain.loadDeploymentRequestBy({
       organization_requester_id: organizationId,
       type: DeploymentRequestDeploymentType.Trial,
       counts_in_orga_quota: true,
+      platform_identifier: platformIdentifier,
     });
   if (freeTrialsRequests) {
     throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);

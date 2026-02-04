@@ -38,14 +38,5 @@ type CustomDashboardConnection {
 type Query {
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
   seoCustomDashboardBySlug(slug: String): CustomDashboard
-  customDashboards(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    logicalFilters: LogicalFilterInput
-    serviceInstanceId: String
-  ): CustomDashboardConnection! @auth
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
 }

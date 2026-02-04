@@ -77,10 +77,10 @@ export const hubspotReachOutSalesHook = async (
     const { user, portalContext } = requestContext.require();
     const platformToken = portalContext?.req.header('XTM-Hub-Platform-Token');
 
-    let deploymentRequest: FullyQualifiedDeploymentRequest;
+    let deploymentRequest: FullyQualifiedDeploymentRequest | undefined;
     if (user?.id) {
       deploymentRequest =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
           PlatformIdentifier.Opencti,
           user.id
         );
@@ -100,9 +100,12 @@ export const hubspotReachOutSalesHook = async (
       }
     } else if (platformToken) {
       deploymentRequest =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
           platformToken
         );
+      if (!deploymentRequest) {
+        throw new Error(`No deployment request found for platform token: ${platformToken}`);
+      }
     } else {
       throw new Error('Either userId or platformToken must be provided');
     }

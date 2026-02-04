@@ -1,23 +1,22 @@
-import {
-  openaevScenariosFragment,
-  openaevScenariosItem,
-  OpenaevScenariosListQuery,
-} from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
-
 import { AppServiceContext } from '@/components/service/components/service-context';
 import ServiceList from '@/components/service/components/service-list';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { ServiceListLocalStorageKey } from '@/components/service/components/use-service-list-local-storage';
+import {
+  documentItem,
+  documentsFragment,
+  DocumentsListQuery,
+} from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
-  openaevScenariosItem_fragment$data,
-  openaevScenariosItem_fragment$key,
-} from '@generated/openaevScenariosItem_fragment.graphql';
-import { openaevScenariosList$key } from '@generated/openaevScenariosList.graphql';
-import { openaevScenariosQuery } from '@generated/openaevScenariosQuery.graphql';
+  documentItem_fragment$data,
+  documentItem_fragment$key,
+} from '@generated/documentItem_fragment.graphql';
+import { documentsList$key } from '@generated/documentsList.graphql';
+import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   PreloadedQuery,
@@ -26,7 +25,7 @@ import {
 } from 'react-relay';
 
 interface OpenAEVScenariosListProps {
-  queryRef: PreloadedQuery<openaevScenariosQuery>;
+  queryRef: PreloadedQuery<documentsQuery>;
   serviceInstance: serviceInstance_fragment$data;
   search: string;
   onSearchChange: (v: string) => void;
@@ -38,22 +37,22 @@ const OpenaevScenariosList = ({
   search,
   onSearchChange,
 }: OpenAEVScenariosListProps) => {
-  const queryData = usePreloadedQuery<openaevScenariosQuery>(
-    OpenaevScenariosListQuery,
+  const queryData = usePreloadedQuery<documentsQuery>(
+    DocumentsListQuery,
     queryRef
   );
 
-  const [data] = useRefetchableFragment<
-    openaevScenariosQuery,
-    openaevScenariosList$key
-  >(openaevScenariosFragment, queryData);
+  const [data] = useRefetchableFragment<documentsQuery, documentsList$key>(
+    documentsFragment,
+    queryData
+  );
 
   const [active, draft] = useActiveAndDraftSplit<
-    openaevScenariosItem_fragment$data,
-    openaevScenariosItem_fragment$key
-  >(data?.openAEVScenarios.edges, openaevScenariosItem);
+    documentItem_fragment$data,
+    documentItem_fragment$key
+  >(data?.documents.edges, documentItem);
 
-  const connectionId = data?.openAEVScenarios.__id;
+  const connectionId = data?.documents.__id;
 
   const context = useDocumentContext({
     serviceInstance,

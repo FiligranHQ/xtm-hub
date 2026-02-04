@@ -525,8 +525,8 @@
           "Placeholder": "Subtype..."
         },
         "Type": {
-          "Label": "Type",
-          "Placeholder": "Type..."
+          "Label": "Integration type",
+          "Placeholder": "Integration type..."
         },
         "ProductVersion": {
           "Label": "Registered platforms",
