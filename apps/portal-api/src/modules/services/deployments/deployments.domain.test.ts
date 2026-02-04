@@ -105,7 +105,7 @@ describe('DeploymentRequestDomain', () => {
     });
   });
 
-  describe('loadProvisionedTrialDeploymentRequestByPlatformIdentifier', () => {
+  describe('loadTrialDeploymentRequestByPlatformIdentifierAndUserId', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await deleteServiceInstanceBy({});
@@ -124,7 +124,7 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
           platformIdentifier,
           userId
         );
@@ -147,7 +147,7 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
           platformIdentifier,
           userId
         );
@@ -157,11 +157,11 @@ describe('DeploymentRequestDomain', () => {
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
     });
 
-    it('should not return deployment request when hub_status is Pending', async () => {
+    it('should return deployment request when hub_status is Pending', async () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = ADMIN_UUID as UserId;
 
-      await insertOpenCtiDeploymentRequest({
+      const deployment = await insertOpenCtiDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Pending,
         type: DeploymentRequestDeploymentType.Trial,
@@ -169,12 +169,14 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
           platformIdentifier,
           userId
         );
 
-      expect(result).toBeUndefined();
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(deployment!.id);
+      expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Pending);
     });
 
     it('should not return deployment request when user is not member of the organization', async () => {
@@ -190,7 +192,7 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
           platformIdentifier,
           userNotInOrganization
         );
@@ -210,7 +212,7 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
           platformIdentifier,
           userId
         );
@@ -219,7 +221,7 @@ describe('DeploymentRequestDomain', () => {
     });
   });
 
-  describe('loadProvisionedTrialDeploymentRequestByPlatformToken', () => {
+  describe('loadTrialDeploymentRequestByPlatformToken', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await deleteServiceInstanceBy({});
@@ -236,7 +238,7 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
           platformToken
         );
 
@@ -256,7 +258,7 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
           platformToken
         );
 
@@ -265,21 +267,23 @@ describe('DeploymentRequestDomain', () => {
       expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Expired);
     });
 
-    it('should not return deployment request when hub_status is Pending', async () => {
+    it('should return deployment request when hub_status is Pending', async () => {
       const platformToken = uuidv4();
 
-      await insertOpenCtiDeploymentRequest({
+      const deployment = await insertOpenCtiDeploymentRequest({
         platform_token: platformToken,
         hub_status: DeploymentRequestHubStatus.Pending,
         type: DeploymentRequestDeploymentType.Trial,
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
           platformToken
         );
 
-      expect(result).toBeUndefined();
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(deployment!.id);
+      expect(result?.hub_status).toBe(DeploymentRequestHubStatus.Pending);
     });
 
     it('should return undefined when platform_token does not exist', async () => {
@@ -293,7 +297,7 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
           nonExistentToken
         );
 

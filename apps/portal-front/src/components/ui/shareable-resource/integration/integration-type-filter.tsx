@@ -61,9 +61,6 @@ export const IntegrationTypeFilter: React.FC = () => {
       noResultString={t('Utils.NotFound')}
       onValueChange={setIntegrationTypes}
       optionLabel={t('Service.OpenctiIntegrations.Filter.Type.Label')}
-      childOptionLabel={t(
-        'Service.OpenctiIntegrations.Filter.IntegrationSubType.Label'
-      )}
       onRemove={removeIntegrationFilter}
     />
   );

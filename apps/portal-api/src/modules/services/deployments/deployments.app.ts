@@ -84,7 +84,10 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
 
-    await assertFreeTrialsLimit(user.selected_organization_id);
+    await assertFreeTrialsLimit(
+      user.selected_organization_id,
+      input.platform_identifier
+    );
 
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(

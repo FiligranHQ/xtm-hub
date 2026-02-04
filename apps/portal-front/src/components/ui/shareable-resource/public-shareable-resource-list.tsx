@@ -22,10 +22,6 @@ export const PublicShareableResourceList: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
 
-  if (documents.length === 0) {
-    return <div className="my-4 text-center">No document found</div>;
-  }
-
   const documentsByIntegrationType = useMemo(() => {
     return documents.reduce<Record<string, PublicShareableResource[]>>(
       (acc, resource) => {
@@ -44,6 +40,10 @@ export const PublicShareableResourceList: React.FC<Props> = ({
       {}
     );
   }, [documents]);
+
+  if (documents.length === 0) {
+    return <div className="my-4 text-center">No document found</div>;
+  }
 
   return (
     <>

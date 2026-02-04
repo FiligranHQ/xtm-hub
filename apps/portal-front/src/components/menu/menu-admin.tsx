@@ -61,7 +61,7 @@ const ClosedMenuAdmin = () => {
   const t = useTranslations();
   const [adminOpened, setAdminOpened] = useDebounceValue(false, 100);
   const currentPath = usePathname();
-  useEffect(() => setAdminOpened(false), [currentPath]);
+  useEffect(() => setAdminOpened(false), [currentPath, setAdminOpened]);
   const handleMouseEnter = () => setAdminOpened(true);
   const handleMouseLeave = () => setAdminOpened(false);
   return (
