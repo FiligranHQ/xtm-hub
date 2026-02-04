@@ -2,10 +2,7 @@ import GuardCapacityComponent from '@/components/admin-guard';
 import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
 import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/reach-sales-button';
 import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
-import {
-  StartTrialButton,
-  StartTrialButtonVariant,
-} from '@/components/service/trial-instances/start-trial-button';
+import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
@@ -51,7 +48,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
                 OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
               ]}>
               <StartTrialButton
-                variant={StartTrialButtonVariant.Gradient}
+                variant={'gradient'}
                 openForm={openTrialForm}
               />
             </GuardCapacityComponent>

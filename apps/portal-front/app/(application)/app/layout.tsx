@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FunctionComponent } from 'react';
 
 import '@filigran/ui/theme.css';
 import '../../../styles/globals.css';
@@ -20,7 +21,6 @@ import meLoaderQueryNode, {
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
