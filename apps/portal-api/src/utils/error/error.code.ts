@@ -90,6 +90,7 @@ export enum NotFoundErrorCode {
   ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
   DeploymentRequestNotFound = 'DEPLOYMENT_REQUEST_NOT_FOUND',
   DeploymentRequestQuotaNotFound = 'DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND',
+  DocumentNotFound = 'DOCUMENT_NOT_FOUND',
 }
 
 export const ErrorCode = {

@@ -78,6 +78,7 @@
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "DOCUMENT_CREATE_ERROR": "Une erreur s'est produite lors de la création de la ressource.",
       "DOCUMENT_MISSING_METADATA": "Il manque des métadonnées au document.",
+      "DOCUMENT_NOT_FOUND": "La ressource n'a pas été trouvée.",
       "DOCUMENT_UNIQUE_SLUG_ERROR": "Le nom de la ressource est déjà utilisé.",
       "DOCUMENT_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de la ressource.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
