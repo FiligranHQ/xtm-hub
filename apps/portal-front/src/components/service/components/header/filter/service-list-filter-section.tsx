@@ -26,8 +26,6 @@ export const ServiceListFilterSection: React.FC<Props> = ({ filters }) => {
   }, [selectedFilters, filters]);
 
   return (
-    <div className="flex justify-start gap-x-m gap-y-m flex-wrap">
-      {filtersList}
-    </div>
+    <div className="flex justify-start gap-s flex-wrap">{filtersList}</div>
   );
 };
