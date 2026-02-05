@@ -52,6 +52,7 @@ const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
       <BreadcrumbNav value={breadcrumbs} />
       {isTrial && (
         <TrialsHeader
+          platformName="OpenCTI"
           actions={
             <>
               <SlackSupportButton />

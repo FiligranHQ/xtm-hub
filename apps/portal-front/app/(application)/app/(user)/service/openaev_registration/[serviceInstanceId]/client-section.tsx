@@ -52,6 +52,7 @@ const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
       <BreadcrumbNav value={breadcrumbs} />
       {isTrial && (
         <TrialsHeader
+          platformName="OpenAEV"
           actions={
             <>
               <SlackSupportButton />

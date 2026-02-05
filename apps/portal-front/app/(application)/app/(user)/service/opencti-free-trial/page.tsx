@@ -37,6 +37,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
       <BreadcrumbNav value={breadcrumbs} />
 
       <TrialsHeader
+        platformName="OpenCTI"
         actions={
           <>
             <SlackSupportButton />

@@ -26,6 +26,7 @@ const Page: React.FC = async () => {
       <BreadcrumbNav value={breadcrumbs} />
       <RelayProvider>
         <TrialsHeader
+          platformName="OpenCTI"
           actions={
             <GradientButton>
               <Link href="/redirect/create-free-trial">
