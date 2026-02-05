@@ -48,6 +48,8 @@ export async function GET(
       return redirectToFreeTrial(request);
     case 'create-free-trial':
       return redirectToCreateFreeTrial(request);
+    case 'create-openaev-free-trial':
+      return redirectToCreateOpenAEVFreeTrial(request);
   }
   return redirectToResource(awaitedParams, request);
 }

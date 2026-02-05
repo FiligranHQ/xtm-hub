@@ -47,7 +47,8 @@ const Page: React.FC = async () => {
           platformName="OpenAEV"
           actions={
             <GradientButton>
-              <Link href="/redirect/create-free-trial">
+              <Link href="/redirect/create-openaev-free-trial">
+                {' '}
                 {t('Service.Trials.StartTrial')}
               </Link>
             </GradientButton>
