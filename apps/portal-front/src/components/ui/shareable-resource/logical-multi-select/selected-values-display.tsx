@@ -31,7 +31,7 @@ export const AndSeparator: FunctionComponent<{ className?: string }> = ({
   return (
     <span
       className={cn(
-        'flex items-center p-s text-xs bg-gray-400 text-foreground rounded',
+        'text-sm h-9 leading-9 px-s bg-gray-700/60 text-foreground rounded',
         className
       )}>
       {t('Utils.And')}
@@ -44,7 +44,11 @@ export const FilterLabel: FunctionComponent<{
   className?: string;
 }> = ({ children, className }) => {
   return (
-    <span className={cn('text-foreground whitespace-nowrap', className)}>
+    <span
+      className={cn(
+        'inline-block text-foreground whitespace-nowrap',
+        className
+      )}>
       {children}
     </span>
   );
@@ -56,7 +60,7 @@ export const OrSeparator: FunctionComponent<{ className?: string }> = ({
   return (
     <span
       className={cn(
-        'flex items-center p-s text-xs bg-gray-400 text-foreground rounded',
+        'h-9 leading-9 px-s mx-s bg-gray-50/30 text-foreground inline-block',
         className
       )}>
       {t('Utils.Or')}
@@ -68,11 +72,7 @@ export const SelectionChip: FunctionComponent<{
   children: ReactNode;
   className?: string;
 }> = ({ children, className }) => (
-  <div
-    className={cn(
-      'inline-flex items-center gap-xs py-0 text-sm rounded',
-      className
-    )}>
+  <div className={cn('text-sm inline-block rounded max-w-[400px] ', className)}>
     {children}
   </div>
 );
@@ -84,7 +84,7 @@ export const ChildrenLabels: FunctionComponent<{
     {items.map((child, index) => (
       <Fragment key={child.value}>
         {index > 0 && <OrSeparator />}
-        <FilterLabel>{child.label}</FilterLabel>
+        {child.label}
       </Fragment>
     ))}
   </>
@@ -117,16 +117,14 @@ export const SelectedValuesDisplay: FunctionComponent<
 > = ({ groupedSelections, optionLabel, placeholder, onRemove }) => {
   if (groupedSelections.length === 0) {
     return (
-      <div className="flex">
-        <div className="flex items-center justify-between border rounded">
-          <span
-            className="mx-3 text-sm text-foreground normal-case"
-            role="textbox"
-            aria-readonly="true">
-            {placeholder}
-          </span>
-          <RemoveFilterButton onRemove={onRemove} />
-        </div>
+      <div className="h-9 flex items-center justify-between border rounded">
+        <span
+          className="mx-3 text-sm text-foreground normal-case"
+          role="textbox"
+          aria-readonly="true">
+          {placeholder}
+        </span>
+        <RemoveFilterButton onRemove={onRemove} />
       </div>
     );
   }
@@ -141,27 +139,24 @@ export const SelectedValuesDisplay: FunctionComponent<
           />
         </TooltipContent>
         <TooltipTrigger
-          className="w-full"
           style={{ cursor: 'unset' }}
           asChild>
-          <div className="flex bg-gray-700/60 hover:bg-hover rounded">
-            <div className="flex items-center truncate max-w-[400px]">
-              <SelectionChip>
-                <FilterLabel className="pl-s py-s font-semibold">
-                  {optionLabel} =
-                </FilterLabel>
-                {groupedSelections.map((group, index) => (
-                  <Fragment key={group.parentValue}>
-                    {index > 0 && <OrSeparator />}
-                    {group.children.length > 0 ? (
-                      <ChildrenLabels items={group.children} />
-                    ) : (
-                      <FilterLabel>{group.parentLabel}</FilterLabel>
-                    )}
-                  </Fragment>
-                ))}
-              </SelectionChip>
-            </div>
+          <div className="flex items-center bg-gray-700/60 text-foreground hover:bg-hover rounded">
+            <SelectionChip className="truncate">
+              <FilterLabel className="pl-s py-s mr-s font-semibold">
+                {optionLabel} =
+              </FilterLabel>
+              {groupedSelections.map((group, index) => (
+                <Fragment key={group.parentValue}>
+                  {index > 0 && <OrSeparator />}
+                  {group.children.length > 0 ? (
+                    <ChildrenLabels items={group.children} />
+                  ) : (
+                    <>{group.parentLabel}</>
+                  )}
+                </Fragment>
+              ))}
+            </SelectionChip>
             <RemoveFilterButton onRemove={onRemove} />
           </div>
         </TooltipTrigger>

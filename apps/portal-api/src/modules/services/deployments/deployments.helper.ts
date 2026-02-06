@@ -106,6 +106,10 @@ const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
     from: DeploymentRequestPlatformState.Removing,
     to: DeploymentRequestPlatformState.Removed,
   },
+  {
+    from: DeploymentRequestPlatformState.Removed,
+    to: DeploymentRequestPlatformState.Provisioning,
+  },
 ];
 
 export const isHubStatusTransitionValid = (

@@ -335,6 +335,10 @@ export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
     slug,
     include_metadata
   );
+  if (!document) {
+    throw new Error(ErrorCode.DocumentNotFound);
+  }
+
   return updateDocumentWithCounters(document);
 };
 
