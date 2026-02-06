@@ -1,7 +1,6 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { NextRequest } from 'next/server';
 import { redirectToCreateFreeTrial } from './create-free-trial';
-import { redirectToCreateOpenAEVFreeTrial } from './create-openaev-free-trial';
 import { redirectToFreeTrial } from './free-trial';
 import { redirectToRegistration } from './registration';
 import { redirectToResource } from './resource';
@@ -48,9 +47,9 @@ export async function GET(
     case 'free-trial':
       return redirectToFreeTrial(request);
     case 'create-free-trial':
-      return redirectToCreateFreeTrial(request);
+      return redirectToCreateFreeTrial(request, PlatformIdentifierEnum.OPENCTI);
     case 'create-openaev-free-trial':
-      return redirectToCreateOpenAEVFreeTrial(request);
+      return redirectToCreateFreeTrial(request, PlatformIdentifierEnum.OPENAEV);
   }
   return redirectToResource(awaitedParams, request);
 }
