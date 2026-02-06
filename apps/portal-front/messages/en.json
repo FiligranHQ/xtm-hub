@@ -215,7 +215,8 @@
     "Settings": "Settings",
     "SettingsLabel": "Settings menu",
     "Users": "Users",
-    "Trials": "Trials dashboard"
+    "OpenCTITrials": "OpenCTI Trials",
+    "OpenAEVTrials": "OpenAEV Trials"
   },
   "MenuUser": {
     "Profile": "Profile",

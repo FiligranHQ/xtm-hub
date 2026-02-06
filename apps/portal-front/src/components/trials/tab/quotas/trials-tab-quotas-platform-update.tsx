@@ -1,4 +1,4 @@
-import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/platform/trials-tab-quotas-platform-update-form';
+import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/trials-tab-quotas-platform-update-form';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
 import { useTranslations } from 'next-intl';
