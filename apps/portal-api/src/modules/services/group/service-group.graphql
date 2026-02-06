@@ -19,5 +19,5 @@ type Query {
 }
 
 type Mutation {
-  updateServiceGroups(input: UpdateServiceGroupsInput!): Success @auth
+  updateServiceGroups(input: UpdateServiceGroupsInput!): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
