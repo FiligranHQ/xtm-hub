@@ -4,6 +4,7 @@ import { TrialsLearnMore } from '@/components/service/trial-instances/trials-lea
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { GradientButton } from '@filigran/ui/servers';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -26,7 +27,7 @@ const Page: React.FC = async () => {
       <BreadcrumbNav value={breadcrumbs} />
       <RelayProvider>
         <TrialsHeader
-          platformName="OpenCTI"
+          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
           actions={
             <GradientButton>
               <Link href="/redirect/create-free-trial">

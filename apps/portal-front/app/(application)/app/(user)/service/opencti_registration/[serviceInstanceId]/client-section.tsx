@@ -9,6 +9,7 @@ import { TrialsLearnMore } from '@/components/service/trial-instances/trials-lea
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
@@ -52,7 +53,7 @@ const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
       <BreadcrumbNav value={breadcrumbs} />
       {isTrial && (
         <TrialsHeader
-          platformName="OpenCTI"
+          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
           actions={
             <>
               <SlackSupportButton />
