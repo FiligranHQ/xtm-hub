@@ -48,7 +48,7 @@
     "watch:graphql": "node builder/dev/watch-graphql.js"
   },
   "dependencies": {
-    "@apollo/server": "5.2.0",
+    "@apollo/server": "5.4.0",
     "@as-integrations/express5": "1.1.2",
     "@aws-sdk/client-s3": "3.908.0",
     "@aws-sdk/lib-storage": "3.908.0",
