@@ -9084,7 +9084,7 @@ __metadata:
     "@uiw/react-md-editor": "npm:4.0.11"
     "@vitejs/plugin-react": "npm:5.1.1"
     "@vitest/coverage-v8": "npm:3.2.4"
-    autoprefixer: "npm:10.4.23"
+    autoprefixer: "npm:10.4.24"
     babel-plugin-relay: "npm:20.1.1"
     class-variance-authority: "npm:0.7.1"
     clsx: "npm:2.1.1"
@@ -9630,12 +9630,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:10.4.23":
-  version: 10.4.23
-  resolution: "autoprefixer@npm:10.4.23"
+"autoprefixer@npm:10.4.24":
+  version: 10.4.24
+  resolution: "autoprefixer@npm:10.4.24"
   dependencies:
     browserslist: "npm:^4.28.1"
-    caniuse-lite: "npm:^1.0.30001760"
+    caniuse-lite: "npm:^1.0.30001766"
     fraction.js: "npm:^5.3.4"
     picocolors: "npm:^1.1.1"
     postcss-value-parser: "npm:^4.2.0"
@@ -9643,7 +9643,7 @@ __metadata:
     postcss: ^8.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: 10c0/3765c5d0fa3e95fb2ebe9d5a6d4da0156f5d346c7ec9ac0fbf5c97c8139d0ca1e8743bf5dc1b4aa954467be6929fddf8498a3b6202d468d70b5f359f3b6af90f
+  checksum: 10c0/16737dfc865afed338f3166718ece0f77539e53c1ba9f064f2e6369b9dec9ea0542f3fb98bcb7ab37e64897dc3304bae6b2004fbf79ada8b2aeaa3db336e4b77
   languageName: node
   linkType: hard
 
@@ -10112,10 +10112,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001759, caniuse-lite@npm:^1.0.30001760":
+"caniuse-lite@npm:^1.0.30001759":
   version: 1.0.30001763
   resolution: "caniuse-lite@npm:1.0.30001763"
   checksum: 10c0/4524f6ae15a18c8510849e43baed01441940c50cab29687cba62dde6354a49549d5bcb7f79b864dadf3f0c8c342038c63131cdb64af382a501593106b1d0028b
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001766":
+  version: 1.0.30001768
+  resolution: "caniuse-lite@npm:1.0.30001768"
+  checksum: 10c0/16808cb39f9563098deab6d45bcd0642a79fc5ace8dbcea8106b008b179820353e3ec089ed7e54f1f3c8bb84f2c2835b451f308212d8f36c2b7942f879e91955
   languageName: node
   linkType: hard
 
