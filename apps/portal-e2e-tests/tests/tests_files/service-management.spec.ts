@@ -1,14 +1,13 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeSubscriptionFromService } from '../db-utils/subscription.helper';
 import ServicePage from '../model/service.pageModel';
 import { clickRowAction, waitForReactIdle } from '../model/common.js';
 
 const TEST_SUBSCRIPTION = {
-  organizationName: 'Thales',
+  organizationName: 'SECOND ORGA',
   organizationId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
-  adminOrgaEmail: 'admin@thales.com',
-  userInOrgaEmail: 'user@thales.com',
+  adminOrgaEmail: 'admin@second-orga.com',
+  userInOrgaEmail: 'user@second-orga.com',
   vaultServiceInstanceId: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
 };
 

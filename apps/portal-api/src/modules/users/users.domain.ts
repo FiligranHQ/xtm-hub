@@ -6,8 +6,8 @@ import {
   OrganizationCapability,
   QueryUsersArgs,
   Subscription,
-  UserConnection,
   User as UserGenerated,
+  UserConnection,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';

@@ -21,6 +21,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../integrations/integrations.model';
 
+import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
@@ -46,7 +47,7 @@ describe('Document domain', () => {
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       await DocumentApp.createDocument(
         {
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
           short_description: 'short_description',
@@ -102,7 +103,7 @@ describe('Document domain', () => {
       // Create data
       const csvFeed = await DocumentApp.createDocument(
         {
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
           short_description: 'short_description',
@@ -224,7 +225,7 @@ describe('Document domain', () => {
         // Create data
         await DocumentApp.createDocument(
           {
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             name: 'myCsvFeed',
             description: 'description',
             short_description: 'short_description',
@@ -289,7 +290,7 @@ describe('Document domain', () => {
         // Create data
         await DocumentApp.createDocument(
           {
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+            uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             name: 'myCsvFeed',
             description: 'description',
             short_description: 'short_description',

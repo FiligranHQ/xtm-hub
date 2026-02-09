@@ -4,7 +4,7 @@ import knex from 'knex';
 import { baseConfig } from '../../knexconfig';
 import { TELEMETRY_SOURCE } from '../modules/telemetry/telemetry.const';
 import { TelemetryEventType } from '../modules/telemetry/telemetry.types';
-import { ADMIN_UUID } from '../portal.const.js';
+import { ADMIN_UUID } from '../portal.const';
 import { esDbClient } from '../thirdparty/elasticsearch/client';
 
 export const up = async function (next) {

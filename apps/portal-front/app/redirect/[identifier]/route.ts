@@ -47,7 +47,9 @@ export async function GET(
     case 'free-trial':
       return redirectToFreeTrial(request);
     case 'create-free-trial':
-      return redirectToCreateFreeTrial(request);
+      return redirectToCreateFreeTrial(request, PlatformIdentifierEnum.OPENCTI);
+    case 'create-openaev-free-trial':
+      return redirectToCreateFreeTrial(request, PlatformIdentifierEnum.OPENAEV);
   }
   return redirectToResource(awaitedParams, request);
 }

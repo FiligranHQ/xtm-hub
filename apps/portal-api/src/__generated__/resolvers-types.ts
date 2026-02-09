@@ -1329,6 +1329,7 @@ export type QueryServiceInstanceByIdArgs = {
 
 
 export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
   service_instance_id?: InputMaybe<Scalars['ID']['input']>;
 };
 

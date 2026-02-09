@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { loadUserOrganizationCapabilities } from './user-organization-capability.domain';
 
 describe('UserOrganizationCapabilityDomain', () => {
   describe('loadUserOrganizationCapabilities', () => {
     it('should return the user capabilities when organization exists', async () => {
       const capabilities = await loadUserOrganizationCapabilities(
-        PLATFORM_ORGANIZATION_UUID
+        TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
       expect(capabilities.length).toBe(1);

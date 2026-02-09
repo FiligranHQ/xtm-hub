@@ -11,7 +11,10 @@ export const redirectToFreeTrial = async (request: NextRequest) => {
       return NextResponse.redirect(redirectionUrl);
     }
 
-    const registrationUrl = new URL(`/app/service/free-trial`, baseUrlFront);
+    const registrationUrl = new URL(
+      `/app/service/opencti-free-trial`,
+      baseUrlFront
+    );
     return NextResponse.redirect(registrationUrl);
   } catch (error) {
     if ((error as Error).message === 'UNAUTHENTICATED') {

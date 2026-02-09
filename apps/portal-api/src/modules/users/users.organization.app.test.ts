@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import portalConfig from '../../config';
 import User, { UserId } from '../../model/kanel/public/User';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import * as MailService from '../../server/mail-service';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { UsersOrganizationApp } from './users.organization.app';
@@ -26,8 +26,8 @@ describe('UsersOrganizationApp', () => {
         'loadOrganizationsWithPendingUsers'
       ).mockResolvedValue([
         {
-          id: PLATFORM_ORGANIZATION_UUID,
-          name: 'organization name',
+          id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           users,
         },
       ] as Awaited<
@@ -64,15 +64,15 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           userEmailList:
             '<li>John Doe (user1@test.com)</li><li>Robert Smith (user2@test.com)</li>',
           userCount: 2,
           requestLabel: 'requests',
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 
@@ -87,8 +87,8 @@ describe('UsersOrganizationApp', () => {
         'loadOrganizationsWithPendingUsers'
       ).mockResolvedValue([
         {
-          id: PLATFORM_ORGANIZATION_UUID,
-          name: 'organization name',
+          id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           users: [
             {
               id: uuidv4() as UserId,
@@ -110,14 +110,14 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           userEmailList: '<li>John Doe (user1@test.com)</li>',
           userCount: 1,
           requestLabel: 'request',
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 
@@ -142,14 +142,14 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
           userEmailList: '<li> Smith (user1@test.com)</li>',
           userCount: 1,
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 
@@ -174,14 +174,14 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
           userEmailList: '<li>John  (user1@test.com)</li>',
           userCount: 1,
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 

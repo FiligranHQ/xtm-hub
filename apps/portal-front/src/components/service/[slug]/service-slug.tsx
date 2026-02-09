@@ -16,8 +16,10 @@ import {
   IconActionsItem,
   IconActionsLink,
 } from '@/components/ui/icon-actions';
+import { SearchInput } from '@/components/ui/search-input';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useAdminPath from '@/hooks/useAdminPath';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
 import { MoreVertIcon } from '@filigran/icon';
@@ -33,8 +35,10 @@ import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutatio
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
+import { useDebounceCallback } from 'usehooks-ts';
+
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
   serviceId: string;
@@ -44,6 +48,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   queryRef,
   serviceId,
 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
     ServiceByIdWithSubscriptions,
     queryRef
@@ -59,6 +64,11 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
   const [removeSubscription, setRemoveSubscription] = useState<
     subscriptionWithUserService_fragment$data | undefined
   >(undefined);
+
+  const debounceHandleInput = useDebounceCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
+    DEBOUNCE_TIME
+  );
 
   const isAdminPath = useAdminPath();
 
@@ -163,19 +173,28 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
 
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
-      <div className="flex items-center ml-l">
-        <Checkbox
-          checked={shouldDisplayPersonalSpaces}
-          onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
-          id="displayPersonalSpaces"
-          className=""
-        />
-        <label
-          htmlFor="displayPersonalSpaces"
-          className="ml-s">
-          {t('Service.Management.ShowPersonalSpaces')}
-        </label>
+      <div className="flex items-center gap-m ml-l">
+        <div className="flex items-center">
+          <Checkbox
+            checked={shouldDisplayPersonalSpaces}
+            onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
+            id="displayPersonalSpaces"
+          />
+          <label
+            htmlFor="displayPersonalSpaces"
+            className="ml-s">
+            {t('Service.Management.ShowPersonalSpaces')}
+          </label>
+        </div>
+        <div className="flex-1 max-w-sm">
+          <SearchInput
+            id="SearchTerm"
+            placeholder={t('Service.Management.SearchOrganization')}
+            onChange={debounceHandleInput}
+          />
+        </div>
       </div>
+
       <div className="flex gap-s flex-wrap ml-auto">
         {useAdminPath() && (
           <SheetWithPreventingDialog
@@ -209,6 +228,37 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     </div>
   );
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const filteredAndSortedData = useMemo(() => {
+    const subscriptions =
+      queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? [];
+
+    const filteredBySpace = subscriptions.filter(
+      (subscription) =>
+        subscription?.organization?.personal_space ===
+        shouldDisplayPersonalSpaces
+    );
+
+    const filteredBySearch = searchTerm
+      ? filteredBySpace.filter((subscription) => {
+          const orgName = subscription?.organization?.name;
+          return orgName?.toLowerCase().includes(searchTerm.toLowerCase());
+        })
+      : filteredBySpace;
+
+    const sorted = filteredBySearch.sort((a, b) => {
+      const nameA = a?.organization?.name || '';
+      const nameB = b?.organization?.name || '';
+      return nameA.localeCompare(nameB);
+    });
+
+    return sorted as subscriptionWithUserService_fragment$data[];
+  }, [
+    queryData.serviceInstanceByIdWithSubscriptions?.subscriptions,
+    shouldDisplayPersonalSpaces,
+    searchTerm,
+  ]);
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -223,14 +273,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       <DataTable
         i18nKey={i18nKey(t)}
         columns={columns}
-        data={
-          (queryData.serviceInstanceByIdWithSubscriptions?.subscriptions?.filter(
-            (subscription) =>
-              subscription?.organization?.personal_space ===
-              shouldDisplayPersonalSpaces
-          ) as subscriptionWithUserService_fragment$data[]) ??
-          ([] as subscriptionWithUserService_fragment$data[])
-        }
+        data={filteredAndSortedData}
         toolbar={toolbar}
         tableState={{
           pagination,
