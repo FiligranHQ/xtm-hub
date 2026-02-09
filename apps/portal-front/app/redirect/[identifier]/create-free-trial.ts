@@ -9,7 +9,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { loadBaseUrlFront, loadMeUser } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
 
-export const redirectToCreateFreeTrial = async (request: NextRequest) => {
+export const redirectToCreateFreeTrial = async (
+  request: NextRequest,
+  platformIdentifier: PlatformIdentifierEnum = PlatformIdentifierEnum.OPENCTI
+) => {
   const baseUrlFront = await loadBaseUrlFront();
   const redirectionUrl = getLoginRedirectionURL(baseUrlFront, request);
   try {
@@ -18,7 +21,10 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
       return NextResponse.redirect(redirectionUrl);
     }
 
-    const freeTrialUrl = new URL(`/app/service/free-trial`, baseUrlFront);
+    const freeTrialUrl = new URL(
+      `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}-free-trial`,
+      baseUrlFront
+    );
 
     const isAdmin = user.capabilities.some(
       ({ name }) => name === PortalCapabilityEnum.BYPASS
@@ -39,7 +45,7 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
         CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery,
         {
           input: {
-            identifier: PlatformIdentifierEnum.OPENCTI,
+            identifier: platformIdentifier,
           },
         }
       );
@@ -54,7 +60,7 @@ export const redirectToCreateFreeTrial = async (request: NextRequest) => {
 
     if (freeTrials.length > 0) {
       const instanceUrl = new URL(
-        `/app/service/opencti_registration/${freeTrials[0]?.id}`,
+        `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}_registration/${freeTrials[0]?.id}`,
         baseUrlFront
       );
       return NextResponse.redirect(instanceUrl);
