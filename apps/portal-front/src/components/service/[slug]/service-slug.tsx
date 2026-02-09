@@ -35,7 +35,7 @@ import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutatio
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -228,6 +228,37 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
     </div>
   );
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const filteredAndSortedData = useMemo(() => {
+    const subscriptions =
+      queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? [];
+
+    const filteredBySpace = subscriptions.filter(
+      (subscription) =>
+        subscription?.organization?.personal_space ===
+        shouldDisplayPersonalSpaces
+    );
+
+    const filteredBySearch = searchTerm
+      ? filteredBySpace.filter((subscription) => {
+          const orgName = subscription?.organization?.name;
+          return orgName?.toLowerCase().includes(searchTerm.toLowerCase());
+        })
+      : filteredBySpace;
+
+    const sorted = filteredBySearch.sort((a, b) => {
+      const nameA = a?.organization?.name || '';
+      const nameB = b?.organization?.name || '';
+      return nameA.localeCompare(nameB);
+    });
+
+    return sorted as subscriptionWithUserService_fragment$data[];
+  }, [
+    queryData.serviceInstanceByIdWithSubscriptions?.subscriptions,
+    shouldDisplayPersonalSpaces,
+    searchTerm,
+  ]);
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -242,33 +273,7 @@ const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
       <DataTable
         i18nKey={i18nKey(t)}
         columns={columns}
-        data={(() => {
-          const subscriptions =
-            queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? [];
-
-          const filteredBySpace = subscriptions.filter(
-            (subscription) =>
-              subscription?.organization?.personal_space ===
-              shouldDisplayPersonalSpaces
-          );
-
-          const filteredBySearch = searchTerm
-            ? filteredBySpace.filter((subscription) => {
-                const orgName = subscription?.organization?.name;
-                return orgName
-                  ?.toLowerCase()
-                  .includes(searchTerm.toLowerCase());
-              })
-            : filteredBySpace;
-
-          const sorted = [...filteredBySearch].sort((a, b) => {
-            const nameA = a?.organization?.name || '';
-            const nameB = b?.organization?.name || '';
-            return nameA.localeCompare(nameB);
-          });
-
-          return sorted as subscriptionWithUserService_fragment$data[];
-        })()}
+        data={filteredAndSortedData}
         toolbar={toolbar}
         tableState={{
           pagination,
