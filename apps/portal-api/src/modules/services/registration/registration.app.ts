@@ -8,13 +8,13 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
+  PlatformIdentifier,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
   RefreshUserPlatformTokenResponse,
   RegisteredPlatform,
-  RegisteredPlatformInput,
   RegisteredPlatformsInput,
   RegisterPlatformInput,
   ServiceConfigurationStatus,
@@ -42,7 +42,6 @@ import {
 } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { RequiredPlatformVersions } from '../../../utils/required-platform-version';
-import { extractId } from '../../../utils/utils';
 import { doesVersionSatisfy, isValidVersion } from '../../../utils/versioning';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
@@ -102,13 +101,10 @@ export const registrationApp = {
   },
 
   loadRegisteredPlatform: async (
-    input: RegisteredPlatformInput
+    serviceInstanceId: ServiceInstanceId
   ): Promise<RegisteredPlatform | null> => {
-    const [platform] = await registrationDomain.loadRegisteredPlatforms({
-      'ServiceInstance.id': extractId<ServiceInstanceId>(
-        input.service_instance_id
-      ),
-    });
+    const [platform] =
+      await registrationDomain.loadRegisteredPlatform(serviceInstanceId);
 
     return platform ? mapDomainRegisteredPlatformToGraphQL(platform) : null;
   },
@@ -118,7 +114,7 @@ export const registrationApp = {
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms({
       platformIdentifier: input?.identifier,
-      onlyActiveTrials: input?.onlyActiveTrials ?? false,
+      onlyActive: input?.onlyActive ?? false,
     });
 
     return platforms.map(mapDomainRegisteredPlatformToGraphQL);
@@ -482,7 +478,7 @@ export const registrationApp = {
       const registerEvent = buildRegisterEvent(
         selectedOrga,
         deploymentRequest.user_requester_id,
-        deploymentRequest.platform_identifier,
+        deploymentRequest.platform_identifier as PlatformIdentifier,
         platform.id,
         platform.contract,
         platform.version,

@@ -8,8 +8,6 @@ import {
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
@@ -32,24 +30,11 @@ const OwnedServices = ({
   const { isPersonalSpace } = useContext(PortalContext);
   // Merge and sort by ordering property
   const sortedServices = [
-    ...services
-      .filter(
-        (service) =>
-          service.subscription?.service_instance?.service_definition
-            ?.identifier !==
-          ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
-      )
-      .map(userServicesOwnedServiceToInstanceCardData),
+    ...services.map(userServicesOwnedServiceToInstanceCardData),
     ...publicServices.map(publicServiceInstanceToInstanceCardData),
-    ...registeredPlatforms
-      .filter(
-        (service) =>
-          service.subscription?.service_instance?.creation_status !==
-          ServiceInstanceCreationStatusEnum.DISABLED
-      )
-      .map((platform) =>
-        registeredPlatformToServiceInstanceCardData(platform, t)
-      ),
+    ...registeredPlatforms.map((platform) =>
+      registeredPlatformToServiceInstanceCardData(platform, t)
+    ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
   const trialInstances = registeredPlatforms.filter(

@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
 import {
@@ -24,6 +25,8 @@ import {
   transferSubscriptionToOrganization,
 } from '../../subcription/subscription.domain';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { FullyQualifiedDeploymentRequest } from '../deployments/deployments.domain';
+
 import { serviceInstanceDomain } from '../instances/domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
@@ -136,16 +139,21 @@ export const registrationDomain = {
     });
   },
 
+  loadRegisteredPlatform: async (serviceInstanceId: ServiceInstanceId) => {
+    return getRegisteredPlatformsDataQuery().where(
+      'ServiceInstance.id',
+      '=',
+      serviceInstanceId
+    );
+  },
+
   loadRegisteredPlatforms: async (
     query: {
       platformIdentifier?: PlatformIdentifier;
-      'ServiceInstance.id'?: ServiceInstanceId;
-      onlyActiveTrials?: boolean;
+      onlyActive?: boolean;
     } = {}
   ): Promise<DomainRegisteredPlatform[]> => {
-    const { user } = requestContext.require();
-    const { platformIdentifier, onlyActiveTrials, ...field } = query;
-    const userSelectedOrganization = user.selected_organization_id;
+    const { platformIdentifier, onlyActive } = query;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
           serviceDefinitionIdentifierMappedByPlatformIdentifier[
@@ -154,6 +162,29 @@ export const registrationDomain = {
         ]
       : Object.values(serviceDefinitionIdentifierMappedByPlatformIdentifier);
 
+    return getRegisteredPlatformsDataQuery()
+      .whereIn('ServiceDefinition.identifier', serviceDefinitionIdentifiers)
+      .where(function () {
+        this.where('Service_Configuration.status', '=', 'active').orWhereNull(
+          'Service_Configuration.service_instance_id'
+        );
+      })
+      .where(function () {
+        if (onlyActive) {
+          this.where(
+            'DeploymentRequest.hub_status',
+            '=',
+            DeploymentRequestHubStatus.Active
+          ).orWhereNull('DeploymentRequest.id');
+        }
+      });
+  },
+};
+
+const getRegisteredPlatformsDataQuery =
+  (): Knex.QueryBuilder<FullyQualifiedDeploymentRequest> => {
+    const { user } = requestContext.require();
+    const userSelectedOrganization = user.selected_organization_id;
     return db<ServiceInstance>('ServiceInstance')
       .leftJoin(
         'Service_Configuration',
@@ -179,30 +210,13 @@ export const registrationDomain = {
         '=',
         'ServiceInstance.id'
       )
-      .whereIn('ServiceDefinition.identifier', serviceDefinitionIdentifiers)
+      .where('ServiceInstance.creation_status', '!=', 'DISABLED')
       .where('Subscription.organization_id', '=', userSelectedOrganization)
       .where('Subscription.status', '=', 'ACCEPTED')
       .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
-      .where(function () {
-        this.where('Service_Configuration.status', '=', 'active').orWhereNull(
-          'Service_Configuration.service_instance_id'
-        );
-      })
-      .where(function () {
-        if (onlyActiveTrials) {
-          this.where(
-            'DeploymentRequest.hub_status',
-            '=',
-            DeploymentRequestHubStatus.Active
-          ).orWhereNull('DeploymentRequest.id');
-        }
-      })
-      .where(field)
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',
         'ServiceInstance.*',
-      ])
-      .secureQuery();
-  },
-};
+      ]);
+  };
