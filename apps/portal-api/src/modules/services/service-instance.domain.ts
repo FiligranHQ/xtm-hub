@@ -347,7 +347,8 @@ export const loadServiceInstanceBy = async (field: string, value: string) => {
 };
 
 export const loadServiceWithSubscriptions = async (
-  serviceInstanceId: ServiceInstanceId
+  serviceInstanceId: ServiceInstanceId,
+  searchTerm?: string
 ) => {
   const { user } = requestContext.require();
 
@@ -439,6 +440,11 @@ export const loadServiceWithSubscriptions = async (
       '=',
       'Subscription.organization_id'
     )
+    .modify((queryBuilder) => {
+      if (searchTerm) {
+        queryBuilder.where('org.name', 'ILIKE', `%${searchTerm}%`);
+      }
+    })
     .select(
       dbRaw('"Subscription".*'),
       dbRaw(

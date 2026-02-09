@@ -1,11 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import {
-  ADMIN_USER_ID,
-  THALES_ADMIN_ORGA_USER_ID,
-  THALES_SIMPLE_USER_ID,
-} from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { ServiceInstanceCreationStatus } from '../../../__generated__/resolvers-types';
 import ServiceGroup, {
   ServiceGroupId,
@@ -32,7 +28,7 @@ describe('ServiceGroupDomain', () => {
         public: false,
         join_type: 'JOIN_AUTO',
         tags: [],
-        service_definition_id: '5f769173-5ace-4ef3-b04f-2c95609c5b59',
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },
       {
         id: serviceInstanceId2,
@@ -42,7 +38,7 @@ describe('ServiceGroupDomain', () => {
         public: false,
         join_type: 'JOIN_AUTO',
         tags: [],
-        service_definition_id: '5f769173-5ace-4ef3-b04f-2c95609c5b59',
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },
     ]);
 
@@ -85,38 +81,48 @@ describe('ServiceGroupDomain', () => {
     it('should return users associated to service group', async () => {
       await db('ServiceGroup_User').insert([
         {
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           group_id: adminGroupId,
         },
         {
-          user_id: THALES_ADMIN_ORGA_USER_ID,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           group_id: adminGroupId,
         },
         {
-          user_id: THALES_SIMPLE_USER_ID,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
           group_id: analystGroupId,
         },
       ]);
 
       const adminUsers = await ServiceGroupDomain.loadGroupUsers(adminGroupId);
       expect(adminUsers.length).toBe(2);
-      expect(adminUsers.find(({ id }) => id === ADMIN_USER_ID)).toBeTruthy();
       expect(
-        adminUsers.find(({ id }) => id === THALES_ADMIN_ORGA_USER_ID)
+        adminUsers.find(
+          ({ id }) => id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+        )
+      ).toBeTruthy();
+      expect(
+        adminUsers.find(
+          ({ id }) =>
+            id === TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
+        )
       ).toBeTruthy();
 
       const analystUsers =
         await ServiceGroupDomain.loadGroupUsers(analystGroupId);
       expect(analystUsers.length).toBe(1);
-      expect(analystUsers[0]?.id === THALES_SIMPLE_USER_ID).toBe(true);
+      expect(
+        analystUsers[0]?.id ===
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
+      ).toBe(true);
     });
   });
 
   describe('addUsersToGroup', () => {
     it('should add users to the service group', async () => {
       await ServiceGroupDomain.addUsersToGroup(adminGroupId, [
-        ADMIN_USER_ID,
-        THALES_ADMIN_ORGA_USER_ID,
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       ]);
 
       const serviceGroupUsers = await db<ServiceGroupUser[]>(
@@ -127,11 +133,16 @@ describe('ServiceGroupDomain', () => {
 
       expect(serviceGroupUsers.length).toBe(2);
       expect(
-        serviceGroupUsers.find(({ user_id }) => user_id === ADMIN_USER_ID)
+        serviceGroupUsers.find(
+          ({ user_id }) =>
+            user_id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+        )
       );
       expect(
         serviceGroupUsers.find(
-          ({ user_id }) => user_id === THALES_ADMIN_ORGA_USER_ID
+          ({ user_id }) =>
+            user_id ===
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
         )
       );
     });

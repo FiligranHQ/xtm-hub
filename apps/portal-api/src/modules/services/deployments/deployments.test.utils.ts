@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { SERVICE_OPENCTI_REGISTRATION } from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -13,7 +13,6 @@ import {
   DeploymentRequestInitializer,
 } from '../../../model/kanel/public/DeploymentRequest';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { insertSubscription } from '../../subcription/subscription.helper';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import { insertServiceInstance } from '../service-instance.domain';
@@ -25,7 +24,7 @@ export async function insertOpenCtiDeploymentRequest(
   const serviceInstanceId = uuidv4() as ServiceInstanceId;
   await insertServiceInstance({
     id: serviceInstanceId,
-    name: 'serviceInstance1',
+    name: 'oneRandomTrialInstance',
     description: '',
     creation_status: ServiceInstanceCreationStatus.Pending,
     public: false,
@@ -33,18 +32,18 @@ export async function insertOpenCtiDeploymentRequest(
     tags: [
       serviceInstanceTagMappedByPlatformIdentifier[PlatformIdentifier.Opencti],
     ],
-    service_definition_id: SERVICE_OPENCTI_REGISTRATION,
+    service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
   });
   await insertSubscription({
     id: uuidv4(),
-    organization_id: PLATFORM_ORGANIZATION_UUID,
+    organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
     service_instance_id: serviceInstanceId,
   });
   const defaultDeploymentRequestValues = {
     activity_sector: 'cybersecurity',
     id: uuidv4() as DeploymentRequestId,
     job_title: 'myJob',
-    organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+    organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
     platform_identifier: PlatformIdentifier.Opencti,
     platform_token: uuidv4(),
     region: DeploymentRequestPlatformRegion.UsEast,
@@ -56,7 +55,7 @@ export async function insertOpenCtiDeploymentRequest(
     type: DeploymentRequestDeploymentType.Trial,
     use_case: 'use_case',
     service_instance_id: serviceInstanceId as ServiceInstanceId,
-    user_requester_id: ADMIN_UUID,
+    user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
   };
   return await DeploymentRequestDomain.insertDeploymentRequest({
     ...defaultDeploymentRequestValues,

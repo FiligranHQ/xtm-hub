@@ -41,12 +41,14 @@ export enum StartTrialButtonVariant {
 interface Props {
   openForm?: boolean;
   variant?: string;
+  platformIdentifier?: PlatformIdentifierEnum;
 }
 
 // Component
 export const StartTrialButton: React.FC<Props> = ({
   openForm = false,
   variant = StartTrialButtonVariant.Default,
+  platformIdentifier = PlatformIdentifierEnum.OPENCTI,
 }) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
@@ -76,10 +78,10 @@ export const StartTrialButton: React.FC<Props> = ({
         environment,
         DeploymentRequestsAvailableQuery,
         {
-          platformIdentifier: PlatformIdentifierEnum.OPENCTI,
+          platformIdentifier: platformIdentifier,
         }
       ),
-    [environment]
+    [environment, platformIdentifier]
   );
 
   const handleSubmit = (values: z.infer<typeof tryOpenCTIFormSchema>) => {
@@ -89,7 +91,7 @@ export const StartTrialButton: React.FC<Props> = ({
       variables: {
         input: {
           ...valuesWithoutAcceptTerms,
-          platform_identifier: PlatformIdentifierEnum.OPENCTI,
+          platform_identifier: platformIdentifier,
           type: DeploymentRequestDeploymentTypeEnum.TRIAL,
         },
       },
@@ -97,7 +99,7 @@ export const StartTrialButton: React.FC<Props> = ({
         store.invalidateStore();
         window.dispatchEvent(new Event('refresh-registered-platforms'));
         fetchQuery(environment, RegisterRegisteredPlatformsQuery, {
-          input: { identifier: PlatformIdentifierEnum.OPENCTI },
+          input: { identifier: platformIdentifier },
         }).subscribe({});
       },
 

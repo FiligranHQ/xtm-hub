@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import { contextAdminUser } from '../../../../tests/tests.const';
+import { contextBypassUser } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
-import { serviceContractDomain } from './domain';
+import { serviceContractDomain } from './service-configuration.domain';
 
 describe('Service Contract Domain', () => {
   describe('isServiceConfigurationValid', () => {
-    const context = contextAdminUser;
+    const context = contextBypassUser;
     it('should throw an error when service contract is not found', async () => {
       const call = serviceContractDomain.isServiceConfigurationValid(
         uuidv4() as ServiceDefinitionId,

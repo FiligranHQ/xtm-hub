@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { THALES_ORGA_ID } from '../../../tests/tests.const';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ADMIN_UUID } from '../../portal.const';
 import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
@@ -26,20 +25,29 @@ describe('organizationsApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationsApp.updateOrganization(THALES_ORGA_ID, {
-        domains: ['thales.com', 'thales.fr'],
-        name: 'new Thales',
-      });
+      await organizationsApp.updateOrganization(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        {
+          domains: [
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST.NAME,
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.SECOND.NAME,
+          ],
+          name: 'new OrgaName',
+        }
+      );
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.UPDATE_ORGANIZATION,
-        organization_id: THALES_ORGA_ID,
-        organization_name: 'new Thales',
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_name: 'new OrgaName',
         organization_type: 'Professional',
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_UUID,
-        domains: ['thales.com', 'thales.fr'],
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        domains: [
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST.NAME,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.SECOND.NAME,
+        ],
       });
     });
   });
@@ -65,7 +73,7 @@ describe('organizationsApp', () => {
         organization_name: 'test.com',
         organization_type: 'Professional',
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_UUID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         domains: ['test.com', 'test.fr'],
       });
     });

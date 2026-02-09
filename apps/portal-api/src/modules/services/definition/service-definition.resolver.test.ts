@@ -1,7 +1,7 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextAdminUser } from '../../../../tests/tests.const';
+import { contextBypassUser } from '../../../../tests/tests.const';
 import { ServiceDefinition } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
@@ -45,7 +45,7 @@ describe('ServiceDefinition resolver fields', () => {
       const response = await resolver(
         { id: mockServiceDefinitionId } as unknown as ServiceDefinition,
         {},
-        contextAdminUser,
+        contextBypassUser,
         {} as GraphQLResolveInfo
       );
 
@@ -72,7 +72,7 @@ describe('ServiceDefinition resolver fields', () => {
       const response = await resolver(
         { id: mockServiceDefinitionId } as unknown as ServiceDefinition,
         {},
-        contextAdminUser,
+        contextBypassUser,
         {} as GraphQLResolveInfo
       );
 
@@ -100,7 +100,7 @@ describe('ServiceDefinition resolver fields', () => {
         resolver(
           { id: mockServiceDefinitionId } as unknown as ServiceDefinition,
           {},
-          contextAdminUser,
+          contextBypassUser,
           {} as GraphQLResolveInfo
         )
       ).rejects.toThrow('Failed to load capabilities');

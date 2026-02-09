@@ -8,6 +8,7 @@ import {
   vi,
 } from 'vitest';
 import { db } from '../../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   IntegrationSubType,
   IntegrationType,
@@ -59,7 +60,7 @@ describe('DocumentHelper', () => {
     it('cvsFeed should return the document with elastic search counters', async () => {
       const document = await DocumentApp.createDocument(
         {
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
           short_description: 'short_description',

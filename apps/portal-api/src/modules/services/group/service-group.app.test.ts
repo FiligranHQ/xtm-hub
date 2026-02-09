@@ -1,14 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import {
-  ADMIN_USER_ID,
-  FILIGRAN_ORGA_ID,
-  FILIGRAN_USER_ID,
-  THALES_ADMIN_ORGA_USER_ID,
-  THALES_ORGA_ID,
-  THALES_SIMPLE_USER_ID,
-} from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestPlatformRegion,
@@ -47,7 +40,7 @@ describe('ServiceGroupApp', () => {
         public: false,
         join_type: 'JOIN_AUTO',
         tags: [],
-        service_definition_id: '5f769173-5ace-4ef3-b04f-2c95609c5b59',
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },
       {
         id: serviceInstanceId2,
@@ -57,7 +50,7 @@ describe('ServiceGroupApp', () => {
         public: false,
         join_type: 'JOIN_AUTO',
         tags: [],
-        service_definition_id: '5f769173-5ace-4ef3-b04f-2c95609c5b59',
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },
     ]);
 
@@ -82,8 +75,17 @@ describe('ServiceGroupApp', () => {
 
   describe('updateGroups', () => {
     const payload = [
-      { id: adminGroupId, userIds: [ADMIN_USER_ID, THALES_ADMIN_ORGA_USER_ID] },
-      { id: analystGroupId, userIds: [THALES_SIMPLE_USER_ID] },
+      {
+        id: adminGroupId,
+        userIds: [
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+        ],
+      },
+      {
+        id: analystGroupId,
+        userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+      },
     ];
 
     it('should prevent user from updating groups in multiple service instances', async () => {
@@ -91,7 +93,10 @@ describe('ServiceGroupApp', () => {
         ...payload,
         {
           id: adminGroupIdServiceInstance2,
-          userIds: [ADMIN_USER_ID, THALES_ADMIN_ORGA_USER_ID],
+          userIds: [
+            TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+          ],
         },
       ]);
 
@@ -104,7 +109,7 @@ describe('ServiceGroupApp', () => {
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
         service_instance_id: serviceInstanceId1,
-        organization_id: THALES_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
       const call = ServiceGroupApp.updateGroups(payload);
@@ -118,18 +123,18 @@ describe('ServiceGroupApp', () => {
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
         service_instance_id: serviceInstanceId1,
-        organization_id: FILIGRAN_ORGA_ID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       await db<ServiceGroupUser>('ServiceGroup_User').insert({
         group_id: analystGroupId,
-        user_id: FILIGRAN_USER_ID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
       });
       await db<DeploymentRequest>('DeploymentRequest').insert({
         id: uuidv4() as DeploymentRequestId,
         service_instance_id: serviceInstanceId1,
         platform_id: uuidv4(),
-        user_requester_id: FILIGRAN_USER_ID,
-        organization_requester_id: FILIGRAN_ORGA_ID,
+        user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         type: DeploymentRequestDeploymentType.Trial,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.EuWest,
@@ -145,10 +150,17 @@ describe('ServiceGroupApp', () => {
 
       expect(admins.length).toBe(2);
       expect(
-        admins.find(({ user_id }) => user_id === ADMIN_USER_ID)
+        admins.find(
+          ({ user_id }) =>
+            user_id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+        )
       ).toBeTruthy();
       expect(
-        admins.find(({ user_id }) => user_id === THALES_ADMIN_ORGA_USER_ID)
+        admins.find(
+          ({ user_id }) =>
+            user_id ===
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
+        )
       ).toBeTruthy();
 
       const analysts = await db<ServiceGroupUser[]>('ServiceGroup_User')
@@ -156,7 +168,9 @@ describe('ServiceGroupApp', () => {
         .select('*');
 
       expect(analysts.length).toBe(1);
-      expect(analysts[0]?.user_id).toBe(THALES_SIMPLE_USER_ID);
+      expect(analysts[0]?.user_id).toBe(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
+      );
     });
   });
 });
