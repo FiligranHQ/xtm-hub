@@ -23,7 +23,7 @@ import {
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
 } from '../../subcription/subscription.domain';
-import { serviceContractDomain } from '../contract/domain';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { serviceInstanceDomain } from '../instances/domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 

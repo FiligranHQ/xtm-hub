@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SERVICE_OPENAEV_SCENARIOS_ID } from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from '../document/document.app';
@@ -22,7 +22,7 @@ describe('openaev scenarios app', () => {
   it('loadOpenAEVScenario should return the document with elastic search counters', async () => {
     const document = await DocumentApp.createDocument(
       {
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         name: 'myCsvFeed',
         description: 'description',
         short_description: 'short_description',
@@ -30,7 +30,7 @@ describe('openaev scenarios app', () => {
         active: true,
       },
       [{ key: 'product_version', value: '1.2.3' }],
-      SERVICE_OPENAEV_SCENARIOS_ID,
+      SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
       []
     );
     expect(document).toBeDefined();
@@ -59,7 +59,7 @@ describe('openaev scenarios app', () => {
   it('loadSeoOpenAEVScenario should return the document with elastic search counters', async () => {
     await DocumentApp.createDocument(
       {
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         name: 'myCsvFeed',
         description: 'description',
         short_description: 'short_description',
@@ -67,7 +67,7 @@ describe('openaev scenarios app', () => {
         active: true,
       },
       [{ key: 'product_version', value: '1.2.3' }],
-      SERVICE_OPENAEV_SCENARIOS_ID,
+      SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
       []
     );
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(

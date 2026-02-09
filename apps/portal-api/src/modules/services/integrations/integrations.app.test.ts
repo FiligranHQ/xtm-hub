@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { IntegrationType } from '../../../__generated__/resolvers-types';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -22,7 +23,7 @@ describe('csv feeds app', () => {
   it('SeoCsvFeed should return the document with elastic search counters', async () => {
     await DocumentApp.createDocument(
       {
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         name: 'myCsvFeed',
         description: 'description',
         short_description: 'short_description',

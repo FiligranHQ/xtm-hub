@@ -14,17 +14,12 @@ import {
 } from 'vitest';
 import { SubscriptionSpy } from '../../../tests/test-utils';
 import {
-  contextAdminOrgaThales,
-  contextAdminUser,
-  DEFAULT_ADMIN_EMAIL,
-  DEFAULT_ADMIN_PASSWORD,
+  contextAdminSecondOrga,
+  contextBypassUser,
+  requestContextAdminSecondOrga,
   requestContextAdminUser,
-  requestContextThalesUser,
-  SERVICE_VAULT_ID,
-  SIMPLE_USER_FILIGRAN_ID,
-  THALES_ADMIN_ORGA_EMAIL,
-  THALES_ADMIN_ORGA_USER_ID,
-  THALES_ORGA_ID,
+  SERVICES,
+  TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
   AddUserInput,
@@ -39,7 +34,6 @@ import { requestContext } from '../../context/request.context';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import * as UserOrganizationDomain from '../common/user-organization.domain';
 import {
@@ -59,22 +53,22 @@ describe('User query resolver', () => {
     beforeEach(async () => {
       await insertSubscription({
         id: SUBSCRIPTION_ID,
-        organization_id: THALES_ORGA_ID,
-        service_instance_id: SERVICE_VAULT_ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
       });
     });
     it.each`
-      expected | organizations                                                                               | description
-      ${true}  | ${[{ id: THALES_ORGA_ID, name: 'Thales', personal_space: false, domains: ['thales.com'] }]} | ${'organization has subscription'}
-      ${false} | ${[]}                                                                                       | ${'has no organization'}
-      ${false} | ${[{ id: RANDOM_ORGA_ID, name: 'Other', personal_space: false, domains: ['thales.com'] }]}  | ${'no organization has subscription'}
+      expected | organizations                                                                                                                                                                                     | description
+      ${true}  | ${[{ id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME, personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]} | ${'organization has subscription'}
+      ${false} | ${[]}                                                                                                                                                                                             | ${'has no organization'}
+      ${false} | ${[{ id: RANDOM_ORGA_ID, name: 'Other', personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]}                                                                | ${'no organization has subscription'}
     `(
       'Should return $expected if $description',
       async ({ expected, organizations }) => {
         const currentContext = {
-          ...contextAdminOrgaThales,
+          ...contextAdminSecondOrga,
           user: {
-            ...contextAdminOrgaThales.user,
+            ...contextAdminSecondOrga.user,
             organizations: organizations,
           },
         };
@@ -104,17 +98,17 @@ describe('User query resolver', () => {
   describe('listPendingUser', () => {
     it('should list pending users from any organization for bypass', async () => {
       const testContext = {
-        ...contextAdminUser,
+        ...contextBypassUser,
         user: {
-          ...contextAdminUser.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextBypassUser.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
         user: testContext.user,
         portalContext: testContext,
       });
-      const email = `testPending${uuidv4()}@thales.com`;
+      const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
         email: email,
         first_name: 'test',
@@ -143,15 +137,15 @@ describe('User query resolver', () => {
     });
     it('should list pending users from the orga if orga filter exists', async () => {
       const testContext = {
-        ...contextAdminOrgaThales,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextAdminOrgaThales.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextAdminSecondOrga.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
-      const pendingUserThales = await loginFromProvider({
-        email: `testPending${uuidv4()}@thales.com`,
-        first_name: 'thales',
+      const pendingUserSecondOrga = await loginFromProvider({
+        email: `testPending${uuidv4()}@second-orga.com`,
+        first_name: 'secondOrga',
         last_name: 'pending',
         roles: [],
       });
@@ -169,7 +163,12 @@ describe('User query resolver', () => {
         filters: [
           {
             key: 'organization_id',
-            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+            value: [
+              toGlobalId(
+                'Organization',
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+              ),
+            ],
           },
         ],
       };
@@ -185,23 +184,23 @@ describe('User query resolver', () => {
       );
 
       expect(response.totalCount).toBe('1');
-      expect(response.edges[0].node.id).toBe(pendingUserThales.id);
+      expect(response.edges[0].node.id).toBe(pendingUserSecondOrga.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser({ email: pendingUserThales.email });
+      await removeUser({ email: pendingUserSecondOrga.email });
       await removeUser({ email: pendingUserFiligran.email });
     });
     it('should list pending users in the user orga even if no filter is specified', async () => {
       const testContext = {
-        ...contextAdminOrgaThales,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextAdminOrgaThales.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextAdminSecondOrga.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
-      const pendingUserThales = await loginFromProvider({
-        email: `testPending${uuidv4()}@thales.com`,
-        first_name: 'thales',
+      const pendingUserSecondOrga = await loginFromProvider({
+        email: `testPending${uuidv4()}@second-orga.com`,
+        first_name: 'secondOrga',
         last_name: 'pending',
         roles: [],
       });
@@ -231,10 +230,10 @@ describe('User query resolver', () => {
       );
 
       expect(response.totalCount).toBe('1');
-      expect(response.edges[0].node.id).toBe(pendingUserThales.id);
+      expect(response.edges[0].node.id).toBe(pendingUserSecondOrga.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser({ email: pendingUserThales.email });
+      await removeUser({ email: pendingUserSecondOrga.email });
       await removeUser({ email: pendingUserFiligran.email });
     });
   });
@@ -245,7 +244,10 @@ describe('User mutation resolver', () => {
     // @ts-ignore
     const response = await usersResolver.Mutation.login(
       undefined,
-      { email: DEFAULT_ADMIN_EMAIL, password: DEFAULT_ADMIN_PASSWORD },
+      {
+        email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
+      },
       {
         req: {
           session: {
@@ -268,11 +270,11 @@ describe('User mutation resolver', () => {
           undefined,
           {
             input: {
-              email: DEFAULT_ADMIN_EMAIL,
-              password: DEFAULT_ADMIN_PASSWORD,
+              email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
             } as AddUserInput,
           },
-          contextAdminUser
+          contextBypassUser
         );
       } catch (error) {
         // Should throw an error and catch it.
@@ -300,7 +302,7 @@ describe('User mutation resolver', () => {
               password: 'fake password',
             } as AddUserInput,
           },
-          contextAdminUser
+          contextBypassUser
         );
       } catch (error) {
         // Should throw an error and catch it.
@@ -314,26 +316,29 @@ describe('User mutation resolver', () => {
 
     it('should should send a add event in sse', async () => {
       const filigranSpy = new SubscriptionSpy();
-      const thalesSpy = new SubscriptionSpy();
+      const secondOrgaSpy = new SubscriptionSpy();
       // @ts-ignore
       await filigranSpy.spy(
         usersResolver.Subscription.User,
         {
           organizationId: toGlobalId(
             'Organization',
-            PLATFORM_ORGANIZATION_UUID
+            TEST_ORGANIZATIONS.FILIGRAN.ID
           ),
         },
-        contextAdminUser,
+        contextBypassUser,
         ['add']
       );
 
-      await thalesSpy.spy(
+      await secondOrgaSpy.spy(
         usersResolver.Subscription.User,
         {
-          organizationId: toGlobalId('Organization', THALES_ORGA_ID),
+          organizationId: toGlobalId(
+            'Organization',
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+          ),
         },
-        contextAdminOrgaThales,
+        contextAdminSecondOrga,
         ['add']
       );
 
@@ -344,29 +349,29 @@ describe('User mutation resolver', () => {
         {
           input: {
             email: email,
-            password: DEFAULT_ADMIN_PASSWORD,
+            password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
             organization_capabilities: [
               {
                 organization_id: toGlobalId(
                   'Organization',
-                  PLATFORM_ORGANIZATION_UUID
+                  TEST_ORGANIZATIONS.FILIGRAN.ID
                 ),
                 capabilities: [],
               },
             ],
           } as AddUserInput,
         },
-        contextAdminUser
+        contextBypassUser
       );
 
       const events = await filigranSpy.waitForEvents(1);
 
       expect(events).toHaveLength(1);
       expect(events[0].User.add.email).toBe(email);
-      await thalesSpy.expectNoEvents();
+      await secondOrgaSpy.expectNoEvents();
 
       await filigranSpy.cleanup();
-      await thalesSpy.cleanup();
+      await secondOrgaSpy.cleanup();
     });
 
     describe('create user with personal space', async () => {
@@ -380,10 +385,10 @@ describe('User mutation resolver', () => {
           {
             input: {
               email: testMail,
-              password: DEFAULT_ADMIN_PASSWORD,
+              password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
             } as AddUserInput,
           },
-          contextAdminUser
+          contextBypassUser
         );
         expect(response).toBeTruthy();
 
@@ -392,7 +397,7 @@ describe('User mutation resolver', () => {
         organizations = await usersResolver.User.organizations(
           user,
           undefined,
-          contextAdminUser,
+          contextBypassUser,
           undefined
         );
       });
@@ -417,33 +422,33 @@ describe('User mutation resolver', () => {
           {
             input: {
               email: testMail,
-              password: DEFAULT_ADMIN_PASSWORD,
+              password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
                   organization_id: toGlobalId(
                     'Organization',
-                    PLATFORM_ORGANIZATION_UUID
+                    TEST_ORGANIZATIONS.FILIGRAN.ID
                   ),
                   capabilities: [],
                 },
               ],
             } as AddUserInput,
           },
-          contextAdminUser
+          contextBypassUser
         );
         expect(response).toBeTruthy();
         user = await loadUserBy({ 'User.id': response.id });
         organizations = await usersResolver.User.organizations(
           user,
           undefined,
-          contextAdminUser,
+          contextBypassUser,
           undefined
         );
       });
 
       it('should have Personal space and Internal as organization', async () => {
         expect(
-          organizations.some((org) => org.id === PLATFORM_ORGANIZATION_UUID)
+          organizations.some((org) => org.id === TEST_ORGANIZATIONS.FILIGRAN.ID)
         ).toBeTruthy();
         expect(
           organizations.some((org) => org.id.toString() === user.id.toString())
@@ -459,23 +464,26 @@ describe('User mutation resolver', () => {
     it('as Admin Organization - should not able to create user with different email domain', async () => {
       const testMail = `testAddUser${uuidv4()}@test.fr`;
       try {
-        requestContext.set(requestContextThalesUser);
+        requestContext.set(requestContextAdminSecondOrga);
         // @ts-ignore
         await usersResolver.Mutation.adminAddUser(
           undefined,
           {
             input: {
               email: testMail,
-              password: DEFAULT_ADMIN_PASSWORD,
+              password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  organization_id: toGlobalId(
+                    'Organization',
+                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+                  ),
                   capabilities: [],
                 },
               ],
             } as AddUserInput,
           },
-          contextAdminOrgaThales
+          contextAdminSecondOrga
         );
       } catch (error) {
         const user = await loadUserBy({ 'User.email': testMail });
@@ -483,29 +491,32 @@ describe('User mutation resolver', () => {
         expect(error).toBeTruthy();
       }
     });
-    describe('as Admin orga - should create user with personal space and add to Thales organization', async () => {
+    describe('as Admin orga - should create user with personal space and add to ORGANIZATIONS_TEST.SECOND_ORGANIZATION.NAME organization', async () => {
       let user: UserLoadUserBy;
       let organizations: Organization[];
       let response;
       beforeAll(async () => {
-        const testMail = `testAddUser${uuidv4()}@thales.com`;
-        requestContext.set(requestContextThalesUser);
+        const testMail = `testAddUser${uuidv4()}@second-orga.com`;
+        requestContext.set(requestContextAdminSecondOrga);
         // @ts-ignore
         response = await usersResolver.Mutation.adminAddUser(
           undefined,
           {
             input: {
               email: testMail,
-              password: DEFAULT_ADMIN_PASSWORD,
+              password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  organization_id: toGlobalId(
+                    'Organization',
+                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+                  ),
                   capabilities: [],
                 },
               ],
             } as AddUserInput,
           },
-          contextAdminOrgaThales
+          contextAdminSecondOrga
         );
         user = await loadUserBy({ 'User.id': response.id });
 
@@ -513,16 +524,18 @@ describe('User mutation resolver', () => {
         organizations = await usersResolver.User.organizations(
           user,
           undefined,
-          contextAdminUser,
+          contextBypassUser,
           undefined
         );
 
         expect(response).toBeTruthy();
       });
 
-      it('should have Personal space and Thales as organization', async () => {
+      it('should have Personal space and ORGANIZATIONS_TEST.SECOND_ORGANIZATION.NAME as organization', async () => {
         expect(
-          organizations.some((org) => org.id === THALES_ORGA_ID)
+          organizations.some(
+            (org) => org.id === TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+          )
         ).toBeTruthy();
         expect(
           organizations.some((org) => org.id.toString() === user.id.toString())
@@ -538,7 +551,7 @@ describe('User mutation resolver', () => {
   });
 
   describe('adminEditUser', () => {
-    let thalesUser: UserLoadUserBy;
+    let secondOrgaUser: UserLoadUserBy;
 
     describe('existing user edition', async () => {
       let fallbackUser: UserLoadUserBy;
@@ -550,13 +563,13 @@ describe('User mutation resolver', () => {
         response = await usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: SIMPLE_USER_FILIGRAN_ID,
+            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
             input: {
               organization_capabilities: [
                 {
                   organization_id: toGlobalId(
                     'Organization',
-                    SIMPLE_USER_FILIGRAN_ID
+                    TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID
                   ),
                   capabilities: [
                     OrganizationCapability.ManageAccess,
@@ -566,7 +579,7 @@ describe('User mutation resolver', () => {
                 {
                   organization_id: toGlobalId(
                     'Organization',
-                    PLATFORM_ORGANIZATION_UUID
+                    TEST_ORGANIZATIONS.FILIGRAN.ID
                   ),
                   capabilities: [
                     OrganizationCapability.ManageAccess,
@@ -574,13 +587,16 @@ describe('User mutation resolver', () => {
                   ],
                 },
                 {
-                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  organization_id: toGlobalId(
+                    'Organization',
+                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+                  ),
                   capabilities: [],
                 },
               ],
             } as AdminEditUserInput,
           },
-          contextAdminUser
+          contextBypassUser
         );
 
         expect(response).toBeTruthy();
@@ -591,13 +607,13 @@ describe('User mutation resolver', () => {
         await usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: SIMPLE_USER_FILIGRAN_ID,
+            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
             input: {
               organization_capabilities: [
                 {
                   organization_id: toGlobalId(
                     'Organization',
-                    SIMPLE_USER_FILIGRAN_ID
+                    TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID
                   ),
                   capabilities: [
                     OrganizationCapability.ManageAccess,
@@ -607,7 +623,7 @@ describe('User mutation resolver', () => {
                 {
                   organization_id: toGlobalId(
                     'Organization',
-                    PLATFORM_ORGANIZATION_UUID
+                    TEST_ORGANIZATIONS.FILIGRAN.ID
                   ),
                   capabilities: [
                     OrganizationCapability.ManageAccess,
@@ -617,7 +633,7 @@ describe('User mutation resolver', () => {
               ],
             } as AdminEditUserInput,
           },
-          contextAdminUser
+          contextBypassUser
         );
       });
 
@@ -632,7 +648,9 @@ describe('User mutation resolver', () => {
 
     describe('administrator deletion', async () => {
       beforeAll(async () => {
-        thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
+        secondOrgaUser = await loadUserBy({
+          email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
+        });
       });
 
       afterEach(async () => {
@@ -640,10 +658,10 @@ describe('User mutation resolver', () => {
         await usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: THALES_ADMIN_ORGA_USER_ID,
+            id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
             input: {
               organization_capabilities:
-                thalesUser.organization_capabilities.map(
+                secondOrgaUser.organization_capabilities.map(
                   (organizationCapabilities) => ({
                     organization_id: toGlobalId(
                       'Organization',
@@ -654,7 +672,7 @@ describe('User mutation resolver', () => {
                 ),
             },
           },
-          contextAdminUser
+          contextBypassUser
         );
       });
 
@@ -663,17 +681,20 @@ describe('User mutation resolver', () => {
         const call = usersResolver.Mutation.adminEditUser(
           undefined,
           {
-            id: THALES_ADMIN_ORGA_USER_ID,
+            id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
             input: {
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId('Organization', THALES_ORGA_ID),
+                  organization_id: toGlobalId(
+                    'Organization',
+                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+                  ),
                   capabilities: [],
                 },
               ],
             } as AdminEditUserInput,
           },
-          contextAdminUser
+          contextBypassUser
         );
 
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
@@ -682,10 +703,12 @@ describe('User mutation resolver', () => {
   });
 
   describe('editUserCapabilities', () => {
-    let thalesUser: UserLoadUserBy;
+    let secondOrgaUser: UserLoadUserBy;
 
     beforeAll(async () => {
-      thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
+      secondOrgaUser = await loadUserBy({
+        email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
+      });
     });
 
     afterEach(async () => {
@@ -693,30 +716,31 @@ describe('User mutation resolver', () => {
       await usersResolver.Mutation.adminEditUser(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_USER_ID,
+          id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: {
-            organization_capabilities: thalesUser.organization_capabilities.map(
-              (organizationCapabilities) => ({
-                organization_id: toGlobalId(
-                  'Organization',
-                  organizationCapabilities.organization.id
-                ),
-                capabilities: organizationCapabilities.capabilities,
-              })
-            ),
+            organization_capabilities:
+              secondOrgaUser.organization_capabilities.map(
+                (organizationCapabilities) => ({
+                  organization_id: toGlobalId(
+                    'Organization',
+                    organizationCapabilities.organization.id
+                  ),
+                  capabilities: organizationCapabilities.capabilities,
+                })
+              ),
           },
         },
-        contextAdminUser,
+        contextBypassUser,
         undefined
       );
     });
 
     it('should prevent deletion of the last organization administrator', async () => {
       const testContext = {
-        ...contextAdminUser,
+        ...contextBypassUser,
         user: {
-          ...contextAdminUser.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextBypassUser.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
@@ -726,7 +750,7 @@ describe('User mutation resolver', () => {
       const call = usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_USER_ID,
+          id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: { capabilities: [] },
         },
         testContext,
@@ -737,15 +761,15 @@ describe('User mutation resolver', () => {
     });
 
     it('should edit capabilities', async () => {
-      expect(thalesUser.selected_org_capabilities).not.to.includes(
+      expect(secondOrgaUser.selected_org_capabilities).not.to.includes(
         'MANAGE_PLATFORM_REGISTRATION'
       );
 
       const testContext = {
-        ...contextAdminUser,
+        ...contextBypassUser,
         user: {
-          ...contextAdminUser.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextBypassUser.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
@@ -755,7 +779,7 @@ describe('User mutation resolver', () => {
       await usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_USER_ID,
+          id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: {
             capabilities: [
               'MANAGE_PLATFORM_REGISTRATION',
@@ -766,15 +790,17 @@ describe('User mutation resolver', () => {
         testContext,
         undefined
       );
-      thalesUser = await loadUserBy({ email: THALES_ADMIN_ORGA_EMAIL });
-      expect(thalesUser.selected_org_capabilities).to.includes(
+      secondOrgaUser = await loadUserBy({
+        email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
+      });
+      expect(secondOrgaUser.selected_org_capabilities).to.includes(
         'MANAGE_PLATFORM_REGISTRATION'
       );
       // Put back the original capabilities
       await usersResolver.Mutation.editUserCapabilities(
         undefined,
         {
-          id: THALES_ADMIN_ORGA_USER_ID,
+          id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: {
             capabilities: ['ADMINISTRATE_ORGANIZATION'],
           },
@@ -785,10 +811,10 @@ describe('User mutation resolver', () => {
     });
     it('should accept a pending user to the organization', async () => {
       const testContext = {
-        ...contextAdminUser,
+        ...contextBypassUser,
         user: {
-          ...contextAdminUser.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextBypassUser.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
@@ -796,7 +822,7 @@ describe('User mutation resolver', () => {
         portalContext: testContext,
       });
       const pendingUser = await loginFromProvider({
-        email: `testPending${uuidv4()}@thales.com`,
+        email: `testPending${uuidv4()}@second-orga.com`,
         first_name: 'test',
         last_name: 'pending',
         roles: [],
@@ -834,7 +860,9 @@ describe('User mutation resolver', () => {
     let adminUser: UserLoadUserBy;
     let auth0Spy: MockInstance;
     beforeAll(async () => {
-      adminUser = await loadUserBy({ email: DEFAULT_ADMIN_EMAIL });
+      adminUser = await loadUserBy({
+        email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+      });
       if (!adminUser) {
         throw new Error('admin user not found');
       }
@@ -860,7 +888,7 @@ describe('User mutation resolver', () => {
             picture: newPicture,
           },
         },
-        contextAdminUser
+        contextBypassUser
       );
 
       // assert response
@@ -872,7 +900,9 @@ describe('User mutation resolver', () => {
       expect(response.picture).toEqual(newPicture);
 
       // assert database
-      const [dbUser] = await loadUser({ email: DEFAULT_ADMIN_EMAIL });
+      const [dbUser] = await loadUser({
+        email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+      });
       expect(dbUser).toBeDefined();
       expect(dbUser?.first_name).toEqual(newFirstName);
       expect(dbUser?.last_name).toEqual(newLastName);
@@ -881,7 +911,7 @@ describe('User mutation resolver', () => {
 
       // assert auth0 call
       expect(auth0Spy).toBeCalledWith({
-        email: DEFAULT_ADMIN_EMAIL,
+        email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
         first_name: newFirstName,
         last_name: newLastName,
         country: newCountry,
@@ -902,7 +932,7 @@ describe('User mutation resolver', () => {
             picture: adminUser.picture,
           },
         },
-        contextAdminUser
+        contextBypassUser
       );
 
       auth0Spy.mockReset();
@@ -920,12 +950,14 @@ describe('User mutation resolver', () => {
       const response = await usersResolver.Mutation.resetPassword(
         undefined,
         {},
-        contextAdminUser
+        contextBypassUser
       );
 
       expect(response).toBeTruthy();
       expect(response.success).toBeTruthy();
-      expect(auth0Spy).toBeCalledWith(DEFAULT_ADMIN_EMAIL);
+      expect(auth0Spy).toBeCalledWith(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+      );
     });
 
     afterAll(() => {
@@ -936,17 +968,17 @@ describe('User mutation resolver', () => {
   describe('removePendingUserFromOrganization', () => {
     it('should remove a pending user from organization', async () => {
       const testContext = {
-        ...contextAdminUser,
+        ...contextBypassUser,
         user: {
-          ...contextAdminUser.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextBypassUser.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
         user: testContext.user,
         portalContext: testContext,
       });
-      const email = `testPending${uuidv4()}@thales.com`;
+      const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
         email: email,
         first_name: 'testToRemove',
@@ -955,7 +987,10 @@ describe('User mutation resolver', () => {
       });
 
       const userId = toGlobalId('User', pendingUser.id);
-      const organizationId = toGlobalId('Organization', THALES_ORGA_ID);
+      const organizationId = toGlobalId(
+        'Organization',
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
 
       await usersResolver.Mutation.removePendingUserFromOrganization(
         undefined,
@@ -978,17 +1013,17 @@ describe('User mutation resolver', () => {
 
     it('should dispatch event when pending user is removed from organization', async () => {
       const testContext = {
-        ...contextAdminOrgaThales,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextAdminOrgaThales.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextAdminSecondOrga.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
         user: testContext.user,
         portalContext: testContext,
       });
-      const email = `testPending${uuidv4()}@thales.com`;
+      const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
         email: email,
         first_name: 'testToRemove',
@@ -996,14 +1031,17 @@ describe('User mutation resolver', () => {
         roles: [],
       });
       const userId = toGlobalId('User', pendingUser.id);
-      const organizationId = toGlobalId('Organization', THALES_ORGA_ID);
+      const organizationId = toGlobalId(
+        'Organization',
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
       const subscriptionSpy = new SubscriptionSpy();
       await subscriptionSpy.spy(
         usersResolver.Subscription?.UserPending,
         {
           organizationId: organizationId,
         },
-        contextAdminOrgaThales,
+        contextAdminSecondOrga,
         ['delete']
       );
 
@@ -1027,7 +1065,7 @@ describe('User mutation resolver', () => {
   });
   describe('bulkRemovePendingUserFromOrganization', () => {
     it('should remove pending users from organization', async () => {
-      const email = `testPending${uuidv4()}@thales.com`;
+      const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
         email: email,
         first_name: 'testToRemove',
@@ -1036,10 +1074,10 @@ describe('User mutation resolver', () => {
       });
 
       const testContext = {
-        ...contextAdminOrgaThales,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextAdminOrgaThales.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextAdminSecondOrga.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
@@ -1071,7 +1109,7 @@ describe('User mutation resolver', () => {
     });
 
     it('should dispatch event when pending users are removed from organization', async () => {
-      const email = `testPending${uuidv4()}@thales.com`;
+      const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
         email: email,
         first_name: 'testToRemove',
@@ -1080,10 +1118,10 @@ describe('User mutation resolver', () => {
       });
 
       const testContext = {
-        ...contextAdminOrgaThales,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextAdminOrgaThales.user,
-          selected_organization_id: THALES_ORGA_ID,
+          ...contextAdminSecondOrga.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
       requestContext.set({
@@ -1091,14 +1129,17 @@ describe('User mutation resolver', () => {
         portalContext: testContext,
       });
 
-      const organizationId = toGlobalId('Organization', THALES_ORGA_ID);
+      const organizationId = toGlobalId(
+        'Organization',
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
       const subscriptionSpy = new SubscriptionSpy();
       await subscriptionSpy.spy(
         usersResolver.Subscription?.UserPending,
         {
           organizationId: organizationId,
         },
-        contextAdminOrgaThales,
+        contextAdminSecondOrga,
         ['invalidate']
       );
 
@@ -1118,7 +1159,9 @@ describe('User mutation resolver', () => {
 
       const events = await subscriptionSpy.waitForEvents(1);
       expect(events).toHaveLength(1);
-      expect(events[0].UserPending.invalidate.id).toBe(THALES_ORGA_ID);
+      expect(events[0].UserPending.invalidate.id).toBe(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
 
       await removeUser({ email: pendingUser.email });
       await subscriptionSpy.cleanup();

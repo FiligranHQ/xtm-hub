@@ -17,7 +17,7 @@ export const ACCESS_SUBSCRIPTION_USER = {
 };
 
 export const THALES_ADMIN_USER = {
-  EMAIL: 'admin@thales.com',
+  EMAIL: 'admin@second-orga.com',
 };
 
 export const THALES_USER = {

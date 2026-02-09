@@ -1,12 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../knexfile';
-import {
-  FILIGRAN_ORGA_ID,
-  INTEGRATION_SERVICE_CAPABILITY_DELETE,
-  INTEGRATION_SERVICE_CAPABILITY_UPLOAD,
-  SERVICE_INTEGRATIONS_ID,
-} from '../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import ServiceInstance, {
   ServiceInstanceId,
@@ -14,7 +9,6 @@ import ServiceInstance, {
 import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { ErrorCode } from '../../utils/error/error.code';
 import { SubscriptionStatus } from '../subscription.const';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
@@ -37,7 +31,7 @@ describe('Subscription app', () => {
       const subscriptionData = {
         id: subscriptionId,
         service_instance_id: serviceInstanceId,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         start_date: new Date(),
         end_date: new Date(),
         billing: 0,
@@ -46,7 +40,7 @@ describe('Subscription app', () => {
       await createSubscription(subscriptionData);
 
       const call = subscriptionApp.subscribeOrganizationToService({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         serviceInstanceId,
         startDate: new Date(),
         endDate: new Date(),
@@ -58,7 +52,7 @@ describe('Subscription app', () => {
 
     it('should subscribe the organization to the service instance (without capabilities)', async () => {
       await subscriptionApp.subscribeOrganizationToService({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         serviceInstanceId,
         startDate: new Date(),
         endDate: new Date(),
@@ -67,7 +61,7 @@ describe('Subscription app', () => {
 
       const createdSubscription = await db<Subscription>('Subscription')
         .where({
-          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           service_instance_id: serviceInstanceId,
         })
         .select('*')
@@ -84,19 +78,19 @@ describe('Subscription app', () => {
 
     it('should subscribe the organization to the service instance (with capabilities)', async () => {
       await subscriptionApp.subscribeOrganizationToService({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         serviceInstanceId,
         startDate: new Date(),
         endDate: new Date(),
         capabilityIds: [
-          INTEGRATION_SERVICE_CAPABILITY_UPLOAD,
-          INTEGRATION_SERVICE_CAPABILITY_DELETE,
+          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
+          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
         ],
       });
 
       const createdSubscription = await db<Subscription>('Subscription')
         .where({
-          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           service_instance_id: serviceInstanceId,
         })
         .select('*')
@@ -112,13 +106,15 @@ describe('Subscription app', () => {
       expect(
         capabilities.some(
           (capa) =>
-            capa.service_capability_id === INTEGRATION_SERVICE_CAPABILITY_UPLOAD
+            capa.service_capability_id ===
+            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
         )
       ).toBeTruthy();
       expect(
         capabilities.some(
           (capa) =>
-            capa.service_capability_id === INTEGRATION_SERVICE_CAPABILITY_DELETE
+            capa.service_capability_id ===
+            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
         )
       ).toBeTruthy();
     });
@@ -129,8 +125,8 @@ describe('Subscription app', () => {
       const id = uuidv4() as SubscriptionId;
       const subscription = await createSubscription({
         id,
-        organization_id: FILIGRAN_ORGA_ID,
-        service_instance_id: SERVICE_INTEGRATIONS_ID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         start_date: new Date(),
         end_date: null,
         status: 'ACCEPTED',

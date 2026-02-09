@@ -1,16 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../tests/tests.const';
 import { withTransaction } from '../context/database.context';
 import { UserInitializer } from '../model/kanel/public/User';
 import UserOrganization from '../model/kanel/public/UserOrganization';
 import { loadOrganizationBy } from '../modules/organizations/organizations.domain';
-import {
-  CAPABILITY_BYPASS,
-  PLATFORM_ORGANIZATION_UUID,
-  ROLE_ADMIN,
-  ROLE_USER,
-} from '../portal.const';
+import { CAPABILITY_BYPASS, ROLE_ADMIN, ROLE_USER } from '../portal.const';
 import { DevUser } from '../utils/config-validation.util';
 import {
   addRoleToUser,
@@ -131,7 +127,7 @@ describe('Dev users seeding', () => {
       const platformMembership = await db<UserOrganization>('User_Organization')
         .where({
           user_id: user?.id,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         })
         .first();
 
