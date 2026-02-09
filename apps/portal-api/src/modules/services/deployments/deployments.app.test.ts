@@ -11,6 +11,7 @@ import {
 } from 'vitest';
 import {
   TEST_ORGANIZATIONS,
+  contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
 } from '../../../../tests/tests.const';
 import {
@@ -48,9 +49,11 @@ import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
+import { PortalContext } from '../../../model/portal-context';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
@@ -841,7 +844,106 @@ describe('Deployment app', () => {
       });
     });
   });
+  describe('loadTrialDeployments', () => {
+    it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({});
 
+      expect(trialDeployments).toEqual({
+        availableTrials: expect.arrayContaining([
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ]),
+        deployed: [],
+      });
+      expect(trialDeployments.availableTrials).toHaveLength(2);
+    });
+    it('should return only requested platform identifier specified as available when no DeploymentRequest exist', async () => {
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+      });
+    });
+
+    it('should return trial as available if the created one does not count in quota', async () => {
+      await insertOpenCtiDeploymentRequest({
+        counts_in_orga_quota: false,
+      });
+
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+      });
+    });
+
+    it('should not return identifier as available when DeploymentRequest exist', async () => {
+      const deploymentRequest = await insertOpenCtiDeploymentRequest({});
+
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [],
+        deployed: [
+          {
+            service_instance_id: toGlobalId(
+              'ServiceInstance',
+              deploymentRequest!.service_instance_id
+            ),
+            platform_identifier: deploymentRequest?.platform_identifier,
+          },
+        ],
+      });
+    });
+    it('should return data corresponding to the right organization', async () => {
+      await insertOpenCtiDeploymentRequest({});
+
+      requestContext.set(requestContextAdminSecondOrga);
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+      });
+    });
+    it('should return not availablity and no deployed for personal space', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+      await insertOpenCtiDeploymentRequest({});
+
+      const contextUserWithPersonalOrga: PortalContext = {
+        ...contextSimpleUserSecondOrga,
+        user: {
+          ...contextSimpleUserSecondOrga.user,
+          selected_organization_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
+              .PERSONAL_SPACE_ID,
+        },
+      };
+
+      requestContext.set({
+        user: contextUserWithPersonalOrga.user,
+        portalContext: contextUserWithPersonalOrga,
+      });
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [],
+        deployed: [],
+      });
+    });
+  });
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(

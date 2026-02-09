@@ -17,6 +17,7 @@ import {
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
   Success,
+  TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -38,6 +39,7 @@ import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 import config from 'config';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { UserId } from '../../../model/kanel/public/User';
 import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
@@ -728,6 +730,48 @@ export const DeploymentsApp = {
     }
 
     await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+  },
+  loadTrialDeployments: async (input: TrialDeploymentsInput) => {
+    const { user } = requestContext.require();
+    const organization = await loadOrganizationBy({
+      id: user.selected_organization_id,
+    });
+    if (organization.personal_space) {
+      return {
+        availableTrials: [],
+        deployed: [],
+      };
+    }
+
+    const deploymentRequests =
+      await DeploymentRequestDomain.loadTrialsForOrganization(
+        user.selected_organization_id,
+        input.platformIdentifiers
+      );
+
+    const deployedIdentifiers = new Set(
+      deploymentRequests.map((d) => d.platform_identifier)
+    );
+
+    const requestedIdentifiers =
+      input.platformIdentifiers ?? Object.values(PlatformIdentifier);
+    const availableTrials = requestedIdentifiers.filter(
+      (identifier) => !deployedIdentifiers.has(identifier)
+    );
+
+    return {
+      availableTrials: availableTrials,
+      deployed: deploymentRequests.map((deployment) => {
+        return {
+          service_instance_id: toGlobalId(
+            'ServiceInstance',
+            deployment.service_instance_id
+          ),
+          platform_identifier:
+            deployment.platform_identifier as PlatformIdentifier,
+        };
+      }),
+    };
   },
 };
 

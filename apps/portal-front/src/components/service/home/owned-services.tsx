@@ -1,18 +1,18 @@
 'use client';
 
-import { PortalContext } from '@/components/me/app-portal-context';
+import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
   registeredPlatformToServiceInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { Suspense, useContext } from 'react';
+import { Suspense } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {
@@ -27,8 +27,9 @@ const OwnedServices = ({
   registeredPlatforms,
 }: OwnedServicesProps) => {
   const t = useTranslations();
-  const { isPersonalSpace } = useContext(PortalContext);
+  const { availableTrials } = useOrgaFreeTrial();
   // Merge and sort by ordering property
+
   const sortedServices = [
     ...services.map(userServicesOwnedServiceToInstanceCardData),
     ...publicServices.map(publicServiceInstanceToInstanceCardData),
@@ -37,15 +38,9 @@ const OwnedServices = ({
     ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
-  const trialInstances = registeredPlatforms.filter(
-    (service) =>
-      service.deployment_request?.type ===
-        DeploymentRequestDeploymentTypeEnum.TRIAL &&
-      service.deployment_request.counts_in_orga_quota
+  const shouldDisplayFreeTrialSkeleton = availableTrials.includes(
+    PlatformIdentifierEnum.OPENCTI
   );
-
-  const shouldDisplayFreeTrialSkeleton =
-    trialInstances.length === 0 && !isPersonalSpace;
 
   const freeTrialServiceInstanceDataCard =
     freeTrialSkeletonToServiceInstanceCardData(t);

@@ -1,16 +1,12 @@
 import { graphql } from 'react-relay';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery = graphql`
-  query createFreeTrialRegisteredPlatformsStatusAndTypeQuery(
-    $input: RegisteredPlatformsInput
-  ) {
-    registeredPlatforms(input: $input) {
-      id
-      deployment_request {
-        type
-        hub_status
-        counts_in_orga_quota
+const CreateFreeTrialAvailableTrials = graphql`
+  query createFreeTrialAvailableTrialsQuery($input: TrialDeploymentsInput) {
+    trialDeployments(input: $input) {
+      availableTrials
+      deployed {
+        service_instance_id
       }
     }
   }

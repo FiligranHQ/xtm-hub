@@ -58,6 +58,7 @@ type Query {
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
+  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
   documentExists(documentName: String, service_instance_id: String): Boolean
   publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
@@ -372,6 +373,16 @@ type DeploymentAvailability {
   platform_identifier: PlatformIdentifier!
 }
 
+type DeployedPlatform {
+  service_instance_id: ID!
+  platform_identifier: PlatformIdentifier!
+}
+
+type TrialsDeployments {
+  availableTrials: [PlatformIdentifier!]!
+  deployed: [DeployedPlatform!]!
+}
+
 enum DeploymentRequestOrdering {
   requester_email
   organization_name
@@ -400,6 +411,10 @@ input UpdateDeploymentQuotaCapacityInput {
   platformIdentifier: PlatformIdentifier!
   region: DeploymentRequestPlatformRegion!
   newCapacity: Int!
+}
+
+input TrialDeploymentsInput {
+  platformIdentifiers: [PlatformIdentifier!]
 }
 
 type ShareableResource {
