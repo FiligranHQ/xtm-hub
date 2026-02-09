@@ -854,6 +854,7 @@ describe('Deployment app', () => {
           PlatformIdentifier.Openaev,
         ]),
         deployed: [],
+        isBlacklisted: false,
       });
       expect(trialDeployments.availableTrials).toHaveLength(2);
     });
@@ -865,9 +866,30 @@ describe('Deployment app', () => {
       expect(trialDeployments).toEqual({
         availableTrials: [PlatformIdentifier.Opencti],
         deployed: [],
+        isBlacklisted: false,
       });
     });
 
+    it('should return blacklisted = true if orga is blacklisted', async () => {
+      const originalConfigGet = config.get;
+      vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        if (key === 'domains_blacklist') {
+          return 'filigran.io,blocked.net';
+        }
+        return originalConfigGet.call(config, key);
+      });
+
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+        isBlacklisted: true,
+      });
+      vi.mocked(config.get).mockImplementation(originalConfigGet);
+    });
     it('should return trial as available if the created one does not count in quota', async () => {
       await insertOpenCtiDeploymentRequest({
         counts_in_orga_quota: false,
@@ -880,6 +902,7 @@ describe('Deployment app', () => {
       expect(trialDeployments).toEqual({
         availableTrials: [PlatformIdentifier.Opencti],
         deployed: [],
+        isBlacklisted: false,
       });
     });
 
@@ -901,6 +924,7 @@ describe('Deployment app', () => {
             platform_identifier: deploymentRequest?.platform_identifier,
           },
         ],
+        isBlacklisted: false,
       });
     });
     it('should return data corresponding to the right organization', async () => {
@@ -914,6 +938,7 @@ describe('Deployment app', () => {
       expect(trialDeployments).toEqual({
         availableTrials: [PlatformIdentifier.Opencti],
         deployed: [],
+        isBlacklisted: false,
       });
     });
     it('should return not availablity and no deployed for personal space', async () => {
@@ -941,6 +966,7 @@ describe('Deployment app', () => {
       expect(trialDeployments).toEqual({
         availableTrials: [],
         deployed: [],
+        isBlacklisted: false,
       });
     });
   });

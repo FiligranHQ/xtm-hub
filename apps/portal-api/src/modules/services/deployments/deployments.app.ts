@@ -38,7 +38,6 @@ import { serviceDefinitionDomain } from '../definition/service-definition.domain
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
-import config from 'config';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { UserId } from '../../../model/kanel/public/User';
 import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
@@ -56,6 +55,7 @@ import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
+  isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
@@ -74,13 +74,7 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
 
-    const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
-      .split(',')
-      .map((d) => d.trim());
-    const organizationIsBlacklisted = chosenOrganization.domains.some(
-      (domain) => domainsBlacklist.includes(domain)
-    );
-    if (organizationIsBlacklisted) {
+    if (isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
         `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
       );
@@ -740,6 +734,7 @@ export const DeploymentsApp = {
       return {
         availableTrials: [],
         deployed: [],
+        isBlacklisted: false,
       };
     }
 
@@ -771,6 +766,7 @@ export const DeploymentsApp = {
             deployment.platform_identifier as PlatformIdentifier,
         };
       }),
+      isBlacklisted: isOrganizationBlacklisted(organization),
     };
   },
 };

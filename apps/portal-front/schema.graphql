@@ -381,6 +381,7 @@ type DeployedPlatform {
 type TrialsDeployments {
   availableTrials: [PlatformIdentifier!]!
   deployed: [DeployedPlatform!]!
+  isBlacklisted: Boolean!
 }
 
 enum DeploymentRequestOrdering {

@@ -1826,6 +1826,7 @@ export type TrialsDeployments = {
   __typename?: 'TrialsDeployments';
   availableTrials: Array<PlatformIdentifier>;
   deployed: Array<DeployedPlatform>;
+  isBlacklisted: Scalars['Boolean']['output'];
 };
 
 export type UnregisterPlatformInput = {
@@ -3269,6 +3270,7 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
 export type TrialsDeploymentsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TrialsDeployments'] = ResolversParentTypes['TrialsDeployments']> = ResolversObject<{
   availableTrials?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   deployed?: Resolver<Array<ResolversTypes['DeployedPlatform']>, ParentType, ContextType>;
+  isBlacklisted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

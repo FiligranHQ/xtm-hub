@@ -8,6 +8,7 @@ const CreateFreeTrialAvailableTrials = graphql`
       deployed {
         service_instance_id
       }
+      isBlacklisted
     }
   }
 `;

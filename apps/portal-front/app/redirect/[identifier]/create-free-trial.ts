@@ -51,14 +51,17 @@ export const redirectToCreateFreeTrial = async (
     const deployedTrials = response.data.trialDeployments.deployed;
     const availableTrials = response.data.trialDeployments.availableTrials;
 
-    if (deployedTrials > 0) {
+    if (deployedTrials.length > 0) {
       const instanceUrl = new URL(
         `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}_registration/${deployedTrials[0]?.service_instance_id}`,
         baseUrlFront
       );
       return NextResponse.redirect(instanceUrl);
     }
-    if (availableTrials.length === 0) {
+    if (
+      availableTrials.length === 0 ||
+      response.data.trialDeployments.isBlacklisted
+    ) {
       return NextResponse.redirect(`${freeTrialUrl}`);
     }
 

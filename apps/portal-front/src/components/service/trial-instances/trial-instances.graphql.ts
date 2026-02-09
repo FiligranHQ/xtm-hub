@@ -48,6 +48,7 @@ export const TrialsForOrgaFragment = graphql`
   @refetchable(queryName: "TrialsForOrgaRefetchQuery") {
     trialDeployments(input: $input) {
       availableTrials
+      isBlacklisted
     }
   }
 `;
