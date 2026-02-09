@@ -12,6 +12,8 @@ export default defineConfig({
         'builder/**',
         'src/__generated__/**',
         'src/migrations/**',
+        'src/es-migrations/**',
+        'src/seeds/**',
         'tests/**',
         'config/**',
         '.kanelrc.js',

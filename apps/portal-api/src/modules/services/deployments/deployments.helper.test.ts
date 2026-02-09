@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -7,7 +8,6 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
-import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 import {
@@ -102,6 +102,10 @@ describe('isPlatformStateTransitionValid', () => {
       DeploymentRequestPlatformState.Removing,
       DeploymentRequestPlatformState.Removed,
     ],
+    [
+      DeploymentRequestPlatformState.Removed,
+      DeploymentRequestPlatformState.Provisioning,
+    ],
   ] as const;
 
   it.each(validTransitions)(
@@ -147,7 +151,10 @@ describe('assertFreeTrialsLimit', () => {
     ).mockResolvedValue(null);
 
     await expect(
-      assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
+      assertFreeTrialsLimit(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        PlatformIdentifier.Opencti
+      )
     ).resolves.not.toThrow();
   });
 
@@ -165,7 +172,10 @@ describe('assertFreeTrialsLimit', () => {
       actual_state: DeploymentRequestPlatformState.Active,
     });
     await expect(
-      assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
+      assertFreeTrialsLimit(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        PlatformIdentifier.Opencti
+      )
     ).rejects.toThrow(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
   });
 });

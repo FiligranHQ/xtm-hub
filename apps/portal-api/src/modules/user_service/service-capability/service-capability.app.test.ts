@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import {
-  requestContextSimpleUserThales,
-  SERVICE_VAULT_ID,
+  requestContextSimpleUserSecondOrga,
+  SERVICES,
 } from '../../../../tests/tests.const';
 import { requestContext } from '../../../context/request.context';
 import Subscription, {
@@ -23,9 +23,9 @@ describe('editServiceCapability', () => {
   beforeEach(async () => {
     subscription = await createSubscription({
       id: uuidv4() as SubscriptionId,
-      service_instance_id: SERVICE_VAULT_ID,
+      service_instance_id: SERVICES.INSTANCES.VAULT.ID,
       organization_id:
-        requestContextSimpleUserThales.user.selected_organization_id,
+        requestContextSimpleUserSecondOrga.user.selected_organization_id,
       start_date: new Date(),
       end_date: undefined,
       billing: 100,
@@ -39,7 +39,7 @@ describe('editServiceCapability', () => {
   it('should update capability', async () => {
     const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
-      user_id: requestContextSimpleUserThales.user.id,
+      user_id: requestContextSimpleUserSecondOrga.user.id,
       capabilities: [GenericServiceCapabilityName.ACCESS],
     });
 
@@ -49,13 +49,13 @@ describe('editServiceCapability', () => {
         GenericServiceCapabilityName.ACCESS,
         GenericServiceCapabilityName.MANAGE_ACCESS,
       ],
-      SERVICE_VAULT_ID
+      SERVICES.INSTANCES.VAULT.ID
     );
 
     const capabilities = await loadCapabilities(
-      SERVICE_VAULT_ID,
-      requestContextSimpleUserThales.user.id,
-      requestContextSimpleUserThales.user.selected_organization_id
+      SERVICES.INSTANCES.VAULT.ID,
+      requestContextSimpleUserSecondOrga.user.id,
+      requestContextSimpleUserSecondOrga.user.selected_organization_id
     );
 
     expect(editedCapa).toBeTruthy();
@@ -67,11 +67,11 @@ describe('editServiceCapability', () => {
   it('should throw an error if user is not allowed', async () => {
     const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
-      user_id: requestContextSimpleUserThales.user.id,
+      user_id: requestContextSimpleUserSecondOrga.user.id,
       capabilities: [GenericServiceCapabilityName.ACCESS],
     });
 
-    requestContext.set(requestContextSimpleUserThales);
+    requestContext.set(requestContextSimpleUserSecondOrga);
 
     const call = serviceCapabilityApp.editServiceCapability(
       userService!.id,
@@ -79,7 +79,7 @@ describe('editServiceCapability', () => {
         GenericServiceCapabilityName.ACCESS,
         GenericServiceCapabilityName.MANAGE_ACCESS,
       ],
-      SERVICE_VAULT_ID
+      SERVICES.INSTANCES.VAULT.ID
     );
 
     await expect(call).rejects.toThrow('MISSING_CAPABILITY_ON_SERVICE');

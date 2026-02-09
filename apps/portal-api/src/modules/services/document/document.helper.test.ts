@@ -1,4 +1,14 @@
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { db } from '../../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   IntegrationSubType,
   IntegrationType,
@@ -18,12 +28,19 @@ import { DocumentApp } from './document.app';
 import {
   DocumentHelper,
   loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
   ManageableServiceDefinitionIdentifier,
   VAULT_DOCUMENT_TYPE,
 } from './document.helper';
 import * as DocumentUploadsHelper from './document.uploads.helper';
+import { DocumentDomain } from './domain/document.domain';
 
 describe('DocumentHelper', () => {
+  afterEach(async () => {
+    vi.restoreAllMocks();
+    await db<Document>('Document').delete();
+  });
+
   describe('CSV Feed', () => {
     const minioFileMock = {
       minioName: 'minioFile',
@@ -43,7 +60,7 @@ describe('DocumentHelper', () => {
     it('cvsFeed should return the document with elastic search counters', async () => {
       const document = await DocumentApp.createDocument(
         {
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
           short_description: 'short_description',
@@ -288,6 +305,47 @@ describe('DocumentHelper', () => {
           },
         ]
       );
+    });
+  });
+
+  describe('loadSeoDocumentWithCountersBySlug', () => {
+    it('should throw an error when document is not found', async () => {
+      const call = loadSeoDocumentWithCountersBySlug(
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        'slug'
+      );
+
+      await expect(call).rejects.toThrow(ErrorCode.DocumentNotFound);
+    });
+
+    it('should return document when it is found', async () => {
+      const slug = 'slug';
+      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+        async (eventType) => {
+          if (eventType === TelemetryEventType.DOWNLOAD) return 5;
+          return 12;
+        }
+      );
+      await DocumentDomain.createDocument(
+        {
+          name: 'name',
+          description: 'description',
+          short_description: 'short_description',
+          slug,
+          active: true,
+          type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        },
+        []
+      );
+
+      const result = await loadSeoDocumentWithCountersBySlug(
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        slug
+      );
+
+      expect(result).toBeDefined();
+      expect(result.download_number).toBe(5);
+      expect(result.share_number).toBe(12);
     });
   });
 });

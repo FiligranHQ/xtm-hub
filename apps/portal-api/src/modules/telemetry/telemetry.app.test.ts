@@ -1,6 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SERVICE_INTEGRATIONS_ID } from '../../../tests/tests.const';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { logApp } from '../../utils/app-logger.util';
 import { telemetryApp } from './telemetry.app';
@@ -14,6 +12,7 @@ import {
 import { LoginEvent, TelemetryEventType } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   IntegrationType,
   PlatformIdentifier,
@@ -128,7 +127,7 @@ describe('TelemetryApp', () => {
 
       const document = await DocumentApp.createDocument(
         {
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
           short_description: 'short_description',
@@ -151,12 +150,12 @@ describe('TelemetryApp', () => {
         .mockResolvedValue();
 
       await telemetryApp.sendOneClickDeployEvent({
-        userId: ADMIN_UUID,
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_ID
+            SERVICES.INSTANCES.INTEGRATIONS.ID
           ),
           resource_id: toGlobalId('DocumentId', documentId),
           resource_title: 'CsvFeed Title',
@@ -170,11 +169,11 @@ describe('TelemetryApp', () => {
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_UUID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: documentId,
@@ -209,7 +208,7 @@ describe('TelemetryApp', () => {
 
       const document = await DocumentApp.createDocument(
         {
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
           short_description: 'short_description',
@@ -232,12 +231,12 @@ describe('TelemetryApp', () => {
         .mockResolvedValue();
 
       await telemetryApp.sendOneClickDeployEvent({
-        userId: ADMIN_UUID,
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_ID
+            SERVICES.INSTANCES.INTEGRATIONS.ID
           ),
           resource_id: toGlobalId('DocumentId', documentId),
           resource_title: 'CsvFeed Title',
@@ -251,11 +250,11 @@ describe('TelemetryApp', () => {
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_UUID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: documentId,
@@ -289,7 +288,7 @@ describe('TelemetryApp', () => {
       });
       const document = await DocumentApp.createDocument(
         {
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
           short_description: 'short_description',
@@ -311,12 +310,12 @@ describe('TelemetryApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
       await telemetryApp.sendOneClickDeployEvent({
-        userId: ADMIN_UUID,
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_ID
+            SERVICES.INSTANCES.INTEGRATIONS.ID
           ),
           resource_id: toGlobalId('DocumentId', documentId),
           resource_title: 'Connector Title',
@@ -330,11 +329,11 @@ describe('TelemetryApp', () => {
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_UUID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
         resource_id: documentId,

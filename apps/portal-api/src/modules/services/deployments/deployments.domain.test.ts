@@ -1,10 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import {
-  SIMPLE_USER_FILIGRAN_ID,
-  THALES_SIMPLE_USER_ID,
-} from '../../../../tests/tests.const';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
@@ -20,7 +17,6 @@ import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../../model/kanel/public/User';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { deleteSubscription } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -70,7 +66,8 @@ describe('DeploymentRequestDomain', () => {
     it('should filter deployment requests when searchTerm is specified ', async () => {
       const deployment = await insertOpenCtiDeploymentRequest({});
       await insertOpenCtiDeploymentRequest({
-        user_requester_id: SIMPLE_USER_FILIGRAN_ID as UserId,
+        user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE
+          .ID as UserId,
       });
 
       const deploymentRequests =
@@ -114,13 +111,13 @@ describe('DeploymentRequestDomain', () => {
 
     it('should return deployment request when Active trial deployment exists for user', async () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
-      const userId = ADMIN_UUID as UserId;
+      const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
       const deployment = await insertOpenCtiDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
       const result =
@@ -137,13 +134,13 @@ describe('DeploymentRequestDomain', () => {
 
     it('should return deployment request when Expired trial deployment exists for user', async () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
-      const userId = ADMIN_UUID as UserId;
+      const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
       const deployment = await insertOpenCtiDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Expired,
         type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
       const result =
@@ -159,13 +156,13 @@ describe('DeploymentRequestDomain', () => {
 
     it('should return deployment request when hub_status is Pending', async () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
-      const userId = ADMIN_UUID as UserId;
+      const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
       const deployment = await insertOpenCtiDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Pending,
         type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
       const result =
@@ -181,14 +178,15 @@ describe('DeploymentRequestDomain', () => {
 
     it('should not return deployment request when user is not member of the organization', async () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
-      // THALES_SIMPLE_USER_ID is in Thales org, not in Filigran org (PLATFORM_ORGANIZATION_UUID)
-      const userNotInOrganization = THALES_SIMPLE_USER_ID;
+      // ORGANIZATIONS_TEST.SECOND_ORGANIZATION.USERS.SIMPLE.ID is in SECOND ORGA, not in Filigran org (ORGANIZATIONS_TEST.FILIGRAN.ID)
+      const userNotInOrganization =
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
 
       await insertOpenCtiDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
       const result =
@@ -202,13 +200,13 @@ describe('DeploymentRequestDomain', () => {
 
     it('should not return deployment request when platform_identifier does not match', async () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
-      const userId = ADMIN_UUID as UserId;
+      const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
       await insertOpenCtiDeploymentRequest({
         platform_identifier: PlatformIdentifier.Openaev,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
       const result =
