@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { UserOrganizationPendingDomain } from '../users/users-pending/user-organization-pending.domain';
 import { createNewUserFromInvitation } from '../users/users.helper';
 import { createUserOrganizationRelationAndRemovePending } from './user-organization.helper';
@@ -20,7 +20,7 @@ describe('UserOrganizationHelper', () => {
 
       const user_orgs = await createUserOrganizationRelationAndRemovePending({
         user_id: user.id,
-        organizations_id: [PLATFORM_ORGANIZATION_UUID],
+        organizations_id: [TEST_ORGANIZATIONS.FILIGRAN.ID],
       });
 
       expect(user_orgs.length).toBe(1);
@@ -44,7 +44,7 @@ describe('UserOrganizationHelper', () => {
 
       const user_orgs = await createUserOrganizationRelationAndRemovePending({
         user_id: user.id,
-        organizations_id: [PLATFORM_ORGANIZATION_UUID],
+        organizations_id: [TEST_ORGANIZATIONS.FILIGRAN.ID],
       });
 
       expect(user_orgs.length).toBe(1);

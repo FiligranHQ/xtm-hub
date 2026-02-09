@@ -1,9 +1,9 @@
 import { MockInstance } from '@vitest/spy';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextAdminUser,
-  requestContextThalesUser,
-  THALES_ORGA_ID,
+  contextBypassUser,
+  requestContextAdminSecondOrga,
+  TEST_ORGANIZATIONS,
 } from '../../tests/tests.const';
 import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
@@ -32,9 +32,9 @@ describe('Security Guard', () => {
       });
 
       const call = securityGuard.assertUserIsAllowedOnOrganization(
-        contextAdminUser.user,
+        contextBypassUser.user,
         {
-          organizationId: THALES_ORGA_ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           requiredCapability: OrganizationCapability.AdministrateOrganization,
         }
       );
@@ -49,9 +49,9 @@ describe('Security Guard', () => {
       });
 
       const call = securityGuard.assertUserIsAllowedOnOrganization(
-        contextAdminUser.user,
+        contextBypassUser.user,
         {
-          organizationId: THALES_ORGA_ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           requiredCapability: OrganizationCapability.AdministrateOrganization,
         }
       );
@@ -67,16 +67,16 @@ describe('Security Guard', () => {
       });
 
       await securityGuard.assertUserIsAllowedOnOrganization(
-        contextAdminUser.user,
+        contextBypassUser.user,
         {
-          organizationId: THALES_ORGA_ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           requiredCapability: OrganizationCapability.AdministrateOrganization,
         }
       );
     });
 
-    it('should verify user thales capability based on selected_organization_id', async () => {
-      requestContext.set(requestContextThalesUser);
+    it('should verify user secondOrga capability based on selected_organization_id', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
       await expect(
         securityGuard.assertUserCapabilities([
           OrganizationCapability.AdministrateOrganization,
@@ -91,12 +91,12 @@ describe('Security Guard', () => {
       );
     });
 
-    it('should verify user thales capability with specific organization_id', async () => {
-      requestContext.set(requestContextThalesUser);
+    it('should verify user secondOrga capability with specific organization_id', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
       await expect(
         securityGuard.assertUserCapabilities(
           [OrganizationCapability.AdministrateOrganization],
-          THALES_ORGA_ID
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         )
       ).resolves.not.toThrow();
     });

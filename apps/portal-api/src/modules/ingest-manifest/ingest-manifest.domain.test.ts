@@ -1,10 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { requestContext } from '../../context/request.context';
-import {
-  PLATFORM_ORGANIZATION_UUID,
-  SYSTEM_USER_CONTEXT,
-  SYSTEM_USER_UUID,
-} from '../../portal.const';
+import { SYSTEM_USER_CONTEXT, SYSTEM_USER_UUID } from '../../portal.const';
 import { minioInit } from '../../server/initialize';
 import { DocumentChildrenDomain } from '../services/document/domain/document.children.domain';
 import {
@@ -43,7 +40,9 @@ describe('upsertConnectors', () => {
       it('should set correct uploader information', () => {
         result.forEach((doc) => {
           expect(doc.uploader_id).toBe(SYSTEM_USER_UUID);
-          expect(doc.uploader_organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
+          expect(doc.uploader_organization_id).toBe(
+            TEST_ORGANIZATIONS.FILIGRAN.ID
+          );
           expect(doc.service_instance_id).toBe(INTEGRATION_SERVICE_INSTANCE_ID);
         });
       });
