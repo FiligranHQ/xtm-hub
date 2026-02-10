@@ -66,8 +66,10 @@ describe('UsersOrganizationApp', () => {
         params: {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-          userEmailList:
-            '<li>John Doe (user1@test.com)</li><li>Robert Smith (user2@test.com)</li>',
+          users: [
+            { firstName: 'John', lastName: 'Doe', email: 'user1@test.com' },
+            { firstName: 'Robert', lastName: 'Smith', email: 'user2@test.com' },
+          ],
           userCount: 2,
           requestLabel: 'requests',
         },
@@ -112,7 +114,9 @@ describe('UsersOrganizationApp', () => {
         params: {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-          userEmailList: '<li>John Doe (user1@test.com)</li>',
+          users: [
+            { firstName: 'John', lastName: 'Doe', email: 'user1@test.com' },
+          ],
           userCount: 1,
           requestLabel: 'request',
         },
@@ -145,7 +149,9 @@ describe('UsersOrganizationApp', () => {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
-          userEmailList: '<li> Smith (user1@test.com)</li>',
+          users: [
+            { firstName: '', lastName: 'Smith', email: 'user1@test.com' },
+          ],
           userCount: 1,
         },
         template: 'organization_pending_user_digest',
@@ -177,7 +183,7 @@ describe('UsersOrganizationApp', () => {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
-          userEmailList: '<li>John  (user1@test.com)</li>',
+          users: [{ firstName: 'John', lastName: '', email: 'user1@test.com' }],
           userCount: 1,
         },
         template: 'organization_pending_user_digest',
