@@ -154,7 +154,11 @@
                       your {{organizationName}} organization:
                     </p>
                     <ul>
-                      {{userEmailList}}
+                      {{#each users}}
+                      <li>
+                        {{this.firstName}} {{this.lastName}} ({{this.email}})
+                      </li>
+                      {{/each}}
                     </ul>
                     <p>
                       <br />
