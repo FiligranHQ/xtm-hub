@@ -26,7 +26,9 @@ import {
 import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../../model/kanel/public/DeploymentRequest';
-import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../../model/kanel/public/ServiceInstance';
 import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
@@ -49,6 +51,7 @@ import { MockInstance } from '@vitest/spy';
 import { db } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -798,6 +801,42 @@ describe('Deployment app', () => {
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
+        expect(mockSendMail).not.toHaveBeenCalled();
+      });
+
+      it('should send a mail in case deployment request is in active (only first time)', async () => {
+        vi.spyOn(
+          serviceContractDomain,
+          'loadConfigurationByPlatform'
+        ).mockResolvedValue({
+          service_instance_id: uuidv4() as ServiceInstanceId,
+          config: { platform_url: 'http://example.com' },
+          status: DeploymentRequestPlatformState.Active,
+        });
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          start_date: new Date(2025, 12, 1),
+          end_date: new Date(2026, 1, 1),
+          actual_state: DeploymentRequestPlatformState.Active,
+        });
+
+        expect(mockSendMail).toHaveBeenCalledWith({
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+          template: 'opencti_free_trial_registered',
+          params: {
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            platformUrl: 'http://example.com',
+          },
+        });
+
+        mockSendMail.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          start_date: new Date(2025, 12, 1),
+          end_date: new Date(2026, 1, 1),
+          actual_state: DeploymentRequestPlatformState.Active,
+        });
         expect(mockSendMail).not.toHaveBeenCalled();
       });
     });
