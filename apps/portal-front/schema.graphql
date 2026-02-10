@@ -374,8 +374,8 @@ type DeploymentAvailability {
 }
 
 type DeployedPlatform {
-  service_instance_id: ID!
-  platform_identifier: PlatformIdentifier!
+  serviceInstanceId: ID!
+  platformIdentifier: PlatformIdentifier!
 }
 
 type TrialsDeployments {

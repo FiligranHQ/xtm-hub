@@ -221,8 +221,8 @@ export type DefaultDocument = Document & Node & {
 
 export type DeployedPlatform = {
   __typename?: 'DeployedPlatform';
-  platform_identifier: PlatformIdentifier;
-  service_instance_id: Scalars['ID']['output'];
+  platformIdentifier: PlatformIdentifier;
+  serviceInstanceId: Scalars['ID']['output'];
 };
 
 export type DeploymentAvailability = {
@@ -2550,8 +2550,8 @@ export type DefaultDocumentResolvers<ContextType = PortalContext, ParentType ext
 }>;
 
 export type DeployedPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeployedPlatform'] = ResolversParentTypes['DeployedPlatform']> = ResolversObject<{
-  platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  platformIdentifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  serviceInstanceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

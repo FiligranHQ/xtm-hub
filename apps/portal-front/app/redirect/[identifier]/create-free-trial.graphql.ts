@@ -6,7 +6,7 @@ const CreateFreeTrialAvailableTrials = graphql`
     trialDeployments(input: $input) {
       availableTrials
       deployed {
-        service_instance_id
+        serviceInstanceId
       }
       isBlacklisted
     }

@@ -53,7 +53,7 @@ export const redirectToCreateFreeTrial = async (
 
     if (deployedTrials.length > 0) {
       const instanceUrl = new URL(
-        `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}_registration/${deployedTrials[0]?.service_instance_id}`,
+        `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}_registration/${deployedTrials[0]?.serviceInstanceId}`,
         baseUrlFront
       );
       return NextResponse.redirect(instanceUrl);

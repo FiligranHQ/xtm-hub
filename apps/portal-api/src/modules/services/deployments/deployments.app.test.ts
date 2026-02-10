@@ -188,7 +188,7 @@ describe('Deployment app', () => {
       it('should throw error when organization domain is blacklisted', async () => {
         vi.spyOn(config, 'get').mockImplementation((key: string) => {
           if (key === 'domains_blacklist') {
-            return 'filigran.io,blocked.net';
+            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
           }
           return originalConfigGet.call(config, key);
         });
@@ -917,11 +917,11 @@ describe('Deployment app', () => {
         availableTrials: [],
         deployed: [
           {
-            service_instance_id: toGlobalId(
+            serviceInstanceId: toGlobalId(
               'ServiceInstance',
               deploymentRequest!.service_instance_id
             ),
-            platform_identifier: deploymentRequest?.platform_identifier,
+            platformIdentifier: deploymentRequest?.platform_identifier,
           },
         ],
         isBlacklisted: false,
