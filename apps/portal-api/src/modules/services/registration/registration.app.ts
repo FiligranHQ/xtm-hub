@@ -496,10 +496,17 @@ export const registrationApp = {
 const mapDomainRegisteredPlatformToGraphQL = (
   platform: DomainRegisteredPlatform
 ): RegisteredPlatform => {
+  const PLATFORM_TRIAL_TITLES: Partial<
+    Record<ServiceDefinitionIdentifier, string>
+  > = {
+    [ServiceDefinitionIdentifier.OpenctiRegistration]:
+      'OpenCTI - Free Trial Platform',
+    [ServiceDefinitionIdentifier.OpenaevRegistration]:
+      'OpenAEV - Free Trial Platform',
+  };
+
   const defaultTitle =
-    platform.identifier === ServiceDefinitionIdentifier.OpenctiRegistration
-      ? 'OpenCTI - Free Trial Platform'
-      : 'OpenAEV - Free Trial Platform';
+    PLATFORM_TRIAL_TITLES[platform.identifier] ?? 'Free Trial Platform';
   return {
     __typename: 'RegisteredPlatform',
     id: platform.id,
