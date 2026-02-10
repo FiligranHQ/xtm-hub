@@ -48,7 +48,10 @@ const OwnedServices = ({
         platformIdentifier !== PlatformIdentifierEnum.OPENAEV
     )
     .map((platformIdentifier) =>
-      freeTrialSkeletonToServiceInstanceCardData(platformIdentifier, t)
+      freeTrialSkeletonToServiceInstanceCardData(
+        platformIdentifier as PlatformIdentifierEnum,
+        t
+      )
     );
 
   if (sortedServices.length > 0) {

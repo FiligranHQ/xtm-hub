@@ -142,7 +142,8 @@ export const registeredPlatformToServiceInstanceCardData = (
     return {
       ...commonValues,
       ...freeTrialStaticData(
-        ServiceDefinitionIdentifierToPlatformIdentifier[platformIdentifier],
+        ServiceDefinitionIdentifierToPlatformIdentifier[platformIdentifier] ??
+          PlatformIdentifierEnum.OPENCTI,
         t
       ),
       displayedServiceStatus: getDisplayDays(platform),
