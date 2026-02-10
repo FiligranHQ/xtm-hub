@@ -1,6 +1,8 @@
 'use client';
 
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
+import { FeatureFlag } from '@/utils/constant';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
@@ -28,8 +30,9 @@ const OwnedServices = ({
 }: OwnedServicesProps) => {
   const t = useTranslations();
   const { availableTrials } = useOrgaFreeTrial();
-  // Merge and sort by ordering property
+  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
 
+  // Merge and sort by ordering property
   const sortedServices = [
     ...services.map(userServicesOwnedServiceToInstanceCardData),
     ...publicServices.map(publicServiceInstanceToInstanceCardData),
@@ -38,22 +41,26 @@ const OwnedServices = ({
     ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
-  const shouldDisplayFreeTrialSkeleton = availableTrials.includes(
-    PlatformIdentifierEnum.OPENCTI
-  );
-
-  const freeTrialServiceInstanceDataCard =
-    freeTrialSkeletonToServiceInstanceCardData(t);
+  const freeTrialsSkelettonDataCards = availableTrials
+    .filter(
+      (platformIdentifier) =>
+        isOpenAEVTrialsEnabled ||
+        platformIdentifier !== PlatformIdentifierEnum.OPENAEV
+    )
+    .map((platformIdentifier) =>
+      freeTrialSkeletonToServiceInstanceCardData(platformIdentifier, t)
+    );
 
   if (sortedServices.length > 0) {
     return (
       <Suspense>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l">
-          {shouldDisplayFreeTrialSkeleton && (
+          {freeTrialsSkelettonDataCards.map((card) => (
             <ServiceInstanceCard
-              serviceInstance={freeTrialServiceInstanceDataCard}
+              key={card.id}
+              serviceInstance={card}
             />
-          )}
+          ))}
           {sortedServices.map((service) => (
             <ServiceInstanceCard
               key={service.id}

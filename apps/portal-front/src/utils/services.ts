@@ -1,3 +1,4 @@
+import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
 import { daysUntil } from '@/utils/date';
 import {
@@ -6,6 +7,7 @@ import {
 } from '@/utils/path/constant';
 import { buildPlatformHoverLinks, isTrial } from '@/utils/platform';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -77,24 +79,35 @@ const buildDocumentUrl = (
   return null;
 };
 
-const freeTrialStaticData = (t: ReturnType<typeof useTranslations>) => {
+const freeTrialStaticData = (
+  platformIdentifier: PlatformIdentifierEnum,
+  t: ReturnType<typeof useTranslations>
+) => {
   return {
-    description: t('Service.Trials.Display.FreeTrialDescription'),
-    name: t('Service.Trials.Display.Title'),
-    logoBackgroundImageUrl: `url(/opencti_free-trial-logo.png)`,
+    description: t(
+      `Service.Trials.Display.${platformIdentifier}.FreeTrialDescription`
+    ),
+    name: t(`Service.Trials.Display.${platformIdentifier}.Title`),
+    logoBackgroundImageUrl: `url(/${platformIdentifier}_free-trial-logo.png)`,
     illustrationDocumentUrl: `/opencti_free-trial-illustration.png`,
     ordering: -2,
   };
 };
 
 export const freeTrialSkeletonToServiceInstanceCardData = (
+  platformIdentifier: PlatformIdentifierEnum,
   t: ReturnType<typeof useTranslations>
 ) => {
+  const page =
+    platformIdentifier === PlatformIdentifierEnum.OPENAEV
+      ? 'openaev-free-trial'
+      : 'opencti-free-trial';
+
   return {
-    ...freeTrialStaticData(t),
+    ...freeTrialStaticData(platformIdentifier, t),
     id: 'freeTrial',
     displayedServiceStatus: t('Service.Trials.Display.New'),
-    url: '/app/service/opencti-free-trial',
+    url: `/app/service/${page}`,
   };
 };
 
@@ -128,7 +141,10 @@ export const registeredPlatformToServiceInstanceCardData = (
   if (isTrial(platform)) {
     return {
       ...commonValues,
-      ...freeTrialStaticData(t),
+      ...freeTrialStaticData(
+        ServiceDefinitionIdentifierToPlatformIdentifier[platformIdentifier],
+        t
+      ),
       displayedServiceStatus: getDisplayDays(platform),
     };
   }

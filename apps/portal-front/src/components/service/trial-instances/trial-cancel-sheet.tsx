@@ -2,6 +2,7 @@
 
 import { SelectWithEditableField } from '@/components/service/registration/select-with-editable-field';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
+import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { CheckIndeterminateIcon } from '@filigran/icon';
 import {
@@ -48,6 +49,7 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
   setOpen,
 }) => {
   const t = useTranslations();
+  const { refetch } = useOrgaFreeTrial();
 
   const [cancelDeploymentRequestMutation] =
     useMutation<trialInstancesCancelDeploymentRequestMutation>(
@@ -70,6 +72,7 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
           title: t('Utils.Success'),
           description: t(descriptionKey),
         });
+        refetch({}, { fetchPolicy: 'network-only' });
         setOpen(false);
       },
       onError: (error) => {
