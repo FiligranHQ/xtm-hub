@@ -4,5 +4,5 @@ export const ANIMATION_TIME = 300;
 export enum FeatureFlag {
   // dummy feature flag used for testing purposes
   DUMMY = 'DUMMY',
-  OPENAEVTRIALS = 'OPENAEV_TRIALS',
+  OPENAEVTRIALS = 'OPENAEV_TRIALS', // Remove component TryOpenCTIBanner and key Trials.Explore in translation files
 }

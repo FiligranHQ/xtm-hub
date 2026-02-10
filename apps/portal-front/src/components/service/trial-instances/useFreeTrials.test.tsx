@@ -5,7 +5,7 @@ import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 import { describe, expect, it } from 'vitest';
 
 describe('useFreeTrial', () => {
-  it('should return null with empty registred platforms', async () => {
+  it('should return [] with empty registred platforms', async () => {
     const environment = createMockEnvironment();
     const { result } = testRenderHook(() => useFreeTrial(), {
       relayConfig: environment,
@@ -22,7 +22,7 @@ describe('useFreeTrial', () => {
       );
     });
     expect(result.current).toBeDefined();
-    expect(result.current).toEqual({ freeTrial: null, isBlacklisted: '' });
+    expect(result.current).toEqual({ freeTrials: [], isBlacklisted: '' });
   });
 
   it('should return trial registred platforms', async () => {
@@ -49,11 +49,13 @@ describe('useFreeTrial', () => {
       );
     });
     expect(result.current).toBeDefined();
-    expect(result.current.freeTrial).toBeDefined();
+    expect(result.current.freeTrials).toBeDefined();
     expect(
-      result.current.freeTrial.deployment_request.counts_in_orga_quota
+      result.current.freeTrials[0]?.deployment_request?.counts_in_orga_quota
     ).toBeTruthy();
-    expect(result.current.freeTrial.deployment_request.type).toEqual('trial');
+    expect(result.current.freeTrials[0]?.deployment_request?.type).toEqual(
+      'trial'
+    );
   });
 
   it('should not return a trial instance', async () => {
@@ -80,6 +82,6 @@ describe('useFreeTrial', () => {
       );
     });
     expect(result.current).toBeDefined();
-    expect(result.current.freeTrial).toBeNull();
+    expect(result.current.freeTrials).toStrictEqual([]);
   });
 });
