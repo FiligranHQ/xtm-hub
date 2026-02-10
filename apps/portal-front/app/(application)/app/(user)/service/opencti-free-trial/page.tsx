@@ -8,6 +8,7 @@ import { TrialsLearnMore } from '@/components/service/trial-instances/trials-lea
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import React from 'react';
 import PersonalSpaceInfo from './personal-space-info';
@@ -37,6 +38,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
       <BreadcrumbNav value={breadcrumbs} />
 
       <TrialsHeader
+        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
         actions={
           <>
             <SlackSupportButton />
@@ -50,6 +52,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
               <StartTrialButton
                 variant={'gradient'}
                 openForm={openTrialForm}
+                platformIdentifier={PlatformIdentifierEnum.OPENCTI}
               />
             </GuardCapacityComponent>
           </>

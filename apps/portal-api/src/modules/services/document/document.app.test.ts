@@ -8,10 +8,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import {
-  SERVICE_CUSTOM_DASHBOARDS_ID,
-  SERVICE_INTEGRATIONS_ID,
-} from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   IntegrationSubType,
   IntegrationType,
@@ -20,7 +17,6 @@ import {
 } from '../../../__generated__/resolvers-types';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -58,7 +54,7 @@ describe('DocumentApp', () => {
   const documentData = {
     short_description: 'short_description',
     slug: 'slug',
-    uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+    uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
     name: 'name',
     description: 'description',
     active: true,
@@ -85,7 +81,7 @@ describe('DocumentApp', () => {
       const call = DocumentApp.createDocument(
         documentData,
         [],
-        SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
         []
       );
 
@@ -109,7 +105,7 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         []
       );
 
@@ -125,7 +121,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.CsvFeed,
           },
         ],
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         [mockUpload]
       );
 
@@ -152,7 +148,7 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         [mockUpload]
       );
 
@@ -173,17 +169,17 @@ describe('DocumentApp', () => {
       await DocumentApp.createDocument(
         documentData,
         [{ key: 'product_version', value: '1.2.3' }],
-        SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
         []
       );
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.CREATE,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-        organization_name: 'Filigran',
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
         organization_type: 'Professional',
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_UUID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
         resource_id: expect.any(String),
         resource_title: documentData.name,
@@ -198,7 +194,7 @@ describe('DocumentApp', () => {
       const createdDocument = await DocumentApp.createDocument(
         documentData,
         [{ key: 'product_version', value: '1.2.3' }],
-        SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
         []
       );
 
@@ -206,7 +202,7 @@ describe('DocumentApp', () => {
 
       const call = DocumentApp.updateDocument(
         createdDocument!.id,
-        SERVICE_CUSTOM_DASHBOARDS_ID as ServiceInstanceId,
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
         [],
         {
           document: [],
@@ -236,7 +232,7 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         []
       );
 
@@ -244,7 +240,7 @@ describe('DocumentApp', () => {
 
       const result = await DocumentApp.updateDocument(
         createdDocument!.id,
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         [
           {
             key: 'integration_type',
@@ -279,7 +275,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.CsvFeed,
           },
         ],
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         [mockUpload]
       );
 
@@ -287,7 +283,7 @@ describe('DocumentApp', () => {
 
       const result = await DocumentApp.updateDocument(
         createdDocument!.id,
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         [
           {
             key: 'integration_type',
@@ -325,7 +321,7 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         []
       );
 
@@ -333,7 +329,7 @@ describe('DocumentApp', () => {
 
       const result = await DocumentApp.updateDocument(
         createdDocument!.id,
-        SERVICE_INTEGRATIONS_ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
         [
           {
             key: 'integration_type',

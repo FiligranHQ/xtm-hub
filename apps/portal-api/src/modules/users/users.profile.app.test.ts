@@ -2,11 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import {
-  ADMIN_USER_ID,
-  contextAdminUser,
-  FILIGRAN_USER_ID,
-  SERVICE_VAULT_ID,
-  SIMPLE_USER_FILIGRAN_ID,
+  contextBypassUser,
+  SERVICES,
+  TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import Subscription, {
@@ -16,7 +14,6 @@ import { UserId } from '../../model/kanel/public/User';
 import UserTransferRequest, {
   UserTransferRequestId,
 } from '../../model/kanel/public/UserTransferRequest';
-import { ADMIN_UUID } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
 import {
   deleteSubscription,
@@ -29,18 +26,19 @@ import {
 } from './user_transferRequest/user_transferRequest.domain';
 import { updateUser } from './users.domain';
 import { usersProfileApp } from './users.profile.app';
+
 describe('User profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
     {
       id: uuidv4() as unknown as UserTransferRequestId,
-      from_user_id: ADMIN_USER_ID as UserId,
-      to_user_id: FILIGRAN_USER_ID as UserId,
+      from_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId,
+      to_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID as UserId,
     },
   ];
 
   describe('editMeUser', () => {
     afterEach(async () => {
-      await updateUser(ADMIN_UUID, {
+      await updateUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID, {
         first_name: 'firstName',
         last_name: 'lastName',
         picture: null,
@@ -49,7 +47,7 @@ describe('User profile app', () => {
     });
     it('should update one field and return user', async () => {
       const userReturned = await usersProfileApp.editMeUser(
-        contextAdminUser.user,
+        contextBypassUser.user,
         {
           first_name: 'anotherFirstName',
         }
@@ -58,7 +56,7 @@ describe('User profile app', () => {
     });
     it('should update multiple fields and return user', async () => {
       const userReturned = await usersProfileApp.editMeUser(
-        contextAdminUser.user,
+        contextBypassUser.user,
         {
           last_name: 'anotherLastName',
           picture: 'https://s.gravatar.com/avatar/aaaa.png',
@@ -78,7 +76,7 @@ describe('User profile app', () => {
     it('Should send error if email is not valid format', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
-          contextAdminUser.user,
+          contextBypassUser.user,
           'emailNotValid'
         )
       ).rejects.toThrow('INVALID_EMAIL');
@@ -86,7 +84,7 @@ describe('User profile app', () => {
     it('Should not send error if email does not already exist (for vilain users)', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
-          contextAdminUser.user,
+          contextBypassUser.user,
           'emailNotExists@filigran.io'
         )
       ).resolves.toBeUndefined();
@@ -99,7 +97,7 @@ describe('User profile app', () => {
         'insertNewUserTransfer'
       ).mockResolvedValue(mockTransferRequestData);
       await usersProfileApp.requestTransferPersonalSpace(
-        contextAdminUser.user,
+        contextBypassUser.user,
         'user15@test.fr'
       );
       expect(mockSendMail).toHaveBeenCalledOnce();
@@ -108,10 +106,10 @@ describe('User profile app', () => {
         template: 'request_transfer_personal_space',
         params: {
           recipientName: 'test hello',
-          recipientId: SIMPLE_USER_FILIGRAN_ID,
-          previousUserId: contextAdminUser.user.id,
-          previousUserEmail: contextAdminUser.user.email,
-          previousUserName: `${contextAdminUser.user.first_name} ${contextAdminUser.user.last_name}`,
+          recipientId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          previousUserId: contextBypassUser.user.id,
+          previousUserEmail: contextBypassUser.user.email,
+          previousUserName: `${contextBypassUser.user.first_name} ${contextBypassUser.user.last_name}`,
           transferRequestId: `${mockTransferRequestData[0]?.id}`,
         },
       });
@@ -121,8 +119,8 @@ describe('User profile app', () => {
   describe('transferPersonalSpace', () => {
     const newSubscription = {
       id: uuidv4(),
-      organization_id: ADMIN_USER_ID,
-      service_instance_id: SERVICE_VAULT_ID,
+      organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      service_instance_id: SERVICES.INSTANCES.VAULT.ID,
     };
     beforeEach(async () => {
       await insertSubscription(newSubscription);
@@ -140,14 +138,17 @@ describe('User profile app', () => {
       await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });
     });
     it('Should update subscription', async () => {
+      // Cast to unknown because we take the personal space of these users
       const subsFromBefore = (await db<Subscription>('Subscription')
         .where({
-          organization_id: ADMIN_USER_ID as OrganizationId,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS
+            .ID as unknown as OrganizationId,
         })
         .select('*')) as unknown as Subscription[];
       const subsToBefore = (await db<Subscription>('Subscription')
         .where({
-          organization_id: FILIGRAN_USER_ID as OrganizationId,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2
+            .ID as unknown as OrganizationId,
         })
         .select('*')) as unknown as Subscription[];
       await usersProfileApp.transferPersonalSpace(
@@ -155,14 +156,16 @@ describe('User profile app', () => {
       );
       const subsFromAfter = (await db<Subscription>('Subscription')
         .where({
-          organization_id: ADMIN_USER_ID as OrganizationId,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS
+            .ID as unknown as OrganizationId,
         })
         .select('*')) as unknown as Subscription[];
       const subsToAfter: Subscription[] = (await db<Subscription>(
         'Subscription'
       )
         .where({
-          organization_id: FILIGRAN_USER_ID as OrganizationId,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2
+            .ID as unknown as OrganizationId,
         })
         .select('*')) as unknown as Subscription[];
       expect(subsFromBefore.length).toStrictEqual(1);

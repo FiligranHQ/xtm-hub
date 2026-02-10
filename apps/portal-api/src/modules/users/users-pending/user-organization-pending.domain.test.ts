@@ -1,14 +1,10 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import {
-  FILIGRAN_ORGA_ID,
-  THALES_ORGA_ID,
-} from '../../../../tests/tests.const';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { FilterKey } from '../../../__generated__/resolvers-types';
 import User from '../../../model/kanel/public/User';
 import UserOrganizationPending from '../../../model/kanel/public/UserOrganizationPending';
-import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
 import { insertUser, linkUsersToOrganization } from '../users.test.utils';
@@ -17,28 +13,40 @@ import { UserOrganizationPendingDomain } from './user-organization-pending.domai
 describe('UserOrganizationPendingDomain', () => {
   describe('loadOrganizationsWithPendingUsers', () => {
     it('should return list of pending organizations with their pending users', async () => {
-      const thalesUsers = [
-        await insertUser({ selected_organization_id: THALES_ORGA_ID }),
-        await insertUser({ selected_organization_id: THALES_ORGA_ID }),
+      const secondOrgaUsers = [
+        await insertUser({
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        }),
+        await insertUser({
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        }),
       ];
-      await linkUsersToOrganization(thalesUsers, THALES_ORGA_ID);
+      await linkUsersToOrganization(
+        secondOrgaUsers,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
 
       const filigranUsers = [await insertUser(), await insertUser()];
-      await linkUsersToOrganization(filigranUsers, PLATFORM_ORGANIZATION_UUID);
+      await linkUsersToOrganization(
+        filigranUsers,
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
 
       const result =
         await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
 
       expect(result.length).toBe(2);
 
-      const thalesResult = result.find((orga) => orga.id === THALES_ORGA_ID);
-      expect(thalesResult).toBeDefined();
-      expect(thalesResult!.users.map(({ id }) => id)).toEqual(
-        expect.arrayContaining(thalesUsers.map(({ id }) => id))
+      const secondOrgaResult = result.find(
+        (orga) => orga.id === TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
+      expect(secondOrgaResult).toBeDefined();
+      expect(secondOrgaResult!.users.map(({ id }) => id)).toEqual(
+        expect.arrayContaining(secondOrgaUsers.map(({ id }) => id))
       );
 
       const filigranResult = result.find(
-        (orga) => orga.id === PLATFORM_ORGANIZATION_UUID
+        (orga) => orga.id === TEST_ORGANIZATIONS.FILIGRAN.ID
       );
       expect(filigranResult).toBeDefined();
       expect(filigranResult!.users.map(({ id }) => id)).toEqual(
@@ -59,25 +67,29 @@ describe('UserOrganizationPendingDomain', () => {
     beforeEach(async () => {
       const userList = [
         {
-          email: 'testOne@thales.com',
+          email: 'testOne@second-orga.com',
           first_name: 'test',
           last_name: 'one',
           picture: null,
         },
         {
-          email: 'testTwo@thales.com',
+          email: 'testTwo@second-orga.com',
           first_name: 'test',
           last_name: 'two',
           picture: null,
         },
       ];
-      const thalesOrga = await loadOrganizationBy({ id: THALES_ORGA_ID });
+      const secondOrga = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
 
       createdUsers = await Promise.all(
-        userList.map((user) => createNewUserWithPendingOrga(user, thalesOrga))
+        userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
       );
 
-      const filigranOrga = await loadOrganizationBy({ id: FILIGRAN_ORGA_ID });
+      const filigranOrga = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
@@ -100,7 +112,7 @@ describe('UserOrganizationPendingDomain', () => {
       const userToKeep = createdUsers[1];
 
       await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [userToRemove!.id],
         undefined,
         [],
@@ -121,147 +133,157 @@ describe('UserOrganizationPendingDomain', () => {
 
     it('should remove users by filter', async () => {
       await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
         [
           {
             key: FilterKey.OrganizationId,
-            value: [toGlobalId('Organization', FILIGRAN_ORGA_ID)],
+            value: [toGlobalId('Organization', TEST_ORGANIZATIONS.FILIGRAN.ID)],
           },
         ],
         []
       );
 
-      const thalesPendingUsers =
+      const secondOrgaPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: THALES_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         });
       const filigranPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: FILIGRAN_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
-      expect(thalesPendingUsers).toHaveLength(2);
+      expect(secondOrgaPendingUsers).toHaveLength(2);
       expect(filigranPendingUsers).toHaveLength(1);
     });
     it('should remove users by filters and excludedIds', async () => {
       const excludedUser = createdUsers[0];
 
       await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
         [
           {
             key: FilterKey.OrganizationId,
-            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+            value: [
+              toGlobalId(
+                'Organization',
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+              ),
+            ],
           },
         ],
         [excludedUser!.id]
       );
 
-      const thalesPendingUsers =
+      const secondOrgaPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: THALES_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         });
-      expect(thalesPendingUsers).toHaveLength(1);
-      expect(thalesPendingUsers[0]!.user_id).toBe(excludedUser!.id);
+      expect(secondOrgaPendingUsers).toHaveLength(1);
+      expect(secondOrgaPendingUsers[0]!.user_id).toBe(excludedUser!.id);
     });
     it('should remove users by searchTerm', async () => {
       const keptUser = createdUsers.find(
-        (user) => user.email === 'testTwo@thales.com'
+        (user) => user.email === 'testTwo@second-orga.com'
       );
 
       await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'One',
         [],
         []
       );
 
-      const thalesPendingUsers =
+      const secondOrgaPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: THALES_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         });
 
-      expect(thalesPendingUsers).toHaveLength(1);
-      expect(thalesPendingUsers[0]!.user_id).toBe(keptUser!.id);
+      expect(secondOrgaPendingUsers).toHaveLength(1);
+      expect(secondOrgaPendingUsers[0]!.user_id).toBe(keptUser!.id);
     });
 
     it('should remove users by searchTerm and excludedIds', async () => {
       const keptUser = createdUsers.find(
-        (user) => user.email === 'testTwo@thales.com'
+        (user) => user.email === 'testTwo@second-orga.com'
       );
 
       await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
         [],
         [keptUser!.id]
       );
 
-      const thalesPendingUsers =
+      const secondOrgaPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: THALES_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         });
 
-      expect(thalesPendingUsers).toHaveLength(1);
-      expect(thalesPendingUsers[0]!.user_id).toBe(keptUser!.id);
+      expect(secondOrgaPendingUsers).toHaveLength(1);
+      expect(secondOrgaPendingUsers[0]!.user_id).toBe(keptUser!.id);
     });
 
     it('should remove users by filter, searchTerm and excludedIds', async () => {
       const keptUser = createdUsers.find(
-        (user) => user.email === 'testTwo@thales.com'
+        (user) => user.email === 'testTwo@second-orga.com'
       );
 
       await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
         [
           {
             key: FilterKey.OrganizationId,
-            value: [toGlobalId('Organization', THALES_ORGA_ID)],
+            value: [
+              toGlobalId(
+                'Organization',
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+              ),
+            ],
           },
         ],
         [keptUser!.id]
       );
 
-      const thalesPendingUsers =
+      const secondOrgaPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: THALES_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         });
       const filigranPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: FILIGRAN_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(thalesPendingUsers).toHaveLength(1);
-      expect(thalesPendingUsers[0]!.user_id).toBe(keptUser!.id);
+      expect(secondOrgaPendingUsers).toHaveLength(1);
+      expect(secondOrgaPendingUsers[0]!.user_id).toBe(keptUser!.id);
       expect(filigranPendingUsers).toHaveLength(1);
     });
     it('should remove only users from the specified organization', async () => {
       await UserOrganizationPendingDomain.bulkRemoveUserFromOrganizationPending(
-        THALES_ORGA_ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
         [],
         []
       );
 
-      const thalesPendingUsers =
+      const secondOrgaPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: THALES_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         });
 
       const filigranPendingUsers =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
-          organization_id: FILIGRAN_ORGA_ID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(thalesPendingUsers).toHaveLength(0);
+      expect(secondOrgaPendingUsers).toHaveLength(0);
       expect(filigranPendingUsers).toHaveLength(1);
     });
   });

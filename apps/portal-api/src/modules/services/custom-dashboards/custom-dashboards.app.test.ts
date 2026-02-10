@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SERVICE_CUSTOM_DASHBOARDS_ID } from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from '../document/document.app';
@@ -22,7 +22,7 @@ describe('custom dashboards app', () => {
   it('customDashboard should return the document with elastic search counters', async () => {
     const document = await DocumentApp.createDocument(
       {
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         name: 'myCustomDashboard',
         description: 'description',
         short_description: 'short_description',
@@ -30,7 +30,7 @@ describe('custom dashboards app', () => {
         active: true,
       },
       [{ key: 'product_version', value: '1.2.3' }],
-      SERVICE_CUSTOM_DASHBOARDS_ID,
+      SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       []
     );
     expect(document).toBeDefined();
@@ -60,7 +60,7 @@ describe('custom dashboards app', () => {
   it('SeoCustomDashboard should return the document with elastic search counters', async () => {
     await DocumentApp.createDocument(
       {
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         name: 'myCustomDashboard',
         description: 'description',
         short_description: 'short_description',
@@ -68,7 +68,7 @@ describe('custom dashboards app', () => {
         active: true,
       },
       [{ key: 'product_version', value: '1.2.3' }],
-      SERVICE_CUSTOM_DASHBOARDS_ID,
+      SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       []
     );
 

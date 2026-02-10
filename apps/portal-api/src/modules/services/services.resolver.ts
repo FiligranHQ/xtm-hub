@@ -128,9 +128,12 @@ const resolvers: Resolvers = {
     },
     serviceInstanceByIdWithSubscriptions: async (
       _,
-      { service_instance_id }
+      { service_instance_id, searchTerm }
     ) => {
-      return loadServiceWithSubscriptions(extractId(service_instance_id));
+      return loadServiceWithSubscriptions(
+        extractId(service_instance_id),
+        searchTerm
+      );
     },
     subscribedServiceInstancesByIdentifier: async (
       _,

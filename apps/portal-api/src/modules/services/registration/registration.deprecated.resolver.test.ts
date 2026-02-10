@@ -1,13 +1,15 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import { contextAdminUser } from '../../../../tests/tests.const';
+import {
+  contextBypassUser,
+  TEST_ORGANIZATIONS,
+} from '../../../../tests/tests.const';
 import {
   PlatformContract,
   PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
 } from '../../../__generated__/resolvers-types';
-import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { registrationApp } from './registration.app';
 import registrationResolver from './registration.resolver';
 
@@ -24,7 +26,7 @@ describe('Registration query resolver', () => {
         await registrationResolver.Query.openCTIPlatformRegistrationStatus(
           {},
           { input: { platformId: uuidv4(), token: uuidv4() } },
-          contextAdminUser,
+          contextBypassUser,
           {} as GraphQLResolveInfo
         );
 
@@ -42,7 +44,7 @@ describe('Registration query resolver', () => {
 
       const platformId = uuidv4();
       const token = await registrationApp.registerPlatform({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform: {
           id: platformId,
           url: 'http://example.com',
@@ -57,7 +59,7 @@ describe('Registration query resolver', () => {
         await registrationResolver.Query.openCTIPlatformRegistrationStatus(
           {},
           { input: { platformId, token } },
-          contextAdminUser,
+          contextBypassUser,
           {} as GraphQLResolveInfo
         );
 

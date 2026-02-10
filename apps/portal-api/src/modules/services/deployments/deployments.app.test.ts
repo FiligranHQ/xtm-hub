@@ -10,11 +10,8 @@ import {
   vi,
 } from 'vitest';
 import {
-  ADMIN_USER_ID,
-  DEFAULT_ADMIN_EMAIL,
-  requestContextThalesUser,
-  THALES_ADMIN_ORGA_USER_ID,
-  THALES_ORGA_ID,
+  TEST_ORGANIZATIONS,
+  requestContextAdminSecondOrga,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -29,14 +26,10 @@ import {
 import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../../model/kanel/public/DeploymentRequest';
-import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
-import {
-  ADMIN_UUID,
-  PLATFORM_NAME,
-  PLATFORM_ORGANIZATION_UUID,
-  SYSTEM_USER_UUID,
-  XTM_HUB_SUPPORT_EMAIL,
-} from '../../../portal.const';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../../model/kanel/public/ServiceInstance';
+import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
@@ -58,6 +51,7 @@ import { MockInstance } from '@vitest/spy';
 import { db } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -109,7 +103,7 @@ describe('Deployment app', () => {
         activity_sector: 'cybersecurity',
         id: expect.any(String),
         job_title: 'myJob',
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -156,7 +150,7 @@ describe('Deployment app', () => {
         activity_sector: 'cybersecurity',
         id: expect.any(String),
         job_title: 'myJob',
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -253,7 +247,7 @@ describe('Deployment app', () => {
       it('should handle blacklist with spaces correctly', async () => {
         vi.spyOn(config, 'get').mockImplementation((key: string) => {
           if (key === 'domains_blacklist') {
-            return 'filigran.io , blocked.net , test.org';
+            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST} , blocked.net , test.org`;
           }
           return originalConfigGet.call(config, key);
         });
@@ -295,13 +289,13 @@ describe('Deployment app', () => {
           expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
             '@timestamp': '2025-02-03T13:12:15.000Z',
             event_type: TelemetryEventType.CREATE_DEPLOYMENT,
-            organization_id: PLATFORM_ORGANIZATION_UUID,
-            organization_name: PLATFORM_NAME,
+            organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+            organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             organization_type: TelemetryOrganizationType.PROFESSIONAL,
             source: TELEMETRY_SOURCE,
-            email: DEFAULT_ADMIN_EMAIL,
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
             job_title: 'myJob',
-            user_id: ADMIN_USER_ID,
+            user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             deployment_id: deployment.id,
             region: DeploymentRequestPlatformRegion.UsEast,
             use_case: 'use_case',
@@ -345,10 +339,10 @@ describe('Deployment app', () => {
         expect(mockSendMail).toHaveBeenCalledTimes(2);
 
         expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: 'admin@filigran.io',
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'opencti_free_trial_requested',
           params: {
-            firstName: 'Firstname',
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           },
         });
 
@@ -358,12 +352,12 @@ describe('Deployment app', () => {
           params: {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
-            organizationName: 'Filigran',
+            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             platformIdentifier: 'Opencti',
             region: DeploymentRequestPlatformRegion.UsEast,
             useCase: 'use_case',
-            userEmail: 'admin@filigran.io',
-            userName: 'firstName lastName',
+            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
           },
         });
       });
@@ -384,10 +378,10 @@ describe('Deployment app', () => {
         expect(mockSendMail).toHaveBeenCalledTimes(2);
 
         expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: 'admin@filigran.io',
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'opencti_free_trial_queued',
           params: {
-            firstName: 'Firstname',
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           },
         });
 
@@ -397,12 +391,12 @@ describe('Deployment app', () => {
           params: {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
-            organizationName: 'Filigran',
+            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             platformIdentifier: 'Opencti',
             region: 'us_east',
             useCase: 'use_case',
-            userEmail: 'admin@filigran.io',
-            userName: 'firstName lastName',
+            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
           },
         });
       });
@@ -419,11 +413,15 @@ describe('Deployment app', () => {
       expect(deployments.totalCount).toBe('1');
       expect(deployments.edges[0]?.node).toStrictEqual({
         ...deploymentRequest,
-        organization_name: 'Filigran',
-        organization_domains: ['filigran.io', 'internal.com'],
-        requester_email: DEFAULT_ADMIN_EMAIL,
-        requester_first_name: 'firstname',
-        requester_last_name: 'lastname',
+        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+        organization_domains: [
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.SECOND,
+        ],
+        requester_email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        requester_first_name:
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+        requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
         cancellation_user_email: null,
       });
     });
@@ -612,7 +610,7 @@ describe('Deployment app', () => {
         activity_sector: 'cybersecurity',
         id: expect.any(String),
         job_title: 'myJob',
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -624,7 +622,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
-        user_requester_id: ADMIN_UUID,
+        user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
@@ -668,7 +666,10 @@ describe('Deployment app', () => {
         );
       expect(userAdminGroup.length).toBe(1);
       expect(
-        userAdminGroup.find(({ email }) => email === DEFAULT_ADMIN_EMAIL)
+        userAdminGroup.find(
+          ({ email }) =>
+            email === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+        )
       ).toBeTruthy();
       const userAnalystGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
@@ -745,11 +746,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: initialDeployment.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: 'fake product instance id',
@@ -786,10 +787,10 @@ describe('Deployment app', () => {
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
         expect(mockSendMail).toHaveBeenCalledWith({
-          to: 'admin@filigran.io',
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'opencti_free_trial_provisioning',
           params: {
-            firstName: 'Firstname',
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           },
         });
 
@@ -800,6 +801,42 @@ describe('Deployment app', () => {
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
+        expect(mockSendMail).not.toHaveBeenCalled();
+      });
+
+      it('should send a mail in case deployment request is in active (only first time)', async () => {
+        vi.spyOn(
+          serviceContractDomain,
+          'loadConfigurationByPlatform'
+        ).mockResolvedValue({
+          service_instance_id: uuidv4() as ServiceInstanceId,
+          config: { platform_url: 'http://example.com' },
+          status: DeploymentRequestPlatformState.Active,
+        });
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          start_date: new Date(2025, 12, 1),
+          end_date: new Date(2026, 1, 1),
+          actual_state: DeploymentRequestPlatformState.Active,
+        });
+
+        expect(mockSendMail).toHaveBeenCalledWith({
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+          template: 'opencti_free_trial_registered',
+          params: {
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            platformUrl: 'http://example.com',
+          },
+        });
+
+        mockSendMail.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          start_date: new Date(2025, 12, 1),
+          end_date: new Date(2026, 1, 1),
+          actual_state: DeploymentRequestPlatformState.Active,
+        });
         expect(mockSendMail).not.toHaveBeenCalled();
       });
     });
@@ -938,7 +975,7 @@ describe('Deployment app', () => {
           target_state: target_state,
           counts_in_orga_quota,
           cancellation_date: expect.any(Date),
-          cancellation_user_id: ADMIN_USER_ID,
+          cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
@@ -983,7 +1020,7 @@ describe('Deployment app', () => {
         {}
       )) as DeploymentRequest;
 
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const call = DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.UserIsNotInOrganization
@@ -995,7 +1032,7 @@ describe('Deployment app', () => {
         {}
       )) as DeploymentRequest;
 
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const response = await DeploymentsApp.cancelDeploymentRequest(
         deployment.id,
         true
@@ -1020,11 +1057,11 @@ describe('Deployment app', () => {
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-        organization_name: PLATFORM_NAME,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_USER_ID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         deployment_id: deployment.id,
         deployment_type: DeploymentRequestDeploymentType.Trial,
         status: DeploymentRequestHubStatus.Cancelled,
@@ -1037,13 +1074,14 @@ describe('Deployment app', () => {
 
     it('should send a mail to the trial requester', async () => {
       const deployment = (await insertOpenCtiDeploymentRequest({
-        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       })) as DeploymentRequest;
 
       await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
 
       expect(mockSendMail).toHaveBeenCalledWith({
-        to: 'admin@thales.com',
+        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
         template: 'opencti_free_trial_cancelled',
         params: {
           firstName: '',
@@ -1249,11 +1287,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1264,11 +1302,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1478,11 +1516,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: pendingRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1493,11 +1531,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: pendingRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1602,13 +1640,14 @@ describe('Deployment app', () => {
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         end_date: expiredDate,
-        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       });
 
       await DeploymentsApp.expireTrials();
 
       expect(mockSendMail).toHaveBeenCalledWith({
-        to: 'admin@thales.com',
+        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
         template: 'opencti_free_trial_expired',
         params: {
           firstName: '',
@@ -1628,8 +1667,9 @@ describe('Deployment app', () => {
         target_state: DeploymentRequestPlatformState.Active,
         start_date,
         end_date,
-        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
-        organization_requester_id: THALES_ORGA_ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
       await DeploymentsApp.expireTrials();
@@ -1637,8 +1677,8 @@ describe('Deployment app', () => {
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-        organization_id: THALES_ORGA_ID,
-        organization_name: 'Thales',
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
         user_id: SYSTEM_USER_UUID,
@@ -1784,11 +1824,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedDeploymentRequest!.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: queuedDeploymentRequest!.platform_id,
