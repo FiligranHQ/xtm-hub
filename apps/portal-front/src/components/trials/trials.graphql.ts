@@ -14,6 +14,8 @@ export const trialsFragment = graphql`
     cancellation_date
     cancellation_user_email
     cancellation_reason
+    platform_id
+    platform_url
   }
 `;
 

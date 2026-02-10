@@ -287,6 +287,44 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
         id: 'region',
         header: t('TrialsDashboard.Columns.Region'),
       },
+      {
+        accessorKey: 'platform_id',
+        id: 'platform_id',
+        header: t('TrialsDashboard.Columns.PlatformId'),
+        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+          return (
+              <span className="truncate">
+        {row.original.platform_id || '-'}
+      </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'platform_url',
+        id: 'platform_url',
+        header: t('TrialsDashboard.Columns.PlatformUrl'),
+        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+          return (
+              <span className="truncate">
+        {row.original.platform_url || '-'}
+      </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'registration_status',
+        id: 'registration_status',
+        header: t('TrialsDashboard.Columns.RegistrationStatus'),
+        enableSorting: false,
+        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+          const isRegistered = !!row.original.platform_id;
+          return (
+              <span className="truncate">
+        {isRegistered ? t('TrialsDashboard.Registered') : t('TrialsDashboard.NotRegistered')}
+      </span>
+          );
+        },
+      },
       ...(type === TrialsTabType.Cancelled
         ? [
             {

@@ -326,6 +326,12 @@ const getDeploymentRequestWithUserDataQuery =
         '=',
         'CancellationUser.id'
       )
+        .leftJoin(
+            'Service_Configuration',
+            'DeploymentRequest.service_instance_id',
+            '=',
+            'Service_Configuration.service_instance_id'
+        )
       .select([
         'DeploymentRequest.*',
         'Organization.name as organization_name',
@@ -334,5 +340,5 @@ const getDeploymentRequestWithUserDataQuery =
         'User.first_name as requester_first_name',
         'User.last_name as requester_last_name',
         'CancellationUser.email as cancellation_user_email',
-      ]);
+        'Service_Configuration.config as platform_config',      ]);
   };

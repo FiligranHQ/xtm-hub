@@ -56,6 +56,14 @@ const resolvers: Resolvers = {
     },
   },
 
+  DeploymentRequest: {
+    platform_url: (parent: Record<string, unknown>) => {
+      if (!parent.platform_config) return null;
+      const config = parent.platform_config as { platform_url?: string };
+      return config.platform_url || null;
+    },
+  },
+
   Mutation: {
     createDeploymentRequest: async (_, { input }) => {
       try {

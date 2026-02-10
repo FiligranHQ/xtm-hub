@@ -284,6 +284,8 @@ type DeploymentRequest implements Node {
   cancellation_date: Date
   cancellation_user_email: String
   cancellation_reason: String
+  platform_id: String
+  platform_url: String
 }
 
 type PlatformDeploymentRequest {

@@ -423,6 +423,7 @@ describe('Deployment app', () => {
           TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
         requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
         cancellation_user_email: null,
+        platform_config: null,
       });
     });
 
