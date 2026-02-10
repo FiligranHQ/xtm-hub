@@ -60,7 +60,7 @@ export async function seed(knex) {
       },
       {
         id: 'bb734d93-4823-4637-a216-518d8ef55628',
-        uploader_id: ADMIN_UUID,
+        uploader_id: BYPASS_USER_ID,
         service_instance_id: customDashboardService?.id || null,
         description:
           'A strategic dashboard that shows threats facing the Banking institutions sector, one of a series of sector-focused dashboards. It includes overviews of Actors, Malware, TTPs and Vulnerabilities reported to be targeting organisations in the sector.\nThe Banking institutions dashboard is designed to provide a comprehensive overview of threats reported to be targeting the sector. This dashboards provides a first-look top-down overview of all threats targeting the sector, and can be adapted to address specific Priority Intelligence Requirements (PIRs) targeting the sector.',
@@ -103,7 +103,7 @@ export async function seed(knex) {
       },
       {
         id: '1275352d-c49e-458d-b340-4e40d2035249',
-        uploader_id: ADMIN_UUID,
+        uploader_id: BYPASS_USER_ID,
         service_instance_id: openaevScenariosService?.id || null,
         description:
           'This scenario focuses on the discovery and exploitation of SUID misconfigurations on Linux systems, specifically targeting the find binary 🐧. The objective is to achieve privilege escalation to root by abusing an improperly configured SUID find binary.',
@@ -115,7 +115,7 @@ export async function seed(knex) {
         mime_type: 'application/x-zip-compressed',
         name: 'Linux Privilege Escalation via Find Command',
         updated_at: '2025-12-26 09:34:53.206+00',
-        updater_id: ADMIN_UUID,
+        updater_id: BYPASS_USER_ID,
         short_description:
           'Check your SUID/SGID, exploit it and validate your security platforms works as expected',
         slug: 'linux-privilege',
