@@ -5,7 +5,6 @@ import {
 } from '@/components/registration/register/register.graphql';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { useContext } from 'react';
@@ -24,9 +23,7 @@ export const useFreeTrial = () => {
   const queryData = useLazyLoadQuery<registerRegisteredPlatformsQuery>(
     RegisterRegisteredPlatformsQuery,
     {
-      input: {
-        identifier: PlatformIdentifierEnum.OPENCTI,
-      },
+      input: {},
     }
   );
 
@@ -42,7 +39,7 @@ export const useFreeTrial = () => {
       platform.deployment_request.counts_in_orga_quota
   );
   return {
-    freeTrial: freeTrials.length > 0 && !isPersonalSpace ? freeTrials[0] : null,
+    freeTrials: freeTrials.length > 0 && !isPersonalSpace ? freeTrials : [],
     isBlacklisted,
   };
 };

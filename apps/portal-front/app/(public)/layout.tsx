@@ -1,5 +1,7 @@
-import { PublicTryOpenCTIBanner } from '@/components/service/trial-instances/public-try-opencti-banner';
+import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/public-try-filigran-products-banner';
+import { FeatureFlag } from '@/utils/constant';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import { Button } from '@filigran/ui/servers';
 import '@filigran/ui/theme.css';
 import { Metadata } from 'next';
@@ -12,14 +14,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return await getDefaultMetadata();
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const isOpenAEVTrialsEnabled = await isFeatureEnabled(
+    FeatureFlag.OPENAEVTRIALS
+  );
   return (
     <div className="md:flex md:flex-col md:h-screen">
-      <PublicTryOpenCTIBanner />
+      <PublicTryFiligranProductsBanner
+        isOpenAEVTrialEnabled={isOpenAEVTrialsEnabled}
+      />
       <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
         <Link href="/">
           <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
