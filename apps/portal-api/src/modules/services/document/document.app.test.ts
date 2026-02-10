@@ -12,7 +12,10 @@ import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   IntegrationSubType,
   IntegrationType,
+  QueryPublicDocumentsArgs,
+  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
+import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { ErrorCode } from '../../../utils/error/error.code';
@@ -22,9 +25,11 @@ import {
   TelemetryEventService,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
+import { DocumentDomain } from './domain/document.domain';
 
 describe('DocumentApp', () => {
   const minioFileMock = {
@@ -351,6 +356,50 @@ describe('DocumentApp', () => {
       expect(result!.file_name).toBeNull();
       expect(result!.minio_name).toBeNull();
       expect(result!.mime_type).toBeNull();
+    });
+  });
+
+  describe('loadPublicDocuments', () => {
+    it('should throw if service definition is not found', async () => {
+      vi.spyOn(
+        serviceDefinitionDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(undefined);
+      const input = { serviceInstanceId: 'invalid-id', slug: 'test-slug' };
+      const call = DocumentApp.loadPublicDocuments(
+        input as QueryPublicDocumentsArgs
+      );
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should call DocumentDomain.loadPaginatedSeoDocumentsByServiceSlug with correct params', async () => {
+      const mockServiceDefinition = {
+        identifier: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+      };
+      vi.spyOn(
+        serviceDefinitionDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(mockServiceDefinition as ServiceDefinition);
+      const loadPaginatedSeoDocumentsSpy = vi
+        .spyOn(DocumentDomain, 'loadPaginatedSeoDocumentsByServiceSlug')
+        .mockResolvedValue([]);
+      const input = {
+        serviceInstanceId: 'valid-id',
+        slug: 'test-slug',
+        page: 1,
+        pageSize: 10,
+      };
+
+      await DocumentApp.loadPublicDocuments(
+        input as unknown as QueryPublicDocumentsArgs
+      );
+
+      expect(loadPaginatedSeoDocumentsSpy).toHaveBeenCalledWith(
+        'opencti_custom_dashboard',
+        'test-slug',
+        { page: 1, pageSize: 10, serviceInstanceId: 'valid-id' },
+        ['product_version']
+      );
     });
   });
 });
