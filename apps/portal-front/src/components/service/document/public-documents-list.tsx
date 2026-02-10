@@ -1,14 +1,22 @@
 import { ServiceListHeader } from '@/components/service/components/header/service-list-header';
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
+import {
+  publicDocumentItem,
+  PublicDocumentListQuery,
+} from '@/components/service/document/public-document.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
 import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
-import { documentsQuery$variables } from '@generated/documentsQuery.graphql';
-import { seoIntegrationsItemFragment$key } from '@generated/seoIntegrationsItemFragment.graphql';
-import { seoIntegrationsList$key } from '@generated/seoIntegrationsList.graphql';
-import { seoIntegrationsQuery } from '@generated/seoIntegrationsQuery.graphql';
+import { publicDocumentItemFragment$key } from '@generated/publicDocumentItemFragment.graphql';
+import publicDocumentListGraphql, {
+  publicDocumentList$key,
+} from '@generated/publicDocumentList.graphql';
+import {
+  publicDocumentsQuery,
+  publicDocumentsQuery$variables,
+} from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
 import React, { useMemo, useState } from 'react';
@@ -18,45 +26,35 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import {
-  SeoIntegrationListQuery,
-  seoIntegrationsFragment,
-  seoIntegrationsItem,
-} from '../../../../../app/(public)/cybersecurity-solutions/[slug]/seo-integration.graphql';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
-  search: string;
-  onSearchChange: (v: string) => void;
-  queryRef: PreloadedQuery<seoIntegrationsQuery>;
+  queryRef: PreloadedQuery<publicDocumentsQuery>;
   baseUrl: string;
 }
 
-const PublicIntegrationsList: React.FC<Props> = ({
+const PublicDocumentsList: React.FC<Props> = ({
   queryRef,
   serviceInstance,
   baseUrl,
 }) => {
-  const queryData = usePreloadedQuery<seoIntegrationsQuery>(
-    SeoIntegrationListQuery,
+  const queryData = usePreloadedQuery<publicDocumentsQuery>(
+    PublicDocumentListQuery,
     queryRef
   );
 
   const [data, refetch] = useRefetchableFragment<
-    seoIntegrationsQuery,
-    seoIntegrationsList$key
-  >(seoIntegrationsFragment, queryData);
+    publicDocumentsQuery,
+    publicDocumentList$key
+  >(publicDocumentListGraphql, queryData);
 
-  const integrations = useMemo(() => {
-    return (data.publicIntegrations?.edges ?? [])
+  const documents = useMemo(() => {
+    return (data.publicDocuments?.edges ?? [])
       .map(({ node }) =>
-        readInlineData<seoIntegrationsItemFragment$key>(
-          seoIntegrationsItem,
-          node
-        )
+        readInlineData<publicDocumentItemFragment$key>(publicDocumentItem, node)
       )
       .filter((l) => !!l);
-  }, [data.publicIntegrations]);
+  }, [data.publicDocuments]);
 
   const { filters, localStorageKey } = useShareableResourceMapping(
     serviceInstance.slug as ServiceSlug
@@ -70,7 +68,9 @@ const PublicIntegrationsList: React.FC<Props> = ({
     pageSize,
   });
 
-  const handleRefetchData = (args?: Partial<documentsQuery$variables>) => {
+  const handleRefetchData = (
+    args?: Partial<publicDocumentsQuery$variables>
+  ) => {
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
@@ -101,7 +101,7 @@ const PublicIntegrationsList: React.FC<Props> = ({
         className="mb-3"
         paginationControls={
           <PaginationControls
-            totalCount={data.publicIntegrations.totalCount}
+            totalCount={data.publicDocuments.totalCount}
             pageSize={pageSize}
             pageIndex={pagination.pageIndex}
             onPaginationChange={onPaginationChange}
@@ -110,7 +110,7 @@ const PublicIntegrationsList: React.FC<Props> = ({
         }
       />
       <PublicShareableResourceList
-        documents={integrations}
+        documents={documents}
         serviceInstance={serviceInstance}
         baseUrl={baseUrl}
       />
@@ -118,4 +118,4 @@ const PublicIntegrationsList: React.FC<Props> = ({
   );
 };
 
-export default PublicIntegrationsList;
+export default PublicDocumentsList;

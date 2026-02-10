@@ -9,13 +9,13 @@ import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from '../regist
 export const serviceDefinitionDomain = {
   loadServiceDefinitionBy(
     field: ServiceDefinitionMutator
-  ): Promise<ServiceDefinition | null> {
+  ): Promise<ServiceDefinition | undefined> {
     return db('ServiceDefinition').where(field).select('id').first();
   },
 
   loadServiceDefinitionByServiceInstance(
     serviceInstanceId: ServiceInstanceId
-  ): Promise<ServiceDefinition | null> {
+  ): Promise<ServiceDefinition | undefined> {
     return db('ServiceDefinition')
       .leftJoin(
         'ServiceInstance',

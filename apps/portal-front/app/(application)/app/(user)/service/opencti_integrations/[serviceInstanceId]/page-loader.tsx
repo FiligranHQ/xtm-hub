@@ -5,12 +5,11 @@ import {
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
+import { useLogicalFiltersFromStorage } from '@/components/service/document/use-logical-filters-from-storage';
 import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/integrations-list';
-import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/integration.utils';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { Skeleton } from '@filigran/ui';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
-import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
-import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -35,10 +34,16 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );
 
-  useEffect(() => {
-    const typeSubtypeFilter =
-      buildTypeSubtypeFilterExpression(integrationTypes);
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
+    labels,
+    deployable,
+    verified,
+    integrationTypes,
+    productVersions,
+  });
 
+  useEffect(() => {
     loadQuery(
       {
         count: pageSize,
@@ -46,49 +51,13 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         orderMode: 'asc',
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
-        logicalFilters: {
-          operator: LogicalOperatorEnum.AND,
-          children: [
-            {
-              leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
-            },
-            ...(typeSubtypeFilter ? [typeSubtypeFilter] : []),
-            {
-              leaf: {
-                key: FilterKeyEnum.PRODUCT_VERSION,
-                value: Object.keys(productVersions),
-              },
-            },
-            {
-              leaf: {
-                key: FilterKeyEnum.MANAGER_SUPPORTED,
-                value: Object.keys(deployable),
-              },
-            },
-            {
-              leaf: {
-                key: FilterKeyEnum.VERIFIED,
-                value: Object.keys(verified),
-              },
-            },
-          ],
-        },
+        logicalFilters,
       },
       {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [
-    loadQuery,
-    pageSize,
-    serviceInstance,
-    search,
-    labels,
-    integrationTypes,
-    productVersions,
-    deployable,
-    verified,
-  ]);
+  }, [loadQuery, pageSize, serviceInstance, search, logicalFilters]);
 
   return (
     <>

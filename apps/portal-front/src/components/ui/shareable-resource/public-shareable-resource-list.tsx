@@ -7,7 +7,7 @@ import {
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 
 interface Props {
   documents: PublicShareableResource[];
@@ -49,7 +49,7 @@ export const PublicShareableResourceList: React.FC<Props> = ({
     <>
       {Object.entries(documentsByIntegrationType).map(
         ([integrationType, documents]) => (
-          <>
+          <Fragment key={integrationType}>
             {Object.values(IntegrationTypeEnum).includes(
               integrationType as IntegrationTypeEnum
             ) && (
@@ -72,7 +72,7 @@ export const PublicShareableResourceList: React.FC<Props> = ({
                 />
               ))}
             </ul>
-          </>
+          </Fragment>
         )
       )}
     </>

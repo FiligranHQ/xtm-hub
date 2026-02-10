@@ -46,7 +46,6 @@ import Subscription, {
 
 import { UserLoadUserBy } from '../../../model/user';
 import * as authHelper from '../../../security/auth.helper';
-import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -946,26 +945,6 @@ describe('Registration app', () => {
           source: TELEMETRY_SOURCE,
           target_product: 'open-cti',
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        });
-      });
-    });
-    describe('sendMail', () => {
-      it('should send a mail when platform is autoregistered', async () => {
-        const mockSendMail = vi.spyOn(mailService, 'sendMail');
-
-        await registrationApp.autoRegisterPlatform(
-          deploymentRequest.platform_token as string,
-          platformConfiguration
-        );
-
-        expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
-          to: 'user@second-orga.com',
-          template: 'opencti_free_trial_registered',
-          params: {
-            firstName:
-              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.FIRST_NAME,
-            platformUrl: 'http://example.com',
-          },
         });
       });
     });

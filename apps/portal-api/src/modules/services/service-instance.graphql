@@ -98,12 +98,12 @@ type Mutation {
     document: Upload
     isLogo: Boolean
   ): ServiceInstance
-  @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   updatePlatformServiceMetadata(
     input: UpdatePlatformServiceMetadataInput!
     document: Upload
   ): RegisteredPlatform
-  @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
 }
 
 type Query {

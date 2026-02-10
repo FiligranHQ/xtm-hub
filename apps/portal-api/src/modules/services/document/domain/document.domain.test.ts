@@ -2,9 +2,10 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import {
+  DocumentConnection,
   DocumentOrdering,
   FilterKey,
-  IntegrationConnection,
+  Integration,
   IntegrationSubType,
   IntegrationType,
   LogicalOperator,
@@ -66,7 +67,7 @@ describe('Document domain', () => {
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 
-      const connection: IntegrationConnection =
+      const connection: { edges: { node: Integration }[] } =
         await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
@@ -125,7 +126,7 @@ describe('Document domain', () => {
       expect(connector).toBeDefined();
 
       // Fetch csv feeds only
-      const csvFeedConnection: IntegrationConnection =
+      const csvFeedConnection: { edges: { node: Integration }[] } =
         await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
@@ -158,7 +159,7 @@ describe('Document domain', () => {
       );
 
       // Fetch connectors only
-      const connectorConnection: IntegrationConnection =
+      const connectorConnection: { edges: { node: Integration }[] } =
         await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
@@ -191,7 +192,7 @@ describe('Document domain', () => {
       );
 
       // fetch both
-      const integrationConnection: IntegrationConnection =
+      const integrationConnection: DocumentConnection =
         await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
@@ -247,7 +248,7 @@ describe('Document domain', () => {
         expect(connectors.length).toBe(2);
 
         // Fetch connectors with version
-        const connectorConnection: IntegrationConnection =
+        const connectorConnection: { edges: { node: Integration }[] } =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
@@ -312,7 +313,7 @@ describe('Document domain', () => {
         expect(connectors.length).toBe(2);
 
         // Fetch connectors with version
-        const connectorConnection: IntegrationConnection =
+        const connectorConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
@@ -385,7 +386,7 @@ describe('Document domain', () => {
         expect(connectors).toBeDefined();
         expect(connectors.length).toBe(2);
 
-        const secondContractConnection: IntegrationConnection =
+        const secondContractConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
@@ -426,7 +427,7 @@ describe('Document domain', () => {
         expect(connectors).toBeDefined();
         expect(connectors.length).toBe(2);
 
-        const allContractsConnection: IntegrationConnection =
+        const allContractsConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {

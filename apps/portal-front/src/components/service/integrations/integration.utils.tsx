@@ -97,8 +97,12 @@ export const getIntegrationSubTypeMetadata = (integration_subtype?: string) => {
 };
 
 export const buildTypeSubtypeFilterExpression = (
-  integrationSubtypesByTypes: LogicalMultiSelectSelection
+  integrationSubtypesByTypes?: LogicalMultiSelectSelection
 ): LogicalFilterInput | null | undefined => {
+  if (!integrationSubtypesByTypes) {
+    return null;
+  }
+
   const entries = Object.entries(integrationSubtypesByTypes);
 
   if (entries.length === 0) {
