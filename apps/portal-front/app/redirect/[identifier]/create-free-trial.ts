@@ -19,9 +19,12 @@ export const redirectToCreateFreeTrial = async (
     if (!user) {
       return NextResponse.redirect(redirectionUrl);
     }
-
+    const pathKey =
+      platformIdentifier === PlatformIdentifierEnum.OPENCTI
+        ? 'opencti'
+        : 'openaev';
     const freeTrialUrl = new URL(
-      `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}-free-trial`,
+      `/app/service/${pathKey}-free-trial`,
       baseUrlFront
     );
 
@@ -53,7 +56,7 @@ export const redirectToCreateFreeTrial = async (
 
     if (deployedTrials.length > 0) {
       const instanceUrl = new URL(
-        `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}_registration/${deployedTrials[0]?.serviceInstanceId}`,
+        `/app/service/${pathKey}_registration/${deployedTrials[0]?.serviceInstanceId}`,
         baseUrlFront
       );
       return NextResponse.redirect(instanceUrl);

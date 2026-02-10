@@ -874,7 +874,7 @@ describe('Deployment app', () => {
       const originalConfigGet = config.get;
       vi.spyOn(config, 'get').mockImplementation((key: string) => {
         if (key === 'domains_blacklist') {
-          return 'filigran.io,blocked.net';
+          return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
         }
         return originalConfigGet.call(config, key);
       });

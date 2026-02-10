@@ -41,7 +41,7 @@ const OwnedServices = ({
     ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
-  const freeTrialsSkelettonDataCards = availableTrials
+  const freeTrialsSkeletonDataCards = availableTrials
     .filter(
       (platformIdentifier) =>
         isOpenAEVTrialsEnabled ||
@@ -58,7 +58,7 @@ const OwnedServices = ({
     return (
       <Suspense>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l">
-          {freeTrialsSkelettonDataCards.map((card) => (
+          {freeTrialsSkeletonDataCards.map((card) => (
             <ServiceInstanceCard
               key={card.id}
               serviceInstance={card}
