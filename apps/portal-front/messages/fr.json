@@ -989,6 +989,14 @@
   },
   "Sort Asc": "Tri Asc",
   "Sort Desc": "Sort Desc",
+  "SortControls": {
+    "SortBy": "Trier par"
+  },
+  "DocumentOrdering": {
+    "name": "Nom",
+    "created_at": "Date de création",
+    "updated_at": "Date de mise à jour"
+  },
   "TestEnvBanner": "Vous êtes sur l'environnement {environnement}",
   "ThemeToggle": {
     "Automatic": "Automatique",

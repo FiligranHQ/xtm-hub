@@ -372,7 +372,8 @@ export enum DocumentOrdering {
   Description = 'description',
   DownloadNumber = 'download_number',
   FileName = 'file_name',
-  Name = 'name'
+  Name = 'name',
+  UpdatedAt = 'updated_at'
 }
 
 export type EditMeUserInput = {

@@ -12,6 +12,7 @@ enum DocumentOrdering {
   file_name
   description
   created_at
+  updated_at
   download_number
   name
 }
