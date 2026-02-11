@@ -34,7 +34,8 @@ describe('render MenuAdmin', () => {
     expect(screen.getByText('Use Cases')).toBeInTheDocument();
     expect(screen.getByText('Organizations')).toBeInTheDocument();
     expect(screen.getByText('Services')).toBeInTheDocument();
-    expect(screen.getByText('Trials dashboard')).toBeInTheDocument();
+    expect(screen.getByText('OpenCTI Trials')).toBeInTheDocument();
+    expect(screen.getByText('OpenAEV Trials')).toBeInTheDocument();
   });
 
   it('should render admin panel with only Trials dashboard in the menu with READ_TRIALS capabilities', async () => {
@@ -66,6 +67,7 @@ describe('render MenuAdmin', () => {
     expect(screen.queryByText('Use Cases')).not.toBeInTheDocument();
     expect(screen.queryByText('Organizations')).not.toBeInTheDocument();
     expect(screen.queryByText('Services')).not.toBeInTheDocument();
-    expect(screen.getByText('Trials dashboard')).toBeInTheDocument();
+    expect(screen.getByText('OpenCTI Trials')).toBeInTheDocument();
+    expect(screen.getByText('OpenAEV Trials')).toBeInTheDocument();
   });
 });

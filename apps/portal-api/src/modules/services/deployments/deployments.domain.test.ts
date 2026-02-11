@@ -22,7 +22,7 @@ import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 import {
   assertDeploymentRequestProperties,
-  insertOpenCtiDeploymentRequest,
+  insertDeploymentRequest,
 } from './deployments.test.utils';
 
 describe('DeploymentRequestDomain', () => {
@@ -38,8 +38,8 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should return filtered deployment requests', async () => {
-      await insertOpenCtiDeploymentRequest({});
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({});
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
       });
 
@@ -64,8 +64,8 @@ describe('DeploymentRequestDomain', () => {
       );
     });
     it('should filter deployment requests when searchTerm is specified ', async () => {
-      const deployment = await insertOpenCtiDeploymentRequest({});
-      await insertOpenCtiDeploymentRequest({
+      const deployment = await insertDeploymentRequest({});
+      await insertDeploymentRequest({
         user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE
           .ID as UserId,
       });
@@ -84,8 +84,8 @@ describe('DeploymentRequestDomain', () => {
       expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment?.id);
     });
     it('should return ordered deployment requests', async () => {
-      const deployment1 = await insertOpenCtiDeploymentRequest({ ordering: 1 });
-      const deployment2 = await insertOpenCtiDeploymentRequest({ ordering: 2 });
+      const deployment1 = await insertDeploymentRequest({ ordering: 1 });
+      const deployment2 = await insertDeploymentRequest({ ordering: 2 });
 
       const deploymentRequests =
         await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
@@ -113,7 +113,7 @@ describe('DeploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      const deployment = await insertOpenCtiDeploymentRequest({
+      const deployment = await insertDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
@@ -136,7 +136,7 @@ describe('DeploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      const deployment = await insertOpenCtiDeploymentRequest({
+      const deployment = await insertDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Expired,
         type: DeploymentRequestDeploymentType.Trial,
@@ -158,7 +158,7 @@ describe('DeploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      const deployment = await insertOpenCtiDeploymentRequest({
+      const deployment = await insertDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Pending,
         type: DeploymentRequestDeploymentType.Trial,
@@ -182,7 +182,7 @@ describe('DeploymentRequestDomain', () => {
       const userNotInOrganization =
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
 
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         platform_identifier: platformIdentifier,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
@@ -202,7 +202,7 @@ describe('DeploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         platform_identifier: PlatformIdentifier.Openaev,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
@@ -229,7 +229,7 @@ describe('DeploymentRequestDomain', () => {
     it('should return deployment request when Active trial deployment exists with matching token', async () => {
       const platformToken = uuidv4();
 
-      const deployment = await insertOpenCtiDeploymentRequest({
+      const deployment = await insertDeploymentRequest({
         platform_token: platformToken,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
@@ -249,7 +249,7 @@ describe('DeploymentRequestDomain', () => {
     it('should return deployment request when Expired trial deployment exists with matching token', async () => {
       const platformToken = uuidv4();
 
-      const deployment = await insertOpenCtiDeploymentRequest({
+      const deployment = await insertDeploymentRequest({
         platform_token: platformToken,
         hub_status: DeploymentRequestHubStatus.Expired,
         type: DeploymentRequestDeploymentType.Trial,
@@ -268,7 +268,7 @@ describe('DeploymentRequestDomain', () => {
     it('should return deployment request when hub_status is Pending', async () => {
       const platformToken = uuidv4();
 
-      const deployment = await insertOpenCtiDeploymentRequest({
+      const deployment = await insertDeploymentRequest({
         platform_token: platformToken,
         hub_status: DeploymentRequestHubStatus.Pending,
         type: DeploymentRequestDeploymentType.Trial,
@@ -288,7 +288,7 @@ describe('DeploymentRequestDomain', () => {
       const platformToken = uuidv4();
       const nonExistentToken = 'non-existent-token';
 
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         platform_token: platformToken,
         hub_status: DeploymentRequestHubStatus.Active,
         type: DeploymentRequestDeploymentType.Trial,
@@ -305,10 +305,10 @@ describe('DeploymentRequestDomain', () => {
 
   describe('reorderDeploymentRequestUp', () => {
     it('should do nothing when deployment request is the top one', async () => {
-      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const topDeploymentRequest = await insertDeploymentRequest({
         ordering: 1,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         ordering: 2,
       });
 
@@ -325,15 +325,15 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should swap deployment request with the previous one', async () => {
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         ordering: 2,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
-      const previousDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const previousDeploymentRequest = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
-      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const selectedDeploymentRequest = await insertDeploymentRequest({
         ordering: 4,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
@@ -357,11 +357,41 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should only reorder queued deployment requests', async () => {
-      const previousDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const previousDeploymentRequest = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Active,
       });
-      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const selectedDeploymentRequest = await insertDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(
+        selectedDeploymentRequest!
+      );
+      const resultPreviousDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: previousDeploymentRequest!.id,
+        });
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
+
+      expect(resultPreviousDeploymentRequest).toBeDefined();
+      expect(resultPreviousDeploymentRequest!.ordering).toBe(3);
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(4);
+    });
+
+    it('should only reorder deployment requests from the same platform', async () => {
+      const previousDeploymentRequest = await insertDeploymentRequest({
+        ordering: 3,
+        hub_status: DeploymentRequestHubStatus.Queued,
+        platform_identifier: PlatformIdentifier.Openaev,
+      });
+      const selectedDeploymentRequest = await insertDeploymentRequest({
         ordering: 4,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
@@ -388,11 +418,11 @@ describe('DeploymentRequestDomain', () => {
 
   describe('reorderDeploymentRequestToTop', async () => {
     it('should do nothing when deployment request is the top one', async () => {
-      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const topDeploymentRequest = await insertDeploymentRequest({
         ordering: 1,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         ordering: 2,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
@@ -410,19 +440,19 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should reorder deployment request to top', async () => {
-      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const topDeploymentRequest = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         ordering: 4,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         ordering: 5,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
-      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const selectedDeploymentRequest = await insertDeploymentRequest({
         ordering: 6,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
@@ -448,18 +478,68 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should only reorder queued deployment requests', async () => {
-      const topDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const topDeploymentRequest = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
-      const secondDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const secondDeploymentRequest = await insertDeploymentRequest({
         ordering: 4,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         ordering: 5,
       });
-      const selectedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+      const selectedDeploymentRequest = await insertDeploymentRequest({
         ordering: 6,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(
+        selectedDeploymentRequest!
+      );
+      const resultSelectedDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: selectedDeploymentRequest!.id,
+        });
+
+      const resultSecondDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: secondDeploymentRequest!.id,
+        });
+
+      const resultTopDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: topDeploymentRequest!.id,
+        });
+
+      expect(resultSelectedDeploymentRequest).toBeDefined();
+      expect(resultSelectedDeploymentRequest!.ordering).toBe(1);
+
+      expect(resultSecondDeploymentRequest).toBeDefined();
+      expect(resultSecondDeploymentRequest!.ordering).toBe(
+        secondDeploymentRequest!.ordering
+      );
+
+      expect(resultTopDeploymentRequest).toBeDefined();
+      expect(resultTopDeploymentRequest!.ordering).toBe(4);
+    });
+
+    it('should only reorder deployment requests from same platform identifier', async () => {
+      const topDeploymentRequest = await insertDeploymentRequest({
+        ordering: 3,
+        platform_identifier: PlatformIdentifier.Openaev,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      const secondDeploymentRequest = await insertDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      await insertDeploymentRequest({
+        ordering: 5,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      const selectedDeploymentRequest = await insertDeploymentRequest({
+        ordering: 6,
+        platform_identifier: PlatformIdentifier.Openaev,
         hub_status: DeploymentRequestHubStatus.Queued,
       });
 
@@ -501,7 +581,7 @@ describe('DeploymentRequestDomain', () => {
     let deploymentRequestId3: DeploymentRequestId;
     let deploymentRequestId4: DeploymentRequestId;
     beforeEach(async () => {
-      const deploymentRequest1 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest1 = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
@@ -511,21 +591,21 @@ describe('DeploymentRequestDomain', () => {
         .platform_identifier as PlatformIdentifier;
       region = deploymentRequest1!.region as DeploymentRequestPlatformRegion;
 
-      const deploymentRequest2 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest2 = await insertDeploymentRequest({
         ordering: 4,
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
       });
       deploymentRequestId2 = deploymentRequest2!.id;
 
-      const deploymentRequest3 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest3 = await insertDeploymentRequest({
         ordering: 5,
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
       });
       deploymentRequestId3 = deploymentRequest3!.id;
 
-      const deploymentRequest4 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest4 = await insertDeploymentRequest({
         ordering: 6,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
@@ -534,6 +614,13 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should update the last request in platform and region', async () => {
+      const openAEVDeploymentRequest = await insertDeploymentRequest({
+        ordering: 4,
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+        platform_identifier: PlatformIdentifier.Openaev,
+      });
+
       const updatedRequest =
         await DeploymentRequestDomain.setLastPendingRequestAsQueued(
           platformIdentifier,
@@ -561,6 +648,11 @@ describe('DeploymentRequestDomain', () => {
       await assertDeploymentRequestProperties(deploymentRequestId4, {
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
+      });
+
+      await assertDeploymentRequestProperties(openAEVDeploymentRequest!.id, {
+        hub_status: DeploymentRequestHubStatus.Queued,
+        ordering: openAEVDeploymentRequest!.ordering,
       });
     });
 
@@ -598,7 +690,7 @@ describe('DeploymentRequestDomain', () => {
           region
         );
 
-      expect(updatedRequest).toBeDefined();
+      expect(updatedRequest).toBeUndefined();
 
       await assertDeploymentRequestProperties(deploymentRequestId1, {
         ordering: 3,
@@ -620,22 +712,22 @@ describe('DeploymentRequestDomain', () => {
 
   describe('setFirstQueuedRequestAsPending', () => {
     it('should move the first request to pending, ordered by ordering', async () => {
-      const deploymentRequest1 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest1 = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
       });
-      const deploymentRequest2 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest2 = await insertDeploymentRequest({
         ordering: 4,
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
       });
-      const deploymentRequest3 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest3 = await insertDeploymentRequest({
         ordering: 5,
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
       });
-      const deploymentRequest4 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest4 = await insertDeploymentRequest({
         ordering: 6,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
@@ -682,13 +774,13 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should not move requests from another region', async () => {
-      const deploymentRequest1 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest1 = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
         platform_identifier: PlatformIdentifier.Opencti,
       });
-      const deploymentRequest2 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest2 = await insertDeploymentRequest({
         ordering: 4,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
@@ -710,13 +802,13 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should not move request from another platform', async () => {
-      const deploymentRequest1 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest1 = await insertDeploymentRequest({
         ordering: 3,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
         region: DeploymentRequestPlatformRegion.UsEast,
       });
-      const deploymentRequest2 = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest2 = await insertDeploymentRequest({
         ordering: 4,
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Unprovisioned,

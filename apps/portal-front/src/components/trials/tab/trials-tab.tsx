@@ -38,9 +38,11 @@ import {
 import { toast } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPaginationQuery.graphql';
+import { DeploymentRequestFilterKeyEnum } from '@generated/models/DeploymentRequestFilterKey.enum';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
 import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
@@ -69,8 +71,9 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
-interface TrialsTabProps {
+interface Props {
   type: TrialsTabType;
+  platformIdentifier: PlatformIdentifierEnum;
 }
 
 const trialsTabConfig: Record<
@@ -103,7 +106,7 @@ const trialsTabConfig: Record<
 
 const connectionIDs = new Map<TrialsTabType, string>();
 
-const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
+const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
@@ -451,8 +454,12 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     orderMode: defaultOrderingMode,
     orderBy: defaultOrder,
     filters: [
-      { key: 'type', value: ['trial'] },
-      { key: 'hub_status', value: statuses },
+      { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
+      { key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses },
+      {
+        key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
+        value: [platformIdentifier],
+      },
     ],
   });
 

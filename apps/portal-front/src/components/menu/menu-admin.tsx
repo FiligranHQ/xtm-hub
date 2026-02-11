@@ -127,8 +127,13 @@ const adminLinksData = (t: UseTranslationsProps) => [
     label: t('MenuLinks.Services'),
   },
   {
-    href: `/${APP_PATH}/admin/trials`,
-    label: t('MenuLinks.Trials'),
+    href: `/${APP_PATH}/admin/opencti-trials`,
+    label: t('MenuLinks.OpenCTITrials'),
+    restriction: [PortalCapabilityEnum.READ_TRIALS],
+  },
+  {
+    href: `/${APP_PATH}/admin/openaev-trials`,
+    label: t('MenuLinks.OpenAEVTrials'),
     restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
 ];
