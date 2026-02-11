@@ -134,12 +134,20 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
 
   const getServiceDefinitionData = Object.values(
     ServiceDefinitionIdentifierEnum
-  ).map((value) => {
-    return {
-      label: t(`Service.ServiceDefinitionIdentifier.${value}`),
-      value: value,
-    };
-  });
+  )
+    .filter(
+      (value) =>
+        ![
+          ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+          ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+        ].includes(value)
+    )
+    .map((value) => {
+      return {
+        label: t(`Service.ServiceDefinitionIdentifier.${value}`),
+        value: value,
+      };
+    });
 
   const handleInputChange = (inputValue: string) => {
     refetch({ searchTerm: inputValue });
