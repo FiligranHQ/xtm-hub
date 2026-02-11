@@ -4,6 +4,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { extractId } from '../../../utils/utils';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import { loadServiceInstanceSubscription } from '../service-instance.domain';
 import { registrationApp } from './registration.app';
@@ -57,7 +58,9 @@ const resolvers: Resolvers = {
       }
     },
     registeredPlatform: async (_, { input }) =>
-      registrationApp.loadRegisteredPlatform(input),
+      registrationApp.loadRegisteredPlatform(
+        extractId<ServiceInstanceId>(input.service_instance_id)
+      ),
     registeredPlatforms: async (_, { input }) =>
       registrationApp.loadRegisteredPlatforms(input),
     /**

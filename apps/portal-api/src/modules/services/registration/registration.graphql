@@ -99,7 +99,7 @@ type RefreshUserPlatformTokenResponse {
 
 input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
-  onlyActiveTrials: Boolean
+  onlyActive: Boolean
 }
 
 input RegisteredPlatformInput {
