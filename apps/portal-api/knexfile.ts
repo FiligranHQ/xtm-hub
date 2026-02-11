@@ -3,6 +3,7 @@ import pkg, { type Knex } from 'knex';
 import { baseConfig } from './knexconfig';
 import {
   DeploymentRequestFilter,
+  DeploymentRequestFilterKey,
   Filter,
   FilterKey,
   LogicalFilterInput,
@@ -294,6 +295,14 @@ const createProductVersionFilter = (): FilterHandler => ({
   },
 });
 
+const createPlatformIdentifierFilterHandler = (): FilterHandler => ({
+  key: DeploymentRequestFilterKey.PlatformIdentifier,
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    qb.whereIn('platform_identifier', values);
+  },
+});
+
 const createMetadataFilterHandler = (key: string): FilterHandler => ({
   key,
   addJoin: (qb, _type) => {
@@ -357,6 +366,8 @@ const filterHandlers: Record<string, FilterHandler> = {
   [ServiceInstanceFilterKey.ServiceDefinitionIdentifier]:
     createServiceDefinitionIdentifierFilter(),
   [FilterKey.ProductVersion]: createProductVersionFilter(),
+  [DeploymentRequestFilterKey.PlatformIdentifier]:
+    createPlatformIdentifierFilterHandler(),
 };
 
 const getFilterHandler = (key: string): FilterHandler => {

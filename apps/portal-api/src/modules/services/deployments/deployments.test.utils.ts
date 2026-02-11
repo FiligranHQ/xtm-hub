@@ -18,7 +18,7 @@ import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/re
 import { insertServiceInstance } from '../service-instance.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
-export async function insertOpenCtiDeploymentRequest(
+export async function insertDeploymentRequest(
   deploymentRequest: Partial<DeploymentRequestInitializer>
 ) {
   const serviceInstanceId = uuidv4() as ServiceInstanceId;

@@ -1,8 +1,12 @@
 import { ServiceListAddFilterCombobox } from '@/components/service/components/header/filter/service-list-add-filter-combobox';
 import { ServiceListFilterSection } from '@/components/service/components/header/filter/service-list-filter-section';
+import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
+import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { SearchInput } from '@/components/ui/search-input';
+import { SortControls } from '@/components/ui/sort-controls';
 import { cn } from '@/lib/utils';
 import { debounceHandleInput } from '@/utils/debounce';
+import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
@@ -43,6 +47,19 @@ export const ServiceListHeader: React.FC<Props> = ({
   const t = useTranslations();
   const hasMoreThanOneFilter = Object.values(filters).length > 1;
 
+  const { localStorageKey } = useServiceListLocalStorageKeyContext();
+  const { orderBy, orderMode, setOrderBy, setOrderMode } =
+    useServiceListLocalStorage(localStorageKey);
+
+  const sortOptions = [
+    DocumentOrderingEnum.NAME,
+    DocumentOrderingEnum.CREATED_AT,
+    DocumentOrderingEnum.UPDATED_AT,
+  ].map((value) => ({
+    value,
+    label: t(`DocumentOrdering.${value}`),
+  }));
+
   return (
     <div className={cn('flex flex-col justify-between gap-m', className)}>
       <div className="flex justify-between gap-s flex-wrap">
@@ -59,10 +76,21 @@ export const ServiceListHeader: React.FC<Props> = ({
               filterKeys={Object.keys(filters) as ServiceListFilterKey[]}
             />
           ) : (
-            <div className="min-w-[20rem] max-w-full">
+            <div className="max-w-full">
               {filters[ServiceListFilterKey.Label]?.node}
             </div>
           )}
+
+          <SortControls
+            orderByOptions={sortOptions}
+            onOrderByChange={(value) =>
+              setOrderBy(value as DocumentOrderingEnum)
+            }
+            onOrderModeChange={setOrderMode}
+            selectedOrderMode={orderMode}
+            selectedOrderBy={orderBy}
+            className="ml-2"
+          />
         </div>
 
         <div className="flex gap-s">

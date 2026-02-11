@@ -10,8 +10,8 @@ import {
   vi,
 } from 'vitest';
 import {
-  TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
+  TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -61,7 +61,7 @@ import { DeploymentRequestDomain } from './deployments.domain';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
 import {
   assertDeploymentRequestProperties,
-  insertOpenCtiDeploymentRequest,
+  insertDeploymentRequest,
 } from './deployments.test.utils';
 
 describe('Deployment app', () => {
@@ -404,7 +404,7 @@ describe('Deployment app', () => {
   });
   describe('loadDeploymentRequests', () => {
     it('should return created deployment requests', async () => {
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({});
+      const deploymentRequest = await insertDeploymentRequest({});
 
       const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
@@ -429,7 +429,7 @@ describe('Deployment app', () => {
 
     it('should return platform_url when Service_Configuration exists', async () => {
 
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({});
+      const deploymentRequest = await insertDeploymentRequest({});
 
       await db('Service_Configuration').insert({
         service_instance_id: deploymentRequest!.service_instance_id,
@@ -451,12 +451,12 @@ describe('Deployment app', () => {
     });
 
     it('should return out-of-sync deployment requests by default', async () => {
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -474,11 +474,11 @@ describe('Deployment app', () => {
     });
 
     it('should return out-of-sync deployments even with other filters', async () => {
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -503,42 +503,42 @@ describe('Deployment app', () => {
 
     it('should filter multiple out-of-sync scenarios correctly', async () => {
       // Out-of-sync: NULL target vs NULL actual (both NULL = synced, should NOT appear)
-      const synced1 = await insertOpenCtiDeploymentRequest({
+      const synced1 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: undefined,
         actual_state: undefined,
       });
 
       // Out-of-sync: active target vs NULL actual
-      const outOfSync1 = await insertOpenCtiDeploymentRequest({
+      const outOfSync1 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
 
       // Out-of-sync: active target vs provisioning actual
-      const outOfSync2 = await insertOpenCtiDeploymentRequest({
+      const outOfSync2 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Provisioning,
       });
 
       // Synced: active target vs active actual
-      const synced2 = await insertOpenCtiDeploymentRequest({
+      const synced2 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
       // Out-of-sync: NULL target vs provisioning actual
-      const outOfSync3 = await insertOpenCtiDeploymentRequest({
+      const outOfSync3 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Failed,
         target_state: undefined,
         actual_state: DeploymentRequestPlatformState.Provisioning,
       });
 
       // Synced: inactive target vs inactive actual
-      const synced3 = await insertOpenCtiDeploymentRequest({
+      const synced3 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Expired,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
         actual_state: DeploymentRequestPlatformState.Unprovisioned,
@@ -562,13 +562,13 @@ describe('Deployment app', () => {
     });
 
     it('should return filtered deployment requests only', async () => {
-      await insertOpenCtiDeploymentRequest({});
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({});
+      await insertDeploymentRequest({
         region: DeploymentRequestPlatformRegion.EuWest,
         hub_status: DeploymentRequestHubStatus.Active,
         actual_state: DeploymentRequestPlatformState.Active,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         platform_identifier: PlatformIdentifier.Openaev,
         hub_status: DeploymentRequestHubStatus.Active,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -599,7 +599,7 @@ describe('Deployment app', () => {
   describe('updateDeploymentRequest', () => {
     let initialDeployment: DeploymentRequest;
     beforeEach(async () => {
-      initialDeployment = (await insertOpenCtiDeploymentRequest({
+      initialDeployment = (await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Provisioning,
@@ -983,7 +983,7 @@ describe('Deployment app', () => {
         counts_in_orga_quota,
         target_state,
       }) => {
-        const initialDeployment = (await insertOpenCtiDeploymentRequest({
+        const initialDeployment = (await insertDeploymentRequest({
           hub_status,
           actual_state,
         })) as DeploymentRequest;
@@ -1040,7 +1040,7 @@ describe('Deployment app', () => {
     });
 
     it('should throw if user is not in organization and not isAdmin', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest(
+      const deployment = (await insertDeploymentRequest(
         {}
       )) as DeploymentRequest;
 
@@ -1052,7 +1052,7 @@ describe('Deployment app', () => {
     });
 
     it('should not throw if user is not in organization and isAdmin', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest(
+      const deployment = (await insertDeploymentRequest(
         {}
       )) as DeploymentRequest;
 
@@ -1064,7 +1064,7 @@ describe('Deployment app', () => {
       expect(response).toBeTruthy();
     });
     it('should send a telemetry event', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest(
+      const deployment = (await insertDeploymentRequest(
         {}
       )) as DeploymentRequest;
 
@@ -1097,7 +1097,7 @@ describe('Deployment app', () => {
     });
 
     it('should send a mail to the trial requester', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest({
+      const deployment = (await insertDeploymentRequest({
         user_requester_id:
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       })) as DeploymentRequest;
@@ -1125,7 +1125,7 @@ describe('Deployment app', () => {
       hubStatus: DeploymentRequestHubStatus,
       ordering: number = 1
     ): Promise<DeploymentRequest> => {
-      return (await insertOpenCtiDeploymentRequest({
+      return (await insertDeploymentRequest({
         platform_identifier: platformIdentifier,
         region,
         hub_status: hubStatus,
@@ -1584,13 +1584,13 @@ describe('Deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      const expiredTrial = await insertOpenCtiDeploymentRequest({
+      const expiredTrial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestHubStatus.Active,
         end_date: new Date(Date.UTC(2025, 1, 1)),
       });
-      const nonExpiredTrial = await insertOpenCtiDeploymentRequest({
+      const nonExpiredTrial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestHubStatus.Active,
@@ -1635,7 +1635,7 @@ describe('Deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
         const expiredDate = new Date(Date.UTC(2025, 1, 1));
-        const trial = await insertOpenCtiDeploymentRequest({
+        const trial = await insertDeploymentRequest({
           hub_status: hub_status,
           target_state: target_state,
           end_date: expiredDate,
@@ -1660,7 +1660,7 @@ describe('Deployment app', () => {
       vi.setSystemTime(date);
       const expiredDate = new Date(Date.UTC(2025, 1, 1));
 
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         end_date: expiredDate,
@@ -1686,7 +1686,7 @@ describe('Deployment app', () => {
       const start_date = new Date(2024, 12, 1);
       const end_date = new Date(2025, 1, 1);
 
-      const trial = await insertOpenCtiDeploymentRequest({
+      const trial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         start_date,
@@ -1734,7 +1734,7 @@ describe('Deployment app', () => {
       `(
         'should not free place when request hub status is $hub_status',
         async ({ hub_status }) => {
-          const deploymentRequest = await insertOpenCtiDeploymentRequest({
+          const deploymentRequest = await insertDeploymentRequest({
             hub_status,
           });
 
@@ -1750,7 +1750,7 @@ describe('Deployment app', () => {
     });
 
     it('should set one queued request as pending and not free place', async () => {
-      const deploymentRequestToRelease = await insertOpenCtiDeploymentRequest({
+      const deploymentRequestToRelease = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
       });
       const queuedDeploymentRequest = {
@@ -1778,9 +1778,9 @@ describe('Deployment app', () => {
       vi.spyOn(
         DeploymentRequestDomain,
         'setFirstQueuedRequestAsPending'
-      ).mockResolvedValue(null);
+      ).mockResolvedValue(undefined);
 
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
       });
 
@@ -1801,9 +1801,9 @@ describe('Deployment app', () => {
         vi.spyOn(
           DeploymentRequestDomain,
           'setFirstQueuedRequestAsPending'
-        ).mockResolvedValue(null);
+        ).mockResolvedValue(undefined);
 
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+        const deploymentRequest = await insertDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
@@ -1821,7 +1821,7 @@ describe('Deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
 
-        const queuedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        const queuedDeploymentRequest = await insertDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Queued,
           activity_sector: 'cybersecurity',
           region: DeploymentRequestPlatformRegion.UsEast,
@@ -1835,7 +1835,7 @@ describe('Deployment app', () => {
           ...queuedDeploymentRequest!,
           hub_status: DeploymentRequestHubStatus!.Pending,
         });
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+        const deploymentRequest = await insertDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Active,
         });
 

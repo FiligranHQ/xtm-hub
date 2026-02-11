@@ -215,7 +215,8 @@
     "Settings": "Settings",
     "SettingsLabel": "Settings menu",
     "Users": "Users",
-    "Trials": "Trials dashboard"
+    "OpenCTITrials": "OpenCTI Trials",
+    "OpenAEVTrials": "OpenAEV Trials"
   },
   "MenuUser": {
     "Profile": "Profile",
@@ -988,6 +989,14 @@
   },
   "Sort Asc": "Sort Asc",
   "Sort Desc": "Sort Desc",
+  "SortControls": {
+    "SortBy": "Sort by"
+  },
+  "DocumentOrdering": {
+    "name": "Name",
+    "created_at": "Creation date",
+    "updated_at": "Update date"
+  },
   "TestEnvBanner": "You are viewing the {environnement} environment.",
   "ThemeToggle": {
     "Automatic": "Automatic",

@@ -1,5 +1,5 @@
-import {Knex} from 'knex';
-import {db, paginate, dbRaw} from '../../../../knexfile';
+import { Knex } from 'knex';
+import { db, paginate, dbRaw } from '../../../../knexfile';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -8,16 +8,16 @@ import {
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
-import {withTransaction} from '../../../context/database.context';
+import { withTransaction } from '../../../context/database.context';
 import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
-import {auth0Client} from '../../../thirdparty/auth0/client';
-import {logApp} from '../../../utils/app-logger.util';
-import {ErrorCode} from '../../../utils/error/error.code';
-import {ServiceGroupDomain} from '../group/service-group.domain';
+import { auth0Client } from '../../../thirdparty/auth0/client';
+import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { ServiceGroupDomain } from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -148,7 +148,7 @@ export const DeploymentRequestDomain = {
   updateDeploymentRequestById: async (
     id: DeploymentRequestId,
     data: DeploymentRequestMutator
-  ): Promise<DeploymentRequest> => {
+  ): Promise<DeploymentRequest | undefined> => {
     const [deploymentRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .where('id', '=', id)
       .update(data)
@@ -159,7 +159,7 @@ export const DeploymentRequestDomain = {
   setFirstQueuedRequestAsPending: async (
     platformIdentifier: PlatformIdentifier,
     region: DeploymentRequestPlatformRegion
-  ): Promise<DeploymentRequest | null> => {
+  ): Promise<DeploymentRequest | undefined> => {
     const request = await db<DeploymentRequest>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
@@ -169,28 +169,29 @@ export const DeploymentRequestDomain = {
       .first();
 
     if (!request) {
-      return null;
+      return undefined;
     }
 
     const maxPendingOrdering = await DeploymentRequestDomain.getMaxOrdering({
       hub_status: DeploymentRequestHubStatus.Pending,
+      platform_identifier: platformIdentifier,
     });
 
     const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .update({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
-        ordering: maxPendingOrdering + 1,
+        ordering: (maxPendingOrdering ?? 0) + 1,
       })
       .where('id', '=', request.id)
       .returning('*');
-    return updatedRequest ?? null;
+    return updatedRequest ?? undefined;
   },
 
   setLastPendingRequestAsQueued: async (
     platformIdentifier: PlatformIdentifier,
     region: DeploymentRequestPlatformRegion
-  ): Promise<DeploymentRequest | null> => {
+  ): Promise<DeploymentRequest | undefined> => {
     const request = await db<DeploymentRequest>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
@@ -200,19 +201,20 @@ export const DeploymentRequestDomain = {
       .first();
 
     if (!request) {
-      return null;
+      return undefined;
     }
 
     await db<DeploymentRequest>('DeploymentRequest')
       .increment('ordering', 1)
-      .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
+      .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
+      .andWhere('platform_identifier', '=', platformIdentifier);
     const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .update({
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: DeploymentRequestPlatformState.Removed,
         ordering: 1,
       })
-      .where({id: request.id})
+      .where({ id: request.id })
       .returning('*');
 
     return updatedRequest;
@@ -255,6 +257,11 @@ export const DeploymentRequestDomain = {
     )
       .where('ordering', '<', deploymentRequest.ordering)
       .andWhere('hub_status', '=', DeploymentRequestHubStatus.Queued)
+      .andWhere(
+        'platform_identifier',
+        '=',
+        deploymentRequest.platform_identifier
+      )
       .select('*')
       .orderBy('ordering', 'desc')
       .first();
@@ -266,20 +273,24 @@ export const DeploymentRequestDomain = {
 
     await withTransaction(async () => {
       await db<DeploymentRequest>('DeploymentRequest')
-        .update({ordering: deploymentRequest.ordering})
-        .where({id: previousDeploymentRequest.id});
+        .update({ ordering: deploymentRequest.ordering })
+        .where({ id: previousDeploymentRequest.id });
 
       await db<DeploymentRequest>('DeploymentRequest')
-        .update({ordering: previousDeploymentRequest.ordering})
-        .where({id: deploymentRequest.id});
+        .update({ ordering: previousDeploymentRequest.ordering })
+        .where({ id: deploymentRequest.id });
     });
   },
 
-  reorderDeploymentRequestToTop: async ({id}: DeploymentRequest) => {
+  reorderDeploymentRequestToTop: async ({
+    id,
+    platform_identifier,
+  }: DeploymentRequest) => {
     const topDeploymentRequest = await db<DeploymentRequest>(
       'DeploymentRequest'
     )
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
+      .andWhere('platform_identifier', '=', platform_identifier)
       .orderBy('ordering', 'asc')
       .first();
     if (!topDeploymentRequest) {
@@ -294,7 +305,8 @@ export const DeploymentRequestDomain = {
     await withTransaction(async () => {
       await db<DeploymentRequest>('DeploymentRequest')
         .increment('ordering', 1)
-        .where('hub_status', '=', DeploymentRequestHubStatus.Queued);
+        .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
+        .andWhere('platform_identifier', '=', platform_identifier);
       await DeploymentRequestDomain.updateDeploymentRequestById(id, {
         ordering: 1,
       });

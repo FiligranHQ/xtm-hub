@@ -21,9 +21,8 @@ interface PageLoaderProps {
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
-  const { count, search, labels, setSearch } = useServiceListLocalStorage(
-    ServiceListLocalStorageKey.OpenAEVScenarios
-  );
+  const { count, search, labels, setSearch, orderMode, orderBy } =
+    useServiceListLocalStorage(ServiceListLocalStorageKey.OpenAEVScenarios);
   const logicalFilters = useLogicalFiltersFromStorage({
     serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
     labels,
@@ -33,8 +32,8 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     loadQuery(
       {
         count,
-        orderBy: 'created_at',
-        orderMode: 'desc',
+        orderBy,
+        orderMode,
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         logicalFilters,
@@ -43,7 +42,15 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, count, serviceInstance, search, logicalFilters]);
+  }, [
+    loadQuery,
+    count,
+    serviceInstance,
+    search,
+    logicalFilters,
+    orderBy,
+    orderMode,
+  ]);
 
   return (
     <>
