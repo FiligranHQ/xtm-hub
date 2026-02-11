@@ -215,7 +215,8 @@
     "Settings": "Réglages",
     "SettingsLabel": "Menu des paramètres",
     "Users": "Utilisateurs",
-    "Trials": "Tableau de bord des essais"
+    "OpenCTITrials": "Essais OpenCTI",
+    "OpenAEVTrials": "Essais OpenAEV"
   },
   "MenuUser": {
     "Profile": "Profile",
