@@ -127,6 +127,7 @@ type Query {
   serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
   serviceInstanceByIdWithSubscriptions(
     service_instance_id: ID
+    searchTerm: String
   ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
   subscribedServiceInstancesByIdentifier(
     identifier: ServiceDefinitionIdentifier!

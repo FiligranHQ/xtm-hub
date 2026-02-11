@@ -94,7 +94,7 @@ export const freeTrialSkeletonToServiceInstanceCardData = (
     ...freeTrialStaticData(t),
     id: 'freeTrial',
     displayedServiceStatus: t('Service.Trials.Display.New'),
-    url: '/app/service/free-trial',
+    url: '/app/service/opencti-free-trial',
   };
 };
 

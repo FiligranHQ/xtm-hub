@@ -6,8 +6,8 @@ import {
   OrganizationCapability,
   QueryUsersArgs,
   Subscription,
-  User as UserGenerated,
   UserConnection,
+  User as UserGenerated,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -271,11 +271,6 @@ export const loadUserConnection = (opts: QueryUsersArgs) => {
     );
   loadUserQuery
     .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
-    .leftJoin(
-      'User_Organization as UserOrgFilter',
-      'User.id',
-      'UserOrgFilter.user_id'
-    )
     .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
     // Inspiration from https://github.com/knex/knex/issues/882
     .select([
@@ -308,7 +303,7 @@ export const loadUserConnection = (opts: QueryUsersArgs) => {
       filters: filters?.map(({ key, value }) => {
         if (key === FilterKey.OrganizationId) {
           return {
-            key: 'UserOrgFilter.organization_id',
+            key: 'UserOrg.organization_id',
             value,
           } as unknown as Filter;
         }

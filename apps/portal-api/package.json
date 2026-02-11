@@ -48,7 +48,7 @@
     "watch:graphql": "node builder/dev/watch-graphql.js"
   },
   "dependencies": {
-    "@apollo/server": "5.2.0",
+    "@apollo/server": "5.4.0",
     "@as-integrations/express5": "1.1.2",
     "@aws-sdk/client-s3": "3.908.0",
     "@aws-sdk/lib-storage": "3.908.0",
@@ -74,6 +74,7 @@
     "graphql-sse": "2.5.4",
     "graphql-subscriptions": "2.0.0",
     "graphql-upload": "17.0.0",
+    "handlebars": "4.7.8",
     "jwt-decode": "4.0.0",
     "knex": "3.1.0",
     "migrate": "^2.1.0",
@@ -96,7 +97,7 @@
     "@types/config": "3.3.5",
     "@types/cors": "2.8.19",
     "@types/express-session": "1.18.2",
-    "@types/node": "24.10.4",
+    "@types/node": "24.10.9",
     "@types/nodemailer": "6.4.21",
     "@types/passport": "1.0.17",
     "@types/uuid": "10.0.0",

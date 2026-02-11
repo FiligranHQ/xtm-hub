@@ -48,8 +48,6 @@ const resolvers: Resolvers = {
   Query: {
     integration: async (_, { id }) =>
       integrationsApp.loadIntegration(extractId<DocumentId>(id)),
-    publicIntegrations: async (_, input) =>
-      integrationsApp.loadPaginatedPublicAccessIntegrations(input),
     publicIntegrationsByServiceSlug: async (_, { serviceSlug }) =>
       integrationsApp.loadPublicAccessIntegrations(serviceSlug),
     publicIntegrationBySlug: async (_, { slug }) =>

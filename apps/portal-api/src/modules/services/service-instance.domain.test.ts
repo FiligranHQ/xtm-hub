@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import {
   contextBypassUser,
+  requestContextAdminUser,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -12,6 +13,7 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import ServiceInstance, {
   ServiceInstanceId,
@@ -28,6 +30,7 @@ import {
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  loadServiceWithSubscriptions,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
@@ -522,6 +525,68 @@ describe('Service instance domain', () => {
       expect(userServicesInDb[0].subscription_id).toBe(
         secondOrgaSubscriptionId
       );
+    });
+  });
+
+  describe('loadServiceWithSubscriptions', () => {
+    let testServiceInstanceId: ServiceInstanceId;
+    let filigranSubscriptionId: SubscriptionId;
+    let thalesSubscriptionId: SubscriptionId;
+    beforeEach(async () => {
+      testServiceInstanceId = uuidv4() as ServiceInstanceId;
+      filigranSubscriptionId = uuidv4() as SubscriptionId;
+      thalesSubscriptionId = uuidv4() as SubscriptionId;
+
+      const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+
+      await db('ServiceInstance').insert({
+        id: testServiceInstanceId,
+        name: 'Test Service With Subscriptions',
+        description: 'Test service',
+        service_definition_id: serviceDefinitionId,
+        creation_status: 'READY',
+      });
+
+      await db('Subscription').insert({
+        id: filigranSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db('Subscription').insert({
+        id: thalesSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+    });
+    it('should filter organizations by searchTerm when provided', async () => {
+      requestContext.set(requestContextAdminUser);
+      const result = await loadServiceWithSubscriptions(
+        testServiceInstanceId,
+        'SECOND'
+      );
+      expect(result.subscriptions.length).toBe(1);
+      expect(result.subscriptions[0].organization.name).toBe('SECOND ORGA');
+    });
+    it('should return all subscriptions when no searchTerm provided', async () => {
+      requestContext.set(requestContextAdminUser);
+
+      const result = await loadServiceWithSubscriptions(
+        testServiceInstanceId,
+        undefined
+      );
+
+      expect(result.subscriptions.length).toBe(2);
+
+      const orgNames = result.subscriptions.map((sub) => sub.organization.name);
+      expect(orgNames).toContain('SECOND ORGA');
+      expect(orgNames).toContain('Filigran');
     });
   });
 });

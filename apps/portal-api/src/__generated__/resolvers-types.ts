@@ -190,19 +190,6 @@ export type CustomDashboard = Document & Node & {
   use_cases?: Maybe<Array<UseCase>>;
 };
 
-export type CustomDashboardConnection = {
-  __typename?: 'CustomDashboardConnection';
-  edges: Array<CustomDashboardEdge>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type CustomDashboardEdge = {
-  __typename?: 'CustomDashboardEdge';
-  cursor: Scalars['String']['output'];
-  node: CustomDashboard;
-};
-
 /**
  * /!\ WARNING Do not use this type.
  * It exists only to cover cases where we failed to map to a specific Document.
@@ -451,19 +438,6 @@ export type Integration = {
   uploader?: Maybe<User>;
   uploader_organization?: Maybe<Organization>;
   use_cases?: Maybe<Array<UseCase>>;
-};
-
-export type IntegrationConnection = {
-  __typename?: 'IntegrationConnection';
-  edges: Array<IntegrationEdge>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type IntegrationEdge = {
-  __typename?: 'IntegrationEdge';
-  cursor: Scalars['String']['output'];
-  node: Integration;
 };
 
 export type IntegrationHack = Document & Integration & Node & {
@@ -1101,8 +1075,8 @@ export type Query = {
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
+  publicDocuments: DocumentConnection;
   publicIntegrationBySlug?: Maybe<Integration>;
-  publicIntegrations: IntegrationConnection;
   publicIntegrationsByServiceSlug?: Maybe<Array<Maybe<Integration>>>;
   publicServiceInstances: ServiceConnection;
   registeredPlatform?: Maybe<RegisteredPlatform>;
@@ -1248,20 +1222,20 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
-export type QueryPublicIntegrationBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryPublicIntegrationsArgs = {
+export type QueryPublicDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
   logicalFilters?: InputMaybe<LogicalFilterInput>;
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: Scalars['ID']['input'];
   slug: Scalars['String']['input'];
+};
+
+
+export type QueryPublicIntegrationBySlugArgs = {
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1329,6 +1303,7 @@ export type QueryServiceInstanceByIdArgs = {
 
 
 export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
   service_instance_id?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -2119,8 +2094,6 @@ export type ResolversTypes = ResolversObject<{
   CreateDocumentInput: CreateDocumentInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
-  CustomDashboardConnection: ResolverTypeWrapper<CustomDashboardConnection>;
-  CustomDashboardEdge: ResolverTypeWrapper<CustomDashboardEdge>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DefaultDocument: ResolverTypeWrapper<DefaultDocument>;
   DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
@@ -2149,8 +2122,6 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Integration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integration']>;
-  IntegrationConnection: ResolverTypeWrapper<Omit<IntegrationConnection, 'edges'> & { edges: Array<ResolversTypes['IntegrationEdge']> }>;
-  IntegrationEdge: ResolverTypeWrapper<Omit<IntegrationEdge, 'node'> & { node: ResolversTypes['Integration'] }>;
   IntegrationHack: ResolverTypeWrapper<IntegrationHack>;
   IntegrationSubType: IntegrationSubType;
   IntegrationType: IntegrationType;
@@ -2284,8 +2255,6 @@ export type ResolversParentTypes = ResolversObject<{
   CreateDocumentInput: CreateDocumentInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
-  CustomDashboardConnection: CustomDashboardConnection;
-  CustomDashboardEdge: CustomDashboardEdge;
   Date: Scalars['Date']['output'];
   DefaultDocument: DefaultDocument;
   DeploymentAvailability: DeploymentAvailability;
@@ -2306,8 +2275,6 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Integration: ResolversInterfaceTypes<ResolversParentTypes>['Integration'];
-  IntegrationConnection: Omit<IntegrationConnection, 'edges'> & { edges: Array<ResolversParentTypes['IntegrationEdge']> };
-  IntegrationEdge: Omit<IntegrationEdge, 'node'> & { node: ResolversParentTypes['Integration'] };
   IntegrationHack: IntegrationHack;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: IsPlatformRegisteredOrganization;
@@ -2524,19 +2491,6 @@ export type CustomDashboardResolvers<ContextType = PortalContext, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type CustomDashboardConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboardConnection'] = ResolversParentTypes['CustomDashboardConnection']> = ResolversObject<{
-  edges?: Resolver<Array<ResolversTypes['CustomDashboardEdge']>, ParentType, ContextType>;
-  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
-  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type CustomDashboardEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CustomDashboardEdge'] = ResolversParentTypes['CustomDashboardEdge']> = ResolversObject<{
-  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['CustomDashboard'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
@@ -2678,19 +2632,6 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
-}>;
-
-export type IntegrationConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationConnection'] = ResolversParentTypes['IntegrationConnection']> = ResolversObject<{
-  edges?: Resolver<Array<ResolversTypes['IntegrationEdge']>, ParentType, ContextType>;
-  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
-  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type IntegrationEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationEdge'] = ResolversParentTypes['IntegrationEdge']> = ResolversObject<{
-  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['Integration'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type IntegrationHackResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationHack'] = ResolversParentTypes['IntegrationHack']> = ResolversObject<{
@@ -2957,8 +2898,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
+  publicDocuments?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryPublicDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId' | 'slug'>>;
   publicIntegrationBySlug?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryPublicIntegrationBySlugArgs>>;
-  publicIntegrations?: Resolver<ResolversTypes['IntegrationConnection'], ParentType, ContextType, RequireFields<QueryPublicIntegrationsArgs, 'first' | 'orderBy' | 'orderMode' | 'slug'>>;
   publicIntegrationsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['Integration']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationsByServiceSlugArgs>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
@@ -3405,8 +3346,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Connector?: ConnectorResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
-  CustomDashboardConnection?: CustomDashboardConnectionResolvers<ContextType>;
-  CustomDashboardEdge?: CustomDashboardEdgeResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DefaultDocument?: DefaultDocumentResolvers<ContextType>;
   DeploymentAvailability?: DeploymentAvailabilityResolvers<ContextType>;
@@ -3418,8 +3357,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
-  IntegrationConnection?: IntegrationConnectionResolvers<ContextType>;
-  IntegrationEdge?: IntegrationEdgeResolvers<ContextType>;
   IntegrationHack?: IntegrationHackResolvers<ContextType>;
   IsPlatformRegisteredOrganization?: IsPlatformRegisteredOrganizationResolvers<ContextType>;
   IsPlatformRegisteredResponse?: IsPlatformRegisteredResponseResolvers<ContextType>;

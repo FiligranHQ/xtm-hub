@@ -49,6 +49,7 @@ import {
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
 import { loadUser } from '../../users/users.domain';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
@@ -363,6 +364,40 @@ export const DeploymentsApp = {
     } catch (error) {
       logApp.error('Unable to send mail', {
         error,
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+
+    try {
+      if (
+        newStatus === DeploymentRequestHubStatus.Active &&
+        newStatus !== deploymentRequest.hub_status
+      ) {
+        const [user] = await loadUser({
+          id: deploymentRequest.user_requester_id,
+        });
+
+        const serviceConfiguration =
+          await serviceContractDomain.loadConfigurationByPlatform(
+            deploymentRequest.platform_id
+          );
+
+        const parsedConfig = JSON.parse(
+          JSON.stringify(serviceConfiguration.config)
+        );
+
+        void sendMail({
+          to: user.email,
+          template: 'opencti_free_trial_registered',
+          params: {
+            firstName: formatName(user.first_name ?? ''),
+            platformUrl: parsedConfig.platform_url,
+          },
+        });
+      }
+    } catch (error) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: error,
         deploymentRequestId: deploymentRequest.id,
       });
     }

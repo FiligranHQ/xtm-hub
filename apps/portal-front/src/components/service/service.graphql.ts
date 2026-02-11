@@ -137,9 +137,13 @@ export const ServiceListQuery = graphql`
 `;
 
 export const ServiceByIdWithSubscriptions = graphql`
-  query serviceByIdWithSubscriptionsQuery($service_instance_id: ID) {
+  query serviceByIdWithSubscriptionsQuery(
+    $service_instance_id: ID
+    $searchTerm: String
+  ) {
     serviceInstanceByIdWithSubscriptions(
       service_instance_id: $service_instance_id
+      searchTerm: $searchTerm
     ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }

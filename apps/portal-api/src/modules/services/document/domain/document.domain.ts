@@ -1,9 +1,7 @@
 import { Knex } from 'knex';
 import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
-  CustomDashboardConnection,
   DocumentConnection,
-  IntegrationConnection,
   Organization,
   QueryDocumentsArgs,
   UpdateDocumentInput,
@@ -115,14 +113,12 @@ export const DocumentDomain = {
     return organization;
   },
 
-  loadParentDocumentsByServiceInstance: async <
-    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
-  >(
+  loadParentDocumentsByServiceInstance: async (
     type: string,
     input: QueryDocumentsArgs,
     include_metadata?: string[]
-  ): Promise<T> => {
-    return DocumentDomain.loadDocuments<T>(
+  ): Promise<DocumentConnection> => {
+    return DocumentDomain.loadDocuments(
       {
         ...input,
         parentsOnly: input.parentsOnly ?? true,
@@ -138,13 +134,11 @@ export const DocumentDomain = {
     );
   },
 
-  loadDocuments: async <
-    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
-  >(
+  loadDocuments: async (
     opts: Partial<QueryDocumentsArgs>,
     field: Record<string, unknown>,
     include_metadata?: string[]
-  ): Promise<T> => {
+  ): Promise<DocumentConnection> => {
     const { user } = requestContext.require();
 
     const loadDocumentQuery = db<Document>('Document')
@@ -213,7 +207,7 @@ export const DocumentDomain = {
       include_metadata
     );
 
-    return paginate<Document, T>(
+    return paginate<Document, DocumentConnection>(
       'Document',
       opts,
       { normalizeSearchTerm: true },
@@ -245,9 +239,7 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
-  loadPaginatedSeoDocumentsByServiceSlug: async <
-    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
-  >(
+  loadPaginatedSeoDocumentsByServiceSlug: async (
     type: string,
     serviceSlug: string,
     opts: Partial<QueryDocumentsArgs>,
@@ -261,10 +253,10 @@ export const DocumentDomain = {
       useDefaultSort
     );
 
-    return paginate<Document, T>(
+    return paginate<Document, DocumentConnection>(
       'Document',
       opts,
-      undefined,
+      opts,
       loadDocumentsQuery
     );
   },

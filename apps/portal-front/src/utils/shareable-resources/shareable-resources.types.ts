@@ -3,7 +3,7 @@ import { customDashboardsItem_fragment$data } from '@generated/customDashboardsI
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
-import { seoIntegrationsItemFragment$data } from '@generated/seoIntegrationsItemFragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
@@ -16,7 +16,7 @@ export type ShareableResource =
   | SeoOpenAEVScenario;
 
 export type PublicShareableResource =
-  | seoIntegrationsItemFragment$data
+  | publicDocumentItemFragment$data
   | SeoIntegration
   | SeoCustomDashboard
   | SeoOpenAEVScenario;

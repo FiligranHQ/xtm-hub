@@ -50,7 +50,6 @@ import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
-  loadUser,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
@@ -493,25 +492,6 @@ export const registrationApp = {
     } catch (error) {
       logApp.error('Unable to send telemetry event for registration', {
         error,
-      });
-    }
-    try {
-      const [user] = await loadUser({
-        id: deploymentRequest.user_requester_id,
-      });
-
-      void sendMail({
-        to: user.email,
-        template: 'opencti_free_trial_registered',
-        params: {
-          firstName: formatName(user.first_name ?? ''),
-          platformUrl: platform.url,
-        },
-      });
-    } catch (error) {
-      logApp.error('Unable to send mail after autoRegistration', {
-        error: error,
-        deploymentRequestId: deploymentRequest.id,
       });
     }
   },

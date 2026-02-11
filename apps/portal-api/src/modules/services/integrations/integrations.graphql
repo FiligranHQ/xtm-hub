@@ -31,19 +31,19 @@ interface Integration implements Node & Document {
   name: String!
   short_description: String
   description: String
-  file_name: String
-  minio_name: String!
+  file_name: String @auth
+  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
-  updater_id: String
+  updater_id: String @auth
   download_number: Int
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
+  subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
   # Integration
@@ -73,8 +73,8 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
@@ -104,8 +104,8 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
@@ -136,8 +136,8 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
@@ -175,8 +175,8 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
@@ -208,8 +208,8 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
@@ -241,8 +241,8 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 
@@ -255,29 +255,8 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   github_url: String
 }
 
-type IntegrationEdge {
-  cursor: String!
-  node: Integration!
-}
-
-type IntegrationConnection {
-  totalCount: Int!
-  edges: [IntegrationEdge!]!
-  pageInfo: PageInfo!
-}
-
 type Query {
   integration(id: ID, serviceInstanceId: ID): Integration @auth
-  publicIntegrations(
-    slug: String!
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    logicalFilters: LogicalFilterInput
-    serviceInstanceId: String
-  ): IntegrationConnection!
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
   publicIntegrationBySlug(slug: String): Integration
 }
