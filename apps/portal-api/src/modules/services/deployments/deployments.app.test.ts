@@ -423,8 +423,31 @@ describe('Deployment app', () => {
           TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
         requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
         cancellation_user_email: null,
-        platform_config: null,
+        platform_url: null,
       });
+    });
+
+    it('should return platform_url when Service_Configuration exists', async () => {
+
+      const deploymentRequest = await insertOpenCtiDeploymentRequest({});
+
+      await db('Service_Configuration').insert({
+        service_instance_id: deploymentRequest!.service_instance_id,
+        config: { platform_url: 'https://test-platform.opencti.io' },
+        status: 'active',
+      });
+
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+        first: 10,
+      });
+
+      expect(deployments.edges[0]?.node.platform_url).toBe(
+        'https://test-platform.opencti.io'
+      );
+
+      await db('Service_Configuration')
+        .where('service_instance_id', deploymentRequest!.service_instance_id)
+        .delete();
     });
 
     it('should return out-of-sync deployment requests by default', async () => {

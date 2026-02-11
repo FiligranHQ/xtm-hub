@@ -995,6 +995,7 @@ export type PlatformDeploymentRequest = {
   platform_id?: Maybe<Scalars['String']['output']>;
   platform_identifier: PlatformIdentifier;
   platform_token: Scalars['String']['output'];
+  platform_url?: Maybe<Scalars['String']['output']>;
   region: DeploymentRequestPlatformRegion;
   requester_email: Scalars['String']['output'];
   requester_first_name?: Maybe<Scalars['String']['output']>;
@@ -2852,6 +2853,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  platform_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;
   requester_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   requester_first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

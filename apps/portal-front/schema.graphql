@@ -309,6 +309,7 @@ type PlatformDeploymentRequest {
   requester_first_name: String
   requester_last_name: String
   platform_id: String
+  platform_url: String
   failure_reason: String
 }
 
