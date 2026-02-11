@@ -24,18 +24,25 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
     PublicDocumentListQuery
   );
 
-  const { localStorageKey } = useShareableResourceMapping(
-    serviceInstance.slug as ServiceSlug
-  );
+  const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
+  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug);
 
-  const { pageSize, search, labels, integrationTypes, deployable, verified } =
-    useServiceListLocalStorage(localStorageKey);
-  const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
+  const {
+    pageSize,
+    search,
     labels,
     integrationTypes,
     deployable,
     verified,
+    orderMode,
+    orderBy,
+  } = useServiceListLocalStorage(localStorageKey);
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug,
+    labels,
+    deployable,
+    verified,
+    integrationTypes,
   });
 
   useEffect(() => {
@@ -43,8 +50,8 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
       {
         slug: serviceInstance.slug ?? '',
         count: pageSize,
-        orderBy: 'name',
-        orderMode: 'asc',
+        orderBy,
+        orderMode,
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         logicalFilters,
@@ -63,6 +70,8 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
     deployable,
     verified,
     logicalFilters,
+    orderMode,
+    orderBy,
   ]);
 
   return (
