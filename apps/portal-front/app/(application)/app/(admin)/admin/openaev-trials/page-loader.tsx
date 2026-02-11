@@ -1,5 +1,6 @@
 import TrialsList from '@/components/trials/trials-list';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 
 const breadcrumbValue = [
@@ -7,7 +8,7 @@ const breadcrumbValue = [
     label: 'MenuLinks.Settings',
   },
   {
-    label: 'MenuLinks.Trials',
+    label: 'MenuLinks.OpenAEVTrials',
   },
 ];
 const PageLoader = () => {
@@ -15,8 +16,8 @@ const PageLoader = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.Trials')}</h1>
-      <TrialsList />
+      <h1 className="sr-only">{t('MenuLinks.OpenAEVTrials')}</h1>
+      <TrialsList platformIdentifier={PlatformIdentifierEnum.OPENAEV} />
     </>
   );
 };

@@ -116,6 +116,7 @@ export const DeploymentsApp = {
               : DeploymentRequestHubStatus.Queued;
             const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
               hub_status: hubStatus,
+              platform_identifier: input.platform_identifier,
             });
             const ordering = (maxOrdering ?? 0) + 1;
 
