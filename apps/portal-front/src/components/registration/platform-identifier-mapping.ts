@@ -14,10 +14,18 @@ export const translateServiceDefinitionIdentifier = (
   serviceDefinitionIdentifier: ServiceDefinitionIdentifier
 ): string => {
   const platformIdentifierEnum =
-    serviceDefinitionIdentifier ===
-    ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
-      ? PlatformIdentifierEnum.OPENCTI
-      : PlatformIdentifierEnum.OPENAEV;
+    ServiceDefinitionIdentifierToPlatformIdentifier[
+      serviceDefinitionIdentifier
+    ] ?? PlatformIdentifierEnum.OPENAEV;
 
   return PlatformTranslationMapping[platformIdentifierEnum];
+};
+
+export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
+  Record<ServiceDefinitionIdentifierEnum, PlatformIdentifierEnum>
+> = {
+  [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION]:
+    PlatformIdentifierEnum.OPENCTI,
+  [ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION]:
+    PlatformIdentifierEnum.OPENAEV,
 };

@@ -49,15 +49,38 @@ describe('useFreeTrial with Relay Mock', () => {
     });
 
     await act(async () => {
-      environment.mock.resolveMostRecentOperation((operation) =>
-        MockPayloadGenerator.generate(operation, {
+      environment.mock.resolveMostRecentOperation((operation) => {
+        expect(operation.request.node.params.name).toBe(
+          'registerRegisteredPlatformsQuery'
+        );
+
+        return MockPayloadGenerator.generate(operation, {
           Query() {
             return {
               registeredPlatforms: [], // Empty array = no trials
             };
           },
-        })
-      );
+        });
+      });
+    });
+
+    await act(async () => {
+      environment.mock.resolveMostRecentOperation((operation) => {
+        expect(operation.request.node.params.name).toBe(
+          'trialInstancesTrialsForOrgaQuery'
+        );
+
+        return MockPayloadGenerator.generate(operation, {
+          Query() {
+            return {
+              trialDeployments: {
+                availableTrials: ['opencti'],
+                isBlacklisted: false,
+              },
+            };
+          },
+        });
+      });
     });
 
     expect(getByText('Learn more')).toBeTruthy();

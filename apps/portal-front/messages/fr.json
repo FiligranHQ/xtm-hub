@@ -918,8 +918,14 @@
       "Display": {
         "New": "Nouveau",
         "Requested": "Demandée",
-        "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
-        "FreeTrialDescription": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition pour commencer à rendre opérationnelle votre veille sur les menaces de bout en bout !"
+        "opencti": {
+          "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
+          "FreeTrialDescription": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition pour commencer à rendre opérationnelle votre veille sur les menaces de bout en bout !"
+        },
+        "openaev": {
+          "Title": "Essai gratuit d'OpenAEV pendant 30 jours",
+          "FreeTrialDescription": "Explorez OpenAEV pour simuler des scénarios d'attaque réels, évaluer votre posture de sécurité et améliorer votre cyber-résilience - au niveau technique et humain."
+        }
       },
       "CapacityWarning": {
         "Title": "Aucune plateforme disponible",

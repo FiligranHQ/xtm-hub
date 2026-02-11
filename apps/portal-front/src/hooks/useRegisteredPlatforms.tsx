@@ -21,20 +21,20 @@ export const UseRegisteredPlatformsQuery = graphql`
 `;
 
 interface UseRegisteredPlatformsOptions {
-  onlyActiveTrials?: boolean;
+  onlyActive?: boolean;
 }
 
 export const useRegisteredPlatforms = (
   platformIdentifier: PlatformIdentifierEnum,
   options: UseRegisteredPlatformsOptions = {}
 ) => {
-  const { onlyActiveTrials = false } = options;
+  const { onlyActive = false } = options;
   const queryData = useLazyLoadQuery<useRegisteredPlatformsFragmentQuery>(
     UseRegisteredPlatformsQuery,
     {
       input: {
         identifier: platformIdentifier,
-        onlyActiveTrials,
+        onlyActive,
       },
     }
   );
