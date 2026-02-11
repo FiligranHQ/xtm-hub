@@ -37,6 +37,39 @@ export const useLogicalFiltersFromStorage = ({
       };
     }
 
+    const deployableFilter = deployable
+      ? [
+          {
+            leaf: {
+              key: FilterKeyEnum.MANAGER_SUPPORTED,
+              value: Object.keys(deployable),
+            },
+          },
+        ]
+      : [];
+
+    const verifiedFilter = verified
+      ? [
+          {
+            leaf: {
+              key: FilterKeyEnum.VERIFIED,
+              value: Object.keys(verified),
+            },
+          },
+        ]
+      : [];
+
+    const productVersionsFilter = productVersions
+      ? [
+          {
+            leaf: {
+              key: FilterKeyEnum.PRODUCT_VERSION,
+              value: Object.keys(productVersions),
+            },
+          },
+        ]
+      : [];
+
     const typeSubtypeFilter =
       buildTypeSubtypeFilterExpression(integrationTypes);
     return {
@@ -46,36 +79,9 @@ export const useLogicalFiltersFromStorage = ({
           leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
         },
         ...(typeSubtypeFilter ? [typeSubtypeFilter] : []),
-        ...(deployable
-          ? [
-              {
-                leaf: {
-                  key: FilterKeyEnum.MANAGER_SUPPORTED,
-                  value: Object.keys(deployable),
-                },
-              },
-            ]
-          : []),
-        ...(verified
-          ? [
-              {
-                leaf: {
-                  key: FilterKeyEnum.VERIFIED,
-                  value: Object.keys(verified),
-                },
-              },
-            ]
-          : []),
-        ...(productVersions
-          ? [
-              {
-                leaf: {
-                  key: FilterKeyEnum.PRODUCT_VERSION,
-                  value: Object.keys(productVersions),
-                },
-              },
-            ]
-          : []),
+        ...deployableFilter,
+        ...verifiedFilter,
+        ...productVersionsFilter,
       ],
     };
   }, [
