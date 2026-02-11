@@ -114,6 +114,8 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   ]);
 
   const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
+  const isReorderTrialsAllowed =
+    type === TrialsTabType.Waiting && canModifyTrial;
   const statuses = trialsTabConfig[type].statuses;
   const defaultOrder =
     trialsTabConfig[type].defaultOrder ??
@@ -210,11 +212,13 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
       {
         accessorKey: 'requester_email',
         id: 'requester_email',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Email'),
       },
       {
         accessorKey: 'organization_name',
         id: 'organization_name',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Organization'),
       },
       ...(type === TrialsTabType.Waiting
@@ -222,6 +226,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
             {
               accessorKey: 'request_date',
               id: 'request_date',
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.RequestDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
@@ -238,6 +243,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
             {
               accessorKey: 'start_date',
               id: 'start_date',
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.StartDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
@@ -252,6 +258,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
             {
               accessorKey: 'end_date',
               id: 'end_date',
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.EndDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
@@ -283,11 +290,13 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
       {
         accessorKey: 'hub_status',
         id: 'hub_status',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Status'),
       },
       {
         accessorKey: 'region',
         id: 'region',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Region'),
       },
       ...(type === TrialsTabType.Cancelled
@@ -337,7 +346,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           ]
         : []),
     ],
-    [type, t, canModifyTrial, onCancelClick, onReorderClick]
+    [type, t, isReorderTrialsAllowed]
   );
 
   const actionColumns: ColumnDef<trials_fragment$data>[] =
@@ -380,7 +389,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
                       })}
                     </AlertDialogComponent>
                   )}
-                  {type === TrialsTabType.Waiting && canModifyTrial && (
+                  {isReorderTrialsAllowed && (
                     <>
                       <TooltipProvider>
                         <Tooltip>
@@ -480,6 +489,11 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
     pageIndex: 0,
     pageSize,
   });
+
+  useEffect(() => {
+    setOrderBy(defaultOrder);
+    setOrderMode(defaultOrderingMode);
+  }, [type, defaultOrder, defaultOrderingMode, setOrderBy, setOrderMode]);
 
   const trialsDataTable = useMemo<trials_fragment$data[]>(
     () =>
