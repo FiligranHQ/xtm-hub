@@ -59,10 +59,13 @@ export const RegistrationLearnMore = async ({
         <div className="text-center w-[70%] m-auto">
           <H2>Your eXtended Threat Management (XTM) suite</H2>
           <P>
-            OpenCTI is part of Filigran’s open-source threat intelligence,
-            advanced adversary simulation, and strategic cyber risk management
-            solution designed to help your organization anticipate and manage
-            threats end-to-end.
+            {serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
+              ? 'OpenCTI'
+              : 'OpenAEV'}{' '}
+            is part of Filigran’s open-source threat intelligence, advanced
+            adversary simulation, and strategic cyber risk management solution
+            designed to help your organization anticipate and manage threats
+            end-to-end.
           </P>
         </div>
         <div className="flex flex-col lg:flex-row gap-xl">

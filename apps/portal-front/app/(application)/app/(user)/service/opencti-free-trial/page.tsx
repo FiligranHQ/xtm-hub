@@ -42,7 +42,10 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         actions={
           <>
             <SlackSupportButton />
-            <ReachSalesButton variant="outline-primary" />
+            <ReachSalesButton
+              variant="outline-primary"
+              platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+            />
             <GuardCapacityComponent
               shouldNotBePersonalSpace
               capacityRestriction={[
@@ -59,7 +62,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         }
       />
       <PersonalSpaceInfo />
-      <TrialsLearnMore />
+      <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENCTI} />
       <RegistrationLearnMore
         serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
       />

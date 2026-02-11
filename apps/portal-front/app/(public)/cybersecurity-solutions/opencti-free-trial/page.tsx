@@ -36,7 +36,7 @@ const Page: React.FC = async () => {
             </GradientButton>
           }
         />
-        <TrialsLearnMore />
+        <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENCTI} />
         <RegistrationLearnMore
           serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
         />

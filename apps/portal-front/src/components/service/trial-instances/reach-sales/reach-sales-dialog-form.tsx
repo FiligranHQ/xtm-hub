@@ -8,6 +8,7 @@ import {
   FormMessage,
   Textarea,
 } from '@filigran/ui';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -18,6 +19,7 @@ interface Props {
   isDialogOpen: boolean;
   setIsDialogOpen: (isOpen: boolean) => void;
   onSubmit: (message: string) => void;
+  platformIdentifier: PlatformIdentifierEnum;
 }
 
 const reachSalesSchema = z.object({
@@ -28,12 +30,18 @@ export const ReachSalesDialogForm: React.FC<Props> = ({
   isDialogOpen,
   setIsDialogOpen,
   onSubmit,
+  platformIdentifier,
 }) => {
   const t = useTranslations();
   const form = useForm<z.infer<typeof reachSalesSchema>>({
     resolver: zodResolver(reachSalesSchema),
     defaultValues: {
-      message: t('Service.Trials.ReachOutToSalesDefaultMessage'),
+      message: t(`Service.Trials.ReachOutToSalesDefaultMessage`, {
+        platform:
+          platformIdentifier === PlatformIdentifierEnum.OPENCTI
+            ? 'OpenCTI'
+            : 'OpenAEV',
+      }),
     },
   });
 
