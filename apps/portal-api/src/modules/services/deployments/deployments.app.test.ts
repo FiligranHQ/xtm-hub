@@ -10,7 +10,7 @@ import {
   vi,
 } from 'vitest';
 import {
-  contextSimpleUserSecondOrga,  
+  contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
@@ -891,7 +891,7 @@ describe('Deployment app', () => {
       vi.mocked(config.get).mockImplementation(originalConfigGet);
     });
     it('should return trial as available if the created one does not count in quota', async () => {
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         counts_in_orga_quota: false,
       });
 
@@ -907,7 +907,7 @@ describe('Deployment app', () => {
     });
 
     it('should not return identifier as available when DeploymentRequest exist', async () => {
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({});
+      const deploymentRequest = await insertDeploymentRequest({});
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
         platformIdentifiers: [PlatformIdentifier.Opencti],
@@ -928,7 +928,7 @@ describe('Deployment app', () => {
       });
     });
     it('should return data corresponding to the right organization', async () => {
-      await insertOpenCtiDeploymentRequest({});
+      await insertDeploymentRequest({});
 
       requestContext.set(requestContextAdminSecondOrga);
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
@@ -943,7 +943,7 @@ describe('Deployment app', () => {
     });
     it('should return not availablity and no deployed for personal space', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      await insertOpenCtiDeploymentRequest({});
+      await insertDeploymentRequest({});
 
       const contextUserWithPersonalOrga: PortalContext = {
         ...contextSimpleUserSecondOrga,
