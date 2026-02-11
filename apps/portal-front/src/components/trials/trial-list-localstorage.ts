@@ -1,8 +1,6 @@
-import { isValueInEnum } from '@/utils/isValueInEnum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingMode } from '@generated/trialsListQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
-import { useEffect } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 export const useTrialsListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
@@ -10,15 +8,7 @@ export const useTrialsListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeTrialsList', 'asc');
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<DeploymentRequestOrderingEnum>(
-      'orderByTrialsList',
-      DeploymentRequestOrderingEnum.REQUEST_DATE
-    );
-  useEffect(() => {
-    if (!isValueInEnum(orderBy, DeploymentRequestOrderingEnum)) {
-      setOrderBy(DeploymentRequestOrderingEnum.REQUEST_DATE);
-    }
-  }, [orderBy, setOrderBy]);
+    useLocalStorage<DeploymentRequestOrderingEnum>('orderByTrialsList');
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countTrialsList',
     50

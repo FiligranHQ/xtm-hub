@@ -80,15 +80,17 @@ const trialsTabConfig: Record<
   TrialsTabType,
   {
     statuses: DeploymentRequestHubStatusEnum[];
-    defaultOrder?: DeploymentRequestOrderingEnum;
+    defaultOrder: DeploymentRequestOrderingEnum;
     defaultOrderingMode?: OrderingModeEnum;
   }
 > = {
   [TrialsTabType.Cancelled]: {
     statuses: [DeploymentRequestHubStatusEnum.CANCELLED],
+    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
   },
   [TrialsTabType.Expired]: {
     statuses: [DeploymentRequestHubStatusEnum.EXPIRED],
+    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
   },
   [TrialsTabType.Running]: {
     statuses: [
@@ -96,6 +98,7 @@ const trialsTabConfig: Record<
       DeploymentRequestHubStatusEnum.PENDING,
       DeploymentRequestHubStatusEnum.PROVISIONING,
     ],
+    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
   },
   [TrialsTabType.Waiting]: {
     statuses: [DeploymentRequestHubStatusEnum.QUEUED],
@@ -117,9 +120,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   const isReorderTrialsAllowed =
     type === TrialsTabType.Waiting && canModifyTrial;
   const statuses = trialsTabConfig[type].statuses;
-  const defaultOrder =
-    trialsTabConfig[type].defaultOrder ??
-    DeploymentRequestOrderingEnum.REQUEST_DATE;
+  const defaultOrder = trialsTabConfig[type].defaultOrder;
   const defaultOrderingMode =
     trialsTabConfig[type].defaultOrderingMode ?? OrderingModeEnum.DESC;
 
