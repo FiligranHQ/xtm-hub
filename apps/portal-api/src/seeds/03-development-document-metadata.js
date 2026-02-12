@@ -8,9 +8,19 @@ export async function seed(knex) {
         value: '6.5.2',
       },
       {
+        document_id: 'bb734d93-4823-4637-a216-518d8ef55628',
+        key: 'product_version',
+        value: '6.8.4',
+      },
+      {
         document_id: '7effeac6-8939-4316-8278-6adbe5c5dcb8',
         key: 'product_version',
         value: '1.18.0',
+      },
+      {
+        document_id: '1275352d-c49e-458d-b340-4e40d2035249',
+        key: 'product_version',
+        value: '1.4.0',
       },
       {
         document_id: 'e02faca0-9d38-4981-94f2-72bf18ca9c53',

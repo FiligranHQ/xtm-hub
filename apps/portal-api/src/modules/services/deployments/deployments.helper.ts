@@ -1,3 +1,4 @@
+import config from 'config';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -5,7 +6,9 @@ import {
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequestModel from '../../../model/kanel/public/DeploymentRequest';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../../model/kanel/public/Organization';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 
@@ -203,4 +206,13 @@ export const computeHubStatus = (
   }
 
   return newHubStatus;
+};
+
+export const isOrganizationBlacklisted = (organization: Organization) => {
+  const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
+    .split(',')
+    .map((d) => d.trim());
+  return organization.domains.some((domain) =>
+    domainsBlacklist.includes(domain)
+  );
 };

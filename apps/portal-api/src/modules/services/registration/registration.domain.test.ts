@@ -315,6 +315,65 @@ describe('Registration domain', () => {
     });
   });
 
+  describe('loadRegisteredPlatform', () => {
+    const openAEVplatformId = uuidv4();
+
+    const openAEVplatformTitle = 'My OpenCTI platform';
+    const openAEVplatformUrl = 'http://example.com';
+    const openAEVplatformContract = PlatformContract.Ee;
+    const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+    const openAEVplatformVersion = '6.7.17';
+    const openAEVToken = uuidv4();
+    const openAEVServiceDefinitionId = 'e66a6b50-1f92-4f62-b84c-88ed6b871790';
+
+    let openCTIServiceInstanceId: ServiceInstanceId;
+    beforeEach(async () => {
+      openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceDefinitionId,
+        configuration: {
+          registerer_id: contextBypassUser.user.id,
+          platform_id: platformId,
+          platform_url: platformUrl,
+          platform_title: platformTitle,
+          platform_contract: platformContract,
+          platform_version: platformOpenCTI,
+          token,
+        },
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+
+      await registrationDomain.registerNewPlatform({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceDefinitionId: openAEVServiceDefinitionId,
+        configuration: {
+          registerer_id: contextBypassUser.user.id,
+          platform_id: openAEVplatformId,
+          platform_url: openAEVplatformUrl,
+          platform_title: openAEVplatformTitle,
+          platform_contract: openAEVplatformContract,
+          platform_version: openAEVplatformVersion,
+          token: openAEVToken,
+        },
+        platformIdentifier: PlatformIdentifier.Openaev,
+      });
+    });
+    afterEach(async () => {
+      await db('DeploymentRequest').delete();
+      await serviceContractDomain.deleteConfigurationBy({});
+      await deleteServiceInstanceBy({});
+    });
+
+    it('should return only the registered platform linked to the service instance', async () => {
+      const platforms = await registrationDomain.loadRegisteredPlatform(
+        openCTIServiceInstanceId
+      );
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
+    });
+  });
+
   describe('loadRegisteredPlatforms', () => {
     const openAEVplatformId = uuidv4();
 
@@ -420,14 +479,6 @@ describe('Registration domain', () => {
         )
       ).toBe(true);
     });
-    it('should return only the registered platform linked to the service instance', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
-        'ServiceInstance.id': openCTIServiceInstanceId,
-      });
-
-      expect(platforms.length).toBe(1);
-      expect(platforms[0]?.config.platform_id).toBe(platformId);
-    });
     it('should return platforms with non-active trials by default', async () => {
       await DeploymentRequestDomain.insertDeploymentRequest({
         id: uuidv4() as DeploymentRequest['id'],
@@ -467,7 +518,7 @@ describe('Registration domain', () => {
 
       const platforms = await registrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
-        onlyActiveTrials: true,
+        onlyActive: true,
       });
 
       expect(platforms.length).toBe(0);
@@ -489,7 +540,7 @@ describe('Registration domain', () => {
 
       const platforms = await registrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
-        onlyActiveTrials: true,
+        onlyActive: true,
       });
 
       expect(platforms.length).toBe(1);

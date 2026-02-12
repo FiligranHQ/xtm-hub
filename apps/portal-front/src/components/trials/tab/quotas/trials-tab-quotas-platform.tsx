@@ -1,4 +1,5 @@
-import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/platform/trials-tab-quotas-platform-update';
+'use client';
+import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/trials-tab-quotas-platform-update';
 import {
   TrialsDeploymentRequestsAvailableListFragment,
   TrialsDeploymentRequestsAvailableQuery,
@@ -117,9 +118,6 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
 
   return (
     <>
-      <h2 className="mt-xxl ml-l">
-        {t(`PlatformIdentifier.${platformIdentifier}`)}
-      </h2>
       <DataTable
         columns={columns}
         data={dataTableData}

@@ -23,7 +23,7 @@ export const ShareableResourceCardVersion: FunctionComponent<
 > = ({ requiredProductVersion, product_version, className }) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI, {
-    onlyActiveTrials: true,
+    onlyActive: true,
   });
   const { platformToBeUpdated, incompatiblePlatformsCount } =
     useBuildCompatibilityTranslationKey({
