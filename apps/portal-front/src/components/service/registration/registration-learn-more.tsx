@@ -113,7 +113,11 @@ export const RegistrationLearnMore = async ({
             <Image
               width="1232"
               height="692"
-              src={`/xtm_schema.png`}
+              src={
+                serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
+                  ? `/opencti_ecosystem.png`
+                  : '/openaev_ecosystem.png'
+              }
               priority={false}
               loading="lazy"
               alt={`Illustration of free trial service`}
