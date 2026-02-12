@@ -11,6 +11,7 @@ import {
   UserConnection,
   User as UserGenerated,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import Organization, {
   OrganizationId,
@@ -20,6 +21,12 @@ import UserOrganizationPending, {
   UserOrganizationPendingInitializer,
   UserOrganizationPendingMutator,
 } from '../../../model/kanel/public/UserOrganizationPending';
+
+interface OrganizationCleanup {
+  organizationId: number;
+  organizationName: string;
+  count: number;
+}
 
 export const UserOrganizationPendingDomain = {
   insertNewUserOrganizationPending: (
@@ -119,6 +126,63 @@ export const UserOrganizationPendingDomain = {
     );
     const results = await queryBuilder.select('user_id');
     return results.map((row) => row.user_id);
+  },
+  cleanupPendingUsers: async (): Promise<{
+    totalDeleted: number;
+    byOrganization: OrganizationCleanup[];
+  }> => {
+    return withTransaction(async () => {
+      const byOrganization = await db<OrganizationCleanup>(
+        'User_Organization_Pending'
+      )
+        .innerJoin('User_Organization', function () {
+          this.on(
+            'User_Organization.user_id',
+            '=',
+            'User_Organization_Pending.user_id'
+          ).andOn(
+            'User_Organization.organization_id',
+            '=',
+            'User_Organization_Pending.organization_id'
+          );
+        })
+        .leftJoin(
+          'Organization',
+          'Organization.id',
+          '=',
+          'User_Organization_Pending.organization_id'
+        )
+        .select(
+          'User_Organization_Pending.organization_id as organizationId',
+          'Organization.name as organizationName',
+          dbRaw('COUNT(*) as count')
+        )
+        .groupBy(
+          'User_Organization_Pending.organization_id',
+          'Organization.name'
+        );
+      const totalDeleted = await db('User_Organization_Pending')
+        .whereExists(function () {
+          this.select('*')
+            .from('User_Organization')
+            .whereRaw(
+              '"User_Organization".user_id = "User_Organization_Pending".user_id'
+            )
+            .andWhereRaw(
+              '"User_Organization".organization_id = "User_Organization_Pending".organization_id'
+            );
+        })
+        .del()
+        .returning('*');
+      return {
+        totalDeleted: totalDeleted.length,
+        byOrganization: byOrganization.map((org: OrganizationCleanup) => ({
+          organizationId: org.organizationId,
+          organizationName: org.organizationName,
+          count: org.count,
+        })),
+      };
+    });
   },
 };
 

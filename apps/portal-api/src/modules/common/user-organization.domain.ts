@@ -117,3 +117,19 @@ export const removeUserFromOrganization = async (
     .where({ user_id, organization_id })
     .delete('*');
 };
+
+export const removeUserFromPendingList = async ({
+  user_id,
+  organization_id,
+}: {
+  user_id: UserId;
+  organization_id: OrganizationId;
+}) => {
+  return db('User_Organization_Pending')
+    .where({
+      user_id,
+      organization_id,
+    })
+    .del()
+    .returning('id');
+};

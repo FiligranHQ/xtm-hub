@@ -5,15 +5,20 @@ import { DialogInformative } from '@/components/ui/dialog';
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { Button, GradientButton } from '@filigran/ui/servers';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'outline-primary';
+  platformIdentifier: PlatformIdentifierEnum;
 }
 
-export const ReachSalesButton = ({ variant }: ReachSalesButtonProps) => {
+export const ReachSalesButton = ({
+  variant,
+  platformIdentifier,
+}: ReachSalesButtonProps) => {
   const t = useTranslations();
   const [commitReachSalesMutation, isInFlight] =
     useMutation(ReachSalesMutation);
@@ -80,6 +85,7 @@ export const ReachSalesButton = ({ variant }: ReachSalesButtonProps) => {
         isDialogOpen={isConfirmationDialogOpen}
         setIsDialogOpen={setIsConfirmationDialogOpen}
         onSubmit={(message) => handleReachSales(message)}
+        platformIdentifier={platformIdentifier}
       />
       <DialogInformative
         isOpen={isInformationDialogOpen}

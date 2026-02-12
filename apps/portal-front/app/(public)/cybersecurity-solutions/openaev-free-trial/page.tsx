@@ -1,5 +1,6 @@
 import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
+import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { FeatureFlag } from '@/utils/constant';
@@ -46,6 +47,7 @@ const Page: React.FC = async () => {
             </GradientButton>
           }
         />
+        <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENAEV} />
         <RegistrationLearnMore
           serviceInstanceTag={ServiceInstanceTagEnum.OPENAEV}
         />
