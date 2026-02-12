@@ -29,6 +29,16 @@ interface AdminServiceTabProps {
   refetch: RefetchFnDynamic<serviceQuery, servicesList_services$key>;
 }
 
+export const ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS = Object.values(
+  ServiceDefinitionIdentifierEnum
+).filter(
+  (val) =>
+    ![
+      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+      ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+    ].includes(val)
+);
+
 const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
@@ -103,14 +113,8 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
                     <span className="sr-only">{t('Utils.OpenMenu')}</span>
                   </>
                 }>
-                {![
-                  ServiceDefinitionIdentifierEnum.LINK,
-                  ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-                  ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
-                ].includes(
-                  row.original.service_definition
-                    ?.identifier as ServiceDefinitionIdentifierEnum
-                ) && (
+                {row.original.service_definition?.identifier !==
+                  ServiceDefinitionIdentifierEnum.LINK && (
                   <IconActionsLink
                     href={`/${APP_PATH}/admin/service/${row.id}`}>
                     {t('Service.GoToAdminLabel')}
@@ -132,17 +136,8 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     setOpen(true);
   };
 
-  const getServiceDefinitionData = Object.values(
-    ServiceDefinitionIdentifierEnum
-  )
-    .filter(
-      (value) =>
-        ![
-          ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
-          ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-        ].includes(value)
-    )
-    .map((value) => {
+  const getServiceDefinitionData =
+    ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS.map((value) => {
       return {
         label: t(`Service.ServiceDefinitionIdentifier.${value}`),
         value: value,
