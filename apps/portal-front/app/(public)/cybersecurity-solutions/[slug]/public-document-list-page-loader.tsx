@@ -20,9 +20,9 @@ interface Props {
 }
 
 export const PublicDocumentListPageLoader: React.FC<Props> = ({
-                                                                serviceInstance,
-                                                                baseUrl,
-                                                              }) => {
+  serviceInstance,
+  baseUrl,
+}) => {
   const [queryRef, loadQuery] = useQueryLoader<publicDocumentsQuery>(
     PublicDocumentListQuery
   );
@@ -37,6 +37,7 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
     integrationTypes,
     deployable,
     verified,
+    productVersions,
     orderMode,
     orderBy,
   } = useServiceListLocalStorage(localStorageKey);
@@ -48,6 +49,7 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
         deployable,
         verified,
         integrationTypes,
+        productVersions,
       }
       : {
         serviceInstanceSlug: serviceInstanceSlug as ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS | ServiceSlug.OPEN_AEV_SCENARIOS,

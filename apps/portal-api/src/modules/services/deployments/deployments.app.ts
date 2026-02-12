@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
@@ -20,38 +20,38 @@ import {
   TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
+import {requestContext} from '../../../context/request.context';
 import DeploymentRequestModel, {
   DeploymentRequestId,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
-import { logApp } from '../../../utils/app-logger.util';
+import {logApp} from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { updateSubscriptionBy } from '../../subcription/subscription.domain';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
-import { registrationDomain } from '../registration/registration.domain';
-import { DeploymentRequestDomain } from './deployments.domain';
+import {loadOrganizationBy} from '../../organizations/organizations.domain';
+import {updateSubscriptionBy} from '../../subcription/subscription.domain';
+import {serviceDefinitionDomain} from '../definition/service-definition.domain';
+import {registrationDomain} from '../registration/registration.domain';
+import {DeploymentRequestDomain} from './deployments.domain';
 
-import { toGlobalId } from 'graphql-relay/node/node.js';
-import { UserId } from '../../../model/kanel/public/User';
-import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
-import { sendMail } from '../../../server/mail-service';
-import { formatName } from '../../../utils/format';
-import { ucfirst } from '../../../utils/utils';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+import {toGlobalId} from 'graphql-relay/node/node.js';
+import {UserId} from '../../../model/kanel/public/User';
+import {SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL} from '../../../portal.const';
+import {sendMail} from '../../../server/mail-service';
+import {formatName} from '../../../utils/format';
+import {ucfirst} from '../../../utils/utils';
+import {telemetryApp} from '../../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { loadUser } from '../../users/users.domain';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
-import { updateServiceInstance } from '../service-instance.domain';
+import {loadUser} from '../../users/users.domain';
+import {serviceContractDomain} from '../contract/service-configuration.domain';
+import {updateServiceInstance} from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
@@ -59,13 +59,13 @@ import {
   isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
-import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
+import {DeploymentsQuotasDomain} from './deployments.quotas.domain';
 
 export const DeploymentsApp = {
   createDeploymentRequest: async (
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
-    const { user } = requestContext.require();
+    const {user} = requestContext.require();
     const chosenOrganization = await loadOrganizationBy({
       id: user.selected_organization_id,
     });
@@ -103,7 +103,7 @@ export const DeploymentsApp = {
             region: input.region,
           },
           async () => {
-            const { isPlaceAvailable } =
+            const {isPlaceAvailable} =
               await DeploymentsQuotasDomain.reservePlace(
                 input.platform_identifier,
                 input.region
@@ -123,7 +123,7 @@ export const DeploymentsApp = {
                 organizationId: user.selected_organization_id,
                 platformIdentifier: input.platform_identifier,
                 serviceInstanceCreationStatus:
-                  ServiceInstanceCreationStatus.Pending,
+                ServiceInstanceCreationStatus.Pending,
               });
 
             return await DeploymentRequestDomain.insertDeploymentRequest({
@@ -227,7 +227,7 @@ export const DeploymentsApp = {
         id: createdDeploymentRequest.id,
       });
     } catch (error) {
-      logApp.error('unable to create deployment request', { error });
+      logApp.error('unable to create deployment request', {error});
       throw error;
     }
   },
@@ -301,7 +301,7 @@ export const DeploymentsApp = {
           input.start_date || input.end_date;
         if (shouldUpdateSubscriptionDates) {
           await updateSubscriptionBy(
-            { service_instance_id: deploymentRequest.service_instance_id },
+            {service_instance_id: deploymentRequest.service_instance_id},
             {
               start_date: input.start_date,
               end_date: input.end_date,
@@ -451,7 +451,7 @@ export const DeploymentsApp = {
     direction: ReorderDeploymentRequestInQueueDirection;
   }): Promise<Success> => {
     const deploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+      await DeploymentRequestDomain.loadDeploymentRequestBy({id});
     if (!deploymentRequest) {
       throw new Error(ErrorCode.DeploymentRequestNotFound);
     }
@@ -488,11 +488,11 @@ export const DeploymentsApp = {
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
-    const { user } = requestContext.require();
+    const {user} = requestContext.require();
     await DeploymentsQuotasDomain.withLockedQuotaTransaction(
-      { platformIdentifier, region },
+      {platformIdentifier, region},
       async () => {
-        const { newAvailability } =
+        const {newAvailability} =
           await DeploymentsQuotasDomain.updateQuotaCapacity({
             platformIdentifier,
             region,
@@ -535,7 +535,7 @@ export const DeploymentsApp = {
       }
     );
 
-    return { success: true };
+    return {success: true};
   },
 
   cancelDeploymentRequest: async (
@@ -543,7 +543,7 @@ export const DeploymentsApp = {
     isAdmin: boolean,
     cancellationReason?: string
   ): Promise<DeploymentRequest> => {
-    const { user } = requestContext.require();
+    const {user} = requestContext.require();
     const deploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         id: deploymentRequestId,
@@ -558,7 +558,7 @@ export const DeploymentsApp = {
     if (
       !isAdmin &&
       user.selected_organization_id !==
-        deploymentRequest.organization_requester_id
+      deploymentRequest.organization_requester_id
     ) {
       throw new Error(ForbiddenErrorCode.UserIsNotInOrganization);
     }
@@ -640,7 +640,7 @@ export const DeploymentsApp = {
 
     for (const trial of expiredTrials) {
       const previousHubStatus = trial.hub_status as DeploymentRequestHubStatus;
-      logApp.info('expiring trial', { deploymentRequestId: trial.id });
+      logApp.info('expiring trial', {deploymentRequestId: trial.id});
 
       try {
         await DeploymentsQuotasDomain.withLockedQuotaTransaction(
@@ -717,7 +717,7 @@ export const DeploymentsApp = {
         region
       );
     if (updatedDeploymentRequest) {
-      const { user } = requestContext.require();
+      const {user} = requestContext.require();
 
       await sendUpdateDeploymentTelemetryEvent(
         updatedDeploymentRequest,
@@ -729,7 +729,7 @@ export const DeploymentsApp = {
     await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
-    const { user } = requestContext.require();
+    const {user} = requestContext.require();
     const organization = await loadOrganizationBy({
       id: user.selected_organization_id,
     });
@@ -806,8 +806,8 @@ const sendUpdateDeploymentTelemetryEvent = async (
         platform_id: deploymentRequest.platform_id,
         ...(deploymentRequest.hub_status ===
           DeploymentRequestHubStatus.Cancelled && {
-          cancellation_reason: deploymentRequest.cancellation_reason,
-        }),
+            cancellation_reason: deploymentRequest.cancellation_reason,
+          }),
       }
     );
 

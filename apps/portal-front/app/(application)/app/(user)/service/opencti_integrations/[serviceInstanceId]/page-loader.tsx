@@ -37,7 +37,7 @@ const PageLoader = ({serviceInstance}: PageLoaderProps) => {
   );
 
   const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: serviceInstance.slug as ServiceSlug.OPEN_CTI_INTEGRATIONS,
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
     labels,
     deployable,
     verified,
