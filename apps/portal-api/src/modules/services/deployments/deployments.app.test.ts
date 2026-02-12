@@ -441,7 +441,11 @@ describe('Deployment app', () => {
         first: 10,
       });
 
-      expect(deployments.edges[0]?.node.platform_url).toBe(
+      const deployment = deployments.edges.find(
+        (edge) => edge.node.id === deploymentRequest!.id
+      );
+
+      expect(deployment?.node.platform_url).toBe(
         'https://test-platform.opencti.io'
       );
 

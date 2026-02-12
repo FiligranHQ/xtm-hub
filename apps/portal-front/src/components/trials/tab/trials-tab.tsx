@@ -1,5 +1,5 @@
-import { useTrialsListLocalstorage } from '@/components/trials/trial-list-localstorage';
-import { TrialsTabType } from '@/components/trials/trials.const';
+import {useTrialsListLocalstorage} from '@/components/trials/trial-list-localstorage';
+import {TrialsTabType} from '@/components/trials/trials.const';
 import {
   TrialsAdminCancelDeploymentRequestMutation,
   trialsFragment,
@@ -7,20 +7,20 @@ import {
   TrialsListQuery,
   TrialsReorderRequestInQueueMutation,
 } from '@/components/trials/trials.graphql';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import {AlertDialogComponent} from '@/components/ui/alert-dialog';
 import {
   handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { SearchInput } from '@/components/ui/search-input';
+import {SearchInput} from '@/components/ui/search-input';
 import {
   useAdminByPass,
   useUserHasPortalCapability,
 } from '@/hooks/usePortalCapability';
-import { DEBOUNCE_TIME } from '@/utils/constant';
-import { i18nKey } from '@/utils/datatable';
-import { daysUntil, formatDate } from '@/utils/date';
+import {DEBOUNCE_TIME} from '@/utils/constant';
+import {i18nKey} from '@/utils/datatable';
+import {daysUntil, formatDate} from '@/utils/date';
 import {
   ArrowShapeUpIcon,
   ArrowShapeUpStackIcon,
@@ -35,26 +35,30 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/ui';
-import { toast } from '@filigran/ui/clients';
-import { Button } from '@filigran/ui/servers';
-import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPaginationQuery.graphql';
-import { DeploymentRequestFilterKeyEnum } from '@generated/models/DeploymentRequestFilterKey.enum';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
-import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
-import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
-import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
-import { trialsList$key } from '@generated/trialsList.graphql';
-import { trialsListQuery } from '@generated/trialsListQuery.graphql';
-import { trialsReorderRequestInQueueMutation } from '@generated/trialsReorderRequestInQueueMutation.graphql';
+import {toast} from '@filigran/ui/clients';
+import {Button} from '@filigran/ui/servers';
+import {TrialsListPaginationQuery$variables} from '@generated/TrialsListPaginationQuery.graphql';
+import {DeploymentRequestFilterKeyEnum} from '@generated/models/DeploymentRequestFilterKey.enum';
+import {DeploymentRequestHubStatusEnum} from '@generated/models/DeploymentRequestHubStatus.enum';
+import {DeploymentRequestOrderingEnum} from '@generated/models/DeploymentRequestOrdering.enum';
+import {OrderingModeEnum} from '@generated/models/OrderingMode.enum';
+import {PlatformIdentifierEnum} from '@generated/models/PlatformIdentifier.enum';
+import {PortalCapabilityEnum} from '@generated/models/PortalCapability.enum';
+import {
+  ReorderDeploymentRequestInQueueDirectionEnum
+} from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
+import {
+  trialsAdminCancelDeploymentRequestMutation
+} from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
+import {trialsList$key} from '@generated/trialsList.graphql';
+import {trialsListQuery} from '@generated/trialsListQuery.graphql';
+import {trialsReorderRequestInQueueMutation} from '@generated/trialsReorderRequestInQueueMutation.graphql';
 import {
   trials_fragment$data,
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
+import {ColumnDef, PaginationState} from '@tanstack/react-table';
+import {useTranslations} from 'next-intl';
 import {
   FunctionComponent,
   Suspense,
@@ -69,7 +73,7 @@ import {
   useMutation,
   useRefetchableFragment,
 } from 'react-relay';
-import { useDebounceCallback } from 'usehooks-ts';
+import {useDebounceCallback} from 'usehooks-ts';
 
 interface Props {
   type: TrialsTabType;
@@ -106,7 +110,7 @@ const trialsTabConfig: Record<
 
 const connectionIDs = new Map<TrialsTabType, string>();
 
-const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
+const TrialsTab: FunctionComponent<Props> = ({type, platformIdentifier}) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
@@ -200,12 +204,12 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
     () => [
       ...(type === TrialsTabType.Waiting
         ? [
-            {
-              accessorKey: 'ordering',
-              id: 'ordering',
-              header: t('TrialsDashboard.Columns.Priority'),
-            },
-          ]
+          {
+            accessorKey: 'ordering',
+            id: 'ordering',
+            header: t('TrialsDashboard.Columns.Priority'),
+          },
+        ]
         : []),
       {
         accessorKey: 'requester_email',
@@ -219,66 +223,66 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
       },
       ...(type === TrialsTabType.Waiting
         ? [
-            {
-              accessorKey: 'request_date',
-              id: 'request_date',
-              header: t('TrialsDashboard.Columns.RequestDate'),
-              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
-                return (
-                  <span className="truncate">
+          {
+            accessorKey: 'request_date',
+            id: 'request_date',
+            header: t('TrialsDashboard.Columns.RequestDate'),
+            cell: ({row}: { row: { original: trials_fragment$data } }) => {
+              return (
+                <span className="truncate">
                     {row.original.request_date
                       ? formatDate(row.original.request_date, 'DATE_FULL')
                       : '-'}
                   </span>
-                );
-              },
+              );
             },
-          ]
+          },
+        ]
         : [
-            {
-              accessorKey: 'start_date',
-              id: 'start_date',
-              header: t('TrialsDashboard.Columns.StartDate'),
-              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
-                return (
-                  <span className="truncate">
+          {
+            accessorKey: 'start_date',
+            id: 'start_date',
+            header: t('TrialsDashboard.Columns.StartDate'),
+            cell: ({row}: { row: { original: trials_fragment$data } }) => {
+              return (
+                <span className="truncate">
                     {row.original.start_date
                       ? formatDate(row.original.start_date, 'DATE_FULL')
                       : '-'}
                   </span>
-                );
-              },
+              );
             },
-            {
-              accessorKey: 'end_date',
-              id: 'end_date',
-              header: t('TrialsDashboard.Columns.EndDate'),
-              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
-                return (
-                  <span className="truncate">
+          },
+          {
+            accessorKey: 'end_date',
+            id: 'end_date',
+            header: t('TrialsDashboard.Columns.EndDate'),
+            cell: ({row}: { row: { original: trials_fragment$data } }) => {
+              return (
+                <span className="truncate">
                     {row.original.end_date
                       ? formatDate(row.original.end_date, 'DATE_FULL')
                       : '-'}
                   </span>
-                );
-              },
+              );
             },
-          ]),
+          },
+        ]),
       ...(type === TrialsTabType.Running
         ? [
-            {
-              accessorKey: 'remainingDays',
-              id: 'remainingDays',
-              header: t('TrialsDashboard.Columns.RemainingDays'),
-              enableSorting: false,
-              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
-                if (!row.original?.end_date) return <>-</>;
-                const target = new Date(row.original.end_date);
-                const diffInDays = daysUntil(target);
-                return <span className="truncate">{diffInDays}</span>;
-              },
+          {
+            accessorKey: 'remainingDays',
+            id: 'remainingDays',
+            header: t('TrialsDashboard.Columns.RemainingDays'),
+            enableSorting: false,
+            cell: ({row}: { row: { original: trials_fragment$data } }) => {
+              if (!row.original?.end_date) return <>-</>;
+              const target = new Date(row.original.end_date);
+              const diffInDays = daysUntil(target);
+              return <span className="truncate">{diffInDays}</span>;
             },
-          ]
+          },
+        ]
         : []),
       {
         accessorKey: 'hub_status',
@@ -294,9 +298,10 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
         accessorKey: 'platform_id',
         id: 'platform_id',
         header: t('TrialsDashboard.Columns.PlatformId'),
-        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+        enableSorting: false,
+        cell: ({row}: { row: { original: trials_fragment$data } }) => {
           return (
-              <span className="truncate">
+            <span className="truncate">
         {row.original.platform_id || '-'}
       </span>
           );
@@ -306,9 +311,10 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
         accessorKey: 'platform_url',
         id: 'platform_url',
         header: t('TrialsDashboard.Columns.PlatformUrl'),
-        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+        enableSorting: false,
+        cell: ({row}: { row: { original: trials_fragment$data } }) => {
           return (
-              <span className="truncate">
+            <span className="truncate">
         {row.original.platform_url || '-'}
       </span>
           );
@@ -319,10 +325,10 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
         id: 'registration_status',
         header: t('TrialsDashboard.Columns.RegistrationStatus'),
         enableSorting: false,
-        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+        cell: ({row}: { row: { original: trials_fragment$data } }) => {
           const isRegistered = !!row.original.platform_id;
           return (
-              <span className="truncate">
+            <span className="truncate">
         {isRegistered ? t('TrialsDashboard.Registered') : t('TrialsDashboard.NotRegistered')}
       </span>
           );
@@ -330,49 +336,49 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
       },
       ...(type === TrialsTabType.Cancelled
         ? [
-            {
-              header: t('TrialsDashboard.Columns.CancellationDate'),
-              accessorKey: 'cancellation_date',
-              id: 'cancellation_date',
-              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
-                return (
-                  <span className="truncate">
+          {
+            header: t('TrialsDashboard.Columns.CancellationDate'),
+            accessorKey: 'cancellation_date',
+            id: 'cancellation_date',
+            cell: ({row}: { row: { original: trials_fragment$data } }) => {
+              return (
+                <span className="truncate">
                     {row.original.cancellation_date
                       ? formatDate(row.original.cancellation_date, 'DATE_FULL')
                       : '-'}
                   </span>
-                );
-              },
+              );
             },
-            {
-              header: t('TrialsDashboard.Columns.CancellationOwner'),
-              accessorKey: 'cancellation_user_email',
-              id: 'cancellation_user_email',
-            },
-            {
-              header: t('TrialsDashboard.Columns.CancellationReason'),
-              accessorKey: 'cancellation_reason',
-              id: 'cancellation_reason',
-              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
-                const reason = row.original.cancellation_reason;
-                if (!reason) return <span>-</span>;
-                return (
-                  <TooltipProvider delayDuration={200}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+          },
+          {
+            header: t('TrialsDashboard.Columns.CancellationOwner'),
+            accessorKey: 'cancellation_user_email',
+            id: 'cancellation_user_email',
+          },
+          {
+            header: t('TrialsDashboard.Columns.CancellationReason'),
+            accessorKey: 'cancellation_reason',
+            id: 'cancellation_reason',
+            cell: ({row}: { row: { original: trials_fragment$data } }) => {
+              const reason = row.original.cancellation_reason;
+              if (!reason) return <span>-</span>;
+              return (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
                         <span className="truncate block cursor-help">
                           {reason}
                         </span>
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-gray-50 max-w-md">
-                        {reason}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                );
-              },
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-gray-50 max-w-md">
+                      {reason}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
             },
-          ]
+          },
+        ]
         : []),
     ],
     [type, t, canModifyTrial, onCancelClick, onReorderClick]
@@ -382,93 +388,93 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
     (type === TrialsTabType.Running || type === TrialsTabType.Waiting) &&
     canModifyTrial
       ? [
-          {
-            accessorKey: 'actions',
-            id: 'actions',
-            enableHiding: false,
-            enableSorting: false,
-            enableResizing: false,
-            header: undefined,
-            cell: ({ row }: { row: { original: trials_fragment$data } }) => {
-              return (
-                <>
-                  {(type === TrialsTabType.Running ||
-                    type === TrialsTabType.Waiting) && (
-                    <AlertDialogComponent
-                      AlertTitle={t(
-                        'Service.Trials.Cancellation.Confirmation.Title'
-                      )}
-                      actionButtonText={t('MenuActions.Delete')}
-                      triggerElement={
-                        <Button
-                          variant="ghost-destructive"
-                          size="icon"
-                          className="border m-1">
-                          <CloseIcon className="h-4 w-4" />
-                        </Button>
-                      }
-                      onClickContinue={() =>
-                        onCancelClick(
-                          row.original.id,
-                          currentConnectionID ?? ''
-                        )
-                      }>
-                      {t('Service.Trials.Cancellation.Confirmation.Admin', {
-                        organizationName: row.original.organization_name ?? '',
-                      })}
-                    </AlertDialogComponent>
-                  )}
-                  {type === TrialsTabType.Waiting && canModifyTrial && (
-                    <>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost-primary"
-                              size="icon"
-                              className="border m-1"
-                              onClick={() =>
-                                onReorderClick(
-                                  row.original.id,
-                                  ReorderDeploymentRequestInQueueDirectionEnum.TOP
-                                )
-                              }>
-                              <ArrowShapeUpStackIcon className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-gray-50">
-                            {t('TrialsDashboard.Actions.MoveToTop')}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost-primary"
-                              size="icon"
-                              className="border m-1"
-                              onClick={() =>
-                                onReorderClick(
-                                  row.original.id,
-                                  ReorderDeploymentRequestInQueueDirectionEnum.UP
-                                )
-                              }>
-                              <ArrowShapeUpIcon className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-gray-50">
-                            {t('TrialsDashboard.Actions.MoveUp')}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </>
-                  )}
-                </>
-              );
-            },
+        {
+          accessorKey: 'actions',
+          id: 'actions',
+          enableHiding: false,
+          enableSorting: false,
+          enableResizing: false,
+          header: undefined,
+          cell: ({row}: { row: { original: trials_fragment$data } }) => {
+            return (
+              <>
+                {(type === TrialsTabType.Running ||
+                  type === TrialsTabType.Waiting) && (
+                  <AlertDialogComponent
+                    AlertTitle={t(
+                      'Service.Trials.Cancellation.Confirmation.Title'
+                    )}
+                    actionButtonText={t('MenuActions.Delete')}
+                    triggerElement={
+                      <Button
+                        variant="ghost-destructive"
+                        size="icon"
+                        className="border m-1">
+                        <CloseIcon className="h-4 w-4"/>
+                      </Button>
+                    }
+                    onClickContinue={() =>
+                      onCancelClick(
+                        row.original.id,
+                        currentConnectionID ?? ''
+                      )
+                    }>
+                    {t('Service.Trials.Cancellation.Confirmation.Admin', {
+                      organizationName: row.original.organization_name ?? '',
+                    })}
+                  </AlertDialogComponent>
+                )}
+                {type === TrialsTabType.Waiting && canModifyTrial && (
+                  <>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost-primary"
+                            size="icon"
+                            className="border m-1"
+                            onClick={() =>
+                              onReorderClick(
+                                row.original.id,
+                                ReorderDeploymentRequestInQueueDirectionEnum.TOP
+                              )
+                            }>
+                            <ArrowShapeUpStackIcon className="h-4 w-4"/>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-gray-50">
+                          {t('TrialsDashboard.Actions.MoveToTop')}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost-primary"
+                            size="icon"
+                            className="border m-1"
+                            onClick={() =>
+                              onReorderClick(
+                                row.original.id,
+                                ReorderDeploymentRequestInQueueDirectionEnum.UP
+                              )
+                            }>
+                            <ArrowShapeUpIcon className="h-4 w-4"/>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-gray-50">
+                          {t('TrialsDashboard.Actions.MoveUp')}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </>
+                )}
+              </>
+            );
           },
-        ]
+        },
+      ]
       : [];
 
   const finalColumns = [...columns, ...actionColumns];
@@ -492,8 +498,8 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
     orderMode: defaultOrderingMode,
     orderBy: defaultOrder,
     filters: [
-      { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
-      { key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses },
+      {key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial']},
+      {key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses},
       {
         key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
         value: [platformIdentifier],
@@ -521,7 +527,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
 
   const trialsDataTable = useMemo<trials_fragment$data[]>(
     () =>
-      data.deploymentRequestsList.edges?.map?.(({ node }) =>
+      data.deploymentRequestsList.edges?.map?.(({node}) =>
         readInlineData<trials_fragment$key>(trialsFragment, node)
       ) as trials_fragment$data[],
     [data]
@@ -540,7 +546,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           ...transformSortingValueToParams(sorting),
           ...args,
         },
-        { fetchPolicy: 'store-and-network' }
+        {fetchPolicy: 'store-and-network'}
       );
     },
     [orderBy, orderMode, pagination.pageIndex, pagination.pageSize, refetch]
@@ -580,7 +586,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   };
 
   const handleInputChange = (inputValue: string) => {
-    handleRefetchData({ searchTerm: inputValue });
+    handleRefetchData({searchTerm: inputValue});
   };
 
   const debounceHandleInput = useDebounceCallback(
@@ -608,11 +614,12 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
                 onChange={debounceHandleInput}
               />
               <div className="flex w-full items-center justify-between gap-s sm:w-auto">
-                <DataTableHeadBarOptions />
+                <DataTableHeadBarOptions/>
               </div>
             </div>
-            <div className="border border-solid border-orange rounded text-orange flex items-center gap-xs p-s text-sm mt-4">
-              <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
+            <div
+              className="border border-solid border-orange rounded text-orange flex items-center gap-xs p-s text-sm mt-4">
+              <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs"/>
               {t('TrialsDashboard.WarningCancellation')}
             </div>
           </div>

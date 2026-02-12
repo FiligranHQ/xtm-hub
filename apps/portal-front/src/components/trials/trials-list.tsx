@@ -1,18 +1,18 @@
 'use client';
 
-import { TrialsTabQuotasPlatform } from '@/components/trials/tab/quotas/trials-tab-quotas-platform';
+import {TrialsTabQuotasPlatform} from '@/components/trials/tab/quotas/trials-tab-quotas-platform';
 import TrialsTab from '@/components/trials/tab/trials-tab';
-import { TrialsTabType } from '@/components/trials/trials.const';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
+import {TrialsTabType} from '@/components/trials/trials.const';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@filigran/ui';
+import {PlatformIdentifierEnum} from '@generated/models/PlatformIdentifier.enum';
+import {useTranslations} from 'next-intl';
+import {FunctionComponent} from 'react';
 
 interface Props {
   platformIdentifier: PlatformIdentifierEnum;
 }
 
-const TrialsList: FunctionComponent<Props> = ({ platformIdentifier }) => {
+const TrialsList: FunctionComponent<Props> = ({platformIdentifier}) => {
   const t = useTranslations();
 
   return (
@@ -60,7 +60,7 @@ const TrialsList: FunctionComponent<Props> = ({ platformIdentifier }) => {
           />
         </TabsContent>
         <TabsContent value="quotas">
-          <TrialsTabQuotasPlatform platformIdentifier={platformIdentifier} />
+          <TrialsTabQuotasPlatform platformIdentifier={platformIdentifier}/>
         </TabsContent>
       </Tabs>
     </>

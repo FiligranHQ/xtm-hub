@@ -1,5 +1,5 @@
-import { Knex } from 'knex';
-import { db, paginate, dbRaw } from '../../../../knexfile';
+import {Knex} from 'knex';
+import {db, paginate, dbRaw} from '../../../../knexfile';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -8,16 +8,16 @@ import {
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
+import {withTransaction} from '../../../context/database.context';
 import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
-import { auth0Client } from '../../../thirdparty/auth0/client';
-import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
-import { ServiceGroupDomain } from '../group/service-group.domain';
+import {auth0Client} from '../../../thirdparty/auth0/client';
+import {logApp} from '../../../utils/app-logger.util';
+import {ErrorCode} from '../../../utils/error/error.code';
+import {ServiceGroupDomain} from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -214,7 +214,7 @@ export const DeploymentRequestDomain = {
         target_state: DeploymentRequestPlatformState.Removed,
         ordering: 1,
       })
-      .where({ id: request.id })
+      .where({id: request.id})
       .returning('*');
 
     return updatedRequest;
@@ -273,19 +273,19 @@ export const DeploymentRequestDomain = {
 
     await withTransaction(async () => {
       await db<DeploymentRequest>('DeploymentRequest')
-        .update({ ordering: deploymentRequest.ordering })
-        .where({ id: previousDeploymentRequest.id });
+        .update({ordering: deploymentRequest.ordering})
+        .where({id: previousDeploymentRequest.id});
 
       await db<DeploymentRequest>('DeploymentRequest')
-        .update({ ordering: previousDeploymentRequest.ordering })
-        .where({ id: deploymentRequest.id });
+        .update({ordering: previousDeploymentRequest.ordering})
+        .where({id: deploymentRequest.id});
     });
   },
 
   reorderDeploymentRequestToTop: async ({
-    id,
-    platform_identifier,
-  }: DeploymentRequest) => {
+                                          id,
+                                          platform_identifier,
+                                        }: DeploymentRequest) => {
     const topDeploymentRequest = await db<DeploymentRequest>(
       'DeploymentRequest'
     )

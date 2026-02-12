@@ -1,7 +1,7 @@
 import { isValueInEnum } from '@/utils/isValueInEnum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingMode } from '@generated/trialsListQuery.graphql';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -30,7 +30,11 @@ export const useTrialsListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
   );
 
   const [columnVisibility, setColumnVisibility, removeColumnVisibility] =
-    useLocalStorage('columnVisibilityTrialsList', {});
+    useLocalStorage<VisibilityState>('columnVisibilityTrialsList', {
+      registration_status: false,
+      platform_url: false,
+      platform_id: false,
+    });
 
   const resetAll = () => {
     removeCount();
