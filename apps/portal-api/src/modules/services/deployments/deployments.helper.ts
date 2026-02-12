@@ -5,6 +5,7 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
+import DeploymentRequestModel from '../../../model/kanel/public/DeploymentRequest';
 import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
@@ -149,6 +150,19 @@ export const assertFreeTrialsLimit = async (
   if (freeTrialsRequests) {
     throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
   }
+};
+
+export const hasDeploymentTelemetryDataChanged = (
+  previous: DeploymentRequestModel,
+  current: DeploymentRequestModel
+): boolean => {
+  return (
+    previous.hub_status !== current.hub_status ||
+    previous.platform_id !== current.platform_id ||
+    previous.cancellation_reason !== current.cancellation_reason ||
+    previous.start_date?.getTime() !== current.start_date?.getTime() ||
+    previous.end_date?.getTime() !== current.end_date?.getTime()
+  );
 };
 
 export const computeHubStatus = (
