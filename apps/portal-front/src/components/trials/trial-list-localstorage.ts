@@ -1,6 +1,6 @@
 import { TrialsTabType } from '@/components/trials/trials.const';
+import { OrderingMode } from '@/components/ui/handle-sorting.utils';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
-import { OrderingMode } from '@generated/userListQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 
