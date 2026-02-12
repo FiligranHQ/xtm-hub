@@ -14,10 +14,11 @@ import DeploymentRequest, {
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
 } from '../../../model/kanel/public/DeploymentRequest';
-import {auth0Client} from '../../../thirdparty/auth0/client';
-import {logApp} from '../../../utils/app-logger.util';
-import {ErrorCode} from '../../../utils/error/error.code';
-import {ServiceGroupDomain} from '../group/service-group.domain';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { auth0Client } from '../../../thirdparty/auth0/client';
+import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { ServiceGroupDomain } from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -50,6 +51,22 @@ export const DeploymentRequestDomain = {
       target_state: result.target_state as DeploymentRequestPlatformState,
       actual_state: result.actual_state as DeploymentRequestPlatformState,
     };
+  },
+
+  loadTrialsForOrganization: async (
+    organizationId: OrganizationId,
+    identifiers?: PlatformIdentifier[]
+  ) => {
+    return db<DeploymentRequest[]>('DeploymentRequest')
+      .where('organization_requester_id', '=', organizationId)
+      .modify((qb) => {
+        if (identifiers?.length) {
+          qb.whereIn('platform_identifier', identifiers);
+        }
+      })
+      .where('type', '=', DeploymentRequestDeploymentType.Trial)
+      .where('counts_in_orga_quota', '=', true)
+      .select('*');
   },
 
   getMaxOrdering: async (

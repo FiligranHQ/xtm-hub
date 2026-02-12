@@ -31,7 +31,7 @@ const OneClickDeploy = ({
   const t = useTranslations();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const { platforms } = useRegisteredPlatforms(platformIdentifier, {
-    onlyActiveTrials: true,
+    onlyActive: true,
   });
 
   const SendOneClickDeployTelemetryMutation = graphql`

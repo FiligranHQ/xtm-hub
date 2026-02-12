@@ -1,7 +1,6 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
-import type { createFreeTrialRegisteredPlatformsStatusAndTypeQuery } from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
-import CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery from '@generated/createFreeTrialRegisteredPlatformsStatusAndTypeQuery.graphql';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import type { createFreeTrialAvailableTrialsQuery } from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
+import CreateFreeTrialAvailableTrials from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
@@ -20,9 +19,12 @@ export const redirectToCreateFreeTrial = async (
     if (!user) {
       return NextResponse.redirect(redirectionUrl);
     }
-
+    const pathKey =
+      platformIdentifier === PlatformIdentifierEnum.OPENCTI
+        ? 'opencti'
+        : 'openaev';
     const freeTrialUrl = new URL(
-      `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}-free-trial`,
+      `/app/service/${pathKey}-free-trial`,
       baseUrlFront
     );
 
@@ -41,29 +43,29 @@ export const redirectToCreateFreeTrial = async (
     }
 
     const response =
-      await serverFetchGraphQL<createFreeTrialRegisteredPlatformsStatusAndTypeQuery>(
-        CreateFreeTrialRegisteredPlatformsStatusAndTypeQuery,
+      await serverFetchGraphQL<createFreeTrialAvailableTrialsQuery>(
+        CreateFreeTrialAvailableTrials,
         {
           input: {
-            identifier: platformIdentifier,
+            platformIdentifiers: [platformIdentifier],
           },
         }
       );
+    const deployedTrials = response.data.trialDeployments.deployed;
+    const availableTrials = response.data.trialDeployments.availableTrials;
 
-    const platforms = response.data.registeredPlatforms || [];
-    const freeTrials = platforms.filter(
-      (platform) =>
-        platform.deployment_request?.type ===
-          DeploymentRequestDeploymentTypeEnum.TRIAL &&
-        platform.deployment_request.counts_in_orga_quota === true
-    );
-
-    if (freeTrials.length > 0) {
+    if (deployedTrials.length > 0) {
       const instanceUrl = new URL(
-        `/app/service/${platformIdentifier === PlatformIdentifierEnum.OPENCTI ? 'opencti' : 'openaev'}_registration/${freeTrials[0]?.id}`,
+        `/app/service/${pathKey}_registration/${deployedTrials[0]?.serviceInstanceId}`,
         baseUrlFront
       );
       return NextResponse.redirect(instanceUrl);
+    }
+    if (
+      availableTrials.length === 0 ||
+      response.data.trialDeployments.isBlacklisted
+    ) {
+      return NextResponse.redirect(`${freeTrialUrl}`);
     }
 
     return NextResponse.redirect(`${freeTrialUrl}?openForm=true`);

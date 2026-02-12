@@ -136,6 +136,17 @@ type DeploymentAvailability {
     platform_identifier: PlatformIdentifier!
 }
 
+type DeployedPlatform {
+  serviceInstanceId: ID!
+  platformIdentifier: PlatformIdentifier!
+}
+
+type TrialsDeployments {
+  availableTrials: [PlatformIdentifier!]!
+  deployed: [DeployedPlatform!]!
+  isBlacklisted: Boolean!
+}
+
 enum DeploymentRequestOrdering {
     requester_email
     organization_name
@@ -166,6 +177,10 @@ input UpdateDeploymentQuotaCapacityInput {
     newCapacity: Int!
 }
 
+input TrialDeploymentsInput {
+  platformIdentifiers: [PlatformIdentifier!]
+}
+
 extend type Query {
     deploymentRequests(
         first: Int!
@@ -179,14 +194,16 @@ extend type Query {
         portalCapa: [BYPASS, READ_TRIALS]
         orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
     )
-    deploymentRequestsList(
-        first: Int!
-        after: ID
-        filters: [DeploymentRequestFilter!]
-        orderBy: DeploymentRequestOrdering!
-        orderMode: OrderingMode!
-        searchTerm: String
-    ): DeploymentRequestConnection! @auth(portalCapa: [BYPASS, READ_TRIALS])
+
+  deploymentRequestsList(
+    first: Int!
+    after: ID
+    filters: [DeploymentRequestFilter!]
+    orderBy: DeploymentRequestOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+  ): DeploymentRequestConnection! @auth(portalCapa: [BYPASS, READ_TRIALS])
+  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments! @auth
 }
 
 extend type Mutation {

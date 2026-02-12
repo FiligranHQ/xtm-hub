@@ -219,6 +219,12 @@ export type DefaultDocument = Document & Node & {
   use_cases?: Maybe<Array<UseCase>>;
 };
 
+export type DeployedPlatform = {
+  __typename?: 'DeployedPlatform';
+  platformIdentifier: PlatformIdentifier;
+  serviceInstanceId: Scalars['ID']['output'];
+};
+
 export type DeploymentAvailability = {
   __typename?: 'DeploymentAvailability';
   availableCount: Scalars['Int']['output'];
@@ -1102,6 +1108,7 @@ export type Query = {
   settings: Settings;
   subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
+  trialDeployments: TrialsDeployments;
   updateOpenCTIManifest: Success;
   useCases?: Maybe<UseCaseConnection>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
@@ -1346,6 +1353,11 @@ export type QuerySubscriptionByIdArgs = {
 };
 
 
+export type QueryTrialDeploymentsArgs = {
+  input?: InputMaybe<TrialDeploymentsInput>;
+};
+
+
 export type QueryUpdateOpenCtiManifestArgs = {
   tag?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1435,7 +1447,7 @@ export type RegisteredPlatformInput = {
 
 export type RegisteredPlatformsInput = {
   identifier?: InputMaybe<PlatformIdentifier>;
-  onlyActiveTrials?: InputMaybe<Scalars['Boolean']['input']>;
+  onlyActive?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type RegistrationResponse = {
@@ -1810,6 +1822,17 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   vendor_url: Scalars['String']['output'];
 };
 
+export type TrialDeploymentsInput = {
+  platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
+};
+
+export type TrialsDeployments = {
+  __typename?: 'TrialsDeployments';
+  availableTrials: Array<PlatformIdentifier>;
+  deployed: Array<DeployedPlatform>;
+  isBlacklisted: Scalars['Boolean']['output'];
+};
+
 export type UnregisterPlatformInput = {
   identifier: PlatformIdentifier;
   platformId: Scalars['String']['input'];
@@ -2100,6 +2123,7 @@ export type ResolversTypes = ResolversObject<{
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DefaultDocument: ResolverTypeWrapper<DefaultDocument>;
+  DeployedPlatform: ResolverTypeWrapper<DeployedPlatform>;
   DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
   DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
@@ -2212,6 +2236,8 @@ export type ResolversTypes = ResolversObject<{
   TaxiiFeed: ResolverTypeWrapper<TaxiiFeed>;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   ThirdPartyIntegration: ResolverTypeWrapper<ThirdPartyIntegration>;
+  TrialDeploymentsInput: TrialDeploymentsInput;
+  TrialsDeployments: ResolverTypeWrapper<TrialsDeployments>;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
@@ -2261,6 +2287,7 @@ export type ResolversParentTypes = ResolversObject<{
   CustomDashboard: CustomDashboard;
   Date: Scalars['Date']['output'];
   DefaultDocument: DefaultDocument;
+  DeployedPlatform: DeployedPlatform;
   DeploymentAvailability: DeploymentAvailability;
   DeploymentRequest: DeploymentRequest;
   DeploymentRequestConnection: DeploymentRequestConnection;
@@ -2344,6 +2371,8 @@ export type ResolversParentTypes = ResolversObject<{
   TaxiiFeed: TaxiiFeed;
   TelemetryResponse: TelemetryResponse;
   ThirdPartyIntegration: ThirdPartyIntegration;
+  TrialDeploymentsInput: TrialDeploymentsInput;
+  TrialsDeployments: TrialsDeployments;
   UnregisterPlatformInput: UnregisterPlatformInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
@@ -2521,6 +2550,12 @@ export type DefaultDocumentResolvers<ContextType = PortalContext, ParentType ext
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DeployedPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeployedPlatform'] = ResolversParentTypes['DeployedPlatform']> = ResolversObject<{
+  platformIdentifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  serviceInstanceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2928,6 +2963,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
+  trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, Partial<QueryTrialDeploymentsArgs>>;
   updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -3238,6 +3274,13 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TrialsDeploymentsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TrialsDeployments'] = ResolversParentTypes['TrialsDeployments']> = ResolversObject<{
+  availableTrials?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
+  deployed?: Resolver<Array<ResolversTypes['DeployedPlatform']>, ParentType, ContextType>;
+  isBlacklisted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
   name: 'Upload';
 }
@@ -3355,6 +3398,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DefaultDocument?: DefaultDocumentResolvers<ContextType>;
+  DeployedPlatform?: DeployedPlatformResolvers<ContextType>;
   DeploymentAvailability?: DeploymentAvailabilityResolvers<ContextType>;
   DeploymentRequest?: DeploymentRequestResolvers<ContextType>;
   DeploymentRequestConnection?: DeploymentRequestConnectionResolvers<ContextType>;
@@ -3415,6 +3459,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   TaxiiFeed?: TaxiiFeedResolvers<ContextType>;
   TelemetryResponse?: TelemetryResponseResolvers<ContextType>;
   ThirdPartyIntegration?: ThirdPartyIntegrationResolvers<ContextType>;
+  TrialsDeployments?: TrialsDeploymentsResolvers<ContextType>;
   Upload?: GraphQLScalarType;
   UseCase?: UseCaseResolvers<ContextType>;
   UseCaseConnection?: UseCaseConnectionResolvers<ContextType>;

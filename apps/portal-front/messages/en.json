@@ -923,8 +923,14 @@
       "Display": {
         "New": "New",
         "Requested": "Requested",
-        "Title": "OpenCTI 30-days Free Trial",
-        "FreeTrialDescription": "Explore all OpenCTI Enterprise Edition functionalities to start operationalizing your threat intelligence end-to-end!"
+        "opencti": {
+          "Title": "OpenCTI 30-days Free Trial",
+          "FreeTrialDescription": "Explore all OpenCTI Enterprise Edition functionalities to start operationalizing your threat intelligence end-to-end!"
+        },
+        "openaev": {
+          "Title": "OpenAEV 30-days Free Trial",
+          "FreeTrialDescription": "Explore OpenAEV to simulate real-life attack scenarios, evaluate your security posture, and improve cyber resilience - at a technical and human level."
+        }
       },
       "CapacityWarning": {
         "Title": "Availability Notice",
