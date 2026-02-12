@@ -41,7 +41,6 @@ import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPagina
 import { DeploymentRequestFilterKeyEnum } from '@generated/models/DeploymentRequestFilterKey.enum';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
@@ -53,6 +52,7 @@ import {
   trials_fragment$data,
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
+import { OrderingMode } from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import {
@@ -81,7 +81,7 @@ const trialsTabConfig: Record<
   {
     statuses: DeploymentRequestHubStatusEnum[];
     defaultOrder: DeploymentRequestOrderingEnum;
-    defaultOrderingMode?: OrderingModeEnum;
+    defaultOrderingMode?: OrderingMode;
   }
 > = {
   [TrialsTabType.Cancelled]: {
@@ -103,7 +103,7 @@ const trialsTabConfig: Record<
   [TrialsTabType.Waiting]: {
     statuses: [DeploymentRequestHubStatusEnum.QUEUED],
     defaultOrder: DeploymentRequestOrderingEnum.ORDERING,
-    defaultOrderingMode: OrderingModeEnum.ASC,
+    defaultOrderingMode: 'asc',
   },
 };
 
@@ -122,7 +122,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   const statuses = trialsTabConfig[type].statuses;
   const defaultOrder = trialsTabConfig[type].defaultOrder;
   const defaultOrderingMode =
-    trialsTabConfig[type].defaultOrderingMode ?? OrderingModeEnum.DESC;
+    trialsTabConfig[type].defaultOrderingMode ?? 'desc';
 
   const [reorderTrigger, setReorderTrigger] = useState(0);
 
@@ -206,6 +206,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
             {
               accessorKey: 'ordering',
               id: 'ordering',
+              enableSortingRemoval: false,
               header: t('TrialsDashboard.Columns.Priority'),
             },
           ]
@@ -457,7 +458,12 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
     columnVisibility,
     setColumnVisibility,
     resetAll,
-  } = useTrialsListLocalstorage(columns);
+  } = useTrialsListLocalstorage(
+    columns,
+    type,
+    defaultOrder,
+    defaultOrderingMode
+  );
 
   const queryData = useLazyLoadQuery<trialsListQuery>(TrialsListQuery, {
     count: pageSize,
@@ -490,11 +496,6 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
     pageIndex: 0,
     pageSize,
   });
-
-  useEffect(() => {
-    setOrderBy(defaultOrder);
-    setOrderMode(defaultOrderingMode);
-  }, [type, defaultOrder, defaultOrderingMode, setOrderBy, setOrderMode]);
 
   const trialsDataTable = useMemo<trials_fragment$data[]>(
     () =>
@@ -602,6 +603,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           manualPagination: true,
           onColumnOrderChange: setColumnOrder,
           onColumnVisibilityChange: setColumnVisibility,
+          enableSortingRemoval: !isReorderTrialsAllowed,
         }}
         i18nKey={i18nKey(t)}
         tableState={{
