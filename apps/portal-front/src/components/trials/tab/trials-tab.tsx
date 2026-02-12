@@ -449,19 +449,23 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
     resetAll,
   } = useTrialsListLocalstorage(columns);
 
-  const queryData = useLazyLoadQuery<trialsListQuery>(TrialsListQuery, {
-    count: pageSize,
-    orderMode: defaultOrderingMode,
-    orderBy: defaultOrder,
-    filters: [
-      { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
-      { key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses },
-      {
-        key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
-        value: [platformIdentifier],
-      },
-    ],
-  });
+  const queryData = useLazyLoadQuery<trialsListQuery>(
+    TrialsListQuery,
+    {
+      count: pageSize,
+      orderMode: defaultOrderingMode,
+      orderBy: defaultOrder,
+      filters: [
+        { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
+        { key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses },
+        {
+          key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
+          value: [platformIdentifier],
+        },
+      ],
+    },
+    { fetchPolicy: 'store-and-network' }
+  );
 
   const [data, refetch] = useRefetchableFragment<
     trialsListQuery,
