@@ -27,7 +27,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     );
 
   const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
+    serviceInstanceSlug: serviceInstance.slug as ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,
     labels,
   });
 

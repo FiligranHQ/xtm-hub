@@ -5,6 +5,26 @@ import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { useMemo } from 'react';
 
+type SimpleFiltersParams = {
+  serviceInstanceSlug: ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS | ServiceSlug.OPEN_AEV_SCENARIOS;
+  labels: LogicalMultiSelectSelection;
+  deployable?: never;
+  verified?: never;
+  integrationTypes?: never;
+  productVersions?: never;
+};
+
+type IntegrationFiltersParams = {
+  serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS;
+  labels: LogicalMultiSelectSelection;
+  deployable?: LogicalMultiSelectSelection;
+  verified?: LogicalMultiSelectSelection;
+  integrationTypes?: LogicalMultiSelectSelection;
+  productVersions?: LogicalMultiSelectSelection;
+};
+
+export type LogicalFiltersParams = SimpleFiltersParams | IntegrationFiltersParams;
+
 export const useLogicalFiltersFromStorage = ({
   serviceInstanceSlug,
   labels,
@@ -12,14 +32,7 @@ export const useLogicalFiltersFromStorage = ({
   verified,
   integrationTypes,
   productVersions,
-}: {
-  serviceInstanceSlug: ServiceSlug;
-  labels: LogicalMultiSelectSelection;
-  deployable?: LogicalMultiSelectSelection;
-  verified?: LogicalMultiSelectSelection;
-  integrationTypes?: LogicalMultiSelectSelection;
-  productVersions?: LogicalMultiSelectSelection;
-}) => {
+}: LogicalFiltersParams) => {
   return useMemo(() => {
     if (
       [

@@ -1,15 +1,18 @@
 'use client';
-import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
-import { PublicDocumentListQuery } from '@/components/service/document/public-document.graphql';
+import {useServiceListLocalStorage} from '@/components/service/components/use-service-list-local-storage';
+import {PublicDocumentListQuery} from '@/components/service/document/public-document.graphql';
 import PublicDocumentsList from '@/components/service/document/public-documents-list';
-import { useLogicalFiltersFromStorage } from '@/components/service/document/use-logical-filters-from-storage';
-import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
-import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
-import { Skeleton } from '@filigran/ui';
-import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import React, { useEffect } from 'react';
-import { useQueryLoader } from 'react-relay';
+import {
+  useLogicalFiltersFromStorage,
+  LogicalFiltersParams
+} from '@/components/service/document/use-logical-filters-from-storage';
+import {ServiceSlug} from '@/utils/shareable-resources/shareable-resources.types';
+import {useShareableResourceMapping} from '@/utils/shareable-resources/use-shareable-resource-mapping';
+import {Skeleton} from '@filigran/ui';
+import {publicDocumentsQuery} from '@generated/publicDocumentsQuery.graphql';
+import {seoServiceInstanceFragment$data} from '@generated/seoServiceInstanceFragment.graphql';
+import React, {useEffect} from 'react';
+import {useQueryLoader} from 'react-relay';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
@@ -17,15 +20,15 @@ interface Props {
 }
 
 export const PublicDocumentListPageLoader: React.FC<Props> = ({
-  serviceInstance,
-  baseUrl,
-}) => {
+                                                                serviceInstance,
+                                                                baseUrl,
+                                                              }) => {
   const [queryRef, loadQuery] = useQueryLoader<publicDocumentsQuery>(
     PublicDocumentListQuery
   );
 
   const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
-  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug);
+  const {localStorageKey} = useShareableResourceMapping(serviceInstanceSlug);
 
   const {
     pageSize,
@@ -37,13 +40,21 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
     orderMode,
     orderBy,
   } = useServiceListLocalStorage(localStorageKey);
-  const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug,
-    labels,
-    deployable,
-    verified,
-    integrationTypes,
-  });
+  const params: LogicalFiltersParams =
+    serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS
+      ? {
+        serviceInstanceSlug: serviceInstanceSlug as ServiceSlug.OPEN_CTI_INTEGRATIONS,
+        labels,
+        deployable,
+        verified,
+        integrationTypes,
+      }
+      : {
+        serviceInstanceSlug: serviceInstanceSlug as ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS | ServiceSlug.OPEN_AEV_SCENARIOS,
+        labels,
+      };
+
+  const logicalFilters = useLogicalFiltersFromStorage(params);
 
   useEffect(() => {
     loadQuery(
@@ -83,7 +94,7 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
           baseUrl={baseUrl}
         />
       ) : (
-        <Skeleton className="w-full inset-1/2" />
+        <Skeleton className="w-full inset-1/2"/>
       )}
     </>
   );

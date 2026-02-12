@@ -24,7 +24,7 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const { count, search, labels, setSearch, orderMode, orderBy } =
     useServiceListLocalStorage(ServiceListLocalStorageKey.OpenAEVScenarios);
   const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
+    serviceInstanceSlug: serviceInstance.slug as ServiceSlug.OPEN_AEV_SCENARIOS,
     labels,
   });
 
