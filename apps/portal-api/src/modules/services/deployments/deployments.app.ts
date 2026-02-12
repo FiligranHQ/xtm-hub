@@ -54,6 +54,7 @@ import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
+  hasDeploymentTelemetryDataChanged,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
@@ -341,7 +342,8 @@ export const DeploymentsApp = {
 
     await sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,
-      updatedDeploymentRequest.user_requester_id
+      updatedDeploymentRequest.user_requester_id,
+      deploymentRequest
     );
 
     try {
@@ -733,8 +735,19 @@ export const DeploymentsApp = {
 
 const sendUpdateDeploymentTelemetryEvent = async (
   deploymentRequest: DeploymentRequestModel,
-  userId: UserId
+  userId: UserId,
+  previousDeploymentRequest?: DeploymentRequestModel
 ) => {
+  if (
+    previousDeploymentRequest &&
+    !hasDeploymentTelemetryDataChanged(
+      previousDeploymentRequest,
+      deploymentRequest
+    )
+  ) {
+    return;
+  }
+
   try {
     const organization = await loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,

@@ -760,6 +760,22 @@ describe('Deployment app', () => {
         });
       });
 
+      it('should not send a telemetry event when data did not change', async () => {
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+
+        telemetrySpy.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+
+        expect(telemetrySpy).not.toHaveBeenCalled();
+      });
+
       it('should not throw when telemetry throws an error', async () => {
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
