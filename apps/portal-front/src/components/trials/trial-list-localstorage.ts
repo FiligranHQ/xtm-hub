@@ -7,8 +7,9 @@ export const useTrialsListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
   const [count, setCount, removeCount] = useLocalStorage('countTrialsList', 50);
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeTrialsList', 'asc');
-  const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<DeploymentRequestOrderingEnum>('orderByTrialsList');
+  const [orderBy, setOrderBy, removeOrderBy] = useLocalStorage<
+    DeploymentRequestOrderingEnum | undefined
+  >('orderByTrialsList', undefined);
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countTrialsList',
     50
