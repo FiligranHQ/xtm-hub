@@ -13,7 +13,7 @@ const nextConfig = {
         destination: '/app/service/opencti-free-trial',
         permanent: true,
       },
-      
+
       // open-bas / obas → openaev
       {
         source: '/app/service/(open-bas-scenarios|obas_scenarios)/:path*',
