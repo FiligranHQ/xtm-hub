@@ -2,9 +2,14 @@ directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
-directive @auth(portalCapa: [PortalCapability] = [], orgaCapa: [OrganizationCapability] = []) repeatable on OBJECT | FIELD_DEFINITION
+directive @auth(
+  portalCapa: [PortalCapability] = []
+  orgaCapa: [OrganizationCapability] = []
+) repeatable on OBJECT | FIELD_DEFINITION
 
-directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+directive @service_capa(
+  requires: [ServiceRestriction] = []
+) repeatable on OBJECT | FIELD_DEFINITION
 
 scalar JSON
 
@@ -48,20 +53,57 @@ type Success {
 type Query {
   updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  organizations(
+    first: Int = 50
+    after: ID
+    orderBy: OrganizationOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+  ): OrganizationConnection!
   userOrganizations: [Organization!]!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
   seoCustomDashboardBySlug(slug: String): CustomDashboard
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard
-  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
-  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
-  deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
+  deploymentRequests(
+    first: Int!
+    after: ID
+    filters: [DeploymentRequestFilter!]
+  ): PlatformDeploymentRequestConnection!
+  deploymentRequestsAvailable(
+    platformIdentifier: PlatformIdentifier
+  ): [DeploymentAvailability!]!
+  deploymentRequestsList(
+    first: Int!
+    after: ID
+    filters: [DeploymentRequestFilter!]
+    orderBy: DeploymentRequestOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+  ): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
   documentExists(documentName: String, service_instance_id: String): Boolean
-  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  publicDocuments(
+    slug: String!
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    logicalFilters: LogicalFilterInput
+    serviceInstanceId: ID!
+  ): DocumentConnection!
+  documents(
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    logicalFilters: LogicalFilterInput
+    serviceInstanceId: String
+    parentsOnly: Boolean
+  ): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
   integration(id: ID, serviceInstanceId: ID): Integration
@@ -70,65 +112,183 @@ type Query {
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario
-  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
-  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
-  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
+  openCTIPlatformRegistrationStatus(
+    input: OpenCTIPlatformRegistrationStatusInput!
+  ): OpenCTIPlatformRegistrationStatusResponse!
+    @deprecated(
+      reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint."
+    )
+  isPlatformRegistered(
+    input: IsPlatformRegisteredInput!
+  ): IsPlatformRegisteredResponse!
+  canUnregisterPlatform(
+    input: CanUnregisterPlatformInput!
+  ): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!): Organization
-  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
-  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
+  publicServiceInstances(
+    first: Int!
+    after: ID
+    orderBy: ServiceInstanceOrdering!
+    orderMode: OrderingMode!
+  ): ServiceConnection!
+  serviceInstances(
+    first: Int!
+    after: ID
+    orderBy: ServiceInstanceOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [ServiceInstanceFilter!]
+  ): ServiceConnection!
+  serviceInstanceLinksByTags(
+    tags: [ServiceInstanceTag!]!
+  ): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ID): ServiceInstance
-  serviceInstanceByIdWithSubscriptions(service_instance_id: ID, searchTerm: String): ServiceInstance
-  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
+  serviceInstanceByIdWithSubscriptions(
+    service_instance_id: ID
+    searchTerm: String
+  ): ServiceInstance
+  subscribedServiceInstancesByIdentifier(
+    identifier: ServiceDefinitionIdentifier!
+  ): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
-  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
+  useCases(
+    first: Int!
+    after: ID
+    orderBy: UseCaseOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    documentType: String
+  ): UseCaseConnection
   subscriptionById(subscription_id: ID): SubscriptionModel
-  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
+  userServiceOwned(
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+  ): UserServiceConnection
+  serviceUsers(
+    id: ID!
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+  ): UserServiceConnection
+  userServiceFromSubscription(
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+    subscription_id: ID!
+  ): UserServiceConnection
   me: User
-  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  usersWithCapabilitiesInOrganization(
+    input: UsersWithCapabilitiesInOrganizationInput!
+  ): [User!]!
+  users(
+    first: Int!
+    after: ID
+    orderBy: UserOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+  ): UserConnection!
+  pendingUsers(
+    first: Int!
+    after: ID
+    orderBy: UserOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [Filter!]
+  ): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
   node(id: ID!): Node
 }
 
 type Mutation {
-  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  frontendErrorLog(
+    message: String!
+    codeStack: String
+    componentStack: String
+  ): Boolean
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
-  updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
-  reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
-  cancelDeploymentRequest(deploymentRequestId: ID!, cancellationReason: String): DeploymentRequest
+  createDeploymentRequest(
+    input: CreateDeploymentRequestInput
+  ): DeploymentRequest!
+  updateDeploymentRequest(
+    input: UpdateDeploymentRequestInput!
+  ): PlatformDeploymentRequest!
+  reorderDeploymentRequestInQueue(
+    input: ReorderDeploymentRequestInQueueInput!
+  ): Success!
+  cancelDeploymentRequest(
+    deploymentRequestId: ID!
+    cancellationReason: String
+  ): DeploymentRequest
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
-  updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
-  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, serviceInstanceId: String): Document!
-  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, updateDocument: Boolean!, images: [String!], serviceInstanceId: String): Document!
-  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
+  updateDeploymentQuotaCapacity(
+    input: UpdateDeploymentQuotaCapacityInput!
+  ): Success!
+  createDocument(
+    input: CreateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    document: [Upload!]!
+    serviceInstanceId: String
+  ): Document!
+  updateDocument(
+    documentId: ID!
+    input: UpdateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    document: [Upload!]!
+    updateDocument: Boolean!
+    images: [String!]
+    serviceInstanceId: String
+  ): Document!
+  deleteDocument(
+    documentId: ID
+    service_instance_id: String
+    forceDelete: Boolean
+  ): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
-  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatus(
+    input: RefreshPlatformRegistrationConnectivityStatusInput!
+  ): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput!): Success!
-  addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
-  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
+  addServicePicture(
+    serviceInstanceId: ID!
+    document: Upload
+    isLogo: Boolean
+  ): ServiceInstance
+  updatePlatformServiceMetadata(
+    input: UpdatePlatformServiceMetadataInput!
+    document: Upload
+  ): RegisteredPlatform
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
   addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
+  addSubscriptionInService(
+    service_instance_id: String
+    organization_id: ID
+    capability_ids: [ID]
+    start_date: Date
+    end_date: Date
+  ): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
+  editServiceCapability(
+    input: EditServiceCapabilityInput
+    serviceInstanceId: String
+  ): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
@@ -138,8 +298,12 @@ type Mutation {
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
-  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
-  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  bulkRemovePendingUserFromOrganization(
+    input: BulkPendingUserFromOrganizationInput
+  ): Success
+  bulkAcceptPendingUserInOrganization(
+    input: BulkPendingUserFromOrganizationInput
+  ): Success
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   editMeUser(input: EditMeUserInput!): User!
