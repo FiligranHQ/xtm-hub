@@ -64,13 +64,13 @@ const OpenaevScenarioSlug = ({
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={
-          <>
-            <DeleteIntegrationSlug document={documentData} />
-            <ServiceManageSheet
-              document={documentData}
-              variant={'button'}
-            />
-          </>
+            <>
+              <DeleteIntegrationSlug document={documentData} />
+              <ServiceManageSheet
+                document={documentData}
+                variant={'button'}
+              />
+            </>
           }>
           <ShareableResourceCarousel
             serviceInstance={serviceInstance}
