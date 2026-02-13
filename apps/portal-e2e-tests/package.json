@@ -15,13 +15,13 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.56.1",
-    "@types/node": "24.10.9",
+    "@playwright/test": "1.58.2",
+    "@types/node": "24.10.12",
     "graphql": "16.12.0",
     "graphql-tag": "2.12.6",
-    "monocart-reporter": "2.9.23",
-    "playwright-ctrf-json-reporter": "0.0.26",
-    "prettier": "3.6.2"
+    "monocart-reporter": "2.10.0",
+    "playwright-ctrf-json-reporter": "0.0.27",
+    "prettier": "3.8.1"
   },
   "packageManager": "yarn@4.10.3",
   "prettier": {
