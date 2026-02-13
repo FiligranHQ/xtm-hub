@@ -213,7 +213,7 @@ export const DeploymentsApp = {
             region: input.region,
             activitySector: input.activity_sector,
             useCase: input.use_case,
-            platformIdentifier: ucfirst(input.platform_identifier),
+            platformIdentifier: input.platform_identifier,
             deploymentType: ucfirst(input.type),
           },
         });

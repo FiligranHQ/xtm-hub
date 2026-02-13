@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
+import { PlatformIdentifier } from '../__generated__/resolvers-types';
 import { clearTemplateCache, renderEmail } from './mail-service';
 
 describe('renderEmail', () => {
@@ -102,6 +103,17 @@ describe('renderEmail', () => {
     });
   });
 
+  describe('{{#if}} tests', () => {
+    it('should render text conditionally', async () => {
+      const html = await renderEmail('free_trial_registered', {
+        firstName: 'User',
+        platformUrl: 'http://myTestPlatform',
+        platformIdentifier: PlatformIdentifier.Openaev,
+      });
+
+      expect(html).not.toContain('OpenCTI');
+    });
+  });
   describe('edge cases', () => {
     it('should handle empty string values gracefully', async () => {
       const html = await renderEmail('organization_pending_user_digest', {

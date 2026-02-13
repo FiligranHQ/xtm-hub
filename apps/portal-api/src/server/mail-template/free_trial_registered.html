@@ -43,29 +43,34 @@
         }
       </style>
     <![endif]-->
-    <title>XTM Hub - Welcome to your OpenCTI free trial!</title>
+    <title>XTM Hub - Welcome to your {{platformIdentifier}} free trial!</title>
     <style>
       @media (max-width: 600px) {
         .sm-my-8 {
           margin-top: 32px !important;
           margin-bottom: 32px !important;
         }
+
         .sm-px-4 {
           padding-left: 16px !important;
           padding-right: 16px !important;
         }
+
         .sm-px-6 {
           padding-left: 24px !important;
           padding-right: 24px !important;
         }
+
         .sm-leading-8 {
           line-height: 32px !important;
         }
       }
+
       @media (prefers-color-scheme: dark) {
         .logo-light {
           display: none !important;
         }
+
         .logo-dark {
           display: block !important;
         }
@@ -84,7 +89,7 @@
     <div
       role="article"
       aria-roledescription="email"
-      aria-label="XTM Hub - Welcome to your OpenCTI free trial!"
+      aria-label="XTM Hub - Welcome to your {{platformIdentifier}} free trial!"
       lang="en">
       <div
         class="sm-px-4"
@@ -153,7 +158,7 @@
                         font-size: 24px;
                         font-weight: 400;
                       ">
-                      Welcome to your OpenCTI free trial!
+                      Welcome to your {{platformIdentifier}} free trial!
                     </h1>
                     <p
                       style="margin: 0; line-height: 24px; margin-bottom: 24px">
@@ -162,11 +167,18 @@
                       Welcome to Filigran! Let's get you started with your free
                       trial.<br />
                       <br />
-                      For the next 30 days, you'll have full access to OpenCTI
+                      {{#if (eq platformIdentifier "OpenAEV")}} For the next 30
+                      days, you’ll have full access to OpenAEV Enterprise
+                      Edition, our leading exposure validation platform. Explore
+                      all key functionalities to simulate offensive attacks, run
+                      realistic tabletop exercises, evaluate your defenses, and
+                      ultimately improve your security posture. {{else}} For the
+                      next 30 days, you'll have full access to OpenCTI
                       Enterprise Edition, our leading Threat Intelligence
                       Platform. Explore all key functionality: gather and enrich
                       intelligence, visualize relationships with powerful tools,
                       run investigations, and try our extensive integrations.<br />
+                      {{/if}}
                       <br />
                       Log in to your free trial:
                       <a href="{{ platformUrl }}"> {{ platformUrl }}</a> <br />
@@ -175,9 +187,11 @@
                       reply to this email or use the 'Contact Us' option in the
                       platform—we're here to help.<br />
                       <br />
-                      Need help getting started with OpenCTI? Check out our
-                      "OpenCTI Fundamentals" course on the Filigran Academy:<br />
-                      <a href="https://academy.filigran.io/page/opencti-101"
+                      Need help getting started with {{platformIdentifier}}?
+                      Check out our "{{platformIdentifier}} Fundamentals" course
+                      on the Filigran Academy:<br />
+                      <a
+                        href="https://academy.filigran.io/course/getting-started-with-openaev"
                         >Get Started</a
                       >
                     </p>

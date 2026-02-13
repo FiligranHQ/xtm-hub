@@ -12,6 +12,10 @@ import {
   templateSubjects,
 } from './mail-template/mail';
 
+Handlebars.registerHelper('eq', function (a, b) {
+  return a === b;
+});
+
 const smtpOptions = config.get('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
 
