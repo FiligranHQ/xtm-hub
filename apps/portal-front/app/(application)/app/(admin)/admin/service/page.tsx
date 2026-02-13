@@ -1,10 +1,13 @@
 'use client';
-import AdminServiceTab from '@/components/service/admin-service-tab';
+import AdminServiceTab, {
+  ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS,
+} from '@/components/service/admin-service-tab';
 import {
   ServiceListQuery,
   servicesListFragment,
 } from '@/components/service/service.graphql';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
+import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
@@ -28,7 +31,12 @@ const Page = () => {
     orderBy: 'name',
     orderMode: 'asc',
     searchTerm: '',
-    filters: [],
+    filters: [
+      {
+        key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
+        value: ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS,
+      },
+    ],
   });
   const [data, refetch] = useRefetchableFragment<
     serviceQuery,
