@@ -12,6 +12,7 @@ import { Callout } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import Link from 'next/link';
 import { useContext } from 'react';
@@ -65,7 +66,7 @@ export const TryOpenCTIBanner = () => {
     <Link
       href={`${settings.base_url_front}/app/service/free-trial`}
       className="ml-xs underline font-bold">
-      {t('Service.Trials.LearnMore')}
+      {t('Service.Trials.LearnMore.Link')}
     </Link>
   );
 
@@ -110,11 +111,21 @@ export const TryOpenCTIBanner = () => {
     },
     expired: {
       text: () => t('Service.Trials.Expired'),
-      button: () => <ReachSalesButton variant="default" />,
+      button: () => (
+        <ReachSalesButton
+          variant="default"
+          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+        />
+      ),
     },
     cancelled: {
       text: () => t('Service.Trials.Cancelled'),
-      button: () => <ReachSalesButton variant="default" />,
+      button: () => (
+        <ReachSalesButton
+          variant="default"
+          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+        />
+      ),
     },
     active: {
       text: () => (

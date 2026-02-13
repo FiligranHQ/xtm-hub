@@ -17,6 +17,7 @@ import {
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
   Success,
+  TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -37,7 +38,7 @@ import { serviceDefinitionDomain } from '../definition/service-definition.domain
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
-import config from 'config';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { UserId } from '../../../model/kanel/public/User';
 import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
@@ -54,6 +55,8 @@ import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
+  hasDeploymentTelemetryDataChanged,
+  isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
@@ -72,13 +75,7 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
 
-    const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
-      .split(',')
-      .map((d) => d.trim());
-    const organizationIsBlacklisted = chosenOrganization.domains.some(
-      (domain) => domainsBlacklist.includes(domain)
-    );
-    if (organizationIsBlacklisted) {
+    if (isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
         `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
       );
@@ -116,6 +113,7 @@ export const DeploymentsApp = {
               : DeploymentRequestHubStatus.Queued;
             const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
               hub_status: hubStatus,
+              platform_identifier: input.platform_identifier,
             });
             const ordering = (maxOrdering ?? 0) + 1;
 
@@ -341,7 +339,8 @@ export const DeploymentsApp = {
 
     await sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,
-      updatedDeploymentRequest.user_requester_id
+      updatedDeploymentRequest.user_requester_id,
+      deploymentRequest
     );
 
     try {
@@ -729,12 +728,67 @@ export const DeploymentsApp = {
 
     await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
   },
+  loadTrialDeployments: async (input: TrialDeploymentsInput) => {
+    const { user } = requestContext.require();
+    const organization = await loadOrganizationBy({
+      id: user.selected_organization_id,
+    });
+    if (organization.personal_space) {
+      return {
+        availableTrials: [],
+        deployed: [],
+        isBlacklisted: false,
+      };
+    }
+
+    const deploymentRequests =
+      await DeploymentRequestDomain.loadTrialsForOrganization(
+        user.selected_organization_id,
+        input.platformIdentifiers
+      );
+
+    const deployedIdentifiers = new Set(
+      deploymentRequests.map((d) => d.platform_identifier)
+    );
+
+    const requestedIdentifiers =
+      input.platformIdentifiers ?? Object.values(PlatformIdentifier);
+    const availableTrials = requestedIdentifiers.filter(
+      (identifier) => !deployedIdentifiers.has(identifier)
+    );
+
+    return {
+      availableTrials: availableTrials,
+      deployed: deploymentRequests.map((deployment) => {
+        return {
+          serviceInstanceId: toGlobalId(
+            'ServiceInstance',
+            deployment.service_instance_id
+          ),
+          platformIdentifier:
+            deployment.platform_identifier as PlatformIdentifier,
+        };
+      }),
+      isBlacklisted: isOrganizationBlacklisted(organization),
+    };
+  },
 };
 
 const sendUpdateDeploymentTelemetryEvent = async (
   deploymentRequest: DeploymentRequestModel,
-  userId: UserId
+  userId: UserId,
+  previousDeploymentRequest?: DeploymentRequestModel
 ) => {
+  if (
+    previousDeploymentRequest &&
+    !hasDeploymentTelemetryDataChanged(
+      previousDeploymentRequest,
+      deploymentRequest
+    )
+  ) {
+    return;
+  }
+
   try {
     const organization = await loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,

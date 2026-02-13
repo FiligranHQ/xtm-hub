@@ -38,9 +38,10 @@ import {
 import { toast } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPaginationQuery.graphql';
+import { DeploymentRequestFilterKeyEnum } from '@generated/models/DeploymentRequestFilterKey.enum';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
 import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
@@ -51,6 +52,7 @@ import {
   trials_fragment$data,
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
+import { OrderingMode } from '@generated/userListQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import {
@@ -69,23 +71,26 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
-interface TrialsTabProps {
+interface Props {
   type: TrialsTabType;
+  platformIdentifier: PlatformIdentifierEnum;
 }
 
 const trialsTabConfig: Record<
   TrialsTabType,
   {
     statuses: DeploymentRequestHubStatusEnum[];
-    defaultOrder?: DeploymentRequestOrderingEnum;
-    defaultOrderingMode?: OrderingModeEnum;
+    defaultOrder: DeploymentRequestOrderingEnum;
+    defaultOrderingMode?: OrderingMode;
   }
 > = {
   [TrialsTabType.Cancelled]: {
     statuses: [DeploymentRequestHubStatusEnum.CANCELLED],
+    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
   },
   [TrialsTabType.Expired]: {
     statuses: [DeploymentRequestHubStatusEnum.EXPIRED],
+    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
   },
   [TrialsTabType.Running]: {
     statuses: [
@@ -93,17 +98,18 @@ const trialsTabConfig: Record<
       DeploymentRequestHubStatusEnum.PENDING,
       DeploymentRequestHubStatusEnum.PROVISIONING,
     ],
+    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
   },
   [TrialsTabType.Waiting]: {
     statuses: [DeploymentRequestHubStatusEnum.QUEUED],
     defaultOrder: DeploymentRequestOrderingEnum.ORDERING,
-    defaultOrderingMode: OrderingModeEnum.ASC,
+    defaultOrderingMode: 'asc',
   },
 };
 
 const connectionIDs = new Map<TrialsTabType, string>();
 
-const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
+const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
@@ -111,12 +117,12 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
   ]);
 
   const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
+  const isReorderTrialsAllowed =
+    type === TrialsTabType.Waiting && canModifyTrial;
   const statuses = trialsTabConfig[type].statuses;
-  const defaultOrder =
-    trialsTabConfig[type].defaultOrder ??
-    DeploymentRequestOrderingEnum.REQUEST_DATE;
+  const defaultOrder = trialsTabConfig[type].defaultOrder;
   const defaultOrderingMode =
-    trialsTabConfig[type].defaultOrderingMode ?? OrderingModeEnum.DESC;
+    trialsTabConfig[type].defaultOrderingMode ?? 'desc';
 
   const [reorderTrigger, setReorderTrigger] = useState(0);
 
@@ -200,6 +206,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             {
               accessorKey: 'ordering',
               id: 'ordering',
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.Priority'),
             },
           ]
@@ -207,11 +214,13 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
       {
         accessorKey: 'requester_email',
         id: 'requester_email',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Email'),
       },
       {
         accessorKey: 'organization_name',
         id: 'organization_name',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Organization'),
       },
       ...(type === TrialsTabType.Waiting
@@ -219,6 +228,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             {
               accessorKey: 'request_date',
               id: 'request_date',
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.RequestDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
@@ -235,6 +245,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             {
               accessorKey: 'start_date',
               id: 'start_date',
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.StartDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
@@ -249,6 +260,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
             {
               accessorKey: 'end_date',
               id: 'end_date',
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.EndDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
@@ -280,12 +292,52 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
       {
         accessorKey: 'hub_status',
         id: 'hub_status',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Status'),
       },
       {
         accessorKey: 'region',
         id: 'region',
+        enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Region'),
+      },
+      {
+        accessorKey: 'platform_id',
+        id: 'platform_id',
+        header: t('TrialsDashboard.Columns.PlatformId'),
+        enableSorting: false,
+        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+          return (
+            <span className="truncate">{row.original.platform_id || '-'}</span>
+          );
+        },
+      },
+      {
+        accessorKey: 'platform_url',
+        id: 'platform_url',
+        header: t('TrialsDashboard.Columns.PlatformUrl'),
+        enableSorting: false,
+        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+          return (
+            <span className="truncate">{row.original.platform_url || '-'}</span>
+          );
+        },
+      },
+      {
+        accessorKey: 'registration_status',
+        id: 'registration_status',
+        header: t('TrialsDashboard.Columns.RegistrationStatus'),
+        enableSorting: false,
+        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+          const isRegistered = !!row.original.platform_id;
+          return (
+            <span className="truncate">
+              {isRegistered
+                ? t('TrialsDashboard.Registered')
+                : t('TrialsDashboard.NotRegistered')}
+            </span>
+          );
+        },
       },
       ...(type === TrialsTabType.Cancelled
         ? [
@@ -334,7 +386,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
           ]
         : []),
     ],
-    [type, t, canModifyTrial, onCancelClick, onReorderClick]
+    [type, t, isReorderTrialsAllowed]
   );
 
   const actionColumns: ColumnDef<trials_fragment$data>[] =
@@ -377,7 +429,7 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
                       })}
                     </AlertDialogComponent>
                   )}
-                  {type === TrialsTabType.Waiting && canModifyTrial && (
+                  {isReorderTrialsAllowed && (
                     <>
                       <TooltipProvider>
                         <Tooltip>
@@ -444,15 +496,24 @@ const TrialsTab: FunctionComponent<TrialsTabProps> = ({ type }) => {
     columnVisibility,
     setColumnVisibility,
     resetAll,
-  } = useTrialsListLocalstorage(columns);
+  } = useTrialsListLocalstorage(
+    columns,
+    type,
+    defaultOrder,
+    defaultOrderingMode
+  );
 
   const queryData = useLazyLoadQuery<trialsListQuery>(TrialsListQuery, {
     count: pageSize,
     orderMode: defaultOrderingMode,
     orderBy: defaultOrder,
     filters: [
-      { key: 'type', value: ['trial'] },
-      { key: 'hub_status', value: statuses },
+      { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
+      { key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses },
+      {
+        key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
+        value: [platformIdentifier],
+      },
     ],
   });
 

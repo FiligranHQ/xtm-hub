@@ -42,3 +42,19 @@ export const CancelDeploymentRequestMutation = graphql`
     }
   }
 `;
+
+export const TrialsForOrgaFragment = graphql`
+  fragment trialInstancesTrialsForOrgaFragment on Query
+  @refetchable(queryName: "TrialsForOrgaRefetchQuery") {
+    trialDeployments(input: $input) {
+      availableTrials
+      isBlacklisted
+    }
+  }
+`;
+
+export const TrialsForOrga = graphql`
+  query trialInstancesTrialsForOrgaQuery($input: TrialDeploymentsInput) {
+    ...trialInstancesTrialsForOrgaFragment
+  }
+`;

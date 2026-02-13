@@ -29,7 +29,7 @@ import {
   useRelayEnvironment,
 } from 'react-relay';
 
-import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
+import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
@@ -53,7 +53,8 @@ export const StartTrialButton: React.FC<Props> = ({
   const t = useTranslations();
   const environment = useRelayEnvironment();
 
-  const { freeTrial, isBlacklisted } = useFreeTrial();
+  const { availableTrials, isBlacklisted, refetch } = useOrgaFreeTrial();
+  const displayCreateFreeTrial = availableTrials.includes(platformIdentifier);
 
   if (isBlacklisted) {
     return (
@@ -67,7 +68,7 @@ export const StartTrialButton: React.FC<Props> = ({
   }
 
   const [openSheet, setOpenSheet] = useState(openForm);
-  const [commitCreateDeploymentRequestMutationMutation] =
+  const [commitCreateDeploymentRequest] =
     useMutation<trialInstancesCreateDeploymentRequestMutation>(
       CreateDeploymentRequestMutation
     );
@@ -87,7 +88,7 @@ export const StartTrialButton: React.FC<Props> = ({
   const handleSubmit = (values: z.infer<typeof tryOpenCTIFormSchema>) => {
     setOpenSheet(false);
     const { acceptTerms: _, ...valuesWithoutAcceptTerms } = values;
-    commitCreateDeploymentRequestMutationMutation({
+    commitCreateDeploymentRequest({
       variables: {
         input: {
           ...valuesWithoutAcceptTerms,
@@ -101,6 +102,7 @@ export const StartTrialButton: React.FC<Props> = ({
         fetchQuery(environment, RegisterRegisteredPlatformsQuery, {
           input: { identifier: platformIdentifier },
         }).subscribe({});
+        refetch({}, { fetchPolicy: 'network-only' });
       },
 
       onCompleted: () => {
@@ -126,7 +128,7 @@ export const StartTrialButton: React.FC<Props> = ({
       setOpen={setOpenSheet}
       open={openSheet}
       trigger={
-        !freeTrial &&
+        displayCreateFreeTrial &&
         (variant === StartTrialButtonVariant.Default ? (
           <Button
             onClick={() => setOpenSheet(true)}

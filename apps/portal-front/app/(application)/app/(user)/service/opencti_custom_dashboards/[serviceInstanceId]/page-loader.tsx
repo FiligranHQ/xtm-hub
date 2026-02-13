@@ -21,12 +21,13 @@ interface PageLoaderProps {
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<documentsQuery>(DocumentsListQuery);
-  const { count, search, setSearch, labels } = useServiceListLocalStorage(
-    ServiceListLocalStorageKey.OpenCTICustomDashboards
-  );
+  const { count, search, setSearch, labels, orderMode, orderBy } =
+    useServiceListLocalStorage(
+      ServiceListLocalStorageKey.OpenCTICustomDashboards
+    );
 
   const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,
     labels,
   });
 
@@ -34,8 +35,8 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     loadQuery(
       {
         count,
-        orderBy: 'created_at',
-        orderMode: 'desc',
+        orderBy,
+        orderMode,
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         logicalFilters,
@@ -44,7 +45,15 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, count, serviceInstance, search, logicalFilters]);
+  }, [
+    loadQuery,
+    count,
+    serviceInstance,
+    search,
+    logicalFilters,
+    orderMode,
+    orderBy,
+  ]);
 
   return (
     <>

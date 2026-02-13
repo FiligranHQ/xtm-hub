@@ -58,6 +58,7 @@ type Query {
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
+  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
   documentExists(documentName: String, service_instance_id: String): Boolean
   publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
@@ -284,6 +285,8 @@ type DeploymentRequest implements Node {
   cancellation_date: Date
   cancellation_user_email: String
   cancellation_reason: String
+  platform_id: String
+  platform_url: String
 }
 
 type PlatformDeploymentRequest {
@@ -307,6 +310,7 @@ type PlatformDeploymentRequest {
   requester_first_name: String
   requester_last_name: String
   platform_id: String
+  platform_url: String
   failure_reason: String
 }
 
@@ -372,6 +376,17 @@ type DeploymentAvailability {
   platform_identifier: PlatformIdentifier!
 }
 
+type DeployedPlatform {
+  serviceInstanceId: ID!
+  platformIdentifier: PlatformIdentifier!
+}
+
+type TrialsDeployments {
+  availableTrials: [PlatformIdentifier!]!
+  deployed: [DeployedPlatform!]!
+  isBlacklisted: Boolean!
+}
+
 enum DeploymentRequestOrdering {
   requester_email
   organization_name
@@ -402,6 +417,10 @@ input UpdateDeploymentQuotaCapacityInput {
   newCapacity: Int!
 }
 
+input TrialDeploymentsInput {
+  platformIdentifiers: [PlatformIdentifier!]
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -416,6 +435,7 @@ enum DocumentOrdering {
   file_name
   description
   created_at
+  updated_at
   download_number
   name
 }
@@ -898,7 +918,7 @@ type RefreshUserPlatformTokenResponse {
 
 input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
-  onlyActiveTrials: Boolean
+  onlyActive: Boolean
 }
 
 input RegisteredPlatformInput {

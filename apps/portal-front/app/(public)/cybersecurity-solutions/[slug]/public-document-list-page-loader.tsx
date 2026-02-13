@@ -2,7 +2,10 @@
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { PublicDocumentListQuery } from '@/components/service/document/public-document.graphql';
 import PublicDocumentsList from '@/components/service/document/public-documents-list';
-import { useLogicalFiltersFromStorage } from '@/components/service/document/use-logical-filters-from-storage';
+import {
+  LogicalFiltersParams,
+  useLogicalFiltersFromStorage,
+} from '@/components/service/document/use-logical-filters-from-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { Skeleton } from '@filigran/ui';
@@ -24,27 +27,47 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
     PublicDocumentListQuery
   );
 
-  const { localStorageKey } = useShareableResourceMapping(
-    serviceInstance.slug as ServiceSlug
-  );
+  const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
+  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug);
 
-  const { pageSize, search, labels, integrationTypes, deployable, verified } =
-    useServiceListLocalStorage(localStorageKey);
-  const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
+  const {
+    pageSize,
+    search,
     labels,
     integrationTypes,
     deployable,
     verified,
-  });
+    productVersions,
+    orderMode,
+    orderBy,
+  } = useServiceListLocalStorage(localStorageKey);
+  const params: LogicalFiltersParams =
+    serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS
+      ? {
+          serviceInstanceSlug:
+            serviceInstanceSlug as ServiceSlug.OPEN_CTI_INTEGRATIONS,
+          labels,
+          deployable,
+          verified,
+          integrationTypes,
+          productVersions,
+        }
+      : {
+          serviceInstanceSlug: serviceInstanceSlug as
+            | ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS
+            | ServiceSlug.OPEN_AEV_SCENARIOS,
+          labels,
+        };
+
+  const logicalFilters = useLogicalFiltersFromStorage(params);
 
   useEffect(() => {
     loadQuery(
       {
         slug: serviceInstance.slug ?? '',
         count: pageSize,
-        orderBy: 'name',
-        orderMode: 'asc',
+        orderBy,
+        orderMode,
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         logicalFilters,
@@ -63,6 +86,8 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
     deployable,
     verified,
     logicalFilters,
+    orderMode,
+    orderBy,
   ]);
 
   return (

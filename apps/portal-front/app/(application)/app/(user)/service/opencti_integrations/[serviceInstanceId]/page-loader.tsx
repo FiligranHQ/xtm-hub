@@ -30,12 +30,14 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     setSearch,
     deployable,
     verified,
+    orderBy,
+    orderMode,
   } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );
 
   const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: serviceInstance.slug as ServiceSlug,
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
     labels,
     deployable,
     verified,
@@ -47,8 +49,8 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     loadQuery(
       {
         count: pageSize,
-        orderBy: 'name',
-        orderMode: 'asc',
+        orderBy,
+        orderMode,
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
         logicalFilters,
@@ -57,7 +59,15 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
         fetchPolicy: 'store-and-network',
       }
     );
-  }, [loadQuery, pageSize, serviceInstance, search, logicalFilters]);
+  }, [
+    loadQuery,
+    pageSize,
+    serviceInstance,
+    search,
+    logicalFilters,
+    orderBy,
+    orderMode,
+  ]);
 
   return (
     <>
