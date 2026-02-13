@@ -865,6 +865,10 @@
     "SureWantSubscriptionDirect": "Commencez avec notre service gratuit {serviceName} et explorez les ressources créées par l'équipe Filigran.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
+      "Header": {
+        "ActiveTrials": "Essais actifs",
+        "DaysRemaning": "jours de sevrage"
+      },
       "Explore": "Explorez tout le potentiel d'OpenCTI Enterprise Edition, commencez votre essai gratuit de 30 jours.",
       "ExploreProducts": "Explorez OpenCTI ou OpenAEV avec 30 jours",
       "ExploreOpenAEV": "Explorez OpenAEV avec 30 jours",
