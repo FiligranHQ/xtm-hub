@@ -22,7 +22,7 @@ describe('useFreeTrial', () => {
       );
     });
     expect(result.current).toBeDefined();
-    expect(result.current).toEqual({ freeTrials: [], isBlacklisted: '' });
+    expect(result.current).toEqual({ freeTrials: [] });
   });
 
   it('should return trial registred platforms', async () => {

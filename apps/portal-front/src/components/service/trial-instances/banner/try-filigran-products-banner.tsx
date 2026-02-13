@@ -60,7 +60,7 @@ export const TryFiligranProductsBanner = () => {
                 className="ml-s mr-s text-[12px] px-2 py-0.5 min-h-0 h-auto"
                 variant="outline"
                 onClick={() => setMenuOpen}>
-                {t('Service.Trials.LearnMore')}
+                {t('Service.Trials.LearnMore.Link')}
                 <div
                   className={`ml-s inline-flex transition-transform ${
                     menuOpen ? 'rotate-90' : 'rotate-0'
@@ -118,7 +118,7 @@ export const TryFiligranProductsBanner = () => {
         <Link
           href={`${settings.base_url_front}/app/service/openaev-free-trial`}
           className="ml-xs mr-s underline font-bold">
-          {t('Service.Trials.LearnMore')}
+          {t('Service.Trials.LearnMore.Link')}
         </Link>
       ),
     },
@@ -133,7 +133,7 @@ export const TryFiligranProductsBanner = () => {
         <Link
           href={`${settings.base_url_front}/app/service/opencti-free-trial`}
           className="ml-xs mr-s underline font-bold">
-          {t('Service.Trials.LearnMore')}
+          {t('Service.Trials.LearnMore.Link')}
         </Link>
       ),
     },
