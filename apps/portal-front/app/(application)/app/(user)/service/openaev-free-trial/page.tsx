@@ -4,6 +4,7 @@ import { ReachSalesButton } from '@/components/service/trial-instances/reach-sal
 import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
 import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
+import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { FeatureFlag } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
@@ -52,7 +53,10 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         actions={
           <>
             <SlackSupportButton />
-            <ReachSalesButton variant="outline-primary" />
+            <ReachSalesButton
+              variant="outline-primary"
+              platformIdentifier={PlatformIdentifierEnum.OPENAEV}
+            />
             <GuardCapacityComponent
               shouldNotBePersonalSpace
               capacityRestriction={[
@@ -69,6 +73,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         }
       />
       <PersonalSpaceInfo />
+      <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENAEV} />
       <RegistrationLearnMore
         serviceInstanceTag={ServiceInstanceTagEnum.OPENAEV}
       />

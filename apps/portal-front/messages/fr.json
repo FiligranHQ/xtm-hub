@@ -872,7 +872,53 @@
       "Expired": "Votre essai gratuit d'OpenCTI a expiré.",
       "Cancelled": "Votre essai gratuit d'OpenCTI a été annulé.",
       "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
-      "LearnMore": "En savoir plus",
+      "LearnMore": {
+        "Link": "En savoir plus",
+        "openaev": {
+          "WhatCanYouDo": {
+            "Title": "Que pouvez-vous faire avec votre essai OpenAEV ?",
+            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenAEV afin de simuler des attaques, d'évaluer vos défenses et d'améliorer votre posture de sécurité. Cela inclut toutes les fonctionnalités de l'édition Enterprise basée sur SaaS d'OpenAEV, y compris l'utilisation de vos agents EDR existants, la génération automatisée de scénarios et les conseils de remédiation alimentés par l'IA.",
+            "SecondParagraph": "Que vous souhaitiez simuler des séquences d'attaques, effectuer des exercices réalistes sur table, valider votre posture de sécurité ou rendre compte de votre cyber-résilience à vos dirigeants, vous pouvez tester toutes les fonctionnalités d'OpenAEV en fonction de vos besoins spécifiques.",
+            "Link": "Découvrez toutes les fonctionnalités d'OpenAEV Enterprise Edition"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Établir des priorités",
+              "Description": "Créez des simulations d'attaques offensives complètes pour identifier avec précision les vulnérabilités et les chemins d'attaque exploitables, en tirant parti des renseignements sur les menaces d'OpenCTI et de la cartographie ATT&CK de MITRE. Vous pouvez ensuite facilement hiérarchiser les menaces qui vous importent en fonction de vos exigences prioritaires en matière de renseignements (PIR)."
+            },
+            "Second": {
+              "Title": "Test",
+              "Description": "Validez vos défenses en testant en permanence votre sécurité, vos processus et votre personnel en effectuant des tests atomiques spécifiques, en élaborant vos propres séquences d'attaque ou en important des scénarios préétablis. Vous pouvez organiser des exercices réalistes sur table pour tester les réponses de vos équipes aux escalades de sécurité. Utilisez l'EDR d'OpenAEV ou intégrez des collecteurs prédéfinis provenant des fournisseurs les plus courants."
+            },
+            "Third": {
+              "Title": "Fixer",
+              "Description": "Identifiez les points sur lesquels vous devez concentrer votre attention pour améliorer votre posture de sécurité. Visualisez et approfondissez les zones problématiques, accédez à des conseils de remédiation alimentés par l'IA et recueillez les commentaires qualitatifs de vos équipes. Vous pouvez construire une boucle de remédiation continue en créant automatiquement de nouveaux scénarios grâce à la création de scénarios assistée par l'IA."
+            }
+          }
+        },
+        "opencti": {
+          "WhatCanYouDo": {
+            "Title": "Que pouvez-vous faire avec votre essai OpenCTI ?",
+            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenCTI et enrichir vos informations sur les menaces. Cela inclut toutes les fonctionnalités d'OpenCTI Enterprise Edition telles que les playbooks automatisés, la possibilité de définir des exigences prioritaires en matière de renseignement (PIR), FINTEL, ainsi que l'importation de fichiers assistée par l'IA, la génération de rapports et la fonctionnalité de recherche NLP.",
+            "SecondParagraph": "Découvrez comment OpenCTI peut répondre à vos besoins spécifiques - qu'il s'agisse de la chasse aux menaces, de la réponse aux incidents ou de la gestion des cas - et s'intégrer à vos sources de données préférées pour que les renseignements sur les menaces puissent être exploités dans l'ensemble de votre système de sécurité.",
+            "Link": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Ingestion",
+              "Description": "Consolidez et enrichissez les renseignements sur les menaces à partir de n'importe quel flux - commercial, open-source, interne - dans une plate-forme centralisée, en tirant parti de plus de 300 intégrations et en vous appuyant sur le cadre STIX 2.1. Utilisez l'importation assistée par l'IA des rapports CTI pour économiser d'innombrables heures d'analyse."
+            },
+            "Second": {
+              "Title": "Traitement",
+              "Description": "Accédez à de puissantes visualisations de tableaux de bord, à des hypergraphes de connaissances et à des playbooks pour pivoter entre les acteurs de la menace à l'aide de calendriers et de mappages ATT&CK. Adaptez vos tableaux de bord à vos besoins en matière de gestion des menaces ou des incidents, et faites de l'IA votre compagnon à chaque étape."
+            },
+            "Third": {
+              "Title": "Sortie",
+              "Description": "Faites circuler les renseignements sur les menaces dans l'ensemble de votre système de sécurité. Partagez et diffusez les renseignements entre les équipes et les outils avec un accès basé sur les rôles pour une action rapide. Utilisez OpenAEV, entièrement intégré à OpenCTI, pour valider et améliorer votre posture de sécurité."
+            }
+          }
+        }
+      },
       "StartTrial": "Commencez votre essai gratuit",
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
@@ -881,7 +927,7 @@
       "NeedSupport": "Besoin d'aide",
       "ReachOutToSalesSuccessTitle": "Merci !",
       "ReachOutToSalesSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
-      "ReachOutToSalesDefaultMessage": "Veuillez me contacter au sujet de l'essai gratuit d'OpenCTI",
+      "ReachOutToSalesDefaultMessage": "Veuillez me contacter au sujet de la version d'essai gratuite d'{platform}",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
