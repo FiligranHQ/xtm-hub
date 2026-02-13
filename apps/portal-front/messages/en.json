@@ -278,6 +278,9 @@
       "RemainingDays": "Days remaining",
       "Status": "Status",
       "Region": "Region",
+      "PlatformId": "Platform ID",
+      "PlatformUrl": "Platform URL",
+      "RegistrationStatus": "Registration Status",
       "RequestDate": "Requested Date",
       "Priority": "Priority",
       "CancellationDate": "Cancellation Date",
@@ -312,7 +315,9 @@
         "ConfirmSentence": "Are you sure you want to save these changes?"
       }
     },
-    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
+    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
+    "Registered": "Registered",
+    "NotRegistered": "Not Registered"
   },
   "Parameters": {
     "Version": "Version"
