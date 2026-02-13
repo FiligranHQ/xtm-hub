@@ -1,36 +1,41 @@
-import { isValueInEnum } from '@/utils/isValueInEnum';
+import { TrialsTabType } from '@/components/trials/trials.const';
+import { OrderingMode } from '@/components/ui/handle-sorting.utils';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
-import { OrderingMode } from '@generated/trialsListQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
-import { useEffect } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
-export const useTrialsListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
-  const [count, setCount, removeCount] = useLocalStorage('countTrialsList', 50);
+export const useTrialsListLocalstorage = <U>(
+  columns: ColumnDef<U>[],
+  type: TrialsTabType,
+  defaultOrder: DeploymentRequestOrderingEnum,
+  defaultOrderMode: OrderingMode
+) => {
+  const [count, setCount, removeCount] = useLocalStorage(
+    `countTrialsList_${type}`,
+    50
+  );
   const [orderMode, setOrderMode, removeOrderMode] =
-    useLocalStorage<OrderingMode>('orderModeTrialsList', 'asc');
+    useLocalStorage<OrderingMode>(
+      `orderModeTrialsList_${type}`,
+      defaultOrderMode
+    );
   const [orderBy, setOrderBy, removeOrderBy] =
     useLocalStorage<DeploymentRequestOrderingEnum>(
-      'orderByTrialsList',
-      DeploymentRequestOrderingEnum.REQUEST_DATE
+      `orderByTrialsList_${type}`,
+      defaultOrder
     );
-  useEffect(() => {
-    if (!isValueInEnum(orderBy, DeploymentRequestOrderingEnum)) {
-      setOrderBy(DeploymentRequestOrderingEnum.REQUEST_DATE);
-    }
-  }, [orderBy, setOrderBy]);
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
-    'countTrialsList',
+    `countTrialsList_${type}`,
     50
   );
 
   const [columnOrder, setColumnOrder, removeColumnOrder] = useLocalStorage(
-    'columnOrderingTrialsList',
+    `columnOrderingTrialsList_${type}`,
     columns.map((c) => c.id!)
   );
 
   const [columnVisibility, setColumnVisibility, removeColumnVisibility] =
-    useLocalStorage('columnVisibilityTrialsList', {});
+    useLocalStorage(`columnVisibilityTrialsList_${type}`, {});
 
   const resetAll = () => {
     removeCount();

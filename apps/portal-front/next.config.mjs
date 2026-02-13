@@ -13,6 +13,11 @@ const nextConfig = {
         destination: '/app/service/opencti-free-trial',
         permanent: true,
       },
+      {
+        source: '/app/admin/trials',
+        destination: '/app/admin/opencti-trials',
+        permanent: true,
+      },
 
       // open-bas / obas → openaev
       {

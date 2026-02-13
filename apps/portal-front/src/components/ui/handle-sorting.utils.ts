@@ -8,7 +8,7 @@ interface ColumnSortValue<T, U> extends ColumnSort {
   orderMode: U;
 }
 
-type OrderingMode = 'asc' | 'desc';
+export type OrderingMode = 'asc' | 'desc';
 
 interface HandleSortingChangeParams<T> {
   handleRefetchData: (args: Record<string, unknown>) => void;
