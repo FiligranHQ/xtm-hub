@@ -1,6 +1,6 @@
-import {type PageInfo} from 'graphql-relay/connection/connection';
-import pkg, {type Knex} from 'knex';
-import {baseConfig} from './knexconfig';
+import { type PageInfo } from 'graphql-relay/connection/connection';
+import pkg, { type Knex } from 'knex';
+import { baseConfig } from './knexconfig';
 import {
   DeploymentRequestFilter,
   DeploymentRequestFilterKey,
@@ -12,15 +12,15 @@ import {
   ServiceInstanceFilterKey,
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
-import {databaseContext} from './src/context/database.context';
-import {requestContext} from './src/context/request.context';
-import {PortalContext} from './src/model/portal-context';
-import {normalizeDocumentName} from './src/modules/services/document/document.helper';
-import {INTEGRATION_METADATA_KEYS} from './src/modules/services/integrations/integrations.model';
-import {applyDbSecurityLayer} from './src/security/access';
-import {logApp} from './src/utils/app-logger.util';
-import {extractId} from './src/utils/utils';
-import {compareVersions, isValidVersion} from './src/utils/versioning';
+import { databaseContext } from './src/context/database.context';
+import { requestContext } from './src/context/request.context';
+import { PortalContext } from './src/model/portal-context';
+import { normalizeDocumentName } from './src/modules/services/document/document.helper';
+import { INTEGRATION_METADATA_KEYS } from './src/modules/services/integrations/integrations.model';
+import { applyDbSecurityLayer } from './src/security/access';
+import { logApp } from './src/utils/app-logger.util';
+import { extractId } from './src/utils/utils';
+import { compareVersions, isValidVersion } from './src/utils/versioning';
 
 type Filters = Filter[] | DeploymentRequestFilter[] | ServiceInstanceFilter[];
 
@@ -125,9 +125,9 @@ const config: Knex.Config = {
     if (!queryContext?.__typename) return result;
     const __typename = queryContext.__typename;
     if (Array.isArray(result)) {
-      return result.map((row) => ({...row, __typename}));
+      return result.map((row) => ({ ...row, __typename }));
     } else if (result && Object.keys(result).length > 0) {
-      return {...result, __typename};
+      return { ...result, __typename };
     }
     // Nothing found
     return undefined;
@@ -202,7 +202,7 @@ export const dbConnections = <T>(
     hasNextPage: nodes.length >= limit,
     hasPreviousPage: !offset && nodes.length > 0,
   };
-  return {edges, pageInfo, totalCount};
+  return { edges, pageInfo, totalCount };
 };
 
 const searchAttributes = [
@@ -269,7 +269,7 @@ const createProductVersionFilter = (): FilterHandler => ({
   key: FilterKey.ProductVersion,
   addJoin: (qb, _type) => {
     const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
-    qb.leftJoin({[metaAlias]: 'Document_Metadata'}, function () {
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
       this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
         `${metaAlias}.key`,
         '=',
@@ -309,7 +309,7 @@ const createMetadataFilterHandler = (key: string): FilterHandler => ({
   key,
   addJoin: (qb, _type) => {
     const metaAlias = `metaFilter${key}`;
-    qb.leftJoin({[metaAlias]: 'Document_Metadata'}, function () {
+    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
       this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
         `${metaAlias}.key`,
         '=',
@@ -349,7 +349,7 @@ export const applyFilterJoins = (
 
   const keysSet = new Set<string>();
 
-  for (const {key} of filters) {
+  for (const { key } of filters) {
     if (!key || keysSet.has(key)) continue;
     keysSet.add(key);
 
@@ -441,7 +441,7 @@ export const applySearch = async <T>(
 
     const shouldSearchOnDocumentMetadata = type === 'Document';
     if (shouldSearchOnDocumentMetadata) {
-      queryContext.leftJoin({[metaAlias]: 'Document_Metadata'}, function () {
+      queryContext.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
         this.on(`${metaAlias}.document_id`, '=', 'Document.id');
       });
     }
@@ -568,16 +568,16 @@ export const paginate = async <T, U>(
     .clearGroup()
     .countDistinct(`${type}.id as totalCount`)
     .first()
-    .secureQuery({...opts});
+    .secureQuery({ ...opts });
 
   queryContext
-    .orderBy([{column: orderBy, order: orderMode, nulls: 'last'}])
+    .orderBy([{ column: orderBy, order: orderMode, nulls: 'last' }])
     .offset(currentOffset)
     .limit(first)
     .select(`${type}.*`)
-    .secureQuery({...opts});
+    .secureQuery({ ...opts });
 
-  const [query, {totalCount}] = await Promise.all([
+  const [query, { totalCount }] = await Promise.all([
     queryContext,
     totalCountQuery,
   ]);

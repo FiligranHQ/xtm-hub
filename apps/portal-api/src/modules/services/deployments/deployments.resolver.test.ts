@@ -1,6 +1,6 @@
-import {afterEach, describe, expect, it} from 'vitest';
-import {db} from '../../../../knexfile';
-import {TEST_ORGANIZATIONS} from '../../../../tests/tests.const';
+import { afterEach, describe, expect, it } from 'vitest';
+import { db } from '../../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -9,11 +9,11 @@ import {
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
-import {ErrorCode} from '../../../utils/error/error.code';
-import {deleteSubscription} from '../../subcription/subscription.helper';
-import {deleteServiceInstanceBy} from '../service-instance.domain';
-import {DeploymentsApp} from './deployments.app';
-import {DeploymentRequestDomain} from './deployments.domain';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { deleteSubscription } from '../../subcription/subscription.helper';
+import { deleteServiceInstanceBy } from '../service-instance.domain';
+import { DeploymentsApp } from './deployments.app';
+import { DeploymentRequestDomain } from './deployments.domain';
 import resolver from './deployments.resolver';
 
 describe('Deployment app', () => {
@@ -126,7 +126,7 @@ describe('Deployment app', () => {
         ],
         requester_email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
         requester_first_name:
-        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
         requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
       });
     });

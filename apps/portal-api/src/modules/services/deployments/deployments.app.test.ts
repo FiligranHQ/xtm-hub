@@ -431,7 +431,6 @@ describe('Deployment app', () => {
     });
 
     it('should return platform_url when Service_Configuration exists', async () => {
-
       const deploymentRequest = await insertDeploymentRequest({});
 
       await db('Service_Configuration').insert({

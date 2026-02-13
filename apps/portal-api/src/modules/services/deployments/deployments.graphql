@@ -1,139 +1,139 @@
 enum DeploymentRequestPlatformRegion {
-    eu_west
-    us_east
-    apac_au
-    apac_sg
+  eu_west
+  us_east
+  apac_au
+  apac_sg
 }
 
 enum DeploymentRequestDeploymentType {
-    trial
+  trial
 }
 
 enum DeploymentRequestHubStatus {
-    queued
-    pending
-    provisioning
-    active
-    expired
-    failed
-    cancelled
+  queued
+  pending
+  provisioning
+  active
+  expired
+  failed
+  cancelled
 }
 
 enum DeploymentRequestPlatformState {
-    unprovisioned
-    provisioning
-    active
-    removing
-    removed
+  unprovisioned
+  provisioning
+  active
+  removing
+  removed
 }
 
 type DeploymentRequest implements Node {
-    id: ID!
-    platform_identifier: PlatformIdentifier!
-    region: DeploymentRequestPlatformRegion!
-    type: DeploymentRequestDeploymentType!
-    job_title: String
-    activity_sector: String
-    use_case: String
-    start_date: Date
-    end_date: Date
-    hub_status: DeploymentRequestHubStatus!
-    ordering: Int!
-    requester_email: String
-    organization_name: String
-    request_date: Date!
-    counts_in_orga_quota: Boolean!
-    cancellation_date: Date
-    cancellation_user_email: String
-    cancellation_reason: String
-    platform_id: String
-    platform_url: String
+  id: ID!
+  platform_identifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
+  job_title: String
+  activity_sector: String
+  use_case: String
+  start_date: Date
+  end_date: Date
+  hub_status: DeploymentRequestHubStatus!
+  ordering: Int!
+  requester_email: String
+  organization_name: String
+  request_date: Date!
+  counts_in_orga_quota: Boolean!
+  cancellation_date: Date
+  cancellation_user_email: String
+  cancellation_reason: String
+  platform_id: String
+  platform_url: String
 }
 
 type PlatformDeploymentRequest {
-    id: ID!
-    platform_identifier: PlatformIdentifier!
-    region: DeploymentRequestPlatformRegion!
-    type: DeploymentRequestDeploymentType!
-    platform_token: String!
-    hub_status: DeploymentRequestHubStatus!
-    target_state: DeploymentRequestPlatformState
-    actual_state: DeploymentRequestPlatformState
-    ordering: Int!
-    start_date: Date
-    end_date: Date
-    job_title: String
-    activity_sector: String
-    use_case: String
-    organization_name: String!
-    organization_domains: [String!]
-    requester_email: String!
-    requester_first_name: String
-    requester_last_name: String
-    platform_id: String
-    platform_url: String
-    failure_reason: String
+  id: ID!
+  platform_identifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
+  platform_token: String!
+  hub_status: DeploymentRequestHubStatus!
+  target_state: DeploymentRequestPlatformState
+  actual_state: DeploymentRequestPlatformState
+  ordering: Int!
+  start_date: Date
+  end_date: Date
+  job_title: String
+  activity_sector: String
+  use_case: String
+  organization_name: String!
+  organization_domains: [String!]
+  requester_email: String!
+  requester_first_name: String
+  requester_last_name: String
+  platform_id: String
+  platform_url: String
+  failure_reason: String
 }
 
 input CreateDeploymentRequestInput {
-    platform_identifier: PlatformIdentifier!
-    region: DeploymentRequestPlatformRegion!
-    type: DeploymentRequestDeploymentType!
-    job_title: String
-    activity_sector: String
-    use_case: String
+  platform_identifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
+  job_title: String
+  activity_sector: String
+  use_case: String
 }
 
 input UpdateDeploymentRequestInput {
-    id: ID!
-    start_date: Date
-    end_date: Date
-    platform_id: String
-    failure_reason: String
-    actual_state: DeploymentRequestPlatformState
-    ordering: Int
+  id: ID!
+  start_date: Date
+  end_date: Date
+  platform_id: String
+  failure_reason: String
+  actual_state: DeploymentRequestPlatformState
+  ordering: Int
 }
 
 enum DeploymentRequestFilterKey {
-    region
-    type
-    hub_status
-    target_state
-    actual_state
-    platform_identifier
+  region
+  type
+  hub_status
+  target_state
+  actual_state
+  platform_identifier
 }
 
 input DeploymentRequestFilter {
-    key: DeploymentRequestFilterKey
-    value: [String!]!
+  key: DeploymentRequestFilterKey
+  value: [String!]!
 }
 
 type DeploymentRequestEdge {
-    cursor: String!
-    node: DeploymentRequest!
+  cursor: String!
+  node: DeploymentRequest!
 }
 type PlatformDeploymentRequestEdge {
-    cursor: String!
-    node: PlatformDeploymentRequest!
+  cursor: String!
+  node: PlatformDeploymentRequest!
 }
 
 type DeploymentRequestConnection {
-    totalCount: Int!
-    edges: [DeploymentRequestEdge!]!
-    pageInfo: PageInfo!
+  totalCount: Int!
+  edges: [DeploymentRequestEdge!]!
+  pageInfo: PageInfo!
 }
 
 type PlatformDeploymentRequestConnection {
-    totalCount: Int!
-    edges: [PlatformDeploymentRequestEdge!]!
-    pageInfo: PageInfo!
+  totalCount: Int!
+  edges: [PlatformDeploymentRequestEdge!]!
+  pageInfo: PageInfo!
 }
 
 type DeploymentAvailability {
-    region: DeploymentRequestPlatformRegion!
-    availableCount: Int!
-    capacity: Int!
-    platform_identifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  availableCount: Int!
+  capacity: Int!
+  platform_identifier: PlatformIdentifier!
 }
 
 type DeployedPlatform {
@@ -148,33 +148,33 @@ type TrialsDeployments {
 }
 
 enum DeploymentRequestOrdering {
-    requester_email
-    organization_name
-    start_date
-    end_date
-    hub_status
-    region
-    ordering
-    request_date
-    cancellation_date
-    cancellation_user_email
-    cancellation_reason
+  requester_email
+  organization_name
+  start_date
+  end_date
+  hub_status
+  region
+  ordering
+  request_date
+  cancellation_date
+  cancellation_user_email
+  cancellation_reason
 }
 
 enum ReorderDeploymentRequestInQueueDirection {
-    top
-    up
+  top
+  up
 }
 
 input ReorderDeploymentRequestInQueueInput {
-    id: ID!
-    direction: ReorderDeploymentRequestInQueueDirection!
+  id: ID!
+  direction: ReorderDeploymentRequestInQueueDirection!
 }
 
 input UpdateDeploymentQuotaCapacityInput {
-    platformIdentifier: PlatformIdentifier!
-    region: DeploymentRequestPlatformRegion!
-    newCapacity: Int!
+  platformIdentifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  newCapacity: Int!
 }
 
 input TrialDeploymentsInput {
@@ -182,17 +182,17 @@ input TrialDeploymentsInput {
 }
 
 extend type Query {
-    deploymentRequests(
-        first: Int!
-        after: ID
-        filters: [DeploymentRequestFilter!]
-    ): PlatformDeploymentRequestConnection! @system_token
-    deploymentRequestsAvailable(
-        platformIdentifier: PlatformIdentifier
-    ): [DeploymentAvailability!]!
+  deploymentRequests(
+    first: Int!
+    after: ID
+    filters: [DeploymentRequestFilter!]
+  ): PlatformDeploymentRequestConnection! @system_token
+  deploymentRequestsAvailable(
+    platformIdentifier: PlatformIdentifier
+  ): [DeploymentAvailability!]!
     @auth(
-        portalCapa: [BYPASS, READ_TRIALS]
-        orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+      portalCapa: [BYPASS, READ_TRIALS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
     )
 
   deploymentRequestsList(
@@ -207,24 +207,24 @@ extend type Query {
 }
 
 extend type Mutation {
-    createDeploymentRequest(
-        input: CreateDeploymentRequestInput
-    ): DeploymentRequest!
+  createDeploymentRequest(
+    input: CreateDeploymentRequestInput
+  ): DeploymentRequest!
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
-    updateDeploymentRequest(
-        input: UpdateDeploymentRequestInput!
-    ): PlatformDeploymentRequest! @system_token
-    reorderDeploymentRequestInQueue(
-        input: ReorderDeploymentRequestInQueueInput!
-    ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
-    cancelDeploymentRequest(
-        deploymentRequestId: ID!
-        cancellationReason: String
-    ): DeploymentRequest
+  updateDeploymentRequest(
+    input: UpdateDeploymentRequestInput!
+  ): PlatformDeploymentRequest! @system_token
+  reorderDeploymentRequestInQueue(
+    input: ReorderDeploymentRequestInQueueInput!
+  ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
+  cancelDeploymentRequest(
+    deploymentRequestId: ID!
+    cancellationReason: String
+  ): DeploymentRequest
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
-    adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
+  adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
     @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
-    updateDeploymentQuotaCapacity(
-        input: UpdateDeploymentQuotaCapacityInput!
-    ): Success! @auth(portalCapa: [BYPASS])
+  updateDeploymentQuotaCapacity(
+    input: UpdateDeploymentQuotaCapacityInput!
+  ): Success! @auth(portalCapa: [BYPASS])
 }
