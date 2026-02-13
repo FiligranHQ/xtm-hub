@@ -206,7 +206,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
             {
               accessorKey: 'ordering',
               id: 'ordering',
-              enableSortingRemoval: false,
+              enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.Priority'),
             },
           ]
@@ -603,7 +603,6 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           manualPagination: true,
           onColumnOrderChange: setColumnOrder,
           onColumnVisibilityChange: setColumnVisibility,
-          enableSortingRemoval: !isReorderTrialsAllowed,
         }}
         i18nKey={i18nKey(t)}
         tableState={{
