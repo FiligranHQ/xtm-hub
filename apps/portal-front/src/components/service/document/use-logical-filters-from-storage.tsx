@@ -36,28 +36,6 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
         productVersions,
       } = params;
 
-      const deployableFilter = [
-        {
-          leaf: {
-            key: FilterKeyEnum.MANAGER_SUPPORTED,
-            value: Object.keys(deployable),
-          },
-        },
-      ];
-
-      const verifiedFilter = [
-        { leaf: { key: FilterKeyEnum.VERIFIED, value: Object.keys(verified) } },
-      ];
-
-      const productVersionsFilter = [
-        {
-          leaf: {
-            key: FilterKeyEnum.PRODUCT_VERSION,
-            value: Object.keys(productVersions),
-          },
-        },
-      ];
-
       const typeSubtypeFilter =
         buildTypeSubtypeFilterExpression(integrationTypes);
       return {
@@ -65,9 +43,21 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
         children: [
           { leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) } },
           ...(typeSubtypeFilter ? [typeSubtypeFilter] : []),
-          ...deployableFilter,
-          ...verifiedFilter,
-          ...productVersionsFilter,
+          {
+            leaf: {
+              key: FilterKeyEnum.MANAGER_SUPPORTED,
+              value: Object.keys(deployable),
+            },
+          },
+          {
+            leaf: { key: FilterKeyEnum.VERIFIED, value: Object.keys(verified) },
+          },
+          {
+            leaf: {
+              key: FilterKeyEnum.PRODUCT_VERSION,
+              value: Object.keys(productVersions),
+            },
+          },
         ],
       };
     }
