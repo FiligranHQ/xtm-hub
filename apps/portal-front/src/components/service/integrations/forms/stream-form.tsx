@@ -1,9 +1,7 @@
 import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { useServiceContext } from '@/components/service/components/service-context';
-import {
-  SubTypesPerIntegrationType,
-} from '@/components/service/integrations/integration.utils';
+import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
