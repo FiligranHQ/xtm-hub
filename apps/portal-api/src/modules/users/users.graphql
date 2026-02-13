@@ -157,7 +157,11 @@ type Mutation {
 
   # Contact
   ############ USED IN OpenCTI ############ DO NOT RENAME/REMOVE
-  contactUs(message: String): Success!
+  contactUs(
+    message: String
+    platformId: ID
+    platformIdentifier: PlatformIdentifier
+  ): Success!
 }
 
 type UserSubscription {

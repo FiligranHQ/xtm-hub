@@ -303,6 +303,33 @@ describe('DeploymentRequestDomain', () => {
     });
   });
 
+  describe('loadFullDeploymentRequestByPlatformId', () => {
+    it('should return a full deployment request when platform id is defined in deployment request', async () => {
+      const platformId = uuidv4();
+      await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+        type: DeploymentRequestDeploymentType.Trial,
+        platform_id: platformId,
+      });
+
+      const result =
+        DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
+          platformId
+        );
+
+      expect(result).toBeDefined();
+    });
+
+    it('should return undefined when platform id is an unknown deployment request platform id', async () => {
+      const result =
+        await DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
+          uuidv4()
+        );
+
+      expect(result).toBeUndefined();
+    });
+  });
+
   describe('reorderDeploymentRequestUp', () => {
     it('should do nothing when deployment request is the top one', async () => {
       const topDeploymentRequest = await insertDeploymentRequest({

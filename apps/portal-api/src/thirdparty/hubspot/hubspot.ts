@@ -70,18 +70,46 @@ export const hubspotLoginHook = async (userId: string) =>
     };
   });
 
-export const hubspotReachOutSalesHook = async (
-  message: string = 'Please contact me about the OpenCTI free trial'
-) =>
+export const hubspotReachOutSalesHook = async ({
+  message = 'Please contact me about the OpenCTI free trial',
+  platformId,
+  platformIdentifier = PlatformIdentifier.Opencti,
+  platformToken,
+}: {
+  message?: string;
+  platformIdentifier?: PlatformIdentifier;
+  platformId?: string;
+  platformToken?: string;
+}) =>
   hubspotHook('reachOutSales', async () => {
-    const { user, portalContext } = requestContext.require();
-    const platformToken = portalContext?.req.header('XTM-Hub-Platform-Token');
+    const { user } = requestContext.require();
 
     let deploymentRequest: FullyQualifiedDeploymentRequest | undefined;
-    if (user?.id) {
+    if (platformId) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
+          platformId
+        );
+
+      if (!deploymentRequest) {
+        throw new Error(
+          `No deployment request found for platform id: ${platformId}`
+        );
+      }
+    } else if (platformToken) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
+          platformToken
+        );
+      if (!deploymentRequest) {
+        throw new Error(
+          `No deployment request found for platform token: ${platformToken}`
+        );
+      }
+    } else if (user?.id) {
       deploymentRequest =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
-          PlatformIdentifier.Opencti,
+          platformIdentifier,
           user.id
         );
       if (!deploymentRequest) {
@@ -94,22 +122,14 @@ export const hubspotReachOutSalesHook = async (
               (org) => org.id === user.selected_organization_id
             )?.name || '',
           job_title: '',
-          message,
+          message: `${platformIdentifier}: ${message}`,
           use_case: '',
         };
       }
-    } else if (platformToken) {
-      deploymentRequest =
-        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
-          platformToken
-        );
-      if (!deploymentRequest) {
-        throw new Error(
-          `No deployment request found for platform token: ${platformToken}`
-        );
-      }
     } else {
-      throw new Error('Either userId or platformToken must be provided');
+      throw new Error(
+        'Either userId, platformToken or platformId must be provided'
+      );
     }
 
     return {

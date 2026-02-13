@@ -8,7 +8,7 @@ import {
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
-import {
+import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -20,7 +20,7 @@ import { DeploymentRequestDomain } from './deployments.domain';
 
 export async function insertDeploymentRequest(
   deploymentRequest: Partial<DeploymentRequestInitializer>
-) {
+): Promise<DeploymentRequest> {
   const serviceInstanceId = uuidv4() as ServiceInstanceId;
   await insertServiceInstance({
     id: serviceInstanceId,

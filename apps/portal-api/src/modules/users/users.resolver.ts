@@ -12,6 +12,7 @@ import { dispatch, listen } from '../../pub';
 import { hubspotReachOutSalesHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
 
+import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { PortalContext } from '../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
@@ -299,9 +300,19 @@ const resolvers: Resolvers = {
     logout: async (_, __, context) => {
       return UsersAuthApp.logout(context);
     },
-    contactUs: async (_, { message }) => {
+    contactUs: async (_, { message, platformIdentifier, platformId }) => {
       try {
-        await hubspotReachOutSalesHook(message);
+        const { portalContext } = requestContext.require();
+        const platformToken = portalContext?.req.header(
+          'XTM-Hub-Platform-Token'
+        );
+
+        await hubspotReachOutSalesHook({
+          message,
+          platformToken,
+          platformId,
+          platformIdentifier,
+        });
         return { success: true };
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.HubspotError);
