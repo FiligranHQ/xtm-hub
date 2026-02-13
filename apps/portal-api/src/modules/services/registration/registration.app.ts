@@ -64,11 +64,7 @@ import {
   PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
-import {
-  platformIdentifierMappedByServiceDefinitionIdentifier,
-  registeredMailTemplateMappedByPlatformIdentifier,
-  unregisteredMailTemplateMappedByPlatformIdentifier,
-} from './registration.mapping';
+import { platformIdentifierMappedByServiceDefinitionIdentifier } from './registration.mapping';
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
@@ -249,15 +245,14 @@ export const registrationApp = {
       OrganizationCapability.ManagePlatformRegistration,
     ]);
 
-    const mailTemplate =
-      registeredMailTemplateMappedByPlatformIdentifier[identifier];
     await Promise.all(
       users.map((user) =>
         sendMail({
           to: user.email,
-          template: mailTemplate,
+          template: 'platform_registered',
           params: {
             adminName: formatName(user.first_name ?? ''),
+            platformIdentifier: identifier,
           },
         })
       )
@@ -341,16 +336,14 @@ export const registrationApp = {
       ]
     );
 
-    const template =
-      unregisteredMailTemplateMappedByPlatformIdentifier[platformIdentifier];
-
     await Promise.all(
       users.map((user) =>
         sendMail({
           to: user.email,
-          template,
+          template: 'platform_unregistered',
           params: {
             adminName: formatName(user.first_name ?? ''),
+            platformIdentifier,
           },
         })
       )

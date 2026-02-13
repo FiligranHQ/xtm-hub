@@ -26,6 +26,7 @@ export interface RequestTransferPersonalSpaceMailModel {
 
 export interface PlatformRegisteredModel {
   adminName: string;
+  platformIdentifier: PlatformIdentifier;
 }
 export interface FreeTrialRegistered {
   firstName: string;
@@ -63,6 +64,7 @@ export interface OrganizationPendingUserDigestModel {
 
 export interface PlatformUnregisteredModel {
   adminName: string;
+  platformIdentifier: PlatformIdentifier;
 }
 
 export const PlatformIdentifierToString: Record<PlatformIdentifier, string> = {
@@ -91,10 +93,8 @@ export type MailTemplates = {
   openaev_scenarios: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
   request_transfer_personal_space: RequestTransferPersonalSpaceMailModel;
-  opencti_platform_registered: PlatformRegisteredModel;
-  opencti_platform_unregistered: PlatformUnregisteredModel;
-  openaev_platform_registered: PlatformRegisteredModel;
-  openaev_platform_unregistered: PlatformUnregisteredModel;
+  platform_registered: PlatformRegisteredModel;
+  platform_unregistered: PlatformUnregisteredModel;
   free_trial_registered: FreeTrialRegistered;
   free_trial_requested: FreeTrialGenericModel;
   free_trial_queued: FreeTrialGenericModel;
@@ -121,14 +121,14 @@ export const templateSubjects: {
     `XTM Hub - You've been added to the ${params.organizationName} organization`,
   request_transfer_personal_space: () =>
     `Confirmation of Personal Space Transfer in XTM Hub`,
-  opencti_platform_registered: () =>
-    `OpenCTI Platform Successfully Registered to XTM Hub – Integration Now Active`,
-  opencti_platform_unregistered: () =>
-    `OpenCTI Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
-  openaev_platform_registered: () =>
-    `OpenAEV Platform Successfully Registered to XTM Hub – Integration Now Active`,
-  openaev_platform_unregistered: () =>
-    `OpenAEV Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
+  platform_registered: (params: PlatformRegisteredModel) =>
+    `${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } Platform Successfully Registered to XTM Hub – Integration Now Active`,
+  platform_unregistered: (params: PlatformUnregisteredModel) =>
+    `${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
   free_trial_registered: (params: FreeTrialGenericModel) =>
     `Welcome to your ${
       PlatformIdentifierToString[params.platformIdentifier]
