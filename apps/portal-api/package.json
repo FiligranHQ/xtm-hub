@@ -60,7 +60,7 @@
     "@graphql-tools/schema": "10.0.29",
     "@graphql-tools/utils": "10.10.3",
     "apollo-errors": "1.9.0",
-    "auth0": "4.31.0",
+    "auth0": "4.37.0",
     "body-parser": "2.2.2",
     "config": "3.3.12",
     "cors": "2.8.6",
