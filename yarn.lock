@@ -8667,7 +8667,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:8.55.0"
     "@vitest/coverage-v8": "npm:3.2.4"
     apollo-errors: "npm:1.9.0"
-    auth0: "npm:4.31.0"
+    auth0: "npm:4.37.0"
     body-parser: "npm:2.2.2"
     chokidar: "npm:3.6.0"
     concurrently: "npm:9.2.1"
@@ -9264,14 +9264,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:4.31.0":
-  version: 4.31.0
-  resolution: "auth0@npm:4.31.0"
+"auth0@npm:4.37.0":
+  version: 4.37.0
+  resolution: "auth0@npm:4.37.0"
   dependencies:
     jose: "npm:^4.13.2"
     undici-types: "npm:^6.15.0"
     uuid: "npm:^9.0.0"
-  checksum: 10/8646437985e74139edb91ea3367adf31d2c7396083693cb5d0b1e3862ae60f69b614e6c5d602a64118da6a6722e905c75f38adcc27cef5772e66fe1b88d3600b
+  checksum: 10/7e6ee62e6223cd2cad83b98e2b278f6c8925a0f242bb14140bd22c50f8a515e074293c6ace10dca69b8a90547fa7d56160825e66950fada689553592da021982
   languageName: node
   linkType: hard
 
