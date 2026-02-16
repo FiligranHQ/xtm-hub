@@ -172,12 +172,13 @@
                       Edition, our leading exposure validation platform. Explore
                       all key functionalities to simulate offensive attacks, run
                       realistic tabletop exercises, evaluate your defenses, and
-                      ultimately improve your security posture. {{else}} For the
-                      next 30 days, you'll have full access to OpenCTI
-                      Enterprise Edition, our leading Threat Intelligence
-                      Platform. Explore all key functionality: gather and enrich
-                      intelligence, visualize relationships with powerful tools,
-                      run investigations, and try our extensive integrations.<br />
+                      ultimately improve your security posture. <br />
+                      {{else}} For the next 30 days, you'll have full access to
+                      OpenCTI Enterprise Edition, our leading Threat
+                      Intelligence Platform. Explore all key functionality:
+                      gather and enrich intelligence, visualize relationships
+                      with powerful tools, run investigations, and try our
+                      extensive integrations.<br />
                       {{/if}}
                       <br />
                       Log in to your free trial:
@@ -190,10 +191,16 @@
                       Need help getting started with {{platformIdentifier}}?
                       Check out our "{{platformIdentifier}} Fundamentals" course
                       on the Filigran Academy:<br />
+                      {{#if (eq platformIdentifier 'OpenCTI')}}
+                      <a href="https://academy.filigran.io/page/opencti-101"
+                        >Get Started</a
+                      >
+                      {{else}}
                       <a
                         href="https://academy.filigran.io/course/getting-started-with-openaev"
                         >Get Started</a
                       >
+                      {{/if}}
                     </p>
                     <p style="margin: 0; padding-top: 16px">
                       Best regards, <br />
