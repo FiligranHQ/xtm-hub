@@ -44,6 +44,23 @@ describe('Hubspot', () => {
       );
     });
 
+    it('should log an error when deployment request is not a trial request', async () => {
+      const platformId = uuidv4();
+      const deploymentRequest = await insertDeploymentRequest({
+        platform_id: platformId,
+        type: 'unknown',
+      });
+      await hubspotReachOutSalesHook({ platformId });
+      expect(logSpy).toHaveBeenCalledWith(
+        'An error occurred while sending the Hubspot reachOutSales hook',
+        {
+          error: new Error(
+            `Deployment request ${deploymentRequest.id} is not a trial deployment request`
+          ),
+        }
+      );
+    });
+
     it('should log error when request is retrieved from platform id and user is not authorized', async () => {
       const platformId = uuidv4();
       const deploymentRequest = await insertDeploymentRequest({
@@ -112,7 +129,7 @@ describe('Hubspot', () => {
             company: 'Filigran',
             job_title: 'myJob',
             message:
-              'Message sent for free trial: pending opencti trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
+              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
             use_case: 'use_case',
           }),
         })
@@ -137,7 +154,7 @@ describe('Hubspot', () => {
             company: 'Filigran',
             job_title: 'myJob',
             message:
-              'Message sent for free trial: pending opencti trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
+              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
             use_case: 'use_case',
           }),
         })
@@ -177,7 +194,7 @@ describe('Hubspot', () => {
             company: 'Filigran',
             job_title: 'myJob',
             message:
-              'Message sent for free trial: pending opencti trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
+              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
             use_case: 'use_case',
           }),
         })

@@ -1,5 +1,6 @@
 import config from 'config';
 import {
+  DeploymentRequestDeploymentType,
   OrganizationCapability,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
@@ -97,6 +98,12 @@ export const hubspotReachOutSalesHook = async ({
         );
       }
 
+      if (deploymentRequest.type !== DeploymentRequestDeploymentType.Trial) {
+        throw new Error(
+          `Deployment request ${deploymentRequest.id} is not a trial deployment request`
+        );
+      }
+
       const hasUserRightsOnRequest = user.organizations.some(
         (organization) =>
           organization.id === deploymentRequest.organization_requester_id
@@ -148,7 +155,7 @@ export const hubspotReachOutSalesHook = async ({
       lastname: deploymentRequest.requester_last_name,
       company: deploymentRequest.organization_name,
       job_title: deploymentRequest.job_title,
-      message: `Message sent for free trial: ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}\n\n${message}`,
+      message: `${deploymentRequest.platform_identifier}: Message sent for free trial: ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}\n\n${message}`,
       use_case: deploymentRequest.use_case,
     };
   });

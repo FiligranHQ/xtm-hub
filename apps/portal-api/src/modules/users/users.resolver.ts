@@ -12,7 +12,6 @@ import { dispatch, listen } from '../../pub';
 import { hubspotReachOutSalesHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
 
-import { requestContext } from '../../context/request.context';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { PortalContext } from '../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
@@ -300,10 +299,13 @@ const resolvers: Resolvers = {
     logout: async (_, __, context) => {
       return UsersAuthApp.logout(context);
     },
-    contactUs: async (_, { message, platformIdentifier, platformId }) => {
+    contactUs: async (
+      _,
+      { message, platformIdentifier, platformId },
+      portalContext
+    ) => {
       try {
-        const { portalContext } = requestContext.require();
-        const platformToken = portalContext?.req.header(
+        const platformToken = portalContext.req.header(
           'XTM-Hub-Platform-Token'
         );
 
