@@ -41,7 +41,9 @@ declare module 'knex' {
   namespace Knex {
     interface QueryBuilder {
       asConnection<T>(): Promise<T>;
+
       secureQuery(opt?: SecuryQueryOpts): Knex.QueryBuilder;
+
       tap(fn: (qb: this) => this): this;
     }
   }

@@ -278,6 +278,9 @@
       "RemainingDays": "Jours restants",
       "Status": "Statut",
       "Region": "Région",
+      "PlatformId": "ID de la plateforme",
+      "PlatformUrl": "URL de la plateforme",
+      "RegistrationStatus": "Statut d'enregistrement",
       "RequestDate": "Date de la demande",
       "Priority": "Priorité",
       "CancellationDate": "Date d'annulation",
@@ -312,7 +315,9 @@
         "ConfirmSentence": "Êtes-vous sûr de vouloir enregistrer ces modifications ?"
       }
     },
-    "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai"
+    "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai",
+    "Registered": "Enregistré",
+    "NotRegistered": "Non enregistré"
   },
   "Parameters": {
     "Version": "Version"

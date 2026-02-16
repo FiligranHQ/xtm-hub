@@ -1,7 +1,7 @@
 import { TrialsTabType } from '@/components/trials/trials.const';
-import { OrderingMode } from '@/components/ui/handle-sorting.utils';
 import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
-import { ColumnDef } from '@tanstack/react-table';
+import { OrderingMode } from '@generated/trialsListQuery.graphql';
+import { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 
 export const useTrialsListLocalstorage = <U>(
@@ -35,7 +35,11 @@ export const useTrialsListLocalstorage = <U>(
   );
 
   const [columnVisibility, setColumnVisibility, removeColumnVisibility] =
-    useLocalStorage(`columnVisibilityTrialsList_${type}`, {});
+    useLocalStorage<VisibilityState>(`columnVisibilityTrialsList_${type}`, {
+      registration_status: false,
+      platform_url: false,
+      platform_id: false,
+    });
 
   const resetAll = () => {
     removeCount();
