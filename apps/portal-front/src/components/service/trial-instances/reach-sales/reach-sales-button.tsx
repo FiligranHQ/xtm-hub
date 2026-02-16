@@ -13,10 +13,12 @@ import { useMutation } from 'react-relay';
 interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'outline-primary';
   platformIdentifier: PlatformIdentifierEnum;
+  platformId?: string;
 }
 
 export const ReachSalesButton = ({
   variant,
+  platformId,
   platformIdentifier,
 }: ReachSalesButtonProps) => {
   const t = useTranslations();
@@ -30,6 +32,8 @@ export const ReachSalesButton = ({
     commitReachSalesMutation({
       variables: {
         message,
+        platformId,
+        platformIdentifier,
       },
       onError(error) {
         toast({
