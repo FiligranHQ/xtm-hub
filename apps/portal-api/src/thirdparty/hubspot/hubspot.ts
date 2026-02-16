@@ -96,6 +96,16 @@ export const hubspotReachOutSalesHook = async ({
           `No deployment request found for platform id: ${platformId}`
         );
       }
+
+      const hasUserRightsOnRequest = user.organizations.some(
+        (organization) =>
+          organization.id === deploymentRequest.organization_requester_id
+      );
+      if (!hasUserRightsOnRequest) {
+        throw new Error(
+          `Deployment request ${deploymentRequest.id}, organization ${deploymentRequest.organization_requester_id} does not match user ${user.id} organizations`
+        );
+      }
     } else if (platformToken) {
       deploymentRequest =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(

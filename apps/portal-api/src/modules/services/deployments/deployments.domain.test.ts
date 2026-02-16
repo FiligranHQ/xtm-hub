@@ -313,11 +313,28 @@ describe('DeploymentRequestDomain', () => {
       });
 
       const result =
-        DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
+        await DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
           platformId
         );
 
       expect(result).toBeDefined();
+      expect(result!.organization_name).toBe(TEST_ORGANIZATIONS.FILIGRAN.NAME);
+      expect(result!.organization_domains.length).toBe(2);
+      expect(result!.organization_domains).toContain(
+        TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST
+      );
+      expect(result!.organization_domains).toContain(
+        TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.SECOND
+      );
+      expect(result!.requester_email).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+      );
+      expect(result!.requester_first_name).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME
+      );
+      expect(result!.requester_last_name).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME
+      );
     });
 
     it('should return undefined when platform id is an unknown deployment request platform id', async () => {
