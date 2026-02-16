@@ -1,5 +1,6 @@
 import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/start-trial-banner-button';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
@@ -19,10 +20,13 @@ describe('Start trial button in the banner', () => {
           Query() {
             return {
               trialDeployments: {
-                availableTrials: ['opencti', 'openaev'],
+                availableTrials: [
+                  PlatformIdentifierEnum.OPENCTI,
+                  PlatformIdentifierEnum.OPENAEV,
+                ],
                 deployed: [],
                 isBlacklisted: false,
-              }, // Empty array = no trials
+              },
             };
           },
         })
@@ -67,10 +71,13 @@ describe('Start trial button in the banner', () => {
           Query() {
             return {
               trialDeployments: {
-                availableTrials: ['opencti', 'openaev'],
+                availableTrials: [
+                  PlatformIdentifierEnum.OPENCTI,
+                  PlatformIdentifierEnum.OPENAEV,
+                ],
                 deployed: [],
                 isBlacklisted: true,
-              }, // Empty array = no trials
+              },
             };
           },
         })
@@ -100,15 +107,15 @@ describe('Start trial button in the banner', () => {
           Query() {
             return {
               trialDeployments: {
-                availableTrials: ['openaev'],
+                availableTrials: [PlatformIdentifierEnum.OPENAEV],
                 deployed: [
                   {
                     serviceInstanceId: 'id',
-                    platformIdentifier: 'opencti',
+                    platformIdentifier: PlatformIdentifierEnum.OPENCTI,
                   },
                 ],
                 isBlacklisted: false,
-              }, // Empty array = no trials
+              },
             };
           },
         })

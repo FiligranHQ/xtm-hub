@@ -19,6 +19,7 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import Image from 'next/image'; // Component
 import Link from 'next/link';
 import { ReactNode, useContext, useState } from 'react';
@@ -37,10 +38,40 @@ export const TryFiligranProductsBanner = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
+
+  const OPEN_CTI_FREE_TRIAL_URL = `${settings!.base_url_front}/app/service/opencti-free-trial`;
+  const OPEN_AEV_FREE_TRIAL_URL = `${settings!.base_url_front}/app/service/openaev-free-trial`;
   if (!isOpenAEVTrialsEnabled) return <TryOpenCTIBanner />;
   if (!settings) return null;
 
   if (availableTrials.length === 0) return null; // Dont display the banner if user already has the 2 products in trial
+
+  const getLink = (product: PlatformIdentifierEnum) => {
+    return (
+      <Link
+        onClick={() => setMenuOpen(false)}
+        href={
+          product === PlatformIdentifierEnum.OPENCTI
+            ? OPEN_CTI_FREE_TRIAL_URL
+            : OPEN_AEV_FREE_TRIAL_URL
+        }>
+        <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
+          <Image
+            width="25"
+            height="25"
+            alt={'Product Logo'}
+            src={
+              product === PlatformIdentifierEnum.OPENCTI
+                ? '/logo_opencti_dark.png'
+                : '/logo_openaev_dark.png'
+            }
+            className="mr-s"
+          />
+          {product === PlatformIdentifierEnum.OPENCTI ? 'OpenCTI' : 'OpenAEV'}
+        </div>
+      </Link>
+    );
+  };
 
   const BANNER_TEXTS: Record<string, BannerConfig> = {
     default: {
@@ -74,34 +105,8 @@ export const TryFiligranProductsBanner = () => {
             align="end"
             className="w-full flex flex-col">
             <IconActionContext.Provider value={{ setMenuOpen }}>
-              <Link
-                onClick={() => setMenuOpen(false)}
-                href={`${settings.base_url_front}/app/service/opencti-free-trial`}>
-                <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
-                  <Image
-                    width="25"
-                    height="25"
-                    src="/logo_opencti_dark.png"
-                    alt="OpenCTI Logo"
-                    className="mr-s"
-                  />
-                  {'OpenCTI'}
-                </div>
-              </Link>
-              <Link
-                onClick={() => setMenuOpen(false)}
-                href={`${settings.base_url_front}/app/service/openaev-free-trial`}>
-                <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
-                  <Image
-                    width="25"
-                    height="25"
-                    src="/logo_openaev_dark.png"
-                    alt="OpenAEV Logo"
-                    className="mr-s"
-                  />
-                  {'OpenAEV'}
-                </div>
-              </Link>
+              {getLink(PlatformIdentifierEnum.OPENCTI)}
+              {getLink(PlatformIdentifierEnum.OPENAEV)}
             </IconActionContext.Provider>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -110,13 +115,13 @@ export const TryFiligranProductsBanner = () => {
     openaev: {
       text: (
         <span>
-          {t('Service.Trials.ExploreOpenAEV')}{' '}
+          {t('Service.Trials.ExplorePlatform', { platformName: 'OpenAEV' })}{' '}
           <strong>{t('Service.Trials.ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
         <Link
-          href={`${settings.base_url_front}/app/service/openaev-free-trial`}
+          href={OPEN_AEV_FREE_TRIAL_URL}
           className="ml-xs mr-s underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>
@@ -125,13 +130,13 @@ export const TryFiligranProductsBanner = () => {
     opencti: {
       text: (
         <span>
-          {t('Service.Trials.ExploreOpenCTI')}{' '}
+          {t('Service.Trials.ExplorePlatform', { platformName: 'OpenCTI' })}{' '}
           <strong>{t('Service.Trials.ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
         <Link
-          href={`${settings.base_url_front}/app/service/opencti-free-trial`}
+          href={OPEN_CTI_FREE_TRIAL_URL}
           className="ml-xs mr-s underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>

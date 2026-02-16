@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,6 +30,33 @@ export function PublicTryFiligranProductsBanner({
   ) : (
     t('Service.Trials.Explore')
   );
+
+  const getLink = (product: PlatformIdentifierEnum) => {
+    return (
+      <Link
+        onClick={() => setMenuOpen(false)}
+        href={
+          product === PlatformIdentifierEnum.OPENCTI
+            ? `/cybersecurity-solutions/opencti-free-trial`
+            : `/cybersecurity-solutions/openaev-free-trial`
+        }>
+        <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
+          <Image
+            width="25"
+            height="25"
+            alt={'Product Logo'}
+            src={
+              product === PlatformIdentifierEnum.OPENCTI
+                ? '/logo_opencti_dark.png'
+                : '/logo_openaev_dark.png'
+            }
+            className="mr-s"
+          />
+          {product === PlatformIdentifierEnum.OPENCTI ? 'OpenCTI' : 'OpenAEV'}
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <Callout className="rounded-none from-blue to-turquoise-300 bg-gradient-to-r text-black justify-center">
@@ -58,40 +86,14 @@ export function PublicTryFiligranProductsBanner({
             align="end"
             className="w-full flex flex-col">
             <IconActionContext.Provider value={{ setMenuOpen }}>
-              <Link
-                onClick={() => setMenuOpen(false)}
-                href={`/cybersecurity-solutions/opencti-free-trial`}>
-                <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
-                  <Image
-                    width="25"
-                    height="25"
-                    src="/logo_opencti_dark.png"
-                    alt="OpenCTI Logo"
-                    className="mr-s"
-                  />
-                  {'OpenCTI'}
-                </div>
-              </Link>
-              <Link
-                onClick={() => setMenuOpen(false)}
-                href={`/cybersecurity-solutions/openaev-free-trial`}>
-                <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
-                  <Image
-                    width="25"
-                    height="25"
-                    src="/logo_openaev_dark.png"
-                    alt="OpenAEV Logo"
-                    className="mr-s"
-                  />
-                  {'OpenAEV'}
-                </div>
-              </Link>
+              {getLink(PlatformIdentifierEnum.OPENCTI)}
+              {getLink(PlatformIdentifierEnum.OPENAEV)}
             </IconActionContext.Provider>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
         <Link
-          href={`/cybersecurity-solutions/free-trial`}
+          href={`/cybersecurity-solutions/opencti-free-trial`}
           className="ml-xs underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>

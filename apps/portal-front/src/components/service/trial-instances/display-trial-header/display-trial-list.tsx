@@ -3,10 +3,7 @@ import {
   addDaysUntil,
   getHeaderDotColor,
 } from '@/components/service/trial-instances/display-trial-header/display-trial.utils';
-import {
-  FreeTrial,
-  useFreeTrial,
-} from '@/components/service/trial-instances/useFreeTrials';
+import { useFreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { cn } from '@/lib/utils';
 import {
   Button,
@@ -15,12 +12,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@filigran/ui';
+import { registerRegisteredPlatformFragment$data } from '@generated/registerRegisteredPlatformFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
-export type RegisteredPlatformWithDaysLeft = FreeTrial & {
-  daysUntilEnd: number;
-};
+export type RegisteredPlatformWithDaysLeft =
+  registerRegisteredPlatformFragment$data & {
+    daysUntilEnd: number;
+  };
 
 export const DisplayTrialList = () => {
   const t = useTranslations();

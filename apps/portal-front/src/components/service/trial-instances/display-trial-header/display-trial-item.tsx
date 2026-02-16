@@ -21,6 +21,7 @@ export const DisplayTrialItem = ({ freeTrial }: DisplayTrialItemProps) => {
       <span className="p-m text-gray-300 text-sm">
         {'-'} {freeTrial.daysUntilEnd}{' '}
         {t('Service.Trials.Header.DaysRemaining')}
+        {freeTrial.daysUntilEnd > 1 && <span>{'s'}</span>}
       </span>
       <div className="ml-auto">
         <Link

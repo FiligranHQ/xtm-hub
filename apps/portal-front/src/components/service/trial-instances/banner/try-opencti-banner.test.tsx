@@ -1,5 +1,6 @@
 import { TryOpenCTIBanner } from '@/components/service/trial-instances/banner/try-opencti-banner';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act } from '@testing-library/react';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 
@@ -77,7 +78,7 @@ describe('useFreeTrial with Relay Mock', () => {
           Query() {
             return {
               trialDeployments: {
-                availableTrials: ['opencti'],
+                availableTrials: [PlatformIdentifierEnum.OPENCTI],
                 deployed: [],
                 isBlacklisted: false,
               },

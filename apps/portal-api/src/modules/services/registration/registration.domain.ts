@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
 import {
+  DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   OrganizationCapability,
   PlatformContract,
@@ -151,9 +152,12 @@ export const registrationDomain = {
     query: {
       platformIdentifier?: PlatformIdentifier;
       onlyActive?: boolean;
+      onlyTrial?: boolean;
+      onlyCountsInOrgaQuota?: boolean;
     } = {}
   ): Promise<DomainRegisteredPlatform[]> => {
-    const { platformIdentifier, onlyActive } = query;
+    const { platformIdentifier, onlyActive, onlyTrial, onlyCountsInOrgaQuota } =
+      query;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
           serviceDefinitionIdentifierMappedByPlatformIdentifier[
@@ -175,6 +179,20 @@ export const registrationDomain = {
             'DeploymentRequest.hub_status',
             '=',
             DeploymentRequestHubStatus.Active
+          ).orWhereNull('DeploymentRequest.id');
+        }
+        if (onlyTrial) {
+          this.where(
+            'DeploymentRequest.type',
+            '=',
+            DeploymentRequestDeploymentType.Trial
+          ).orWhereNull('DeploymentRequest.id');
+        }
+        if (onlyCountsInOrgaQuota) {
+          this.where(
+            'DeploymentRequest.counts_in_orga_quota',
+            '=',
+            true
           ).orWhereNull('DeploymentRequest.id');
         }
       });

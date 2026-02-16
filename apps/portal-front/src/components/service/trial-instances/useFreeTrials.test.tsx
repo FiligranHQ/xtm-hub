@@ -15,7 +15,7 @@ describe('useFreeTrial', () => {
         MockPayloadGenerator.generate(operation, {
           Query() {
             return {
-              registeredPlatforms: [], // Empty array = no trials
+              registeredPlatforms: [],
             };
           },
         })
@@ -56,32 +56,5 @@ describe('useFreeTrial', () => {
     expect(result.current.freeTrials[0]?.deployment_request?.type).toEqual(
       'trial'
     );
-  });
-
-  it('should not return a trial instance', async () => {
-    const environment = createMockEnvironment();
-    const { result } = testRenderHook(() => useFreeTrial(), {
-      relayConfig: environment,
-    });
-    await act(async () => {
-      environment.mock.resolveMostRecentOperation((operation) =>
-        MockPayloadGenerator.generate(operation, {
-          Query() {
-            return {
-              registeredPlatforms: [
-                {
-                  deployment_request: {
-                    type: 'Not a trial',
-                    counts_in_orga_quota: false,
-                  },
-                },
-              ],
-            };
-          },
-        })
-      );
-    });
-    expect(result.current).toBeDefined();
-    expect(result.current.freeTrials).toStrictEqual([]);
   });
 });

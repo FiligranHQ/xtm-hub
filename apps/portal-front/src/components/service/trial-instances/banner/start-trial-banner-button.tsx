@@ -93,8 +93,7 @@ export const StartTrialBannerButton = () => {
           type: DeploymentRequestDeploymentTypeEnum.TRIAL,
         },
       },
-      updater: (store) => {
-        store.invalidateStore();
+      updater: () => {
         window.dispatchEvent(new Event('refresh-registered-platforms'));
         fetchQuery(environment, RegisterRegisteredPlatformsQuery, {
           input: { identifier: platformIdentifier },
@@ -121,6 +120,27 @@ export const StartTrialBannerButton = () => {
     setOpenSheet(true);
     setMenuOpen(false);
     setPlatformIdentifier(platformIdentifier);
+  };
+
+  const getButton = (product: PlatformIdentifierEnum) => {
+    return (
+      <Button
+        variant="ghost"
+        onClick={() => handleProductChoosen(product)}>
+        <Image
+          width="25"
+          height="25"
+          src={
+            product === PlatformIdentifierEnum.OPENCTI
+              ? '/logo_opencti_dark.png'
+              : '/logo_openaev_dark.png'
+          }
+          alt="Logo"
+          className="mr-s"
+        />
+        {product === PlatformIdentifierEnum.OPENCTI ? 'OpenCTI' : 'OpenAEV'}
+      </Button>
+    );
   };
   return (
     <SheetWithPreventingDialog
@@ -151,34 +171,8 @@ export const StartTrialBannerButton = () => {
               align="end"
               className="w-full flex flex-col">
               <IconActionContext.Provider value={{ setMenuOpen }}>
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    handleProductChoosen(PlatformIdentifierEnum.OPENCTI)
-                  }>
-                  <Image
-                    width="25"
-                    height="25"
-                    src="/logo_opencti_dark.png"
-                    alt="OpenCTI Logo"
-                    className="mr-s"
-                  />
-                  {'OpenCTI'}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    handleProductChoosen(PlatformIdentifierEnum.OPENAEV)
-                  }>
-                  <Image
-                    width="25"
-                    height="25"
-                    src="/logo_openaev_dark.png"
-                    alt="OpenAEV Logo"
-                    className="mr-s"
-                  />
-                  {'OpenAEV'}
-                </Button>
+                {getButton(PlatformIdentifierEnum.OPENCTI)}
+                {getButton(PlatformIdentifierEnum.OPENAEV)}
               </IconActionContext.Provider>
             </DropdownMenuContent>
           </DropdownMenu>

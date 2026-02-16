@@ -1,6 +1,6 @@
 import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/display-trial-list';
-import { FreeTrial } from '@/components/service/trial-instances/useFreeTrials';
 import { daysUntil } from '@/utils/date';
+import { registerRegisteredPlatformFragment$data } from '@generated/registerRegisteredPlatformFragment.graphql';
 
 export const getDotColor = (daysLeft: number) => {
   if (daysLeft <= 8) return 'bg-red';
@@ -18,7 +18,7 @@ export const getHeaderDotColor = (
 };
 
 export const addDaysUntil = (
-  freeTrials: FreeTrial[]
+  freeTrials: registerRegisteredPlatformFragment$data[]
 ): RegisteredPlatformWithDaysLeft[] => {
   return freeTrials.map((trial) => {
     const target = new Date(trial?.subscription?.end_date?.toString() ?? '');
