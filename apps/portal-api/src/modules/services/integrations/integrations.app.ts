@@ -1,9 +1,5 @@
-import { DocumentId } from '../../../model/kanel/public/Document';
 import { WithUseCases } from '../../../utils/types';
-import {
-  loadDocumentWithCountersById,
-  loadSeoDocumentWithCountersBySlug,
-} from '../document/document.helper';
+import { loadSeoDocumentWithCountersBySlug } from '../document/document.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import {
   Integration,
@@ -12,11 +8,6 @@ import {
 } from './integrations.model';
 
 export const integrationsApp = {
-  loadIntegration: async (
-    documentId: DocumentId
-  ): Promise<WithUseCases<Integration>> => {
-    return loadDocumentWithCountersById(documentId, INTEGRATION_METADATA_KEYS);
-  },
   loadPublicAccessIntegrations: async (serviceSlug: string) =>
     DocumentDomain.loadSeoDocumentsByServiceSlug(
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,

@@ -19,43 +19,6 @@ describe('openaev scenarios app', () => {
     ]);
   });
 
-  it('loadOpenAEVScenario should return the document with elastic search counters', async () => {
-    const document = await DocumentApp.createDocument(
-      {
-        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        name: 'myCsvFeed',
-        description: 'description',
-        short_description: 'short_description',
-        slug: 'slug',
-        active: true,
-      },
-      [{ key: 'product_version', value: '1.2.3' }],
-      SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
-      []
-    );
-    expect(document).toBeDefined();
-    const documentId = document!.id;
-
-    vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
-      async (eventType: TelemetryEventType, documentId: string) => {
-        if (
-          documentId === documentId &&
-          eventType === TelemetryEventType.DOWNLOAD
-        )
-          return 5;
-        if (documentId === documentId && eventType === TelemetryEventType.SHARE)
-          return 12;
-        return 0; // default
-      }
-    );
-
-    const documentLoaded =
-      await OpenAEVScenariosApp.loadOpenAEVScenario(documentId);
-
-    expect(documentLoaded.download_number).toBe(5);
-    expect(documentLoaded.share_number).toBe(12);
-  });
-
   it('loadSeoOpenAEVScenario should return the document with elastic search counters', async () => {
     await DocumentApp.createDocument(
       {

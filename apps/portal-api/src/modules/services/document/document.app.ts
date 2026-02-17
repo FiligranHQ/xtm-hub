@@ -27,7 +27,9 @@ import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
 import {
+  ALL_METADATA_KEYS,
   DocumentHelper,
+  loadDocumentWithCountersById,
   ManageableServiceDefinitionIdentifier,
 } from './document.helper';
 import {
@@ -419,6 +421,10 @@ export const DocumentApp = {
       opts,
       metadataKeys
     );
+  },
+
+  loadDocument: async (documentId: DocumentId) => {
+    return loadDocumentWithCountersById(documentId, ALL_METADATA_KEYS);
   },
 };
 

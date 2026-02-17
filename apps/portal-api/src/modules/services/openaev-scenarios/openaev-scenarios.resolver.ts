@@ -1,7 +1,5 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { extractId } from '../../../utils/utils';
 import { useCaseDomain } from '../../settings/useCase/use-case.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
@@ -43,8 +41,6 @@ const resolvers: Resolvers = {
     seoOpenAEVScenarioBySlug: async (_, { slug }) => {
       return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
     },
-    openAEVScenario: async (_, { id }) =>
-      OpenAEVScenariosApp.loadOpenAEVScenario(extractId<DocumentId>(id)),
   },
 };
 

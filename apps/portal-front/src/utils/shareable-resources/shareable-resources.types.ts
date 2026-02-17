@@ -1,31 +1,6 @@
-import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
-import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
-
-export type ShareableResource =
-  | customDashboardsItem_fragment$data
-  | integrationsItem_fragment$data
-  | openaevScenariosItem_fragment$data
-  | documentItem_fragment$data
-  | SeoIntegration
-  | SeoCustomDashboard
-  | SeoOpenAEVScenario;
-
-export type PublicShareableResource =
-  | publicDocumentItemFragment$data
-  | SeoIntegration
-  | SeoCustomDashboard
-  | SeoOpenAEVScenario;
-
-export type SubscribableResource =
-  | integrationsItem_fragment$data
-  | openaevScenariosItem_fragment$data
-  | customDashboardsItem_fragment$data
-  | documentItem_fragment$data;
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
@@ -40,23 +15,15 @@ export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
 };
 
 export const isIntegrationItem = (
-  resource:
-    | SubscribableResource
-    | ShareableResource
-    | ShareableResourceConnectorType
-    | PublicShareableResource
-): resource is integrationsItem_fragment$data => {
+  resource: documentItem_fragment$data | publicDocumentItemFragment$data
+): boolean => {
   return resource.type === ShareableResourceType.OPENCTI_INTEGRATION;
 };
 
 export const isConnectorResource = (
-  resource:
-    | SubscribableResource
-    | ShareableResource
-    | ShareableResourceConnectorType
-    | PublicShareableResource
-): resource is ShareableResourceConnectorType => {
-  return isIntegrationItem(resource) && resource.__typename === 'Connector';
+  resource: documentItem_fragment$data
+): boolean => {
+  return resource.__typename === 'Connector';
 };
 
 export type SeoResource =

@@ -12,18 +12,15 @@ import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
   isConnectorResource,
-  SeoResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { Button } from '@filigran/ui/servers';
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
-import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import Image from 'next/image';
@@ -56,10 +53,10 @@ const getPageData = async (serviceSlug: string, docSlug: string) => {
     notFound();
   }
 
-  const document = (await fetchSingleDocument(
+  const document = await fetchSingleDocument(
     serviceInstance.slug as ServiceSlug,
     docSlug
-  )) as unknown as SeoResource;
+  );
 
   return { baseUrl, serviceInstance, document };
 };
@@ -297,12 +294,8 @@ const Page = async ({
           serviceInstance.slug === ServiceSlug.OPEN_AEV_SCENARIOS) &&
           mainChild && (
             <ShareableResourceCarousel
-              serviceInstance={
-                serviceInstance as unknown as serviceInstance_fragment$data
-              }
-              documentData={
-                document as unknown as customDashboardsItem_fragment$data
-              }
+              serviceInstance={serviceInstance}
+              documentData={document}
             />
           )}
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">

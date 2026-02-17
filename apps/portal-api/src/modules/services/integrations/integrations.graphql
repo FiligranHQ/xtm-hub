@@ -256,7 +256,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
 }
 
 type Query {
-  integration(id: ID, serviceInstanceId: ID): Integration @auth
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
   publicIntegrationBySlug(slug: String): Integration
 }

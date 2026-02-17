@@ -2,10 +2,8 @@ import {
   IntegrationType,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../utils/app-logger.util';
-import { extractId } from '../../../utils/utils';
 import { useCaseDomain } from '../../settings/useCase/use-case.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
@@ -46,8 +44,6 @@ const resolvers: Resolvers = {
       subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
   },
   Query: {
-    integration: async (_, { id }) =>
-      integrationsApp.loadIntegration(extractId<DocumentId>(id)),
     publicIntegrationsByServiceSlug: async (_, { serviceSlug }) =>
       integrationsApp.loadPublicAccessIntegrations(serviceSlug),
     publicIntegrationBySlug: async (_, { slug }) =>

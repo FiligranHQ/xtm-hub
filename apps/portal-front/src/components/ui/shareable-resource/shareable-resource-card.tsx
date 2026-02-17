@@ -2,13 +2,11 @@
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-footer-author';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-footer-versions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-header';
-import {
-  PublicShareableResource,
-  ShareableResource,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import Link from 'next/link';
 import { ReactNode } from 'react';
@@ -20,7 +18,7 @@ interface ShareableServiceInstance {
   } | null;
 }
 interface ShareableResourceCardProps {
-  document: ShareableResource | PublicShareableResource;
+  document: documentItem_fragment$data | publicDocumentItemFragment$data;
   detailUrl: string;
   shareLinkUrl: string;
   extraContent?: ReactNode;
@@ -53,6 +51,7 @@ const ShareableResourceCard = ({
           document={document}
           shouldDisplayBothIcons={
             docHasMetadata(document, 'integration_type') &&
+            !!document.integration_type &&
             FOOTER_VERSIONS_INTEGRATION_TYPES.includes(
               document.integration_type
             )
@@ -65,6 +64,7 @@ const ShareableResourceCard = ({
       </Link>
       <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
         {docHasMetadata(document, 'integration_type') &&
+        document.integration_type &&
         FOOTER_VERSIONS_INTEGRATION_TYPES.includes(
           document.integration_type
         ) ? (
@@ -78,6 +78,7 @@ const ShareableResourceCard = ({
           <ShareableResourceCardFooterAuthor
             shouldDisplayAuthor={
               (docHasMetadata(document, 'integration_type') &&
+                document.integration_type &&
                 !FOOTER_NO_AUTHOR_INTEGRATION_TYPES.includes(
                   document.integration_type
                 )) ||

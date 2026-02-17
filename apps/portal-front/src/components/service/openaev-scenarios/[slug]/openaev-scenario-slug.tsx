@@ -2,22 +2,22 @@ import { AppServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
+import {
+  documentItem,
+  DocumentsItemQuery,
+} from '@/components/service/document/document.graphql';
 import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
-import {
-  OpenaevScenarioQuery,
-  openaevScenariosItem,
-} from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
-import { openaevScenarioQuery } from '@generated/openaevScenarioQuery.graphql';
-import { openaevScenariosItem_fragment$key } from '@generated/openaevScenariosItem_fragment.graphql';
+import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
+import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 interface OpenAEVScenarioSlugProps {
-  queryRef: PreloadedQuery<openaevScenarioQuery>;
+  queryRef: PreloadedQuery<documentQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
@@ -25,14 +25,11 @@ const OpenaevScenarioSlug = ({
   queryRef,
   serviceInstance,
 }: OpenAEVScenarioSlugProps) => {
-  const data = usePreloadedQuery<openaevScenarioQuery>(
-    OpenaevScenarioQuery,
-    queryRef
-  );
+  const data = usePreloadedQuery<documentQuery>(DocumentsItemQuery, queryRef);
 
-  const documentData = readInlineData<openaevScenariosItem_fragment$key>(
-    openaevScenariosItem,
-    data.openAEVScenario
+  const documentData = readInlineData<documentItem_fragment$key>(
+    documentItem,
+    data.document
   );
 
   const breadcrumbValue = [

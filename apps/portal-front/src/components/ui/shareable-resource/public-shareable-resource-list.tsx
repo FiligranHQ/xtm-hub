@@ -1,16 +1,14 @@
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import {
-  isIntegrationItem,
-  PublicShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, { Fragment, useMemo } from 'react';
 
 interface Props {
-  documents: PublicShareableResource[];
+  documents: publicDocumentItemFragment$data[];
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
 }
@@ -23,7 +21,7 @@ export const PublicShareableResourceList: React.FC<Props> = ({
   const t = useTranslations();
 
   const documentsByIntegrationType = useMemo(() => {
-    return documents.reduce<Record<string, PublicShareableResource[]>>(
+    return documents.reduce<Record<string, publicDocumentItemFragment$data[]>>(
       (acc, resource) => {
         const type =
           isIntegrationItem(resource) && resource.integration_type

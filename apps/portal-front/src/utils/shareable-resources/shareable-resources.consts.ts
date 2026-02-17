@@ -1,3 +1,4 @@
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
 import SeoIntegrationBySlugQuery from '@generated/seoIntegrationBySlugQuery.graphql';
@@ -81,20 +82,23 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
   }),
 };
 
-export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: makeSingleQueryMapEntry<SeoIntegration>({
-    query: SeoIntegrationBySlugQuery,
-    key: 'publicIntegrationBySlug',
-  }),
+export const querySlugMap: Record<
+  ServiceSlug,
+  QueryMapEntry<documentItem_fragment$data>
+> = {
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
+    makeSingleQueryMapEntry<documentItem_fragment$data>({
+      query: SeoIntegrationBySlugQuery,
+      key: 'publicIntegrationBySlug',
+    }),
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
-    makeSingleQueryMapEntry<SeoCustomDashboard>({
+    makeSingleQueryMapEntry<documentItem_fragment$data>({
       query: SeoCustomDashboardBySlugQuery,
       key: 'seoCustomDashboardBySlug',
     }),
-  [ServiceSlug.OPEN_AEV_SCENARIOS]: makeSingleQueryMapEntry<SeoOpenAEVScenario>(
-    {
+  [ServiceSlug.OPEN_AEV_SCENARIOS]:
+    makeSingleQueryMapEntry<documentItem_fragment$data>({
       query: SeoOpenaevScenarioBySlugQuery,
       key: 'seoOpenAEVScenarioBySlug',
-    }
-  ),
+    }),
 };

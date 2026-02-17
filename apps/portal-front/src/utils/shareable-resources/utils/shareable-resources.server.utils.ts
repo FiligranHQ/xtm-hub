@@ -1,11 +1,8 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { queryMap, querySlugMap } from '../shareable-resources.consts';
-import {
-  SeoResource,
-  ServiceSlug,
-  ShareableResource,
-} from '../shareable-resources.types';
+import { SeoResource, ServiceSlug } from '../shareable-resources.types';
 
 export async function fetchAllDocuments(
   serviceSlug: ServiceSlug
@@ -26,7 +23,7 @@ export async function fetchAllDocuments(
 export async function fetchSingleDocument(
   serviceSlug: ServiceSlug,
   slug: string
-): Promise<ShareableResource> {
+): Promise<documentItem_fragment$data> {
   const config = querySlugMap[serviceSlug];
   const response = await serverFetchGraphQL(
     config.query,

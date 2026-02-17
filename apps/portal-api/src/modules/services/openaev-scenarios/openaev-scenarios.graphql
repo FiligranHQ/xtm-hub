@@ -38,5 +38,4 @@ type OpenAEVScenarioConnection {
 type Query {
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
-  openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario @auth
 }

@@ -3,14 +3,12 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareableResourceCardIcon } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-icon';
 import { ShareableResourceCardImage } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-image';
-import {
-  PublicShareableResource,
-  ShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { FunctionComponent } from 'react';
 
 interface ShareableResourceCardHeaderProps {
-  document: ShareableResource | PublicShareableResource;
+  document: documentItem_fragment$data | publicDocumentItemFragment$data;
   serviceInstanceId: string;
   shouldDisplayBothIcons: boolean;
 }

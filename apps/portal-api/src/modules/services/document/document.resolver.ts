@@ -205,9 +205,7 @@ const resolvers: Resolvers = {
       }
     },
     document: async (_, { documentId }) =>
-      DocumentDomain.loadDocumentWithMetadataById(
-        extractId<DocumentId>(documentId)
-      ),
+      DocumentApp.loadDocument(extractId<DocumentId>(documentId)),
   },
 };
 

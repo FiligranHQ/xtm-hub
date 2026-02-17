@@ -1069,18 +1069,15 @@ export enum PortalCapability {
 export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
-  customDashboard?: Maybe<CustomDashboard>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
-  integration?: Maybe<Integration>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me?: Maybe<User>;
   node?: Maybe<Node>;
-  openAEVScenario?: Maybe<OpenAevScenario>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
@@ -1124,12 +1121,6 @@ export type Query = {
 
 export type QueryCanUnregisterPlatformArgs = {
   input: CanUnregisterPlatformInput;
-};
-
-
-export type QueryCustomDashboardArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1179,12 +1170,6 @@ export type QueryDocumentsArgs = {
 };
 
 
-export type QueryIntegrationArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
 };
@@ -1192,12 +1177,6 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryNodeArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QueryOpenAevScenarioArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -2926,18 +2905,15 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
-  customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  integration?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryIntegrationArgs>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  openAEVScenario?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QueryOpenAevScenarioArgs>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
