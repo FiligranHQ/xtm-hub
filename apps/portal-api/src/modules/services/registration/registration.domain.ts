@@ -173,28 +173,28 @@ export const registrationDomain = {
       })
       .where(function () {
         if (onlyActive) {
-          this.where(
-            'DeploymentRequest.hub_status',
-            '=',
-            DeploymentRequestHubStatus.Active
-          ).andWhere(function () {
-            this.whereNull('DeploymentRequest.id').orWhere(
+          this.whereNull('DeploymentRequest.id').orWhere(function () {
+            this.where(
               'DeploymentRequest.counts_in_orga_quota',
               '=',
               true
+            ).andWhere(
+              'DeploymentRequest.hub_status',
+              '=',
+              DeploymentRequestHubStatus.Active
             );
           });
         }
         if (onlyTrial) {
-          this.where(
-            'DeploymentRequest.type',
-            '=',
-            DeploymentRequestDeploymentType.Trial
-          ).andWhere(function () {
-            this.whereNull('DeploymentRequest.id').orWhere(
+          this.whereNull('DeploymentRequest.id').orWhere(function () {
+            this.where(
               'DeploymentRequest.counts_in_orga_quota',
               '=',
               true
+            ).andWhere(
+              'DeploymentRequest.type',
+              '=',
+              DeploymentRequestDeploymentType.Trial
             );
           });
         }
