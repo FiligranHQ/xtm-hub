@@ -1,330 +1,380 @@
-# XTM Hub - Copilot Coding Instructions
+# XTM Hub - Coding Agent Instructions
+
+## Critical Rules
+
+- **No console.log** — Use `logApp` (backend) from `src/utils/app-logger.util.ts`. `console.warn` and `console.error` are allowed by ESLint config.
+- Unused variables must be prefixed with `_` (e.g. `_unused`).
 
 ## Repository Overview
 
-XTM Hub is the **unified entry point** for Filigran's ecosystem, serving as a marketplace for resources, knowledge-sharing platform, and community engagement hub. This is a full-stack monorepo application built with TypeScript.
+XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace for cybersecurity resources, knowledge-sharing platform, and community engagement hub. It is a full-stack TypeScript monorepo.
 
-**Repository Size**: Medium (~1800 packages)
-**Primary Languages**: TypeScript, JavaScript
-**Architecture**: Monorepo with Yarn workspaces
-**Main Applications**:
-- `apps/portal-api`: Backend API (Node.js/Express/GraphQL/Apollo Server)
-- `apps/portal-front`: Frontend UI (Next.js 15/React 19/Relay)
-- `apps/portal-e2e-tests`: End-to-end tests (Playwright)
+- **Version**: 1.5.3
+- **Architecture**: Yarn 4 workspaces monorepo
+- **Runtime**: Node.js 24.11.1 (see `.nvmrc`)
+- **Package Manager**: Yarn 4.12.0 via Corepack (`packageManager` field in root `package.json`)
 
-## Critical Setup Requirements
+### Applications
 
-### Prerequisites
-**Node.js**: v24.11.1 (specified in `.nvmrc`)
-**Package Manager**: Yarn 4.12.0 via Corepack (NOT global yarn)
+| Workspace | Path | Stack | Dev Port |
+|---|---|---|---|
+| `portal-api` | `apps/portal-api` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4001 |
+| `portal-front` | `apps/portal-front` | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
+| `portal-e2e-tests` | `apps/portal-e2e-tests` | Playwright | — |
 
-### Initial Setup (ALWAYS DO THIS FIRST)
+## Setup
+
 ```bash
-# Enable Corepack (REQUIRED before any yarn commands)
-corepack enable
-
-# Install all dependencies from repository root
-yarn install
+corepack enable          # REQUIRED — without this, yarn commands fail with version mismatch
+yarn install             # from repo root, installs all workspaces
 ```
 
-**IMPORTANT**: The project uses `packageManager: "yarn@4.12.0"` in package.json. If you see errors about Yarn version mismatch, you MUST run `corepack enable` first. The global yarn (1.x) will NOT work.
+`corepack enable` must run before ANY yarn command. The global yarn (1.x) will NOT work.
 
-### Yarn Configuration
-- Uses Yarn 4 with node_modules linker (`.yarnrc.yml`)
-- Build scripts disabled by default for security
-- NPM packages must be at least 3 days old (npmMinimalAgeGate)
-- Pre-approved packages: `@filigran/*`
+## Development
 
-## Development Workflow
+### Local Infrastructure (Docker Compose)
 
-### Starting Development Servers
-
-**Backend API** (runs on port 4001):
-```bash
-yarn dev:api
-# OR from apps/portal-api:
-yarn dev
-```
-
-**Frontend** (runs on port 3002):
-```bash
-yarn dev:front
-# OR from apps/portal-front:
-yarn dev
-```
-
-**IMPORTANT**: Frontend depends on backend API. Always start the API first, or run services via Docker Compose.
-
-### Using Docker Compose (Recommended for Full Stack)
-Docker Compose files are located in `xtm-hub-dev/`:
-
-**For local development**:
 ```bash
 docker compose -f xtm-hub-dev/docker-compose.yml up
 ```
 
-This starts:
-- PostgreSQL (port 5434)
-- MinIO (port 9002)
-- Elasticsearch (port 9204)
-- Kibana (port 5603)
-- PgAdmin (port 8888)
-- Mailpit (port 8025)
+Starts: PostgreSQL (5434), MinIO (9002), Elasticsearch (9204), Kibana (5603), PgAdmin (8888), Mailpit (8025/1025).
 
-**For CI testing**:
-```bash
-# Used by GitHub Actions
-docker compose -f xtm-hub-dev/docker-compose-ci.yml up
-```
-
-## Building and Testing
-
-### Linting
-**ALWAYS run linting before committing**. The repository uses ESLint with TypeScript.
+### Dev Servers
 
 ```bash
-# Lint API code
-cd apps/portal-api
-yarn lint
-
-# Lint frontend code
-cd apps/portal-front
-yarn lint
-
-# Auto-fix linting issues
-yarn lint:fix
+yarn dev:api             # starts backend on :4001
+yarn dev:front           # starts frontend on :3002 (needs API running first)
 ```
 
-**Known Linting Warnings**: The frontend has React Hook exhaustive-deps warnings in several files. These are non-blocking but should not be introduced in new code.
+## Build & Validation
 
-### Type Checking
+### Backend (`apps/portal-api`)
+
 ```bash
-# Check TypeScript types without emitting files
-cd apps/portal-api
-yarn check-ts
-
-cd apps/portal-front
-yarn check-ts
+yarn build               # esbuild compile + copy .graphql and migration .js files
+yarn check-ts            # TypeScript type check (noEmit)
+yarn lint                # ESLint
+yarn lint:fix            # ESLint auto-fix
+yarn test                # Vitest (sets VITEST_MODE=true)
+yarn test:coverage       # with V8 coverage
 ```
 
-### Testing
+### Frontend (`apps/portal-front`)
 
-**Backend Unit Tests** (Vitest):
 ```bash
-cd apps/portal-api
-yarn test              # Run tests
-yarn test:coverage     # With coverage
-yarn test:w           # Watch mode
+yarn relay               # REQUIRED before build — runs relay-compiler + generate-enum script
+yarn build               # relay + Next.js production build
+yarn check-ts            # TypeScript type check
+yarn lint                # next lint (ESLint)
+yarn lint:fix            # auto-fix not available via next lint, use prettier
+yarn test                # Vitest + jsdom
+yarn test:coverage       # with V8 coverage
 ```
 
-**Frontend Unit Tests** (Vitest):
+**`yarn relay` must run after any GraphQL schema change.** The `dev` script runs relay-compiler automatically via `concurrently`.
+
+### E2E Tests (`apps/portal-e2e-tests`)
+
 ```bash
-cd apps/portal-front
-yarn test              # Run tests
-yarn test:coverage     # With coverage
-yarn test:w           # Watch mode
+yarn test:e2e            # Playwright (requires frontend + backend running)
+yarn test:e2e:ui         # Playwright UI mode
 ```
 
-**E2E Tests** (Playwright):
-```bash
-cd apps/portal-e2e-tests
-yarn test:e2e          # Run all e2e tests
-yarn test:e2e:ui       # Run with Playwright UI
-```
+E2E runs with `workers: 1` (sequential), `retries: 2`, Chromium only. Base URL defaults to `http://localhost:3002`.
 
-**IMPORTANT**: E2E tests require both frontend and backend services to be running. They run on port 3002 for frontend and 4001 for API.
+## GraphQL Pipeline
 
-### Building
+This is the most important data flow to understand:
 
-**Backend**:
-```bash
-cd apps/portal-api
-yarn build             # Compiles TypeScript and copies GraphQL files
-```
+1. **Schema definition**: `.graphql` files in `apps/portal-api/src/modules/**/` and `src/nodes/`
+2. **Backend codegen**: `yarn generate:ts` in portal-api → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
+3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/portal-front/schema.graphql`
+4. **Relay compilation**: `yarn relay` in portal-front → reads `schema.graphql` → generates TypeScript artifacts in `apps/portal-front/__generated__/`
+5. **Enum generation**: `yarn generate:enum` (part of `yarn relay`) → extracts enums from the schema into TypeScript
 
-**Frontend**:
-```bash
-cd apps/portal-front
-yarn relay             # Generate Relay artifacts (REQUIRED before build)
-yarn build             # Next.js production build
-```
-
-**CRITICAL**: Frontend MUST run `yarn relay` before building to generate GraphQL types and Relay artifacts. The CI does this automatically.
+GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typically has: `*.graphql` (schema), `*.resolver.ts`, `*.service.ts`.
 
 ## Repository Structure
 
-### Root Files
-- `package.json`: Root workspace configuration
-- `tsconfig.json`: Base TypeScript config (extended by workspaces)
-- `.nvmrc`: Node version specification
-- `.yarnrc.yml`: Yarn 4 configuration
-- `.husky/`: Git hooks (pre-commit runs lint-staged)
-- `xtm-hub-dev/`: Docker Compose configurations
+### Root
 
-### Backend API (`apps/portal-api/`)
-**Key Directories**:
-- `src/index.ts`: Main entry point
-- `src/modules/`: Feature modules (services, users, organizations, etc.)
-- `src/migrations/`: Knex database migrations
-- `src/es-migrations/`: Elasticsearch migrations
-- `src/seeds/`: Database seed data
-- `src/security/`: Authentication and authorization
-- `src/thirdparty/`: Third-party integrations (Elasticsearch, MinIO, etc.)
-- `src/__generated__/`: Auto-generated GraphQL TypeScript types
-- `tests/`: Unit tests
-- `config/`: Configuration files (default.json, production.json, etc.)
-
-**Key Config Files**:
-- `knexfile.ts`: Database migration configuration
-- `codegen.yml`: GraphQL Code Generator config
-- `vitest.config.ts`: Test configuration
-- `eslint.config.mjs`: ESLint rules
-- `.prettierrc`: Prettier formatting rules
-
-**Database Commands**:
-```bash
-yarn migrate:latest    # Run migrations
-yarn migrate:make <name>  # Create new migration
-yarn esmigrate:up      # Run Elasticsearch migrations
+```
+.nvmrc                  # Node 24.11.1
+.yarnrc.yml             # Yarn 4 config: node-modules linker, scripts disabled, 3-day age gate
+.rules                  # Project rules (no comments in code)
+tsconfig.json           # Base TS config (extended by workspaces)
+graphql.config.yml      # Points to apps/portal-api/**/*.graphql
+codecov.yml             # Coverage reporting (informational only)
+renovate.json           # Dependency automation
+.husky/pre-commit       # Runs lint-staged in portal-api then portal-front
+chart/                  # Helm chart for Kubernetes deployment
+xtm-hub-dev/            # Docker Compose files (dev + CI)
 ```
 
-### Frontend (`apps/portal-front/`)
-**Key Directories**:
-- `app/`: Next.js 15 app directory (routes and layouts)
-- `src/components/`: React components
-- `src/hooks/`: Custom React hooks
-- `src/relay/`: Relay GraphQL client setup
-- `__generated__/`: Relay-generated artifacts
-- `messages/`: i18n translation files
-- `public/`: Static assets
+### Backend — `apps/portal-api/`
 
-**Key Config Files**:
-- `next.config.mjs`: Next.js configuration
-- `relay.config.json`: Relay compiler config
-- `tailwind.config.ts`: TailwindCSS config
-- `vitest.config.ts`: Test configuration
-- `eslint.config.mjs`: ESLint rules
-
-**GraphQL Commands**:
-```bash
-yarn relay             # Compile Relay queries (REQUIRED after GraphQL changes)
-yarn generate:enum     # Generate TypeScript enums from GraphQL
+```
+src/index.ts                    # Entry point — Express + Apollo Server + SSE setup
+src/config.ts                   # Configuration via node-config library
+src/crons.ts                    # Scheduled jobs (node-cron)
+src/portal.const.ts             # Platform constants (UUIDs, roles, system user)
+src/pub.ts                      # GraphQL PubSub for subscriptions
+src/session-store-manager.ts    # Session store (PostgreSQL or memory)
+src/modules/                    # Feature modules (each has .graphql + .resolver.ts + .service.ts)
+  common/                       # Shared GraphQL types (PageInfo, Connection, etc.)
+  organizations/                # Organization management
+  users/                        # User management
+  services/                     # Service instances, definitions, documents, deployments, integrations
+    document/                   # File management (MinIO)
+    integrations/               # OpenCTI connectors, CSV feeds
+    custom-dashboards/          # OpenCTI dashboards
+    openaev-scenarios/          # OpenBAS/AEV scenarios
+    registration/               # Platform registration
+    deployments/                # Service deployment requests
+    definition/                 # Service definitions
+    group/                      # Service groups
+    instances/service-link/     # Service links
+    contract/                   # Service configuration/contracts
+  settings/                     # Platform settings + labels
+  subcription/                  # Subscription management
+  user_service/                 # User-service relationships + capabilities
+  role-portal/                  # Role management
+  telemetry/                    # Telemetry data
+  log/                          # Activity logs
+  ingest-manifest/              # Manifest ingestion
+src/auth/                       # Authentication (OIDC provider, local)
+src/security/                   # Authorization (GraphQL directives, access control, guards)
+  directive-graphql/            # @auth GraphQL directive
+  layer/                        # Security layers
+  restriction/                  # Access restrictions
+src/context/                    # AsyncLocalStorage contexts (request, database transaction)
+src/model/                      # TypeScript models
+  kanel/                        # Auto-generated types from PostgreSQL (via kanel)
+  portal-context.ts             # PortalContext type (user, req, res)
+  user.ts                       # User type definitions
+src/nodes/                      # GraphQL Node interface (Relay-compatible)
+src/stores/                     # Session store (PostgreSQL)
+src/thirdparty/                 # External services
+  elasticsearch/                # ES client + migrations
+  minio/                        # S3-compatible storage
+  auth0/                        # Auth0 integration
+  hubspot/                      # HubSpot webhooks
+src/utils/                      # Utilities (logger, hashing, formatting, feature flags)
+src/seeds/                      # Production seed data
+src/migrations/                 # Knex database migrations (.js files)
+src/es-migrations/              # Elasticsearch migrations
+config/                         # node-config JSON files
+  default.json                  # Default config (dev ports, local services)
+  development.json              # Dev overrides
+  production.json               # Production overrides
+  staging.json                  # Staging overrides
+  local.json                    # Local overrides (gitignored pattern)
+  custom-environment-variables.json  # Env var → config mapping
+knexfile.ts                     # Knex migration config (imports knexconfig.ts)
+knexconfig.ts                   # Base Knex connection config
+codegen.yml                     # GraphQL Code Generator config
+vitest.config.ts                # Vitest config (globalSetup, sequential)
+eslint.config.mjs               # ESLint flat config (typescript-eslint strict)
+.prettierrc                     # Prettier config (single quotes, trailing comma es5, organize-imports plugin)
+test.Dockerfile                 # Docker image for running unit tests in CI
+Dockerfile                      # Production Docker image
 ```
 
-### E2E Tests (`apps/portal-e2e-tests/`)
-- `tests/`: Playwright test files
-- `playwright.config.ts`: Playwright configuration
-- Test runs require migrations and seeds copied from portal-api
+### Frontend — `apps/portal-front/`
+
+```
+app/                            # Next.js 15 App Router
+  layout.tsx                    # Root layout
+  (application)/app/            # Authenticated app routes
+    (admin)/admin/              # Admin panel (users, orgs, labels, services, trials, parameters)
+    (user)/                     # User-facing routes
+      service/                  # Service pages (vault, integrations, dashboards, scenarios, registration)
+      manage/                   # Organization management
+      profile/                  # User profile
+  (public)/                     # Public routes (cybersecurity-solutions, landing)
+  (authentification)/auth/      # Auth callback routes
+  (embed)/                      # Embeddable widget routes (register, unregister)
+  login/                        # Login page
+  health/                       # Health check endpoint
+src/
+  components/                   # React components by domain
+    ui/                         # Shared UI components (dialogs, badges, pagination, search, etc.)
+    admin/                      # Admin components
+    service/                    # Service-related components
+    organization/               # Organization components
+    login/                      # Login components
+    menu/                       # Navigation menu
+    ...
+  hooks/                        # Custom React hooks (useGranted, useDecodedParams, useIsMobile, etc.)
+  relay/                        # Relay client setup
+    environment/                # Client + server Relay environments
+    RelayProvider.tsx            # SSR-compatible Relay provider with streaming
+    serverPortalApiFetch.ts     # Server-side GraphQL fetch (uses Next.js cookies)
+  i18n/                         # Internationalization (next-intl)
+    config.ts                   # i18n configuration
+    locale.ts                   # Supported locales
+    request.ts                  # Request-scoped locale
+  lib/                          # Utility functions (utils, omit, pick, regexs)
+  utils/                        # Application utilities
+    middleware/                  # Next.js middleware helpers (GraphQL proxy)
+    actions/                    # Server actions
+    format/                     # Formatting utilities
+    shareable-resources/        # Shareable resource helpers
+    test/                       # Test utilities
+__generated__/                  # Relay compiler output (auto-generated, do not edit)
+messages/                       # i18n translation files
+  en.json                       # English translations
+  fr.json                       # French translations
+scripts/
+  generate-enum.ts              # Generates TS enums from GraphQL schema
+  extract-error-code-translation-keys.ts  # Extracts error codes for i18n
+middleware.ts                   # Next.js middleware (proxies GraphQL, auth, document routes to API)
+schema.graphql                  # GraphQL schema (generated by backend, read by Relay)
+relay.config.json               # Relay compiler config (artifactDirectory: __generated__)
+next.config.mjs                 # Next.js config (standalone output, Relay compiler, SVG loader, intl)
+tailwind.config.ts              # TailwindCSS config (includes @filigran/ui paths)
+components.json                 # shadcn/ui component config
+vitest.config.ts                # Vitest config (jsdom, react plugin, relay plugin)
+setup-vitest.ts                 # Vitest setup (jest-dom matchers, cleanup)
+eslint.config.mjs               # ESLint config (next/core-web-vitals + prettier)
+.lintstagedrc.js                # Lint-staged config (next lint + prettier per file)
+test.Dockerfile                 # Docker image for running unit tests in CI
+Dockerfile                      # Production Docker image (standalone Next.js)
+```
+
+### Path Aliases (Frontend)
+
+- `@/*` → `./src/*`
+- `@generated/*` → `./__generated__/*`
+
+### E2E Tests — `apps/portal-e2e-tests/`
+
+```
+tests/
+  fixtures/                     # Playwright fixtures
+  model/                        # Page object models
+  db-utils/                     # Database utilities for test setup/teardown
+  utils/                        # Test helpers
+  webhooks/                     # Notification webhook for test reporting
+  tests_files/                  # Test data files
+  __screenshots__/              # Visual regression screenshots
+playwright.config.ts            # Playwright config (setup/teardown projects, chromium, ctrf reporter)
+Dockerfile                      # E2E test Docker image
+```
+
+## Database
+
+- **ORM**: Knex.js 3 with PostgreSQL (`pg` driver)
+- **Config**: `node-config` library reads from `apps/portal-api/config/` JSON files. Environment variables override via `custom-environment-variables.json`.
+- **Migrations**: JavaScript files in `src/migrations/`. Run with `yarn migrate:latest`.
+- **Seeds**: In `src/seeds/` (production) and `tests/seeds/` (test).
+- **Test DB**: When `VITEST_MODE=true`, uses `test_database` database and `tests/seeds/` directory.
+- **Connection**: `knexconfig.ts` defines base config, `knexfile.ts` extends it with migrations/seeds paths + security layer + pagination.
+
+### Database Access Pattern
+
+The `db()` function from `knexfile.ts` is the primary database accessor. It:
+- Accepts a `PortalContext` and `DatabaseType` (table name)
+- Applies security layers via `.secureQuery()`
+- Supports pagination via `paginate()`
+- Uses `requestContext` (AsyncLocalStorage) for implicit transaction support
+
+## Authentication & Security
+
+- **Auth providers**: OIDC (via `openid-client`), Local (form-based)
+- **Session**: `express-session` with PostgreSQL or memory store
+- **GraphQL auth**: Custom `@auth` directive transformer in `src/security/directive-graphql/`
+- **Frontend proxy**: Next.js `middleware.ts` proxies `/graphql-api`, `/graphql-sse`, `/auth/*`, `/document/*` to the backend API via `SERVER_HTTP_API` env var (default: `http://localhost:4001`)
+- **Subscriptions**: GraphQL SSE via `graphql-sse` on `/graphql-sse`
+
+## UI Component System
+
+- **Design system**: `@filigran/ui` is Filigran's in-house React component library, built to match our design system. **Always use `@filigran/ui` components first** for any UI work (buttons, inputs, tables, dialogs, etc.). Only fall back to raw TailwindCSS or shadcn/ui primitives when `@filigran/ui` does not provide the needed component.
+- **Icons**: `@filigran/icon` (Filigran's icon set) + `lucide-react` as fallback
+- **Styling**: TailwindCSS 3 with `@filigran/ui`'s Tailwind plugin (`FiligranUIPlugin` in `tailwind.config.ts`)
+- **Forms**: `react-hook-form` + `zod` validation (zod v4)
+- **Markdown**: `@uiw/react-md-editor`
 
 ## CI/CD Pipeline
 
-### Main Workflow: `.github/workflows/dockerbuild-ci.yml`
+Main workflow: `.github/workflows/dockerbuild-ci.yml`
 
-**Triggered on**:
-- Push to `main`, `development`, or tags
-- Pull requests to `main`, `development`, `issue/*`
+Triggered on pushes to `main`/`development`, tags `v*`, and PRs to `main`/`development`/`issue/*` — only when `apps/**`, the workflow file, `package.json`, or `yarn.lock` change.
 
-**Job Sequence**:
-1. **build-images-tests**: Builds 5 Docker images in parallel:
-   - `portal-front`, `portal-api`, `portal-e2e-tests`
-   - `portal-front-test`, `portal-api-test`
-   
-2. **run-e2e-tests**: Runs Playwright E2E tests (timeout: 20 min)
-   - Uses docker-compose-ci.yml
-   - Generates CTRF test reports
-   - On failure: collects logs from all services
+### Job Sequence
 
-3. **run-front-unit-tests**: Frontend Vitest tests (timeout: 10 min)
-   - Uploads coverage to Codecov
+1. **build-images-tests** (10 min) — Builds 5 Docker images in parallel: `portal-front`, `portal-api`, `portal-e2e-tests`, `portal-front-test`, `portal-api-test`
+2. **run-e2e-tests** (20 min) — Playwright E2E via `docker-compose-ci.yml`
+3. **run-front-unit-tests** (10 min) — Frontend Vitest in Docker container
+4. **run-api-unit-tests** (10 min) — Backend Vitest via docker-compose (needs PostgreSQL + MinIO)
+5. **build-images-prod** — Production images (after all tests pass, only on main/development/tags)
+6. **deploy** — AWX deployment to staging/production
 
-4. **run-api-unit-tests**: Backend Vitest tests (timeout: 10 min)
-   - Uploads coverage to Codecov
+### CI Requirement
 
-5. **build-images-prod**: Production images (only after tests pass)
-   - Builds `portal-front-prod` and `portal-api-prod`
-   - Tags with version from git tag or commit SHA
-
-6. **deploy**: Deploys to staging/production via AWX
-
-**CRITICAL CI REQUIREMENT**: Before E2E tests run, migrations and seeds are copied:
+Before Docker builds, migrations and seeds are copied to e2e-tests:
 ```bash
 cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
 cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
 ```
 
-### Other Workflows
-- `pr-issue-automation.yml`: PR/issue labeling and automation
-- `notify-teams-pr-ready-testing.yml`: Teams notifications
-- `test-feature-branch.yml`: Feature branch deployments
-- `helmpackage.yml`: Helm chart packaging
-- `deployment.yml`: Production deployments
+## Commit Convention
 
-## Commit Message Convention
+Format: `[package] <type>(<scope>): Message (#issueNumber)`
 
-**MUST follow this format**:
-```
-[package] <type>(<scope>): Message (#issueNumber)
-```
+- **Packages**: `frontend`, `backend`, `doc`
+- **Types**: `feat`, `fix`, `docs`, `refactor`, `chore`, `test`
+- **Scope**: optional component name
 
-**Allowed types**: `feat`, `fix`, `docs`, `refactor`, `chore`, `test`
-**Packages**: `frontend`, `backend`, `doc`
-**Scope**: Optional component name
-
-**Examples**:
+Examples:
 - `[frontend] feat(custom dashboards): add card component (#123)`
 - `[backend] fix(login): handle missing auth token (#456)`
-- `[doc] docs: update README with installation steps (#789)`
-
-## Common Pitfalls and Solutions
-
-### Issue: Yarn version mismatch error
-**Solution**: Run `corepack enable` before any yarn commands
-
-### Issue: Frontend build fails with "Cannot find Relay artifacts"
-**Solution**: Run `yarn relay` before `yarn build`
-
-### Issue: E2E tests fail immediately
-**Solution**: Ensure frontend (port 3002) and backend (port 4001) are running and healthy
-
-### Issue: Database migration errors in tests
-**Solution**: Check that `VITEST_MODE=true` is set, which uses test database configuration
-
-### Issue: Docker build fails with "Cannot find migrations"
-**Solution**: The CI workflow copies migrations before building. Locally, ensure migrations exist in expected paths.
-
-### Issue: Linting fails on pre-commit
-**Solution**: Run `yarn lint:fix` in the affected workspace (portal-api or portal-front)
-
-### Issue: TypeScript version warning from ESLint
-**Solution**: This is a known warning (TypeScript 5.9.3 vs supported <5.9.0). Non-blocking, do not upgrade TypeScript without testing.
 
 ## Environment Variables
 
-### Backend (`apps/portal-api/`)
-Key environment variables (see `src/config.ts`):
-- `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_BASE`
-- `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET_NAME`
-- `ELASTIC_HOST`, `ELASTIC_PORT`
-- `ADMIN_EMAIL`, `ADMIN_PASSWORD`
-- `NODE_ENV`: development/production
-- `VITEST_MODE`: Set to "true" for tests
-- `DATA_SEEDING`: Set to "true" to seed database on startup
+### Backend (via `custom-environment-variables.json`)
 
-### Frontend (`apps/portal-front/`)
-- `SERVER_HTTP_API`: Backend API URL (default: http://localhost:4001)
-- `E2E_BASE_URL`: Frontend URL for E2E tests (default: http://localhost:3002)
+`DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_BASE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `MINIO_ENDPOINT`, `MINIO_PORT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET_NAME`, `MINIO_USE_SSL`, `ELASTIC_HOST`, `ELASTIC_PORT`, `NODE_ENV`, `VITEST_MODE`, `DATA_SEEDING`, `SESSION_STORE_TYPE`, `BASE_URL_FRONT`
 
-## Best Practices
+### Frontend
 
-1. **Always enable Corepack first**: `corepack enable` before any yarn command
-2. **Run from workspace root**: Use `yarn dev:api` or `yarn dev:front` from root, not `cd apps/...`
-3. **Lint before commit**: Git hooks will enforce this, but run manually to catch issues early
-4. **Type check regularly**: Run `yarn check-ts` in workspaces after changes
-5. **Relay after GraphQL changes**: Always run `yarn relay` in portal-front after backend GraphQL changes
-6. **Test locally before push**: Run unit tests in affected workspace
-7. **Use Docker Compose for integration testing**: Start services with docker-compose.yml for full-stack testing
-8. **Follow commit conventions**: PRs will fail automation if commit messages don't match format
+`SERVER_HTTP_API` (default: `http://localhost:4001`), `E2E_BASE_URL` (default: `http://localhost:3002`), `NEXT_PUBLIC_APP_VERSION`
 
-## Trust These Instructions
+## Common Patterns
 
-These instructions have been validated through actual execution of commands, review of CI workflows, and examination of the codebase. If you encounter issues not covered here, they may indicate a genuine bug or environmental problem. Only search for additional information if these instructions are incomplete or incorrect for your specific case.
+### Adding a New Backend Module
+
+1. Create directory in `src/modules/<name>/`
+2. Add `<name>.graphql` with type definitions, queries, mutations
+3. Add `<name>.resolver.ts` with resolver implementations
+4. Add `<name>.service.ts` with business logic
+5. Register resolver in `src/server/graphql-schema.ts`
+6. Run `yarn generate:ts` to update `src/__generated__/resolvers-types.ts`
+7. The schema will be written to `apps/portal-front/schema.graphql` on next API start (non-production)
+
+### Adding a New Frontend Page
+
+1. Create route in `app/(application)/app/(user)/` or `(admin)/admin/`
+2. Create GraphQL query file (`*.graphql.ts`) using Relay's `graphql` tagged template
+3. Run `yarn relay` to generate artifacts in `__generated__/`
+4. Use `useLazyLoadQuery` or `usePreloadedQuery` from `react-relay`
+5. Use `@/*` path alias for `src/` imports, `@generated/*` for generated types
+
+### Adding a Database Migration
+
+```bash
+cd apps/portal-api
+yarn migrate:make <migration_name>    # creates JS file in src/migrations/
+```
+
+## Pitfalls
+
+- **Yarn version mismatch**: Always `corepack enable` first
+- **Missing Relay artifacts**: Run `yarn relay` before build or after GraphQL changes
+- **E2E test failures**: Ensure frontend (:3002) and backend (:4001) are running
+- **TypeScript ESLint warning** about TS 5.9.3 vs supported <5.9.0: non-blocking, ignore it
+- **Frontend port**: Dev runs on 3002, Docker production runs on 3000 internally
+- **Test DB**: Backend tests use `test_database` DB (not `cloud-portal`) when `VITEST_MODE=true`
+- **Pre-commit hook**: Runs `lint-staged` in both portal-api and portal-front sequentially
