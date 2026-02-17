@@ -35,7 +35,8 @@ export const TrialsTabQuotasPlatform: React.FC<Props> = ({
 
   const queryData = useLazyLoadQuery<trialsDeploymentRequestsAvailableQuery>(
     TrialsDeploymentRequestsAvailableQuery,
-    { platformIdentifier }
+    { platformIdentifier },
+    { fetchPolicy: 'store-and-network' }
   );
 
   const [data, refetch] = useRefetchableFragment<

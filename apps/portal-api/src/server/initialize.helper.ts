@@ -1,12 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../knexfile';
 import {
+  IntegrationType,
   OrganizationCapability,
   ServiceDefinition,
   ServiceInstance,
 } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
 import { withTransaction } from '../context/database.context';
+import { requestContext } from '../context/request.context';
+import Document from '../model/kanel/public/Document';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
@@ -19,12 +22,15 @@ import UserOrganization, {
   UserOrganizationId,
 } from '../model/kanel/public/UserOrganization';
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
+import { IngestManifestApp } from '../modules/ingest-manifest/ingest-manifest.app';
 import {
   insertNewOrganization,
   loadOrganizationBy,
   updateOrganizationBy,
 } from '../modules/organizations/organizations.domain';
+import { loadUserBy } from '../modules/users/users.domain';
 import {
+  ADMIN_UUID,
   PLATFORM_DOMAIN,
   PLATFORM_NAME,
   PLATFORM_ORGANIZATION_UUID,
@@ -428,4 +434,27 @@ export const initializeDevUsers = async (): Promise<void> => {
   }
 
   logApp.info('Development users initialization completed');
+};
+
+/**
+ * Ingest fixed connectors manifest for development environment.
+ */
+export const seedDevelopmentConnectors = async () => {
+  const areConnectorsSeeded = await db<Document>('Document_Metadata')
+    .where('key', '=', 'integration_type')
+    .andWhere('value', '=', IntegrationType.Connector)
+    .first();
+
+  if (areConnectorsSeeded) {
+    logApp.info('[SEEDING] OpenCTI connectors already seeded');
+
+    return;
+  }
+
+  logApp.info('[SEEDING] Ingesting OpenCTI connectors manifest...');
+  const user = await loadUserBy({ 'User.id': ADMIN_UUID });
+  requestContext.run({ user }, async () => {
+    await IngestManifestApp.updateOpenCTIManifest('6.8.3');
+  });
+  logApp.info('[SEEDING] OpenCTI connectors seeding completed');
 };
