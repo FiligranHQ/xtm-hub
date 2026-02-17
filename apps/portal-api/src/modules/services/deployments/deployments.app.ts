@@ -39,8 +39,13 @@ import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import portalConfig from '../../../config';
 import { UserId } from '../../../model/kanel/public/User';
-import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
+import {
+  SYSTEM_USER_UUID,
+  XTM_HUB_DEV_TEAM_EMAIL,
+  XTM_HUB_SUPPORT_EMAIL,
+} from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
 import { formatName } from '../../../utils/format';
 import { ucfirst } from '../../../utils/utils';
@@ -197,9 +202,13 @@ export const DeploymentsApp = {
         });
       }
 
+      const instanceRequestedEmail =
+        portalConfig.environment === 'production'
+          ? XTM_HUB_SUPPORT_EMAIL
+          : XTM_HUB_DEV_TEAM_EMAIL;
       try {
         sendMail({
-          to: XTM_HUB_SUPPORT_EMAIL,
+          to: instanceRequestedEmail,
           template: 'admin_saas_instance_requested',
           params: {
             organizationName: user.organizations.find(
