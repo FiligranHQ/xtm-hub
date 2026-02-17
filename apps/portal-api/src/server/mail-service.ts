@@ -4,8 +4,17 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import Handlebars from 'handlebars';
 import nodemailer from 'nodemailer';
 import * as path from 'path';
+import { PlatformIdentifier } from '../__generated__/resolvers-types';
 import { logApp } from '../utils/app-logger.util';
-import { MailTemplates, templateSubjects } from './mail-template/mail';
+import {
+  MailTemplates,
+  PlatformIdentifierToString,
+  templateSubjects,
+} from './mail-template/mail';
+
+Handlebars.registerHelper('eq', function (a, b) {
+  return a === b;
+});
 
 const smtpOptions = config.get('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
@@ -44,10 +53,22 @@ export async function renderEmail<T extends keyof MailTemplates>(
     templateCache.set(templateName, compiledTemplate);
   }
 
-  const renderParams = {
-    ...params,
+  const baseParams = {
     base_url_front: config.get('base_url_front'),
     contactEmail: 'xtm-hub-support@filigran.io',
+  };
+
+  const renderParams = {
+    ...params,
+    ...baseParams,
+    ...('platformIdentifier' in params
+      ? {
+          platformIdentifier:
+            PlatformIdentifierToString[
+              params.platformIdentifier as PlatformIdentifier
+            ],
+        }
+      : {}),
   };
 
   return compiledTemplate(renderParams);
