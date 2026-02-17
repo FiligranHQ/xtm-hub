@@ -8804,7 +8804,7 @@ __metadata:
     i18n-auto-translation: "npm:2.2.3"
     jsdom: "npm:27.4.0"
     lint-staged: "npm:16.2.7"
-    lucide-react: "npm:0.545.0"
+    lucide-react: "npm:0.564.0"
     monocart-reporter: "npm:2.10.0"
     next: "npm:16.1.6"
     next-intl: "npm:4.5.8"
@@ -15119,12 +15119,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:0.545.0":
-  version: 0.545.0
-  resolution: "lucide-react@npm:0.545.0"
+"lucide-react@npm:0.564.0":
+  version: 0.564.0
+  resolution: "lucide-react@npm:0.564.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/06ce9470c4c5b9d5dd8f9a0cfe2004f281824cdbf3f96f38772f57b6479178aaff66059f2e86190886906ec9115203228020bd044d47a09318c3c10a4532d4ad
+  checksum: 10/65346b244202dba485a31eb4cd41231586178b952dd8c7a499e40e8ba8be2816f2f8895b4c08b04b7740b1027aee59fa59940009efe278ae03215b39858c0acb
   languageName: node
   linkType: hard
 
