@@ -148,7 +148,7 @@ type Mutation {
   transferPersonalSpace(requestId: ID!): Success!
   login(email: String!, password: String): User
   logout: ID!
-  contactUs(message: String): Success!
+  contactUs(message: String, platformId: ID, platformIdentifier: PlatformIdentifier): Success!
 }
 
 enum OrganizationOrdering {

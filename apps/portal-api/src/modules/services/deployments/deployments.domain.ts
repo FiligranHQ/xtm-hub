@@ -111,6 +111,14 @@ export const DeploymentRequestDomain = {
     return query.first();
   },
 
+  loadFullDeploymentRequestByPlatformId: async (
+    platformId: string
+  ): Promise<FullyQualifiedDeploymentRequest | undefined> => {
+    return getDeploymentRequestWithUserDataQuery()
+      .where('DeploymentRequest.platform_id', '=', platformId)
+      .first();
+  },
+
   loadTrialDeploymentRequestByPlatformIdentifierAndUserId: async (
     platformIdentifier: PlatformIdentifier,
     userId: string

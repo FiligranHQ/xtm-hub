@@ -2,7 +2,6 @@ import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
-import { MailTemplates } from '../../../server/mail-template/mail';
 
 export const serviceDefinitionIdentifierMappedByPlatformIdentifier: Record<
   PlatformIdentifier,
@@ -10,22 +9,6 @@ export const serviceDefinitionIdentifierMappedByPlatformIdentifier: Record<
 > = {
   [PlatformIdentifier.Opencti]: ServiceDefinitionIdentifier.OpenctiRegistration,
   [PlatformIdentifier.Openaev]: ServiceDefinitionIdentifier.OpenaevRegistration,
-};
-
-export const registeredMailTemplateMappedByPlatformIdentifier: Record<
-  PlatformIdentifier,
-  keyof MailTemplates
-> = {
-  [PlatformIdentifier.Opencti]: 'opencti_platform_registered',
-  [PlatformIdentifier.Openaev]: 'openaev_platform_registered',
-};
-
-export const unregisteredMailTemplateMappedByPlatformIdentifier: Record<
-  PlatformIdentifier,
-  keyof MailTemplates
-> = {
-  [PlatformIdentifier.Opencti]: 'opencti_platform_unregistered',
-  [PlatformIdentifier.Openaev]: 'openaev_platform_unregistered',
 };
 
 export const platformIdentifierMappedByServiceDefinitionIdentifier: Partial<
