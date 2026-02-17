@@ -1,4 +1,4 @@
-import { dbUnsecure } from '../../knexfile';
+import { db } from '../../knexfile';
 import { User } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
 import { withTransaction } from '../context/database.context';
@@ -48,9 +48,7 @@ const initializeUser = async ({
   password: string;
   roleId?: RolePortalId;
 }) => {
-  const existingUser = await dbUnsecure<User>('User')
-    .where({ id: userId })
-    .first();
+  const existingUser = await db<User>('User').where({ id: userId }).first();
 
   const { salt, hash } = hashPassword(password);
   const passwordData = { salt, password: hash };

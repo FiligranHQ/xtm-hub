@@ -15,7 +15,7 @@ export const SeoServiceInstanceFragment = graphql`
     children_documents {
       id
     }
-    labels {
+    use_cases {
       id
       name
       color

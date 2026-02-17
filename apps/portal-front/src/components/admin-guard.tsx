@@ -1,9 +1,10 @@
 'use client';
 
 import { PortalContext } from '@/components/me/app-portal-context';
-import useAdminByPass from '@/hooks/useAdminByPass';
 import useGranted from '@/hooks/useGranted';
+import { useAdminByPass } from '@/hooks/usePortalCapability';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -12,6 +13,7 @@ import { useContext } from 'react';
 interface GuardComponentProps {
   children: React.ReactNode;
   capacityRestriction?: OrganizationCapabilityEnum[];
+  portalCapabilityRestriction?: PortalCapabilityEnum[];
   displayError?: boolean;
   shouldNotBePersonalSpace?: boolean;
 }
@@ -19,18 +21,22 @@ interface GuardComponentProps {
 const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
   children,
   capacityRestriction = [],
+  portalCapabilityRestriction = [],
   displayError = false,
   shouldNotBePersonalSpace = false,
 }) => {
-  const { me } = useContext(PortalContext);
-  if (!me) {
+  const { me, hasCapability } = useContext(PortalContext);
+  if (!me || !hasCapability) {
     return null;
   }
   const isAdmin = useAdminByPass();
   const currentOrganization = me?.organizations.find(
     (orga) => orga.id === me?.selected_organization_id
   );
-  const authorized = capacityRestriction.some(useGranted) || isAdmin;
+  const authorized =
+    capacityRestriction.some(useGranted) ||
+    portalCapabilityRestriction.some(hasCapability) ||
+    isAdmin;
 
   const isPersonalSpace = currentOrganization?.personal_space ?? false;
   const t = useTranslations();

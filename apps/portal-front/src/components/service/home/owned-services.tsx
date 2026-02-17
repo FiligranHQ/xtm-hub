@@ -1,20 +1,20 @@
 'use client';
 
-import { PortalContext } from '@/components/me/app-portal-context';
+import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
+import { FeatureFlag } from '@/utils/constant';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
   registeredPlatformToServiceInstanceCardData,
   userServicesOwnedServiceToInstanceCardData,
 } from '@/utils/services';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { Suspense, useContext } from 'react';
+import { Suspense } from 'react';
 import ServiceInstanceCard from '../service-instance-card';
 
 interface OwnedServicesProps {
@@ -29,51 +29,41 @@ const OwnedServices = ({
   registeredPlatforms,
 }: OwnedServicesProps) => {
   const t = useTranslations();
-  const { isPersonalSpace } = useContext(PortalContext);
+  const { availableTrials } = useOrgaFreeTrial();
+  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
+
   // Merge and sort by ordering property
   const sortedServices = [
-    ...services
-      .filter(
-        (service) =>
-          service.subscription?.service_instance?.service_definition
-            ?.identifier !==
-          ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION
-      )
-      .map(userServicesOwnedServiceToInstanceCardData),
+    ...services.map(userServicesOwnedServiceToInstanceCardData),
     ...publicServices.map(publicServiceInstanceToInstanceCardData),
-    ...registeredPlatforms
-      .filter(
-        (service) =>
-          service.subscription?.service_instance?.creation_status !==
-          ServiceInstanceCreationStatusEnum.DISABLED
-      )
-      .map((platform) =>
-        registeredPlatformToServiceInstanceCardData(platform, t)
-      ),
+    ...registeredPlatforms.map((platform) =>
+      registeredPlatformToServiceInstanceCardData(platform, t)
+    ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
-  const trialInstances = registeredPlatforms.filter(
-    (service) =>
-      service.deployment_request?.type ===
-        DeploymentRequestDeploymentTypeEnum.TRIAL &&
-      service.deployment_request.counts_in_orga_quota
-  );
-
-  const shouldDisplayFreeTrialSkeleton =
-    trialInstances.length === 0 && !isPersonalSpace;
-
-  const freeTrialServiceInstanceDataCard =
-    freeTrialSkeletonToServiceInstanceCardData(t);
+  const freeTrialsSkeletonDataCards = availableTrials
+    .filter(
+      (platformIdentifier) =>
+        isOpenAEVTrialsEnabled ||
+        platformIdentifier !== PlatformIdentifierEnum.OPENAEV
+    )
+    .map((platformIdentifier) =>
+      freeTrialSkeletonToServiceInstanceCardData(
+        platformIdentifier as PlatformIdentifierEnum,
+        t
+      )
+    );
 
   if (sortedServices.length > 0) {
     return (
       <Suspense>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l">
-          {shouldDisplayFreeTrialSkeleton && (
+          {freeTrialsSkeletonDataCards.map((card) => (
             <ServiceInstanceCard
-              serviceInstance={freeTrialServiceInstanceDataCard}
+              key={card.id}
+              serviceInstance={card}
             />
-          )}
+          ))}
           {sortedServices.map((service) => (
             <ServiceInstanceCard
               key={service.id}

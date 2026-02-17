@@ -1,31 +1,31 @@
 import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
-import { csvFeedsItem_fragment$data } from '@generated/csvFeedsItem_fragment.graphql';
 import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
 import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
-import { seoIntegrationsItemFragment$data } from '@generated/seoIntegrationsItemFragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ConcreteRequest } from 'relay-runtime';
 
 export type ShareableResource =
   | customDashboardsItem_fragment$data
-  | csvFeedsItem_fragment$data
   | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
+  | documentItem_fragment$data
   | SeoIntegration
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
 export type PublicShareableResource =
-  | seoIntegrationsItemFragment$data
+  | publicDocumentItemFragment$data
   | SeoIntegration
   | SeoCustomDashboard
   | SeoOpenAEVScenario;
 
 export type SubscribableResource =
-  | csvFeedsItem_fragment$data
   | integrationsItem_fragment$data
   | openaevScenariosItem_fragment$data
-  | customDashboardsItem_fragment$data;
+  | customDashboardsItem_fragment$data
+  | documentItem_fragment$data;
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
@@ -73,7 +73,7 @@ export interface SeoCustomDashboard {
   }[];
   created_at: string;
   updated_at: string;
-  labels: {
+  use_cases: {
     color: string;
     id: string;
     name: string;
@@ -110,7 +110,7 @@ export interface SeoIntegration {
   }[];
   created_at: string;
   updated_at: string;
-  labels: {
+  use_cases: {
     color: string;
     id: string;
     name: string;
@@ -146,7 +146,7 @@ export interface SeoOpenAEVScenario {
   }[];
   created_at: string;
   updated_at: string;
-  labels: {
+  use_cases: {
     color: string;
     id: string;
     name: string;

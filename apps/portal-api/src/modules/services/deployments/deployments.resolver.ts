@@ -54,6 +54,16 @@ const resolvers: Resolvers = {
         );
       }
     },
+    trialDeployments: async (_, { input }) => {
+      try {
+        return await DeploymentsApp.loadTrialDeployments(input);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
   },
 
   Mutation: {

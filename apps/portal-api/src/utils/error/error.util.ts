@@ -17,18 +17,16 @@ const errorUtil = (
   information?: ErrorInformation
 ): CustomApolloError => {
   const Exception = createError(name, { data, message });
-  console.trace(name, data, message);
-  if (information?.detail instanceof Error) {
-    console.error('Original error:', information.detail);
-  }
+  const errorDetails = {
+    data,
+    message,
+    ...(information?.detail instanceof Error
+      ? { detail: information.detail }
+      : {}),
+  };
+  logApp.error(name, errorDetails);
   return new Exception();
 };
-export const BAD_REQUEST = 'BAD_REQUEST';
-export const FORBIDDEN_ACCESS = 'FORBIDDEN_ACCESS';
-export const UNKNOWN_ERROR = 'UNKNOWN_ERROR';
-export const STILL_REFERENCED = 'STILL_REFERENCED';
-export const ALREADY_EXISTS = 'ALREADY_EXISTS';
-export const NOT_FOUND = 'NOT_FOUND';
 
 export type ErrorBuilder = (
   message: string,
@@ -72,7 +70,6 @@ export const UnknownError: ErrorBuilder = (
   information?: ErrorInformation,
   data?: Record<string, unknown>
 ): CustomApolloError => {
-  logApp.error(message + ' details: ' + information.detail);
   return errorUtil(
     ErrorType.UnknownError,
     message || 'An unknown error has occurred',
@@ -90,8 +87,6 @@ export const StillReferencedError: ErrorBuilder = (
   information?: ErrorInformation,
   data?: Record<string, unknown>
 ): CustomApolloError => {
-  logApp.error(message + ' details: ' + information.detail);
-
   return errorUtil(
     ErrorType.StillReference,
     message,
@@ -109,8 +104,6 @@ export const AlreadyExistsError: ErrorBuilder = (
   information?: ErrorInformation,
   data?: Record<string, unknown>
 ): CustomApolloError => {
-  logApp.error(message + ' details: ' + information.detail);
-
   return errorUtil(
     ErrorType.AlreadyExists,
     message,
@@ -128,10 +121,6 @@ export const NotFoundError: ErrorBuilder = (
   information?: ErrorInformation,
   data?: Record<string, unknown>
 ): CustomApolloError => {
-  logApp.error(
-    `${message} ${information ? `details: ${JSON.stringify(information)}` : ''}`
-  );
-
   return errorUtil(
     ErrorType.NotFound,
     message,

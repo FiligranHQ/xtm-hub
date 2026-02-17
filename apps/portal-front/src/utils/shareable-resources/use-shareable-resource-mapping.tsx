@@ -10,6 +10,7 @@ import {
 } from '@/components/service/components/use-service-list-local-storage';
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/integration-deployable-filter';
 import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/integration-filters';
+import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/integration-verified-filter';
 import {
   ServiceSlug,
   ShareableResourceType,
@@ -37,9 +38,9 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   };
   const {
     removeLabels,
-    removeConnectorTypes,
     removeIntegrationTypes,
     removeDeployable,
+    removeVerified,
   } = useServiceListLocalStorage(localStorageKey);
 
   const labelFilter = {
@@ -52,14 +53,15 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       [ServiceListFilterKey.Label]: labelFilter,
       [ServiceListFilterKey.IntegrationType]: {
         node: <IntegrationFilters />,
-        reset: () => {
-          removeConnectorTypes();
-          removeIntegrationTypes();
-        },
+        reset: removeIntegrationTypes,
       },
       [ServiceListFilterKey.ManagerSupported]: {
         node: <IntegrationDeployableFilter />,
         reset: removeDeployable,
+      },
+      [ServiceListFilterKey.Verified]: {
+        node: <IntegrationVerifiedFilter />,
+        reset: removeVerified,
       },
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {

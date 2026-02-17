@@ -4,11 +4,12 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
+import { DocumentsListQuery } from '@/components/service/document/document.graphql';
+import { useLogicalFiltersFromStorage } from '@/components/service/document/use-logical-filters-from-storage';
 import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/integrations-list';
-import { IntegrationsListQuery } from '@/components/service/integrations/integration.graphql';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { Skeleton } from '@filigran/ui';
-import { integrationsQuery } from '@generated/integrationsQuery.graphql';
-import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
+import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
@@ -18,37 +19,41 @@ interface PageLoaderProps {
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
-  const [queryRef, loadQuery] = useQueryLoader<integrationsQuery>(
-    IntegrationsListQuery
-  );
+  const [queryRef, loadQuery] =
+    useQueryLoader<documentsQuery>(DocumentsListQuery);
   const {
     pageSize,
     search,
     labels,
     integrationTypes,
-    connectorTypes,
     productVersions,
     setSearch,
     deployable,
+    verified,
+    orderBy,
+    orderMode,
   } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );
+
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
+    labels,
+    deployable,
+    verified,
+    integrationTypes,
+    productVersions,
+  });
 
   useEffect(() => {
     loadQuery(
       {
         count: pageSize,
-        orderBy: 'name',
-        orderMode: 'asc',
+        orderBy,
+        orderMode,
         serviceInstanceId: serviceInstance.id,
         searchTerm: search,
-        filters: [
-          { key: FilterKeyEnum.LABEL, value: labels },
-          { key: FilterKeyEnum.INTEGRATION_TYPE, value: integrationTypes },
-          { key: FilterKeyEnum.INTEGRATION_SUBTYPE, value: connectorTypes },
-          { key: FilterKeyEnum.PRODUCT_VERSION, value: productVersions },
-          { key: FilterKeyEnum.MANAGER_SUPPORTED, value: deployable },
-        ],
+        logicalFilters,
       },
       {
         fetchPolicy: 'store-and-network',
@@ -59,11 +64,9 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     pageSize,
     serviceInstance,
     search,
-    labels,
-    integrationTypes,
-    connectorTypes,
-    productVersions,
-    deployable,
+    logicalFilters,
+    orderBy,
+    orderMode,
   ]);
 
   return (

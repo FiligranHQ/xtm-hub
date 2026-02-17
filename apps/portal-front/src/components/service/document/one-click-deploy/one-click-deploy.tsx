@@ -21,7 +21,7 @@ import { graphql, useMutation } from 'react-relay';
 
 interface OneClickDeployProps {
   documentData: ShareableResource;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
 }
 
 const OneClickDeploy = ({
@@ -30,7 +30,9 @@ const OneClickDeploy = ({
 }: OneClickDeployProps) => {
   const t = useTranslations();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
-  const { platforms } = useRegisteredPlatforms(platformIdentifier);
+  const { platforms } = useRegisteredPlatforms(platformIdentifier, {
+    onlyActive: true,
+  });
 
   const SendOneClickDeployTelemetryMutation = graphql`
     mutation oneClickDeployMutation($input: OneClickDeployInput!) {
@@ -69,7 +71,7 @@ const OneClickDeploy = ({
               platform_identifier: platformIdentifier,
               service_instance_id: documentData.service_instance!.id,
               resource_id: documentData.id,
-              resource_title: documentData.name,
+              resource_title: documentData.name ?? '',
               platform_service_instance_id: platform!.id,
             },
           },

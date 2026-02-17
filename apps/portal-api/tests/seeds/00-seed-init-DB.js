@@ -23,8 +23,8 @@ export async function seed(knex) {
         salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
         password:
           'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
-        first_name: 'firstname',
-        last_name: 'lastname',
+        first_name: 'Al',
+        last_name: 'Beback',
         selected_organization_id: filigranOrganisationId,
       },
     ])
@@ -181,13 +181,6 @@ export async function seed(knex) {
         public: true,
         identifier: 'opencti_custom_dashboards',
       },
-      {
-        id: '6c837a7d-2821-4c3d-9479-d3e7fa02f0cb',
-        name: 'OpenCTI Registration',
-        description: 'Access and manage your OpenCTI instance',
-        public: false,
-        identifier: 'opencti_registration',
-      },
     ])
     .onConflict('id')
     .ignore();
@@ -285,26 +278,6 @@ export async function seed(knex) {
         service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         url: '/service/vault',
         name: 'Vault',
-      },
-    ])
-    .onConflict('id')
-    .ignore();
-
-  await knex('Service_Price')
-    .insert([
-      {
-        id: '7c6c5d07-07d4-4418-b441-bc19f2d14825',
-        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-        fee_type: 'YEARLY',
-        start_date: null,
-        price: 0,
-      },
-      {
-        id: '65ca846b-b4ff-42ec-bafa-cc604eea11f5',
-        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-        fee_type: 'MONTHLY',
-        start_date: '2024-08-08',
-        price: 1000,
       },
     ])
     .onConflict('id')

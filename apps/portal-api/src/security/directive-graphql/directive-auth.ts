@@ -4,6 +4,7 @@ import { hasServiceCapability } from './validators/service-capability.validator'
 
 // Export validators for testing or external use
 export const authDirectives = {
+  isAuthenticated,
   hasCapability,
   hasServiceCapability,
 };

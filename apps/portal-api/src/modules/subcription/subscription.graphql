@@ -29,16 +29,16 @@ type SubscriptionEdge {
 
 type Mutation {
   addSubscription(service_instance_id: String): ServiceInstance
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addSubscriptionInService(
     service_instance_id: String
     organization_id: ID
     capability_ids: [ID]
     start_date: Date
     end_date: Date
-  ): ServiceInstance @auth(requires: [BYPASS])
+  ): ServiceInstance @auth(portalCapa: [BYPASS])
   deleteSubscription(subscription_id: ID!): ServiceInstance
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])
 }
 

@@ -22,11 +22,11 @@ export const ServiceListAddFilterCombobox: React.FC<Props> = ({
       value: filterKey,
       label: t(`Service.List.Filter.Key.${filterKey}`),
     }));
-  }, [availableFilterKeys, addFilter, t]);
+  }, [availableFilterKeys, t]);
 
   return (
     <Combobox
-      className="w-[250px]"
+      className="w-[150px]"
       dataTab={dataTab}
       order={t('Service.List.Filter.Add')}
       placeholder={t('Service.List.Filter.Add')}

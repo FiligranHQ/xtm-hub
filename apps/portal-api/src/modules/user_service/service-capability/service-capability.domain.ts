@@ -1,9 +1,9 @@
 import { db } from '../../../../knexfile';
-import { Restriction } from '../../../__generated__/resolvers-types';
 import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
 import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
+import { GenericServiceCapabilityName } from './generic_service_capability.const';
 
 export const getManageAccessLeft = async (userServiceId: UserServiceId) => {
   const userService = await db<UserService>('User_Service')
@@ -30,7 +30,10 @@ export const getManageAccessLeft = async (userServiceId: UserServiceId) => {
       'Generic_Service_Capability.id'
     )
     .where('User_Service.subscription_id', userService.subscription_id)
-    .andWhere('Generic_Service_Capability.name', Restriction.ManageAccess)
+    .andWhere(
+      'Generic_Service_Capability.name',
+      GenericServiceCapabilityName.MANAGE_ACCESS
+    )
     .countDistinct('User_Service.id as count')
     .first();
 

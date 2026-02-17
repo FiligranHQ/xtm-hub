@@ -1,3 +1,3 @@
-import Label from '../model/kanel/public/Label';
+import UseCase from '../model/kanel/public/UseCase';
 
-export type WithLabels<T> = T & { labels: Label[] };
+export type WithUseCases<T> = T & { use_cases: UseCase[] };

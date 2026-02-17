@@ -1,28 +1,3 @@
-input CreateOpenAEVScenarioInput {
-  name: String!
-  slug: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  labels: [String!]
-  uploader_id: String!
-  # Specific fields for OpenAEV scenarios
-  product_version: String!
-}
-
-input UpdateOpenAEVScenarioInput {
-  name: String
-  slug: String
-  short_description: String
-  description: String
-  active: Boolean
-  labels: [String!]
-  uploader_organization_id: String
-  uploader_id: String
-  # Specific fields for OpenAEV scenarios
-  product_version: String
-}
-
 type OpenAEVScenario implements Document & Node {
   id: ID!
   type: String!
@@ -31,19 +6,19 @@ type OpenAEVScenario implements Document & Node {
   name: String!
   short_description: String
   description: String
-  file_name: String!
-  minio_name: String!
+  file_name: String! @auth
+  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
-  updater_id: String
+  updater_id: String @auth
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
+  use_cases: [UseCase!]
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
+  subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
   # Specific fields for OpenAEVScenario scenarios
   product_version: String
@@ -63,33 +38,5 @@ type OpenAEVScenarioConnection {
 type Query {
   seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
   seoOpenAEVScenarioBySlug(slug: String): OpenAEVScenario
-  openAEVScenarios(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    filters: [Filter!]
-    serviceInstanceId: String
-  ): OpenAEVScenarioConnection! @auth
   openAEVScenario(id: ID, serviceInstanceId: ID): OpenAEVScenario @auth
-}
-
-type Mutation {
-  createOpenAEVScenario(
-    input: CreateOpenAEVScenarioInput!
-    document: [Upload!]!
-    serviceInstanceId: String
-  ): OpenAEVScenario! @auth @service_capa(requires: [UPLOAD])
-  updateOpenAEVScenario(
-    documentId: ID!
-    input: UpdateOpenAEVScenarioInput!
-    document: [Upload!]
-    updateDocument: Boolean!
-    images: [String!]
-    serviceInstanceId: String
-  ): OpenAEVScenario! @auth @service_capa(requires: [UPLOAD])
-  deleteOpenAEVScenario(id: ID!, serviceInstanceId: String!): OpenAEVScenario!
-    @auth
-    @service_capa(requires: [DELETE])
 }

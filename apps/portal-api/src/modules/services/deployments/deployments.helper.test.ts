@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -7,15 +8,51 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
-import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import DeploymentRequestModel, {
+  DeploymentRequestId,
+} from '../../../model/kanel/public/DeploymentRequest';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
+  hasDeploymentTelemetryDataChanged,
   isHubStatusTransitionValid,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
+
+const buildDeploymentRequest = (
+  overrides: Partial<DeploymentRequestModel> = {}
+): DeploymentRequestModel => ({
+  id: uuidv4() as DeploymentRequestId,
+  user_requester_id: uuidv4() as UserId,
+  organization_requester_id: uuidv4() as OrganizationId,
+  service_instance_id: uuidv4() as ServiceInstanceId,
+  type: DeploymentRequestDeploymentType.Trial,
+  request_date: new Date('2025-01-01'),
+  start_date: new Date('2025-01-01'),
+  end_date: new Date('2025-02-01'),
+  platform_identifier: PlatformIdentifier.Opencti,
+  region: DeploymentRequestPlatformRegion.EuWest,
+  activity_sector: null,
+  platform_token: null,
+  platform_id: 'platform-123',
+  failure_reason: null,
+  job_title: null,
+  use_case: null,
+  hub_status: DeploymentRequestHubStatus.Pending,
+  target_state: DeploymentRequestPlatformState.Active,
+  actual_state: DeploymentRequestPlatformState.Provisioning,
+  ordering: 0,
+  counts_in_orga_quota: true,
+  cancellation_user_id: null,
+  cancellation_date: null,
+  cancellation_reason: null,
+  ...overrides,
+});
 
 describe('isHubStatusTransitionValid', () => {
   const validTransitions = [
@@ -102,6 +139,10 @@ describe('isPlatformStateTransitionValid', () => {
       DeploymentRequestPlatformState.Removing,
       DeploymentRequestPlatformState.Removed,
     ],
+    [
+      DeploymentRequestPlatformState.Removed,
+      DeploymentRequestPlatformState.Provisioning,
+    ],
   ] as const;
 
   it.each(validTransitions)(
@@ -147,7 +188,10 @@ describe('assertFreeTrialsLimit', () => {
     ).mockResolvedValue(null);
 
     await expect(
-      assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
+      assertFreeTrialsLimit(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        PlatformIdentifier.Opencti
+      )
     ).resolves.not.toThrow();
   });
 
@@ -165,7 +209,10 @@ describe('assertFreeTrialsLimit', () => {
       actual_state: DeploymentRequestPlatformState.Active,
     });
     await expect(
-      assertFreeTrialsLimit(PLATFORM_ORGANIZATION_UUID)
+      assertFreeTrialsLimit(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        PlatformIdentifier.Opencti
+      )
     ).rejects.toThrow(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
   });
 });
@@ -320,5 +367,140 @@ describe('computeHubStatus', () => {
         expect(result).toBe(expectedStatus);
       }
     );
+  });
+});
+
+describe('hasDeploymentTelemetryDataChanged', () => {
+  it('should return false when all telemetry fields are identical', () => {
+    const base = buildDeploymentRequest();
+    const copy = { ...base };
+
+    expect(hasDeploymentTelemetryDataChanged(base, copy)).toBe(false);
+  });
+
+  it('should return true when hub_status changed', () => {
+    const previous = buildDeploymentRequest({
+      hub_status: DeploymentRequestHubStatus.Pending,
+    });
+    const current = buildDeploymentRequest({
+      ...previous,
+      hub_status: DeploymentRequestHubStatus.Active,
+    });
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return true when platform_id changed', () => {
+    const previous = buildDeploymentRequest({ platform_id: 'old-id' });
+    const current = { ...previous, platform_id: 'new-id' };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return true when platform_id goes from null to a value', () => {
+    const previous = buildDeploymentRequest({ platform_id: null });
+    const current = { ...previous, platform_id: 'new-id' };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return true when cancellation_reason changed', () => {
+    const previous = buildDeploymentRequest({ cancellation_reason: null });
+    const current = { ...previous, cancellation_reason: 'user_request' };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return true when start_date changed', () => {
+    const previous = buildDeploymentRequest({
+      start_date: new Date('2025-01-01'),
+    });
+    const current = { ...previous, start_date: new Date('2025-01-15') };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return true when end_date changed', () => {
+    const previous = buildDeploymentRequest({
+      end_date: new Date('2025-02-01'),
+    });
+    const current = { ...previous, end_date: new Date('2025-03-01') };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return true when start_date goes from null to a value', () => {
+    const previous = buildDeploymentRequest({ start_date: null });
+    const current = { ...previous, start_date: new Date('2025-01-01') };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return true when end_date goes from a value to null', () => {
+    const previous = buildDeploymentRequest({
+      end_date: new Date('2025-02-01'),
+    });
+    const current = { ...previous, end_date: null };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return false when both start_date and end_date are null', () => {
+    const previous = buildDeploymentRequest({
+      start_date: null,
+      end_date: null,
+    });
+    const current = { ...previous };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);
+  });
+
+  it('should return false when non-telemetry fields changed', () => {
+    const previous = buildDeploymentRequest({
+      failure_reason: null,
+      ordering: 0,
+      actual_state: DeploymentRequestPlatformState.Provisioning,
+      activity_sector: 'cybersecurity',
+    });
+    const current = {
+      ...previous,
+      failure_reason: 'some failure',
+      ordering: 5,
+      actual_state: DeploymentRequestPlatformState.Active,
+      activity_sector: 'finance',
+    };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);
+  });
+
+  it('should return true when multiple telemetry fields changed at once', () => {
+    const previous = buildDeploymentRequest({
+      hub_status: DeploymentRequestHubStatus.Pending,
+      platform_id: null,
+      start_date: null,
+    });
+    const current = {
+      ...previous,
+      hub_status: DeploymentRequestHubStatus.Active,
+      platform_id: 'new-platform',
+      start_date: new Date('2025-01-01'),
+    };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+  });
+
+  it('should return false when dates have same timestamp', () => {
+    const timestamp = new Date('2025-06-15T10:30:00.000Z');
+    const previous = buildDeploymentRequest({
+      start_date: new Date(timestamp.getTime()),
+      end_date: new Date(timestamp.getTime()),
+    });
+    const current = {
+      ...previous,
+      start_date: new Date(timestamp.getTime()),
+      end_date: new Date(timestamp.getTime()),
+    };
+
+    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);
   });
 });

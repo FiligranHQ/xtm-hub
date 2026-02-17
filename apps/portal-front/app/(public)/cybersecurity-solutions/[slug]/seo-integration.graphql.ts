@@ -15,7 +15,7 @@ export const SeoIntegrationFragment = graphql`
     children_documents {
       id
     }
-    labels {
+    use_cases {
       id
       name
       color
@@ -28,6 +28,27 @@ export const SeoIntegrationFragment = graphql`
     active
     type
     integration_type
+
+    ... on CsvFeed {
+      feed_url
+    }
+    ... on Connector {
+      integration_subtype
+    }
+    ... on Stream {
+      integration_subtype
+      feed_url
+    }
+    ... on TaxiiFeed {
+      integration_subtype
+      feed_url
+    }
+    ... on ThirdPartyIntegration {
+      integration_subtype
+      product_version
+      github_url
+      vendor_url
+    }
   }
 `;
 
@@ -58,81 +79,5 @@ export const SeoIntegrationBySlugQuery = graphql`
       ...seoIntegrationFragment
       ...seoIntegrationConnectorFragment
     }
-  }
-`;
-
-export const seoIntegrationsItem = graphql`
-  fragment seoIntegrationsItemFragment on Integration @inline {
-    __typename
-    id
-    name
-    description
-    short_description
-    created_at
-    updated_at
-    slug
-    download_number
-    share_number
-    service_instance {
-      id
-      slug
-    }
-    children_documents {
-      id
-    }
-    labels {
-      id
-      name
-      color
-    }
-    uploader {
-      first_name
-      last_name
-      picture
-    }
-    active
-    type
-    integration_type
-
-    ...seoIntegrationConnectorFragment @relay(mask: false)
-  }
-`;
-
-export const seoIntegrationsFragment = graphql`
-  fragment seoIntegrationsList on Query
-  @refetchable(queryName: "SeoIntegrationsPaginationQuery") {
-    publicIntegrations(
-      slug: $slug
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      searchTerm: $searchTerm
-      filters: $filters
-      serviceInstanceId: $serviceInstanceId
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          ...seoIntegrationsItemFragment
-        }
-      }
-    }
-  }
-`;
-
-export const SeoIntegrationListQuery = graphql`
-  query seoIntegrationsQuery(
-    $slug: String!
-    $count: Int!
-    $cursor: ID
-    $orderBy: DocumentOrdering!
-    $orderMode: OrderingMode!
-    $filters: [Filter!]
-    $searchTerm: String
-    $serviceInstanceId: String
-  ) {
-    ...seoIntegrationsList
   }
 `;

@@ -1,4 +1,4 @@
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { OrganizationCapabilitiesInput } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import Organization, {
@@ -20,14 +20,6 @@ export const insertNewUserOrganization = (
   field: UserOrganizationInitializer | UserOrganizationInitializer[]
 ): Promise<UserOrganization[]> => {
   return db('User_Organization').insert(field).returning('*');
-};
-
-export const insertNewUserOrganizationUnsecure = (
-  field: UserOrganizationInitializer | UserOrganizationInitializer[]
-): Promise<UserOrganization[]> => {
-  return dbUnsecure<UserOrganization>('User_Organization')
-    .insert(field)
-    .returning('*');
 };
 
 export const loadUserOrganization = (
@@ -124,4 +116,20 @@ export const removeUserFromOrganization = async (
   return db<UserOrganization>('User_Organization')
     .where({ user_id, organization_id })
     .delete('*');
+};
+
+export const removeUserFromPendingList = async ({
+  user_id,
+  organization_id,
+}: {
+  user_id: UserId;
+  organization_id: OrganizationId;
+}) => {
+  return db('User_Organization_Pending')
+    .where({
+      user_id,
+      organization_id,
+    })
+    .del()
+    .returning('id');
 };

@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import { OrganizationCapability } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { ForbiddenAccess } from '../../utils/error/error.util';
@@ -7,9 +7,9 @@ import { ForbiddenAccess } from '../../utils/error/error.util';
 export const checkUserCapabilities = async (
   requiredCapabilities: OrganizationCapability[]
 ) => {
-  const context = requestContext.require();
+  const { user } = requestContext.require();
   // TODO Replace this query by adding a mapping org/capa and check the user capabilities depending of the organization
-  const getUserCapability = await dbUnsecure('User')
+  const getUserCapability = await db('User')
     .leftJoin('User_Organization', 'User.id', 'User_Organization.user_id')
     .leftJoin(
       'UserOrganization_Capability',
@@ -17,7 +17,7 @@ export const checkUserCapabilities = async (
       'UserOrganization_Capability.user_organization_id'
     )
     .where({
-      'User.id': context.user.id,
+      'User.id': user.id,
     })
     .whereIn('UserOrganization_Capability.name', requiredCapabilities)
     .first();

@@ -1,6 +1,10 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/service-list-header';
-import { ConnectorTypeEnum } from '@generated/models/ConnectorType.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import {
+  isLogicalMultiSelectSelection,
+  LogicalMultiSelectSelection,
+} from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
+import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
+import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {
@@ -8,6 +12,38 @@ export enum ServiceListLocalStorageKey {
   OpenCTIIntegrationFeeds = 'OpenCTIIntegrationFeeds',
   OpenAEVScenarios = 'OpenAEVScenarios',
 }
+
+const deserializeSelectedFilters = (stored: string): ServiceListFilterKey[] => {
+  try {
+    const parsed = JSON.parse(stored);
+
+    if (!Array.isArray(parsed)) return [];
+
+    const validValues = Object.values(ServiceListFilterKey);
+
+    return parsed.filter((item): item is ServiceListFilterKey =>
+      validValues.includes(item)
+    );
+  } catch {
+    return [];
+  }
+};
+
+const deserializeLogicalMultiSelectSelection = (
+  stored: string
+): LogicalMultiSelectSelection => {
+  try {
+    const parsed = JSON.parse(stored);
+
+    if (isLogicalMultiSelectSelection(parsed)) {
+      return parsed;
+    }
+
+    return {};
+  } catch {
+    return {};
+  }
+};
 
 export const useServiceListLocalStorage = (
   serviceName: ServiceListLocalStorageKey
@@ -22,37 +58,81 @@ export const useServiceListLocalStorage = (
     ''
   );
 
-  const [labels, setLabels, removeLabels] = useLocalStorage<string[]>(
-    `label${serviceName}List`,
-    []
-  );
+  const [labels, setLabels, removeLabels] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `label${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
 
   const [selectedFilters, setSelectedFilters, removeSelectedFilters] =
     useLocalStorage<ServiceListFilterKey[]>(
       `selectedFilters${serviceName}List`,
-      []
+      [],
+      {
+        deserializer: deserializeSelectedFilters,
+      }
     );
 
   const [integrationTypes, setIntegrationTypes, removeIntegrationTypes] =
-    useLocalStorage<IntegrationTypeEnum[]>(
+    useLocalStorage<LogicalMultiSelectSelection>(
       `integrationType${serviceName}List`,
-      []
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
     );
 
-  const [connectorTypes, setConnectorTypes, removeConnectorTypes] =
-    useLocalStorage<ConnectorTypeEnum[]>(`connectorType${serviceName}List`, []);
-
   const [productVersions, setProductVersions, removeProductVersions] =
-    useLocalStorage<string[]>(`productVersion${serviceName}List`, []);
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `productVersion${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
 
-  const [deployable, setDeployable, removeDeployable] = useLocalStorage<
-    string[]
-  >(`deployable${serviceName}List`, []);
+  const [deployable, setDeployable, removeDeployable] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `deployable${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
+
+  const [verified, setVerified, removeVerified] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `verified${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
 
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     `count${serviceName}List`,
     50
   );
+
+  const defaultOrderBy =
+    serviceName === ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+      ? DocumentOrderingEnum.NAME
+      : DocumentOrderingEnum.CREATED_AT;
+
+  const [orderBy, setOrderBy, removeOrderBy] =
+    useLocalStorage<DocumentOrderingEnum>(
+      `orderBy${serviceName}List`,
+      defaultOrderBy
+    );
+
+  const [orderMode, setOrderMode, removeOrderMode] =
+    useLocalStorage<OrderingModeEnum>(
+      `orderMode${serviceName}List`,
+      OrderingModeEnum.ASC
+    );
 
   const resetAll = () => {
     removeCount();
@@ -61,8 +141,9 @@ export const useServiceListLocalStorage = (
     removeLabels();
     removeSelectedFilters();
     removeIntegrationTypes();
-    removeConnectorTypes();
     removeDeployable();
+    removeOrderBy();
+    removeOrderMode();
   };
 
   return {
@@ -80,9 +161,6 @@ export const useServiceListLocalStorage = (
     integrationTypes,
     setIntegrationTypes,
     removeIntegrationTypes,
-    connectorTypes,
-    setConnectorTypes,
-    removeConnectorTypes,
     selectedFilters,
     setSelectedFilters,
     removeSelectedFilters,
@@ -92,5 +170,12 @@ export const useServiceListLocalStorage = (
     deployable,
     setDeployable,
     removeDeployable,
+    verified,
+    setVerified,
+    removeVerified,
+    orderBy,
+    setOrderBy,
+    orderMode,
+    setOrderMode,
   };
 };

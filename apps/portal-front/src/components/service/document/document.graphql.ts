@@ -46,58 +46,6 @@ export const DocumentUpdateMutation = graphql`
   }
 `;
 
-export const DocumentAddMutation = graphql`
-  mutation documentAddMutation(
-    $document: Upload
-    $name: String
-    $shortDescription: String
-    $description: String
-    $serviceInstanceId: String
-    $active: Boolean
-    $parentDocumentId: ID
-    $slug: String
-    $connections: [ID!]!
-    $type: String!
-  ) {
-    addDocument(
-      document: $document
-      name: $name
-      short_description: $shortDescription
-      description: $description
-      service_instance_id: $serviceInstanceId
-      active: $active
-      parentDocumentId: $parentDocumentId
-      slug: $slug
-      type: $type
-    ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
-      __id
-      id
-      name
-      file_name
-      ...documentItem_fragment
-    }
-  }
-`;
-
-export const DocumentEditMutation = graphql`
-  mutation documentEditMutation(
-    $documentId: ID
-    $input: EditDocumentInput!
-    $serviceInstanceId: String
-  ) {
-    editDocument(
-      documentId: $documentId
-      input: $input
-      service_instance_id: $serviceInstanceId
-    ) {
-      id
-      name
-      file_name
-      ...documentItem_fragment
-    }
-  }
-`;
-
 export const DocumentDeleteMutation = graphql`
   mutation documentDeleteMutation(
     $documentId: ID
@@ -115,22 +63,6 @@ export const DocumentDeleteMutation = graphql`
   }
 `;
 
-export const DocumentDetailDeleteMutation = graphql`
-  mutation documentDetailDeleteMutation(
-    $documentId: ID
-    $serviceInstanceId: String
-    $forceDelete: Boolean
-  ) {
-    deleteDocument(
-      documentId: $documentId
-      service_instance_id: $serviceInstanceId
-      forceDelete: $forceDelete
-    ) {
-      id
-    }
-  }
-`;
-
 export const DocumentExistsQuery = graphql`
   query documentExistsQuery($documentName: String, $serviceInstanceId: String) {
     documentExists(
@@ -142,6 +74,7 @@ export const DocumentExistsQuery = graphql`
 
 export const documentItem = graphql`
   fragment documentItem_fragment on Document @inline {
+    __typename
     id
     type
     file_name
@@ -153,12 +86,14 @@ export const documentItem = graphql`
     share_number
     active
     updated_at
-    labels {
+    use_cases {
       id
       name
       color
     }
     uploader {
+      id
+      email
       first_name
       last_name
       picture
@@ -189,6 +124,45 @@ export const documentItem = graphql`
     ... on CustomDashboard {
       product_version
     }
+
+    ... on CsvFeed {
+      integration_type
+      feed_url
+    }
+
+    ... on TaxiiFeed {
+      integration_type
+      feed_url
+    }
+
+    ... on Stream {
+      integration_type
+      feed_url
+    }
+
+    ... on ThirdPartyIntegration {
+      integration_type
+      integration_subtype
+      product_version
+      vendor_url
+      github_url
+    }
+
+    ... on Connector {
+      integration_type
+      integration_subtype
+      product_version
+      container_image
+      verified
+      source_code
+      subscription_link
+      manager_supported
+      playbook_supported
+    }
+
+    ... on OpenAEVScenario {
+      product_version
+    }
   }
 `;
 export const documentsFragment = graphql`
@@ -200,7 +174,7 @@ export const documentsFragment = graphql`
       orderBy: $orderBy
       orderMode: $orderMode
       searchTerm: $searchTerm
-      filters: $filters
+      logicalFilters: $logicalFilters
       serviceInstanceId: $serviceInstanceId
       parentsOnly: $parentsOnly
     ) {
@@ -223,19 +197,11 @@ export const DocumentsListQuery = graphql`
     $cursor: ID
     $orderBy: DocumentOrdering!
     $orderMode: OrderingMode!
-    $filters: [Filter!]
+    $logicalFilters: LogicalFilterInput
     $searchTerm: String
     $serviceInstanceId: String
     $parentsOnly: Boolean
   ) {
     ...documentsList
-  }
-`;
-
-export const DocumentQuery = graphql`
-  query documentQuery($documentId: ID, $serviceInstanceId: ID) {
-    document(documentId: $documentId, serviceInstanceId: $serviceInstanceId) {
-      ...documentItem_fragment
-    }
   }
 `;

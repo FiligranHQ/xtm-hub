@@ -1,19 +1,41 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { OrganizationCapability } from '../../__generated__/resolvers-types';
+import {
+  CAPABILITY_MODIFY_TRIALS,
+  CAPABILITY_READ_TRIALS,
+} from '../../../tests/tests.const';
+import {
+  OrganizationCapability,
+  PortalCapability,
+} from '../../__generated__/resolvers-types';
 import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import * as AuthHelper from '../auth.helper';
 import { authDirectives } from './directive-auth';
+import { RoleType } from './directive.model';
 
 describe('Auth directives', () => {
+  describe('isAuthenticated', () => {
+    it('should return false if user is disabled', () => {
+      const user = {
+        disabled: true,
+      } as UserLoadUserBy;
+
+      const result = authDirectives.isAuthenticated(user);
+
+      expect(result).toBe(false);
+    });
+  });
+
   describe('hasCapability', () => {
     it.each`
-      description                                                                   | expected | isUserAdmin | userHasManageAccess | areCapabilitiesRequired | isUserBypass
-      ${'allow bypass user'}                                                        | ${true}  | ${false}    | ${false}            | ${true}                 | ${true}
-      ${'allow user when there is no required capability and he is not disabled'}   | ${true}  | ${false}    | ${false}            | ${false}                | ${false}
-      ${'allow user when he has the right capability'}                              | ${true}  | ${false}    | ${true}             | ${true}                 | ${false}
-      ${'not allow user when he does not have right capability'}                    | ${false} | ${false}    | ${false}            | ${true}                 | ${false}
-      ${'not allow user is the organization admin but capability is not mentioned'} | ${false} | ${true}     | ${false}            | ${true}                 | ${false}
+      description                                                                   | expected | isUserAdmin | userHasManageAccess | userHasReadTrials | userHasModifyTrials | areOrgaCapaRequired | arePortalCapaRequired | isUserBypass
+      ${'allow bypass user'}                                                        | ${true}  | ${false}    | ${false}            | ${false}          | ${false}            | ${true}             | ${false}              | ${true}
+      ${'allow user when there is no required capability and he is not disabled'}   | ${true}  | ${false}    | ${false}            | ${false}          | ${false}            | ${false}            | ${false}              | ${false}
+      ${'allow user when he has the right orga capability'}                         | ${true}  | ${false}    | ${true}             | ${false}          | ${false}            | ${true}             | ${false}              | ${false}
+      ${'not allow user when he does not have right orga capability'}               | ${false} | ${false}    | ${false}            | ${false}          | ${false}            | ${true}             | ${false}              | ${false}
+      ${'not allow user is the organization admin but capability is not mentioned'} | ${false} | ${true}     | ${false}            | ${false}          | ${false}            | ${true}             | ${false}              | ${false}
+      ${'allow user when he has the right portal capability'}                       | ${true}  | ${false}    | ${false}            | ${true}           | ${false}            | ${false}            | ${true}               | ${false}
+      ${'not allow user when he does not have the right portal capability'}         | ${false} | ${false}    | ${false}            | ${false}          | ${true}             | ${false}            | ${true}               | ${false}
     `(
       'should $description',
       ({
@@ -21,9 +43,14 @@ describe('Auth directives', () => {
         expected,
         isUserAdmin,
         userHasManageAccess,
-        areCapabilitiesRequired,
+        userHasReadTrials,
+        userHasModifyTrials,
+        areOrgaCapaRequired,
+        arePortalCapaRequired,
       }) => {
         const capabilities = isUserBypass ? [CAPABILITY_BYPASS] : [];
+        if (userHasReadTrials) capabilities.push(CAPABILITY_READ_TRIALS);
+        if (userHasModifyTrials) capabilities.push(CAPABILITY_MODIFY_TRIALS);
         const organizationCapabilities = [];
         if (isUserAdmin) {
           organizationCapabilities.push(
@@ -40,9 +67,14 @@ describe('Auth directives', () => {
           disabled: false,
         } as UserLoadUserBy;
 
-        const requiredCapabilities = areCapabilitiesRequired
-          ? [OrganizationCapability.ManageAccess]
-          : [];
+        const requiredCapabilities = {
+          [RoleType.ORGA]: areOrgaCapaRequired
+            ? [OrganizationCapability.ManageAccess]
+            : [],
+          [RoleType.PORTAL]: arePortalCapaRequired
+            ? [PortalCapability.ReadTrials]
+            : [],
+        };
 
         const result = authDirectives.hasCapability(user, requiredCapabilities);
 

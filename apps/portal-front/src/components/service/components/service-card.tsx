@@ -1,65 +1,102 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { useServiceContext } from '@/components/service/components/service-context';
+import {
+  CardTypeEnum,
+  ServiceDelete,
+} from '@/components/service/components/service-delete';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
-import { ShareableResourceConnectorType } from '@/components/service/document/connector/shareable-resource-connector-slug-public';
-import { SettingsContext } from '@/components/settings/env-portal-context';
+import { useDocumentContext } from '@/components/service/document/use-document-context';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import ShareableResourceCard from '@/components/ui/shareable-resource/shareable-resource-card';
-import ShareableResourceConnectorCard from '@/components/ui/shareable-resource/shareable-resource-connector-card';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import {
-  isConnectorResource,
+  isIntegrationItem,
+  ShareableResourceType,
   SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { MoreVertIcon } from '@filigran/icon';
+import { toast } from '@filigran/ui';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface ServiceCardProps {
   document: SubscribableResource;
   detailUrl: string;
   shareLinkUrl: string;
   requiredProductVersion?: string;
+  connectionId?: string;
 }
 
 const ServiceCard = ({
   document,
   detailUrl,
   shareLinkUrl,
+  connectionId,
 }: ServiceCardProps) => {
-  const { settings } = useContext(SettingsContext);
   const t = useTranslations();
+  const router = useRouter();
+
   const [openSheet, setOpenSheet] = useState(false);
 
-  const { serviceInstance } = useServiceContext();
-
-  const userCanUpdate = useServiceCapability(
+  const { serviceInstance, setIntegrationType, translationKey } =
+    useServiceContext();
+  const context = useDocumentContext({
+    serviceInstance,
+    connectionId,
+    type: document.type as ShareableResourceType,
+  });
+  const hasUploadCapability = useServiceCapability(
     ServiceCapabilityName.Upload,
     serviceInstance
   );
+  const isAllowedIntegration =
+    isIntegrationItem(document) &&
+    document.integration_type !== IntegrationTypeEnum.CONNECTOR;
+  const isAllowedType =
+    document.type !== ShareableResourceType.OPENCTI_INTEGRATION;
+
+  const userCanUpdate =
+    hasUploadCapability && (isAllowedIntegration || isAllowedType);
+
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
     serviceInstance
   );
 
-  if (isConnectorResource(document)) {
-    const docResource: ShareableResourceConnectorType = document;
-    return (
-      <ShareableResourceConnectorCard
-        shareableConnector={docResource}
-        requiredProductVersion={docResource.product_version}
-        serviceInstance={serviceInstance}
-        detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${docResource.id}`}
-        shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${docResource?.service_instance?.slug}/${docResource?.slug}`}
-      />
-    );
-  }
+  const onClickOnUpdate = () => {
+    if (document && isIntegrationItem(document)) {
+      setIntegrationType(
+        (document.integration_type as IntegrationTypeEnum) ??
+          IntegrationTypeEnum.CSV_FEED
+      );
+    }
 
+    setOpenSheet(true);
+  };
+
+  function onDeleteCompleted() {
+    revalidatePathActions([
+      `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+    ]).then(() => {
+      router.push(
+        `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
+      );
+    });
+    toast({
+      title: t('Utils.Success'),
+      description: t(`${translationKey}.Actions.Deleted`, {
+        name: document?.name ?? '',
+      }),
+    });
+  }
   return (
     <ShareableResourceCard
       key={document.id}
@@ -68,27 +105,44 @@ const ServiceCard = ({
       shareLinkUrl={shareLinkUrl}
       serviceInstance={serviceInstance}
       extraContent={
-        (userCanUpdate || userCanDelete) && (
-          <>
-            <IconActions
-              className="z-[2]"
-              icon={
-                <>
-                  <MoreVertIcon className="h-4 w-4 text-primary" />
-                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                </>
-              }>
-              <IconActionsItem onClick={() => setOpenSheet(true)}>
+        <>
+          <IconActions
+            className="z-[2]"
+            icon={
+              <>
+                <MoreVertIcon className="h-4 w-4 text-primary" />
+                <span className="sr-only">{t('Utils.OpenMenu')}</span>
+              </>
+            }>
+            {userCanUpdate && (
+              <IconActionsItem onClick={() => onClickOnUpdate()}>
                 {t('MenuActions.Update')}
               </IconActionsItem>
-            </IconActions>
+            )}
+            {userCanDelete && (
+              <ServiceDelete
+                type={'menuitem'}
+                userCanDelete={userCanDelete}
+                onDelete={() =>
+                  context.handleDeleteSheet(document, onDeleteCompleted)
+                }
+                serviceName={serviceInstance.name}
+                integrationType={
+                  (document && isIntegrationItem(document)
+                    ? document.integration_type
+                    : document.type) as CardTypeEnum
+                }
+              />
+            )}
+          </IconActions>
+          {userCanUpdate && (
             <ServiceManageSheet
               document={document}
               open={openSheet}
               setOpen={setOpenSheet}
             />
-          </>
-        )
+          )}
+        </>
       }
     />
   );

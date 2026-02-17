@@ -2,10 +2,12 @@ import {
   GenericCapabilityName,
   ServiceCapabilityName,
 } from '@/components/service/[slug]/capabilities/capability.helper';
+import { ServiceListIntegrationDropdown } from '@/components/service/components/header/service-list-integration-dropdown';
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { APP_PATH } from '@/utils/path/constant';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -19,7 +21,8 @@ const ServiceListHeaderButtons = ({
   firstServiceSubscriptionId,
 }: ServiceButtonsProps) => {
   const t = useTranslations();
-  const { serviceInstance, translationKey } = useServiceContext();
+  const { serviceInstance, translationKey, type, setIntegrationType } =
+    useServiceContext();
   const [openSheet, setOpenSheet] = useState(false);
 
   const canManageService = serviceInstance.capabilities.includes(
@@ -29,6 +32,7 @@ const ServiceListHeaderButtons = ({
     ServiceCapabilityName.Upload,
     serviceInstance
   );
+  const isIntegration = type === ShareableResourceType.OPENCTI_INTEGRATION;
 
   return (
     <div className="flex gap-s">
@@ -46,9 +50,18 @@ const ServiceListHeaderButtons = ({
       )}
       {userCanUpdate && (
         <>
-          <Button onClick={() => setOpenSheet(true)}>
-            {t(`${translationKey}.AddService`)}
-          </Button>
+          {isIntegration ? (
+            <ServiceListIntegrationDropdown
+              onIntegrationTypeSelect={(integrationType) => {
+                setIntegrationType(integrationType);
+                setOpenSheet(true);
+              }}
+            />
+          ) : (
+            <Button onClick={() => setOpenSheet(true)}>
+              {t(`${translationKey}.AddService`)}
+            </Button>
+          )}
           <ServiceManageSheet
             open={openSheet}
             setOpen={setOpenSheet}

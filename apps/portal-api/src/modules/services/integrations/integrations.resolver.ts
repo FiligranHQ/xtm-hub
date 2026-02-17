@@ -4,8 +4,9 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../../utils/app-logger.util';
 import { extractId } from '../../../utils/utils';
-import { labelsDomain } from '../../settings/labels/labels.domain';
+import { useCaseDomain } from '../../settings/useCase/use-case.domain';
 import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
@@ -19,11 +20,21 @@ const resolvers: Resolvers = {
       const mapping = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
+        [IntegrationType.Stream]: 'Stream',
+        [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
       };
 
-      return mapping[feed.integration_type];
+      const resolvedType = mapping[feed.integration_type];
+      if (!resolvedType) {
+        logApp.error(
+          `Unknown resolve type for integration ${feed.id} and integration type ${feed.integration_type}`
+        );
+      }
+
+      return resolvedType;
     },
-    labels: ({ id }) => labelsDomain.loadLabelsByDocumentId(id),
+    use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
@@ -32,14 +43,11 @@ const resolvers: Resolvers = {
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
-      subscriptionApp.loadSubscriptionModel(context, service_instance_id),
+      subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
   },
   Query: {
-    integrations: async (_, input) => integrationsApp.loadIntegrations(input),
     integration: async (_, { id }) =>
       integrationsApp.loadIntegration(extractId<DocumentId>(id)),
-    publicIntegrations: async (_, input) =>
-      integrationsApp.loadPaginatedPublicAccessIntegrations(input),
     publicIntegrationsByServiceSlug: async (_, { serviceSlug }) =>
       integrationsApp.loadPublicAccessIntegrations(serviceSlug),
     publicIntegrationBySlug: async (_, { slug }) =>

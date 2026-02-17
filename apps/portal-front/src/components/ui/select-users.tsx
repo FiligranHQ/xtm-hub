@@ -22,13 +22,7 @@ import {
 import { Badge, Button } from '@filigran/ui/servers';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useUsersList } from '@/hooks/useUsersList';
 import { readInlineData } from 'react-relay';
@@ -50,58 +44,63 @@ const SelectUsersFormField = React.forwardRef<
     defaultValue ?? '',
   ]);
 
-  const selectedValuesSet = useRef(new Set(selectedValues));
+  const selectedValuesSet = useMemo(
+    () => new Set(selectedValues),
+    [selectedValues]
+  );
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [visibleBadges, setVisibleBadges] = useState<number>(
     selectedValues.length
   );
-  const badgesContainerRef = useRef<HTMLDivElement>(null);
   const measurementRef = useRef<HTMLDivElement>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
-  const updateBadgeVisibility = useCallback(() => {
-    if (!badgesContainerRef.current || !measurementRef.current) {
-      return;
-    }
-
-    const container = badgesContainerRef.current;
-    const measurementContainer = measurementRef.current;
-
-    const containerWidth = container.offsetWidth - 10; // Save space for controls
-
-    let totalWidth = 0;
-    let lastVisibleIndex = 0;
-
-    const children = Array.from(measurementContainer.children) as HTMLElement[];
-
-    for (let i = 0; i < selectedValues.length; i++) {
-      const child = children[i];
-      if (child) {
-        const childWidth = child.offsetWidth + 4; // 4px for gap
-        const overflowBadgeLength = 56;
-
-        if (totalWidth + childWidth + overflowBadgeLength > containerWidth) {
-          break;
-        }
-
-        totalWidth += childWidth;
-        lastVisibleIndex = i + 1;
+  const badgesContainerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) {
+        resizeObserverRef.current?.disconnect();
+        resizeObserverRef.current = null;
+        return;
       }
-    }
+      if (!node || !measurementRef.current) return;
 
-    setVisibleBadges(lastVisibleIndex);
-  }, [selectedValues, badgesContainerRef, measurementRef, setVisibleBadges]);
+      const updateVisibility = () => {
+        const containerWidth = node.offsetWidth - 10; // Save space for controls
+        let totalWidth = 0;
+        let lastVisibleIndex = 0;
 
-  useEffect(() => {
-    updateBadgeVisibility();
+        const children = Array.from(
+          measurementRef.current!.children
+        ) as HTMLElement[];
 
-    const handleResize = () => updateBadgeVisibility();
-    window.addEventListener('resize', handleResize);
+        for (let i = 0; i < selectedValues.length; i++) {
+          const child = children[i];
+          if (child) {
+            const childWidth = child.offsetWidth + 4; // 4px for gap
+            const overflowBadgeLength = 56;
+            if (
+              totalWidth + childWidth + overflowBadgeLength >
+              containerWidth
+            ) {
+              break;
+            }
+            totalWidth += childWidth;
+            lastVisibleIndex = i + 1;
+          }
+        }
+        setVisibleBadges(lastVisibleIndex);
+      };
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [selectedValues, updateBadgeVisibility]);
+      updateVisibility();
 
+      const resizeObserver = new ResizeObserver(() => {
+        updateVisibility();
+      });
+
+      resizeObserver.observe(node);
+    },
+    [selectedValues]
+  );
   const { orderMode, orderBy } = useUserListLocalstorage();
   const filterRef = useRef({ search: '' });
 
@@ -110,7 +109,7 @@ const SelectUsersFormField = React.forwardRef<
     orderMode,
     pageSize: 50,
     filter: {
-      search: filterRef.current.search,
+      search: '',
     },
   });
 
@@ -155,9 +154,8 @@ const SelectUsersFormField = React.forwardRef<
     } else if (event.key === 'Backspace' && !target.value) {
       if (selectedValues.length > 0) {
         const newValues = [...selectedValues];
-        const lastValue = newValues.pop() || '';
+        newValues.pop();
         setSelectedValues(newValues);
-        selectedValuesSet.current.delete(lastValue);
         onValueChange(newValues[0] ?? '');
       }
     }
@@ -165,18 +163,16 @@ const SelectUsersFormField = React.forwardRef<
 
   const toggleOption = useCallback(
     (value: string) => {
-      if (selectedValuesSet.current.has(value)) {
-        selectedValuesSet.current.clear();
+      if (selectedValuesSet.has(value)) {
         setSelectedValues([]);
         onValueChange('');
       } else {
-        selectedValuesSet.current = new Set([value]);
         setSelectedValues([value]);
         onValueChange(value);
         setIsPopoverOpen(false);
       }
     },
-    [onValueChange, setIsPopoverOpen]
+    [onValueChange, setIsPopoverOpen, selectedValuesSet]
   );
 
   const hiddenCount = selectedValues.length - visibleBadges;
@@ -268,7 +264,6 @@ const SelectUsersFormField = React.forwardRef<
                     className="flex items-center justify-center"
                     onClick={(event) => {
                       setSelectedValues([]);
-                      selectedValuesSet.current.clear();
                       onValueChange('');
                       event.stopPropagation();
                     }}
@@ -314,7 +309,7 @@ const SelectUsersFormField = React.forwardRef<
               <CommandGroup>
                 {users.map((option) => {
                   const optionValue = String(option.value);
-                  const isSelected = selectedValuesSet.current.has(optionValue);
+                  const isSelected = selectedValuesSet.has(optionValue);
                   return (
                     <CommandItem
                       key={optionValue}
@@ -344,7 +339,6 @@ const SelectUsersFormField = React.forwardRef<
                       <CommandItem
                         onSelect={() => {
                           setSelectedValues([]);
-                          selectedValuesSet.current.clear();
                           onValueChange('');
                         }}
                         style={{

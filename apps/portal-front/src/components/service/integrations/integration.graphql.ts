@@ -15,7 +15,7 @@ export const integrationsItem = graphql`
     share_number
     slug
     updated_at
-    labels {
+    use_cases {
       id
       name
       color
@@ -45,7 +45,40 @@ export const integrationsItem = graphql`
     }
     integration_type
 
+    ...integrationCsvFeedsItem_fragment @relay(mask: false)
     ...integrationConnectorsItem_fragment @relay(mask: false)
+    ...integrationTaxiiFeedsItem_fragment @relay(mask: false)
+    ...integrationStreamsItem_fragment @relay(mask: false)
+    ...integrationThirdPartyIntegrationsItem_fragment @relay(mask: false)
+  }
+`;
+
+export const csvFeedsItem = graphql`
+  fragment integrationCsvFeedsItem_fragment on CsvFeed {
+    feed_url
+  }
+`;
+
+export const taxiiFeedsItem = graphql`
+  fragment integrationTaxiiFeedsItem_fragment on TaxiiFeed {
+    integration_subtype
+    feed_url
+  }
+`;
+
+export const streamsItem = graphql`
+  fragment integrationStreamsItem_fragment on Stream {
+    integration_subtype
+    feed_url
+  }
+`;
+
+export const thirdPartyIntegrationsItem = graphql`
+  fragment integrationThirdPartyIntegrationsItem_fragment on ThirdPartyIntegration {
+    integration_subtype
+    product_version
+    github_url
+    vendor_url
   }
 `;
 
@@ -59,43 +92,6 @@ export const connectorsItem = graphql`
     integration_subtype
     manager_supported
     playbook_supported
-  }
-`;
-
-export const integrationsFragment = graphql`
-  fragment integrationsList on Query
-  @refetchable(queryName: "IntegrationsPaginationQuery") {
-    integrations(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      searchTerm: $searchTerm
-      filters: $filters
-      serviceInstanceId: $serviceInstanceId
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          ...integrationsItem_fragment
-        }
-      }
-    }
-  }
-`;
-
-export const IntegrationsListQuery = graphql`
-  query integrationsQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: DocumentOrdering!
-    $orderMode: OrderingMode!
-    $filters: [Filter!]
-    $searchTerm: String
-    $serviceInstanceId: String
-  ) {
-    ...integrationsList
   }
 `;
 

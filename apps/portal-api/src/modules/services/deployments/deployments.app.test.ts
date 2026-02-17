@@ -10,11 +10,9 @@ import {
   vi,
 } from 'vitest';
 import {
-  ADMIN_USER_ID,
-  DEFAULT_ADMIN_EMAIL,
-  requestContextThalesUser,
-  THALES_ADMIN_ORGA_USER_ID,
-  THALES_ORGA_ID,
+  contextSimpleUserSecondOrga,
+  requestContextAdminSecondOrga,
+  TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
@@ -29,14 +27,10 @@ import {
 import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../../model/kanel/public/DeploymentRequest';
-import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
-import {
-  ADMIN_UUID,
-  PLATFORM_NAME,
-  PLATFORM_ORGANIZATION_UUID,
-  SYSTEM_USER_UUID,
-  XTM_HUB_SUPPORT_EMAIL,
-} from '../../../portal.const';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../../model/kanel/public/ServiceInstance';
+import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
@@ -45,7 +39,7 @@ import {
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
+import { deleteSubscription } from '../../subcription/subscription.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
@@ -55,9 +49,12 @@ import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceGroupDomain } from '../group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../knexfile';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
+import { PortalContext } from '../../../model/portal-context';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -67,7 +64,7 @@ import { DeploymentRequestDomain } from './deployments.domain';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
 import {
   assertDeploymentRequestProperties,
-  insertOpenCtiDeploymentRequest,
+  insertDeploymentRequest,
 } from './deployments.test.utils';
 
 describe('Deployment app', () => {
@@ -79,7 +76,7 @@ describe('Deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await deleteServiceInstanceBy({});
-    await deleteSubscriptionUnsecure({});
+    await deleteSubscription({});
     vi.resetAllMocks();
   });
 
@@ -109,7 +106,7 @@ describe('Deployment app', () => {
         activity_sector: 'cybersecurity',
         id: expect.any(String),
         job_title: 'myJob',
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -156,7 +153,7 @@ describe('Deployment app', () => {
         activity_sector: 'cybersecurity',
         id: expect.any(String),
         job_title: 'myJob',
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -191,7 +188,7 @@ describe('Deployment app', () => {
       it('should throw error when organization domain is blacklisted', async () => {
         vi.spyOn(config, 'get').mockImplementation((key: string) => {
           if (key === 'domains_blacklist') {
-            return 'filigran.io,blocked.net';
+            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
           }
           return originalConfigGet.call(config, key);
         });
@@ -253,7 +250,7 @@ describe('Deployment app', () => {
       it('should handle blacklist with spaces correctly', async () => {
         vi.spyOn(config, 'get').mockImplementation((key: string) => {
           if (key === 'domains_blacklist') {
-            return 'filigran.io , blocked.net , test.org';
+            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST} , blocked.net , test.org`;
           }
           return originalConfigGet.call(config, key);
         });
@@ -272,39 +269,46 @@ describe('Deployment app', () => {
     });
 
     describe('telemetry', () => {
-      it('should send a telemetry event', async () => {
-        vi.useFakeTimers();
-        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-        vi.setSystemTime(date);
+      it.each`
+        product                       | targetProduct
+        ${PlatformIdentifier.Opencti} | ${'open-cti'}
+        ${PlatformIdentifier.Openaev} | ${'open-aev'}
+      `(
+        'should send a telemetry event when trial for $product platform is launched',
+        async ({ product, targetProduct }) => {
+          vi.useFakeTimers();
+          const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+          vi.setSystemTime(date);
 
-        const deployment = await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
+          const deployment = await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: product,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
 
-        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-          '@timestamp': '2025-02-03T13:12:15.000Z',
-          event_type: TelemetryEventType.CREATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
-          organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
-          email: DEFAULT_ADMIN_EMAIL,
-          job_title: 'myJob',
-          user_id: ADMIN_USER_ID,
-          deployment_id: deployment.id,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          use_case: 'use_case',
-          deployment_type: DeploymentRequestDeploymentType.Trial,
-          status: DeploymentRequestHubStatus.Pending,
-          activity_sector: 'cybersecurity',
-          target_product: 'open-cti',
-        });
-      });
+          expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+            '@timestamp': '2025-02-03T13:12:15.000Z',
+            event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+            organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+            organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+            organization_type: TelemetryOrganizationType.PROFESSIONAL,
+            source: TELEMETRY_SOURCE,
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            job_title: 'myJob',
+            user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+            deployment_id: deployment.id,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            use_case: 'use_case',
+            deployment_type: DeploymentRequestDeploymentType.Trial,
+            status: DeploymentRequestHubStatus.Pending,
+            activity_sector: 'cybersecurity',
+            target_product: targetProduct,
+          });
+        }
+      );
       it('should not throw when an error is thrown by telemetry', async () => {
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
@@ -338,10 +342,10 @@ describe('Deployment app', () => {
         expect(mockSendMail).toHaveBeenCalledTimes(2);
 
         expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: 'admin@filigran.io',
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'opencti_free_trial_requested',
           params: {
-            firstName: 'Firstname',
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           },
         });
 
@@ -351,12 +355,12 @@ describe('Deployment app', () => {
           params: {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
-            organizationName: 'Filigran',
+            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             platformIdentifier: 'Opencti',
             region: DeploymentRequestPlatformRegion.UsEast,
             useCase: 'use_case',
-            userEmail: 'admin@filigran.io',
-            userName: 'firstName lastName',
+            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
           },
         });
       });
@@ -377,10 +381,10 @@ describe('Deployment app', () => {
         expect(mockSendMail).toHaveBeenCalledTimes(2);
 
         expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: 'admin@filigran.io',
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'opencti_free_trial_queued',
           params: {
-            firstName: 'Firstname',
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           },
         });
 
@@ -390,12 +394,12 @@ describe('Deployment app', () => {
           params: {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
-            organizationName: 'Filigran',
+            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             platformIdentifier: 'Opencti',
             region: 'us_east',
             useCase: 'use_case',
-            userEmail: 'admin@filigran.io',
-            userName: 'firstName lastName',
+            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
           },
         });
       });
@@ -403,7 +407,7 @@ describe('Deployment app', () => {
   });
   describe('loadDeploymentRequests', () => {
     it('should return created deployment requests', async () => {
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({});
+      const deploymentRequest = await insertDeploymentRequest({});
 
       const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
         first: 10,
@@ -412,22 +416,53 @@ describe('Deployment app', () => {
       expect(deployments.totalCount).toBe('1');
       expect(deployments.edges[0]?.node).toStrictEqual({
         ...deploymentRequest,
-        organization_name: 'Filigran',
-        organization_domains: ['filigran.io', 'internal.com'],
-        requester_email: DEFAULT_ADMIN_EMAIL,
-        requester_first_name: 'firstname',
-        requester_last_name: 'lastname',
+        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+        organization_domains: [
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.SECOND,
+        ],
+        requester_email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        requester_first_name:
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+        requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
         cancellation_user_email: null,
+        platform_url: null,
       });
     });
 
+    it('should return platform_url when Service_Configuration exists', async () => {
+      const deploymentRequest = await insertDeploymentRequest({});
+
+      await db('Service_Configuration').insert({
+        service_instance_id: deploymentRequest!.service_instance_id,
+        config: { platform_url: 'https://test-platform.opencti.io' },
+        status: 'active',
+      });
+
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+        first: 10,
+      });
+
+      const deployment = deployments.edges.find(
+        (edge) => edge.node.id === deploymentRequest!.id
+      );
+
+      expect(deployment?.node.platform_url).toBe(
+        'https://test-platform.opencti.io'
+      );
+
+      await db('Service_Configuration')
+        .where('service_instance_id', deploymentRequest!.service_instance_id)
+        .delete();
+    });
+
     it('should return out-of-sync deployment requests by default', async () => {
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -445,11 +480,11 @@ describe('Deployment app', () => {
     });
 
     it('should return out-of-sync deployments even with other filters', async () => {
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -474,42 +509,42 @@ describe('Deployment app', () => {
 
     it('should filter multiple out-of-sync scenarios correctly', async () => {
       // Out-of-sync: NULL target vs NULL actual (both NULL = synced, should NOT appear)
-      const synced1 = await insertOpenCtiDeploymentRequest({
+      const synced1 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Queued,
         target_state: undefined,
         actual_state: undefined,
       });
 
       // Out-of-sync: active target vs NULL actual
-      const outOfSync1 = await insertOpenCtiDeploymentRequest({
+      const outOfSync1 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: undefined,
       });
 
       // Out-of-sync: active target vs provisioning actual
-      const outOfSync2 = await insertOpenCtiDeploymentRequest({
+      const outOfSync2 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Provisioning,
       });
 
       // Synced: active target vs active actual
-      const synced2 = await insertOpenCtiDeploymentRequest({
+      const synced2 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
       // Out-of-sync: NULL target vs provisioning actual
-      const outOfSync3 = await insertOpenCtiDeploymentRequest({
+      const outOfSync3 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Failed,
         target_state: undefined,
         actual_state: DeploymentRequestPlatformState.Provisioning,
       });
 
       // Synced: inactive target vs inactive actual
-      const synced3 = await insertOpenCtiDeploymentRequest({
+      const synced3 = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Expired,
         target_state: DeploymentRequestPlatformState.Unprovisioned,
         actual_state: DeploymentRequestPlatformState.Unprovisioned,
@@ -533,13 +568,13 @@ describe('Deployment app', () => {
     });
 
     it('should return filtered deployment requests only', async () => {
-      await insertOpenCtiDeploymentRequest({});
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({});
+      await insertDeploymentRequest({
         region: DeploymentRequestPlatformRegion.EuWest,
         hub_status: DeploymentRequestHubStatus.Active,
         actual_state: DeploymentRequestPlatformState.Active,
       });
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         platform_identifier: PlatformIdentifier.Openaev,
         hub_status: DeploymentRequestHubStatus.Active,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -570,7 +605,7 @@ describe('Deployment app', () => {
   describe('updateDeploymentRequest', () => {
     let initialDeployment: DeploymentRequest;
     beforeEach(async () => {
-      initialDeployment = (await insertOpenCtiDeploymentRequest({
+      initialDeployment = (await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestPlatformState.Provisioning,
@@ -605,7 +640,7 @@ describe('Deployment app', () => {
         activity_sector: 'cybersecurity',
         id: expect.any(String),
         job_title: 'myJob',
-        organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -617,7 +652,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: 'use_case',
-        user_requester_id: ADMIN_UUID,
+        user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
@@ -661,7 +696,10 @@ describe('Deployment app', () => {
         );
       expect(userAdminGroup.length).toBe(1);
       expect(
-        userAdminGroup.find(({ email }) => email === DEFAULT_ADMIN_EMAIL)
+        userAdminGroup.find(
+          ({ email }) =>
+            email === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+        )
       ).toBeTruthy();
       const userAnalystGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
@@ -738,11 +776,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: initialDeployment.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: 'fake product instance id',
@@ -750,6 +788,22 @@ describe('Deployment app', () => {
           end_date,
           status: DeploymentRequestHubStatus.Active,
         });
+      });
+
+      it('should not send a telemetry event when data did not change', async () => {
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+
+        telemetrySpy.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+
+        expect(telemetrySpy).not.toHaveBeenCalled();
       });
 
       it('should not throw when telemetry throws an error', async () => {
@@ -779,10 +833,10 @@ describe('Deployment app', () => {
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
         expect(mockSendMail).toHaveBeenCalledWith({
-          to: 'admin@filigran.io',
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'opencti_free_trial_provisioning',
           params: {
-            firstName: 'Firstname',
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
           },
         });
 
@@ -795,9 +849,170 @@ describe('Deployment app', () => {
 
         expect(mockSendMail).not.toHaveBeenCalled();
       });
+
+      it('should send a mail in case deployment request is in active (only first time)', async () => {
+        vi.spyOn(
+          serviceContractDomain,
+          'loadConfigurationByPlatform'
+        ).mockResolvedValue({
+          service_instance_id: uuidv4() as ServiceInstanceId,
+          config: { platform_url: 'http://example.com' },
+          status: DeploymentRequestPlatformState.Active,
+        });
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          start_date: new Date(2025, 12, 1),
+          end_date: new Date(2026, 1, 1),
+          actual_state: DeploymentRequestPlatformState.Active,
+        });
+
+        expect(mockSendMail).toHaveBeenCalledWith({
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+          template: 'opencti_free_trial_registered',
+          params: {
+            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            platformUrl: 'http://example.com',
+          },
+        });
+
+        mockSendMail.mockClear();
+
+        await DeploymentsApp.updateDeploymentRequest({
+          id: initialDeployment?.id as string,
+          start_date: new Date(2025, 12, 1),
+          end_date: new Date(2026, 1, 1),
+          actual_state: DeploymentRequestPlatformState.Active,
+        });
+        expect(mockSendMail).not.toHaveBeenCalled();
+      });
     });
   });
+  describe('loadTrialDeployments', () => {
+    it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({});
 
+      expect(trialDeployments).toEqual({
+        availableTrials: expect.arrayContaining([
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ]),
+        deployed: [],
+        isBlacklisted: false,
+      });
+      expect(trialDeployments.availableTrials).toHaveLength(2);
+    });
+    it('should return only requested platform identifier specified as available when no DeploymentRequest exist', async () => {
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+        isBlacklisted: false,
+      });
+    });
+
+    it('should return blacklisted = true if orga is blacklisted', async () => {
+      const originalConfigGet = config.get;
+      vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        if (key === 'domains_blacklist') {
+          return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
+        }
+        return originalConfigGet.call(config, key);
+      });
+
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+        isBlacklisted: true,
+      });
+      vi.mocked(config.get).mockImplementation(originalConfigGet);
+    });
+    it('should return trial as available if the created one does not count in quota', async () => {
+      await insertDeploymentRequest({
+        counts_in_orga_quota: false,
+      });
+
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+        isBlacklisted: false,
+      });
+    });
+
+    it('should not return identifier as available when DeploymentRequest exist', async () => {
+      const deploymentRequest = await insertDeploymentRequest({});
+
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [],
+        deployed: [
+          {
+            serviceInstanceId: toGlobalId(
+              'ServiceInstance',
+              deploymentRequest!.service_instance_id
+            ),
+            platformIdentifier: deploymentRequest?.platform_identifier,
+          },
+        ],
+        isBlacklisted: false,
+      });
+    });
+    it('should return data corresponding to the right organization', async () => {
+      await insertDeploymentRequest({});
+
+      requestContext.set(requestContextAdminSecondOrga);
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [PlatformIdentifier.Opencti],
+        deployed: [],
+        isBlacklisted: false,
+      });
+    });
+    it('should return not availablity and no deployed for personal space', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+      await insertDeploymentRequest({});
+
+      const contextUserWithPersonalOrga: PortalContext = {
+        ...contextSimpleUserSecondOrga,
+        user: {
+          ...contextSimpleUserSecondOrga.user,
+          selected_organization_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
+              .PERSONAL_SPACE_ID,
+        },
+      };
+
+      requestContext.set({
+        user: contextUserWithPersonalOrga.user,
+        portalContext: contextUserWithPersonalOrga,
+      });
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      expect(trialDeployments).toEqual({
+        availableTrials: [],
+        deployed: [],
+        isBlacklisted: false,
+      });
+    });
+  });
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(
@@ -915,7 +1130,7 @@ describe('Deployment app', () => {
         counts_in_orga_quota,
         target_state,
       }) => {
-        const initialDeployment = (await insertOpenCtiDeploymentRequest({
+        const initialDeployment = (await insertDeploymentRequest({
           hub_status,
           actual_state,
         })) as DeploymentRequest;
@@ -931,7 +1146,7 @@ describe('Deployment app', () => {
           target_state: target_state,
           counts_in_orga_quota,
           cancellation_date: expect.any(Date),
-          cancellation_user_id: ADMIN_USER_ID,
+          cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
@@ -972,11 +1187,11 @@ describe('Deployment app', () => {
     });
 
     it('should throw if user is not in organization and not isAdmin', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest(
+      const deployment = (await insertDeploymentRequest(
         {}
       )) as DeploymentRequest;
 
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const call = DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.UserIsNotInOrganization
@@ -984,11 +1199,11 @@ describe('Deployment app', () => {
     });
 
     it('should not throw if user is not in organization and isAdmin', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest(
+      const deployment = (await insertDeploymentRequest(
         {}
       )) as DeploymentRequest;
 
-      requestContext.set(requestContextThalesUser);
+      requestContext.set(requestContextAdminSecondOrga);
       const response = await DeploymentsApp.cancelDeploymentRequest(
         deployment.id,
         true
@@ -996,7 +1211,7 @@ describe('Deployment app', () => {
       expect(response).toBeTruthy();
     });
     it('should send a telemetry event', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest(
+      const deployment = (await insertDeploymentRequest(
         {}
       )) as DeploymentRequest;
 
@@ -1013,11 +1228,11 @@ describe('Deployment app', () => {
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
-        organization_name: PLATFORM_NAME,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_USER_ID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         deployment_id: deployment.id,
         deployment_type: DeploymentRequestDeploymentType.Trial,
         status: DeploymentRequestHubStatus.Cancelled,
@@ -1029,14 +1244,15 @@ describe('Deployment app', () => {
     });
 
     it('should send a mail to the trial requester', async () => {
-      const deployment = (await insertOpenCtiDeploymentRequest({
-        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+      const deployment = (await insertDeploymentRequest({
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       })) as DeploymentRequest;
 
       await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
 
       expect(mockSendMail).toHaveBeenCalledWith({
-        to: 'admin@thales.com',
+        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
         template: 'opencti_free_trial_cancelled',
         params: {
           firstName: '',
@@ -1056,7 +1272,7 @@ describe('Deployment app', () => {
       hubStatus: DeploymentRequestHubStatus,
       ordering: number = 1
     ): Promise<DeploymentRequest> => {
-      return (await insertOpenCtiDeploymentRequest({
+      return (await insertDeploymentRequest({
         platform_identifier: platformIdentifier,
         region,
         hub_status: hubStatus,
@@ -1242,11 +1458,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1257,11 +1473,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1471,11 +1687,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: pendingRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1486,11 +1702,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: pendingRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1515,13 +1731,13 @@ describe('Deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      const expiredTrial = await insertOpenCtiDeploymentRequest({
+      const expiredTrial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestHubStatus.Active,
         end_date: new Date(Date.UTC(2025, 1, 1)),
       });
-      const nonExpiredTrial = await insertOpenCtiDeploymentRequest({
+      const nonExpiredTrial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         actual_state: DeploymentRequestHubStatus.Active,
@@ -1566,7 +1782,7 @@ describe('Deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
         const expiredDate = new Date(Date.UTC(2025, 1, 1));
-        const trial = await insertOpenCtiDeploymentRequest({
+        const trial = await insertDeploymentRequest({
           hub_status: hub_status,
           target_state: target_state,
           end_date: expiredDate,
@@ -1591,17 +1807,18 @@ describe('Deployment app', () => {
       vi.setSystemTime(date);
       const expiredDate = new Date(Date.UTC(2025, 1, 1));
 
-      await insertOpenCtiDeploymentRequest({
+      await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         end_date: expiredDate,
-        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       });
 
       await DeploymentsApp.expireTrials();
 
       expect(mockSendMail).toHaveBeenCalledWith({
-        to: 'admin@thales.com',
+        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
         template: 'opencti_free_trial_expired',
         params: {
           firstName: '',
@@ -1616,13 +1833,14 @@ describe('Deployment app', () => {
       const start_date = new Date(2024, 12, 1);
       const end_date = new Date(2025, 1, 1);
 
-      const trial = await insertOpenCtiDeploymentRequest({
+      const trial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
         start_date,
         end_date,
-        user_requester_id: THALES_ADMIN_ORGA_USER_ID,
-        organization_requester_id: THALES_ORGA_ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
       await DeploymentsApp.expireTrials();
@@ -1630,8 +1848,8 @@ describe('Deployment app', () => {
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-        organization_id: THALES_ORGA_ID,
-        organization_name: 'Thales',
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TELEMETRY_SOURCE,
         user_id: SYSTEM_USER_UUID,
@@ -1663,7 +1881,7 @@ describe('Deployment app', () => {
       `(
         'should not free place when request hub status is $hub_status',
         async ({ hub_status }) => {
-          const deploymentRequest = await insertOpenCtiDeploymentRequest({
+          const deploymentRequest = await insertDeploymentRequest({
             hub_status,
           });
 
@@ -1679,7 +1897,7 @@ describe('Deployment app', () => {
     });
 
     it('should set one queued request as pending and not free place', async () => {
-      const deploymentRequestToRelease = await insertOpenCtiDeploymentRequest({
+      const deploymentRequestToRelease = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
       });
       const queuedDeploymentRequest = {
@@ -1707,9 +1925,9 @@ describe('Deployment app', () => {
       vi.spyOn(
         DeploymentRequestDomain,
         'setFirstQueuedRequestAsPending'
-      ).mockResolvedValue(null);
+      ).mockResolvedValue(undefined);
 
-      const deploymentRequest = await insertOpenCtiDeploymentRequest({
+      const deploymentRequest = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
       });
 
@@ -1730,9 +1948,9 @@ describe('Deployment app', () => {
         vi.spyOn(
           DeploymentRequestDomain,
           'setFirstQueuedRequestAsPending'
-        ).mockResolvedValue(null);
+        ).mockResolvedValue(undefined);
 
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+        const deploymentRequest = await insertDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
@@ -1750,7 +1968,7 @@ describe('Deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
 
-        const queuedDeploymentRequest = await insertOpenCtiDeploymentRequest({
+        const queuedDeploymentRequest = await insertDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Queued,
           activity_sector: 'cybersecurity',
           region: DeploymentRequestPlatformRegion.UsEast,
@@ -1764,7 +1982,7 @@ describe('Deployment app', () => {
           ...queuedDeploymentRequest!,
           hub_status: DeploymentRequestHubStatus!.Pending,
         });
-        const deploymentRequest = await insertOpenCtiDeploymentRequest({
+        const deploymentRequest = await insertDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
@@ -1777,11 +1995,11 @@ describe('Deployment app', () => {
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
-          organization_name: PLATFORM_NAME,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TELEMETRY_SOURCE,
-          user_id: ADMIN_USER_ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedDeploymentRequest!.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: queuedDeploymentRequest!.platform_id,

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { dbUnsecure } from '../../knexfile';
+import { db } from '../../knexfile';
 import {
   OrganizationCapability,
   ServiceDefinition,
@@ -14,7 +14,6 @@ import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
 import ServiceCapability from '../model/kanel/public/ServiceCapability';
 import ServiceLink from '../model/kanel/public/ServiceLink';
-import ServicePrice from '../model/kanel/public/ServicePrice';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationId,
@@ -45,54 +44,42 @@ const ROLE_MAPPING: { [key: string]: string } = {
 };
 
 export const ensureServiceDefinitionExists = async (service) => {
-  const serviceDefinitions = await dbUnsecure('ServiceDefinition');
+  const serviceDefinitions = await db('ServiceDefinition');
   if (
     !serviceDefinitions.find(
       (serviceDefinition) =>
         serviceDefinition.id === service.serviceDefinition.id
     )
   ) {
-    await dbUnsecure<ServiceDefinition>('ServiceDefinition').insert(
+    await db<ServiceDefinition>('ServiceDefinition').insert(
       service.serviceDefinition
     );
   } else {
-    await dbUnsecure<ServiceDefinition>('ServiceDefinition')
+    await db<ServiceDefinition>('ServiceDefinition')
       .where({ id: service.serviceDefinition.id })
       .update(service.serviceDefinition)
       .returning('*');
   }
-
-  const prices = await dbUnsecure('Service_Price');
-  if (!prices.find((price) => price.id === service.price.id)) {
-    await dbUnsecure<ServicePrice>('Service_Price').insert(service.price);
-  } else {
-    await dbUnsecure<ServicePrice>('Service_Price')
-      .where({ id: service.price.id })
-      .update(service.price)
-      .returning('*');
-  }
 };
 export const ensureServiceExists = async (service) => {
-  const serviceInstances = await dbUnsecure('ServiceInstance');
-  const links = await dbUnsecure('Service_Link');
+  const serviceInstances = await db('ServiceInstance');
+  const links = await db('Service_Link');
   if (
     !serviceInstances.find(
       (serviceInstance) => serviceInstance.id === service.service.id
     )
   ) {
-    await dbUnsecure<ServiceInstance>('ServiceInstance').insert(
-      service.service
-    );
+    await db<ServiceInstance>('ServiceInstance').insert(service.service);
   } else {
-    await dbUnsecure<ServiceInstance>('ServiceInstance')
+    await db<ServiceInstance>('ServiceInstance')
       .where({ id: service.service.id })
       .update(service.service)
       .returning('*');
   }
   if (!links.find((link) => link.id === service.link.id)) {
-    await dbUnsecure<ServiceLink>('Service_Link').insert(service.link);
+    await db<ServiceLink>('Service_Link').insert(service.link);
   } else {
-    await dbUnsecure<ServiceLink>('Service_Link')
+    await db<ServiceLink>('Service_Link')
       .where({ id: service.link.id })
       .update(service.link)
       .returning('*');
@@ -100,59 +87,62 @@ export const ensureServiceExists = async (service) => {
 };
 
 export const ensureServiceCapabilityExists = async (serviceCapability) => {
-  const serviceCapas = await dbUnsecure('Service_Capability');
+  const serviceCapas = await db('Service_Capability');
   if (
     !serviceCapas.find((serviceCapa) => serviceCapa.id === serviceCapability.id)
   ) {
-    await dbUnsecure<ServiceCapability>('Service_Capability').insert(
-      serviceCapability
-    );
+    await db<ServiceCapability>('Service_Capability').insert(serviceCapability);
   } else {
-    await dbUnsecure<ServiceCapability>('Service_Capability')
+    await db<ServiceCapability>('Service_Capability')
       .where({ id: serviceCapability.id })
       .update(serviceCapability)
       .returning('*');
   }
 };
 export const ensureCapabilityExists = async (capability) => {
-  const capabilityPortal = await dbUnsecure('CapabilityPortal');
+  const capabilityPortal = await db('CapabilityPortal');
   if (!capabilityPortal.find((c) => c.id === capability.id)) {
-    await dbUnsecure<RolePortalCapabilityPortal>('CapabilityPortal').insert(
-      capability
-    );
+    await db<RolePortalCapabilityPortal>('CapabilityPortal').insert(capability);
   }
 };
 
 export const ensureUserRoleExist = async (user_id, role_portal_id) => {
-  const userRole = await dbUnsecure('User_RolePortal')
+  const userRole = await db('User_RolePortal')
     .where({ user_id, role_portal_id })
     .first();
   if (!userRole) {
-    await dbUnsecure('User_RolePortal').insert({
+    await db('User_RolePortal').insert({
       user_id,
       role_portal_id,
     });
   }
 };
 
+export const addRoleToUser = async (user_id, role) => {
+  const rolePortal = await db('RolePortal').where({ name: role }).first();
+  if (!rolePortal) {
+    logApp.warn(`Role portal '${role}' not found for user`);
+    return;
+  }
+  await ensureUserRoleExist(user_id, rolePortal.id);
+};
+
 export const ensureRoleExists = async (role) => {
-  const rolePortal = await dbUnsecure('RolePortal');
+  const rolePortal = await db('RolePortal');
   if (!rolePortal.find((r) => r.id === role.id)) {
-    await dbUnsecure<RolePortal>('RolePortal').insert(role);
+    await db<RolePortal>('RolePortal').insert(role);
   }
 };
 
 export const ensureRoleHasCapability = async (role, capability) => {
-  const roleCapability = await dbUnsecure<RolePortalCapabilityPortal>(
+  const roleCapability = await db<RolePortalCapabilityPortal>(
     'RolePortal_CapabilityPortal'
   )
     .where({ capability_portal_id: capability.id, role_portal_id: role.id })
     .first();
 
   if (!roleCapability) {
-    await dbUnsecure<RolePortalCapabilityPortal>(
-      'RolePortal_CapabilityPortal'
-    ).insert({
+    await db<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal').insert({
       capability_portal_id: capability.id,
       role_portal_id: role.id,
     });
@@ -194,11 +184,11 @@ export const insertAdminUser = async (user_id, email, data) => {
     selected_organization_id: PLATFORM_ORGANIZATION_UUID,
     ...data,
   };
-  await dbUnsecure<UserInitializer>('User').insert(userData);
+  await db<UserInitializer>('User').insert(userData);
 };
 
 export const updateUserPassword = async (user_id, data) => {
-  await dbUnsecure<UserInitializer>('User')
+  await db<UserInitializer>('User')
     .where({ id: user_id as UserId })
     .update(data)
     .returning('*');
@@ -208,14 +198,12 @@ export const ensureUserOrganizationExist = async (
   user_id: UserId,
   organization_id: OrganizationId
 ) => {
-  const userOrganization = await dbUnsecure<UserOrganization>(
-    'User_Organization'
-  )
+  const userOrganization = await db<UserOrganization>('User_Organization')
     .where({ user_id, organization_id })
     .first();
 
   if (!userOrganization) {
-    await dbUnsecure('User_Organization').insert({
+    await db('User_Organization').insert({
       user_id,
       organization_id,
     });
@@ -254,12 +242,12 @@ const ensureUserOrganizationExists = async (
   user_id: UserId,
   orgId: OrganizationId
 ) => {
-  const userOrg = await dbUnsecure<UserOrganization>('User_Organization')
+  const userOrg = await db<UserOrganization>('User_Organization')
     .where({ user_id, organization_id: orgId })
     .first();
 
   if (!userOrg) {
-    const query = dbUnsecure<UserOrganization>('User_Organization')
+    const query = db<UserOrganization>('User_Organization')
       .insert({ user_id, organization_id: orgId })
       .returning('id');
 
@@ -274,14 +262,14 @@ const ensureCapabilitiesExist = async (
   capabilities: string[]
 ) => {
   for (const capability of capabilities) {
-    const existingCapability = await dbUnsecure<UserOrganizationCapability>(
+    const existingCapability = await db<UserOrganizationCapability>(
       'UserOrganization_Capability'
     )
       .where({ user_organization_id: userOrgId, name: capability })
       .first();
 
     if (!existingCapability) {
-      await dbUnsecure<UserOrganizationCapability>(
+      await db<UserOrganizationCapability>(
         'UserOrganization_Capability'
       ).insert({ user_organization_id: userOrgId, name: capability });
     }
@@ -332,7 +320,7 @@ export const ensureDevUserExists = async (
   try {
     await withTransaction(async () => {
       // Check if user already exists
-      const existingUser = await dbUnsecure<UserInitializer>('User')
+      const existingUser = await db<UserInitializer>('User')
         .where({ email: userConfig.email })
         .first();
 
@@ -343,7 +331,7 @@ export const ensureDevUserExists = async (
         userId = existingUser.id;
         // Update password
         const { salt, hash } = hashPassword(userConfig.password);
-        await dbUnsecure<UserInitializer>('User')
+        await db<UserInitializer>('User')
           .where({ id: userId })
           .update({ salt, password: hash });
 
@@ -362,7 +350,7 @@ export const ensureDevUserExists = async (
           selected_organization_id: PLATFORM_ORGANIZATION_UUID,
         };
 
-        await dbUnsecure<UserInitializer>('User').insert(userData);
+        await db<UserInitializer>('User').insert(userData);
 
         logApp.info(`Created dev user: ${userConfig.email}`);
       }
@@ -382,7 +370,7 @@ export const ensureDevUserExists = async (
 
         // Set as default organization for new users
         if (isNewUser) {
-          await dbUnsecure<UserInitializer>('User')
+          await db<UserInitializer>('User')
             .where({ id: userId })
             .update({ selected_organization_id: orgId });
         }

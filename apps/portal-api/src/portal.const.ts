@@ -1,4 +1,4 @@
-import { Restriction } from './__generated__/resolvers-types';
+import { PortalCapability } from './__generated__/resolvers-types';
 import CapabilityPortal, {
   CapabilityPortalId,
 } from './model/kanel/public/CapabilityPortal';
@@ -13,15 +13,15 @@ export const PLATFORM_USER_EMAIL = 'platform_user@filigran.io';
 export const SYSTEM_USER_EMAIL = 'system_user@filigran.io';
 export const SYSTEM_USER_UUID: UserId =
   'f0587688-ef35-466a-9f71-a8807ba460b8' as UserId;
-export const ADMIN_UUID: UserId =
-  'ba091095-418f-4b4f-b150-6c9295e232c3' as UserId;
 export const PLATFORM_NAME = 'Filigran';
 export const PLATFORM_DOMAIN = ['filigran.io'];
 export const PLATFORM_ORGANIZATION_UUID: OrganizationId =
   'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId;
+export const ADMIN_UUID: UserId =
+  'ba091095-418f-4b4f-b150-6c9295e232c3' as UserId;
 export const CAPABILITY_BYPASS: CapabilityPortal = {
   id: '85c9fe6f-901f-4992-a8aa-b8d56a7e2e09' as CapabilityPortalId,
-  name: Restriction.Bypass,
+  name: PortalCapability.Bypass,
 };
 
 export const ROLE_ADMIN: RolePortal = {
@@ -38,13 +38,6 @@ export const ROLE_USER: RolePortal = {
 };
 
 export const XTM_HUB_SUPPORT_EMAIL = 'xtm-hub-support@filigran.io';
-
-export const JOIN_TYPE = {
-  JOIN_INVITE: 'JOIN_INVITE',
-  JOIN_ASK: 'JOIN_ASK',
-  JOIN_AUTO: 'JOIN_AUTO',
-  JOIN_SELF: 'JOIN_SELF',
-};
 
 export const SYSTEM_USER_CONTEXT: PortalContext = {
   user: {
@@ -65,7 +58,7 @@ export const SYSTEM_USER_CONTEXT: PortalContext = {
         domains: [],
       },
     ],
-    capabilities: [{ id: CAPABILITY_BYPASS.id, name: Restriction.Bypass }],
+    capabilities: [CAPABILITY_BYPASS],
     roles_portal: [
       {
         ...ROLE_ADMIN,

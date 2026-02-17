@@ -1,11 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { db } from '../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import portalConfig from '../../config';
 import User, { UserId } from '../../model/kanel/public/User';
-import { PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
+import UserOrganizationPending from '../../model/kanel/public/UserOrganizationPending';
 import * as MailService from '../../server/mail-service';
+import { loadUserOrganization } from '../common/user-organization.domain';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { UsersOrganizationApp } from './users.organization.app';
+import { insertUser } from './users.test.utils';
 
 describe('UsersOrganizationApp', () => {
   describe('sendPendingUsersDigest', () => {
@@ -26,8 +30,8 @@ describe('UsersOrganizationApp', () => {
         'loadOrganizationsWithPendingUsers'
       ).mockResolvedValue([
         {
-          id: PLATFORM_ORGANIZATION_UUID,
-          name: 'organization name',
+          id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           users,
         },
       ] as Awaited<
@@ -64,15 +68,17 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
-          userEmailList:
-            '<li>John Doe (user1@test.com)</li><li>Robert Smith (user2@test.com)</li>',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          users: [
+            { firstName: 'John', lastName: 'Doe', email: 'user1@test.com' },
+            { firstName: 'Robert', lastName: 'Smith', email: 'user2@test.com' },
+          ],
           userCount: 2,
           requestLabel: 'requests',
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 
@@ -87,8 +93,8 @@ describe('UsersOrganizationApp', () => {
         'loadOrganizationsWithPendingUsers'
       ).mockResolvedValue([
         {
-          id: PLATFORM_ORGANIZATION_UUID,
-          name: 'organization name',
+          id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           users: [
             {
               id: uuidv4() as UserId,
@@ -110,14 +116,16 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
-          userEmailList: '<li>John Doe (user1@test.com)</li>',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          users: [
+            { firstName: 'John', lastName: 'Doe', email: 'user1@test.com' },
+          ],
           userCount: 1,
           requestLabel: 'request',
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 
@@ -142,14 +150,16 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
-          userEmailList: '<li> Smith (user1@test.com)</li>',
+          users: [
+            { firstName: '', lastName: 'Smith', email: 'user1@test.com' },
+          ],
           userCount: 1,
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 
@@ -174,14 +184,14 @@ describe('UsersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
-          adminName: 'Firstname',
-          organizationName: 'organization name',
+          adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
-          userEmailList: '<li>John  (user1@test.com)</li>',
+          users: [{ firstName: 'John', lastName: '', email: 'user1@test.com' }],
           userCount: 1,
         },
         template: 'organization_pending_user_digest',
-        to: 'admin@filigran.io',
+        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
       });
     });
 
@@ -206,6 +216,89 @@ describe('UsersOrganizationApp', () => {
       await UsersOrganizationApp.sendPendingUsersDigest();
 
       expect(sendMailSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not send mail if user is already in organization and remove from pending list', async () => {
+      portalConfig.enabled_emails = {
+        ...originalEnabledEmails,
+        pending_user_digest: true,
+      };
+      const newUser = await insertUser({
+        email: 'testPendingUser@filigran.io',
+      });
+
+      await db<UserOrganizationPending>('User_Organization').insert({
+        user_id: newUser.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+      await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
+        user_id: newUser.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+
+      const userPendingExisted =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: newUser.id,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        });
+
+      expect(userPendingExisted.length).toEqual(1);
+
+      const sendMailSpy = vi.spyOn(MailService, 'sendMail');
+      await UsersOrganizationApp.sendPendingUsersDigest();
+      expect(sendMailSpy).not.toHaveBeenCalled();
+
+      const userPendingShouldExistAnymore =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: newUser.id,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        });
+
+      expect(userPendingShouldExistAnymore.length).toEqual(0);
+    });
+  });
+  describe('addUserToOrganization', async () => {
+    it('should add user and remove user from pending list', async () => {
+      const newUser = await insertUser({
+        email: 'testAddingPendingUser@filigran.io',
+      });
+      await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
+        user_id: newUser.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+
+      const userShouldNotBeInTheOrg = await loadUserOrganization({
+        user_id: newUser.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+
+      expect(userShouldNotBeInTheOrg.length).toEqual(0);
+
+      const userPendingExisted =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: newUser.id,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        });
+
+      expect(userPendingExisted.length).toEqual(1);
+      await UsersOrganizationApp.addUserToOrganization({
+        email: 'testAddingPendingUser@filigran.io',
+      });
+
+      const userPendingShouldExistAnymore =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: newUser.id,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        });
+
+      expect(userPendingShouldExistAnymore.length).toEqual(0);
+
+      const userShouldBeAdded = await loadUserOrganization({
+        user_id: newUser.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+
+      expect(userShouldBeAdded.length).toEqual(1);
     });
   });
 });

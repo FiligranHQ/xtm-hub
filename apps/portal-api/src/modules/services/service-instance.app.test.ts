@@ -3,20 +3,21 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { contextAdminUser } from '../../../tests/tests.const';
+import { contextBypassUser } from '../../../tests/tests.const';
 import {
   PlatformContract,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import * as securityGuard from '../../security/guard';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
-import * as userServiceDomain from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user_service/user_service.domain';
 import * as documentHelper from './document/document.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
 import { serviceInstanceApp } from './service-instance.app';
@@ -31,7 +32,7 @@ describe('Service Instance app', () => {
 
     const mockServiceInstanceId = uuidv4() as ServiceInstanceId;
     const mockSubscriptionId = uuidv4() as SubscriptionId;
-    const mockUserId = contextAdminUser.user.id;
+    const mockUserId = contextBypassUser.user.id;
 
     const mockSubscription = {
       id: mockSubscriptionId,
@@ -63,7 +64,7 @@ describe('Service Instance app', () => {
         subscriptionDomain,
         'loadSubscriptionBy'
       );
-      loadUserServiceBySpy = vi.spyOn(userServiceDomain, 'loadUserServiceBy');
+      loadUserServiceBySpy = vi.spyOn(UserServiceDomain, 'loadUserServiceBy');
       loadServiceInstanceBySpy = vi.spyOn(
         serviceInstanceDomain,
         'loadServiceInstanceBy'
@@ -84,12 +85,13 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser.user,
+        contextBypassUser.user,
         mockServiceInstanceId
       );
 
       expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
+        organization_id: contextBypassUser.user.selected_organization_id,
       });
       expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
@@ -114,7 +116,7 @@ describe('Service Instance app', () => {
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser.user,
+        contextBypassUser.user,
         mockServiceInstanceId
       );
 
@@ -124,6 +126,62 @@ describe('Service Instance app', () => {
         mockSubscriptionId
       );
       expect(result).toEqual(mockServiceInstance);
+    });
+
+    it('should use subscription from user organization, not from another organization', async () => {
+      const userOrganizationId =
+        contextBypassUser.user.selected_organization_id;
+      const otherOrganizationId = uuidv4() as OrganizationId;
+
+      const userOrgSubscriptionId = uuidv4() as SubscriptionId;
+      const otherOrgSubscriptionId = uuidv4() as SubscriptionId;
+
+      const userOrgSubscription = {
+        id: userOrgSubscriptionId,
+        service_instance_id: mockServiceInstanceId,
+        organization_id: userOrganizationId,
+        joining: 'AUTO_JOIN',
+        start_date: new Date(),
+        end_date: null,
+      };
+
+      const otherOrgSubscription = {
+        id: otherOrgSubscriptionId,
+        service_instance_id: mockServiceInstanceId,
+        organization_id: otherOrganizationId,
+        joining: 'AUTO_JOIN',
+        start_date: new Date(),
+        end_date: null,
+      };
+
+      loadSubscriptionBySpy.mockImplementation((filter) => {
+        if (filter.organization_id === userOrganizationId) {
+          return Promise.resolve(userOrgSubscription);
+        } else if (filter.organization_id === otherOrganizationId) {
+          return Promise.resolve(otherOrgSubscription);
+        }
+        return Promise.resolve(otherOrgSubscription);
+      });
+
+      loadUserServiceBySpy.mockResolvedValue([]);
+      loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
+      grantServiceAccessSpy.mockResolvedValue(undefined);
+
+      await serviceInstanceApp.loadServiceInstance(
+        contextBypassUser.user,
+        mockServiceInstanceId
+      );
+
+      expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
+        service_instance_id: mockServiceInstanceId,
+        organization_id: userOrganizationId,
+      });
+
+      expect(grantServiceAccessSpy).toHaveBeenCalledWith(
+        [GenericServiceCapabilityIds.AccessId],
+        [mockUserId],
+        userOrgSubscriptionId
+      );
     });
 
     it('should not auto-join user when subscription has INVITE_ONLY mode', async () => {
@@ -136,7 +194,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser.user,
+        contextBypassUser.user,
         mockServiceInstanceId
       );
 
@@ -158,7 +216,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
       const result = await serviceInstanceApp.loadServiceInstance(
-        contextAdminUser.user,
+        contextBypassUser.user,
         mockServiceInstanceId
       );
 
@@ -172,7 +230,7 @@ describe('Service Instance app', () => {
 
       await expect(
         serviceInstanceApp.loadServiceInstance(
-          contextAdminUser.user,
+          contextBypassUser.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Error');
@@ -193,7 +251,7 @@ describe('Service Instance app', () => {
 
       await expect(
         serviceInstanceApp.loadServiceInstance(
-          contextAdminUser.user,
+          contextBypassUser.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Other error');
@@ -204,9 +262,9 @@ describe('Service Instance app', () => {
     it('should handle different context users', async () => {
       const differentUserId = uuidv4() as UserId;
       const differentContext = {
-        ...contextAdminUser,
+        ...contextBypassUser,
         user: {
-          ...contextAdminUser.user,
+          ...contextBypassUser.user,
           id: differentUserId,
         },
       };
@@ -283,7 +341,7 @@ describe('Service Instance app', () => {
       };
 
       const mockPlatformConfig: PlatformConfiguration = {
-        registerer_id: contextAdminUser.user.id,
+        registerer_id: contextBypassUser.user.id,
         platform_id: 'test-platform',
         platform_title: 'Test Platform',
         platform_url: 'https://test.com',
@@ -350,20 +408,19 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           null
         );
 
         expect(loadPlatformServiceInstanceSpy).toHaveBeenCalledWith(
-          contextAdminUser.user.selected_organization_id,
+          contextBypassUser.user.selected_organization_id,
           mockServiceInstanceId
         );
         expect(loadServiceDefinitionByServiceInstanceSpy).toHaveBeenCalledWith(
           mockServiceInstanceId
         );
         expect(assertUserCanModifyPlatformServiceSpy).toHaveBeenCalledWith(
-          contextAdminUser.user,
+          contextBypassUser.user,
           mockServiceDefinition
         );
         expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
@@ -404,7 +461,6 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           mockUpload
         );
@@ -447,7 +503,6 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           inputWithoutName,
           mockUpload
         );
@@ -469,11 +524,7 @@ describe('Service Instance app', () => {
         loadPlatformServiceInstanceSpy.mockResolvedValue(null);
 
         await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
-            mockInput,
-            null
-          )
+          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
         ).rejects.toThrow();
 
         expect(
@@ -487,11 +538,7 @@ describe('Service Instance app', () => {
         loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(null);
 
         await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
-            mockInput,
-            null
-          )
+          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
         ).rejects.toThrow();
 
         expect(assertUserCanModifyPlatformServiceSpy).not.toHaveBeenCalled();
@@ -507,11 +554,7 @@ describe('Service Instance app', () => {
         assertUserCanModifyPlatformServiceSpy.mockRejectedValue(securityError);
 
         await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
-            mockInput,
-            null
-          )
+          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
         ).rejects.toThrow('Insufficient permissions');
 
         expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
@@ -528,7 +571,6 @@ describe('Service Instance app', () => {
 
         await expect(
           serviceInstanceApp.updatePlatformServiceMetadata(
-            contextAdminUser,
             mockInput,
             mockUpload
           )
@@ -552,7 +594,6 @@ describe('Service Instance app', () => {
         loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(null);
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           null
         );
@@ -586,7 +627,6 @@ describe('Service Instance app', () => {
         );
 
         const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          contextAdminUser,
           mockInput,
           null
         );

@@ -18,7 +18,9 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
   connectorDetails,
 }) => {
   const t = useTranslations();
-  const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI);
+  const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI, {
+    onlyActive: true,
+  });
   const { platformToBeUpdated, incompatiblePlatformsCount } =
     useBuildCompatibilityTranslationKey({
       platforms,

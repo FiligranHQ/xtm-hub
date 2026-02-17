@@ -6,46 +6,26 @@ type CustomDashboard implements Document & Node {
   name: String!
   short_description: String
   description: String
-  file_name: String!
-  minio_name: String!
+  file_name: String! @auth
+  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
-  updater_id: String
+  updater_id: String @auth
   download_number: Int
   share_number: Int
   slug: String!
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
+  use_cases: [UseCase!]
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
+  subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
   # Specific fields for custom dashboards
   product_version: String
 }
 
-type CustomDashboardEdge {
-  cursor: String!
-  node: CustomDashboard!
-}
-
-type CustomDashboardConnection {
-  totalCount: Int!
-  edges: [CustomDashboardEdge!]!
-  pageInfo: PageInfo!
-}
-
 type Query {
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
   seoCustomDashboardBySlug(slug: String): CustomDashboard
-  customDashboards(
-    first: Int!
-    after: ID
-    orderBy: DocumentOrdering!
-    orderMode: OrderingMode!
-    searchTerm: String
-    filters: [Filter!]
-    serviceInstanceId: String
-  ): CustomDashboardConnection! @auth
   customDashboard(id: ID, serviceInstanceId: ID): CustomDashboard @auth
 }

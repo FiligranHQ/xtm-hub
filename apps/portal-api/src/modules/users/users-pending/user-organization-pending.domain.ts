@@ -1,9 +1,17 @@
-import { db, dbRaw, dbUnsecure, paginate } from '../../../../knexfile';
 import {
+  applyFilters,
+  applySearch,
+  db,
+  dbRaw,
+  paginate,
+} from '../../../../knexfile';
+import {
+  Filter,
   QueryUsersArgs,
   UserConnection,
   User as UserGenerated,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import Organization, {
   OrganizationId,
@@ -14,11 +22,17 @@ import UserOrganizationPending, {
   UserOrganizationPendingMutator,
 } from '../../../model/kanel/public/UserOrganizationPending';
 
+interface OrganizationCleanup {
+  organizationId: number;
+  organizationName: string;
+  count: number;
+}
+
 export const UserOrganizationPendingDomain = {
   insertNewUserOrganizationPending: (
     field: UserOrganizationPendingInitializer
   ): Promise<UserOrganizationPending[]> => {
-    return dbUnsecure<UserOrganizationPending>('User_Organization_Pending')
+    return db<UserOrganizationPending>('User_Organization_Pending')
       .insert(field)
       .returning('*');
   },
@@ -64,9 +78,9 @@ export const UserOrganizationPendingDomain = {
   loadUserOrganizationPending: (
     field: UserOrganizationPendingMutator
   ): Promise<UserOrganizationPending[]> => {
-    return db<UserOrganizationPending>('User_Organization_Pending')
-      .where(field)
-      .secureQuery();
+    return db<UserOrganizationPending>('User_Organization_Pending').where(
+      field
+    );
   },
 
   removeUserFromOrganizationPending: async (
@@ -78,4 +92,125 @@ export const UserOrganizationPendingDomain = {
       .delete('*')
       .secureQuery();
   },
+
+  bulkRemoveUserFromOrganizationPending: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ) => {
+    const { queryBuilder } = await buildBulkUserFromOrganizationPendingQuery(
+      organizationId,
+      ids,
+      searchTerm,
+      filters,
+      excludedIds
+    );
+    return queryBuilder.delete('*');
+  },
+
+  bulkLoadUserIdsFromOrganizationPending: async (
+    organizationId: OrganizationId,
+    ids: UserId[],
+    searchTerm: string | undefined,
+    filters: Filter[],
+    excludedIds: UserId[]
+  ): Promise<UserId[]> => {
+    const { queryBuilder } = await buildBulkUserFromOrganizationPendingQuery(
+      organizationId,
+      ids,
+      searchTerm,
+      filters,
+      excludedIds
+    );
+    const results = await queryBuilder.select('user_id');
+    return results.map((row) => row.user_id);
+  },
+  cleanupPendingUsers: async (): Promise<{
+    totalDeleted: number;
+    byOrganization: OrganizationCleanup[];
+  }> => {
+    return withTransaction(async () => {
+      const byOrganization = await db<OrganizationCleanup>(
+        'User_Organization_Pending'
+      )
+        .innerJoin('User_Organization', function () {
+          this.on(
+            'User_Organization.user_id',
+            '=',
+            'User_Organization_Pending.user_id'
+          ).andOn(
+            'User_Organization.organization_id',
+            '=',
+            'User_Organization_Pending.organization_id'
+          );
+        })
+        .leftJoin(
+          'Organization',
+          'Organization.id',
+          '=',
+          'User_Organization_Pending.organization_id'
+        )
+        .select(
+          'User_Organization_Pending.organization_id as organizationId',
+          'Organization.name as organizationName',
+          dbRaw('COUNT(*) as count')
+        )
+        .groupBy(
+          'User_Organization_Pending.organization_id',
+          'Organization.name'
+        );
+      const totalDeleted = await db('User_Organization_Pending')
+        .whereExists(function () {
+          this.select('*')
+            .from('User_Organization')
+            .whereRaw(
+              '"User_Organization".user_id = "User_Organization_Pending".user_id'
+            )
+            .andWhereRaw(
+              '"User_Organization".organization_id = "User_Organization_Pending".organization_id'
+            );
+        })
+        .del()
+        .returning('*');
+      return {
+        totalDeleted: totalDeleted.length,
+        byOrganization: byOrganization.map((org: OrganizationCleanup) => ({
+          organizationId: org.organizationId,
+          organizationName: org.organizationName,
+          count: org.count,
+        })),
+      };
+    });
+  },
+};
+
+const buildBulkUserFromOrganizationPendingQuery = async (
+  organizationId: OrganizationId,
+  ids: UserId[],
+  searchTerm: string | undefined,
+  filters: Filter[],
+  excludedIds: UserId[]
+) => {
+  const qb = db<UserOrganizationPending>('User_Organization_Pending').where(
+    'organization_id',
+    '=',
+    organizationId
+  );
+  if (searchTerm) {
+    qb.leftJoin('User', 'User.id', 'User_Organization_Pending.user_id');
+    await applySearch('User', qb, searchTerm);
+  }
+
+  if (filters.length > 0) {
+    await applyFilters('User_Organization_Pending', qb, filters);
+  }
+
+  if ((filters.length > 0 || searchTerm) && excludedIds.length > 0) {
+    qb.whereNotIn('user_id', excludedIds);
+  } else if (ids.length > 0) {
+    qb.whereIn('user_id', ids);
+  }
+  return { queryBuilder: qb };
 };

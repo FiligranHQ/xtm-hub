@@ -1,0 +1,71 @@
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
+import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-version';
+import {
+  PublicShareableResource,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
+import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { Badge } from '@filigran/ui/servers';
+import { FunctionComponent, ReactNode } from 'react';
+
+interface ShareableResourceCardFooterVersionProps {
+  document: ShareableResource | PublicShareableResource;
+  publicPath?: boolean;
+  shareLinkUrl: string;
+  extraContent?: ReactNode;
+}
+export const ShareableResourceCardFooterVersion: FunctionComponent<
+  ShareableResourceCardFooterVersionProps
+> = ({ document, publicPath = false, shareLinkUrl, extraContent }) => {
+  let documentMetadata;
+  if (docHasMetadata(document, 'integration_subtype')) {
+    documentMetadata = getIntegrationSubTypeMetadata(
+      document.integration_subtype
+    );
+  }
+
+  return (
+    <>
+      <div className="flex gap-l">
+        {documentMetadata && (
+          <Badge
+            className="mr-auto"
+            variant="outline"
+            color={documentMetadata.color}>
+            {documentMetadata.label}
+          </Badge>
+        )}
+        {publicPath ||
+        (docHasMetadata(document, 'manager_supported') &&
+          !document.manager_supported) ? (
+          <span className="text-sm">
+            {docHasMetadata(document, 'product_version') &&
+              document.product_version}
+          </span>
+        ) : (
+          <ShareableResourceCardVersion
+            className="text-sm"
+            product_version={
+              docHasMetadata(document, 'product_version')
+                ? document.product_version
+                : ''
+            }
+            requiredProductVersion={
+              docHasMetadata(document, 'product_version')
+                ? document.product_version
+                : ''
+            }
+          />
+        )}
+      </div>
+      <div className=" flex flex-row pr-m">
+        <ShareLinkButton
+          documentId={document.id}
+          url={shareLinkUrl}
+        />
+        {extraContent}
+      </div>
+    </>
+  );
+};

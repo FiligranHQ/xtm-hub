@@ -2,12 +2,12 @@ import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Readable } from 'stream';
 import z from 'zod';
 import {
-  ConnectorType,
+  IntegrationSubType,
   IntegrationType,
 } from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
-import { semanticVersionRegex } from '../../utils/semantic-versioning';
+import { isValidVersion } from '../../utils/versioning';
 import { Upload } from '../services/document/document.uploads.helper';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
@@ -114,8 +114,8 @@ export const extractManifestInformation = (
         subscription_link: validContract.subscription_link,
         manager_supported: validContract.manager_supported,
         playbook_supported: validContract.playbook_supported,
-        /*Label and picture*/
-        labels: validContract.use_cases,
+        /*Use case and picture*/
+        use_cases: validContract.use_cases,
         logo: validContract.logo,
       });
     }
@@ -141,7 +141,7 @@ const ContractSchema = z.object({
   use_cases: z.array(z.string()), // At least one use case
   verified: z.boolean(),
   container_image: z.string().min(1),
-  container_type: z.nativeEnum(ConnectorType),
+  container_type: z.nativeEnum(IntegrationSubType),
   source_code: z.string().url(),
   subscription_link: z.string().url().or(z.literal('')).nullish(),
   manager_supported: z.boolean(),
@@ -152,7 +152,7 @@ const ManifestSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   description: z.string(),
-  version: z.string().min(1).regex(semanticVersionRegex),
+  version: z.string().min(1).refine(isValidVersion),
   contracts: z.array(z.unknown()),
 });
 

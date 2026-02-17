@@ -14,7 +14,7 @@ export const customDashboardsItem = graphql`
     active
     slug
     updated_at
-    labels {
+    use_cases {
       id
       name
       color
@@ -44,43 +44,6 @@ export const customDashboardsItem = graphql`
     }
     # Specific fields
     product_version
-  }
-`;
-
-export const customDashboardsFragment = graphql`
-  fragment customDashboardsList on Query
-  @refetchable(queryName: "CustomDashboardsPaginationQuery") {
-    customDashboards(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      searchTerm: $searchTerm
-      filters: $filters
-      serviceInstanceId: $serviceInstanceId
-    ) {
-      __id
-      totalCount
-      edges {
-        node {
-          ...customDashboardsItem_fragment
-        }
-      }
-    }
-  }
-`;
-
-export const CustomDashboardsListQuery = graphql`
-  query customDashboardsQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: DocumentOrdering!
-    $orderMode: OrderingMode!
-    $filters: [Filter!]
-    $searchTerm: String
-    $serviceInstanceId: String
-  ) {
-    ...customDashboardsList
   }
 `;
 

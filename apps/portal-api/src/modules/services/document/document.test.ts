@@ -2,9 +2,10 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import {
-  contextAdminUser,
+  contextBypassUser,
   requestContextAdminUser,
-  SERVICE_INTEGRATIONS_ID,
+  SERVICES,
+  TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import { IntegrationType } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -15,7 +16,6 @@ import {
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
@@ -26,7 +26,7 @@ import {
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
   CsvFeed,
-  INTEGRATION_CSV_FEED_METADATA,
+  INTEGRATION_CSV_FEED_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integrations/integrations.model';
 import { DocumentApp } from './document.app';
@@ -35,11 +35,9 @@ import {
   deleteDocumentBy,
   deleteDocuments,
   getDocumentName,
-  loadUnsecureDocumentsBy,
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
-import { insertDocument } from './document.test.utils';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
@@ -60,8 +58,9 @@ describe('should call S3 to send file', () => {
     await MinIOClient.sendFile(
       fileMock,
       'name',
-      'ba091095-418f-4b4f-b150-6c9295e232c3',
-      'ba091095-418f-4b4f-b150-6c9295e232c3' as ServiceInstanceId
+      TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS
+        .ID as unknown as ServiceInstanceId // unknown used because this id is an user id (#personalSpace)
     );
 
     const expectedResult = {
@@ -72,7 +71,7 @@ describe('should call S3 to send file', () => {
         mimetype: 'mimeType',
         filename: 'name',
         encoding: 'utf8',
-        Uploadinguserid: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        Uploadinguserid: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       },
     };
     expect(mockInsertFileInMinio).toHaveBeenCalledTimes(1);
@@ -82,66 +81,15 @@ describe('should call S3 to send file', () => {
   });
 });
 
-describe('should add new file', () => {
-  beforeAll(async () => {
-    await DocumentApp.createDocumentWithChildrenAndMetadata(
-      {
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-        description: 'description',
-        minio_name: 'minioName',
-        file_name: 'filename',
-        service_instance_id:
-          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-        type: 'vault',
-      },
-      []
-    );
-  });
-  it('should create Document entry in DB', async () => {
-    const data = {
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      description: 'description2',
-      minio_name: 'minioName2',
-      file_name: 'filename2',
-      service_instance_id:
-        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-      type: 'vault',
-    };
-    await insertDocument(data);
-    const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename2' });
-    expect(inDb).toBeTruthy();
-    expect(inDb[0].file_name).toEqual('filename2');
-  });
-
-  it('should pass old Documents into inactive state', async () => {
-    const data = {
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      description: 'description3',
-      minio_name: 'minioName3',
-      file_name: 'filename',
-      service_instance_id:
-        'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-      type: 'vault',
-    };
-    await insertDocument(data);
-    const inDb = await loadUnsecureDocumentsBy({ file_name: 'filename' });
-    expect(inDb).toBeTruthy();
-    expect(inDb.length).toEqual(2);
-    expect(inDb[0].active).toEqual(false);
-    expect(inDb[1].active).toEqual(true);
-  });
-
-  afterAll(async () => {
-    await deleteDocuments();
-  });
-});
-
 describe('Should modify document', () => {
   beforeAll(async () => {
     await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
-        uploader_id: toGlobalId('User', 'ba091095-418f-4b4f-b150-6c9295e232c3'),
+        uploader_id: toGlobalId(
+          'User',
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+        ),
         description: 'description',
         minio_name: 'minioName',
         file_name: 'filename',
@@ -153,24 +101,6 @@ describe('Should modify document', () => {
       },
       []
     );
-  });
-  it('Should update document description', async () => {
-    const response = await documentResolver.Mutation.editDocument(
-      {},
-      {
-        documentId: toGlobalId(
-          'Document',
-          'bc348e84-3635-46de-9b56-38db09c35f4d'
-        ),
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          'c6343882-f609-4a3f-abe0-a34f8cb11302'
-        ),
-        input: { description: 'NEW' },
-      },
-      contextAdminUser
-    );
-    expect(response.description).toStrictEqual('NEW');
   });
 
   it('Should delete document', async () => {
@@ -209,7 +139,7 @@ describe('should check if file already exists', () => {
   beforeAll(async () => {
     await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         description: 'description',
         minio_name: 'minioName',
         file_name: 'filename',
@@ -244,7 +174,7 @@ describe('Documents loading', () => {
     await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         id: 'aefd2d32-adae-4329-b772-90a2fb8516ad' as DocumentId,
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         description: 'description',
         minio_name: 'minioName',
         file_name: 'filename',
@@ -257,7 +187,7 @@ describe('Documents loading', () => {
     await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         id: '96847916-2f35-4402-8e64-888c5d5e8b7a' as DocumentId,
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'xfilename',
@@ -282,7 +212,7 @@ describe('Documents loading', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
       },
-      contextAdminUser as PortalContext
+      contextBypassUser as PortalContext
     );
     expect(response?.totalCount).toStrictEqual('2');
     expect(response?.edges[0].node.file_name).toStrictEqual('filename');
@@ -302,7 +232,7 @@ describe('Documents loading', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
       },
-      contextAdminUser
+      contextBypassUser
     );
     expect(response?.totalCount).toStrictEqual('2');
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
@@ -323,7 +253,7 @@ describe('Documents loading', () => {
           'c6343882-f609-4a3f-abe0-a34f8cb11302'
         ),
       },
-      contextAdminUser
+      contextBypassUser
     );
     expect(response?.totalCount).toStrictEqual('1');
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
@@ -336,24 +266,24 @@ describe('increment shared counter', () => {
     const testContext = {
       user: requestContextAdminUser.user,
       portalContext: {
-        ...contextAdminUser,
-        serviceInstanceId: SERVICE_INTEGRATIONS_ID,
+        ...contextBypassUser,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
       },
     };
     requestContext.set(testContext);
     await DocumentApp.createDocumentWithChildrenAndMetadata<CsvFeed>(
       {
         id: documentId as DocumentId,
-        uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         name: 'Csv Feed',
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'csvfilename',
-        service_instance_id: SERVICE_INTEGRATIONS_ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         integration_type: IntegrationType.CsvFeed,
       },
-      INTEGRATION_CSV_FEED_METADATA
+      INTEGRATION_CSV_FEED_METADATA_KEYS
     );
     vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {
@@ -382,16 +312,16 @@ describe('increment shared counter', () => {
       {
         documentId: toGlobalId('DocumentId', documentId),
       },
-      contextAdminUser
+      contextBypassUser
     );
     expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
       '@timestamp': '2025-02-03T13:12:15.000Z',
       event_type: TelemetryEventType.SHARE,
-      organization_id: PLATFORM_ORGANIZATION_UUID,
+      organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       organization_name: 'Filigran',
       organization_type: 'Professional',
       source: TELEMETRY_SOURCE,
-      user_id: ADMIN_UUID,
+      user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,

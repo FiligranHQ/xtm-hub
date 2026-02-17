@@ -94,6 +94,12 @@ const IntegrationTypeToEventServiceType = new Map<
 >([
   [IntegrationType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
   [IntegrationType.Connector, TelemetryEventServiceType.CONNECTORS],
+  [IntegrationType.TaxiiFeed, TelemetryEventServiceType.TAXII_FEEDS],
+  [IntegrationType.Stream, TelemetryEventServiceType.STREAMS],
+  [
+    IntegrationType.ThirdPartyIntegration,
+    TelemetryEventServiceType.THIRD_PARTY_INTEGRATIONS,
+  ],
 ]);
 
 const buildServiceTypeEvent = async (resource_id: string) => {

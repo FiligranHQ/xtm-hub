@@ -1,17 +1,15 @@
+import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { dbUnsecure } from '../../knexfile';
+import { db } from '../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../tests/tests.const';
 import { withTransaction } from '../context/database.context';
 import { UserInitializer } from '../model/kanel/public/User';
 import UserOrganization from '../model/kanel/public/UserOrganization';
 import { loadOrganizationBy } from '../modules/organizations/organizations.domain';
-import {
-  CAPABILITY_BYPASS,
-  PLATFORM_ORGANIZATION_UUID,
-  ROLE_ADMIN,
-  ROLE_USER,
-} from '../portal.const';
+import { CAPABILITY_BYPASS, ROLE_ADMIN, ROLE_USER } from '../portal.const';
 import { DevUser } from '../utils/config-validation.util';
 import {
+  addRoleToUser,
   ensureCapabilityExists,
   ensureDevOrganizationExists,
   ensureDevUserExists,
@@ -35,7 +33,7 @@ describe('Dev users seeding', () => {
   // Clean up test data after each test
   afterEach(async () => {
     // Clean up test users and their data
-    const testUsers = await dbUnsecure<UserInitializer>('User').where(
+    const testUsers = await db<UserInitializer>('User').where(
       'email',
       'like',
       '%@test-dev.com'
@@ -43,20 +41,20 @@ describe('Dev users seeding', () => {
 
     for (const user of testUsers) {
       // Clean user roles
-      await dbUnsecure('User_RolePortal').where('user_id', user.id).del();
+      await db('User_RolePortal').where('user_id', user.id).del();
 
       // Clean user organizations
-      await dbUnsecure('User_Organization').where('user_id', user.id).del();
+      await db('User_Organization').where('user_id', user.id).del();
 
       // Clean personal space organization
-      await dbUnsecure('Organization').where('id', user.id).del();
+      await db('Organization').where('id', user.id).del();
     }
 
     // Clean test users
-    await dbUnsecure('User').where('email', 'like', '%@test-dev.com').del();
+    await db('User').where('email', 'like', '%@test-dev.com').del();
 
     // Clean test organizations
-    await dbUnsecure('Organization')
+    await db('Organization')
       .where('name', 'like', '%Test%')
       .where('personal_space', false)
       .del();
@@ -109,7 +107,7 @@ describe('Dev users seeding', () => {
       await ensureDevUserExists(userConfig);
 
       // Verify user exists
-      const user = await dbUnsecure<UserInitializer>('User')
+      const user = await db<UserInitializer>('User')
         .where({ email: 'simple@test-dev.com' })
         .first();
 
@@ -117,7 +115,7 @@ describe('Dev users seeding', () => {
       expect(user?.email).toBe('simple@test-dev.com');
 
       // Verify user has USER role
-      const userRole = await dbUnsecure('User_RolePortal')
+      const userRole = await db('User_RolePortal')
         .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
         .where('User_RolePortal.user_id', user?.id)
         .where('RolePortal.name', 'USER')
@@ -126,12 +124,10 @@ describe('Dev users seeding', () => {
       expect(userRole).toBeDefined();
 
       // Verify platform organization membership
-      const platformMembership = await dbUnsecure<UserOrganization>(
-        'User_Organization'
-      )
+      const platformMembership = await db<UserOrganization>('User_Organization')
         .where({
           user_id: user?.id,
-          organization_id: PLATFORM_ORGANIZATION_UUID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         })
         .first();
 
@@ -155,14 +151,14 @@ describe('Dev users seeding', () => {
 
       await ensureDevUserExists(adminConfig);
 
-      const user = await dbUnsecure<UserInitializer>('User')
+      const user = await db<UserInitializer>('User')
         .where({ email: 'admin@test-dev.com' })
         .first();
 
       expect(user).toBeDefined();
 
       // Verify user has ADMIN role
-      const adminRole = await dbUnsecure('User_RolePortal')
+      const adminRole = await db('User_RolePortal')
         .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
         .where('User_RolePortal.user_id', user?.id)
         .where('RolePortal.name', 'ADMIN')
@@ -183,7 +179,7 @@ describe('Dev users seeding', () => {
 
       await ensureDevUserExists(userWithOrgConfig);
 
-      const user = await dbUnsecure<UserInitializer>('User')
+      const user = await db<UserInitializer>('User')
         .where({ email: 'orguser@test-dev.com' })
         .first();
 
@@ -196,9 +192,7 @@ describe('Dev users seeding', () => {
       expect(org?.domains).toEqual(['userorg.test-dev.com']);
 
       // Verify user is member of the organization
-      const orgMembership = await dbUnsecure<UserOrganization>(
-        'User_Organization'
-      )
+      const orgMembership = await db<UserOrganization>('User_Organization')
         .where({
           user_id: user?.id,
           organization_id: org?.id,
@@ -217,7 +211,7 @@ describe('Dev users seeding', () => {
       // Create user first time
       await ensureDevUserExists(userConfig);
 
-      const originalUser = await dbUnsecure<UserInitializer>('User')
+      const originalUser = await db<UserInitializer>('User')
         .where({ email: 'update@test-dev.com' })
         .first();
 
@@ -231,7 +225,7 @@ describe('Dev users seeding', () => {
 
       await ensureDevUserExists(updatedConfig);
 
-      const updatedUser = await dbUnsecure<UserInitializer>('User')
+      const updatedUser = await db<UserInitializer>('User')
         .where({ email: 'update@test-dev.com' })
         .first();
 
@@ -274,7 +268,7 @@ describe('Dev users seeding', () => {
         await initializeDevUsers();
 
         // Verify all users were created
-        const createdUsers = await dbUnsecure<UserInitializer>('User').whereIn(
+        const createdUsers = await db<UserInitializer>('User').whereIn(
           'email',
           ['dev1@test-dev.com', 'dev2@test-dev.com', 'dev3@test-dev.com']
         );
@@ -283,7 +277,7 @@ describe('Dev users seeding', () => {
 
         // Verify admin role for dev2
         const dev2 = createdUsers.find((u) => u.email === 'dev2@test-dev.com');
-        const adminRole = await dbUnsecure('User_RolePortal')
+        const adminRole = await db('User_RolePortal')
           .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
           .where('User_RolePortal.user_id', dev2?.id)
           .where('RolePortal.name', 'ADMIN')
@@ -318,14 +312,14 @@ describe('Dev users seeding', () => {
         await initializeDevUsers();
 
         // User should still be created
-        const user = await dbUnsecure<UserInitializer>('User')
+        const user = await db<UserInitializer>('User')
           .where({ email: 'invalidrole@test-dev.com' })
           .first();
 
         expect(user).toBeDefined();
 
         // Should have USER role (valid role was processed)
-        const userRole = await dbUnsecure('User_RolePortal')
+        const userRole = await db('User_RolePortal')
           .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
           .where('User_RolePortal.user_id', user?.id)
           .where('RolePortal.name', 'USER')
@@ -346,7 +340,7 @@ describe('Dev users seeding', () => {
         await initializeDevUsers();
 
         // Should not create any test users
-        const testUsers = await dbUnsecure<UserInitializer>('User').where(
+        const testUsers = await db<UserInitializer>('User').where(
           'email',
           'like',
           '%@test-dev.com'
@@ -357,5 +351,106 @@ describe('Dev users seeding', () => {
         portalConfig.default.dev_users = originalDevUsers;
       }
     });
+  });
+});
+
+describe('addRoleToUser', () => {
+  const testUserIds: string[] = [];
+  const testRolePortalIds: string[] = [];
+  const user_id = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
+  // Clean up test data after each test
+  afterEach(async () => {
+    if (testUserIds.length > 0) {
+      await db('User_RolePortal').whereIn('user_id', testUserIds).del();
+    }
+    if (testRolePortalIds.length > 0) {
+      await db('RolePortal').whereIn('id', testRolePortalIds).del();
+    }
+    testUserIds.length = 0;
+    testRolePortalIds.length = 0;
+  });
+
+  it('should add role to user when role exists and user does not have it', async () => {
+    // Setup test data
+    const rolePortalId = uuidv4();
+
+    testUserIds.push(user_id);
+    testRolePortalIds.push(rolePortalId);
+
+    await db('RolePortal').insert({
+      id: rolePortalId,
+      name: `test-admin-${rolePortalId}`,
+    });
+
+    // Execute
+    await addRoleToUser(user_id, `test-admin-${rolePortalId}`);
+
+    // Assert
+    const userRole = await db('User_RolePortal')
+      .where({ user_id, role_portal_id: rolePortalId })
+      .first();
+
+    expect(userRole).toBeDefined();
+    expect(userRole.user_id).toBe(user_id);
+    expect(userRole.role_portal_id).toBe(rolePortalId);
+  });
+
+  it('should not duplicate role if user already has it', async () => {
+    // Setup test data
+    const rolePortalId = uuidv4();
+
+    testUserIds.push(user_id);
+    testRolePortalIds.push(rolePortalId);
+
+    await db('RolePortal').insert({
+      id: rolePortalId,
+      name: `test-editor-${rolePortalId}`,
+    });
+
+    // Add role first time
+    await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
+
+    // Add role second time
+    await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
+
+    // Assert - should only have one record
+    const userRoles = await db('User_RolePortal').where({
+      user_id,
+      role_portal_id: rolePortalId,
+    });
+
+    expect(userRoles).toHaveLength(1);
+  });
+
+  it('should handle when role does not exist', async () => {
+    testUserIds.push(user_id);
+
+    // Execute - should not throw
+    await expect(
+      addRoleToUser(user_id, 'non-existent-role')
+    ).resolves.not.toThrow();
+
+    // Assert - no user role should be created
+    const userRoles = await db('User_RolePortal').where({ user_id });
+
+    expect(userRoles).toHaveLength(0);
+  });
+
+  it('should work with existing role names in database', async () => {
+    // This test assumes you have actual roles in your database
+    testUserIds.push(user_id);
+
+    // Get an existing role from database
+    const existingRole = await db('RolePortal').first();
+
+    if (existingRole) {
+      await addRoleToUser(user_id, existingRole.name);
+
+      const userRole = await db('User_RolePortal')
+        .where({ user_id, role_portal_id: existingRole.id })
+        .first();
+
+      expect(userRole).toBeDefined();
+    }
   });
 });

@@ -1,4 +1,5 @@
 import createNextIntlPlugin from 'next-intl/plugin';
+
 const withNextIntl = createNextIntlPlugin();
 
 /**
@@ -7,6 +8,17 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   redirects: async () => {
     return [
+      {
+        source: '/app/service/free-trial',
+        destination: '/app/service/opencti-free-trial',
+        permanent: true,
+      },
+      {
+        source: '/app/admin/trials',
+        destination: '/app/admin/opencti-trials',
+        permanent: true,
+      },
+
       // open-bas / obas → openaev
       {
         source: '/app/service/(open-bas-scenarios|obas_scenarios)/:path*',
@@ -32,6 +44,12 @@ const nextConfig = {
       // -------------------------
       // Cybersecurity solutions
       // -------------------------
+
+      {
+        source: '/cybersecurity-solutions/free-trial',
+        destination: '/cybersecurity-solutions/opencti-free-trial',
+        permanent: true,
+      },
 
       {
         source:

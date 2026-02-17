@@ -164,7 +164,7 @@ export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
         <div
           className={cn(
             '!mt-m px-l py-s space-y-s',
-            fields.length > 0 && 'border border-primary rounded'
+            fields.length > 0 && 'border bg-card rounded'
           )}>
           {fields.map((field, index) => {
             return (

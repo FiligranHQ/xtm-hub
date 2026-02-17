@@ -139,7 +139,7 @@ export const documentDownloadEndpoint = (app) => {
 
           stream.pipe(res);
         } catch (error) {
-          logApp.error('Error while retrieving document: ', error);
+          logApp.error('Error while retrieving document: ', { error });
           res.status(404).json({ message: 'Document not found' });
           return;
         }

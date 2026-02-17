@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
-import { isCompatibleWithSemanticVersion } from '@/utils/semantic-versioning';
 import {
   SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
   ShareableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { doesVersionSatisfy } from '@/utils/versioning';
 import {
   AutoForm,
   FormItem,
@@ -28,7 +28,7 @@ interface ChoosePlatformFormProps {
   translatedPlatformIdentifier: string;
   oneClickDeploy: (platformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;
-  requiredProductVersion?: string;
+  requiredProductVersion?: string | null;
 }
 
 export const selectPlatformFormSchema = z.object({
@@ -49,7 +49,7 @@ const ChoosePlatformForm = ({
       <div className="space-y-m">
         <h1>
           {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
-            resourceName: documentData.name,
+            resourceName: documentData.name ?? '',
             resourceType:
               SHAREABLE_RESOURCE_TYPE_NAME_MAPPING[
                 documentData.type as keyof typeof SHAREABLE_RESOURCE_TYPE_NAME_MAPPING
@@ -73,11 +73,10 @@ const ChoosePlatformForm = ({
               <FormItem>
                 <>
                   {platforms.map((platform) => {
-                    const isPlatformCompatible =
-                      isCompatibleWithSemanticVersion(
-                        platform.version ?? '0.0.0',
-                        requiredProductVersion ?? '0.0.0'
-                      );
+                    const isPlatformCompatible = doesVersionSatisfy({
+                      givenVersion: platform.version ?? '0.0.0',
+                      requiredVersion: requiredProductVersion ?? '0.0.0',
+                    });
 
                     const input = (
                       <div className="flex items-center gap-2">

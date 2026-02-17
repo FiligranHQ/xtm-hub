@@ -27,6 +27,7 @@ import {
   FunctionComponent,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -38,7 +39,13 @@ import {
   IconActionsItem,
 } from '@/components/ui/icon-actions';
 import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
-import { useMutation } from 'react-relay';
+import {
+  PreloadedQuery,
+  readInlineData,
+  useMutation,
+  usePreloadedQuery,
+  useRefetchableFragment,
+} from 'react-relay';
 
 import { PortalContext } from '@/components/me/app-portal-context';
 import { UserServiceForm } from '@/components/service/[slug]/userservice-form';
@@ -50,17 +57,10 @@ import {
 } from '@/components/ui/breadcrumb-nav';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import { APP_PATH } from '@/utils/path/constant';
-import { RestrictionEnum } from '@generated/models/Restriction.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
-import { useEffect } from 'react';
-import {
-  PreloadedQuery,
-  readInlineData,
-  usePreloadedQuery,
-  useRefetchableFragment,
-} from 'react-relay';
 
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
@@ -91,7 +91,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
 
   useEffect(() => {
     if (!openSheet && openSheet !== null) setMenuOpen(false);
-  }, [openSheet]);
+  }, [openSheet, setMenuOpen]);
 
   const queryData = usePreloadedQuery<userServiceFromSubscriptionQuery>(
     UserServiceFromSubscription,
@@ -240,7 +240,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
           return (
             <div className="flex items-center justify-end">
               {(me?.capabilities?.some(
-                (capa) => capa?.name === RestrictionEnum.BYPASS
+                (capa) => capa?.name === PortalCapabilityEnum.BYPASS
               ) ||
                 canManageService()) && (
                 <IconActions
@@ -265,14 +265,7 @@ const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
         },
       },
     ],
-    [
-      canManageService,
-      deleteCurrentUser,
-      me?.capabilities,
-      queryDataSubscription,
-      t,
-      userServices.userServiceFromSubscription?.__id,
-    ]
+    [canManageService, me?.capabilities, t]
   );
 
   const [pagination] = useState<PaginationState>({

@@ -11,7 +11,22 @@ export interface Context extends BaseContext {
 }
 
 export const errorLoggingPlugin = (): ApolloServerPlugin<Context> => ({
-  async requestDidStart() {
+  async requestDidStart(requestContext) {
+    const { request, contextValue } = requestContext;
+    const { user, serviceId, req } = contextValue ?? {};
+
+    logApp.info(
+      'GraphQL request received',
+      {
+        operationName: request.operationName,
+        query: request.query,
+        variables: req?.body?.variables,
+        user,
+        serviceId,
+      },
+      AppLogsCategory.GRAPHQL
+    );
+
     return {
       async didEncounterErrors(requestContext) {
         const { errors, operationName, contextValue } = requestContext;
@@ -26,6 +41,7 @@ export const errorLoggingPlugin = (): ApolloServerPlugin<Context> => ({
               user: contextValue?.user,
               serviceId: contextValue?.serviceId,
               codeStack: error.originalError?.stack,
+              variables: contextValue?.req?.body?.variables,
             },
             AppLogsCategory.GRAPHQL
           );

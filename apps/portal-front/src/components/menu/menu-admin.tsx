@@ -1,7 +1,8 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import useAdminByPass from '@/hooks/useAdminByPass';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
+import { FeatureFlag } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
 import { SettingsIcon } from '@filigran/icon';
 import {
@@ -16,7 +17,7 @@ import {
   PopoverTrigger,
   Separator,
 } from '@filigran/ui';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -62,7 +63,7 @@ const ClosedMenuAdmin = () => {
   const t = useTranslations();
   const [adminOpened, setAdminOpened] = useDebounceValue(false, 100);
   const currentPath = usePathname();
-  useEffect(() => setAdminOpened(false), [currentPath]);
+  useEffect(() => setAdminOpened(false), [currentPath, setAdminOpened]);
   const handleMouseEnter = () => setAdminOpened(true);
   const handleMouseLeave = () => setAdminOpened(false);
   return (
@@ -105,7 +106,10 @@ const ClosedMenuAdmin = () => {
   );
 };
 
-const adminLinksData = (t: UseTranslationsProps) => [
+const adminLinksData = (
+  t: UseTranslationsProps,
+  isOpenAEVTrialsEnabled: boolean
+) => [
   {
     href: `/${APP_PATH}/admin/parameters`,
     label: t('MenuLinks.Parameters'),
@@ -113,14 +117,11 @@ const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/user`,
     label: t('MenuLinks.Security'),
-    restriction: [
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-      OrganizationCapabilityEnum.MANAGE_ACCESS,
-    ],
   },
   {
-    href: `/${APP_PATH}/admin/label`,
-    label: t('MenuLinks.Labels'),
+    href: `/${APP_PATH}/admin/use-case
+    `,
+    label: t('MenuLinks.UseCases'),
   },
   {
     href: `/${APP_PATH}/admin/organizations`,
@@ -131,28 +132,41 @@ const adminLinksData = (t: UseTranslationsProps) => [
     label: t('MenuLinks.Services'),
   },
   {
-    href: `/${APP_PATH}/admin/trials`,
-    label: t('MenuLinks.Trials'),
+    href: `/${APP_PATH}/admin/opencti-trials`,
+    label: t('MenuLinks.OpenCTITrials'),
+    restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
+  ...(isOpenAEVTrialsEnabled
+    ? [
+        {
+          href: `/${APP_PATH}/admin/openaev-trials`,
+          label: t('MenuLinks.OpenAEVTrials'),
+          restriction: [PortalCapabilityEnum.READ_TRIALS],
+        },
+      ]
+    : []),
 ];
 
 const AdminLinks = ({ className }: { className?: string }) => {
   const t = useTranslations();
+  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
   return (
     <>
-      {adminLinksData(t).map(({ href, label, restriction = [] }) => (
-        <GuardCapacityComponent
-          key={href}
-          capacityRestriction={[...restriction]}>
-          <li>
-            <AdminButton
-              className={className}
-              href={href}
-              label={label}
-            />
-          </li>
-        </GuardCapacityComponent>
-      ))}
+      {adminLinksData(t, isOpenAEVTrialsEnabled).map(
+        ({ href, label, restriction = [] }) => (
+          <GuardCapacityComponent
+            key={href}
+            portalCapabilityRestriction={[...restriction]}>
+            <li>
+              <AdminButton
+                className={className}
+                href={href}
+                label={label}
+              />
+            </li>
+          </GuardCapacityComponent>
+        )
+      )}
     </>
   );
 };
@@ -186,17 +200,12 @@ const AdminButton = ({
   );
 };
 const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
-  const useGrantedBYPASS = useAdminByPass();
-  if (useGrantedBYPASS) {
-    return (
-      <>
-        <Separator className="my-s" />
-        <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>
-      </>
-    );
-  }
-
-  return null;
+  return (
+    <>
+      <Separator className="my-s" />
+      <li>{open ? <OpenedMenuAdmin /> : <ClosedMenuAdmin />}</li>
+    </>
+  );
 };
 
 export default MenuAdmin;

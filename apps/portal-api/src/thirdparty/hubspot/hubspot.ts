@@ -1,5 +1,6 @@
 import config from 'config';
 import {
+  DeploymentRequestDeploymentType,
   OrganizationCapability,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
@@ -44,8 +45,9 @@ async function hubspotHook(
       logApp.info(`Hubspot ${type} hook sent`);
     }
   } catch (error) {
-    logApp.error(`An error occurred while sending the Hubspot ${type} hook`);
-    logApp.error(error);
+    logApp.error(`An error occurred while sending the Hubspot ${type} hook`, {
+      error,
+    });
   }
 }
 
@@ -69,16 +71,62 @@ export const hubspotLoginHook = async (userId: string) =>
     };
   });
 
-export const hubspotReachOutSalesHook = async () =>
+export const hubspotReachOutSalesHook = async ({
+  message = 'Please contact me about the OpenCTI free trial',
+  platformId,
+  platformIdentifier = PlatformIdentifier.Opencti,
+  platformToken,
+}: {
+  message?: string;
+  platformIdentifier?: PlatformIdentifier;
+  platformId?: string;
+  platformToken?: string;
+}) =>
   hubspotHook('reachOutSales', async () => {
-    const { user, portalContext } = requestContext.require();
-    const platformToken = portalContext?.req.header('XTM-Hub-Platform-Token');
+    const { user } = requestContext.require();
 
-    let deploymentRequest: FullyQualifiedDeploymentRequest;
-    if (user?.id) {
+    let deploymentRequest: FullyQualifiedDeploymentRequest | undefined;
+    if (platformId) {
       deploymentRequest =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformIdentifier(
-          PlatformIdentifier.Opencti,
+        await DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
+          platformId
+        );
+
+      if (!deploymentRequest) {
+        throw new Error(
+          `No deployment request found for platform id: ${platformId}`
+        );
+      }
+
+      if (deploymentRequest.type !== DeploymentRequestDeploymentType.Trial) {
+        throw new Error(
+          `Deployment request ${deploymentRequest.id} is not a trial deployment request`
+        );
+      }
+
+      const hasUserRightsOnRequest = user.organizations.some(
+        (organization) =>
+          organization.id === deploymentRequest.organization_requester_id
+      );
+      if (!hasUserRightsOnRequest) {
+        throw new Error(
+          `Deployment request ${deploymentRequest.id}, organization ${deploymentRequest.organization_requester_id} does not match user ${user.id} organizations`
+        );
+      }
+    } else if (platformToken) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
+          platformToken
+        );
+      if (!deploymentRequest) {
+        throw new Error(
+          `No deployment request found for platform token: ${platformToken}`
+        );
+      }
+    } else if (user?.id) {
+      deploymentRequest =
+        await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
+          platformIdentifier,
           user.id
         );
       if (!deploymentRequest) {
@@ -91,17 +139,14 @@ export const hubspotReachOutSalesHook = async () =>
               (org) => org.id === user.selected_organization_id
             )?.name || '',
           job_title: '',
-          message: `Please contact me about the OpenCTI free trial`,
+          message: `${platformIdentifier}: ${message}`,
           use_case: '',
         };
       }
-    } else if (platformToken) {
-      deploymentRequest =
-        await DeploymentRequestDomain.loadProvisionedTrialDeploymentRequestByPlatformToken(
-          platformToken
-        );
     } else {
-      throw new Error('Either userId or platformToken must be provided');
+      throw new Error(
+        'Either userId, platformToken or platformId must be provided'
+      );
     }
 
     return {
@@ -110,7 +155,7 @@ export const hubspotReachOutSalesHook = async () =>
       lastname: deploymentRequest.requester_last_name,
       company: deploymentRequest.organization_name,
       job_title: deploymentRequest.job_title,
-      message: `Please contact me about my ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.platform_identifier} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}`,
+      message: `${deploymentRequest.platform_identifier}: Message sent for free trial: ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.type}.\nUse Case: ${deploymentRequest.use_case}\n\n${message}`,
       use_case: deploymentRequest.use_case,
     };
   });

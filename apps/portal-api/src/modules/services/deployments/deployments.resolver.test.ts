@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import { DEFAULT_ADMIN_EMAIL } from '../../../../tests/tests.const';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -10,7 +10,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { deleteSubscriptionUnsecure } from '../../subcription/subscription.helper';
+import { deleteSubscription } from '../../subcription/subscription.helper';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import { DeploymentsApp } from './deployments.app';
 import { DeploymentRequestDomain } from './deployments.domain';
@@ -20,7 +20,7 @@ describe('Deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await deleteServiceInstanceBy({});
-    await deleteSubscriptionUnsecure({});
+    await deleteSubscription({});
   });
   describe('createDeploymentRequest', () => {
     it('should return the deployment request created', async () => {
@@ -119,11 +119,15 @@ describe('Deployment app', () => {
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
         failure_reason: 'not failed',
-        organization_name: 'Filigran',
-        organization_domains: ['filigran.io', 'internal.com'],
-        requester_email: DEFAULT_ADMIN_EMAIL,
-        requester_first_name: 'firstname',
-        requester_last_name: 'lastname',
+        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+        organization_domains: [
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.SECOND,
+        ],
+        requester_email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        requester_first_name:
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+        requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
       });
     });
     it('should return an error when status transition is not allowed', async () => {

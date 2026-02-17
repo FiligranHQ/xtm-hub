@@ -1,28 +1,28 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import {
+  DocumentConnection,
   DocumentOrdering,
   FilterKey,
-  IntegrationConnection,
+  Integration,
+  IntegrationSubType,
   IntegrationType,
+  LogicalOperator,
   OrderingMode,
 } from '../../../../__generated__/resolvers-types';
-import { DocumentId } from '../../../../model/kanel/public/Document';
 import { upsertConnectors } from '../../../ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../../ingest-manifest/ingest-manifest.model';
 import sampleExtractedManifest from '../../../ingest-manifest/test/sample-extracted-manifest.json';
 import {
   Connector,
-  CsvFeed,
-  INTEGRATION_CONNECTOR_METADATA,
-  INTEGRATION_CSV_FEED_METADATA,
-  INTEGRATION_METADATA,
+  INTEGRATION_CONNECTOR_METADATA_KEYS,
+  INTEGRATION_METADATA_KEYS,
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../integrations/integrations.model';
 
+import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
@@ -46,31 +46,28 @@ describe('Document domain', () => {
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
-      const documentId = uuidv4() as DocumentId;
-
-      await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+      await DocumentApp.createDocument(
         {
-          id: documentId,
-          uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
-          slug: 'myCsvFeed',
           description: 'description',
-          minio_name: 'minioName',
-          file_name: 'csvfilename',
+          short_description: 'short_description',
+          slug: 'slug',
           active: true,
-          integration_type: IntegrationType.CsvFeed,
-          service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         },
-        [],
-        INTEGRATION_CSV_FEED_METADATA
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
       );
 
       await upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 
-      const connection: IntegrationConnection =
+      const connection: { edges: { node: Integration }[] } =
         await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
@@ -82,7 +79,7 @@ describe('Document domain', () => {
               INTEGRATION_SERVICE_INSTANCE_ID
             ),
           },
-          INTEGRATION_METADATA
+          INTEGRATION_METADATA_KEYS
         );
 
       const csvFeeds = connection.edges
@@ -98,33 +95,29 @@ describe('Document domain', () => {
 
       expect(connectors.length).toBeTruthy();
       const connector: Connector = connectors[0]?.node as Connector;
-      INTEGRATION_CONNECTOR_METADATA.forEach((metadata) => {
+      INTEGRATION_CONNECTOR_METADATA_KEYS.forEach((metadata) => {
         expect(connector[metadata]).toBeDefined();
       });
     });
 
     it('should filter an integration feed with a metadata type', async () => {
       // Create data
-      const documentId = uuidv4() as DocumentId;
-
-      const csvFeed =
-        await DocumentApp.createDocumentWithImageUploadsAndMetadata<CsvFeed>(
-          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          {
-            id: documentId,
-            uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-            name: 'myCsvFeed',
-            slug: 'myCsvFeed',
-            description: 'description',
-            minio_name: 'minioName',
-            file_name: 'csvfilename',
-            active: true,
-            integration_type: IntegrationType.CsvFeed,
-            service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
-          },
-          [],
-          INTEGRATION_CSV_FEED_METADATA
-        );
+      const csvFeed = await DocumentApp.createDocument(
+        {
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          name: 'myCsvFeed',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
+      );
 
       const [connector] = await upsertConnectors([
         sampleExtractedManifest[0],
@@ -133,7 +126,7 @@ describe('Document domain', () => {
       expect(connector).toBeDefined();
 
       // Fetch csv feeds only
-      const csvFeedConnection: IntegrationConnection =
+      const csvFeedConnection: { edges: { node: Integration }[] } =
         await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
@@ -144,24 +137,29 @@ describe('Document domain', () => {
               'ServiceInstance',
               INTEGRATION_SERVICE_INSTANCE_ID
             ),
-            filters: [
-              {
-                key: FilterKey.IntegrationType,
-                value: [IntegrationType.CsvFeed],
-              },
-            ],
+            logicalFilters: {
+              operator: LogicalOperator.And,
+              children: [
+                {
+                  leaf: {
+                    key: FilterKey.IntegrationType,
+                    value: [IntegrationType.CsvFeed],
+                  },
+                },
+              ],
+            },
           },
-          INTEGRATION_METADATA
+          INTEGRATION_METADATA_KEYS
         );
 
       expect(csvFeedConnection.edges.length).toBe(1);
-      expect(csvFeedConnection.edges[0]?.node.id).toBe(csvFeed.id);
+      expect(csvFeedConnection.edges[0]?.node.id).toBe(csvFeed!.id);
       expect(csvFeedConnection.edges[0]?.node.integration_type).toBe(
         IntegrationType.CsvFeed
       );
 
       // Fetch connectors only
-      const connectorConnection: IntegrationConnection =
+      const connectorConnection: { edges: { node: Integration }[] } =
         await DocumentDomain.loadParentDocumentsByServiceInstance(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           {
@@ -172,14 +170,19 @@ describe('Document domain', () => {
               'ServiceInstance',
               INTEGRATION_SERVICE_INSTANCE_ID
             ),
-            filters: [
-              {
-                key: FilterKey.IntegrationType,
-                value: [IntegrationType.Connector],
-              },
-            ],
+            logicalFilters: {
+              operator: LogicalOperator.And,
+              children: [
+                {
+                  leaf: {
+                    key: FilterKey.IntegrationType,
+                    value: [IntegrationType.Connector],
+                  },
+                },
+              ],
+            },
           },
-          INTEGRATION_METADATA
+          INTEGRATION_METADATA_KEYS
         );
 
       expect(connectorConnection.edges.length).toBe(1);
@@ -187,6 +190,190 @@ describe('Document domain', () => {
       expect(connectorConnection.edges[0]?.node.integration_type).toBe(
         IntegrationType.Connector
       );
+
+      // fetch both
+      const integrationConnection: DocumentConnection =
+        await DocumentDomain.loadParentDocumentsByServiceInstance(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          {
+            orderBy: DocumentOrdering.CreatedAt,
+            orderMode: OrderingMode.Desc,
+            first: 10,
+            serviceInstanceId: toGlobalId(
+              'ServiceInstance',
+              INTEGRATION_SERVICE_INSTANCE_ID
+            ),
+            logicalFilters: {
+              operator: LogicalOperator.And,
+              children: [
+                {
+                  leaf: {
+                    key: FilterKey.IntegrationType,
+                    value: [IntegrationType.Connector, IntegrationType.CsvFeed],
+                  },
+                },
+              ],
+            },
+          },
+          INTEGRATION_METADATA_KEYS
+        );
+
+      expect(integrationConnection.edges.length).toBe(2);
+    });
+
+    describe('multiple filters', () => {
+      it('should handle type and version', async () => {
+        // Create data
+        await DocumentApp.createDocument(
+          {
+            uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+            name: 'myCsvFeed',
+            description: 'description',
+            short_description: 'short_description',
+            slug: 'slug',
+            active: true,
+          },
+          [
+            { key: 'integration_type', value: IntegrationType.CsvFeed },
+            { key: 'feed_url', value: 'https://example.com' },
+          ],
+          INTEGRATION_SERVICE_INSTANCE_ID,
+          []
+        );
+
+        const connectors = await upsertConnectors(
+          sampleExtractedManifest as ManifestInformation[]
+        );
+
+        expect(connectors.length).toBe(2);
+
+        // Fetch connectors with version
+        const connectorConnection: { edges: { node: Integration }[] } =
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            {
+              orderBy: DocumentOrdering.CreatedAt,
+              orderMode: OrderingMode.Desc,
+              first: 10,
+              serviceInstanceId: toGlobalId(
+                'ServiceInstance',
+                INTEGRATION_SERVICE_INSTANCE_ID
+              ),
+              logicalFilters: {
+                operator: LogicalOperator.And,
+                children: [
+                  {
+                    leaf: {
+                      key: FilterKey.IntegrationType,
+                      value: [IntegrationType.Connector],
+                    },
+                  },
+                  {
+                    leaf: {
+                      key: FilterKey.ProductVersion,
+                      value: ['1.0.0'],
+                    },
+                  },
+                ],
+              },
+            },
+            INTEGRATION_METADATA_KEYS
+          );
+
+        expect(connectorConnection.edges.length).toBe(1);
+        expect(connectorConnection.edges[0]?.node.id).toBe(connectors[0]?.id);
+        expect(connectorConnection.edges[0]?.node.integration_type).toBe(
+          IntegrationType.Connector
+        );
+      });
+
+      it('should handle type and subtype', async () => {
+        // Create data
+        await DocumentApp.createDocument(
+          {
+            uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+            name: 'myCsvFeed',
+            description: 'description',
+            short_description: 'short_description',
+            slug: 'slug',
+            active: true,
+          },
+          [
+            { key: 'integration_type', value: IntegrationType.CsvFeed },
+            { key: 'feed_url', value: 'https://example.com' },
+          ],
+          INTEGRATION_SERVICE_INSTANCE_ID,
+          []
+        );
+
+        const connectors = await upsertConnectors(
+          sampleExtractedManifest as ManifestInformation[]
+        );
+
+        expect(connectors.length).toBe(2);
+
+        // Fetch connectors with version
+        const connectorConnection: DocumentConnection =
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            {
+              orderBy: DocumentOrdering.CreatedAt,
+              orderMode: OrderingMode.Desc,
+              first: 10,
+              serviceInstanceId: toGlobalId(
+                'ServiceInstance',
+                INTEGRATION_SERVICE_INSTANCE_ID
+              ),
+              logicalFilters: {
+                operator: LogicalOperator.Or,
+                children: [
+                  {
+                    operator: LogicalOperator.And,
+                    children: [
+                      {
+                        leaf: {
+                          key: FilterKey.IntegrationType,
+                          value: [IntegrationType.Connector],
+                        },
+                      },
+                      {
+                        leaf: {
+                          key: FilterKey.IntegrationSubtype,
+                          value: [IntegrationSubType.ExternalImport],
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    leaf: {
+                      key: FilterKey.IntegrationType,
+                      value: [IntegrationType.CsvFeed],
+                    },
+                  },
+                ],
+              },
+            },
+            INTEGRATION_METADATA_KEYS
+          );
+
+        expect(connectorConnection.edges.length).toBe(2);
+
+        expect(connectorConnection.edges).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              node: expect.objectContaining({
+                integration_type: IntegrationType.CsvFeed,
+              }),
+            }),
+            expect.objectContaining({
+              node: expect.objectContaining({
+                integration_type: IntegrationType.Connector,
+                integration_subtype: IntegrationSubType.ExternalImport,
+              }),
+            }),
+          ])
+        );
+      });
     });
 
     describe('product version filtering', () => {
@@ -199,7 +386,7 @@ describe('Document domain', () => {
         expect(connectors).toBeDefined();
         expect(connectors.length).toBe(2);
 
-        const secondContractConnection: IntegrationConnection =
+        const secondContractConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
@@ -210,14 +397,19 @@ describe('Document domain', () => {
                 'ServiceInstance',
                 INTEGRATION_SERVICE_INSTANCE_ID
               ),
-              filters: [
-                {
-                  key: FilterKey.ProductVersion,
-                  value: ['1.0.0'],
-                },
-              ],
+              logicalFilters: {
+                operator: LogicalOperator.And,
+                children: [
+                  {
+                    leaf: {
+                      key: FilterKey.ProductVersion,
+                      value: ['1.0.0'],
+                    },
+                  },
+                ],
+              },
             },
-            INTEGRATION_METADATA
+            INTEGRATION_METADATA_KEYS
           );
 
         expect(secondContractConnection.edges.length).toBe(1);
@@ -235,7 +427,7 @@ describe('Document domain', () => {
         expect(connectors).toBeDefined();
         expect(connectors.length).toBe(2);
 
-        const allContractsConnection: IntegrationConnection =
+        const allContractsConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
             {
@@ -246,14 +438,19 @@ describe('Document domain', () => {
                 'ServiceInstance',
                 INTEGRATION_SERVICE_INSTANCE_ID
               ),
-              filters: [
-                {
-                  key: FilterKey.ProductVersion,
-                  value: ['1.0.54', '1.0.1'],
-                },
-              ],
+              logicalFilters: {
+                operator: LogicalOperator.And,
+                children: [
+                  {
+                    leaf: {
+                      key: FilterKey.ProductVersion,
+                      value: ['1.0.54', '1.0.1'],
+                    },
+                  },
+                ],
+              },
             },
-            INTEGRATION_METADATA
+            INTEGRATION_METADATA_KEYS
           );
 
         expect(allContractsConnection.edges.length).toBe(2);

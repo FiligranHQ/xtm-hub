@@ -1,9 +1,14 @@
+import config from 'config';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformState,
+  PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import DeploymentRequestModel from '../../../model/kanel/public/DeploymentRequest';
+import Organization, {
+  OrganizationId,
+} from '../../../model/kanel/public/Organization';
 import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployments.domain';
 
@@ -105,6 +110,10 @@ const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
     from: DeploymentRequestPlatformState.Removing,
     to: DeploymentRequestPlatformState.Removed,
   },
+  {
+    from: DeploymentRequestPlatformState.Removed,
+    to: DeploymentRequestPlatformState.Provisioning,
+  },
 ];
 
 export const isHubStatusTransitionValid = (
@@ -127,16 +136,33 @@ export const isPlatformStateTransitionValid = (
   );
 };
 
-export const assertFreeTrialsLimit = async (organizationId: OrganizationId) => {
+export const assertFreeTrialsLimit = async (
+  organizationId: OrganizationId,
+  platformIdentifier: PlatformIdentifier
+) => {
   const freeTrialsRequests =
     await DeploymentRequestDomain.loadDeploymentRequestBy({
       organization_requester_id: organizationId,
       type: DeploymentRequestDeploymentType.Trial,
       counts_in_orga_quota: true,
+      platform_identifier: platformIdentifier,
     });
   if (freeTrialsRequests) {
     throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
   }
+};
+
+export const hasDeploymentTelemetryDataChanged = (
+  previous: DeploymentRequestModel,
+  current: DeploymentRequestModel
+): boolean => {
+  return (
+    previous.hub_status !== current.hub_status ||
+    previous.platform_id !== current.platform_id ||
+    previous.cancellation_reason !== current.cancellation_reason ||
+    previous.start_date?.getTime() !== current.start_date?.getTime() ||
+    previous.end_date?.getTime() !== current.end_date?.getTime()
+  );
 };
 
 export const computeHubStatus = (
@@ -180,4 +206,13 @@ export const computeHubStatus = (
   }
 
   return newHubStatus;
+};
+
+export const isOrganizationBlacklisted = (organization: Organization) => {
+  const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
+    .split(',')
+    .map((d) => d.trim());
+  return organization.domains.some((domain) =>
+    domainsBlacklist.includes(domain)
+  );
 };

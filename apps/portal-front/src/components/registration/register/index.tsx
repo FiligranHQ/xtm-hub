@@ -23,7 +23,13 @@ import {
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
 import { useTranslations } from 'next-intl';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+} from 'react';
 import {
   PreloadedQuery,
   useFragment,
@@ -43,11 +49,43 @@ export type RegistrationRequestStatus =
   | 'failed'
   | 'missed-capability';
 
+interface State {
+  registrationRequestStatus: RegistrationRequestStatus;
+  chosenOrganizationId?: string;
+  registerFragmentRef: registerFragment$key | null;
+}
+
+type Action =
+  | { type: 'SET_ORGANIZATION_ID'; payload: string }
+  | { type: 'SET_FRAGMENT_REF'; payload: registerFragment$key }
+  | { type: 'SET_STATUS'; payload: RegistrationRequestStatus }
+  | { type: 'SET_SUCCEEDED' };
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'SET_ORGANIZATION_ID':
+      return { ...state, chosenOrganizationId: action.payload };
+    case 'SET_FRAGMENT_REF':
+      return { ...state, registerFragmentRef: action.payload };
+    case 'SET_STATUS':
+      return { ...state, registrationRequestStatus: action.payload };
+    case 'SET_SUCCEEDED':
+      return { ...state, registrationRequestStatus: 'succeeded' };
+    default:
+      return state;
+  }
+};
+
+const initialState: State = {
+  registrationRequestStatus: 'idle',
+  chosenOrganizationId: undefined,
+  registerFragmentRef: null,
+};
+
 export const Register: React.FC<Props> = ({ queryRef, platform }) => {
   const t = useTranslations();
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
-
-  const [chosenOrganizationId, setChosenOrganizationId] = useState<string>();
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const isPlatformRegisteredPreloadedQuery =
     usePreloadedQuery<registerIsPlatformRegisteredQuery>(
@@ -67,87 +105,85 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
       isPlatformRegisteredPreloadedQuery.isPlatformRegistered
     );
 
-  // required to prevent React strict mode double registration
-  const hasRun = useRef(false);
-  useEffect(() => {
-    const shouldRefreshToken =
-      isPlatformRegistered.status === PlatformRegistrationStatusEnum.REGISTERED;
-
-    if (
-      shouldRefreshToken &&
-      isPlatformRegistered.organization &&
-      !hasRun.current
-    ) {
-      hasRun.current = true;
-      register(isPlatformRegistered.organization.id);
-    }
-  }, [isPlatformRegistered]);
-
-  const [registrationRequestStatus, setRegistrationRequestStatus] =
-    useState<RegistrationRequestStatus>('idle');
-
   const [registerPlatform] =
     useMutation<registerPlatformMutation>(RegisterPlatform);
 
-  const [registerFragmentRef, setRegisterFragmentRef] =
-    useState<registerFragment$key | null>(null);
   const registerDataResponse = useFragment<registerFragment$key>(
     registerFragmentGraphql,
-    registerFragmentRef
+    state.registerFragmentRef
   );
 
-  useEffect(() => {
-    if (!registerDataResponse?.token) {
-      return;
-    }
+  const hasPostedMessageRef = useRef(false);
+  const hasAutoRegisteredRef = useRef(false);
 
-    setRegistrationRequestStatus('succeeded');
-    window.opener?.postMessage(
-      {
-        action: 'register',
-        token: registerDataResponse.token,
-      },
-      '*'
-    );
-  }, [registerDataResponse]);
-
-  const cancel = () => {
+  const cancel = useCallback(() => {
     window.opener?.postMessage({ action: 'cancel' }, '*');
-  };
+  }, []);
 
-  const register = (organizationId: string) => {
-    if (!identifier) {
-      return;
+  const register = useCallback(
+    (organizationId: string) => {
+      if (!identifier) {
+        return;
+      }
+      dispatch({ type: 'SET_ORGANIZATION_ID', payload: organizationId });
+      registerPlatform({
+        variables: {
+          input: { organizationId, platform, identifier },
+        },
+        onCompleted: (response) => {
+          dispatch({
+            type: 'SET_FRAGMENT_REF',
+            payload: response.registerPlatform,
+          });
+        },
+        onError: (error) => {
+          if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {
+            dispatch({ type: 'SET_STATUS', payload: 'missed-capability' });
+          } else {
+            dispatch({ type: 'SET_STATUS', payload: 'failed' });
+            toast({
+              variant: 'destructive',
+              title: t('Utils.Error'),
+              description: t(`Error.Server.${error.message}`),
+            });
+          }
+        },
+      });
+    },
+    [identifier, platform, registerPlatform, t]
+  );
+
+  useLayoutEffect(() => {
+    if (registerDataResponse?.token && !hasPostedMessageRef.current) {
+      hasPostedMessageRef.current = true;
+      window.opener?.postMessage(
+        {
+          action: 'register',
+          token: registerDataResponse.token,
+        },
+        '*'
+      );
+      dispatch({ type: 'SET_SUCCEEDED' });
     }
+  }, [registerDataResponse?.token]);
 
-    setChosenOrganizationId(organizationId);
-    registerPlatform({
-      variables: {
-        input: { organizationId, platform, identifier },
-      },
-      onCompleted: (response) => {
-        setRegisterFragmentRef(response.registerPlatform);
-      },
-      onError: (error) => {
-        if (error.message === 'MISSING_CAPABILITY_ON_ORGANIZATION') {
-          setRegistrationRequestStatus('missed-capability');
-          return;
-        }
+  useLayoutEffect(() => {
+    const shouldAutoRegister =
+      isPlatformRegistered.status ===
+        PlatformRegistrationStatusEnum.REGISTERED &&
+      isPlatformRegistered.organization &&
+      !hasAutoRegisteredRef.current;
 
-        setRegistrationRequestStatus('failed');
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
-  };
+    if (shouldAutoRegister) {
+      hasAutoRegisteredRef.current = true;
+      register(isPlatformRegistered.organization.id);
+    }
+  }, [isPlatformRegistered, register]);
 
-  if (registrationRequestStatus === 'missed-capability') {
-    return chosenOrganizationId ? (
+  if (state.registrationRequestStatus === 'missed-capability') {
+    return state.chosenOrganizationId ? (
       <RegisterStateMissingCapability
-        organizationId={chosenOrganizationId}
+        organizationId={state.chosenOrganizationId}
         cancel={cancel}
       />
     ) : (
@@ -155,7 +191,7 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
     );
   }
 
-  if (registrationRequestStatus === 'succeeded') {
+  if (state.registrationRequestStatus === 'succeeded') {
     return (
       <RegistrationLayout>
         <h1>
@@ -168,7 +204,7 @@ export const Register: React.FC<Props> = ({ queryRef, platform }) => {
     );
   }
 
-  if (registrationRequestStatus === 'failed') {
+  if (state.registrationRequestStatus === 'failed') {
     return (
       <RegistrationLayout cancel={cancel}>
         <h1>{t(`Register.Failed.Title`)}</h1>

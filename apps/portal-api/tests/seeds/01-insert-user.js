@@ -1,42 +1,36 @@
+const REVENUE_SALES_UUID = '907f53cc-492f-4537-8702-e24b8ae515ca';
+const REVENUE_LEADERSHIP_UUID = 'ba6fc032-f700-4ada-87a0-306a6d2f860f';
+import { createUser } from '../test-utils.ts';
+
 export async function seed(knex) {
-  await knex('User')
-    .insert([
-      {
-        id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
-        email: 'user15@test.fr',
-        salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
-        password:
-          'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
-        first_name: 'test',
-        last_name: 'hello',
-        selected_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
-      },
-    ])
-    .onConflict('id')
-    .ignore();
+  await createUser({
+    knex,
+    email: 'user15@test.fr',
+    userId: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
+    first_name: 'test',
+    last_name: 'hello',
+  });
 
-  await knex('Organization')
-    .insert([
-      {
-        id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
-        name: 'user15@test.fr',
-        personal_space: true,
-      },
-    ])
-    .onConflict('id')
-    .ignore();
+  const { userId: userRevenueSalesId } = await createUser({
+    knex,
+    email: 'revenue_sales@filigran.io',
+  });
 
-  await knex('User_Organization')
-    .insert([
-      {
-        user_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
-        organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
-      },
-      {
-        user_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
-        organization_id: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
-      },
-    ])
-    .onConflict('id')
-    .ignore();
+  await knex('User_RolePortal').insert([
+    {
+      user_id: userRevenueSalesId,
+      role_portal_id: REVENUE_SALES_UUID,
+    },
+  ]);
+  const { userId: userRevenueLeadershipId } = await createUser({
+    knex,
+    email: 'revenue_leadership@filigran.io',
+  });
+
+  await knex('User_RolePortal').insert([
+    {
+      user_id: userRevenueLeadershipId,
+      role_portal_id: REVENUE_LEADERSHIP_UUID,
+    },
+  ]);
 }

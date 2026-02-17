@@ -4,6 +4,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { extractId } from '../../../utils/utils';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import { loadServiceInstanceSubscription } from '../service-instance.domain';
 import { registrationApp } from './registration.app';
@@ -32,12 +33,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    canUnregisterPlatform: async (_, { input }, context) => {
+    canUnregisterPlatform: async (_, { input }) => {
       try {
-        const response = await registrationApp.canUnregisterPlatform(
-          context,
-          input
-        );
+        const response = await registrationApp.canUnregisterPlatform(input);
 
         return {
           ...response,
@@ -60,7 +58,9 @@ const resolvers: Resolvers = {
       }
     },
     registeredPlatform: async (_, { input }) =>
-      registrationApp.loadRegisteredPlatform(input),
+      registrationApp.loadRegisteredPlatform(
+        extractId<ServiceInstanceId>(input.service_instance_id)
+      ),
     registeredPlatforms: async (_, { input }) =>
       registrationApp.loadRegisteredPlatforms(input),
     /**
@@ -80,13 +80,13 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    registerPlatform: async (_, { input }, context) => {
+    registerPlatform: async (_, { input }) => {
       try {
         const payload = {
           ...input,
           organizationId: fromGlobalId(input.organizationId).id,
         };
-        const token = await registrationApp.registerPlatform(context, payload);
+        const token = await registrationApp.registerPlatform(payload);
         return { token };
       } catch (error) {
         throw mapToGraphQLError(
@@ -95,9 +95,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    unregisterPlatform: async (_, { input }, context) => {
+    unregisterPlatform: async (_, { input }) => {
       try {
-        await registrationApp.unregisterPlatform(context, input);
+        await registrationApp.unregisterPlatform(input);
         return { success: true };
       } catch (error) {
         throw mapToGraphQLError(
@@ -108,7 +108,7 @@ const resolvers: Resolvers = {
     },
     refreshUserPlatformToken: async (_, __, context) => {
       try {
-        return await registrationApp.refreshUserPlatformToken(context);
+        return await registrationApp.refreshUserPlatformToken(context.user.id);
       } catch (error) {
         throw mapToGraphQLError(
           error,

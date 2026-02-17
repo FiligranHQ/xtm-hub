@@ -1,16 +1,19 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
-import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
 import ShareableResourceConnectorSlug from '@/components/service/document/connector/shareable-resource-connector-slug';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
-
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { isConnectorResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isConnectorResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 
+import { useDocumentContext } from '@/components/service/document/use-document-context';
 import {
   IntegrationQuery,
   integrationsItem,
@@ -20,8 +23,9 @@ import {
   integrationsItem_fragment$data,
   integrationsItem_fragment$key,
 } from '@generated/integrationsItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
@@ -59,12 +63,25 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
     },
   ];
 
-  const context = useCsvFeedContext(serviceInstance);
+  const { setIntegrationType, ...context } = useDocumentContext({
+    serviceInstance,
+    type: ShareableResourceType.OPENCTI_INTEGRATION,
+  });
+
+  useEffect(() => {
+    setIntegrationType(
+      (documentData?.integration_type as IntegrationTypeEnum) ??
+        IntegrationTypeEnum.CSV_FEED
+    );
+  }, [setIntegrationType, documentData?.integration_type]);
+
   const shareUrl = `${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`;
 
   return (
     documentData && (
-      <AppServiceContext {...context}>
+      <AppServiceContext
+        {...context}
+        setIntegrationType={setIntegrationType}>
         {isConnectorResource(documentData) ? (
           <ShareableResourceConnectorSlug
             breadcrumbValue={breadcrumbValue}
@@ -74,13 +91,17 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
           />
         ) : (
           <ShareableResourceSlug
+            serviceInstance={serviceInstance}
             breadcrumbValue={breadcrumbValue}
             documentData={documentData}
             updateActions={
-              <ServiceManageSheet
-                document={documentData}
-                variant={'button'}
-              />
+              <>
+                <DeleteIntegrationSlug document={documentData} />
+                <ServiceManageSheet
+                  document={documentData}
+                  variant={'button'}
+                />
+              </>
             }
           />
         )}

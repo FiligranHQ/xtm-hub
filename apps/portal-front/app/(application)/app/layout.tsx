@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FunctionComponent } from 'react';
 
 import '@filigran/ui/theme.css';
 import '../../../styles/globals.css';
@@ -11,7 +12,6 @@ import { ContentLayout } from '@/components/content-layout';
 import HeaderComponent from '@/components/header';
 import Menu from '@/components/menu/menu';
 import { TryOpenCTIBanner } from '@/components/service/trial-instances/try-opencti-banner';
-import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
@@ -21,7 +21,6 @@ import meLoaderQueryNode, {
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
@@ -40,62 +39,40 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-const should_redirect_error = 'should_redirect_error';
-
 // Component
 const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
-  try {
-    // @ts-expect-error
-    const { data: meData }: { data: meLoaderQuery$data } =
-      await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
-        meLoaderQueryNode,
-        {}
-      );
+  // @ts-expect-error
+  const { data: meData }: { data: meLoaderQuery$data } =
+    await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
+      meLoaderQueryNode,
+      {}
+    );
 
-    const me = meData.me as unknown as meContext_fragment$data;
-    if (!me) {
-      throw new Error(should_redirect_error);
-    }
+  const me = meData.me as unknown as meContext_fragment$data;
+  if (!me) {
+    redirect(`/`);
+  }
 
-    return (
-      <RelayProvider>
-        <div className="flex min-h-screen">
-          <PageLoader>
-            <div className="flex flex-col w-full h-screen">
-              <TestEnvBanner />
-              <AdminBanner />
-              <TryOpenCTIBanner />
-              <div className="flex flex-row flex-grow overflow-hidden">
-                <Menu />
-                <div className="flex flex-col w-full h-full overflow-auto">
-                  <HeaderComponent />
-                  <ContentLayout>{children}</ContentLayout>
-                </div>
+  return (
+    <RelayProvider>
+      <div className="flex min-h-screen">
+        <PageLoader>
+          <div className="flex flex-col w-full h-screen">
+            <TestEnvBanner />
+            <AdminBanner />
+            <TryOpenCTIBanner />
+            <div className="flex flex-row flex-grow overflow-hidden">
+              <Menu />
+              <div className="flex flex-col w-full h-full overflow-auto">
+                <HeaderComponent />
+                <ContentLayout>{children}</ContentLayout>
               </div>
             </div>
-          </PageLoader>
-        </div>
-      </RelayProvider>
-    );
-  } catch (error) {
-    if ((error as Error).message === should_redirect_error) {
-      redirect(`/`);
-    }
-
-    console.error('RootLayout Error:', error);
-    return (
-      <div className="flex flex-col w-full h-screen">
-        <ErrorPage>
-          <p className="text-center">
-            We&#39;re sorry, something went wrong
-            <br />
-            We&#39;re currently troubleshooting the issue. Please try again in a
-            few minutes.
-          </p>
-        </ErrorPage>
+          </div>
+        </PageLoader>
       </div>
-    );
-  }
+    </RelayProvider>
+  );
 };
 
 // Component export

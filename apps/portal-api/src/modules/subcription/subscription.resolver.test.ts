@@ -1,19 +1,18 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextAdminUser,
-  SERVICE_INTEGRATIONS_ID,
-  SERVICE_MALWARE_ID,
+  contextBypassUser,
+  SERVICES,
+  TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { ADMIN_UUID, PLATFORM_ORGANIZATION_UUID } from '../../portal.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
   TelemetryEventService,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { deleteSubscriptionUnsecure } from './subscription.helper';
+import { deleteSubscription } from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
 describe('Subscription mutation resolver', () => {
@@ -25,10 +24,10 @@ describe('Subscription mutation resolver', () => {
         {
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_MALWARE_ID
+            SERVICES.INSTANCES.MALWARE.ID
           ),
         },
-        contextAdminUser
+        contextBypassUser
       );
       expect(response).toBeTruthy();
       expect(response?.name).toEqual('Malware analysis');
@@ -47,19 +46,19 @@ describe('Subscription mutation resolver', () => {
         {
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_INTEGRATIONS_ID
+            SERVICES.INSTANCES.INTEGRATIONS.ID
           ),
         },
-        contextAdminUser
+        contextBypassUser
       );
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.SUBSCRIBE,
-        organization_id: PLATFORM_ORGANIZATION_UUID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: 'Professional',
         source: TELEMETRY_SOURCE,
-        user_id: ADMIN_UUID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       });
     });
@@ -72,21 +71,21 @@ describe('Subscription mutation resolver', () => {
         {
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICE_MALWARE_ID
+            SERVICES.INSTANCES.MALWARE.ID
           ),
         },
-        contextAdminUser
+        contextBypassUser
       );
       expect(telemetrySpy).not.toHaveBeenCalled();
     });
 
     afterEach(async () => {
       vi.useRealTimers();
-      await deleteSubscriptionUnsecure({
-        service_instance_id: SERVICE_MALWARE_ID as ServiceInstanceId,
+      await deleteSubscription({
+        service_instance_id: SERVICES.INSTANCES.MALWARE.ID as ServiceInstanceId,
       });
-      await deleteSubscriptionUnsecure({
-        service_instance_id: SERVICE_INTEGRATIONS_ID,
+      await deleteSubscription({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
     });
   });

@@ -27,7 +27,7 @@ const OnePlatformDisplay = ({
       <div className="space-y-m">
         <AlertDialogTitle>
           {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
-            resourceName: documentData.name,
+            resourceName: documentData.name ?? '',
             resourceType:
               SHAREABLE_RESOURCE_TYPE_NAME_MAPPING[
                 documentData.type as keyof typeof SHAREABLE_RESOURCE_TYPE_NAME_MAPPING

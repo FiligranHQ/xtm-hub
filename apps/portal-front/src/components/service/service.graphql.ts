@@ -1,17 +1,5 @@
 import { graphql } from 'react-relay';
 
-export const ServiceListCreateMutation = graphql`
-  mutation serviceListMutation($input: AddServiceInput, $connections: [ID!]!) {
-    addServiceInstance(input: $input)
-      @prependNode(
-        connections: $connections
-        edgeTypeName: "ServiceInstanceEdge"
-      ) {
-      ...subscription_fragment
-    }
-  }
-`;
-
 export const ServiceAddPicture = graphql`
   mutation serviceAddPictureMutation(
     $serviceInstanceId: ID!
@@ -149,9 +137,13 @@ export const ServiceListQuery = graphql`
 `;
 
 export const ServiceByIdWithSubscriptions = graphql`
-  query serviceByIdWithSubscriptionsQuery($service_instance_id: ID) {
+  query serviceByIdWithSubscriptionsQuery(
+    $service_instance_id: ID
+    $searchTerm: String
+  ) {
     serviceInstanceByIdWithSubscriptions(
       service_instance_id: $service_instance_id
+      searchTerm: $searchTerm
     ) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }

@@ -1,9 +1,7 @@
 import { Knex } from 'knex';
-import { db, dbRaw, dbUnsecure, paginate } from '../../../../../knexfile';
+import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
-  CustomDashboardConnection,
   DocumentConnection,
-  IntegrationConnection,
   Organization,
   QueryDocumentsArgs,
   UpdateDocumentInput,
@@ -16,7 +14,7 @@ import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstanc
 import User, { UserId } from '../../../../model/kanel/public/User';
 import { formatRawObject } from '../../../../utils/queryRaw.util';
 import { extractId, omit } from '../../../../utils/utils';
-import { Document, normalizeDocumentName } from '../document.helper';
+import { Document } from '../document.helper';
 
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
@@ -33,9 +31,9 @@ import {
 
 export type DocumentData<T extends DocumentModel> = Omit<
   Partial<T>,
-  'labels'
+  'use_cases'
 > & {
-  labels?: string[];
+  use_cases?: string[];
   parent_document_id?: DocumentId;
 };
 
@@ -60,7 +58,7 @@ export const DocumentDomain = {
       .insert({
         ...omit(documentData, [
           'parent_document_id',
-          'labels',
+          'use_cases',
           ...metadataKeys,
         ]),
         active: documentData.active ?? true,
@@ -115,18 +113,16 @@ export const DocumentDomain = {
     return organization;
   },
 
-  loadParentDocumentsByServiceInstance: async <
-    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
-  >(
+  loadParentDocumentsByServiceInstance: async (
     type: string,
     input: QueryDocumentsArgs,
     include_metadata?: string[]
-  ): Promise<T> => {
-    return DocumentDomain.loadDocuments<T>(
+  ): Promise<DocumentConnection> => {
+    return DocumentDomain.loadDocuments(
       {
         ...input,
-        parentsOnly: true,
-        searchTerm: normalizeDocumentName(input.searchTerm),
+        parentsOnly: input.parentsOnly ?? true,
+        searchTerm: input.searchTerm,
       },
       {
         'Document.service_instance_id': extractId<ServiceInstanceId>(
@@ -138,13 +134,11 @@ export const DocumentDomain = {
     );
   },
 
-  loadDocuments: async <
-    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
-  >(
+  loadDocuments: async (
     opts: Partial<QueryDocumentsArgs>,
     field: Record<string, unknown>,
     include_metadata?: string[]
-  ): Promise<T> => {
+  ): Promise<DocumentConnection> => {
     const { user } = requestContext.require();
 
     const loadDocumentQuery = db<Document>('Document')
@@ -213,10 +207,10 @@ export const DocumentDomain = {
       include_metadata
     );
 
-    return paginate<Document, T>(
+    return paginate<Document, DocumentConnection>(
       'Document',
       opts,
-      undefined,
+      { normalizeSearchTerm: true },
       loadDocumentQuery
     );
   },
@@ -226,7 +220,7 @@ export const DocumentDomain = {
     slug: string,
     include_metadata: string[] = []
   ) => {
-    const docQuery = dbUnsecure<Document>('Document')
+    const docQuery = db<Document>('Document')
       .select('Document.*')
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
@@ -245,9 +239,7 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
-  loadPaginatedSeoDocumentsByServiceSlug: async <
-    T = DocumentConnection | IntegrationConnection | CustomDashboardConnection,
-  >(
+  loadPaginatedSeoDocumentsByServiceSlug: async (
     type: string,
     serviceSlug: string,
     opts: Partial<QueryDocumentsArgs>,
@@ -261,10 +253,10 @@ export const DocumentDomain = {
       useDefaultSort
     );
 
-    return paginate<Document, T>(
+    return paginate<Document, DocumentConnection>(
       'Document',
       opts,
-      undefined,
+      opts,
       loadDocumentsQuery
     );
   },
@@ -275,7 +267,7 @@ export const DocumentDomain = {
     include_metadata: string[] = [],
     orderResults: boolean = true
   ): Knex.QueryBuilder => {
-    const loadDocumentsQuery = dbUnsecure<Document>('Document')
+    const loadDocumentsQuery = db<Document>('Document')
       .select('Document.*')
       .leftJoin(
         'ServiceInstance',
@@ -340,7 +332,7 @@ export const DocumentDomain = {
     const [updatedDocument] = await db<DocumentModel>('Document')
       .where('id', '=', parentDocumentId)
       .update({
-        ...omit(completeDocumentData, ['labels']),
+        ...omit(completeDocumentData, ['use_cases']),
         uploader_organization_id,
         uploader_id,
         updated_at: new Date(),
@@ -352,15 +344,19 @@ export const DocumentDomain = {
   },
 
   upsertOnSlug: async <T extends DocumentModel>(
-    documentData: Omit<Partial<T>, 'labels'> & {
-      labels?: string[];
+    documentData: Omit<Partial<T>, 'use_cases'> & {
+      use_cases?: string[];
       parent_document_id?: string;
     },
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<DocumentModel> => {
     const { user } = requestContext.require();
     const insertData = {
-      ...omit(documentData, ['parent_document_id', 'labels', ...metadataKeys]),
+      ...omit(documentData, [
+        'parent_document_id',
+        'use_cases',
+        ...metadataKeys,
+      ]),
       uploader_id: user.id,
       uploader_organization_id: user.selected_organization_id,
     };

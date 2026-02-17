@@ -20,7 +20,7 @@ import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { RefetchFnDynamic } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -28,6 +28,16 @@ interface AdminServiceTabProps {
   serviceData: serviceList_fragment$data[];
   refetch: RefetchFnDynamic<serviceQuery, servicesList_services$key>;
 }
+
+export const ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS = Object.values(
+  ServiceDefinitionIdentifierEnum
+).filter(
+  (val) =>
+    ![
+      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+      ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+    ].includes(val)
+);
 
 const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
   const t = useTranslations();
@@ -103,14 +113,8 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
                     <span className="sr-only">{t('Utils.OpenMenu')}</span>
                   </>
                 }>
-                {![
-                  ServiceDefinitionIdentifierEnum.LINK,
-                  ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-                  ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
-                ].includes(
-                  row.original.service_definition
-                    ?.identifier as ServiceDefinitionIdentifierEnum
-                ) && (
+                {row.original.service_definition?.identifier !==
+                  ServiceDefinitionIdentifierEnum.LINK && (
                   <IconActionsLink
                     href={`/${APP_PATH}/admin/service/${row.id}`}>
                     {t('Service.GoToAdminLabel')}
@@ -132,17 +136,13 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     setOpen(true);
   };
 
-  const getServiceDefinitionData = useMemo(() => {
-    return serviceData
-      .map((service) => ({
-        value: service.service_definition?.identifier ?? '',
-        label: service.service_definition?.name ?? '',
-      }))
-      .filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.value === item.value)
-      );
-  }, [serviceData]);
+  const getServiceDefinitionData =
+    ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS.map((value) => {
+      return {
+        label: t(`Service.ServiceDefinitionIdentifier.${value}`),
+        value: value,
+      };
+    });
 
   const handleInputChange = (inputValue: string) => {
     refetch({ searchTerm: inputValue });

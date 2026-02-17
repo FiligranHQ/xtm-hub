@@ -1,13 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { db, dbUnsecure } from '../../../knexfile';
-import { contextAdminUser, SERVICE_VAULT_ID } from '../../../tests/tests.const';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { db } from '../../../knexfile';
+import {
+  contextBypassUser,
+  requestContextAdminUser,
+  SERVICES,
+  TEST_ORGANIZATIONS,
+} from '../../../tests/tests.const';
 import {
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import ServiceInstance, {
   ServiceInstanceId,
@@ -15,11 +21,16 @@ import ServiceInstance, {
 import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
+import UserService from '../../model/kanel/public/UserService';
+import * as mailService from '../../server/mail-service';
+import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { PlatformConfiguration } from './registration/registration.domain';
 import {
+  grantServiceAccess,
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  loadServiceWithSubscriptions,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
@@ -102,13 +113,13 @@ describe('Service instance domain', () => {
 
   describe('loadLinks', () => {
     it('should return the service link when the service instance exists and has links', async () => {
-      const links = await loadLinks(SERVICE_VAULT_ID);
+      const links = await loadLinks(SERVICES.INSTANCES.VAULT.ID);
       expect(links.length).toBe(1);
     });
 
     it('should return an empty array when the service instance exists but has no links', async () => {
       const generateId = uuidv4();
-      const test = await dbUnsecure('ServiceInstance')
+      const test = await db('ServiceInstance')
         .insert([
           {
             id: generateId,
@@ -118,7 +129,7 @@ describe('Service instance domain', () => {
             public: false,
             join_type: 'JOIN_AUTO',
             tags: '{others}',
-            service_definition_id: '5f769173-5ace-4ef3-b04f-2c95609c5b59',
+            service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
           },
         ])
         .returning('id');
@@ -141,13 +152,13 @@ describe('Service instance domain', () => {
       const serviceDefinitionId = uuidv4();
 
       // Insert test data
-      await dbUnsecure('ServiceDefinition').insert({
+      await db('ServiceDefinition').insert({
         id: serviceDefinitionId,
         name: 'OpenCTI Registration',
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       });
 
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: serviceInstanceId,
         name: 'Test OpenCTI Platform',
         description: 'Test platform',
@@ -155,16 +166,16 @@ describe('Service instance domain', () => {
         creation_status: 'READY',
       });
 
-      await dbUnsecure('Subscription').insert({
+      await db('Subscription').insert({
         id: uuidv4(),
         service_instance_id: serviceInstanceId,
-        organization_id: contextAdminUser.user.selected_organization_id,
+        organization_id: contextBypassUser.user.selected_organization_id,
         start_date: new Date(),
         status: 'ACCEPTED',
       });
 
       const result = await loadPlatformServiceInstance(
-        contextAdminUser.user.selected_organization_id,
+        contextBypassUser.user.selected_organization_id,
         serviceInstanceId
       );
 
@@ -176,7 +187,7 @@ describe('Service instance domain', () => {
     it('should return null when service instance does not exist', async () => {
       const nonExistentId = uuidv4();
       const result = await loadPlatformServiceInstance(
-        contextAdminUser.user.selected_organization_id,
+        contextBypassUser.user.selected_organization_id,
         nonExistentId
       );
       expect(result).toBeUndefined();
@@ -186,13 +197,13 @@ describe('Service instance domain', () => {
       const serviceInstanceId = uuidv4();
       const serviceDefinitionId = uuidv4();
 
-      await dbUnsecure('ServiceDefinition').insert({
+      await db('ServiceDefinition').insert({
         id: serviceDefinitionId,
         name: 'OpenCTI Registration',
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       });
 
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: serviceInstanceId,
         name: 'Test Platform No Sub',
         description: 'Test platform without subscription',
@@ -201,7 +212,7 @@ describe('Service instance domain', () => {
       });
 
       const result = await loadPlatformServiceInstance(
-        contextAdminUser.user.selected_organization_id,
+        contextBypassUser.user.selected_organization_id,
         serviceInstanceId
       );
       expect(result).toBeUndefined();
@@ -213,8 +224,8 @@ describe('Service instance domain', () => {
 
     beforeEach(async () => {
       mockServiceInstanceId = uuidv4() as ServiceInstanceId;
-      const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59'; // Use existing service definition
-      await dbUnsecure('ServiceInstance').insert({
+      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID; // Use existing service definition
+      await db('ServiceInstance').insert({
         id: mockServiceInstanceId,
         name: 'Original Name',
         description: 'Original Description',
@@ -271,10 +282,10 @@ describe('Service instance domain', () => {
 
     beforeEach(async () => {
       mockServiceInstanceId = uuidv4();
-      const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59'; // Use existing service definition
+      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID; // Use existing service definition
 
       // Create ServiceInstance first
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: mockServiceInstanceId,
         name: 'Test Service Config',
         description: 'Test service for configuration',
@@ -283,7 +294,7 @@ describe('Service instance domain', () => {
       });
 
       const mockConfig: PlatformConfiguration = {
-        registerer_id: contextAdminUser.user.id,
+        registerer_id: contextBypassUser.user.id,
         platform_id: 'test-platform',
         platform_title: 'Test Platform',
         platform_url: 'https://test.com',
@@ -292,7 +303,7 @@ describe('Service instance domain', () => {
         token: 'test-token',
       };
 
-      await dbUnsecure('Service_Configuration').insert({
+      await db('Service_Configuration').insert({
         service_instance_id: mockServiceInstanceId,
         config: JSON.stringify(mockConfig),
         status: ServiceConfigurationStatus.Active,
@@ -329,10 +340,10 @@ describe('Service instance domain', () => {
 
     beforeEach(async () => {
       mockServiceInstanceId = uuidv4();
-      const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59'; // Use existing service definition
+      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID; // Use existing service definition
 
       // Create ServiceInstance first
-      await dbUnsecure('ServiceInstance').insert({
+      await db('ServiceInstance').insert({
         id: mockServiceInstanceId,
         name: 'Test Update Config',
         description: 'Test service for configuration update',
@@ -341,7 +352,7 @@ describe('Service instance domain', () => {
       });
 
       originalConfig = {
-        registerer_id: contextAdminUser.user.id,
+        registerer_id: contextBypassUser.user.id,
         platform_id: 'original-platform',
         platform_title: 'Original Title',
         platform_url: 'https://original.com',
@@ -350,7 +361,7 @@ describe('Service instance domain', () => {
         token: 'original-token',
       };
 
-      await dbUnsecure('Service_Configuration').insert({
+      await db('Service_Configuration').insert({
         service_instance_id: mockServiceInstanceId,
         config: JSON.stringify(originalConfig),
         status: ServiceConfigurationStatus.Active,
@@ -417,6 +428,165 @@ describe('Service instance domain', () => {
       expect(config.platform_id).toBe('completely-new-platform');
       expect(config.platform_title).toBe('Completely New Title');
       expect(config.platform_contract).toBe(PlatformContract.Ee);
+    });
+  });
+
+  describe('grantServiceAccess', () => {
+    let testServiceInstanceId: ServiceInstanceId;
+    let filigranSubscriptionId: SubscriptionId;
+    let secondOrgaSubscriptionId: SubscriptionId;
+
+    beforeEach(async () => {
+      vi.spyOn(mailService, 'sendMail').mockResolvedValue();
+      testServiceInstanceId = uuidv4() as ServiceInstanceId;
+      filigranSubscriptionId = uuidv4() as SubscriptionId;
+      secondOrgaSubscriptionId = uuidv4() as SubscriptionId;
+
+      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID;
+
+      await db('ServiceInstance').insert({
+        id: testServiceInstanceId,
+        name: 'Test Service for Grant Access',
+        description: 'Test service',
+        service_definition_id: serviceDefinitionId,
+        creation_status: 'READY',
+      });
+
+      await db('Subscription').insert({
+        id: filigranSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db('Subscription').insert({
+        id: secondOrgaSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+    });
+
+    afterEach(async () => {
+      vi.restoreAllMocks();
+      await db<UserService>('User_Service')
+        .where(
+          'user_id',
+          '=',
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
+        )
+        .delete();
+    });
+
+    it('should create user_service linked to the correct subscription', async () => {
+      const result = await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        secondOrgaSubscriptionId
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].user_id).toBe(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
+      );
+      expect(result[0].subscription_id).toBe(secondOrgaSubscriptionId);
+
+      const userServiceInDb = await db<UserService>('User_Service')
+        .where('id', '=', result[0].id)
+        .first();
+
+      expect(userServiceInDb).toBeDefined();
+      expect(userServiceInDb?.subscription_id).toBe(secondOrgaSubscriptionId);
+    });
+
+    it('should not link user_service to a different organization subscription', async () => {
+      const result = await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        secondOrgaSubscriptionId
+      );
+
+      expect(result[0].subscription_id).toBe(secondOrgaSubscriptionId);
+      expect(result[0].subscription_id).not.toBe(filigranSubscriptionId);
+
+      const userServicesInDb = await db<UserService>('User_Service')
+        .where(
+          'user_id',
+          '=',
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
+        )
+        .select('*');
+
+      expect(userServicesInDb).toHaveLength(1);
+      expect(userServicesInDb[0].subscription_id).toBe(
+        secondOrgaSubscriptionId
+      );
+    });
+  });
+
+  describe('loadServiceWithSubscriptions', () => {
+    let testServiceInstanceId: ServiceInstanceId;
+    let filigranSubscriptionId: SubscriptionId;
+    let thalesSubscriptionId: SubscriptionId;
+    beforeEach(async () => {
+      testServiceInstanceId = uuidv4() as ServiceInstanceId;
+      filigranSubscriptionId = uuidv4() as SubscriptionId;
+      thalesSubscriptionId = uuidv4() as SubscriptionId;
+
+      const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+
+      await db('ServiceInstance').insert({
+        id: testServiceInstanceId,
+        name: 'Test Service With Subscriptions',
+        description: 'Test service',
+        service_definition_id: serviceDefinitionId,
+        creation_status: 'READY',
+      });
+
+      await db('Subscription').insert({
+        id: filigranSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db('Subscription').insert({
+        id: thalesSubscriptionId,
+        service_instance_id: testServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+    });
+    it('should filter organizations by searchTerm when provided', async () => {
+      requestContext.set(requestContextAdminUser);
+      const result = await loadServiceWithSubscriptions(
+        testServiceInstanceId,
+        'SECOND'
+      );
+      expect(result.subscriptions.length).toBe(1);
+      expect(result.subscriptions[0].organization.name).toBe('SECOND ORGA');
+    });
+    it('should return all subscriptions when no searchTerm provided', async () => {
+      requestContext.set(requestContextAdminUser);
+
+      const result = await loadServiceWithSubscriptions(
+        testServiceInstanceId,
+        undefined
+      );
+
+      expect(result.subscriptions.length).toBe(2);
+
+      const orgNames = result.subscriptions.map((sub) => sub.organization.name);
+      expect(orgNames).toContain('SECOND ORGA');
+      expect(orgNames).toContain('Filigran');
     });
   });
 });

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { dbUnsecure } from '../../../../../knexfile';
+import { db } from '../../../../../knexfile';
 import ServiceCapability, {
   ServiceCapabilityId,
 } from '../../../../model/kanel/public/ServiceCapability';
@@ -16,9 +16,7 @@ describe('Service Capability domain', () => {
   let testServiceDefIds: ServiceDefinitionId[] = [];
 
   beforeAll(async () => {
-    const serviceDefinition = await dbUnsecure<ServiceDefinition>(
-      'ServiceDefinition'
-    )
+    const serviceDefinition = await db<ServiceDefinition>('ServiceDefinition')
       .insert([
         {
           id: uuidv4() as ServiceDefinitionId,
@@ -38,9 +36,7 @@ describe('Service Capability domain', () => {
     testServiceDefinitionId2 =
       serviceDefinition[1]?.id ?? (uuidv4() as ServiceDefinitionId);
 
-    const capabilities = await dbUnsecure<ServiceCapability>(
-      'Service_Capability'
-    )
+    const capabilities = await db<ServiceCapability>('Service_Capability')
       .insert([
         {
           id: uuidv4() as ServiceCapabilityId,
@@ -69,13 +65,13 @@ describe('Service Capability domain', () => {
 
   afterAll(async () => {
     if (testCapabilityIds.length > 0) {
-      await dbUnsecure<ServiceCapability>('Service_Capability')
+      await db<ServiceCapability>('Service_Capability')
         .whereIn('id', testCapabilityIds)
         .delete();
     }
 
     if (testServiceDefinitionId) {
-      await dbUnsecure<ServiceDefinition>('ServiceDefinition')
+      await db<ServiceDefinition>('ServiceDefinition')
         .whereIn('id', testServiceDefIds)
         .delete();
     }

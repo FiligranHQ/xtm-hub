@@ -8,13 +8,13 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
+  PlatformIdentifier,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
   RefreshUserPlatformTokenResponse,
   RegisteredPlatform,
-  RegisteredPlatformInput,
   RegisteredPlatformsInput,
   RegisterPlatformInput,
   ServiceConfigurationStatus,
@@ -29,7 +29,7 @@ import Organization, {
   OrganizationId,
 } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../../model/portal-context';
+import { UserId } from '../../../model/kanel/public/User';
 import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
 import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
@@ -42,22 +42,17 @@ import {
 } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { RequiredPlatformVersions } from '../../../utils/required-platform-version';
-import {
-  isSemanticVersionString,
-  isVersionAtLeast,
-} from '../../../utils/semantic-versioning';
-import { extractId } from '../../../utils/utils';
+import { doesVersionSatisfy, isValidVersion } from '../../../utils/versioning';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
 import {
-  loadUnsecureUser,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
-import { serviceContractDomain } from '../contract/domain';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import {
@@ -106,13 +101,10 @@ export const registrationApp = {
   },
 
   loadRegisteredPlatform: async (
-    input: RegisteredPlatformInput
+    serviceInstanceId: ServiceInstanceId
   ): Promise<RegisteredPlatform | null> => {
-    const [platform] = await registrationDomain.loadRegisteredPlatforms({
-      'ServiceInstance.id': extractId<ServiceInstanceId>(
-        input.service_instance_id
-      ),
-    });
+    const [platform] =
+      await registrationDomain.loadRegisteredPlatform(serviceInstanceId);
 
     return platform ? mapDomainRegisteredPlatformToGraphQL(platform) : null;
   },
@@ -122,6 +114,7 @@ export const registrationApp = {
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms({
       platformIdentifier: input?.identifier,
+      onlyActive: input?.onlyActive ?? false,
     });
 
     return platforms.map(mapDomainRegisteredPlatformToGraphQL);
@@ -147,7 +140,7 @@ export const registrationApp = {
   refreshPlatformRegistrationConnectivityStatus: async (
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    if (!isSemanticVersionString(input.platformVersion)) {
+    if (!isValidVersion(input.platformVersion)) {
       throw new Error(ErrorCode.InvalidPlatformVersion);
     }
 
@@ -163,10 +156,10 @@ export const registrationApp = {
           input.platformIdentifier
         ];
 
-      const shouldSendNotFoundStatus = isVersionAtLeast(
-        input.platformVersion,
-        requiredVersionForNotFoundStatus
-      );
+      const shouldSendNotFoundStatus = doesVersionSatisfy({
+        givenVersion: input.platformVersion,
+        requiredVersion: requiredVersionForNotFoundStatus,
+      });
 
       return {
         status: shouldSendNotFoundStatus
@@ -197,13 +190,15 @@ export const registrationApp = {
     };
   },
 
-  registerPlatform: async (
-    context: PortalContext,
-    { organizationId, platform, identifier }: RegisterPlatformInput
-  ): Promise<string> => {
+  registerPlatform: async ({
+    organizationId,
+    platform,
+    identifier,
+  }: RegisterPlatformInput): Promise<string> => {
+    const { user } = requestContext.require();
     const token = uuidv4();
     const configuration: PlatformConfiguration = {
-      registerer_id: context.user.id,
+      registerer_id: user.id,
       platform_id: platform.id,
       platform_url: platform.url,
       platform_title: platform.title,
@@ -275,7 +270,7 @@ export const registrationApp = {
 
       const registerEvent = buildRegisterEvent(
         selectedOrga,
-        context.user.id,
+        user.id,
         identifier,
         platform.id,
         platform.contract,
@@ -292,10 +287,10 @@ export const registrationApp = {
     return token;
   },
 
-  unregisterPlatform: async (
-    context: PortalContext,
-    { platformId, identifier }: UnregisterPlatformInput
-  ) => {
+  unregisterPlatform: async ({
+    platformId,
+    identifier,
+  }: UnregisterPlatformInput) => {
     const activeServiceConfiguration =
       await serviceContractDomain.loadConfigurationByPlatform(
         platformId,
@@ -327,8 +322,8 @@ export const registrationApp = {
     if (identifier !== platformIdentifier) {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
-
-    await securityGuard.assertUserIsAllowedOnOrganization(context.user, {
+    const { user } = requestContext.require();
+    await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId: subscription.organization_id,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
@@ -391,10 +386,9 @@ export const registrationApp = {
     };
   },
 
-  canUnregisterPlatform: async (
-    context: PortalContext,
-    { platformId }: CanUnregisterPlatformInput
-  ): Promise<{
+  canUnregisterPlatform: async ({
+    platformId,
+  }: CanUnregisterPlatformInput): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId;
     isInOrganization: boolean;
@@ -421,9 +415,9 @@ export const registrationApp = {
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
-
+    const { user } = requestContext.require();
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      context.user,
+      user,
       {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -438,11 +432,10 @@ export const registrationApp = {
   },
 
   refreshUserPlatformToken: async (
-    context: PortalContext
+    userId: UserId
   ): Promise<RefreshUserPlatformTokenResponse> => {
     const token = uuidv4();
-
-    await updateUser(context.user.id, { platform_token: token });
+    await updateUser(userId, { platform_token: token });
 
     return { token };
   },
@@ -485,7 +478,7 @@ export const registrationApp = {
       const registerEvent = buildRegisterEvent(
         selectedOrga,
         deploymentRequest.user_requester_id,
-        deploymentRequest.platform_identifier,
+        deploymentRequest.platform_identifier as PlatformIdentifier,
         platform.id,
         platform.contract,
         platform.version,
@@ -497,36 +490,28 @@ export const registrationApp = {
         error,
       });
     }
-    try {
-      const [user] = await loadUnsecureUser({
-        id: deploymentRequest.user_requester_id,
-      });
-
-      void sendMail({
-        to: user.email,
-        template: 'opencti_free_trial_registered',
-        params: {
-          firstName: formatName(user.first_name ?? ''),
-          platformUrl: platform.url,
-        },
-      });
-    } catch (error) {
-      logApp.error('Unable to send mail after autoRegistration', {
-        error: error,
-        deploymentRequestId: deploymentRequest.id,
-      });
-    }
   },
 };
 
 const mapDomainRegisteredPlatformToGraphQL = (
   platform: DomainRegisteredPlatform
 ): RegisteredPlatform => {
+  const PLATFORM_TRIAL_TITLES: Partial<
+    Record<ServiceDefinitionIdentifier, string>
+  > = {
+    [ServiceDefinitionIdentifier.OpenctiRegistration]:
+      'OpenCTI - Free Trial Platform',
+    [ServiceDefinitionIdentifier.OpenaevRegistration]:
+      'OpenAEV - Free Trial Platform',
+  };
+
+  const defaultTitle =
+    PLATFORM_TRIAL_TITLES[platform.identifier] ?? 'Free Trial Platform';
   return {
     __typename: 'RegisteredPlatform',
     id: platform.id,
     platform_id: platform.config?.platform_id ?? platform.id,
-    title: platform.config?.platform_title ?? 'OpenCTI - Free Trial Platform',
+    title: platform.config?.platform_title ?? defaultTitle,
     url: platform.config?.platform_url ?? '',
     contract: platform.config?.platform_contract ?? PlatformContract.Trial,
     identifier:

@@ -1,4 +1,4 @@
-import { db, dbUnsecure, paginate } from '../../../knexfile';
+import { db, paginate } from '../../../knexfile';
 import {
   Filter,
   FilterKey,
@@ -61,7 +61,7 @@ export const loadOrganizationsByUser = async (
 export const loadUserByOrganization = async (
   organizationId: OrganizationId
 ): Promise<User[]> => {
-  return dbUnsecure<User>('User')
+  return db<User>('User')
     .leftJoin('User_Organization', 'User_Organization.user_id', '=', 'User.id')
     .where('User_Organization.organization_id', '=', organizationId)
     .select('User.*');
@@ -70,10 +70,7 @@ export const loadUserByOrganization = async (
 export const loadOrganizationBy = async (
   conditions: OrganizationMutator
 ): Promise<Organization> => {
-  return dbUnsecure<Organization>('Organization')
-    .where(conditions)
-    .select('*')
-    .first();
+  return db<Organization>('Organization').where(conditions).select('*').first();
 };
 
 export const loadOrganizations = (opts: QueryOrganizationsArgs) => {
@@ -96,7 +93,7 @@ export const loadOrganizations = (opts: QueryOrganizationsArgs) => {
 export const insertNewOrganization = async (
   data: OrganizationInitializer
 ): Promise<Organization> => {
-  const [createdOrganization] = await dbUnsecure<Organization>('Organization')
+  const [createdOrganization] = await db<Organization>('Organization')
     .insert(data)
     .returning('*');
 
@@ -107,7 +104,7 @@ export const updateOrganizationBy = async (
   field: OrganizationMutator,
   data: OrganizationMutator
 ): Promise<Organization> => {
-  const [updatedOrganization] = await dbUnsecure<Organization>('Organization')
+  const [updatedOrganization] = await db<Organization>('Organization')
     .where(field)
     .update(data)
     .returning('*');
@@ -119,7 +116,7 @@ export const deleteOrganizationBy = async (
   conditions: OrganizationMutator
 ): Promise<Organization> => {
   try {
-    const [deletedOrganization] = await dbUnsecure<Organization>('Organization')
+    const [deletedOrganization] = await db<Organization>('Organization')
       .where(conditions)
       .delete()
       .returning('*');

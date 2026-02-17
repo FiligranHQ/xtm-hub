@@ -1,5 +1,6 @@
 import {
   AddUserInput,
+  User as GraphqlUser,
   OrganizationCapability,
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
@@ -8,6 +9,7 @@ import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
+import { dispatch } from '../../pub';
 import { isUserAdminPlatform } from '../../security/access';
 import { sendMail } from '../../server/mail-service';
 import { logApp } from '../../utils/app-logger.util';
@@ -17,12 +19,13 @@ import { formatName } from '../../utils/format';
 import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
+  removeUserFromPendingList,
 } from '../common/user-organization.domain';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
-  loadUnsecureUser,
+  loadUser,
   loadUserBy,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
@@ -58,7 +61,7 @@ export const UsersOrganizationApp = {
       throw ForbiddenAccess(ErrorCode.EmailOutsideOrganizationError);
     }
 
-    const [existingUser] = await loadUnsecureUser({ email: input.email });
+    const [existingUser] = await loadUser({ email: input.email });
 
     const user = await withTransaction(async () => {
       const user = existingUser
@@ -75,6 +78,19 @@ export const UsersOrganizationApp = {
         orgCapabilities: input.capabilities ?? [],
         userExists: !!existingUser,
       });
+
+      const userIsDeletedFromPrendingList = await removeUserFromPendingList({
+        user_id: user.id,
+        organization_id: chosenOrganization.id,
+      });
+
+      if (userIsDeletedFromPrendingList.length > 0) {
+        const userPendingPayload: GraphqlUser = {
+          ...user,
+          pending_organization_id: chosenOrganization.id,
+        };
+        await dispatch('UserPending', 'delete', userPendingPayload, 'User');
+      }
 
       return user;
     });
@@ -139,8 +155,19 @@ export const UsersOrganizationApp = {
       return;
     }
 
+    const cleanupPendingUser =
+      await UserOrganizationPendingDomain.cleanupPendingUsers();
+
+    if (cleanupPendingUser.totalDeleted > 0) {
+      logApp.error(
+        `[Cleanup] Removed ${cleanupPendingUser.totalDeleted} User_Organization_Pending records matching existing User_Organization entries`,
+        cleanupPendingUser
+      );
+    }
+
     const organizationsWithPendingUsers =
       await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
+
     const promises = organizationsWithPendingUsers.map(async (organization) => {
       try {
         const adminUsers = await loadUsersByCapabilitiesInOrganization(
@@ -156,13 +183,13 @@ export const UsersOrganizationApp = {
               params: {
                 adminName: formatName(adminUser.first_name ?? ''),
                 organizationName: organization.name,
-                userEmailList: organization.users
+                users: organization.users
                   .sort((a, b) => a.first_name.localeCompare(b.first_name))
-                  .map(
-                    ({ first_name, last_name, email }) =>
-                      `<li>${formatName(first_name)} ${formatName(last_name)} (${email})</li>`
-                  )
-                  .join(''),
+                  .map(({ first_name, last_name, email }) => ({
+                    firstName: formatName(first_name),
+                    lastName: formatName(last_name),
+                    email,
+                  })),
                 userCount: organization.users.length,
                 requestLabel:
                   organization.users.length === 1 ? 'request' : 'requests',

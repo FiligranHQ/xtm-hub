@@ -1,14 +1,13 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeUser } from '../db-utils/user.helper';
 import { addOrganization } from '../db-utils/organization.helper';
 import UserPage from '../model/user.pageModel';
 
 const TEST_USER = {
-  userOrganizationName: 'Thales',
-  userEmail: 'userInE2E@thales.com',
-  adminThales: 'admin@thales.com',
-  otherThalesUserEmail: 'user@thales.com',
+  userOrganizationName: 'SECOND ORGA',
+  userEmail: 'userInE2E@second-orga.com',
+  adminThales: 'admin@second-orga.com',
+  otherThalesUserEmail: 'user@second-orga.com',
 };
 
 test.describe('User Management', () => {

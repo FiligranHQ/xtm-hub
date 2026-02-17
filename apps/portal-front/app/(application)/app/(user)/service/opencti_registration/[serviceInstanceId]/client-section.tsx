@@ -2,12 +2,14 @@
 
 import { registeredPlatformByServiceInstanceId } from '@/components/registration/register/register.graphql';
 import { RegistrationDetails } from '@/components/service/registration/registration-details';
-import { ContactUsButton } from '@/components/service/trial-instances/contact-us-button';
+import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/reach-sales-button';
+import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
@@ -50,10 +52,24 @@ const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
     <>
       <BreadcrumbNav value={breadcrumbs} />
       {isTrial && (
-        <TrialsHeader actions={<ContactUsButton variant="gradient" />} />
+        <TrialsHeader
+          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+          actions={
+            <>
+              <SlackSupportButton />
+              <ReachSalesButton
+                variant="gradient"
+                platformId={queryData.registeredPlatform.platform_id}
+                platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+              />
+            </>
+          }
+        />
       )}
       <RegistrationDetails registeredPlatform={queryData.registeredPlatform} />
-      {isTrial && <TrialsLearnMore />}
+      {isTrial && (
+        <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENCTI} />
+      )}
     </>
   );
 };

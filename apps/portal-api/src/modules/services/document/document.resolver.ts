@@ -6,7 +6,6 @@ import {
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
@@ -29,11 +28,9 @@ import {
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
-  loadUnsecureDocumentsBy,
-  normalizeDocumentName,
+  loadDocumentsBy,
   updateDocumentWithCounters,
 } from './document.helper';
-import { waitForUploads } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
@@ -62,7 +59,7 @@ const resolvers: Resolvers = {
     },
     updateDocument: async (_, input) => {
       try {
-        return await DocumentApp.updateDocumentWithChildrenAndMetadata(
+        return await DocumentApp.updateDocument(
           extractId<DocumentId>(input.documentId),
           extractId<ServiceInstanceId>(input.serviceInstanceId),
           input.metadata,
@@ -75,47 +72,6 @@ const resolvers: Resolvers = {
           });
         }
         throw mapToGraphQLError(error, UnknownErrorCode.DocumentUpdateError);
-      }
-    },
-    addDocument: async (
-      _,
-      { document, parentDocumentId, service_instance_id, ...payload }
-    ) => {
-      try {
-        await waitForUploads(document);
-        const extractedServiceInstanceId =
-          extractId<ServiceInstanceId>(service_instance_id);
-        const { minioName, fileName, mimeType } = await MinIOClient.createFile(
-          document,
-          extractedServiceInstanceId
-        );
-        return await DocumentApp.createDocumentWithChildrenAndMetadata<Document>(
-          {
-            ...payload,
-            service_instance_id: extractedServiceInstanceId,
-            minio_name: minioName,
-            file_name: fileName,
-            mime_type: mimeType,
-            parent_document_id: parentDocumentId
-              ? extractId<DocumentId>(parentDocumentId)
-              : null,
-          },
-          []
-        );
-      } catch (error) {
-        console.error('Error while adding document:', error);
-        throw mapToGraphQLError(error, UnknownErrorCode.InsertDocumentError);
-      }
-    },
-    editDocument: async (_, { documentId, input }) => {
-      try {
-        return await DocumentApp.updateDocument(
-          extractId<DocumentId>(documentId),
-          input,
-          []
-        );
-      } catch (error) {
-        throw mapToGraphQLError(error, UnknownErrorCode.UpdateDocumentError);
       }
     },
     deleteDocument: async (
@@ -134,7 +90,7 @@ const resolvers: Resolvers = {
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [document] = await loadUnsecureDocumentsBy({
+        const [document] = await loadDocumentsBy({
           id: extractId<DocumentId>(documentId),
         });
         const documentWithCounters = await updateDocumentWithCounters(document);
@@ -183,6 +139,9 @@ const resolvers: Resolvers = {
       const INTEGRATION_MAPPINGS = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
+        [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
+        [IntegrationType.Stream]: 'Stream',
+        [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
       };
       if (TYPE_MAPPINGS[document.type]) {
         return TYPE_MAPPINGS[document.type];
@@ -225,40 +184,23 @@ const resolvers: Resolvers = {
           fromGlobalId(input.service_instance_id).id as ServiceInstanceId
         );
       } catch (error) {
-        logApp.error('Error while fetching documents:', error);
+        logApp.error('Error while fetching documents:', { error });
         throw mapToGraphQLError(error);
       }
     },
-    documents: async (
-      _,
-      {
-        first,
-        after,
-        orderMode,
-        orderBy,
-        searchTerm,
-        filters,
-        serviceInstanceId,
-        parentsOnly,
-      }
-    ) => {
+    publicDocuments: async (_, input) => {
       try {
-        return DocumentDomain.loadDocuments(
-          {
-            first,
-            after,
-            orderMode,
-            orderBy,
-            parentsOnly,
-            filters,
-            searchTerm: normalizeDocumentName(searchTerm ?? ''),
-          },
-          {
-            'Document.service_instance_id': fromGlobalId(serviceInstanceId).id,
-          }
-        );
+        return DocumentApp.loadPublicDocuments(input);
       } catch (error) {
-        logApp.error('Error while fetching documents:', error);
+        logApp.error('Error while fetching documents:', { error });
+        throw mapToGraphQLError(error);
+      }
+    },
+    documents: async (_, input) => {
+      try {
+        return DocumentApp.loadDocuments(input);
+      } catch (error) {
+        logApp.error('Error while fetching documents:', { error });
         throw mapToGraphQLError(error);
       }
     },

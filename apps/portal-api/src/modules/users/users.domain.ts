@@ -1,4 +1,4 @@
-import { db, dbRaw, dbUnsecure, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   Filter,
   FilterKey,
@@ -32,10 +32,10 @@ export const UsersDomain = {
   },
 };
 
-export const loadUnsecureUser = async (
+export const loadUser = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<User[]> => {
-  return dbUnsecure<User>('User').where(field);
+  return db<User>('User').where(field);
 };
 
 export const getOrganizations = (id: string) => {
@@ -96,13 +96,13 @@ export const getRolesPortal = (id: string) => {
 export const loadSimpleUserBy = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<User> => {
-  return dbUnsecure<User>('User').where(field).first();
+  return db<User>('User').where(field).first();
 };
 
 export const loadUserBy = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<UserLoadUserBy> => {
-  const [foundUser] = await dbUnsecure<UserLoadUserBy>('User').where(field);
+  const [foundUser] = await db<UserLoadUserBy>('User').where(field);
   if (!foundUser) {
     return;
   }
@@ -111,9 +111,7 @@ export const loadUserBy = async (
     throw new Error(ErrorCode.UserDisabled);
   }
 
-  const userOrganizationCapabilityQuery = dbUnsecure<UserService>(
-    'User_Organization'
-  )
+  const userOrganizationCapabilityQuery = db<UserService>('User_Organization')
     .leftJoin(
       'UserOrganization_Capability',
       'User_Organization.id',
@@ -132,7 +130,7 @@ export const loadUserBy = async (
       `"UserOrganization_Capability"."user_organization_id" = "UserOrg"."id"`
     );
 
-  const userQuery = dbUnsecure<UserLoadUserBy>('User')
+  const userQuery = db<UserLoadUserBy>('User')
     .where(field)
     .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
     .leftJoin('User_Organization as selected_user_orga', function () {
@@ -273,11 +271,6 @@ export const loadUserConnection = (opts: QueryUsersArgs) => {
     );
   loadUserQuery
     .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
-    .leftJoin(
-      'User_Organization as UserOrgFilter',
-      'User.id',
-      'UserOrgFilter.user_id'
-    )
     .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
     // Inspiration from https://github.com/knex/knex/issues/882
     .select([
@@ -310,7 +303,7 @@ export const loadUserConnection = (opts: QueryUsersArgs) => {
       filters: filters?.map(({ key, value }) => {
         if (key === FilterKey.OrganizationId) {
           return {
-            key: 'UserOrgFilter.organization_id',
+            key: 'UserOrg.organization_id',
             value,
           } as unknown as Filter;
         }
@@ -345,13 +338,13 @@ export const updateUser = async (
 };
 
 export const deleteUserById = async (userId: UserId) => {
-  return dbUnsecure<User>('User').where('id', userId).delete().returning('*');
+  return db<User>('User').where('id', userId).delete().returning('*');
 };
 export const loadUserCapabilitiesByOrganization = async (
   user_id: UserId,
   organization_id: OrganizationId
 ): Promise<{ capabilities?: string[] }> => {
-  return dbUnsecure('User_Organization')
+  return db('User_Organization')
     .leftJoin(
       'UserOrganization_Capability',
       'User_Organization.id',
@@ -367,9 +360,7 @@ export const loadUserCapabilitiesByOrganization = async (
 export const loadUserDetails = async (
   field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
 ): Promise<UserWithOrganizationsAndRole> => {
-  const userOrganizationCapabilityQuery = dbUnsecure<UserService>(
-    'User_Organization'
-  )
+  const userOrganizationCapabilityQuery = db<UserService>('User_Organization')
     .leftJoin(
       'UserOrganization_Capability',
       'User_Organization.id',
@@ -387,7 +378,7 @@ export const loadUserDetails = async (
     .whereRaw(
       `"UserOrganization_Capability"."user_organization_id" = "UserOrg"."id"`
     );
-  return dbUnsecure<UserWithOrganizationsAndRole>('User')
+  return db<UserWithOrganizationsAndRole>('User')
     .where(field)
     .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
     .leftJoin('Organization as org', 'UserOrg.organization_id', '=', 'org.id')
@@ -457,7 +448,7 @@ export const updateUserAtLogin = async (
     fields.selected_organization_id = organizations[0].id;
   }
 
-  const [updatedUser] = await dbUnsecure<User>('User')
+  const [updatedUser] = await db<User>('User')
     .where({ id: user.id })
     .update(fields)
     .returning('*');
@@ -473,8 +464,5 @@ export const updateUserAtLogin = async (
       error,
     });
   }
-  return {
-    ...user,
-    selected_organization_id: updatedUser.selected_organization_id,
-  };
+  return loadUserBy({ 'User.id': user.id });
 };

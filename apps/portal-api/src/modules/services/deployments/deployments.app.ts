@@ -17,6 +17,7 @@ import {
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
   Success,
+  TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -37,7 +38,7 @@ import { serviceDefinitionDomain } from '../definition/service-definition.domain
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
-import config from 'config';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { UserId } from '../../../model/kanel/public/User';
 import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
@@ -48,11 +49,14 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
-import { loadUnsecureUser } from '../../users/users.domain';
+import { loadUser } from '../../users/users.domain';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
+  hasDeploymentTelemetryDataChanged,
+  isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
@@ -71,20 +75,17 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
 
-    const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
-      .split(',')
-      .map((d) => d.trim());
-    const organizationIsBlacklisted = chosenOrganization.domains.some(
-      (domain) => domainsBlacklist.includes(domain)
-    );
-    if (organizationIsBlacklisted) {
+    if (isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
         `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
       );
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
 
-    await assertFreeTrialsLimit(user.selected_organization_id);
+    await assertFreeTrialsLimit(
+      user.selected_organization_id,
+      input.platform_identifier
+    );
 
     const serviceDefinition =
       await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
@@ -112,6 +113,7 @@ export const DeploymentsApp = {
               : DeploymentRequestHubStatus.Queued;
             const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
               hub_status: hubStatus,
+              platform_identifier: input.platform_identifier,
             });
             const ordering = (maxOrdering ?? 0) + 1;
 
@@ -225,7 +227,7 @@ export const DeploymentsApp = {
         id: createdDeploymentRequest.id,
       });
     } catch (error) {
-      logApp.error('unable to create deployment request', error);
+      logApp.error('unable to create deployment request', { error });
       throw error;
     }
   },
@@ -337,7 +339,8 @@ export const DeploymentsApp = {
 
     await sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,
-      updatedDeploymentRequest.user_requester_id
+      updatedDeploymentRequest.user_requester_id,
+      deploymentRequest
     );
 
     try {
@@ -345,7 +348,7 @@ export const DeploymentsApp = {
         newStatus === DeploymentRequestHubStatus.Provisioning &&
         newStatus !== deploymentRequest.hub_status
       ) {
-        const [user] = await loadUnsecureUser({
+        const [user] = await loadUser({
           id: deploymentRequest.user_requester_id,
         });
 
@@ -360,6 +363,40 @@ export const DeploymentsApp = {
     } catch (error) {
       logApp.error('Unable to send mail', {
         error,
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+
+    try {
+      if (
+        newStatus === DeploymentRequestHubStatus.Active &&
+        newStatus !== deploymentRequest.hub_status
+      ) {
+        const [user] = await loadUser({
+          id: deploymentRequest.user_requester_id,
+        });
+
+        const serviceConfiguration =
+          await serviceContractDomain.loadConfigurationByPlatform(
+            deploymentRequest.platform_id
+          );
+
+        const parsedConfig = JSON.parse(
+          JSON.stringify(serviceConfiguration.config)
+        );
+
+        void sendMail({
+          to: user.email,
+          template: 'opencti_free_trial_registered',
+          params: {
+            firstName: formatName(user.first_name ?? ''),
+            platformUrl: parsedConfig.platform_url,
+          },
+        });
+      }
+    } catch (error) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: error,
         deploymentRequestId: deploymentRequest.id,
       });
     }
@@ -577,7 +614,7 @@ export const DeploymentsApp = {
     await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
-      const [requester] = await loadUnsecureUser({
+      const [requester] = await loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
       sendMail({
@@ -635,7 +672,7 @@ export const DeploymentsApp = {
         );
 
         try {
-          const [requester] = await loadUnsecureUser({
+          const [requester] = await loadUser({
             id: trial.user_requester_id,
           });
           sendMail({
@@ -691,12 +728,67 @@ export const DeploymentsApp = {
 
     await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
   },
+  loadTrialDeployments: async (input: TrialDeploymentsInput) => {
+    const { user } = requestContext.require();
+    const organization = await loadOrganizationBy({
+      id: user.selected_organization_id,
+    });
+    if (organization.personal_space) {
+      return {
+        availableTrials: [],
+        deployed: [],
+        isBlacklisted: false,
+      };
+    }
+
+    const deploymentRequests =
+      await DeploymentRequestDomain.loadTrialsForOrganization(
+        user.selected_organization_id,
+        input.platformIdentifiers
+      );
+
+    const deployedIdentifiers = new Set(
+      deploymentRequests.map((d) => d.platform_identifier)
+    );
+
+    const requestedIdentifiers =
+      input.platformIdentifiers ?? Object.values(PlatformIdentifier);
+    const availableTrials = requestedIdentifiers.filter(
+      (identifier) => !deployedIdentifiers.has(identifier)
+    );
+
+    return {
+      availableTrials: availableTrials,
+      deployed: deploymentRequests.map((deployment) => {
+        return {
+          serviceInstanceId: toGlobalId(
+            'ServiceInstance',
+            deployment.service_instance_id
+          ),
+          platformIdentifier:
+            deployment.platform_identifier as PlatformIdentifier,
+        };
+      }),
+      isBlacklisted: isOrganizationBlacklisted(organization),
+    };
+  },
 };
 
 const sendUpdateDeploymentTelemetryEvent = async (
   deploymentRequest: DeploymentRequestModel,
-  userId: UserId
+  userId: UserId,
+  previousDeploymentRequest?: DeploymentRequestModel
 ) => {
+  if (
+    previousDeploymentRequest &&
+    !hasDeploymentTelemetryDataChanged(
+      previousDeploymentRequest,
+      deploymentRequest
+    )
+  ) {
+    return;
+  }
+
   try {
     const organization = await loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,

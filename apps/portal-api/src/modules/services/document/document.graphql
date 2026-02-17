@@ -12,11 +12,12 @@ enum DocumentOrdering {
   file_name
   description
   created_at
+  updated_at
   download_number
   name
 }
 """
- /!\ WARNING Do not use this type.
+/!\ WARNING Do not use this type.
 It exists only to cover cases where we failed to map to a specific Document.
 """
 type DefaultDocument implements Node & Document {
@@ -27,19 +28,19 @@ type DefaultDocument implements Node & Document {
   name: String
   short_description: String
   description: String
-  file_name: String
-  minio_name: String!
+  file_name: String @auth
+  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
-  updater_id: String
+  updater_id: String @auth
   download_number: Int
   share_number: Int
   slug: String
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
+  use_cases: [UseCase!]
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
+  subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
 }
 
@@ -51,29 +52,20 @@ interface Document implements Node {
   name: String
   short_description: String
   description: String
-  file_name: String
-  minio_name: String!
+  file_name: String @auth
+  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
-  updater_id: String
+  updater_id: String @auth
   download_number: Int
   share_number: Int
   slug: String
-  labels: [Label!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
+  use_cases: [UseCase!]
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
+  subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
-}
-
-input EditDocumentInput {
-  short_description: String
-  description: String
-  uploader_organization_id: String
-  name: String
-  active: Boolean
-  slug: String
 }
 
 input DocumentMetadata {
@@ -87,7 +79,7 @@ input CreateDocumentInput {
   short_description: String!
   description: String!
   active: Boolean!
-  labels: [String!]
+  use_cases: [String!]
   uploader_id: String!
 }
 
@@ -97,7 +89,7 @@ input UpdateDocumentInput {
   short_description: String
   description: String
   active: Boolean
-  labels: [String!]
+  use_cases: [String!]
   uploader_organization_id: String
   uploader_id: String
 }
@@ -117,22 +109,6 @@ type Mutation {
     updateDocument: Boolean!
     images: [String!]
     serviceInstanceId: String
-  ): Document! @auth @service_capa(requires: [UPLOAD])
-  addDocument(
-    document: Upload
-    name: String
-    short_description: String
-    description: String
-    service_instance_id: String
-    parentDocumentId: ID
-    active: Boolean
-    slug: String
-    type: String!
-  ): Document! @auth @service_capa(requires: [UPLOAD])
-  editDocument(
-    documentId: ID
-    input: EditDocumentInput!
-    service_instance_id: String
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID
@@ -157,13 +133,23 @@ type Query {
   documentExists(documentName: String, service_instance_id: String): Boolean
     @auth
     @service_capa(requires: [UPLOAD])
+  publicDocuments(
+    slug: String!
+    first: Int!
+    after: ID
+    orderBy: DocumentOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    logicalFilters: LogicalFilterInput
+    serviceInstanceId: ID!
+  ): DocumentConnection!
   documents(
     first: Int!
     after: ID
     orderBy: DocumentOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-    filters: [Filter!]
+    logicalFilters: LogicalFilterInput
     serviceInstanceId: String
     parentsOnly: Boolean
   ): DocumentConnection! @auth

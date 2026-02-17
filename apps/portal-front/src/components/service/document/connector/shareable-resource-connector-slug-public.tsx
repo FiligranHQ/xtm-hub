@@ -63,7 +63,7 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
           </div>
           <div className="w-full mt-s mb-xs">
             <BadgeOverflowCounter
-              badges={documentData?.labels as BadgeOverflow[]}
+              badges={documentData?.use_cases as BadgeOverflow[]}
               className="z-[2]"
             />
           </div>
@@ -77,7 +77,7 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
           </h3>
           <section className="border rounded border-border-light bg-page-background">
             <h2 className="p-l">{documentData?.short_description}</h2>
-            <div className="p-l !bg-page-background">
+            <div className="p-l !bg-page-background markdown-content">
               <MarkdownAsync>{documentData?.description ?? ''}</MarkdownAsync>
             </div>
           </section>

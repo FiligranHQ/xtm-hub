@@ -1,40 +1,70 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "timezone": "Europe/Paris",
-  "schedule": ["* * * * 0,6"],
-  "labels": ["dependencies", "filigran team"],
-  "ignorePaths": ["charts/**"],
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies",
+    "filigran team"
+  ],
+  "ignorePaths": [
+    "chart/**"
+  ],
+  "commitMessagePrefix": "[deps]",
   "prConcurrentLimit": 5,
   "rebaseWhen": "behind-base-branch",
   "minimumReleaseAge": "3 days",
+  "timezone": "Europe/Paris",
+  "schedule": [
+    "* 0-4,22-23 * * 1-5",
+    "* * * * 0,6"
+  ],
   "packageRules": [
     {
       "description": "Major updates wait 1 month before being proposed",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "minimumReleaseAge": "30 days"
     },
     {
-      "description": "batch on sunday morning, non-major update of dev dependencies",
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "description": "batch non-major update of dev dependencies",
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "groupName": "devDependencies (non-major)",
       "groupSlug": "dev-dependencies-non-major"
     },
     {
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["elasticsearch", "docker.elastic.co/elasticsearch/elasticsearch", "docker.elastic.co/kibana/kibana"],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "elasticsearch",
+        "docker.elastic.co/elasticsearch/elasticsearch",
+        "docker.elastic.co/kibana/kibana"
+      ],
       "enabled": false,
       "description": "Ignore Elasticsearch Docker image updates"
     },
     {
-      "matchManagers": ["docker-compose"],
+      "matchManagers": [
+        "docker-compose"
+      ],
       "enabled": false,
       "description": "Ignore all Docker Compose file updates"
     }
   ],
   "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["* * * * 0,6"]
+    "schedule": ["* 5 * * 0"],
+    "rebaseWhen": "behind-base-branch",
+    "automerge": false,
+    "enabled": true
   }
 }

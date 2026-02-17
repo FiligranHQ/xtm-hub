@@ -11,13 +11,12 @@ import ServiceDefinitionResolver from '../modules/services/definition/service-de
 import deploymentResolver from '../modules/services/deployments/deployments.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
 import serviceGroupResolver from '../modules/services/group/service-group.resolver';
-import csvFeedsResolver from '../modules/services/integrations/csv-feeds/csv-feeds.resolver';
 import integrationsResolver from '../modules/services/integrations/integrations.resolver';
 import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
-import labelsResolver from '../modules/settings/labels/labels.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
+import useCaseResolver from '../modules/settings/useCase/use-case.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import serviceCapabilityResolver from '../modules/user_service/service-capability/service-capability.resolver';
@@ -47,9 +46,8 @@ const resolvers = mergeResolvers([
   userServiceResolver,
   serviceCapabilityResolver,
   logResolver,
-  labelsResolver,
+  useCaseResolver,
   customDashboardsResolver,
-  csvFeedsResolver,
   openAEVScenariosResolver,
   registrationResolver,
   telemetryResolver,

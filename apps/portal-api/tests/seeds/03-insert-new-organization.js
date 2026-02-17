@@ -3,8 +3,8 @@ export async function seed(knex) {
     .insert([
       {
         id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
-        name: 'Thales',
-        domains: ['thales.com'],
+        name: 'SECOND ORGA',
+        domains: ['second-orga.com'],
       },
     ])
     .onConflict('name')
@@ -13,7 +13,7 @@ export async function seed(knex) {
     .insert([
       {
         id: '015c0488-848d-4c89-95e3-8a243971f594',
-        email: 'admin@thales.com',
+        email: 'admin@second-orga.com',
         salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
         password:
           'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
@@ -23,12 +23,12 @@ export async function seed(knex) {
       },
       {
         id: '154006e2-f24b-42da-b39c-e0fb17bead00',
-        email: 'user@thales.com',
+        email: 'user@second-orga.com',
         salt: 'fabc28ed1339f8b34c10bc3b5a650c01',
         password:
           'a0bbec7075b7aca96feb276477a5ab4b8d86c495de9b5eb1e9f44dea11a1fea7b0621437a2e437517ecf222e1c730db96c51211856fd309a6293dba2aa44c24e',
-        first_name: 'thalesUserFirstName',
-        last_name: 'thalesUserLastName',
+        first_name: 'Justin',
+        last_name: 'Time',
         selected_organization_id: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
       },
     ])
@@ -39,12 +39,12 @@ export async function seed(knex) {
     .insert([
       {
         id: '015c0488-848d-4c89-95e3-8a243971f594',
-        name: 'admin@thales.com',
+        name: 'admin@second-orga.com',
         personal_space: true,
       },
       {
         id: '154006e2-f24b-42da-b39c-e0fb17bead00',
-        name: 'user@thales.com',
+        name: 'user@second-orga.com',
         personal_space: true,
       },
     ])

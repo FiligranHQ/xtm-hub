@@ -1,15 +1,23 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dbUnsecure } from '../../../../knexfile';
-import { contextAdminUser } from '../../../../tests/tests.const';
+import { db } from '../../../../knexfile';
 import {
+  contextBypassUser,
+  SERVICES,
+  TEST_ORGANIZATIONS,
+} from '../../../../tests/tests.const';
+import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
   PlatformContract,
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
@@ -19,12 +27,12 @@ import Subscription, {
   SubscriptionId,
 } from '../../../model/kanel/public/Subscription';
 import { PortalContext } from '../../../model/portal-context';
-import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import * as organizationDomain from '../../organizations/organizations.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
-import { serviceContractDomain } from '../contract/domain';
+import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import {
   PlatformConfiguration,
@@ -37,7 +45,7 @@ describe('Registration domain', () => {
   const platformTitle = 'My OpenCTI platform';
   const platformUrl = 'http://example.com';
   const platformContract = PlatformContract.Ee;
-  const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
+  const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID;
   const platformOpenCTI = '6.7.17';
 
   beforeEach(() => {
@@ -47,10 +55,10 @@ describe('Registration domain', () => {
   describe('registerNewPlatform', () => {
     it('save registration data', async () => {
       await registrationDomain.registerNewPlatform({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         serviceDefinitionId,
         configuration: {
-          registerer_id: contextAdminUser.user.id,
+          registerer_id: contextBypassUser.user.id,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -61,9 +69,7 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      const serviceInstance = await dbUnsecure<ServiceInstance>(
-        'ServiceInstance'
-      )
+      const serviceInstance = await db<ServiceInstance>('ServiceInstance')
         .where('name', '=', 'OpenCTI Platform')
         .select('*')
         .first();
@@ -73,15 +79,15 @@ describe('Registration domain', () => {
         ServiceInstanceCreationStatus.Ready
       );
 
-      const subscription = await dbUnsecure<Subscription>('Subscription')
+      const subscription = await db<Subscription>('Subscription')
         .where('service_instance_id', '=', serviceInstance.id)
         .select('*')
         .first();
 
       expect(subscription).toBeDefined();
-      expect(subscription.organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
+      expect(subscription.organization_id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
 
-      const serviceConfiguration = await dbUnsecure<ServiceConfiguration>(
+      const serviceConfiguration = await db<ServiceConfiguration>(
         'Service_Configuration'
       )
         .where('service_instance_id', '=', serviceInstance.id)
@@ -94,7 +100,7 @@ describe('Registration domain', () => {
       );
 
       expect(configuration.token).toBe(token);
-      expect(configuration.registerer_id).toBe(contextAdminUser.user.id);
+      expect(configuration.registerer_id).toBe(contextBypassUser.user.id);
       expect(configuration.platform_id).toBe(platformId);
       expect(configuration.platform_title).toBe(platformTitle);
       expect(configuration.platform_url).toBe(platformUrl);
@@ -102,15 +108,13 @@ describe('Registration domain', () => {
     });
     it('can create pending platforms', async () => {
       const serviceInstanceId = await registrationDomain.registerNewPlatform({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         serviceDefinitionId,
         platformIdentifier: PlatformIdentifier.Opencti,
         serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
       });
 
-      const serviceInstance = await dbUnsecure<ServiceInstance>(
-        'ServiceInstance'
-      )
+      const serviceInstance = await db<ServiceInstance>('ServiceInstance')
         .where('id', '=', serviceInstanceId)
         .select('*')
         .first();
@@ -120,15 +124,15 @@ describe('Registration domain', () => {
         ServiceInstanceCreationStatus.Pending
       );
 
-      const subscription = await dbUnsecure<Subscription>('Subscription')
+      const subscription = await db<Subscription>('Subscription')
         .where('service_instance_id', '=', serviceInstanceId)
         .select('*')
         .first();
 
       expect(subscription).toBeDefined();
-      expect(subscription.organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
+      expect(subscription.organization_id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
 
-      const serviceConfiguration = await dbUnsecure<ServiceConfiguration>(
+      const serviceConfiguration = await db<ServiceConfiguration>(
         'Service_Configuration'
       )
         .where('service_instance_id', '=', serviceInstanceId)
@@ -141,7 +145,7 @@ describe('Registration domain', () => {
 
   describe('refreshExistingPlatform', () => {
     const configuration: PlatformConfiguration = {
-      registerer_id: contextAdminUser.user.id,
+      registerer_id: contextBypassUser.user.id,
       platform_id: uuidv4(),
       platform_contract: PlatformContract.Ce,
       platform_title: 'Title',
@@ -311,7 +315,7 @@ describe('Registration domain', () => {
     });
   });
 
-  describe('loadRegisteredPlatforms', () => {
+  describe('loadRegisteredPlatform', () => {
     const openAEVplatformId = uuidv4();
 
     const openAEVplatformTitle = 'My OpenCTI platform';
@@ -325,10 +329,10 @@ describe('Registration domain', () => {
     let openCTIServiceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
       openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         serviceDefinitionId,
         configuration: {
-          registerer_id: contextAdminUser.user.id,
+          registerer_id: contextBypassUser.user.id,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -340,10 +344,10 @@ describe('Registration domain', () => {
       });
 
       await registrationDomain.registerNewPlatform({
-        organizationId: PLATFORM_ORGANIZATION_UUID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         serviceDefinitionId: openAEVServiceDefinitionId,
         configuration: {
-          registerer_id: contextAdminUser.user.id,
+          registerer_id: contextBypassUser.user.id,
           platform_id: openAEVplatformId,
           platform_url: openAEVplatformUrl,
           platform_title: openAEVplatformTitle,
@@ -355,6 +359,66 @@ describe('Registration domain', () => {
       });
     });
     afterEach(async () => {
+      await db('DeploymentRequest').delete();
+      await serviceContractDomain.deleteConfigurationBy({});
+      await deleteServiceInstanceBy({});
+    });
+
+    it('should return only the registered platform linked to the service instance', async () => {
+      const platforms = await registrationDomain.loadRegisteredPlatform(
+        openCTIServiceInstanceId
+      );
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
+    });
+  });
+
+  describe('loadRegisteredPlatforms', () => {
+    const openAEVplatformId = uuidv4();
+
+    const openAEVplatformTitle = 'My OpenCTI platform';
+    const openAEVplatformUrl = 'http://example.com';
+    const openAEVplatformContract = PlatformContract.Ee;
+    const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID;
+    const openAEVplatformVersion = '6.7.17';
+    const openAEVToken = uuidv4();
+    const openAEVServiceDefinitionId = 'e66a6b50-1f92-4f62-b84c-88ed6b871790';
+
+    let openCTIServiceInstanceId: ServiceInstanceId;
+    beforeEach(async () => {
+      openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceDefinitionId,
+        configuration: {
+          registerer_id: contextBypassUser.user.id,
+          platform_id: platformId,
+          platform_url: platformUrl,
+          platform_title: platformTitle,
+          platform_contract: platformContract,
+          platform_version: platformOpenCTI,
+          token,
+        },
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+
+      await registrationDomain.registerNewPlatform({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceDefinitionId: openAEVServiceDefinitionId,
+        configuration: {
+          registerer_id: contextBypassUser.user.id,
+          platform_id: openAEVplatformId,
+          platform_url: openAEVplatformUrl,
+          platform_title: openAEVplatformTitle,
+          platform_contract: openAEVplatformContract,
+          platform_version: openAEVplatformVersion,
+          token: openAEVToken,
+        },
+        platformIdentifier: PlatformIdentifier.Openaev,
+      });
+    });
+    afterEach(async () => {
+      await db('DeploymentRequest').delete();
       await serviceContractDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
@@ -401,7 +465,7 @@ describe('Registration domain', () => {
     it('should return platforms without configuration (not yet auto registered) ', async () => {
       const notYetRegisteredPlatformServiceInstanceId =
         await registrationDomain.registerNewPlatform({
-          organizationId: PLATFORM_ORGANIZATION_UUID,
+          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
           serviceDefinitionId,
           platformIdentifier: PlatformIdentifier.Opencti,
         });
@@ -415,9 +479,68 @@ describe('Registration domain', () => {
         )
       ).toBe(true);
     });
-    it('should return only the registered platform linked to the service instance', async () => {
+    it('should return platforms with non-active trials by default', async () => {
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Cancelled,
+        platform_token: uuidv4(),
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        user_requester_id: contextBypassUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+
       const platforms = await registrationDomain.loadRegisteredPlatforms({
-        'ServiceInstance.id': openCTIServiceInstanceId,
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
+    });
+    it('should not return platforms with non-active trials when onlyActiveTrials is true', async () => {
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Provisioning,
+        platform_token: uuidv4(),
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        user_requester_id: contextBypassUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        onlyActive: true,
+      });
+
+      expect(platforms.length).toBe(0);
+    });
+    it('should return platforms with active trials when onlyActiveTrials is true', async () => {
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Active,
+        platform_token: uuidv4(),
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        user_requester_id: contextBypassUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        onlyActive: true,
       });
 
       expect(platforms.length).toBe(1);

@@ -37,8 +37,8 @@
     "ResetTable": "Reset table",
     "RowsPerPage": "Rows per page"
   },
-  "DeleteLabelDialog": {
-    "TextDeleteLabel": "Do you really want to delete this label {name} ?"
+  "DeleteUseCaseDialog": {
+    "TextDeleteUseCase": "Do you really want to delete this use case {name} ?"
   },
   "DialogActions": {
     "ContinueTitle": "Do you want to continue?",
@@ -54,6 +54,7 @@
       "LoginError": "You are not allowed to login"
     },
     "Server": {
+      "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Error occurred while accepting users",
       "ADD_ORGANIZATION_ERROR": "Error occurred while adding organization",
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "ADDING_USER_ERROR": "Error occurred while creating user",
@@ -67,10 +68,6 @@
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "You cannot request a free trial in your personal space",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
-      "CSV_FEED_DELETION_ERROR": "Error occurred while deleting CSV Feed",
-      "CSV_FEED_INSERTION_ERROR": "An error occurred while creating the CSV Feed.",
-      "CSV_FEED_UNIQUE_SLUG_ERROR": "The CSV feed slug is already in use.",
-      "CSV_FEED_UPDATE_ERROR": "An error occurred while updating the CSV feed.",
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION_ERROR": "Error while deleting organization",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
@@ -81,6 +78,7 @@
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "An unknown error occurred",
       "DOCUMENT_CREATE_ERROR": "An error occurred while creating the resource.",
       "DOCUMENT_MISSING_METADATA": "Document is missing metadata.",
+      "DOCUMENT_NOT_FOUND": "The resource was not found.",
       "DOCUMENT_UNIQUE_SLUG_ERROR": "The resource slug is already in use.",
       "DOCUMENT_UPDATE_ERROR": "An error occurred while updating the resource.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
@@ -94,7 +92,8 @@
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "You must grant capabilities on organization first",
       "HUBSPOT_ERROR": "An error occured while contacting us",
       "INCREMENT_SHARE_NUMBER": "Error occurred while incrementing share number",
-      "INSERT_DOCUMENT_ERROR": "Error while inserting document",
+      "INTEGRATION_TYPE_NOT_MANAGEABLE": "This type of integration is not manageable.",
+      "INTEGRATION_TYPE_NOT_RECOGNIZED": "This type of integration is not recognized",
       "INVALID_ACTION_SIZE": "An unknown error occurred",
       "INVALID_EMAIL": "The email should be in valid format.",
       "INVALID_IMAGE_URL": "The image URL is not valid",
@@ -105,13 +104,10 @@
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
+      "MISSING_METADATA_MAPPING": "Missing metadata mapping",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
       "NO_ASYNC_CONTEXT_AVAILABLE": "An unknown error occurred",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "An unknown error occurred",
-      "OPENAEV_SCENARIO_DELETE_ERROR": "An error occurred while deleting an OpenAEV Scenario",
-      "OPENAEV_SCENARIO_INSERTION_ERROR": "An error occurred while creating an OpenAEV Scenario",
-      "OPENAEV_SCENARIO_UNIQUE_SLUG_ERROR": "An OpenAEV scenario with the same slug already exists",
-      "OPENAEV_SCENARIO_UPDATE_ERROR": "An error occurred while updating an OpenAEV Scenario",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "An organization with the same domain already exists",
       "ORGANIZATION_SAME_NAME_EXISTS": "An organization with the same name already exists",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "You are not allowed to do this",
@@ -128,12 +124,12 @@
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
       "SERVICE_NOT_FOUND": "Service was not found",
+      "SERVICE_NOT_MANAGEABLE": "This service is not manageable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
       "SUBSCRIPTION_NOT_FOUND": "Subscription was not found",
       "TRANSFER_ME_ERROR": "Error while requesting personal space transfer.",
       "UNKNOWN_ERROR": "An unknown error occurred",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
-      "UPDATE_DOCUMENT_ERROR": "Error while updating document",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "An error occurred while updating platform service metadata",
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
@@ -144,6 +140,7 @@
   },
   "GenericActions": {
     "FilterUseCases": "Use case...",
+    "FilterUseCasesLabel": "Use case",
     "Search": "Search...",
     "Paginate": {
       "PreviousPage": "Go to previous page",
@@ -169,15 +166,15 @@
     "Organization": "Organization",
     "Title": "Invite user to the {serviceName} service"
   },
-  "LabelActions": {
-    "AddLabel": "Add label",
+  "UseCaseActions": {
+    "AddUseCase": "Add use case",
     "SearchLabel": "Search"
   },
-  "LabelForm": {
+  "UseCaseForm": {
     "Color": "Color",
     "Name": "Name"
   },
-  "LabelListPage": {
+  "UseCaseListPage": {
     "Color": "Color",
     "Name": "Name"
   },
@@ -209,7 +206,7 @@
     "Backoffice": "Backoffice",
     "Connectors": "OpenCTI Connectors",
     "Home": "Home",
-    "Labels": "Labels",
+    "UseCases": "Use Cases",
     "Organizations": "Organizations",
     "Parameters": "Parameters",
     "Profile": "Profile",
@@ -218,7 +215,8 @@
     "Settings": "Settings",
     "SettingsLabel": "Settings menu",
     "Users": "Users",
-    "Trials": "Trials dashboard"
+    "OpenCTITrials": "OpenCTI Trials",
+    "OpenAEVTrials": "OpenAEV Trials"
   },
   "MenuUser": {
     "Profile": "Profile",
@@ -280,6 +278,9 @@
       "RemainingDays": "Days remaining",
       "Status": "Status",
       "Region": "Region",
+      "PlatformId": "Platform ID",
+      "PlatformUrl": "Platform URL",
+      "RegistrationStatus": "Registration Status",
       "RequestDate": "Requested Date",
       "Priority": "Priority",
       "CancellationDate": "Cancellation Date",
@@ -314,7 +315,9 @@
         "ConfirmSentence": "Are you sure you want to save these changes?"
       }
     },
-    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
+    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
+    "Registered": "Registered",
+    "NotRegistered": "Not Registered"
   },
   "Parameters": {
     "Version": "Version"
@@ -323,7 +326,17 @@
     "TabTitle": "Users Requests ({usersCount})",
     "WarningUserRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse this person from your organization. There is no way of going back. Are you sure ?",
+      "Description": "You are about to refuse this user from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Are you sure?"
+    },
+    "WarningUsersRejection": {
+      "Confirm": "Confirm",
+      "Description": "You are about to refuse these users from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Are you sure?"
+    },
+    "WarningUsersAccept": {
+      "Confirm": "Confirm",
+      "Description": "You are about to accept these users in your organization. These users won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
       "Title": "Are you sure?"
     }
   },
@@ -476,6 +489,15 @@
   "Reset table": "Reset table",
   "Rows per page": "Rows per page",
   "Service": {
+    "ServiceDefinitionIdentifier": {
+      "link": "Link",
+      "openaev_registration": "OpenAEV Registration",
+      "openaev_scenarios": "OpenAEV Scenarios",
+      "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
+      "opencti_integrations": "OpenCTI Integrations",
+      "opencti_registration": "OpenCTI Registration",
+      "vault": "Vault"
+    },
     "Capabilities": {
       "AccessServiceDescription": "You just have access to a service",
       "AccessServiceName": "Access service",
@@ -492,7 +514,6 @@
       "LastVerifiedDate": "Last verified at",
       "Name": "OpenCTI Connectors",
       "Search": "Search a connector with name...",
-      "Type": "Type",
       "VendorContact": "Vendor Contact",
       "VisitVendor": "Visit the vendor's page to learn more and get in touch",
       "Incompatible": "{platformToBeUpdated} {count, plural, =1 {needs} other {need}} to be updated to deploy this connector.",
@@ -501,32 +522,47 @@
     "CreationStatus": "Creation status",
     "OpenctiIntegrations": {
       "Actions": {
-        "Share": "Share integration Feed"
+        "Share": "Share integration"
       },
+      "AddService": "Add new Integration",
+      "IntegrationType": "Integration type",
       "Filter": {
-        "Connector": {
-          "Type": {
-            "Placeholder": "Connector type..."
-          }
+        "IntegrationSubType": {
+          "Label": "Subtype",
+          "Placeholder": "Subtype..."
         },
         "Type": {
-          "Placeholder": "Type...",
-          "csv_feed": "CSV Feeds",
-          "connector": "Connectors",
-          "rss_feed": "RSS Feeds (coming soon)",
-          "json_feed": "JSON Feeds (coming soon)",
-          "taxii_feed": "TAXII Feeds (coming soon)",
-          "opencti_stream_feed": "OpenCTI Stream feeds (coming soon)",
-          "third_party_integration": "Third party integrations (coming soon)"
+          "Label": "Integration type",
+          "Placeholder": "Integration type..."
         },
         "ProductVersion": {
-          "Placeholder": "Platform..."
+          "Label": "Registered platforms",
+          "Placeholder": "Registered platforms..."
         },
         "ManagerSupported": {
+          "Label": "Deployment type",
           "Placeholder": "Deployment type...",
           "AutomaticDeploy": "Automatic deploy",
           "ManualDeploy": "Manual deploy"
+        },
+        "Verified": {
+          "Label": "Verification status",
+          "Placeholder": "Verification status...",
+          "Verified": "Verified",
+          "Unverified": "Unverified"
         }
+      },
+      "Type": {
+        "csv_feed": "CSV Feeds",
+        "connector": "Connectors",
+        "rss_feed": "RSS Feeds (coming soon)",
+        "json_feed": "JSON Feeds (coming soon)",
+        "taxii_feed": "TAXII Feeds",
+        "stream": "OpenCTI Streams",
+        "third_party_integration": "Third party integrations"
+      },
+      "Form": {
+        "SelectIntegrationSubType": "Subtype"
       }
     },
     "CsvFeed": {
@@ -548,8 +584,8 @@
         "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
         "ExistingCsvFeedFile": "Existing Csv Feed file: {file_name}",
         "ExistingCsvFeedIllustration": "Existing Csv Feed illustration: {file_name}",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "NameLabel": "Name",
         "PublishedPlaceholder": "Is the CSV Feed published?",
         "ShortDescriptionLabel": "Short Description",
@@ -559,6 +595,109 @@
       "NonActive": "Draft",
       "SureDeleteService": "Are you sure you want to delete the CSV Feed {name}?",
       "UpdateService": "Update the CSV Feed {name}"
+    },
+    "TaxiiFeed": {
+      "Actions": {
+        "Added": "The TAXII {name} has been added successfully",
+        "Deleted": "The TAXII {name} has been deleted successfully",
+        "Share": "Share TAXII Feed",
+        "Updated": "The TAXII {name} has been modified successfully"
+      },
+      "Active": "Published",
+      "AddService": "Add new TAXII Feed",
+      "DeleteService": "Delete the TAXII Feed {name}",
+      "Form": {
+        "Author": "Author",
+        "TaxiiFeedFile": "TAXII Feed file",
+        "TaxiiFeedIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the TAXII Feed.",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
+        "ExistingTaxiiFeedFile": "Existing TAXII Feed file: {file_name}",
+        "ExistingTaxiiFeedIllustration": "Existing TAXII Feed illustration: {file_name}",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
+        "NameLabel": "Name",
+        "PublishedPlaceholder": "Is the TAXII Feed published?",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Update JSON file"
+      },
+      "NonActive": "Draft",
+      "SureDeleteService": "Are you sure you want to delete the TAXII Feed {name}?",
+      "UpdateService": "Update the TAXII Feed {name}"
+    },
+    "Connector": {
+      "Actions": {
+        "Deleted": "The Connector {name} has been deleted successfully"
+      },
+      "DeleteService": "Delete the Connector {name}",
+      "SureDeleteService": "Are you sure you want to delete the Connector {name}?"
+    },
+    "Stream": {
+      "Actions": {
+        "Added": "The Stream {name} has been added successfully",
+        "Deleted": "The Stream {name} has been deleted successfully",
+        "Share": "Share Stream",
+        "Updated": "The Stream {name} has been modified successfully"
+      },
+      "Active": "Published",
+      "AddService": "Add new Stream",
+      "DeleteService": "Delete the Stream {name}",
+      "Form": {
+        "Author": "Author",
+        "StreamFile": "Stream file",
+        "StreamIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the Stream.",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
+        "ExistingStreamFile": "Existing Stream file: {file_name}",
+        "ExistingStreamIllustration": "Existing Stream illustration: {file_name}",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
+        "NameLabel": "Name",
+        "PublishedPlaceholder": "Is the Stream published?",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Update JSON file"
+      },
+      "NonActive": "Draft",
+      "SureDeleteService": "Are you sure you want to delete the Stream {name}?",
+      "UpdateService": "Update the Stream {name}"
+    },
+    "ThirdPartyIntegration": {
+      "Actions": {
+        "Added": "The Third party integration {name} has been added successfully",
+        "Deleted": "The Third Party Integration {name} has been deleted successfully",
+        "Share": "Share Third Party Integration",
+        "Updated": "The Third Party Integration {name} has been modified successfully"
+      },
+      "Active": "Published",
+      "AddService": "Add new Third Party Integration",
+      "DeleteService": "Delete the Third Party Integration {name}",
+      "Form": {
+        "Author": "Author",
+        "ThirdPartyIntegrationFile": "Third Party Integration file",
+        "ThirdPartyIntegrationIllustration": "Illustration",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "This is a paragraph to describe the Third Party Integration.",
+        "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
+        "ExistingThirdPartyIntegrationFile": "Existing Third Party Integration file: {file_name}",
+        "ExistingThirdPartyIntegrationIllustration": "Existing Third Party Integration illustration: {file_name}",
+        "GithubUrlLabel": "Github URL",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
+        "NameLabel": "Name",
+        "ProductVersionLabel": "OpenCTI version",
+        "PublishedPlaceholder": "Is the Third Party Integration published?",
+        "ShortDescriptionLabel": "Short Description",
+        "SlugLabel": "Slug",
+        "UpdateJSONFile": "Update JSON file",
+        "VendorUrlLabel": "Vendor URL"
+      },
+      "NonActive": "Draft",
+      "SureDeleteService": "Are you sure you want to delete the Third Party Integration {name}?",
+      "UpdateService": "Update the Third Party Integration {name}"
     },
     "OpenctiCustomDashboards": {
       "Actions": {
@@ -579,8 +718,8 @@
         "ExistingJSONFile": "Existing JSON file: {file_name}",
         "ImageLabel": "Images",
         "JSONFile": "JSON file",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "NameLabel": "Name",
         "NamePlaceholder": "Dashboard name",
         "NoImage": "No image selected",
@@ -592,7 +731,7 @@
         "SelectJSONFile": "Select JSON file",
         "ShortDescriptionLabel": "Short Description",
         "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
-        "SlugLabel": "Slug (url)",
+        "SlugLabel": "Slug (URL)",
         "SlugPlaceholder": "dashboard-slug",
         "UpdateJSONFile": "Update JSON file",
         "UploadImage": "Upload new image(s)",
@@ -616,15 +755,23 @@
         "SlugLabel": "Slug",
         "DescriptionLabel": "Description",
         "DescriptionPlaceholder": "This is a paragraph to describe the scenario.",
-        "LabelsLabel": "Labels",
-        "LabelsPlaceholder": "Add labels",
+        "UseCasesLabel": "Use cases",
+        "UseCasesPlaceholder": "Add use cases",
         "OpenAEVScenarioFile": "Scenario file",
         "ExistingOpenAEVScenarioFile": "Existing scenario file: {file_name}",
         "OpenAEVScenarioIllustration": "Illustration",
         "ExistingOpenAEVScenarioIllustration": "Existing scenario illustration: {file_name}",
         "PublishedPlaceholder": "Is the scenario published?",
         "Author": "Author",
-        "ProductVersionLabel": "OpenAEV Version"
+        "ProductVersionLabel": "OpenAEV Version",
+        "UpdateZIPFile": "Update ZIP file",
+        "DescriptionUpdateZIPFile": "You're about to upload a new zip file. The previous json file will be deleted. Do you want to continue?",
+        "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
+        "Restore": "Restore",
+        "UploadImage": "Upload new image(s)",
+        "NoImage": "No image selected",
+        "ImageLabel": "Images",
+        "SelectImage": "Select image(s)"
       },
       "AddService": "Add new scenario",
       "UpdateService": "Update the scenario {name}",
@@ -647,8 +794,9 @@
         "Key": {
           "label": "Use case",
           "integration_type": "Integration type",
-          "product_version": "Platform",
-          "manager_supported": "Deployment type"
+          "product_version": "Registered platforms",
+          "manager_supported": "Deployment type",
+          "verified": "Verification status"
         }
       }
     },
@@ -670,6 +818,7 @@
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
       "ShowPersonalSpaces": "Show personal spaces",
+      "SearchOrganization": "Search organization",
       "Subscription": "Subscription"
     },
     "Name": "Name",
@@ -697,11 +846,17 @@
       "Details": {
         "Author": "Author",
         "BasicInformation": "Basic information",
+        "OpenCTIDocumentation": "OpenCTI Documentation",
         "Downloads": "Downloads",
         "LastUpdatedAt": "Last updated at",
         "Overview": "Overview",
         "ProductVersion": "Product minimum version",
-        "Shares": "Shares"
+        "Shares": "Shares",
+        "IntegrationType": "Type",
+        "IntegrationSubType": "Subtype",
+        "GithubURL": "Github URL",
+        "VendorURL": "Vendor URL",
+        "FeedURL": "Feed URL"
       },
       "Download": "Download",
       "FromVersion": "From version",
@@ -712,7 +867,7 @@
     "SubscribeService": "Subscribe to {serviceName} service",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
     "SubscriptionRequestSuccessful": "Your request has been sent. You will soon be in touch with our team.",
-    "SureWantSubscriptionDirect": "Do you want to subscribe to the {serviceName} service ? This service is free and gives you access to resources built carefully by the Filigran Team.",
+    "SureWantSubscriptionDirect": "Get started with our free {serviceName} service and explore resources created by the Filigran team.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
       "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
@@ -722,13 +877,62 @@
       "Expired": "Your OpenCTI free trial has expired.",
       "Cancelled": "Your OpenCTI free trial has been cancelled.",
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
-      "LearnMore": "Learn more",
+      "LearnMore": {
+        "Link": "Learn more",
+        "openaev": {
+          "WhatCanYouDo": {
+            "Title": "What can you do with your OpenAEV trial?",
+            "FirstParagraph": "Get 30 days to explore all OpenAEV functionalities to simulate attacks, evaluate your defenses, and  improve your security posture. This includes all OpenAEV SaaS-based Enterprise Edition features, including the use of your existing EDR agents, automated scenario generation, and AI-powered remediation guidance.",
+            "SecondParagraph": "Whether you want to want to simulate attack sequences, perform realistic tabletop exercises, validate your security posture, or report on your cyber resilience to leadership, you can test all OpenAEV capabilities for your specific needs.",
+            "Link": "Discover all OpenAEV Enterprise Edition features"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Prioritize",
+              "Description": "Build complete offensive attack simulations to accurately identify vulnerabilities and exploitable attack paths, leveraging OpenCTI threat intelligence and MITRE ATT&CK mapping. You can then easily prioritize which threats matter to you based on your Prioritized Intelligence Requirements (PIRs)."
+            },
+            "Second": {
+              "Title": "Test",
+              "Description": "Validate your defenses with continuous testing of your security, processes, and people by  performing specific atomic testing, building your own attack sequences, or importing pre-packaged scenarios. You can run realistic tabletop exercises to test your teams’ responses to security escalations. Use OpenAEV’s own EDR or integrate with pre-built collectors from most common vendors."
+            },
+            "Third": {
+              "Title": "Fix",
+              "Description": "Identify where you need to focus your attention to improve your security posture. Visualize and drill-down into problematic areas, access AI-powered remediation guidance, gather qualitative feedback from your teams. You can build a continuous remediation loop by automatically creating new scenarios with AI-assisted scenario creation."
+            }
+          }
+        },
+        "opencti": {
+          "WhatCanYouDo": {
+            "Title": "What can you do with your OpenCTI trial?",
+            "FirstParagraph": "Get 30 days to explore all OpenCTI functionalities and enrich your threat intelligence. This includes all OpenCTI Enterprise Edition features such as automated playbooks, ability to set-up priority intelligence requirements (PIRs), FINTEL, as well as AI-powered files import, report generation, and NLP search functionality.",
+            "SecondParagraph": "Explore how OpenCTI can support your specific needs—whether threat hunting, incident response, or case management—and integrate with your preferred data sources to make actionable threat intelligence flow across your security stack.",
+            "Link": "Discover all OpenCTI Enterprise Edition features"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Ingestion",
+              "Description": "Consolidate and enrich threat intelligence from any feed—commercial, open-source, internal—into a centralized platform, leveraging 300+ integrations and standardized on the STIX 2.1 framework. Use AI-assisted import of CTI reports to save countless analyst hours."
+            },
+            "Second": {
+              "Title": "Processing",
+              "Description": "Access powerful dashboard visualizations, knowledge hypergraphs, and playbooks to pivot across threat actors using timelines and ATT&CK mappings. Tailor your dashboards to meet your threat or incident management needs, and make AI your companion at every step."
+            },
+            "Third": {
+              "Title": "Output",
+              "Description": "Make threat intelligence flow through your entire security system. Share and disseminate intelligence across teams and tools with role-based access for timely action. Use OpenAEV—fully integrated with OpenCTI—to validate and improve your security posture."
+            }
+          }
+        }
+      },
       "StartTrial": "Start your free trial",
       "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
-      "ContactUs": "Contact us",
-      "ContactUsSuccessTitle": "Thank you!",
-      "ContactUsSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
+      "ReachOutToSales": "Reach out to Sales",
+      "ReachOutToSalesMessagePlaceholder": "Your message",
+      "NeedSupport": "Need support",
+      "ReachOutToSalesSuccessTitle": "Thank you!",
+      "ReachOutToSalesSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
+      "ReachOutToSalesDefaultMessage": "Please contact me about the {platform} free trial",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",
@@ -750,10 +954,14 @@
       },
       "Form": {
         "Region": "Region",
+        "RegionPlaceholder": "Please select your preferred region for hosting",
         "AssociatedEmail": "Associated Email",
         "JobTitle": "Job title",
+        "JobTitlePlaceholder": "Please select your job title",
         "ActivitySector": "Activity sector",
+        "ActivitySectorPlaceholder": "Please select your activity sector",
         "UseCase": "Use case",
+        "UseCasePlaceholder": "Please select your use case",
         "MSSA": "MSSA",
         "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
@@ -761,8 +969,14 @@
       "Display": {
         "New": "New",
         "Requested": "Requested",
-        "Title": "OpenCTI 30-days Free Trial",
-        "FreeTrialDescription": "Explore all OpenCTI Enterprise Edition functionalities to start operationalizing your threat intelligence end-to-end!"
+        "opencti": {
+          "Title": "OpenCTI 30-days Free Trial",
+          "FreeTrialDescription": "Explore all OpenCTI Enterprise Edition functionalities to start operationalizing your threat intelligence end-to-end!"
+        },
+        "openaev": {
+          "Title": "OpenAEV 30-days Free Trial",
+          "FreeTrialDescription": "Explore OpenAEV to simulate real-life attack scenarios, evaluate your security posture, and improve cyber resilience - at a technical and human level."
+        }
       },
       "CapacityWarning": {
         "Title": "Availability Notice",
@@ -827,6 +1041,14 @@
   },
   "Sort Asc": "Sort Asc",
   "Sort Desc": "Sort Desc",
+  "SortControls": {
+    "SortBy": "Sort by"
+  },
+  "DocumentOrdering": {
+    "name": "Name",
+    "created_at": "Creation date",
+    "updated_at": "Update date"
+  },
   "TestEnvBanner": "You are viewing the {environnement} environment.",
   "ThemeToggle": {
     "Automatic": "Automatic",
@@ -988,7 +1210,9 @@
     "Verified": "Verified",
     "Visualize": "Visualize",
     "DangerZone": "Danger Zone",
-    "AutomaticDeploy": "Automatic deploy"
+    "AutomaticDeploy": "Automatic deploy",
+    "And": "and",
+    "Or": "or"
   },
   "Platform": {
     "Update": "Update",

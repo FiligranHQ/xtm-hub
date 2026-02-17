@@ -42,10 +42,16 @@ export interface AdminSaasInstanceRequestedModel {
   deploymentType: string;
 }
 
+export interface OrganizationPendingUserDigestUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export interface OrganizationPendingUserDigestModel {
   adminName: string;
   organizationName: string;
-  userEmailList: string;
+  users: OrganizationPendingUserDigestUser[];
   userCount: number;
   requestLabel: string;
 }

@@ -25,7 +25,7 @@ export const LoginLayout: FunctionComponent = ({}) => {
         description: t('UnexpectedErrorDialog.Description'),
       });
     }
-  }, [currentPath]);
+  }, [currentPath, error, t, toast]);
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
       <TestEnvBanner />

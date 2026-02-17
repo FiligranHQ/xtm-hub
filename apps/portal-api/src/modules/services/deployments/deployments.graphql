@@ -46,6 +46,8 @@ type DeploymentRequest implements Node {
   cancellation_date: Date
   cancellation_user_email: String
   cancellation_reason: String
+  platform_id: String
+  platform_url: String
 }
 
 type PlatformDeploymentRequest {
@@ -69,6 +71,7 @@ type PlatformDeploymentRequest {
   requester_first_name: String
   requester_last_name: String
   platform_id: String
+  platform_url: String
   failure_reason: String
 }
 
@@ -133,6 +136,17 @@ type DeploymentAvailability {
   platform_identifier: PlatformIdentifier!
 }
 
+type DeployedPlatform {
+  serviceInstanceId: ID!
+  platformIdentifier: PlatformIdentifier!
+}
+
+type TrialsDeployments {
+  availableTrials: [PlatformIdentifier!]!
+  deployed: [DeployedPlatform!]!
+  isBlacklisted: Boolean!
+}
+
 enum DeploymentRequestOrdering {
   requester_email
   organization_name
@@ -163,6 +177,10 @@ input UpdateDeploymentQuotaCapacityInput {
   newCapacity: Int!
 }
 
+input TrialDeploymentsInput {
+  platformIdentifiers: [PlatformIdentifier!]
+}
+
 extend type Query {
   deploymentRequests(
     first: Int!
@@ -172,7 +190,11 @@ extend type Query {
   deploymentRequestsAvailable(
     platformIdentifier: PlatformIdentifier
   ): [DeploymentAvailability!]!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(
+      portalCapa: [BYPASS, READ_TRIALS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
+
   deploymentRequestsList(
     first: Int!
     after: ID
@@ -180,28 +202,29 @@ extend type Query {
     orderBy: DeploymentRequestOrdering!
     orderMode: OrderingMode!
     searchTerm: String
-  ): DeploymentRequestConnection! @auth(requires: [BYPASS])
+  ): DeploymentRequestConnection! @auth(portalCapa: [BYPASS, READ_TRIALS])
+  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments! @auth
 }
 
 extend type Mutation {
   createDeploymentRequest(
     input: CreateDeploymentRequestInput
   ): DeploymentRequest!
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   updateDeploymentRequest(
     input: UpdateDeploymentRequestInput!
   ): PlatformDeploymentRequest! @system_token
   reorderDeploymentRequestInQueue(
     input: ReorderDeploymentRequestInQueueInput!
-  ): Success! @auth(requires: [BYPASS])
+  ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
   cancelDeploymentRequest(
     deploymentRequestId: ID!
     cancellationReason: String
   ): DeploymentRequest
-    @auth(requires: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
-    @auth(requires: [BYPASS])
+    @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
   updateDeploymentQuotaCapacity(
     input: UpdateDeploymentQuotaCapacityInput!
-  ): Success! @auth(requires: [BYPASS])
+  ): Success! @auth(portalCapa: [BYPASS])
 }

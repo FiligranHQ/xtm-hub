@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ConnectorType,
+  IntegrationSubType,
   IntegrationType,
 } from '../../__generated__/resolvers-types';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../services/integrations/integrations.model';
@@ -24,10 +24,10 @@ describe('Ingest manifest helper', () => {
           description: 'This is the first contract',
           short_description: 'First contract',
           logo: 'data:image/png;base64,abc123',
-          labels: ['automation', 'integration'],
+          use_cases: ['automation', 'integration'],
           verified: true,
           container_image: 'docker.io/example/image:latest',
-          integration_subtype: ConnectorType.InternalEnrichment,
+          integration_subtype: IntegrationSubType.InternalEnrichment,
           source_code: 'https://github.com/example/repo',
           subscription_link: 'https://example.com/subscribe',
           type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -44,10 +44,10 @@ describe('Ingest manifest helper', () => {
           description: 'This is the second contract',
           short_description: 'Second contract',
           logo: 'https://example.com/logo.png',
-          labels: ['monitoring'],
+          use_cases: ['monitoring'],
           verified: false,
           container_image: 'docker.io/example/image2:latest',
-          integration_subtype: ConnectorType.ExternalImport,
+          integration_subtype: IntegrationSubType.ExternalImport,
           source_code: 'https://github.com/example/repo2',
           subscription_link: 'https://example.com/subscribe2',
           type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -91,8 +91,8 @@ describe('Ingest manifest helper', () => {
         expect(typeof firstItem.integration_type).toBe('string');
         expect(firstItem).toHaveProperty('type');
         expect(typeof firstItem.type).toBe('string');
-        expect(firstItem).toHaveProperty('labels');
-        expect(Array.isArray(firstItem.labels)).toBe(true);
+        expect(firstItem).toHaveProperty('use_cases');
+        expect(Array.isArray(firstItem.use_cases)).toBe(true);
         expect(firstItem).toHaveProperty('manager_supported');
         expect(typeof firstItem.manager_supported).toBe('boolean');
         expect(firstItem).toHaveProperty('playbook_supported');
@@ -183,7 +183,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['security', 'monitoring'],
               verified: true,
               container_image: 'docker.io/example/valid:latest',
-              container_type: ConnectorType.InternalExportFile,
+              container_type: IntegrationSubType.InternalExportFile,
               source_code: 'https://github.com/example/valid',
               subscription_link: 'https://example.com/subscribe',
               manager_supported: true,
@@ -206,7 +206,7 @@ describe('Ingest manifest helper', () => {
               use_cases: 'should-be-array', // Wrong type
               verified: 'yes', // Wrong type
               container_image: 'docker.io/example/invalid:latest',
-              container_type: ConnectorType.ExternalImport,
+              container_type: IntegrationSubType.ExternalImport,
               source_code: 'not-a-url', // Invalid URL
               subscription_link: '',
               manager_supported: true,
@@ -222,7 +222,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['automation'],
               verified: false,
               container_image: 'docker.io/example/valid2:latest',
-              container_type: ConnectorType.Stream,
+              container_type: IntegrationSubType.Stream,
               source_code: 'https://github.com/example/valid2',
               subscription_link: '',
               manager_supported: false,
@@ -319,7 +319,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['test'],
               verified: true,
               container_image: 'docker.io/first:latest',
-              container_type: ConnectorType.InternalEnrichment,
+              container_type: IntegrationSubType.InternalEnrichment,
               source_code: 'https://github.com/example/first',
               subscription_link: '',
               manager_supported: true,
@@ -340,7 +340,7 @@ describe('Ingest manifest helper', () => {
               use_cases: ['test'],
               verified: false,
               container_image: 'docker.io/last:latest',
-              container_type: ConnectorType.Stream,
+              container_type: IntegrationSubType.Stream,
               source_code: 'https://github.com/example/last',
               subscription_link: '',
               manager_supported: false,

@@ -9,6 +9,9 @@ export enum TelemetryEventService {
 export enum TelemetryEventServiceType {
   CSV_FEEDS = 'csv-feeds',
   CONNECTORS = 'connectors',
+  TAXII_FEEDS = 'taxii-feeds',
+  STREAMS = 'streams',
+  THIRD_PARTY_INTEGRATIONS = 'third-party-integrations',
 }
 
 export enum TelemetryTargetProduct {

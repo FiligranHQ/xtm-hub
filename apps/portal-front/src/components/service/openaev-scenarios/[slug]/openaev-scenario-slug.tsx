@@ -2,12 +2,15 @@ import { AppServiceContext } from '@/components/service/components/service-conte
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
+import { useDocumentContext } from '@/components/service/document/use-document-context';
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import {
   OpenaevScenarioQuery,
   openaevScenariosItem,
 } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
-import { useOpenaevScenarioContext } from '@/components/service/openaev-scenarios/use-openaev-scenario-context';
 import { APP_PATH } from '@/utils/path/constant';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { openaevScenarioQuery } from '@generated/openaevScenarioQuery.graphql';
 import { openaevScenariosItem_fragment$key } from '@generated/openaevScenariosItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -48,20 +51,32 @@ const OpenaevScenarioSlug = ({
     },
   ];
 
-  const context = useOpenaevScenarioContext(serviceInstance);
+  const context = useDocumentContext({
+    serviceInstance,
+    type: ShareableResourceType.OPENAEV_SCENARIO,
+  });
+
   return (
     documentData && (
       <AppServiceContext {...context}>
         <ShareableResourceSlug
+          serviceInstance={serviceInstance}
           breadcrumbValue={breadcrumbValue}
           documentData={documentData}
           updateActions={
-            <ServiceManageSheet
-              document={documentData}
-              variant={'button'}
-            />
-          }
-        />
+            <>
+              <DeleteIntegrationSlug document={documentData} />
+              <ServiceManageSheet
+                document={documentData}
+                variant={'button'}
+              />
+            </>
+          }>
+          <ShareableResourceCarousel
+            serviceInstance={serviceInstance}
+            documentData={documentData}
+          />
+        </ShareableResourceSlug>
       </AppServiceContext>
     )
   );

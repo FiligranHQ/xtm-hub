@@ -10,26 +10,28 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/components/service/components/use-service-list-local-storage';
-import { useCsvFeedContext } from '@/components/service/csv-feeds/use-csv-feed-context';
-import {
-  integrationsFragment,
-  integrationsItem,
-  IntegrationsListQuery,
-} from '@/components/service/integrations/integration.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/integration-deployable-filter';
 import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/integration-filters';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/product-version-filter';
-import {
-  integrationsItem_fragment$data,
-  integrationsItem_fragment$key,
-} from '@generated/integrationsItem_fragment.graphql';
-import { integrationsList$key } from '@generated/integrationsList.graphql';
 
 import {
-  integrationsQuery,
-  integrationsQuery$variables,
-} from '@generated/integrationsQuery.graphql';
+  documentItem,
+  documentsFragment,
+  DocumentsListQuery,
+} from '@/components/service/document/document.graphql';
+import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/integration-verified-filter';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  documentItem_fragment$data,
+  documentItem_fragment$key,
+} from '@generated/documentItem_fragment.graphql';
+import { documentsList$key } from '@generated/documentsList.graphql';
+import {
+  documentsQuery,
+  documentsQuery$variables,
+} from '@generated/documentsQuery.graphql';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
@@ -41,7 +43,7 @@ import {
 } from 'react-relay';
 
 interface IntegrationsListProps {
-  queryRef: PreloadedQuery<integrationsQuery>;
+  queryRef: PreloadedQuery<documentsQuery>;
   serviceInstance: serviceInstance_fragment$data;
   search: string;
   onSearchChange: (v: string) => void;
@@ -53,32 +55,36 @@ const IntegrationsList = ({
   search,
   onSearchChange,
 }: IntegrationsListProps) => {
-  const queryData = usePreloadedQuery<integrationsQuery>(
-    IntegrationsListQuery,
+  const queryData = usePreloadedQuery<documentsQuery>(
+    DocumentsListQuery,
     queryRef
   );
 
   const [data, refetch] = useRefetchableFragment<
-    integrationsQuery,
-    integrationsList$key
-  >(integrationsFragment, queryData);
+    documentsQuery,
+    documentsList$key
+  >(documentsFragment, queryData);
 
   const [active, draft] = useActiveAndDraftSplit<
-    integrationsItem_fragment$data,
-    integrationsItem_fragment$key
-  >(data?.integrations.edges, integrationsItem);
+    documentItem_fragment$data,
+    documentItem_fragment$key
+  >(data?.documents.edges, documentItem);
 
-  const connectionId = data?.integrations.__id;
+  const connectionId = data?.documents.__id;
 
-  const context = useCsvFeedContext(serviceInstance, connectionId);
+  const context = useDocumentContext({
+    serviceInstance,
+    connectionId,
+    type: ShareableResourceType.OPENCTI_INTEGRATION,
+  });
 
   const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
   const {
-    removeConnectorTypes,
     removeIntegrationTypes,
     removeProductVersions,
     removeDeployable,
+    removeVerified,
     pageSize,
     setPageSize,
   } = useServiceListLocalStorage(localStorageKey);
@@ -87,7 +93,6 @@ const IntegrationsList = ({
     [ServiceListFilterKey.IntegrationType]: {
       node: <IntegrationFilters />,
       reset: () => {
-        removeConnectorTypes();
         removeIntegrationTypes();
       },
     },
@@ -103,6 +108,10 @@ const IntegrationsList = ({
       node: <IntegrationDeployableFilter />,
       reset: removeDeployable,
     },
+    [ServiceListFilterKey.Verified]: {
+      node: <IntegrationVerifiedFilter />,
+      reset: removeVerified,
+    },
   };
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -110,7 +119,7 @@ const IntegrationsList = ({
     pageSize,
   });
 
-  const handleRefetchData = (args?: Partial<integrationsQuery$variables>) => {
+  const handleRefetchData = (args?: Partial<documentsQuery$variables>) => {
     refetch({
       count: pagination.pageSize,
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
@@ -141,9 +150,10 @@ const IntegrationsList = ({
           search={search}
           onSearchChange={onSearchChange}
           additionalFilters={filters}
+          connectionId={connectionId}
           paginationControls={
             <PaginationControls
-              totalCount={data.integrations.totalCount}
+              totalCount={data.documents.totalCount}
               pageSize={pageSize}
               pageIndex={pagination.pageIndex}
               onPaginationChange={onPaginationChange}

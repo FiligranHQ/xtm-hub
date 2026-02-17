@@ -1,5 +1,7 @@
 import bodyParser from 'body-parser';
+import { requestContext } from '../context/request.context';
 import { UserInfo } from '../model/user';
+import { SYSTEM_USER_CONTEXT } from '../portal.const';
 import { AppLogsCategory, logApp } from '../utils/app-logger.util';
 import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
@@ -14,6 +16,7 @@ export const initAuthPlatform = async (app) => {
       req.session.referer = req.query.redirect
         ? atob(req.query.redirect)
         : req.get('Referrer');
+      requestContext.set(SYSTEM_USER_CONTEXT);
       passport.authenticate(provider, {}, (err) => {
         setCookieError(res, err?.message);
         next(err);
@@ -32,6 +35,7 @@ export const initAuthPlatform = async (app) => {
       const { provider } = req.params;
       let referer = req.session.referer;
       try {
+        requestContext.set(SYSTEM_USER_CONTEXT);
         const user: UserInfo = await new Promise((resolve, reject) => {
           passport.authenticate(
             provider,

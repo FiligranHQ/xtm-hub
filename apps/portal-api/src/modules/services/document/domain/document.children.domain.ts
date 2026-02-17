@@ -1,5 +1,5 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db, dbUnsecure } from '../../../../../knexfile';
+import { db } from '../../../../../knexfile';
 import { withTransaction } from '../../../../context/database.context';
 import {
   DocumentId,
@@ -93,7 +93,7 @@ export const DocumentChildrenDomain = {
   },
 
   loadImagesByDocumentId: async (documentId: string) => {
-    const images = await dbUnsecure<Document>('Document')
+    const images = await db<Document>('Document')
       .select(['Document.*'])
       .join(
         'Document_Children',

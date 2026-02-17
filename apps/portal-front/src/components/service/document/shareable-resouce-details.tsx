@@ -1,15 +1,23 @@
 import { formatDate } from '@/utils/date';
 import { LogoFiligranIcon } from '@filigran/icon';
 import * as React from 'react';
+import { useMemo } from 'react';
 
 import { Avatar } from '@filigran/ui/clients';
 
+import { ShareableResourceDetailsLink } from '@/components/service/document/shareable-resource-details-link';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isIntegrationItem,
+  ShareableResource,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { Badge } from '@filigran/ui/servers';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 
 // Component interface
@@ -18,10 +26,35 @@ interface ShareableResourceDetailsProps {
   downloadNumber?: number;
 }
 
+const CSV_FEED_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/csv-feed/';
+const STREAM_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/internal-streams/';
+const TAXII_FEED_DOCUMENTATION =
+  'https://docs.opencti.io/latest/usage/import/taxii-feed/';
+
+const DOCUMENTATION_URLS: Partial<Record<IntegrationTypeEnum, string>> = {
+  [IntegrationTypeEnum.CSV_FEED]: CSV_FEED_DOCUMENTATION,
+  [IntegrationTypeEnum.STREAM]: STREAM_DOCUMENTATION,
+  [IntegrationTypeEnum.TAXII_FEED]: TAXII_FEED_DOCUMENTATION,
+};
+
 const ShareableResourceDetails: React.FunctionComponent<
   ShareableResourceDetailsProps
 > = ({ documentData, downloadNumber }) => {
   const t = useTranslations();
+  const isIntegration = isIntegrationItem(documentData);
+  const integrationSubTypeMetadata = useMemo(() => {
+    if (!isIntegration) {
+      return null;
+    }
+
+    return getIntegrationSubTypeMetadata(documentData.integration_subtype);
+  }, [isIntegration, documentData]);
+  const documentationUrl =
+    isIntegrationItem(documentData) &&
+    DOCUMENTATION_URLS[documentData.integration_type];
+
   return (
     <ShareableResourceBasicInformation>
       {!documentData.uploader_organization?.personal_space && (
@@ -45,6 +78,41 @@ const ShareableResourceDetails: React.FunctionComponent<
           <span>{formatPersonNames(documentData.uploader)}</span>
         </div>
       </ShareableResourceDetailItem>
+      {isIntegration && (
+        <>
+          <ShareableResourceDetailItem
+            label={t('Service.ShareableResources.Details.IntegrationType')}>
+            <div className="flex items-center gap-s">
+              <span>
+                {t(
+                  `Service.OpenctiIntegrations.Type.${documentData.integration_type}`
+                )}
+              </span>
+            </div>
+          </ShareableResourceDetailItem>
+          {integrationSubTypeMetadata && (
+            <ShareableResourceDetailItem
+              label={t(
+                'Service.ShareableResources.Details.IntegrationSubType'
+              )}>
+              <span>
+                <Badge
+                  className="mr-auto"
+                  variant="outline"
+                  color={integrationSubTypeMetadata.color}>
+                  {integrationSubTypeMetadata.label}
+                </Badge>
+              </span>
+            </ShareableResourceDetailItem>
+          )}
+        </>
+      )}
+      {docHasMetadata(documentData, 'feed_url') && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.FeedURL')}>
+          <ShareableResourceDetailsLink url={documentData.feed_url} />
+        </ShareableResourceDetailItem>
+      )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.LastUpdatedAt')}>
         <span>
@@ -54,10 +122,28 @@ const ShareableResourceDetails: React.FunctionComponent<
           )}
         </span>
       </ShareableResourceDetailItem>
+      {docHasMetadata(documentData, 'vendor_url') && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.VendorURL')}>
+          <ShareableResourceDetailsLink url={documentData.vendor_url} />
+        </ShareableResourceDetailItem>
+      )}
+      {docHasMetadata(documentData, 'github_url') && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.GithubURL')}>
+          <ShareableResourceDetailsLink url={documentData.github_url} />
+        </ShareableResourceDetailItem>
+      )}
       {docHasMetadata(documentData, 'product_version') && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.ProductVersion')}>
           <span>{documentData.product_version}</span>
+        </ShareableResourceDetailItem>
+      )}
+      {documentationUrl && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
+          <ShareableResourceDetailsLink url={documentationUrl} />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem

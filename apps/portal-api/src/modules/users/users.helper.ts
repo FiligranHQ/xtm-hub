@@ -1,7 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbUnsecure } from '../../../knexfile';
+import { db } from '../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
@@ -71,7 +71,7 @@ export const createUserWithPersonalSpace = async (
     personal_space: true,
   });
 
-  const [addedUser] = await dbUnsecure<User>('User')
+  const [addedUser] = await db<User>('User')
     .insert({
       id: uuid as UserId,
       selected_organization_id:
@@ -172,13 +172,13 @@ export const createNewUserFromInvitation = async (
     last_name,
     picture,
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
-  isAdminFiligran: boolean = false
+  isFiligranUser: boolean = false
 ) => {
   const [organization] = await loadOrganizationsFromEmail(email);
   let userWithRoles: User;
   if (!organization) {
     userWithRoles = await createOrganisationWithAdminUser(email);
-  } else if (isAdminFiligran) {
+  } else if (isFiligranUser) {
     userWithRoles = await createUserWithPersonalSpace({
       email,
       last_name,
@@ -206,11 +206,11 @@ export const getOrCreateUser = async (
     'email' | 'first_name' | 'last_name' | 'picture'
   >,
   upsert = false,
-  isAdminFiligran = false
+  isFiligranUser = false
 ) => {
   const user = await loadUserBy({ email: userInfo.email });
   if (user && upsert) {
-    await dbUnsecure<User>('User')
+    await db<User>('User')
       .where({ id: user.id })
       .update({
         last_login: new Date(),
@@ -225,7 +225,7 @@ export const getOrCreateUser = async (
   }
   return user
     ? user
-    : await createNewUserFromInvitation(userInfo, isAdminFiligran);
+    : await createNewUserFromInvitation(userInfo, isFiligranUser);
 };
 
 export const insertUserIntoOrganization = async (
@@ -388,7 +388,7 @@ const isUserLastOrganizationAdministrator = async (
 const countOrganizationAdministrators = async (
   organizationId: OrganizationId
 ): Promise<number> => {
-  const [administratorsCount] = await dbUnsecure('Organization')
+  const [administratorsCount] = await db('Organization')
     .count('Organization.id')
     .leftJoin(
       'User_Organization',

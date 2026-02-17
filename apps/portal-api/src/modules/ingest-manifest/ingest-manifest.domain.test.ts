@@ -1,17 +1,14 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { requestContext } from '../../context/request.context';
-import {
-  PLATFORM_ORGANIZATION_UUID,
-  SYSTEM_USER_CONTEXT,
-  SYSTEM_USER_UUID,
-} from '../../portal.const';
+import { SYSTEM_USER_CONTEXT, SYSTEM_USER_UUID } from '../../portal.const';
 import { minioInit } from '../../server/initialize';
 import { DocumentChildrenDomain } from '../services/document/domain/document.children.domain';
 import {
   Connector,
   INTEGRATION_SERVICE_INSTANCE_ID,
 } from '../services/integrations/integrations.model';
-import { labelsDomain } from '../settings/labels/labels.domain';
+import { useCaseDomain } from '../settings/useCase/use-case.domain';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';
@@ -43,7 +40,9 @@ describe('upsertConnectors', () => {
       it('should set correct uploader information', () => {
         result.forEach((doc) => {
           expect(doc.uploader_id).toBe(SYSTEM_USER_UUID);
-          expect(doc.uploader_organization_id).toBe(PLATFORM_ORGANIZATION_UUID);
+          expect(doc.uploader_organization_id).toBe(
+            TEST_ORGANIZATIONS.FILIGRAN.ID
+          );
           expect(doc.service_instance_id).toBe(INTEGRATION_SERVICE_INSTANCE_ID);
         });
       });
@@ -110,15 +109,15 @@ describe('upsertConnectors', () => {
         expect(contractOne.short_description).toBe('First contract');
       });
 
-      it('should have automation and integration labels', async () => {
-        const labels = await labelsDomain.loadLabelsByDocumentId(
+      it('should have automation and integration use cases', async () => {
+        const useCases = await useCaseDomain.loadUseCasesByDocumentId(
           contractOne.id
         );
-        const labelNames = labels.map((label) => label.name);
+        const useCaseNames = useCases.map((useCase) => useCase.name);
 
-        expect(labelNames).toHaveLength(2);
-        expect(labelNames).toContain('automation');
-        expect(labelNames).toContain('integration');
+        expect(useCaseNames).toHaveLength(2);
+        expect(useCaseNames).toContain('automation');
+        expect(useCaseNames).toContain('integration');
       });
       it('should have related logo', async () => {
         const images = await DocumentChildrenDomain.loadImagesByDocumentId(
@@ -144,14 +143,14 @@ describe('upsertConnectors', () => {
         expect(contractTwo.description).toBe('This is the second contract');
         expect(contractTwo.short_description).toBe('Second contract');
       });
-      it('should have automation and integration labels', async () => {
-        const labels = await labelsDomain.loadLabelsByDocumentId(
+      it('should have automation and integration use cases', async () => {
+        const useCases = await useCaseDomain.loadUseCasesByDocumentId(
           contractTwo.id
         );
-        const labelNames = labels.map((label) => label.name);
+        const useCaseNames = useCases.map((useCase) => useCase.name);
 
-        expect(labelNames).toHaveLength(1);
-        expect(labelNames).toContain('monitoring');
+        expect(useCaseNames).toHaveLength(1);
+        expect(useCaseNames).toContain('monitoring');
       });
     });
   });
@@ -177,7 +176,7 @@ describe('upsertConnectors', () => {
         description: `${manifest.description} - Updated`,
         short_description: `${manifest.short_description} - Updated`,
         product_version: '1.2.2-test',
-        labels: ['updated label 1', 'updated label 2'],
+        use_cases: ['updated useCase 1', 'updated useCase 2'],
       })) as ManifestInformation[];
 
       // Second call - update
@@ -233,15 +232,15 @@ describe('upsertConnectors', () => {
         expect(doc.updater_id).toBe(SYSTEM_USER_UUID);
       });
     });
-    it('should update labels to new values', async () => {
-      // Test labels for each document
+    it('should update use cases to new values', async () => {
+      // Test use cases for each document
       for (const doc of secondResult) {
-        const labels = await labelsDomain.loadLabelsByDocumentId(doc.id);
-        const labelNames = labels.map((label) => label.name);
+        const useCases = await useCaseDomain.loadUseCasesByDocumentId(doc.id);
+        const useCaseNames = useCases.map((useCase) => useCase.name);
 
-        expect(labelNames).toHaveLength(2);
-        expect(labelNames).toContain('updated label 1');
-        expect(labelNames).toContain('updated label 2');
+        expect(useCaseNames).toHaveLength(2);
+        expect(useCaseNames).toContain('updated useCase 1');
+        expect(useCaseNames).toContain('updated useCase 2');
       }
     });
 

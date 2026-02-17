@@ -1,33 +1,20 @@
-import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
-import { v4 as uuidv4 } from 'uuid';
-import { DatabaseType, db } from '../../../knexfile';
+import { toGlobalId } from 'graphql-relay/node/node.js';
+import { db } from '../../../knexfile';
 import {
   IntegrationType,
   RegisteredPlatform,
   Resolvers,
   SeoServiceInstance,
   ServiceInstance,
-  ServiceInstanceCreationStatus,
   ServiceInstanceTag,
-  ServiceLink,
-  Subscription,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { ServiceLinkId } from '../../model/kanel/public/ServiceLink';
-import ServicePrice, {
-  ServicePriceId,
-} from '../../model/kanel/public/ServicePrice';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { dispatch, listen } from '../../pub';
-import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
 import { uploadNewFile } from './document/document.helper';
@@ -141,9 +128,12 @@ const resolvers: Resolvers = {
     },
     serviceInstanceByIdWithSubscriptions: async (
       _,
-      { service_instance_id }
+      { service_instance_id, searchTerm }
     ) => {
-      return loadServiceWithSubscriptions(extractId(service_instance_id));
+      return loadServiceWithSubscriptions(
+        extractId(service_instance_id),
+        searchTerm
+      );
     },
     subscribedServiceInstancesByIdentifier: async (
       _,
@@ -197,19 +187,6 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    deleteServiceInstance: async (_, { id }) => {
-      const { id: databaseId } = fromGlobalId(id) as {
-        type: DatabaseType;
-        id: string;
-      };
-      const [deletedServiceInstance] = await db<ServiceInstance>(
-        'ServiceInstance'
-      )
-        .where({ id: databaseId })
-        .delete('*');
-      await dispatch('ServiceInstance', 'delete', deletedServiceInstance);
-      return deletedServiceInstance;
-    },
     addServicePicture: async (_, payload) => {
       try {
         const extractedServiceInstanceId = extractId<ServiceInstanceId>(
@@ -243,90 +220,10 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    editServiceInstance: async (_, { id, name }) => {
-      const { id: databaseId } = fromGlobalId(id) as {
-        type: DatabaseType;
-        id: string;
-      };
-      const [updatedServiceInstance] = await db<ServiceInstance>(
-        'ServiceInstance'
-      )
-        .where({ id: databaseId })
-        .update({ name })
-        .returning('*');
-      await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
-      return updatedServiceInstance;
-    },
-    addServiceInstance: async (_, { input }) => {
-      try {
-        const dataService = {
-          id: uuidv4(),
-          name: input.service_instance_name,
-          description: input.service_instance_description,
-          creation_status: ServiceInstanceCreationStatus.Pending,
-        };
-
-        return await withTransaction(async () => {
-          const [addedServiceInstance] = await db<ServiceInstance>(
-            'ServiceInstance'
-          )
-            .insert(dataService)
-            .returning('*');
-
-          const dataServicePrice = {
-            id: uuidv4() as unknown as ServicePriceId,
-            service_definition_id:
-              addedServiceInstance.id as unknown as ServiceDefinitionId,
-            fee_type: input.fee_type,
-            start_date: new Date(),
-            price: input.price,
-          };
-
-          await db<ServicePrice>('Service_Price')
-            .insert(dataServicePrice)
-            .returning('*');
-
-          const dataServiceLink = {
-            id: uuidv4() as unknown as ServiceLinkId,
-            service_instance_id:
-              addedServiceInstance.id as unknown as ServiceInstanceId,
-            url: input.url,
-            name: input.service_instance_name,
-          };
-
-          await db<ServiceLink>('Service_Link')
-            .insert(dataServiceLink)
-            .returning('*');
-          await dispatch('ServiceInstance', 'add', addedServiceInstance);
-
-          const dataSubscription = {
-            id: uuidv4() as unknown as SubscriptionId,
-            organization_id: fromGlobalId(input.organization_id).id,
-            service_instance_id: addedServiceInstance.id,
-            start_date: new Date(),
-            end_date: null,
-            status: 'ACCEPTED',
-          };
-
-          const [addedSubscription] = await db<Subscription>('Subscription')
-            .insert(dataSubscription)
-            .returning('*');
-          addedSubscription.organization = await loadOrganizationBy({
-            id: fromGlobalId(input.organization_id).id as OrganizationId,
-          });
-          addedSubscription.service_instance = addedServiceInstance;
-          return addedSubscription;
-        });
-      } catch (error) {
-        logApp.error('Error while adding the new service.', error);
-        throw mapToGraphQLError(error);
-      }
-    },
-    updatePlatformServiceMetadata: async (_, { input, document }, context) => {
+    updatePlatformServiceMetadata: async (_, { input, document }) => {
       try {
         const updatedServiceInstance =
           await serviceInstanceApp.updatePlatformServiceMetadata(
-            context,
             input,
             document
           );
