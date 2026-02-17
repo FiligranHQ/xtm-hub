@@ -169,7 +169,7 @@
                     </p>
                     <div style="text-align: center">
                       <a
-                        href="{{ base_url_front }}/app/admin/trials"
+                        href="{{base_url_front}}/app/admin/{{#if (eq platformIdentifier 'OpenCTI')}}opencti-trials{{else}}openaev-trials{{/if}}"
                         style="
                           color: #f4f4f6;
                           background-color: #001bdb;

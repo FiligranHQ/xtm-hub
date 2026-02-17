@@ -43,10 +43,7 @@
         }
       </style>
     <![endif]-->
-    <title>
-      OpenCTI Platform Successfully Unregistered from XTM Hub – Integration is
-      Deactivated
-    </title>
+    <title>XTM Hub - Your {{platformIdentifier}} Free Trial Has Expired</title>
     <style>
       @media (max-width: 600px) {
         .sm-my-8 {
@@ -87,7 +84,7 @@
     <div
       role="article"
       aria-roledescription="email"
-      aria-label="OpenCTI Platform Successfully Unregistered from XTM Hub – Integration is Deactivated"
+      aria-label="XTM Hub - Your {{platformIdentifier}} Free Trial Has Expired"
       lang="en">
       <div
         class="sm-px-4"
@@ -149,30 +146,24 @@
                       color: #00020c;
                       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
                     ">
-                    <h1
-                      class="sm-leading-8"
-                      style="
-                        margin: 0 0 24px;
-                        font-size: 24px;
-                        font-weight: 400;
-                      ">
-                      Hi {{ adminName }},
-                    </h1>
                     <p style="margin: 0; line-height: 24px">
-                      We’re pleased to inform you that your OpenCTI platform has
-                      been successfully unregistered from XTM Hub – the
-                      integration is deactivated.<br />
-                      If you have any questions or need support, don’t hesitate
-                      to reach out — we’re here to help.
+                      Hi {{firstName}},<br />
+                      <br />
+                      <strong
+                        >Your {{platformIdentifier}} Enterprise Edition free
+                        trial has expired.</strong
+                      >
+
+                      Thank you for participating, we hope you enjoyed exploring
+                      the platform's full capabilities. <br />
+
+                      If you'd like to extend your trial, please get in touch
+                      with us here: <br />
                     </p>
-                    <div
-                      role="separator"
-                      style="line-height: 24px">
-                      &zwj;
-                    </div>
+
                     <div style="text-align: center">
                       <a
-                        href="{{ base_url_front }}"
+                        href="mailto:{{ contactEmail }}"
                         style="
                           color: #f4f4f6;
                           background-color: #001bdb;
@@ -191,9 +182,7 @@
                             >&emsp;</i
                           >
                         <![endif]-->
-                        <span style="mso-text-raise: 16px">
-                          Access XTM Hub
-                        </span>
+                        <span style="mso-text-raise: 16px"> Contact us </span>
                         <!--[if mso]>
                           <i
                             hidden
@@ -203,8 +192,12 @@
                         <![endif]-->
                       </a>
                     </div>
+                    <br />
+                    (Please note that your free trial data will be saved for 7
+                    days.)<br />
                     <p style="margin: 0; padding-top: 16px">
                       Best regards, <br />
+                      <br />
                       <strong>The Filigran Team</strong>
                     </p>
                     <div
@@ -218,13 +211,14 @@
                       &zwj;
                     </div>
                     <p style="margin: 0; font-size: 14px">
-                      If you have any questions or need support, don’t hesitate
-                      to reach out to us at
+                      If you have any questions or require support, don’t
+                      hesitate to reach out at
                       <a href="mailto:{{ contactEmail }}">{{ contactEmail }}</a
                       >.
                     </p>
                   </td>
                 </tr>
+                <tr></tr>
                 <tr role="separator">
                   <td style="line-height: 16px">&zwj;</td>
                 </tr>

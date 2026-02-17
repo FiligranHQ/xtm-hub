@@ -343,9 +343,10 @@ describe('Deployment app', () => {
 
         expect(mockSendMail).toHaveBeenNthCalledWith(1, {
           to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'opencti_free_trial_requested',
+          template: 'free_trial_requested',
           params: {
             firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            platformIdentifier: PlatformIdentifier.Opencti,
           },
         });
 
@@ -356,7 +357,7 @@ describe('Deployment app', () => {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
             organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-            platformIdentifier: 'Opencti',
+            platformIdentifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             useCase: 'use_case',
             userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
@@ -382,9 +383,10 @@ describe('Deployment app', () => {
 
         expect(mockSendMail).toHaveBeenNthCalledWith(1, {
           to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'opencti_free_trial_queued',
+          template: 'free_trial_queued',
           params: {
             firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            platformIdentifier: PlatformIdentifier.Opencti,
           },
         });
 
@@ -395,7 +397,7 @@ describe('Deployment app', () => {
             activitySector: 'cybersecurity',
             deploymentType: 'Trial',
             organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-            platformIdentifier: 'Opencti',
+            platformIdentifier: PlatformIdentifier.Opencti,
             region: 'us_east',
             useCase: 'use_case',
             userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
@@ -426,7 +428,34 @@ describe('Deployment app', () => {
           TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
         requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
         cancellation_user_email: null,
+        platform_url: null,
       });
+    });
+
+    it('should return platform_url when Service_Configuration exists', async () => {
+      const deploymentRequest = await insertDeploymentRequest({});
+
+      await db('Service_Configuration').insert({
+        service_instance_id: deploymentRequest!.service_instance_id,
+        config: { platform_url: 'https://test-platform.opencti.io' },
+        status: 'active',
+      });
+
+      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+        first: 10,
+      });
+
+      const deployment = deployments.edges.find(
+        (edge) => edge.node.id === deploymentRequest!.id
+      );
+
+      expect(deployment?.node.platform_url).toBe(
+        'https://test-platform.opencti.io'
+      );
+
+      await db('Service_Configuration')
+        .where('service_instance_id', deploymentRequest!.service_instance_id)
+        .delete();
     });
 
     it('should return out-of-sync deployment requests by default', async () => {
@@ -807,9 +836,10 @@ describe('Deployment app', () => {
         });
         expect(mockSendMail).toHaveBeenCalledWith({
           to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'opencti_free_trial_provisioning',
+          template: 'free_trial_provisioning',
           params: {
             firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            platformIdentifier: PlatformIdentifier.Opencti,
           },
         });
 
@@ -841,10 +871,11 @@ describe('Deployment app', () => {
 
         expect(mockSendMail).toHaveBeenCalledWith({
           to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'opencti_free_trial_registered',
+          template: 'free_trial_registered',
           params: {
             firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
             platformUrl: 'http://example.com',
+            platformIdentifier: PlatformIdentifier.Opencti,
           },
         });
 
@@ -1226,9 +1257,10 @@ describe('Deployment app', () => {
 
       expect(mockSendMail).toHaveBeenCalledWith({
         to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-        template: 'opencti_free_trial_cancelled',
+        template: 'free_trial_cancelled',
         params: {
           firstName: '',
+          platformIdentifier: PlatformIdentifier.Opencti,
         },
       });
     });
@@ -1792,9 +1824,10 @@ describe('Deployment app', () => {
 
       expect(mockSendMail).toHaveBeenCalledWith({
         to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-        template: 'opencti_free_trial_expired',
+        template: 'free_trial_expired',
         params: {
           firstName: '',
+          platformIdentifier: PlatformIdentifier.Opencti,
         },
       });
     });

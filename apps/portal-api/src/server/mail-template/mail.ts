@@ -1,4 +1,7 @@
-import { ServiceDefinitionIdentifier } from '../../__generated__/resolvers-types';
+import {
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier,
+} from '../../__generated__/resolvers-types';
 
 export interface GenericServiceMailModel {
   name: string;
@@ -23,13 +26,16 @@ export interface RequestTransferPersonalSpaceMailModel {
 
 export interface PlatformRegisteredModel {
   adminName: string;
+  platformIdentifier: PlatformIdentifier;
 }
-export interface OpenCTIFreeTrialRegistered {
+export interface FreeTrialRegistered {
   firstName: string;
   platformUrl: string;
+  platformIdentifier: PlatformIdentifier;
 }
-export interface OpenCTIFreeTrialGenericModel {
+export interface FreeTrialGenericModel {
   firstName: string;
+  platformIdentifier: PlatformIdentifier;
 }
 export interface AdminSaasInstanceRequestedModel {
   organizationName: string;
@@ -58,7 +64,14 @@ export interface OrganizationPendingUserDigestModel {
 
 export interface PlatformUnregisteredModel {
   adminName: string;
+  platformIdentifier: PlatformIdentifier;
 }
+
+export const PlatformIdentifierToString: Record<PlatformIdentifier, string> = {
+  [PlatformIdentifier.Opencti]: 'OpenCTI',
+  [PlatformIdentifier.Openaev]: 'OpenAEV',
+};
+
 export const ServiceIdentifierToMailTemplate = new Map<
   ServiceDefinitionIdentifier,
   keyof MailTemplates
@@ -80,16 +93,14 @@ export type MailTemplates = {
   openaev_scenarios: GenericServiceMailModel;
   new_user_organization: NewUserOrganizationMailModel;
   request_transfer_personal_space: RequestTransferPersonalSpaceMailModel;
-  opencti_platform_registered: PlatformRegisteredModel;
-  opencti_platform_unregistered: PlatformUnregisteredModel;
-  openaev_platform_registered: PlatformRegisteredModel;
-  openaev_platform_unregistered: PlatformUnregisteredModel;
-  opencti_free_trial_registered: OpenCTIFreeTrialRegistered;
-  opencti_free_trial_requested: OpenCTIFreeTrialGenericModel;
-  opencti_free_trial_queued: OpenCTIFreeTrialGenericModel;
-  opencti_free_trial_provisioning: OpenCTIFreeTrialGenericModel;
-  opencti_free_trial_cancelled: OpenCTIFreeTrialGenericModel;
-  opencti_free_trial_expired: OpenCTIFreeTrialGenericModel;
+  platform_registered: PlatformRegisteredModel;
+  platform_unregistered: PlatformUnregisteredModel;
+  free_trial_registered: FreeTrialRegistered;
+  free_trial_requested: FreeTrialGenericModel;
+  free_trial_queued: FreeTrialGenericModel;
+  free_trial_provisioning: FreeTrialGenericModel;
+  free_trial_cancelled: FreeTrialGenericModel;
+  free_trial_expired: FreeTrialGenericModel;
   organization_pending_user_digest: OrganizationPendingUserDigestModel;
   admin_saas_instance_requested: AdminSaasInstanceRequestedModel;
 };
@@ -110,21 +121,34 @@ export const templateSubjects: {
     `XTM Hub - You've been added to the ${params.organizationName} organization`,
   request_transfer_personal_space: () =>
     `Confirmation of Personal Space Transfer in XTM Hub`,
-  opencti_platform_registered: () =>
-    `OpenCTI Platform Successfully Registered to XTM Hub – Integration Now Active`,
-  opencti_platform_unregistered: () =>
-    `OpenCTI Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
-  openaev_platform_registered: () =>
-    `OpenAEV Platform Successfully Registered to XTM Hub – Integration Now Active`,
-  openaev_platform_unregistered: () =>
-    `OpenAEV Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
-  opencti_free_trial_registered: () => `Welcome to your OpenCTI free trial!`,
-  opencti_free_trial_requested: () => `Your OpenCTI Free Trial Request`,
-  opencti_free_trial_queued: () => `Your OpenCTI Free Trial Request`,
-  opencti_free_trial_provisioning: () =>
-    `Your OpenCTI Platform Is Being Provisioned`,
-  opencti_free_trial_cancelled: () => 'Your OpenCTI Trial Has Been Cancelled',
-  opencti_free_trial_expired: () => 'Your OpenCTI Free Trial Has Expired',
+  platform_registered: (params: PlatformRegisteredModel) =>
+    `${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } Platform Successfully Registered to XTM Hub – Integration Now Active`,
+  platform_unregistered: (params: PlatformUnregisteredModel) =>
+    `${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
+  free_trial_registered: (params: FreeTrialGenericModel) =>
+    `Welcome to your ${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } free trial!`,
+  free_trial_requested: (params: FreeTrialGenericModel) =>
+    `Your ${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } Free Trial Request`,
+  free_trial_queued: (params: FreeTrialGenericModel) =>
+    `Your ${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } Free Trial Request`,
+  free_trial_provisioning: (params: FreeTrialGenericModel) =>
+    `Your ${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } Platform Is Being Provisioned`,
+  free_trial_cancelled: (params: FreeTrialGenericModel) =>
+    `Your ${PlatformIdentifierToString[params.platformIdentifier]} Trial Has Been Cancelled`,
+  free_trial_expired: (params: FreeTrialGenericModel) =>
+    `Your ${PlatformIdentifierToString[params.platformIdentifier]} Free Trial Has Expired`,
   organization_pending_user_digest: () =>
     'XTM Hub - Users Requesting to Join Your Organization',
   admin_saas_instance_requested: (params: AdminSaasInstanceRequestedModel) => {

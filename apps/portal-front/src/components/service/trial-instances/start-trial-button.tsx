@@ -68,7 +68,7 @@ export const StartTrialButton: React.FC<Props> = ({
   }
 
   const [openSheet, setOpenSheet] = useState(openForm);
-  const [commitCreateDeploymentRequestMutationMutation] =
+  const [commitCreateDeploymentRequest] =
     useMutation<trialInstancesCreateDeploymentRequestMutation>(
       CreateDeploymentRequestMutation
     );
@@ -88,7 +88,7 @@ export const StartTrialButton: React.FC<Props> = ({
   const handleSubmit = (values: z.infer<typeof tryOpenCTIFormSchema>) => {
     setOpenSheet(false);
     const { acceptTerms: _, ...valuesWithoutAcceptTerms } = values;
-    commitCreateDeploymentRequestMutationMutation({
+    commitCreateDeploymentRequest({
       variables: {
         input: {
           ...valuesWithoutAcceptTerms,

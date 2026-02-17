@@ -43,7 +43,9 @@
         }
       </style>
     <![endif]-->
-    <title>XTM Hub - Your OpenCTI Trial Has Been Cancelled</title>
+    <title>
+      XTM Hub - Your {{platformIdentifier}} Platform Is Being Provisioned
+    </title>
     <style>
       @media (max-width: 600px) {
         .sm-my-8 {
@@ -84,7 +86,7 @@
     <div
       role="article"
       aria-roledescription="email"
-      aria-label="XTM Hub - Your OpenCTI Trial Has Been Cancelled"
+      aria-label="XTM Hub - Your {{platformIdentifier}} Platform Is Being Provisioned"
       lang="en">
       <div
         class="sm-px-4"
@@ -149,25 +151,23 @@
                     <p style="margin: 0; line-height: 24px">
                       Hi {{firstName}},<br />
                       <br />
-                      We wanted to inform you that your OpenCTI trial has been
-                      cancelled. As a result, access to the openCTI trial
-                      environment is no longer available.
+                      We just wanted to let you know that your
+                      {{platformIdentifier}} trial platform is currently being
+                      provisioned. This process may take some time while your
+                      environment is being deployed.
                       <br />
                       <br />
-                      If you believe this cancellation was a mistake or if you
-                      would like to explore alternative options, please feel
-                      free to reach out. We’re here to help you find the best
-                      way to get started with OpenCTI.
+                      We will notify you as soon as your platform is ready or if
+                      any additional information is required.
                       <br />
                       <br />
-                      In the meantime, you can learn more about Filigran,
-                      install the Community Edition of OpenCTI, or join the
-                      community directly from the XTM Hub.
-                      <br /><br />
-                      Thank you for your understanding.
+                      <br />
+                      Thank you for your patience.
                     </p>
                     <p style="margin: 0; padding-top: 16px">
-                      Best regards, <br />
+                      Best regards,
+                      <br />
+                      <br />
                       <strong>The Filigran Team</strong>
                     </p>
                     <div
@@ -181,8 +181,8 @@
                       &zwj;
                     </div>
                     <p style="margin: 0; font-size: 14px">
-                      If you have any questions or require support, don’t
-                      hesitate to reach out at
+                      If you have any questions in the meantime, feel free to
+                      contact us at
                       <a href="mailto:{{ contactEmail }}">{{ contactEmail }}</a
                       >.
                     </p>

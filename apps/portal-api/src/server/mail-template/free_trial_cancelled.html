@@ -43,7 +43,9 @@
         }
       </style>
     <![endif]-->
-    <title>XTM Hub - Welcome to your OpenCTI free trial!</title>
+    <title>
+      XTM Hub - Your {{platformIdentifier}} Trial Has Been Cancelled
+    </title>
     <style>
       @media (max-width: 600px) {
         .sm-my-8 {
@@ -84,7 +86,7 @@
     <div
       role="article"
       aria-roledescription="email"
-      aria-label="XTM Hub - Welcome to your OpenCTI free trial!"
+      aria-label="XTM Hub - Your {{platformIdentifier}} Trial Has Been Cancelled"
       lang="en">
       <div
         class="sm-px-4"
@@ -146,48 +148,31 @@
                       color: #00020c;
                       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
                     ">
-                    <h1
-                      class="sm-leading-8"
-                      style="
-                        margin: 0 0 24px;
-                        font-size: 24px;
-                        font-weight: 400;
-                      ">
-                      Welcome to your OpenCTI free trial!
-                    </h1>
-                    <p
-                      style="margin: 0; line-height: 24px; margin-bottom: 24px">
+                    <p style="margin: 0; line-height: 24px">
                       Hi {{firstName}},<br />
                       <br />
-                      Welcome to Filigran! Let's get you started with your free
-                      trial.<br />
+                      We wanted to inform you that your {{platformIdentifier}}
+                      trial has been cancelled. As a result, access to the
+                      {{platformIdentifier}} trial environment is no longer
+                      available.
                       <br />
-                      For the next 30 days, you'll have full access to OpenCTI
-                      Enterprise Edition, our leading Threat Intelligence
-                      Platform. Explore all key functionality: gather and enrich
-                      intelligence, visualize relationships with powerful tools,
-                      run investigations, and try our extensive integrations.<br />
                       <br />
-                      Log in to your free trial:
-                      <a href="{{ platformUrl }}"> {{ platformUrl }}</a> <br />
+                      If you believe this cancellation was a mistake or if you
+                      would like to explore alternative options, please feel
+                      free to reach out. We’re here to help you find the best
+                      way to get started with {{platformIdentifier}}.
                       <br />
-                      If you'd like a walkthrough or have questions, simply
-                      reply to this email or use the 'Contact Us' option in the
-                      platform—we're here to help.<br />
                       <br />
-                      Need help getting started with OpenCTI? Check out our
-                      "OpenCTI Fundamentals" course on the Filigran Academy:<br />
-                      <a href="https://academy.filigran.io/page/opencti-101"
-                        >Get Started</a
-                      >
+                      In the meantime, you can learn more about Filigran,
+                      install the Community Edition of {{platformIdentifier}},
+                      or join the community directly from the XTM Hub.
+                      <br /><br />
+                      Thank you for your understanding.
                     </p>
                     <p style="margin: 0; padding-top: 16px">
                       Best regards, <br />
+                      <br />
                       <strong>The Filigran Team</strong>
-                    </p>
-                    <p>
-                      Note: This trial uses public Filigran API keys, but you
-                      can change them based on your requirements.
                     </p>
                     <div
                       role="separator"

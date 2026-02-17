@@ -15,7 +15,7 @@ export function PublicTryOpenCTIBanner() {
         <Link
           href={`/cybersecurity-solutions/free-trial`}
           className="ml-xs underline font-bold">
-          {t('Service.Trials.LearnMore')}
+          {t('Service.Trials.LearnMore.Link')}
         </Link>
       </div>
     </Callout>
