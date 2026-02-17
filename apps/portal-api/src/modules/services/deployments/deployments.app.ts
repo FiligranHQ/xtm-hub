@@ -55,6 +55,7 @@ import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
+  hasDeploymentTelemetryDataChanged,
   isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
@@ -178,14 +179,15 @@ export const DeploymentsApp = {
         const mailTemplate =
           createdDeploymentRequest.hub_status ===
           DeploymentRequestHubStatus.Pending
-            ? 'opencti_free_trial_requested'
-            : 'opencti_free_trial_queued';
+            ? 'free_trial_requested'
+            : 'free_trial_queued';
 
         sendMail({
           to: user.email,
           template: mailTemplate,
           params: {
             firstName: formatName(user.first_name ?? ''),
+            platformIdentifier: input.platform_identifier,
           },
         });
       } catch (error) {
@@ -211,7 +213,7 @@ export const DeploymentsApp = {
             region: input.region,
             activitySector: input.activity_sector,
             useCase: input.use_case,
-            platformIdentifier: ucfirst(input.platform_identifier),
+            platformIdentifier: input.platform_identifier,
             deploymentType: ucfirst(input.type),
           },
         });
@@ -338,7 +340,8 @@ export const DeploymentsApp = {
 
     await sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,
-      updatedDeploymentRequest.user_requester_id
+      updatedDeploymentRequest.user_requester_id,
+      deploymentRequest
     );
 
     try {
@@ -352,9 +355,10 @@ export const DeploymentsApp = {
 
         sendMail({
           to: user.email,
-          template: 'opencti_free_trial_provisioning',
+          template: 'free_trial_provisioning',
           params: {
             firstName: formatName(user.first_name ?? ''),
+            platformIdentifier: deploymentRequest.platform_identifier,
           },
         });
       }
@@ -385,10 +389,11 @@ export const DeploymentsApp = {
 
         void sendMail({
           to: user.email,
-          template: 'opencti_free_trial_registered',
+          template: 'free_trial_registered',
           params: {
             firstName: formatName(user.first_name ?? ''),
             platformUrl: parsedConfig.platform_url,
+            platformIdentifier: deploymentRequest.platform_identifier,
           },
         });
       }
@@ -617,9 +622,10 @@ export const DeploymentsApp = {
       });
       sendMail({
         to: requester.email,
-        template: 'opencti_free_trial_cancelled',
+        template: 'free_trial_cancelled',
         params: {
           firstName: formatName(requester.first_name ?? ''),
+          platformIdentifier: updatedDeploymentRequest.platform_identifier,
         },
       });
     } catch (error) {
@@ -675,9 +681,11 @@ export const DeploymentsApp = {
           });
           sendMail({
             to: requester.email,
-            template: 'opencti_free_trial_expired',
+            template: 'free_trial_expired',
             params: {
               firstName: formatName(requester.first_name ?? ''),
+              platformIdentifier:
+                trial.platform_identifier as PlatformIdentifier,
             },
           });
         } catch (error) {
@@ -774,8 +782,19 @@ export const DeploymentsApp = {
 
 const sendUpdateDeploymentTelemetryEvent = async (
   deploymentRequest: DeploymentRequestModel,
-  userId: UserId
+  userId: UserId,
+  previousDeploymentRequest?: DeploymentRequestModel
 ) => {
+  if (
+    previousDeploymentRequest &&
+    !hasDeploymentTelemetryDataChanged(
+      previousDeploymentRequest,
+      deploymentRequest
+    )
+  ) {
+    return;
+  }
+
   try {
     const organization = await loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,

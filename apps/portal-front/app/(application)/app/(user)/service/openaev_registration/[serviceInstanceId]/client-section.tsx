@@ -57,13 +57,19 @@ const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
           actions={
             <>
               <SlackSupportButton />
-              <ReachSalesButton variant="gradient" />
+              <ReachSalesButton
+                variant="gradient"
+                platformId={queryData.registeredPlatform.platform_id}
+                platformIdentifier={PlatformIdentifierEnum.OPENAEV}
+              />
             </>
           }
         />
       )}
       <RegistrationDetails registeredPlatform={queryData.registeredPlatform} />
-      {isTrial && <TrialsLearnMore />}
+      {isTrial && (
+        <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENAEV} />
+      )}
     </>
   );
 };

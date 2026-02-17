@@ -278,6 +278,9 @@
       "RemainingDays": "Days remaining",
       "Status": "Status",
       "Region": "Region",
+      "PlatformId": "Platform ID",
+      "PlatformUrl": "Platform URL",
+      "RegistrationStatus": "Registration Status",
       "RequestDate": "Requested Date",
       "Priority": "Priority",
       "CancellationDate": "Cancellation Date",
@@ -312,7 +315,9 @@
         "ConfirmSentence": "Are you sure you want to save these changes?"
       }
     },
-    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial"
+    "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
+    "Registered": "Registered",
+    "NotRegistered": "Not Registered"
   },
   "Parameters": {
     "Version": "Version"
@@ -872,7 +877,53 @@
       "Expired": "Your OpenCTI free trial has expired.",
       "Cancelled": "Your OpenCTI free trial has been cancelled.",
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
-      "LearnMore": "Learn more",
+      "LearnMore": {
+        "Link": "Learn more",
+        "openaev": {
+          "WhatCanYouDo": {
+            "Title": "What can you do with your OpenAEV trial?",
+            "FirstParagraph": "Get 30 days to explore all OpenAEV functionalities to simulate attacks, evaluate your defenses, and  improve your security posture. This includes all OpenAEV SaaS-based Enterprise Edition features, including the use of your existing EDR agents, automated scenario generation, and AI-powered remediation guidance.",
+            "SecondParagraph": "Whether you want to want to simulate attack sequences, perform realistic tabletop exercises, validate your security posture, or report on your cyber resilience to leadership, you can test all OpenAEV capabilities for your specific needs.",
+            "Link": "Discover all OpenAEV Enterprise Edition features"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Prioritize",
+              "Description": "Build complete offensive attack simulations to accurately identify vulnerabilities and exploitable attack paths, leveraging OpenCTI threat intelligence and MITRE ATT&CK mapping. You can then easily prioritize which threats matter to you based on your Prioritized Intelligence Requirements (PIRs)."
+            },
+            "Second": {
+              "Title": "Test",
+              "Description": "Validate your defenses with continuous testing of your security, processes, and people by  performing specific atomic testing, building your own attack sequences, or importing pre-packaged scenarios. You can run realistic tabletop exercises to test your teams’ responses to security escalations. Use OpenAEV’s own EDR or integrate with pre-built collectors from most common vendors."
+            },
+            "Third": {
+              "Title": "Fix",
+              "Description": "Identify where you need to focus your attention to improve your security posture. Visualize and drill-down into problematic areas, access AI-powered remediation guidance, gather qualitative feedback from your teams. You can build a continuous remediation loop by automatically creating new scenarios with AI-assisted scenario creation."
+            }
+          }
+        },
+        "opencti": {
+          "WhatCanYouDo": {
+            "Title": "What can you do with your OpenCTI trial?",
+            "FirstParagraph": "Get 30 days to explore all OpenCTI functionalities and enrich your threat intelligence. This includes all OpenCTI Enterprise Edition features such as automated playbooks, ability to set-up priority intelligence requirements (PIRs), FINTEL, as well as AI-powered files import, report generation, and NLP search functionality.",
+            "SecondParagraph": "Explore how OpenCTI can support your specific needs—whether threat hunting, incident response, or case management—and integrate with your preferred data sources to make actionable threat intelligence flow across your security stack.",
+            "Link": "Discover all OpenCTI Enterprise Edition features"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Ingestion",
+              "Description": "Consolidate and enrich threat intelligence from any feed—commercial, open-source, internal—into a centralized platform, leveraging 300+ integrations and standardized on the STIX 2.1 framework. Use AI-assisted import of CTI reports to save countless analyst hours."
+            },
+            "Second": {
+              "Title": "Processing",
+              "Description": "Access powerful dashboard visualizations, knowledge hypergraphs, and playbooks to pivot across threat actors using timelines and ATT&CK mappings. Tailor your dashboards to meet your threat or incident management needs, and make AI your companion at every step."
+            },
+            "Third": {
+              "Title": "Output",
+              "Description": "Make threat intelligence flow through your entire security system. Share and disseminate intelligence across teams and tools with role-based access for timely action. Use OpenAEV—fully integrated with OpenCTI—to validate and improve your security posture."
+            }
+          }
+        }
+      },
       "StartTrial": "Start your free trial",
       "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
@@ -881,7 +932,7 @@
       "NeedSupport": "Need support",
       "ReachOutToSalesSuccessTitle": "Thank you!",
       "ReachOutToSalesSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
-      "ReachOutToSalesDefaultMessage": "Please contact me about the OpenCTI free trial",
+      "ReachOutToSalesDefaultMessage": "Please contact me about the {platform} free trial",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",

@@ -57,13 +57,19 @@ const ClientSection = ({ params }: ServiceOpenCTIRegistrationPageProps) => {
           actions={
             <>
               <SlackSupportButton />
-              <ReachSalesButton variant="gradient" />
+              <ReachSalesButton
+                variant="gradient"
+                platformId={queryData.registeredPlatform.platform_id}
+                platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+              />
             </>
           }
         />
       )}
       <RegistrationDetails registeredPlatform={queryData.registeredPlatform} />
-      {isTrial && <TrialsLearnMore />}
+      {isTrial && (
+        <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENCTI} />
+      )}
     </>
   );
 };

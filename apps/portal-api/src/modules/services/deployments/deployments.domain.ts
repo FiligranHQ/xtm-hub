@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { db, paginate } from '../../../../knexfile';
+import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -109,6 +109,14 @@ export const DeploymentRequestDomain = {
     const query = getDeploymentRequestWithUserDataQuery();
     query.where('DeploymentRequest.id', '=', id);
     return query.first();
+  },
+
+  loadFullDeploymentRequestByPlatformId: async (
+    platformId: string
+  ): Promise<FullyQualifiedDeploymentRequest | undefined> => {
+    return getDeploymentRequestWithUserDataQuery()
+      .where('DeploymentRequest.platform_id', '=', platformId)
+      .first();
   },
 
   loadTrialDeploymentRequestByPlatformIdentifierAndUserId: async (
@@ -355,6 +363,12 @@ const getDeploymentRequestWithUserDataQuery =
         '=',
         'CancellationUser.id'
       )
+      .leftJoin(
+        'Service_Configuration',
+        'DeploymentRequest.service_instance_id',
+        '=',
+        'Service_Configuration.service_instance_id'
+      )
       .select([
         'DeploymentRequest.*',
         'Organization.name as organization_name',
@@ -363,5 +377,8 @@ const getDeploymentRequestWithUserDataQuery =
         'User.first_name as requester_first_name',
         'User.last_name as requester_last_name',
         'CancellationUser.email as cancellation_user_email',
+        dbRaw(
+          `"Service_Configuration"."config"->>'platform_url' as platform_url`
+        ),
       ]);
   };

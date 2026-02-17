@@ -2,7 +2,10 @@
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { PublicDocumentListQuery } from '@/components/service/document/public-document.graphql';
 import PublicDocumentsList from '@/components/service/document/public-documents-list';
-import { useLogicalFiltersFromStorage } from '@/components/service/document/use-logical-filters-from-storage';
+import {
+  LogicalFiltersParams,
+  useLogicalFiltersFromStorage,
+} from '@/components/service/document/use-logical-filters-from-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { Skeleton } from '@filigran/ui';
@@ -34,16 +37,29 @@ export const PublicDocumentListPageLoader: React.FC<Props> = ({
     integrationTypes,
     deployable,
     verified,
+    productVersions,
     orderMode,
     orderBy,
   } = useServiceListLocalStorage(localStorageKey);
-  const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug,
-    labels,
-    deployable,
-    verified,
-    integrationTypes,
-  });
+  const params: LogicalFiltersParams =
+    serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS
+      ? {
+          serviceInstanceSlug:
+            serviceInstanceSlug as ServiceSlug.OPEN_CTI_INTEGRATIONS,
+          labels,
+          deployable,
+          verified,
+          integrationTypes,
+          productVersions,
+        }
+      : {
+          serviceInstanceSlug: serviceInstanceSlug as
+            | ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS
+            | ServiceSlug.OPEN_AEV_SCENARIOS,
+          labels,
+        };
+
+  const logicalFilters = useLogicalFiltersFromStorage(params);
 
   useEffect(() => {
     loadQuery(
