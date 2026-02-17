@@ -210,6 +210,19 @@ export const DocumentHelper = {
       throw new Error(ErrorCode.DocumentMissingMetadata);
     }
   },
+  deleteFileFromMinIO: async (
+    childrenDocumentFromDB: DocumentModel[],
+    document: DocumentModel
+  ) => {
+    if (document.minio_name) {
+      await MinIOClient.deleteFile(document.minio_name);
+    }
+    await Promise.all(
+      childrenDocumentFromDB.map((document) =>
+        MinIOClient.deleteFile(document.minio_name)
+      )
+    );
+  },
 };
 
 export const getDocumentName = (documentName: string) => {
@@ -233,18 +246,12 @@ export const checkDocumentExists = async (
   documentName: string,
   serviceInstanceId: ServiceInstanceId
 ) => {
-  const documents: Document[] = await loadDocumentsBy({
+  const documents = await DocumentDomain.loadDocumentBy({
     file_name: normalizeDocumentName(documentName),
     active: true,
     service_instance_id: serviceInstanceId,
   });
   return documents.length > 0;
-};
-
-export const loadDocumentsBy = async (
-  field: DocumentMutator
-): Promise<Document[]> => {
-  return db<Document[]>('Document').where(field).select('*');
 };
 
 export const uploadNewFile = async (
