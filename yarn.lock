@@ -8738,7 +8738,7 @@ __metadata:
     globals: "npm:15.15.0"
     graphql: "npm:16.12.0"
     graphql-relay: "npm:0.10.2"
-    graphql-sse: "npm:2.5.4"
+    graphql-sse: "npm:2.6.0"
     graphql-subscriptions: "npm:2.0.0"
     graphql-upload: "npm:17.0.0"
     handlebars: "npm:4.7.8"
@@ -8799,7 +8799,7 @@ __metadata:
     eslint-config-prettier: "npm:10.1.8"
     extract-files: "npm:13.0.0"
     graphql: "npm:16.11.0"
-    graphql-sse: "npm:2.5.4"
+    graphql-sse: "npm:2.6.0"
     husky: "npm:9.1.7"
     i18n-auto-translation: "npm:2.2.3"
     jsdom: "npm:27.4.0"
@@ -13034,12 +13034,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-sse@npm:2.5.4":
-  version: 2.5.4
-  resolution: "graphql-sse@npm:2.5.4"
+"graphql-sse@npm:2.6.0":
+  version: 2.6.0
+  resolution: "graphql-sse@npm:2.6.0"
   peerDependencies:
     graphql: ">=0.11 <=16"
-  checksum: 10/42ad852677d27c8992645a24a04745a149d239eb3fe6f4f58fcfbc31dada4cade1c0f0e64cf71fc0801454eda40f44e23023cba5a4706a2001fbac27b8c8516e
+  checksum: 10/4d0b2d6b988f2a5655bf197e6f986853616c41448bab6d2f01670d4eee4ec2ab8d26329698af07eb37c4b4accfaf809201ea0476e5a51b5dbad318bfbbc497a6
   languageName: node
   linkType: hard
 
