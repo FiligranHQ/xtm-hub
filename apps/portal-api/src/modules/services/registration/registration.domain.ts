@@ -153,11 +153,9 @@ export const registrationDomain = {
       platformIdentifier?: PlatformIdentifier;
       onlyActive?: boolean;
       onlyTrial?: boolean;
-      onlyCountsInOrgaQuota?: boolean;
     } = {}
   ): Promise<DomainRegisteredPlatform[]> => {
-    const { platformIdentifier, onlyActive, onlyTrial, onlyCountsInOrgaQuota } =
-      query;
+    const { platformIdentifier, onlyActive, onlyTrial } = query;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
           serviceDefinitionIdentifierMappedByPlatformIdentifier[
@@ -179,21 +177,26 @@ export const registrationDomain = {
             'DeploymentRequest.hub_status',
             '=',
             DeploymentRequestHubStatus.Active
-          ).orWhereNull('DeploymentRequest.id');
+          ).andWhere(function () {
+            this.whereNull('DeploymentRequest.id').orWhere(
+              'DeploymentRequest.counts_in_orga_quota',
+              '=',
+              true
+            );
+          });
         }
         if (onlyTrial) {
           this.where(
             'DeploymentRequest.type',
             '=',
             DeploymentRequestDeploymentType.Trial
-          ).orWhereNull('DeploymentRequest.id');
-        }
-        if (onlyCountsInOrgaQuota) {
-          this.where(
-            'DeploymentRequest.counts_in_orga_quota',
-            '=',
-            true
-          ).orWhereNull('DeploymentRequest.id');
+          ).andWhere(function () {
+            this.whereNull('DeploymentRequest.id').orWhere(
+              'DeploymentRequest.counts_in_orga_quota',
+              '=',
+              true
+            );
+          });
         }
       });
   },

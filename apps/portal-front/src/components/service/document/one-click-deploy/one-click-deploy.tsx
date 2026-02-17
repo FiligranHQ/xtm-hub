@@ -1,4 +1,4 @@
-import { PlatformTranslationMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import ChoosePlatformForm from '@/components/service/document/one-click-deploy/choose-platform-form';
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/no-platform-display';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/one-platform-display';
@@ -103,7 +103,7 @@ const OneClickDeploy = ({
         <NoPlatformDisplay
           setIsOpen={setIsOpen}
           platformIdentifier={
-            PlatformTranslationMapping[platformIdentifier] ?? 'OpenCTI'
+            PlatformMetadataMapping[platformIdentifier].name ?? 'OpenCTI'
           }
         />
       );
@@ -126,7 +126,7 @@ const OneClickDeploy = ({
           oneClickDeploy={onOneClickDeploy}
           setIsOpen={setIsOpen}
           translatedPlatformIdentifier={
-            PlatformTranslationMapping[platformIdentifier] ?? 'OpenCTI'
+            PlatformMetadataMapping[platformIdentifier].name ?? 'OpenCTI'
           }
           requiredProductVersion={requiredProductVersion}
         />
@@ -150,7 +150,7 @@ const OneClickDeploy = ({
       onClick={() => setIsOpen(true)}>
       {t('Service.ShareableResources.Deploy.DeployPlatform', {
         platformName:
-          PlatformTranslationMapping[platformIdentifier] ?? 'OpenCTI',
+          PlatformMetadataMapping[platformIdentifier].name ?? 'OpenCTI',
       })}
     </Button>
   );

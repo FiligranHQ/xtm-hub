@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 
-import { PlatformTranslationMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/shareable-resource-connector-private-details';
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
@@ -90,7 +90,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
                   <Button disabled={true}>
                     {t('Service.ShareableResources.Deploy.DeployPlatform', {
                       platformName:
-                        PlatformTranslationMapping[platformIdentifier] ??
+                        PlatformMetadataMapping[platformIdentifier].name ??
                         'OpenCTI',
                     })}
                   </Button>

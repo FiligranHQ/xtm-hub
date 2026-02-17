@@ -17,7 +17,6 @@ export const useFreeTrial = (isActiveOnly: boolean = false) => {
       input: {
         onlyActive: isActiveOnly,
         onlyTrial: true,
-        onlyCountsInOrgaQuota: true,
       },
     }
   );

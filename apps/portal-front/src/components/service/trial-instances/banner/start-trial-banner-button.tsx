@@ -29,6 +29,7 @@ import {
   useRelayEnvironment,
 } from 'react-relay';
 
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { PRODUCTS_AVAILABLE_ON_TRIAL } from '@/components/service/trial-instances/banner/try-filigran-products-banner';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { IconActionContext } from '@/components/ui/icon-actions';
@@ -116,7 +117,7 @@ export const StartTrialBannerButton = () => {
       },
     });
   };
-  const handleProductChoosen = (platformIdentifier: PlatformIdentifier) => {
+  const handleProductChosen = (platformIdentifier: PlatformIdentifier) => {
     setOpenSheet(true);
     setMenuOpen(false);
     setPlatformIdentifier(platformIdentifier);
@@ -126,19 +127,15 @@ export const StartTrialBannerButton = () => {
     return (
       <Button
         variant="ghost"
-        onClick={() => handleProductChoosen(product)}>
+        onClick={() => handleProductChosen(product)}>
         <Image
           width="25"
           height="25"
-          src={
-            product === PlatformIdentifierEnum.OPENCTI
-              ? '/logo_opencti_dark.png'
-              : '/logo_openaev_dark.png'
-          }
+          src={PlatformMetadataMapping[product].logoUrl}
           alt="Logo"
           className="mr-s"
         />
-        {product === PlatformIdentifierEnum.OPENCTI ? 'OpenCTI' : 'OpenAEV'}
+        {PlatformMetadataMapping[product].name}
       </Button>
     );
   };

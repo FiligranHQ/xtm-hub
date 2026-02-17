@@ -882,7 +882,7 @@
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "Header": {
         "ActiveTrial": "Active trial",
-        "DaysRemaining": "remaning day"
+        "DaysRemaining": "remaining day"
       },
       "LearnMore": {
         "Link": "Learn more",

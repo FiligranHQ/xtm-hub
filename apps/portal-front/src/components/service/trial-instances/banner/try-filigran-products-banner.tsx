@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import GuardCapacityComponent from '@/components/admin-guard';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/start-trial-banner-button';
 import { TryOpenCTIBanner } from '@/components/service/trial-instances/banner/try-opencti-banner';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
@@ -39,8 +40,6 @@ export const TryFiligranProductsBanner = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
 
-  const OPEN_CTI_FREE_TRIAL_URL = `${settings!.base_url_front}/app/service/opencti-free-trial`;
-  const OPEN_AEV_FREE_TRIAL_URL = `${settings!.base_url_front}/app/service/openaev-free-trial`;
   if (!isOpenAEVTrialsEnabled) return <TryOpenCTIBanner />;
   if (!settings) return null;
 
@@ -50,24 +49,16 @@ export const TryFiligranProductsBanner = () => {
     return (
       <Link
         onClick={() => setMenuOpen(false)}
-        href={
-          product === PlatformIdentifierEnum.OPENCTI
-            ? OPEN_CTI_FREE_TRIAL_URL
-            : OPEN_AEV_FREE_TRIAL_URL
-        }>
+        href={`${settings!.base_url_front}${PlatformMetadataMapping[product].learnMorePrivateUrl}`}>
         <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
           <Image
             width="25"
             height="25"
             alt={'Product Logo'}
-            src={
-              product === PlatformIdentifierEnum.OPENCTI
-                ? '/logo_opencti_dark.png'
-                : '/logo_openaev_dark.png'
-            }
+            src={PlatformMetadataMapping[product].logoUrl}
             className="mr-s"
           />
-          {product === PlatformIdentifierEnum.OPENCTI ? 'OpenCTI' : 'OpenAEV'}
+          {PlatformMetadataMapping[product].name}
         </div>
       </Link>
     );
@@ -115,13 +106,16 @@ export const TryFiligranProductsBanner = () => {
     openaev: {
       text: (
         <span>
-          {t('Service.Trials.ExplorePlatform', { platformName: 'OpenAEV' })}{' '}
+          {t('Service.Trials.ExplorePlatform', {
+            platformName:
+              PlatformMetadataMapping[PlatformIdentifierEnum.OPENAEV].name,
+          })}{' '}
           <strong>{t('Service.Trials.ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
         <Link
-          href={OPEN_AEV_FREE_TRIAL_URL}
+          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifierEnum.OPENAEV].learnMorePrivateUrl}`}
           className="ml-xs mr-s underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>
@@ -130,13 +124,16 @@ export const TryFiligranProductsBanner = () => {
     opencti: {
       text: (
         <span>
-          {t('Service.Trials.ExplorePlatform', { platformName: 'OpenCTI' })}{' '}
+          {t('Service.Trials.ExplorePlatform', {
+            platformName:
+              PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
+          })}{' '}
           <strong>{t('Service.Trials.ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
         <Link
-          href={OPEN_CTI_FREE_TRIAL_URL}
+          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].learnMorePrivateUrl}`}
           className="ml-xs mr-s underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>

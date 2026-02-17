@@ -1,4 +1,5 @@
 'use client';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { IconActionContext } from '@/components/ui/icon-actions';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
@@ -35,24 +36,16 @@ export function PublicTryFiligranProductsBanner({
     return (
       <Link
         onClick={() => setMenuOpen(false)}
-        href={
-          product === PlatformIdentifierEnum.OPENCTI
-            ? `/cybersecurity-solutions/opencti-free-trial`
-            : `/cybersecurity-solutions/openaev-free-trial`
-        }>
+        href={PlatformMetadataMapping[product].learnMorePublicUrl}>
         <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
           <Image
             width="25"
             height="25"
             alt={'Product Logo'}
-            src={
-              product === PlatformIdentifierEnum.OPENCTI
-                ? '/logo_opencti_dark.png'
-                : '/logo_openaev_dark.png'
-            }
+            src={PlatformMetadataMapping[product].logoUrl}
             className="mr-s"
           />
-          {product === PlatformIdentifierEnum.OPENCTI ? 'OpenCTI' : 'OpenAEV'}
+          {PlatformMetadataMapping[product].name}
         </div>
       </Link>
     );
@@ -93,7 +86,10 @@ export function PublicTryFiligranProductsBanner({
         </DropdownMenu>
       ) : (
         <Link
-          href={`/cybersecurity-solutions/opencti-free-trial`}
+          href={
+            PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI]
+              .learnMorePublicUrl
+          }
           className="ml-xs underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>
