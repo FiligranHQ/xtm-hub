@@ -2,7 +2,7 @@
 
 ## Critical Rules
 
-- **No console.log** — Use `logApp` (backend) from `src/utils/app-logger.util.ts`. `console.warn` and `console.error` are allowed by ESLint config.
+- **No console.log** — Use `logApp` (backend) from `src/utils/app-logger.util.ts`. `console.warn` and `console.error` are only allowed in scripts or launch code not directly related to the app.
 - Unused variables must be prefixed with `_` (e.g. `_unused`).
 
 ## Repository Overview
@@ -18,7 +18,7 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 
 | Workspace | Path | Stack | Dev Port |
 |---|---|---|---|
-| `portal-api` | `apps/portal-api` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4001 |
+| `portal-api` | `apps/portal-api` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
 | `portal-front` | `apps/portal-front` | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
 | `portal-e2e-tests` | `apps/portal-e2e-tests` | Playwright | — |
 
@@ -44,7 +44,7 @@ Starts: PostgreSQL (5434), MinIO (9002), Elasticsearch (9204), Kibana (5603), Pg
 ### Dev Servers
 
 ```bash
-yarn dev:api             # starts backend on :4001
+yarn dev:api             # starts backend on :4002
 yarn dev:front           # starts frontend on :3002 (needs API running first)
 ```
 
@@ -266,7 +266,7 @@ Dockerfile                      # E2E test Docker image
 
 ## Database
 
-- **ORM**: Knex.js 3 with PostgreSQL (`pg` driver)
+- **SQL Query Builder**: Knex.js 3 with PostgreSQL (`pg` driver) — not an ORM
 - **Config**: `node-config` library reads from `apps/portal-api/config/` JSON files. Environment variables override via `custom-environment-variables.json`.
 - **Migrations**: JavaScript files in `src/migrations/`. Run with `yarn migrate:latest`.
 - **Seeds**: In `src/seeds/` (production) and `tests/seeds/` (test).
@@ -286,7 +286,7 @@ The `db()` function from `knexfile.ts` is the primary database accessor. It:
 - **Auth providers**: OIDC (via `openid-client`), Local (form-based)
 - **Session**: `express-session` with PostgreSQL or memory store
 - **GraphQL auth**: Custom `@auth` directive transformer in `src/security/directive-graphql/`
-- **Frontend proxy**: Next.js `middleware.ts` proxies `/graphql-api`, `/graphql-sse`, `/auth/*`, `/document/*` to the backend API via `SERVER_HTTP_API` env var (default: `http://localhost:4001`)
+- **Frontend proxy**: Next.js `middleware.ts` proxies `/graphql-api`, `/graphql-sse`, `/auth/*`, `/document/*` to the backend API via `SERVER_HTTP_API` env var (default: `http://localhost:4002`)
 - **Subscriptions**: GraphQL SSE via `graphql-sse` on `/graphql-sse`
 
 ## UI Component System
@@ -340,7 +340,7 @@ Examples:
 
 ### Frontend
 
-`SERVER_HTTP_API` (default: `http://localhost:4001`), `E2E_BASE_URL` (default: `http://localhost:3002`), `NEXT_PUBLIC_APP_VERSION`
+`SERVER_HTTP_API` (default: `http://localhost:4002`), `E2E_BASE_URL` (default: `http://localhost:3002`), `NEXT_PUBLIC_APP_VERSION`
 
 ## Common Patterns
 
@@ -373,7 +373,7 @@ yarn migrate:make <migration_name>    # creates JS file in src/migrations/
 
 - **Yarn version mismatch**: Always `corepack enable` first
 - **Missing Relay artifacts**: Run `yarn relay` before build or after GraphQL changes
-- **E2E test failures**: Ensure frontend (:3002) and backend (:4001) are running
+- **E2E test failures**: Ensure frontend (:3002) and backend (:4002) are running
 - **TypeScript ESLint warning** about TS 5.9.3 vs supported <5.9.0: non-blocking, ignore it
 - **Frontend port**: Dev runs on 3002, Docker production runs on 3000 internally
 - **Test DB**: Backend tests use `test_database` DB (not `cloud-portal`) when `VITEST_MODE=true`
