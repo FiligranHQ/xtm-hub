@@ -105,7 +105,7 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
       </ShareableResourceDetailItem>
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Shares')}>
-        <span>{roundToNearest(connectorDetails.share_number ?? 0)}</span>
+        <span>{roundToNearest(connectorDetails.share_number)}</span>
       </ShareableResourceDetailItem>
     </ShareableResourceBasicInformation>
   );

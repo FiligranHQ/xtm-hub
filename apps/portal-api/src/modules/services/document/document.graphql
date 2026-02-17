@@ -153,5 +153,5 @@ type Query {
     serviceInstanceId: String
     parentsOnly: Boolean
   ): DocumentConnection! @auth
-  document(documentId: ID, serviceInstanceId: ID): Document
+  document(documentId: ID, serviceInstanceId: ID): Document @auth
 }

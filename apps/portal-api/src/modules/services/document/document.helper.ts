@@ -326,6 +326,10 @@ export const loadDocumentWithCountersById = async <T extends Document>(
     id,
     include_metadata
   );
+  if (!document) {
+    throw new Error(ErrorCode.DocumentNotFound);
+  }
+
   return updateDocumentWithCounters(document);
 };
 

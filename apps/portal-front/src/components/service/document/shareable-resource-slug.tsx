@@ -156,7 +156,7 @@ const ShareableResourceSlug: React.FunctionComponent<
         {documentData && (
           <ShareableResourceDetails
             documentData={documentData}
-            downloadNumber={documentDownloadNumber ?? 0}
+            downloadNumber={documentDownloadNumber}
           />
         )}
       </div>

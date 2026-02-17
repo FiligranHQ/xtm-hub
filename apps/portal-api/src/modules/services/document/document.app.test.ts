@@ -379,14 +379,14 @@ describe('DocumentApp', () => {
       const documentId = document!.id;
 
       vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
-        async (eventType: TelemetryEventType, documentId: string) => {
+        async (eventType: TelemetryEventType, calledDocumentId: string) => {
           if (
-            documentId === documentId &&
+            calledDocumentId === documentId &&
             eventType === TelemetryEventType.DOWNLOAD
           )
             return 5;
           if (
-            documentId === documentId &&
+            calledDocumentId === documentId &&
             eventType === TelemetryEventType.SHARE
           )
             return 12;

@@ -152,7 +152,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       </ShareableResourceDetailItem>
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Shares')}>
-        <span>{roundToNearest(documentData.share_number ?? 0)}</span>
+        <span>{roundToNearest(documentData.share_number)}</span>
       </ShareableResourceDetailItem>
     </ShareableResourceBasicInformation>
   );
