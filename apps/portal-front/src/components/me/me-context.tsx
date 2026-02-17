@@ -5,9 +5,8 @@ import { MeContextFragment, MeQuery } from '@/components/me/me.graphql';
 import UserEventSubscription from '@/components/me/user-event-subscription';
 import { meContext_fragment$key } from '@generated/meContext_fragment.graphql';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
-import * as React from 'react';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import Flowise from '../external/flowise';
+import Copilot from '../external/copilot';
 
 // Component interface
 interface ContextProps {
@@ -26,7 +25,7 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
   return (
     <AppPortalContext me={me}>
       <UserEventSubscription />
-      <Flowise user={me} />
+      <Copilot user={me} />
       {children}
     </AppPortalContext>
   );

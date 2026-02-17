@@ -683,6 +683,8 @@ export type MutationChangeSelectedOrganizationArgs = {
 
 export type MutationContactUsArgs = {
   message?: InputMaybe<Scalars['String']['input']>;
+  platformId?: InputMaybe<Scalars['ID']['input']>;
+  platformIdentifier?: InputMaybe<PlatformIdentifier>;
 };
 
 
