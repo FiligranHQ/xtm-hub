@@ -1,5 +1,6 @@
-import { TryOpenCTIBanner } from '@/components/service/trial-instances/try-opencti-banner';
+import { TryOpenCTIBanner } from '@/components/service/trial-instances/banner/try-opencti-banner';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act } from '@testing-library/react';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 
@@ -32,21 +33,24 @@ describe('useFreeTrial with Relay Mock', () => {
     expect(link.getAttribute('href')).toBe(
       'http://localhost:3002/app/service/free-trial'
     );
-    const learnMoreButton = queryByRole('button', {
+    const startTrialButton = queryByRole('button', {
       name: /Start your free trial/i,
     });
-    expect(learnMoreButton).not.toBeInTheDocument();
+    expect(startTrialButton).not.toBeInTheDocument();
   });
 
   it('should return Learn more when the user is Admin Orga', async () => {
     const environment = createMockEnvironment();
 
-    const { getByText, getByRole } = testRender(<TryOpenCTIBanner />, {
-      me: {
-        selected_org_capabilities: ['ADMINISTRATE_ORGANIZATION'],
-      },
-      relayConfig: environment,
-    });
+    const { getByText, getByRole, queryByRole } = testRender(
+      <TryOpenCTIBanner />,
+      {
+        me: {
+          selected_org_capabilities: ['ADMINISTRATE_ORGANIZATION'],
+        },
+        relayConfig: environment,
+      }
+    );
 
     await act(async () => {
       environment.mock.resolveMostRecentOperation((operation) => {
@@ -74,7 +78,8 @@ describe('useFreeTrial with Relay Mock', () => {
           Query() {
             return {
               trialDeployments: {
-                availableTrials: ['opencti'],
+                availableTrials: [PlatformIdentifierEnum.OPENCTI],
+                deployed: [],
                 isBlacklisted: false,
               },
             };
@@ -89,10 +94,10 @@ describe('useFreeTrial with Relay Mock', () => {
     expect(link.getAttribute('href')).toBe(
       'http://localhost:3002/app/service/free-trial'
     );
-    const learnMoreButton = getByRole('button', {
+    const startTrialButton = queryByRole('button', {
       name: /Start your free trial/i,
     });
-    expect(learnMoreButton).toBeTruthy();
+    expect(startTrialButton).toBeTruthy();
   });
 
   it('should display trial banner when trial exists', async () => {

@@ -1,4 +1,4 @@
-import { PlatformTranslationMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import * as React from 'react';
@@ -26,7 +26,7 @@ export const generateRegistrationContext = (
     return { displayedIdentifier: '' };
   }
 
-  const displayedIdentifier = PlatformTranslationMapping[identifier];
+  const displayedIdentifier = PlatformMetadataMapping[identifier].name;
 
   return {
     identifier,
