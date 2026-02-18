@@ -334,8 +334,15 @@ export const DocumentApp = {
 
     const childIds = await DocumentChildrenDomain.loadChildrenIds(documentId);
     if (hardDelete) {
+      // Get all minio_name before their deletion
+      const childrenDocumentFromDB = (
+        await Promise.all(
+          childIds.map((id) => DocumentDomain.loadDocumentBy({ id }))
+        )
+      ).flat();
       await withTransaction(async () => {
         await DocumentChildrenDomain.deleteChildrenByParent(documentId);
+
         await DocumentDomain.deleteDocuments([...childIds, documentId]);
 
         // Use Cases
@@ -343,6 +350,10 @@ export const DocumentApp = {
           object_id: documentId as unknown as ObjectUseCaseObjectId,
         });
       });
+      await DocumentHelper.deleteFileFromMinIO(
+        childrenDocumentFromDB,
+        documentFromDb
+      );
       return documentFromDb as T;
     }
 

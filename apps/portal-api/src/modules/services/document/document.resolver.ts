@@ -28,7 +28,6 @@ import {
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
-  loadDocumentsBy,
   updateDocumentWithCounters,
 } from './document.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
@@ -90,9 +89,10 @@ const resolvers: Resolvers = {
     },
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
-        const [document] = await loadDocumentsBy({
-          id: extractId<DocumentId>(documentId),
-        });
+        const document = await DocumentDomain.loadDocumentWithMetadataById(
+          extractId<DocumentId>(documentId),
+          []
+        );
         const documentWithCounters = await updateDocumentWithCounters(document);
         try {
           const serviceDefinition =
