@@ -871,12 +871,19 @@
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
       "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
+      "ExploreBold": "Free Trial!",
+      "ExplorePlatform": "Explore {platformName} platform with 30 days",
+      "ExploreProducts": "Explore OpenCTI or OpenAEV platform with 30 days",
       "Active": "Your OpenCTI free trial is active",
       "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
       "Requested": "Your OpenCTI free trial has been requested.",
       "Expired": "Your OpenCTI free trial has expired.",
       "Cancelled": "Your OpenCTI free trial has been cancelled.",
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
+      "Header": {
+        "ActiveTrial": "Active trial",
+        "DaysRemaining": "remaining day"
+      },
       "LearnMore": {
         "Link": "Learn more",
         "openaev": {

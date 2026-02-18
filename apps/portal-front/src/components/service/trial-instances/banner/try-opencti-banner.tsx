@@ -16,8 +16,9 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { ReachSalesButton } from './reach-sales/reach-sales-button';
+import { ReachSalesButton } from '../reach-sales/reach-sales-button';
 
+// This component will be removed when Feature Flag "OPENAEVTRIALS" will be removed
 // Component
 export const TryOpenCTIBanner = () => {
   const t = useTranslations();
@@ -25,8 +26,9 @@ export const TryOpenCTIBanner = () => {
 
   if (!settings) return null;
 
-  const { freeTrial } = useFreeTrial();
+  const { freeTrials } = useFreeTrial();
 
+  const freeTrial = freeTrials[0];
   const target = new Date(freeTrial?.subscription?.end_date);
 
   const diffInDays = daysUntil(target);

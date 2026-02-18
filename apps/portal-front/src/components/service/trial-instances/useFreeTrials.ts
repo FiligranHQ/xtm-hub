@@ -3,29 +3,20 @@ import {
   registerRegisteredPlatformListFragment,
   RegisterRegisteredPlatformsQuery,
 } from '@/components/registration/register/register.graphql';
-import { SettingsContext } from '@/components/settings/env-portal-context';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { registerRegisteredPlatformFragment$data } from '@generated/registerRegisteredPlatformFragment.graphql';
 import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { useContext } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
-export const useFreeTrial = () => {
-  const { me, isPersonalSpace } = useContext(PortalContext);
-  const { settings } = useContext(SettingsContext);
-
-  const isBlacklisted =
-    settings?.domains_blacklist &&
-    settings?.domains_blacklist
-      .split(',')
-      .some((domain) => me?.email?.includes(domain.trim()));
-
+export const useFreeTrial = (isActiveOnly: boolean = false) => {
+  const { isPersonalSpace } = useContext(PortalContext);
   const queryData = useLazyLoadQuery<registerRegisteredPlatformsQuery>(
     RegisterRegisteredPlatformsQuery,
     {
       input: {
-        identifier: PlatformIdentifierEnum.OPENCTI,
+        onlyActive: isActiveOnly,
+        onlyTrial: true,
       },
     }
   );
@@ -35,14 +26,10 @@ export const useFreeTrial = () => {
     registerRegisteredPlatformListFragment$key
   >(registerRegisteredPlatformListFragment, queryData);
 
-  const freeTrials = data.registeredPlatforms.filter(
-    (platform) =>
-      platform.deployment_request?.type ===
-        DeploymentRequestDeploymentTypeEnum.TRIAL &&
-      platform.deployment_request.counts_in_orga_quota
-  );
   return {
-    freeTrial: freeTrials.length > 0 && !isPersonalSpace ? freeTrials[0] : null,
-    isBlacklisted,
+    freeTrials:
+      data.registeredPlatforms.length > 0 && !isPersonalSpace
+        ? (data.registeredPlatforms as registerRegisteredPlatformFragment$data[])
+        : ([] as registerRegisteredPlatformFragment$data[]),
   };
 };
