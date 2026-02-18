@@ -896,15 +896,15 @@
           "Blocks": {
             "First": {
               "Title": "Prioritize",
-              "Description": "Build complete offensive attack simulations to accurately identify vulnerabilities and exploitable attack paths, leveraging OpenCTI threat intelligence and MITRE ATT&CK mapping. You can then easily prioritize which threats matter to you based on your Prioritized Intelligence Requirements (PIRs)."
+              "Description": "Build offensive attack simulations to identify vulnerabilities and exploitable attack paths, leveraging OpenCTI threat intelligence and MITRE ATT&CK mapping to prioritize threats based on your PIRs."
             },
             "Second": {
               "Title": "Test",
-              "Description": "Validate your defenses with continuous testing of your security, processes, and people by  performing specific atomic testing, building your own attack sequences, or importing pre-packaged scenarios. You can run realistic tabletop exercises to test your teams’ responses to security escalations. Use OpenAEV’s own EDR or integrate with pre-built collectors from most common vendors."
+              "Description": "Validate your defenses continuously through atomic testing, custom attack sequences, or pre-packaged scenarios. Run tabletop exercises to test team responses, using OpenAEV's native EDR or pre-built integrations with leading vendors."
             },
             "Third": {
               "Title": "Fix",
-              "Description": "Identify where you need to focus your attention to improve your security posture. Visualize and drill-down into problematic areas, access AI-powered remediation guidance, gather qualitative feedback from your teams. You can build a continuous remediation loop by automatically creating new scenarios with AI-assisted scenario creation."
+              "Description": "Pinpoint where to improve your security posture with drill-down analytics, AI-powered remediation guidance, and team feedback — then close the loop with AI-assisted scenario creation."
             }
           }
         },
