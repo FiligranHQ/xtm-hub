@@ -29,7 +29,7 @@ import React, { FunctionComponent, useContext, useState } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 
-export const tryOpenCTIFormSchema = z.object({
+export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
   job_title: z.enum(JOB_TITLES),
   activity_sector: z.enum(ACTIVITIES_SECTOR),
@@ -42,12 +42,14 @@ export const tryOpenCTIFormSchema = z.object({
     }),
 });
 
-interface TryOpenCTIFormProps {
-  handleSubmit: (values: z.infer<typeof tryOpenCTIFormSchema>) => void;
+interface TryFiligranProductFormProps {
+  handleSubmit: (values: z.infer<typeof tryFiligranProductFormSchema>) => void;
   handleCloseSheet: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deploymentRequestsAvailabilityQueryRef: PreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>;
 }
-export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
+export const TryFiligranProductForm: FunctionComponent<
+  TryFiligranProductFormProps
+> = ({
   handleSubmit,
   handleCloseSheet,
   deploymentRequestsAvailabilityQueryRef,
@@ -61,11 +63,14 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
       deploymentRequestsAvailabilityQueryRef
     );
 
-  const [values, setValues] = useState<z.infer<typeof tryOpenCTIFormSchema>>();
+  const [values, setValues] =
+    useState<z.infer<typeof tryFiligranProductFormSchema>>();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const onSubmit = (newValues: z.infer<typeof tryOpenCTIFormSchema>) => {
+  const onSubmit = (
+    newValues: z.infer<typeof tryFiligranProductFormSchema>
+  ) => {
     const availabilityForRegion =
       deploymentRequestsAvailability.deploymentRequestsAvailable.filter(
         (avl) => avl.region === newValues.region
@@ -92,7 +97,7 @@ export const TryOpenCTIForm: FunctionComponent<TryOpenCTIFormProps> = ({
         {t('Service.Trials.Form.AssociatedEmail')}: {me?.email}
         <AutoForm
           className="mt-l"
-          formSchema={tryOpenCTIFormSchema}
+          formSchema={tryFiligranProductFormSchema}
           onSubmit={(values) => {
             onSubmit(values);
           }}

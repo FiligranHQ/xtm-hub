@@ -2,12 +2,29 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 
-export const PlatformTranslationMapping: Record<
+export interface PlatformMetadata {
+  name: string;
+  learnMorePublicUrl: string;
+  learnMorePrivateUrl: string;
+  logoUrl: string;
+}
+
+export const PlatformMetadataMapping: Record<
   PlatformIdentifierEnum,
-  string
+  PlatformMetadata
 > = {
-  [PlatformIdentifierEnum.OPENCTI]: 'OpenCTI',
-  [PlatformIdentifierEnum.OPENAEV]: 'OpenAEV',
+  [PlatformIdentifierEnum.OPENCTI]: {
+    name: 'OpenCTI',
+    learnMorePublicUrl: '/cybersecurity-solutions/opencti-free-trial',
+    learnMorePrivateUrl: '/app/service/opencti-free-trial',
+    logoUrl: '/logo_opencti_dark.png',
+  },
+  [PlatformIdentifierEnum.OPENAEV]: {
+    name: 'OpenAEV',
+    learnMorePublicUrl: '/cybersecurity-solutions/openaev-free-trial',
+    learnMorePrivateUrl: '/app/service/openaev-free-trial',
+    logoUrl: '/logo_openaev_dark.png',
+  },
 };
 
 export const translateServiceDefinitionIdentifier = (
@@ -18,7 +35,7 @@ export const translateServiceDefinitionIdentifier = (
       serviceDefinitionIdentifier
     ] ?? PlatformIdentifierEnum.OPENAEV;
 
-  return PlatformTranslationMapping[platformIdentifierEnum];
+  return PlatformMetadataMapping[platformIdentifierEnum].name;
 };
 
 export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
