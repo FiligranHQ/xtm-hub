@@ -36,6 +36,7 @@ import { seedDevelopmentConnectors } from './server/initialize.helper';
 import { getSessionStoreInstance } from './session-store-manager';
 import { initShutdown, registerShutdownHook } from './shutdown';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
+import { PgBossApp } from './thirdparty/pgboss/pgboss';
 import { logApp } from './utils/app-logger.util';
 import {
   startSessionCleanup,
@@ -295,6 +296,8 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   await minioInit();
   logApp.debug('[MinIO] Bucket ready');
 
+  await PgBossApp.start();
+
   startSessionCleanup();
 
   await new Promise<void>((resolve) =>
@@ -307,6 +310,7 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // uncaughtException and unhandledRejection handlers.
   // The HTTP server hook is registered inside initShutdown.
   initShutdown(httpServer);
+  registerShutdownHook('pg-boss', async () => PgBossApp.stop());
   registerShutdownHook('session-cleanup', async () => stopSessionCleanup());
   registerShutdownHook('cron-jobs', async () => stopCronJobs());
   registerShutdownHook('apollo-server', async () => {
