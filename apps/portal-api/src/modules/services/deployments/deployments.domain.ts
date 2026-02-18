@@ -18,7 +18,10 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { auth0Client } from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { ServiceGroupDomain } from '../group/service-group.domain';
+import {
+  ServiceGroupDomain,
+  ServiceGroupName,
+} from '../group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -245,7 +248,10 @@ export const DeploymentRequestDomain = {
     return updatedRequest;
   },
 
-  initialiseServiceGroup: async (id: DeploymentRequestId) => {
+  initialiseServiceGroup: async (
+    id: DeploymentRequestId,
+    platformIdentifier: PlatformIdentifier
+  ) => {
     const {
       organization_name,
       requester_email,
@@ -266,11 +272,12 @@ export const DeploymentRequestDomain = {
     if (serviceGroup.length === 0) {
       await ServiceGroupDomain.initGroupWithAdmin(
         user_requester_id,
-        service_instance_id
+        service_instance_id,
+        platformIdentifier
       );
       await auth0Client.updateUserRBACInstance(requester_email, {
         [platform_id]: {
-          groups: ['Admin'],
+          groups: [ServiceGroupName.Admin],
         },
       });
     }

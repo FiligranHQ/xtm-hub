@@ -327,7 +327,8 @@ export const DeploymentsApp = {
 
         if (newStatus === DeploymentRequestHubStatus.Active) {
           await DeploymentRequestDomain.initialiseServiceGroup(
-            input.id as DeploymentRequestId
+            input.id as DeploymentRequestId,
+            deploymentRequest.platform_identifier as PlatformIdentifier
           );
         }
       }

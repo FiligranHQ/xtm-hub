@@ -1,4 +1,5 @@
 import { db } from '../../../../knexfile';
+import { PlatformIdentifier } from '../../../__generated__/resolvers-types';
 import ServiceGroup, {
   ServiceGroupId,
   ServiceGroupMutator,
@@ -9,8 +10,29 @@ import ServiceGroupUser, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 
-const DEFAULT_SERVICE_GROUP = ['Admin', 'Analyst', 'Reader'] as const;
-type DefaultServiceGroup = (typeof DEFAULT_SERVICE_GROUP)[number];
+export enum ServiceGroupName {
+  Admin = 'Admin',
+  Analyst = 'Analyst',
+  Reader = 'Reader',
+  Manager = 'Manager',
+  Observer = 'Observer',
+}
+
+export const GROUPS_BY_PLATFORM_IDENTIFIER: Record<
+  PlatformIdentifier,
+  readonly ServiceGroupName[]
+> = {
+  [PlatformIdentifier.Opencti]: [
+    ServiceGroupName.Admin,
+    ServiceGroupName.Analyst,
+    ServiceGroupName.Reader,
+  ],
+  [PlatformIdentifier.Openaev]: [
+    ServiceGroupName.Admin,
+    ServiceGroupName.Manager,
+    ServiceGroupName.Observer,
+  ],
+};
 
 export const ServiceGroupDomain = {
   loadGroupsServiceInstanceIds: async (
@@ -53,7 +75,7 @@ export const ServiceGroupDomain = {
 
   loadGroupUsersByServiceAndName: async (
     serviceInstanceId: ServiceInstanceId,
-    name: DefaultServiceGroup
+    name: ServiceGroupName
   ): Promise<User[]> => {
     return db<User[]>('ServiceGroup')
       .leftJoin(
@@ -105,17 +127,19 @@ export const ServiceGroupDomain = {
 
   initGroupWithAdmin: async (
     userAdminId: UserId,
-    serviceInstancesId: ServiceInstanceId
+    serviceInstancesId: ServiceInstanceId,
+    platformIdentifier: PlatformIdentifier = PlatformIdentifier.Opencti
   ) => {
-    const rolesToInsert = DEFAULT_SERVICE_GROUP.map((instance) => ({
-      name: instance,
+    const groups = GROUPS_BY_PLATFORM_IDENTIFIER[platformIdentifier];
+    const rolesToInsert = groups.map((groupName) => ({
+      name: groupName,
       service_instance_id: serviceInstancesId,
     }));
     const insertResponse = await db<ServiceGroup>('ServiceGroup')
       .insert(rolesToInsert)
       .returning(['id', 'name']);
     const findAdminGroupId = insertResponse.find(
-      (group) => group.name === 'Admin'
+      (group) => group.name === ServiceGroupName.Admin
     );
     await ServiceGroupDomain.addUsersToGroup(findAdminGroupId.id, [
       userAdminId,
