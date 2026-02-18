@@ -1,4 +1,4 @@
-import { NotificationsIcon } from '@filigran/icon';
+import { IndividualIcon, NotificationsIcon } from '@filigran/icon';
 
 import { UserFragment } from '@/components/admin/user/user-list';
 import {
@@ -28,7 +28,6 @@ import {
   userPendingListSubscription,
   userPendingListSubscription$data,
 } from '@generated/userPendingListSubscription.graphql';
-import { UsersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext, useMemo, useState } from 'react';
@@ -141,7 +140,7 @@ export const NotificationButton: React.FC = () => {
                 href={`/${APP_PATH}/manage/user?pendingUsers`}
                 onClick={() => setOpenPopover(false)}
                 className="flex items-center my-2 px-4">
-                <UsersIcon className="mr-4 h-4 w-4 text-gray-300" />
+                <IndividualIcon className="mr-4 h-4 w-4 text-gray-300" />
                 <div className="">
                   <span className="block text-sm">
                     {t('Notifications.UserNotification.Title')}
