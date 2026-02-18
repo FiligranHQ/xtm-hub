@@ -1,6 +1,7 @@
 import { PgBoss } from 'pg-boss';
 import portalConfig from '../../config';
 import { logApp } from '../../utils/app-logger.util';
+import { PgBossWorkers } from './workers';
 
 const PGBOSS_SCHEMA = 'pgboss';
 
@@ -41,6 +42,8 @@ export const PgBossApp = {
     logApp.info(
       `[PgBoss] Started (schema: ${PGBOSS_SCHEMA}, database: ${database})`
     );
+
+    await PgBossWorkers.startAll(boss);
 
     return boss;
   },
