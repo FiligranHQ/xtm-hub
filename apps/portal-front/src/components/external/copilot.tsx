@@ -1,5 +1,6 @@
 'use client';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 
 const COPILOT_WIDGET_URL =
@@ -14,6 +15,7 @@ interface CopilotProps {
 export default function Copilot({ user }: CopilotProps) {
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const lastUserRef = useRef<string>('');
+  const pathname = usePathname();
 
   const getUserKey = useCallback(
     (u: meContext_fragment$data | null | undefined): string => {
@@ -25,23 +27,29 @@ export default function Copilot({ user }: CopilotProps) {
 
   const buildContext = useCallback(() => {
     const context: Record<string, string> = {
-      page: 'xtm-hub',
-      product: 'XTM Suite (OpenCTI / OpenAEV / OpenGRC)',
+      product: 'XTM Hub',
+      page: pathname || '/',
     };
 
     if (user) {
-      context.username = `${user.first_name} ${user.last_name}`;
+      context.username =
+        `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() || 'Unknown';
+      context.email = user.email;
+
       const selectedOrganization = user.organizations?.find(
         (org) => org.id === user.selected_organization_id
       );
       context.organization = selectedOrganization?.name || 'Unknown';
+      context.isPersonalSpace = selectedOrganization?.personal_space
+        ? 'true'
+        : 'false';
     } else {
       context.username = 'Anonymous User';
       context.organization = 'Unknown';
     }
 
     return JSON.stringify(context);
-  }, [user]);
+  }, [user, pathname]);
 
   const cleanup = useCallback(() => {
     if (scriptRef.current) {
@@ -73,6 +81,21 @@ export default function Copilot({ user }: CopilotProps) {
     scriptRef.current = script;
   }, [cleanup, buildContext]);
 
+  /**
+   * Update the data-context attribute on the existing script element
+   * when the page changes, without doing a full widget re-init.
+   * This keeps the chat state intact across navigations while giving
+   * the LLM fresh page context for the next question.
+   */
+  const updateContext = useCallback(() => {
+    const scriptEl =
+      scriptRef.current || document.getElementById(COPILOT_SCRIPT_ID);
+    if (scriptEl) {
+      scriptEl.setAttribute('data-context', buildContext());
+    }
+  }, [buildContext]);
+
+  // Full re-init when the user identity changes
   useEffect(() => {
     const currentUserKey = getUserKey(user);
     if (lastUserRef.current !== currentUserKey) {
@@ -82,6 +105,7 @@ export default function Copilot({ user }: CopilotProps) {
     }
   }, [initialize, getUserKey, user]);
 
+  // Initial load
   useEffect(() => {
     if (!scriptRef.current) {
       const timer = setTimeout(() => initialize(), 500);
@@ -89,6 +113,14 @@ export default function Copilot({ user }: CopilotProps) {
     }
   }, [initialize]);
 
+  // Lightweight context update on page navigation (no full re-init)
+  useEffect(() => {
+    if (scriptRef.current) {
+      updateContext();
+    }
+  }, [pathname, updateContext]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       cleanup();
