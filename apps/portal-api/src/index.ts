@@ -32,6 +32,7 @@ import {
 import { healthEndpoint } from './server/endpoints/health';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
+import { seedDevelopmentConnectors } from './server/initialize.helper';
 import { getSessionStoreInstance } from './session-store-manager';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
 import { logApp } from './utils/app-logger.util';
@@ -280,6 +281,8 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
     logApp.info('[SEEDING] Running development seeds...');
     await dbMigration.seed();
     logApp.info('[SEEDING] Development seeds completed');
+
+    await seedDevelopmentConnectors();
   }
 
   logApp.info(
