@@ -3542,9 +3542,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:0.44.3":
-  version: 0.44.3
-  resolution: "@filigran/ui@npm:0.44.3"
+"@filigran/ui@npm:0.44.7":
+  version: 0.44.7
+  resolution: "@filigran/ui@npm:0.44.7"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -3574,7 +3574,7 @@ __metadata:
     date-fns: "npm:4.1.0"
     embla-carousel-react: "npm:8.6.0"
     react-colorful: "npm:5.6.1"
-    react-day-picker: "npm:9.13.0"
+    react-day-picker: "npm:9.13.1"
     react-easy-sort: "npm:1.8.0"
     tailwind-merge: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
@@ -3586,7 +3586,7 @@ __metadata:
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/cf37b57bbefa3a4b0ba300c57b796a23635969a5ccebf5e2d2314609323e39403949b3c0c35c5e49b8236ffabfc7faa4813d8d260276ccc8f9b692999d8aff90
+  checksum: 10/06bd031b3ef12134770e49f31ed286a5b76d1853fb079a5add0cb21d92dbd835108f4687b0173ec3480c1a44e15d943297c66f0b1a94d1c15f34139a7af6773c
   languageName: node
   linkType: hard
 
@@ -8940,7 +8940,7 @@ __metadata:
   resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
   dependencies:
     "@filigran/icon": "npm:0.22.3"
-    "@filigran/ui": "npm:0.44.3"
+    "@filigran/ui": "npm:0.44.7"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@testing-library/dom": "npm:10.4.1"
@@ -17825,16 +17825,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-day-picker@npm:9.13.0":
-  version: 9.13.0
-  resolution: "react-day-picker@npm:9.13.0"
+"react-day-picker@npm:9.13.1":
+  version: 9.13.1
+  resolution: "react-day-picker@npm:9.13.1"
   dependencies:
     "@date-fns/tz": "npm:^1.4.1"
     date-fns: "npm:^4.1.0"
     date-fns-jalali: "npm:^4.1.0-0"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 10/1a622e2850c04dcfbec6607c44abded18315d17e378b6366f5328b7528f869d7bb32f8bc67df5efddab552108854089c84957e16871ace182c3e6cd71df99621
+  checksum: 10/1ddd3b1ee4ce0c2309c9685412b0c03f9cf24a7f3912e9047ccbd6f381bd85c89f3c8e99b4bbc7623a0a3f078307e2beb290944eee2650be70d41d2e20e204b9
   languageName: node
   linkType: hard
 
