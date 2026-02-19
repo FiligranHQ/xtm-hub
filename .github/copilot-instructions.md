@@ -11,7 +11,7 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 
 - **Version**: 1.5.3
 - **Architecture**: Yarn 4 workspaces monorepo
-- **Runtime**: Node.js 24.11.1 (see `.nvmrc`)
+- **Runtime**: Node.js 24.13.1 (see `.nvmrc`)
 - **Package Manager**: Yarn 4.12.0 via Corepack (`packageManager` field in root `package.json`)
 
 ### Applications
@@ -101,7 +101,7 @@ GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typi
 ### Root
 
 ```
-.nvmrc                  # Node 24.11.1
+.nvmrc                  # Node 24.13.1
 .yarnrc.yml             # Yarn 4 config: node-modules linker, scripts disabled, 3-day age gate
 .rules                  # Project rules (no comments in code)
 tsconfig.json           # Base TS config (extended by workspaces)

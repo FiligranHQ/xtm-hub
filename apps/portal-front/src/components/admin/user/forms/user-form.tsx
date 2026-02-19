@@ -36,6 +36,7 @@ export const UserForm: FunctionComponent<UserFormProps> = ({
     resolver: zodResolver(validationSchema),
     defaultValues: {
       password: '',
+      capabilities: [],
     },
   });
 
