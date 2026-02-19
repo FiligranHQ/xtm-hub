@@ -186,31 +186,6 @@ enum ServiceConfigurationStatus {
   inactive
 }
 
-type CustomDashboard implements Document & Node {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String!
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  product_version: String
-}
-
 enum ServiceDefinitionIdentifier {
   vault
   link
@@ -522,26 +497,54 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
-type ServiceGroup implements Node {
+type OpenAEVScenario implements Document & Node {
   id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
   name: String!
-  users: [User!]
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
 }
 
-input UpdateServiceGroupsInputGroup {
+type CustomDashboard implements Document & Node {
   id: ID!
-  userIds: [ID!]!
-}
-
-input UpdateServiceGroupsInput {
-  groups: [UpdateServiceGroupsInputGroup!]!
-}
-
-type ServiceLink implements Node {
-  id: ID!
-  service_instance_id: ID
-  url: String
-  name: String
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
 }
 
 enum IntegrationType {
@@ -765,29 +768,26 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   github_url: String
 }
 
-type OpenAEVScenario implements Document & Node {
+type ServiceGroup implements Node {
   id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
   name: String!
-  short_description: String
-  description: String
-  file_name: String!
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: String!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  product_version: String
+  users: [User!]
+}
+
+input UpdateServiceGroupsInputGroup {
+  id: ID!
+  userIds: [ID!]!
+}
+
+input UpdateServiceGroupsInput {
+  groups: [UpdateServiceGroupsInputGroup!]!
+}
+
+type ServiceLink implements Node {
+  id: ID!
+  service_instance_id: ID
+  url: String
+  name: String
 }
 
 input OpenCTIPlatformRegistrationStatusInput {

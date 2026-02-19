@@ -25,7 +25,6 @@ import { useCaseApp } from '../../settings/useCase/use-case.app';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { serviceDefinitionDomain } from '../definition/service-definition.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
 import {
   ALL_METADATA_KEYS,
   DocumentHelper,
@@ -44,6 +43,7 @@ import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integrations.model';
 
 export const DocumentApp = {
   createDocument: async (
