@@ -14,6 +14,7 @@ import Document, {
 } from '../../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { UserId } from '../../../model/kanel/public/User';
@@ -27,6 +28,7 @@ import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   ALL_METADATA_KEYS,
+  DOCUMENT_TYPE,
   DocumentHelper,
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
@@ -375,17 +377,8 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const serviceDefinitionIdentifier =
-      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
-
-    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
-      serviceDefinitionIdentifier
-    );
-
-    const documentType =
-      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
-        serviceDefinitionIdentifier
-      );
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
 
     return DocumentDomain.loadParentDocumentsByServiceInstance(
       documentType,
@@ -405,17 +398,8 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const serviceDefinitionIdentifier =
-      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
-
-    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
-      serviceDefinitionIdentifier
-    );
-
-    const documentType =
-      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
-        serviceDefinitionIdentifier
-      );
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
 
     return DocumentDomain.loadSeoDocumentsByServiceSlug(
       documentType,
@@ -436,17 +420,8 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const serviceDefinitionIdentifier =
-      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
-
-    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
-      serviceDefinitionIdentifier
-    );
-
-    const documentType =
-      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
-        serviceDefinitionIdentifier
-      );
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
 
     return loadSeoDocumentWithCountersBySlug(documentType, slug, metadataKeys);
   },
@@ -566,6 +541,26 @@ const upsertDocument = async <T extends DocumentModel>(
 
     return document as T;
   });
+};
+
+const getMetadataKeysAndDocumentTypeFromServiceDefinition = (
+  serviceDefinition: ServiceDefinition
+): { documentType: DOCUMENT_TYPE; metadataKeys: string[] } => {
+  const serviceDefinitionIdentifier =
+    serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+  const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+    serviceDefinitionIdentifier
+  );
+
+  const documentType = DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+    serviceDefinitionIdentifier
+  );
+
+  return {
+    documentType,
+    metadataKeys,
+  };
 };
 
 const shouldHandleFirstFileAsDocument = (
