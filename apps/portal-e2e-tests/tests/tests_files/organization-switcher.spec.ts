@@ -1,0 +1,89 @@
+import { expect, test } from '../fixtures/baseFixtures';
+import IntegrationPage from '../model/integration.pageModel';
+import LoginPage from '../model/login.pageModel';
+import RegisterPage from '../model/register.pageModel';
+import { v4 as uuidv4 } from 'uuid';
+import { insertDeploymentRequest } from '../db-utils/deployment.helper';
+import { ADMIN_USER, PLATFORM_ORGANIZATION_UUID } from '../db-utils/const';
+
+test.describe('Organization switcher', async () => {
+  let loginPage: LoginPage;
+  let integrationPage: IntegrationPage;
+  let registerPage: RegisterPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    integrationPage = new IntegrationPage(page);
+    registerPage = new RegisterPage(page);
+  });
+
+  test('Should see registered platforms, subscriptions and trials', async ({
+    page,
+  }) => {
+    // Given
+    // Have 1 active trial (OpenAEV)
+    await insertDeploymentRequest({
+      id: uuidv4(),
+      user_requester_id: ADMIN_USER.ID,
+      organization_requester_id: PLATFORM_ORGANIZATION_UUID,
+      type: 'trial',
+      request_date: new Date('01/01/2026'),
+      start_date: new Date('01/01/2026'),
+      end_date: new Date('02/02/2026'),
+      platform_identifier: 'opencti',
+      hub_status: 'active',
+      target_state: 'active',
+      actual_state: 'provisioned',
+      ordering: 1,
+      counts_in_orga_quota: true,
+      region: 'us-west',
+    });
+    // Have subscription
+    await loginPage.navigateToAndLogin();
+    await integrationPage.subscribeIntegrationsService();
+    // Have registered platform (OpenCTI)
+    await registerPage.navigateToAndRegister('register-opencti');
+    await loginPage.navigateTo();
+    await test.step("Should see his organization's items", async () => {
+      await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
+        4
+      );
+      await expect(
+        page.getByText('Open CTI Instance - Private platform')
+      ).toBeVisible();
+      await expect(page.getByText('1 Active trial')).toBeVisible();
+    });
+
+    // When User switch on personal space
+    await test.step("Should not see his organization's items but personal ones", async () => {
+      await page
+        .getByRole('combobox', { name: 'Select an organization' })
+        .click();
+      await page.getByText('Personal space').click();
+      // Then he should not see his subscriptions, registrations and trials
+      await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
+        5
+      );
+      await expect(
+        page.getByText('Open CTI Instance - Private platform')
+      ).not.toBeVisible();
+      await expect(page.getByText('1 Active trial')).not.toBeVisible();
+    });
+
+    // WHen User comes back to organization
+    await test.step("Should see his organization's items", async () => {
+      await page
+        .getByRole('combobox', { name: 'Select an organization' })
+        .click();
+      await page.getByText('Filigran', { exact: true }).click();
+      // Then he should see again its subscriptions, registrations and trials
+      await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
+        4
+      );
+      await expect(
+        page.getByText('Open CTI Instance - Private platform')
+      ).toBeVisible();
+      await expect(page.getByText('1 Active trial')).toBeVisible();
+    });
+  });
+});

@@ -24,12 +24,12 @@ export type RegisteredPlatformWithDaysLeft =
 export const DisplayTrialList = () => {
   const t = useTranslations();
   const { freeTrials } = useFreeTrial(true);
-  if (freeTrials.length === 0) return null;
   const freeTrialsWithDaysLeft = useMemo(
     () => addDaysUntil(freeTrials),
     [freeTrials]
   );
   const headerDotColor = getHeaderDotColor(freeTrialsWithDaysLeft);
+  if (freeTrials.length === 0) return null;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -48,7 +48,10 @@ export const DisplayTrialList = () => {
           <DropdownMenuItem
             className="p-0"
             key={freeTrial.id}>
-            <DisplayTrialItem freeTrial={freeTrial} />
+            <DisplayTrialItem
+              t={t}
+              freeTrial={freeTrial}
+            />
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

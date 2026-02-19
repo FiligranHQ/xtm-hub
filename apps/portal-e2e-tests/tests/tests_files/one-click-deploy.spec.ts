@@ -12,13 +12,6 @@ const CSV_FEED_TEST = {
   csvFeedsServiceInstanceId: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
 };
 
-const OPENCTI_PLATFORM_URL: PlatformDetails = {
-  url: 'http://localhost:3000',
-  title: 'Open%20CTI%20Instance',
-  id: '916121bf-d246-4a43-8522-24be19537b91',
-  contract: 'EE',
-};
-
 test.describe('One Click Deploy', () => {
   let loginPage: LoginPage;
   let csvFeedPage: IntegrationPage;
@@ -33,10 +26,7 @@ test.describe('One Click Deploy', () => {
     await page.waitForURL('/app');
 
     registerPage = new RegisterPage(page);
-    await registerPage.navigateToAndRegister(
-      'register-opencti',
-      OPENCTI_PLATFORM_URL
-    );
+    await registerPage.navigateToAndRegister('register-opencti');
 
     await homePage.navigateTo();
     await csvFeedPage.subscribeIntegrationsService();
