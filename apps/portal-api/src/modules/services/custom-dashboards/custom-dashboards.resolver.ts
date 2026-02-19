@@ -5,10 +5,6 @@ import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import {
-  CUSTOM_DASHBOARD_METADATA_KEYS,
-  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-} from './custom-dashboards.domain';
 
 const resolvers: Resolvers = {
   CustomDashboard: {
@@ -22,24 +18,6 @@ const resolvers: Resolvers = {
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: async ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
-  },
-  Query: {
-    seoCustomDashboardsByServiceSlug: async (_, { serviceSlug }) => {
-      const dashboards = await DocumentDomain.loadSeoDocumentsByServiceSlug(
-        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-        serviceSlug,
-        CUSTOM_DASHBOARD_METADATA_KEYS
-      );
-      for (const dashboard of dashboards) {
-        dashboard.children_documents =
-          await DocumentChildrenDomain.loadImagesByDocumentId(dashboard.id);
-        dashboard.uploader = await DocumentDomain.loadUploader(dashboard.id);
-        dashboard.use_cases = await useCaseDomain.loadUseCasesByDocumentId(
-          dashboard.id
-        );
-      }
-      return dashboards;
-    },
   },
 };
 

@@ -120,6 +120,14 @@ export const PublicDocumentListQuery = graphql`
   }
 `;
 
+export const PublicDocumentsByServiceSlugQuery = graphql`
+  query publicDocumentsByServiceSlugQuery($serviceInstanceSlug: String!) {
+    publicDocumentsByServiceSlug(serviceInstanceSlug: $serviceInstanceSlug) {
+      ...publicDocumentItemFragment
+    }
+  }
+`;
+
 export const PublicDocumentBySlugQuery = graphql`
   query publicDocumentBySlugQuery($serviceInstanceId: ID!, $slug: String!) {
     publicDocumentBySlug(serviceInstanceId: $serviceInstanceId, slug: $slug) {

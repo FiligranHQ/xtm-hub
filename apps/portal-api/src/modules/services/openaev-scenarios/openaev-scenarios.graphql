@@ -23,18 +23,3 @@ type OpenAEVScenario implements Document & Node {
   # Specific fields for OpenAEVScenario scenarios
   product_version: String
 }
-
-type OpenAEVScenarioEdge {
-  cursor: String!
-  node: OpenAEVScenario!
-}
-
-type OpenAEVScenarioConnection {
-  totalCount: Int!
-  edges: [OpenAEVScenarioEdge!]!
-  pageInfo: PageInfo!
-}
-
-type Query {
-  seoOpenAEVScenariosByServiceSlug(serviceSlug: String): [OpenAEVScenario]
-}

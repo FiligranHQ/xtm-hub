@@ -394,6 +394,34 @@ export const DocumentApp = {
     );
   },
 
+  loadPublicDocumentsByServiceSlug: async (serviceInstanceSlug: string) => {
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstanceSlug(
+        serviceInstanceSlug
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const serviceDefinitionIdentifier =
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+      serviceDefinitionIdentifier
+    );
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinitionIdentifier
+      );
+
+    return DocumentDomain.loadSeoDocumentsByServiceSlug(
+      documentType,
+      serviceInstanceSlug,
+      metadataKeys
+    );
+  },
+
   loadPublicDocumentBySlug: async (
     serviceInstanceId: ServiceInstanceId,
     slug: string

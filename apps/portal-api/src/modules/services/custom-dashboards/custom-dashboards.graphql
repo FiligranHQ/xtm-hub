@@ -23,7 +23,3 @@ type CustomDashboard implements Document & Node {
   # Specific fields for custom dashboards
   product_version: String
 }
-
-type Query {
-  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
-}

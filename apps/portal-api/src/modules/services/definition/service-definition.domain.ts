@@ -13,6 +13,21 @@ export const serviceDefinitionDomain = {
     return db('ServiceDefinition').where(field).select('id').first();
   },
 
+  loadServiceDefinitionByServiceInstanceSlug(
+    serviceInstanceSlug: string
+  ): Promise<ServiceDefinition | undefined> {
+    return db('ServiceDefinition')
+      .leftJoin(
+        'ServiceInstance',
+        'ServiceInstance.service_definition_id',
+        '=',
+        'ServiceDefinition.id'
+      )
+      .where('ServiceInstance.slug', '=', serviceInstanceSlug)
+      .select('ServiceDefinition.*')
+      .first();
+  },
+
   loadServiceDefinitionByServiceInstance(
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceDefinition | undefined> {

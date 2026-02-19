@@ -5,18 +5,8 @@ import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import {
-  OPENAEV_SCENARIO_DOCUMENT_TYPE,
-  OPENAEV_SCENARIO_METADATA_KEYS,
-} from './openaev-scenarios.domain';
 
 const resolvers: Resolvers = {
-  SeoOpenAEVScenario: {
-    children_documents: ({ id }) =>
-      DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
-    use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
-  },
   OpenAEVScenario: {
     use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
     children_documents: ({ id }) =>
@@ -28,15 +18,6 @@ const resolvers: Resolvers = {
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
-  },
-  Query: {
-    seoOpenAEVScenariosByServiceSlug: async (_, { serviceSlug }) => {
-      return DocumentDomain.loadSeoDocumentsByServiceSlug(
-        OPENAEV_SCENARIO_DOCUMENT_TYPE,
-        serviceSlug,
-        OPENAEV_SCENARIO_METADATA_KEYS
-      );
-    },
   },
 };
 

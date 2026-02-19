@@ -254,7 +254,3 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   product_version: String
   github_url: String
 }
-
-type Query {
-  publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
-}

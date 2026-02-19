@@ -2,23 +2,25 @@ import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 
 import publicDocumentBySlugQueryGraphql from '@generated/publicDocumentBySlugQuery.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
-import { queryMap } from '../shareable-resources.consts';
-import { SeoResource, ServiceSlug } from '../shareable-resources.types';
+import publicDocumentsByServiceSlugQueryGraphql from '@generated/publicDocumentsByServiceSlugQuery.graphql';
+import { ServiceSlug } from '../shareable-resources.types';
 
 export async function fetchAllDocuments(
-  serviceSlug: ServiceSlug
-): Promise<SeoResource[]> {
-  const config = queryMap[serviceSlug];
-  if (!config) {
-    throw new Error(`Invalid service slug: ${serviceSlug}`);
+  serviceInstanceSlug: ServiceSlug
+): Promise<publicDocumentItemFragment$data[]> {
+  if (!Object.values(ServiceSlug).includes(serviceInstanceSlug)) {
+    throw new Error(`Invalid service slug: ${serviceInstanceSlug}`);
   }
   const response = await serverFetchGraphQL(
-    config.query,
-    { serviceSlug },
+    publicDocumentsByServiceSlugQueryGraphql,
+    { serviceInstanceSlug },
     { cache: 'force-cache' }
   );
 
-  return config.cast(response.data);
+  const safeData = response.data as Record<string, unknown>;
+  return safeData[
+    'publicDocumentsByServiceSlug'
+  ] as publicDocumentItemFragment$data[];
 }
 
 export async function fetchSingleDocument(

@@ -9,7 +9,6 @@ import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import { integrationsApp } from './integrations.app';
 import { Integration } from './integrations.model';
 
 const resolvers: Resolvers = {
@@ -42,10 +41,6 @@ const resolvers: Resolvers = {
       getServiceInstance(service_instance_id as ServiceInstanceId),
     subscription: ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
-  },
-  Query: {
-    publicIntegrationsByServiceSlug: async (_, { serviceSlug }) =>
-      integrationsApp.loadPublicAccessIntegrations(serviceSlug),
   },
 };
 
