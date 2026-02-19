@@ -1,6 +1,7 @@
 import { PgBoss } from 'pg-boss';
 import portalConfig from '../../config';
 import { logApp } from '../../utils/app-logger.util';
+import { PgBossMetrics } from './pgboss.metrics';
 import { PgBossWorkers } from './workers';
 
 const PGBOSS_SCHEMA = 'pgboss';
@@ -45,11 +46,14 @@ export const PgBossApp = {
 
     await PgBossWorkers.startAll(boss);
 
+    PgBossMetrics.start(boss);
+
     return boss;
   },
 
   stop: async (): Promise<void> => {
     if (boss) {
+      PgBossMetrics.stop();
       await boss.stop({ graceful: true, timeout: 10_000 });
       boss = null;
       logApp.info('[PgBoss] Stopped');

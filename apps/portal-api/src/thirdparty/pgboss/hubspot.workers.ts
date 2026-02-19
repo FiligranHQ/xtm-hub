@@ -6,12 +6,31 @@ import {
   HUBSPOT_TYPE_TO_QUEUE,
   type HubspotJobData,
 } from './hubspot.jobs';
+import { PgBossMetrics } from './pgboss.metrics';
 import { RETRY_STRATEGIES } from './retry-strategies';
 
 const handleHubspotJob = async (jobs: Job<HubspotJobData>[]) => {
   for (const job of jobs) {
-    logApp.debug(`[PgBoss] Processing ${job.name} job`, { jobId: job.id });
-    await hubspotWebhookSend(job.data.type, job.data.payload);
+    logApp.info(`[PgBoss] Processing ${job.name} job`, { jobId: job.id });
+
+    const end = PgBossMetrics.counters.jobDuration.startTimer({
+      queue: job.name,
+    });
+    try {
+      await hubspotWebhookSend(job.data.type, job.data.payload);
+      PgBossMetrics.counters.jobsProcessed.inc({
+        queue: job.name,
+        result: 'success',
+      });
+    } catch (err) {
+      PgBossMetrics.counters.jobsProcessed.inc({
+        queue: job.name,
+        result: 'error',
+      });
+      throw err;
+    } finally {
+      end();
+    }
   }
 };
 
