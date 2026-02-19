@@ -31,6 +31,10 @@ import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
 import { DocumentDomain } from './domain/document.domain';
+import {
+  CUSTOM_DASHBOARD_METADATA_KEYS,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+} from './opencti/custom-dashboards/custom-dashboards.model';
 
 describe('DocumentApp', () => {
   const minioFileMock = {
@@ -71,6 +75,7 @@ describe('DocumentApp', () => {
 
   afterEach(async () => {
     await deleteDocuments();
+    vi.restoreAllMocks();
   });
 
   afterAll(async () => {
@@ -453,6 +458,33 @@ describe('DocumentApp', () => {
 
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);
+    });
+  });
+
+  describe('loadPublicDocumentsByServiceSlug', () => {
+    it('should throw when service definition is not found', async () => {
+      const call = DocumentApp.loadPublicDocumentsByServiceSlug('unknown-slug');
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should return the documents', async () => {
+      const loadSeoDocumentsByServiceSlugSpy = vi
+        .spyOn(DocumentDomain, 'loadSeoDocumentsByServiceSlug')
+        .mockResolvedValue([{}]);
+
+      const loadedDocuments =
+        await DocumentApp.loadPublicDocumentsByServiceSlug(
+          'open-cti-custom-dashboards'
+        );
+
+      expect(loadSeoDocumentsByServiceSlugSpy).toHaveBeenCalledWith(
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        'open-cti-custom-dashboards',
+        CUSTOM_DASHBOARD_METADATA_KEYS
+      );
+      expect(loadedDocuments).toBeDefined();
+      expect(loadedDocuments.length).toBe(1);
     });
   });
 

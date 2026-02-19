@@ -394,7 +394,9 @@ export const DocumentApp = {
     );
   },
 
-  loadPublicDocumentsByServiceSlug: async (serviceInstanceSlug: string) => {
+  loadPublicDocumentsByServiceSlug: async (
+    serviceInstanceSlug: string
+  ): Promise<Document[]> => {
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstanceSlug(
         serviceInstanceSlug

@@ -10,7 +10,7 @@ export const ServiceDefinitionDomain = {
   loadServiceDefinitionBy(
     field: ServiceDefinitionMutator
   ): Promise<ServiceDefinition | undefined> {
-    return db('ServiceDefinition').where(field).select('id').first();
+    return db('ServiceDefinition').where(field).select('*').first();
   },
 
   loadServiceDefinitionByServiceInstanceSlug(
@@ -31,7 +31,7 @@ export const ServiceDefinitionDomain = {
   loadServiceDefinitionByServiceInstance(
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceDefinition | undefined> {
-    return db('ServiceDefinition')
+    return db<ServiceDefinition>('ServiceDefinition')
       .leftJoin(
         'ServiceInstance',
         'ServiceInstance.service_definition_id',
@@ -45,7 +45,7 @@ export const ServiceDefinitionDomain = {
 
   loadServiceDefinitionByPlatformIdentifier(
     platformIdentifier: PlatformIdentifier
-  ): Promise<ServiceDefinition> {
+  ): Promise<ServiceDefinition | undefined> {
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
 
