@@ -1,9 +1,12 @@
+import config from 'config';
 import { OneClickDeployInput } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
+import { PgBossProducer } from '../../thirdparty/pgboss/producer';
+import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
@@ -16,12 +19,41 @@ import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
 const TELEMETRY_INDEX = 'telemetry';
 
+export async function indexTelemetryEvent(event: TelemetryEvent) {
+  await esDbClient.index({
+    index: TELEMETRY_INDEX,
+    document: event,
+  });
+}
+
+const useQueueProcessing = (): boolean =>
+  config.get<boolean>('telemetry_use_queue_processing');
+
+const getQueuedEventTypes = (): string[] =>
+  config.get<string[]>('telemetry_queued_event_types');
+
 export const telemetryApp = {
   async sendTelemetryEvent(event: TelemetryEvent) {
     try {
-      await esDbClient.index({
-        index: TELEMETRY_INDEX,
-        document: event,
+      if (useQueueProcessing()) {
+        const queuedTypes = getQueuedEventTypes();
+        if (
+          queuedTypes.length === 0 ||
+          queuedTypes.includes(event.event_type)
+        ) {
+          try {
+            await PgBossProducer.send(TELEMETRY_QUEUES.EVENTS, { event });
+          } catch (error) {
+            logApp.error('Failed to enqueue telemetry event', { event, error });
+          }
+          return;
+        }
+      }
+      indexTelemetryEvent(event).catch((error) => {
+        logApp.error('Error sending telemetry event synchronously', {
+          event,
+          error,
+        });
       });
     } catch (error) {
       logApp.error('Error sending telemetry event ', { event, error });

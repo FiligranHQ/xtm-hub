@@ -1,4 +1,4 @@
-import type { Job, PgBoss } from 'pg-boss';
+import type { PgBoss } from 'pg-boss';
 import { logApp } from '../../utils/app-logger.util';
 import { hubspotWebhookSend } from '../hubspot/hubspot';
 import {
@@ -6,37 +6,18 @@ import {
   HUBSPOT_TYPE_TO_QUEUE,
   type HubspotJobData,
 } from './hubspot.jobs';
-import { PgBossMetrics } from './pgboss.metrics';
 import { RETRY_STRATEGIES } from './retry-strategies';
+import { createBatchHandler } from './workers';
 
-const handleHubspotJob = async (jobs: Job<HubspotJobData>[]) => {
-  for (const job of jobs) {
-    logApp.info(`[PgBoss] Processing ${job.name} job`, { jobId: job.id });
-
-    const end = PgBossMetrics.counters.jobDuration.startTimer({
-      queue: job.name,
-    });
-    try {
-      await hubspotWebhookSend(job.data.type, job.data.payload);
-      PgBossMetrics.counters.jobsProcessed.inc({
-        queue: job.name,
-        result: 'success',
-      });
-    } catch (err) {
-      PgBossMetrics.counters.jobsProcessed.inc({
-        queue: job.name,
-        result: 'error',
-      });
-      throw err;
-    } finally {
-      end();
-    }
-  }
-};
+const handleHubspotJob = createBatchHandler<HubspotJobData>(async (job) =>
+  hubspotWebhookSend(job.data.type, job.data.payload)
+);
 
 export const HubspotWorkers = {
   start: async (boss: PgBoss): Promise<void> => {
-    await boss.createQueue(HUBSPOT_QUEUES.DEAD_LETTER);
+    await boss.createQueue(HUBSPOT_QUEUES.DEAD_LETTER, {
+      ...RETRY_STRATEGIES.dlq,
+    });
 
     for (const queueName of Object.values(HUBSPOT_TYPE_TO_QUEUE)) {
       await boss.createQueue(queueName, {
