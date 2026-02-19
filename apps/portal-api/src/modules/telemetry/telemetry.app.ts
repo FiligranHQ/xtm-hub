@@ -116,6 +116,6 @@ export const telemetryApp = {
       extractId<DocumentId>(input.resource_id),
       input.resource_title
     );
-    telemetryApp.sendTelemetryEvent(event);
+    await telemetryApp.sendTelemetryEvent(event);
   },
 };

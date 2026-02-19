@@ -42,7 +42,11 @@ export async function hubspotHook<T extends HubspotWebhookType>(
       return;
     }
 
-    await hubspotWebhookSend(type, payload);
+    hubspotWebhookSend(type, payload).catch((error) => {
+      logApp.error(`Failed to send Hubspot ${type} hook synchronously`, {
+        error,
+      });
+    });
   } catch (error) {
     logApp.error(`Failed to send Hubspot ${type} hook`, { error });
   }

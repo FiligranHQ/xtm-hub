@@ -31,7 +31,7 @@ export const organizationsApp = {
         updatedOrganization,
         user.id
       );
-      telemetryApp.sendTelemetryEvent(updateOrgaEvent);
+      await telemetryApp.sendTelemetryEvent(updateOrgaEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for update organization', {
         error,
@@ -64,7 +64,7 @@ export const organizationsApp = {
         createdOrganization,
         user.id
       );
-      telemetryApp.sendTelemetryEvent(createOrgaEvent);
+      await telemetryApp.sendTelemetryEvent(createOrgaEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for create organization', {
         error,
