@@ -54,6 +54,9 @@ const getPageData = async (serviceSlug: string, docSlug: string) => {
   }
 
   const document = await fetchSingleDocument(serviceInstance.id, docSlug);
+  if (!document) {
+    notFound();
+  }
 
   return { baseUrl, serviceInstance, document };
 };

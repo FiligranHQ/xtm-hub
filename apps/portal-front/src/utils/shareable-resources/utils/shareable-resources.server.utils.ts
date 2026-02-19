@@ -26,12 +26,14 @@ export async function fetchAllDocuments(
 export async function fetchSingleDocument(
   serviceInstanceId: string,
   slug: string
-): Promise<publicDocumentItemFragment$data> {
+): Promise<publicDocumentItemFragment$data | null> {
   const response = await serverFetchGraphQL(
     publicDocumentBySlugQueryGraphql,
     { slug, serviceInstanceId },
     { cache: 'force-cache' }
   );
   const safeData = response.data as Record<string, unknown>;
-  return safeData['publicDocumentBySlug'] as publicDocumentItemFragment$data;
+  return safeData[
+    'publicDocumentBySlug'
+  ] as publicDocumentItemFragment$data | null;
 }
