@@ -5,7 +5,6 @@ import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import { CustomDashboardsApp } from './custom-dashboards.app';
 import {
   CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
@@ -40,9 +39,6 @@ const resolvers: Resolvers = {
         );
       }
       return dashboards;
-    },
-    seoCustomDashboardBySlug: async (_, { slug }) => {
-      return CustomDashboardsApp.loadSeoCustomDashboard(slug);
     },
   },
 };

@@ -21,7 +21,7 @@ export const isIntegrationItem = (
 };
 
 export const isConnectorResource = (
-  resource: documentItem_fragment$data
+  resource: documentItem_fragment$data | publicDocumentItemFragment$data
 ): boolean => {
   return resource.__typename === 'Connector';
 };

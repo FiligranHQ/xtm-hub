@@ -26,5 +26,4 @@ type CustomDashboard implements Document & Node {
 
 type Query {
   seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
-  seoCustomDashboardBySlug(slug: String): CustomDashboard
 }

@@ -257,5 +257,4 @@ type ThirdPartyIntegration implements Node & Document & Integration {
 
 type Query {
   publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
-  publicIntegrationBySlug(slug: String): Integration
 }

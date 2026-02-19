@@ -1,9 +1,5 @@
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
 import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-import SeoIntegrationBySlugQuery from '@generated/seoIntegrationBySlugQuery.graphql';
 import SeoIntegrationsByServiceSlugQuery from '@generated/seoIntegrationsByServiceSlugQuery.graphql';
-import SeoOpenaevScenarioBySlugQuery from '@generated/seoOpenaevScenarioBySlugQuery.graphql';
 import SeoOpenaevScenariosByServiceSlugQuery from '@generated/seoOpenaevScenariosByServiceSlugQuery.graphql';
 import {
   MakeQueryMapParams,
@@ -49,17 +45,6 @@ function makeQueryMapEntry<TReturn>({
   return { query, cast };
 }
 
-function makeSingleQueryMapEntry<TReturn>({
-  query,
-  key,
-}: Omit<MakeQueryMapParams, 'isList'>): QueryMapEntry<TReturn> {
-  const cast = (data: unknown): TReturn => {
-    const safeData = data as Record<string, unknown>;
-    return safeData[key] as TReturn;
-  };
-  return { query, cast };
-}
-
 export const localeMap: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]: 'OpenctiIntegrations',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
@@ -80,25 +65,4 @@ export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
     query: SeoOpenaevScenariosByServiceSlugQuery,
     key: 'seoOpenAEVScenariosByServiceSlug',
   }),
-};
-
-export const querySlugMap: Record<
-  ServiceSlug,
-  QueryMapEntry<documentItem_fragment$data>
-> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
-    makeSingleQueryMapEntry<documentItem_fragment$data>({
-      query: SeoIntegrationBySlugQuery,
-      key: 'publicIntegrationBySlug',
-    }),
-  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
-    makeSingleQueryMapEntry<documentItem_fragment$data>({
-      query: SeoCustomDashboardBySlugQuery,
-      key: 'seoCustomDashboardBySlug',
-    }),
-  [ServiceSlug.OPEN_AEV_SCENARIOS]:
-    makeSingleQueryMapEntry<documentItem_fragment$data>({
-      query: SeoOpenaevScenarioBySlugQuery,
-      key: 'seoOpenAEVScenarioBySlug',
-    }),
 };

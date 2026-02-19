@@ -36,11 +36,3 @@ export const SeoCustomDashboardsByServiceSlugQuery = graphql`
     }
   }
 `;
-
-export const SeoCustomDashboardBySlugQuery = graphql`
-  query seoCustomDashboardBySlugQuery($slug: String!) {
-    seoCustomDashboardBySlug(slug: $slug) {
-      ...seoCustomDashboardFragment
-    }
-  }
-`;

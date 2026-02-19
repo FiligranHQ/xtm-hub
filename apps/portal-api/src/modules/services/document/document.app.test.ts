@@ -1,4 +1,5 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
+import { v4 as uuidv4 } from 'uuid';
 import {
   afterAll,
   afterEach,
@@ -395,6 +396,60 @@ describe('DocumentApp', () => {
       );
 
       const documentLoaded = await DocumentApp.loadDocument(documentId);
+
+      expect(documentLoaded.download_number).toBe(5);
+      expect(documentLoaded.share_number).toBe(12);
+    });
+  });
+
+  describe('loadPublicDocumentBySlug', () => {
+    it('should throw when service definition is not found', async () => {
+      const call = DocumentApp.loadPublicDocumentBySlug(
+        uuidv4() as ServiceInstanceId,
+        'slug'
+      );
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should return the document with elastic search counters', async () => {
+      const document = await DocumentApp.createDocument(
+        {
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          name: 'myCustomDashboard',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [{ key: 'product_version', value: '1.2.3' }],
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        []
+      );
+      expect(document).toBeDefined();
+
+      const documentId = document!.id;
+
+      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+        async (eventType: TelemetryEventType, calledDocumentId: string) => {
+          if (
+            calledDocumentId === documentId &&
+            eventType === TelemetryEventType.DOWNLOAD
+          )
+            return 5;
+          if (
+            calledDocumentId === documentId &&
+            eventType === TelemetryEventType.SHARE
+          )
+            return 12;
+          return 0; // default
+        }
+      );
+
+      const documentLoaded = await DocumentApp.loadPublicDocumentBySlug(
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        document!.slug!
+      );
 
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);

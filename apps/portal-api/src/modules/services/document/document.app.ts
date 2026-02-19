@@ -30,6 +30,7 @@ import {
   ALL_METADATA_KEYS,
   DocumentHelper,
   loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
   ManageableServiceDefinitionIdentifier,
 } from './document.helper';
 import {
@@ -391,6 +392,33 @@ export const DocumentApp = {
       input,
       metadataKeys
     );
+  },
+
+  loadPublicDocumentBySlug: async (
+    serviceInstanceId: ServiceInstanceId,
+    slug: string
+  ) => {
+    const serviceDefinition =
+      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const serviceDefinitionIdentifier =
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+      serviceDefinitionIdentifier
+    );
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinitionIdentifier
+      );
+
+    return loadSeoDocumentWithCountersBySlug(documentType, slug, metadataKeys);
   },
 
   loadPublicDocuments: async (input: QueryPublicDocumentsArgs) => {

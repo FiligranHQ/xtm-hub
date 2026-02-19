@@ -1,7 +1,8 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { queryMap, querySlugMap } from '../shareable-resources.consts';
+import publicDocumentBySlugQueryGraphql from '@generated/publicDocumentBySlugQuery.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
+import { queryMap } from '../shareable-resources.consts';
 import { SeoResource, ServiceSlug } from '../shareable-resources.types';
 
 export async function fetchAllDocuments(
@@ -21,14 +22,14 @@ export async function fetchAllDocuments(
 }
 
 export async function fetchSingleDocument(
-  serviceSlug: ServiceSlug,
+  serviceInstanceId: string,
   slug: string
-): Promise<documentItem_fragment$data> {
-  const config = querySlugMap[serviceSlug];
+): Promise<publicDocumentItemFragment$data> {
   const response = await serverFetchGraphQL(
-    config.query,
-    { slug },
+    publicDocumentBySlugQueryGraphql,
+    { slug, serviceInstanceId },
     { cache: 'force-cache' }
   );
-  return config.cast(response.data);
+  const safeData = response.data as Record<string, unknown>;
+  return safeData['publicDocumentBySlug'] as publicDocumentItemFragment$data;
 }

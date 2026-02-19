@@ -196,6 +196,16 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+    publicDocumentBySlug: async (_, { serviceInstanceId, slug }) => {
+      try {
+        return DocumentApp.loadPublicDocumentBySlug(
+          extractId<ServiceInstanceId>(serviceInstanceId),
+          slug
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
     documents: async (_, input) => {
       try {
         return DocumentApp.loadDocuments(input);

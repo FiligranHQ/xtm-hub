@@ -143,6 +143,7 @@ type Query {
     logicalFilters: LogicalFilterInput
     serviceInstanceId: ID!
   ): DocumentConnection!
+  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
   documents(
     first: Int!
     after: ID

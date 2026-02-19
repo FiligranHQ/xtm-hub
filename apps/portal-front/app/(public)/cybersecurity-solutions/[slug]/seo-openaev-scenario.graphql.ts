@@ -36,11 +36,3 @@ export const SeoOpenaevScenariosByServiceSlugQuery = graphql`
     }
   }
 `;
-
-export const SeoOpenaevScenarioBySlugQuery = graphql`
-  query seoOpenaevScenarioBySlugQuery($slug: String!) {
-    seoOpenAEVScenarioBySlug(slug: $slug) {
-      ...seoOpenaevScenarioFragment
-    }
-  }
-`;

@@ -5,7 +5,6 @@ import { subscriptionApp } from '../../subcription/subscription.app';
 import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { getServiceInstance } from '../service-instance.domain';
-import { OpenAEVScenariosApp } from './openaev-scenarios.app';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA_KEYS,
@@ -37,9 +36,6 @@ const resolvers: Resolvers = {
         serviceSlug,
         OPENAEV_SCENARIO_METADATA_KEYS
       );
-    },
-    seoOpenAEVScenarioBySlug: async (_, { slug }) => {
-      return OpenAEVScenariosApp.loadSeoOpenAEVScenario(slug);
     },
   },
 };

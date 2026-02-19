@@ -46,8 +46,6 @@ const resolvers: Resolvers = {
   Query: {
     publicIntegrationsByServiceSlug: async (_, { serviceSlug }) =>
       integrationsApp.loadPublicAccessIntegrations(serviceSlug),
-    publicIntegrationBySlug: async (_, { slug }) =>
-      integrationsApp.loadPublicAccessIntegration(slug),
   },
 };
 

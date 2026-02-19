@@ -73,11 +73,3 @@ export const seoIntegrationsByServiceSlugQuery = graphql`
     }
   }
 `;
-export const SeoIntegrationBySlugQuery = graphql`
-  query seoIntegrationBySlugQuery($slug: String!) {
-    publicIntegrationBySlug(slug: $slug) {
-      ...seoIntegrationFragment
-      ...seoIntegrationConnectorFragment
-    }
-  }
-`;

@@ -71,9 +71,15 @@ export type ManageableServiceDefinitionIdentifier =
 
 export const VAULT_DOCUMENT_TYPE = 'vault';
 
+export type DOCUMENT_TYPE =
+  | typeof OPENCTI_INTEGRATION_DOCUMENT_TYPE
+  | typeof OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE
+  | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE
+  | typeof VAULT_DOCUMENT_TYPE;
+
 const DocumentTypeMappedByServiceDefinition: Record<
   ManageableServiceDefinitionIdentifier,
-  string
+  DOCUMENT_TYPE
 > = {
   [ServiceDefinitionIdentifier.OpenctiIntegrations]:
     OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -161,8 +167,8 @@ export const DocumentHelper = {
 
   retrieveDocumentTypeFromServiceDefinition: (
     serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier
-  ): string => {
-    const documentType: string | undefined =
+  ): DOCUMENT_TYPE => {
+    const documentType =
       DocumentTypeMappedByServiceDefinition[serviceDefinitionIdentifier];
     if (!documentType) {
       throw new Error(ErrorCode.ServiceNotManageable);
@@ -334,10 +340,7 @@ export const loadDocumentWithCountersById = async <T extends Document>(
 };
 
 export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
-  type:
-    | typeof OPENCTI_INTEGRATION_DOCUMENT_TYPE
-    | typeof OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE
-    | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  type: DOCUMENT_TYPE,
   slug: string,
   include_metadata: string[] = []
 ) => {
