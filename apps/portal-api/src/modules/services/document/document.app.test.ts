@@ -26,7 +26,7 @@ import {
   TelemetryEventService,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
@@ -459,7 +459,7 @@ describe('DocumentApp', () => {
   describe('loadPublicDocuments', () => {
     it('should throw if service definition is not found', async () => {
       vi.spyOn(
-        serviceDefinitionDomain,
+        ServiceDefinitionDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(undefined);
       const input = { serviceInstanceId: 'invalid-id', slug: 'test-slug' };
@@ -474,7 +474,7 @@ describe('DocumentApp', () => {
         identifier: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
       };
       vi.spyOn(
-        serviceDefinitionDomain,
+        ServiceDefinitionDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(mockServiceDefinition as ServiceDefinition);
       const loadPaginatedSeoDocumentsSpy = vi

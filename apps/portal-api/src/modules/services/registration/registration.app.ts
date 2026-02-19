@@ -53,7 +53,7 @@ import {
   updateUser,
 } from '../../users/users.domain';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import {
   loadServiceDefinitionByServiceInstance,
@@ -205,7 +205,7 @@ export const registrationApp = {
     };
 
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
+      await ServiceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
         identifier
       );
     if (!serviceDefinition) {

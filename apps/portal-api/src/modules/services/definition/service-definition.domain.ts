@@ -6,7 +6,7 @@ import ServiceDefinition, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from '../registration/registration.mapping';
 
-export const serviceDefinitionDomain = {
+export const ServiceDefinitionDomain = {
   loadServiceDefinitionBy(
     field: ServiceDefinitionMutator
   ): Promise<ServiceDefinition | undefined> {
@@ -49,7 +49,7 @@ export const serviceDefinitionDomain = {
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
 
-    return serviceDefinitionDomain.loadServiceDefinitionBy({
+    return ServiceDefinitionDomain.loadServiceDefinitionBy({
       identifier: serviceDefinitionIdentifier,
     });
   },

@@ -24,7 +24,7 @@ import { objectUseCaseDomain } from '../../settings/objectUseCase/object-useCase
 import { useCaseApp } from '../../settings/useCase/use-case.app';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   ALL_METADATA_KEYS,
   DocumentHelper,
@@ -53,7 +53,7 @@ export const DocumentApp = {
     uploads: Upload[]
   ) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
       );
     if (!serviceDefinition) {
@@ -157,7 +157,7 @@ export const DocumentApp = {
     >
   ) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
       );
     if (!serviceDefinition) {
@@ -368,7 +368,7 @@ export const DocumentApp = {
 
   loadDocuments: async (input: QueryDocumentsArgs) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         extractId<ServiceInstanceId>(input.serviceInstanceId)
       );
     if (!serviceDefinition) {
@@ -396,7 +396,7 @@ export const DocumentApp = {
 
   loadPublicDocumentsByServiceSlug: async (serviceInstanceSlug: string) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstanceSlug(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstanceSlug(
         serviceInstanceSlug
       );
     if (!serviceDefinition) {
@@ -427,7 +427,7 @@ export const DocumentApp = {
     slug: string
   ) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
       );
     if (!serviceDefinition) {
@@ -451,7 +451,7 @@ export const DocumentApp = {
 
   loadPublicDocuments: async (input: QueryPublicDocumentsArgs) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         extractId<ServiceInstanceId>(input.serviceInstanceId)
       );
     if (!serviceDefinition) {
