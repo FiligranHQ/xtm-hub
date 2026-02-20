@@ -1012,24 +1012,8 @@ jobs:
             }
 
   deploy-feature-env:
-    needs: manage-pr-and-issues
     if: github.event_name == 'pull_request_target' && github.event.action == 'labeled' && github.event.label.name == 'needs feature env' && needs.manage-pr-and-issues.outputs.pr_number != ''
     uses: ./.github/workflows/test-feature-branch.yml
     with:
       pr_number: ${{ needs.manage-pr-and-issues.outputs.pr_number }}
     secrets: inherit
-  debug-why-not-deploy:
-    needs: manage-pr-and-issues
-    if: |
-      !(github.event_name == 'pull_request_target' &&
-        github.event.action == 'labeled' &&
-        github.event.label.name == 'needs feature env' &&
-        needs.manage-pr-and-issues.outputs.pr_number != '')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print debug info
-        run: |
-          echo "event_name=${{ github.event_name }}"
-          echo "action=${{ github.event.action }}"
-          echo "label=${{ github.event.label.name }}"
-          echo "pr_number=${{ needs.manage-pr-and-issues.outputs.pr_number }}"
