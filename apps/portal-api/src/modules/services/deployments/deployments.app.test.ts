@@ -30,7 +30,11 @@ import DeploymentRequest, {
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
-import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
+import {
+  SYSTEM_USER_UUID,
+  XTM_HUB_DEV_TEAM_EMAIL,
+  XTM_HUB_SUPPORT_EMAIL,
+} from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
@@ -54,6 +58,7 @@ import {
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../knexfile';
+import portalConfig from '../../../config';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { PortalContext } from '../../../model/portal-context';
@@ -332,80 +337,172 @@ describe('Deployment app', () => {
     });
 
     describe('mail', () => {
-      it('should send a mail if status is pending', async () => {
-        await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        expect(mockSendMail).toHaveBeenCalledTimes(2);
-
-        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'free_trial_requested',
-          params: {
-            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
-          },
-        });
-
-        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: XTM_HUB_SUPPORT_EMAIL,
-          template: 'admin_saas_instance_requested',
-          params: {
-            activitySector: 'cybersecurity',
-            deploymentType: 'Trial',
-            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
+      describe('development environment', () => {
+        it('should send a mail if status is pending to dev team', async () => {
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
-            useCase: 'use_case',
-            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
-          },
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_requested',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_DEV_TEAM_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: DeploymentRequestPlatformRegion.UsEast,
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
+        });
+
+        it('should send a mail if there is no space available', async () => {
+          vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+            isPlaceAvailable: false,
+          });
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_queued',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_DEV_TEAM_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: 'us_east',
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
         });
       });
 
-      it('should send a mail if there is no space available', async () => {
-        vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
-          isPlaceAvailable: false,
-        });
-        await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
+      describe('production environment', () => {
+        let originalEnvironment: typeof portalConfig.environment;
+
+        beforeEach(async () => {
+          originalEnvironment = portalConfig.environment;
+          portalConfig.environment = 'production';
         });
 
-        expect(mockSendMail).toHaveBeenCalledTimes(2);
-
-        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'free_trial_queued',
-          params: {
-            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
-          },
+        afterEach(async () => {
+          portalConfig.environment = originalEnvironment;
         });
 
-        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: XTM_HUB_SUPPORT_EMAIL,
-          template: 'admin_saas_instance_requested',
-          params: {
-            activitySector: 'cybersecurity',
-            deploymentType: 'Trial',
-            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
-            region: 'us_east',
-            useCase: 'use_case',
-            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
-          },
+        it('should send a mail if status is pending to dev team', async () => {
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_requested',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_SUPPORT_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: DeploymentRequestPlatformRegion.UsEast,
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
+        });
+
+        it('should send a mail if there is no space available', async () => {
+          vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+            isPlaceAvailable: false,
+          });
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_queued',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_SUPPORT_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: 'us_east',
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
         });
       });
     });
