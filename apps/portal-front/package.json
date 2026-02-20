@@ -85,7 +85,7 @@
     "vitest": "3.2.4"
   },
   "tsConfig": "apps/portal-front/tsconfig.json",
-  "packageManager": "yarn@4.10.3",
+  "packageManager": "yarn@4.12.0",
   "prettier": {
     "printWidth": 80,
     "semi": true,
