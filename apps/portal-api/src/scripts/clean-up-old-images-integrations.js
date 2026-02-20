@@ -38,8 +38,8 @@ async function run() {
       'Document.service_instance_id'
     )
     .whereIn('ServiceInstance.slug', [
-      'open-cti-integrations',
-      'open-aev-scenarios',
+      'opencti-integrations',
+      'openaev-scenarios',
     ])
     .select('Document.id', 'Document.minio_name');
   // eslint-disable-next-line no-console
