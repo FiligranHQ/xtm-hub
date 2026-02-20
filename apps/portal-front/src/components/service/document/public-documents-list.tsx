@@ -19,13 +19,14 @@ import {
 } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
-import React, { useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
+import { useSessionStorage } from 'usehooks-ts';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
@@ -67,6 +68,23 @@ const PublicDocumentsList: React.FC<Props> = ({
     pageIndex: 0,
     pageSize,
   });
+
+  const [scrollPosition] = useSessionStorage('scrollPosition', {
+    container: 'main',
+    position: 0,
+  });
+
+  useLayoutEffect(() => {
+    if (scrollPosition.position) {
+      const el = window.document.querySelector('main');
+      if (!el) return;
+
+      el.scrollTo({
+        top: scrollPosition.position,
+        behavior: 'auto',
+      });
+    }
+  }, []);
 
   const handleRefetchData = (
     args?: Partial<publicDocumentsQuery$variables>

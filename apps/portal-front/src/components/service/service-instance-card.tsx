@@ -5,7 +5,8 @@ import { ArrowOutwardIcon, LogoFiligranIcon } from '@filigran/icon';
 import { AspectRatio, Button } from '@filigran/ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
+import { useSessionStorage } from 'usehooks-ts';
 
 export type PlatformHoverAction = {
   id: string;
@@ -44,6 +45,13 @@ interface ServiceInstanceCardProps {
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className }) => {
+  const [, setScrollPosition] = useSessionStorage('scrollPosition', {});
+  useEffect(() => {
+    setScrollPosition({
+      container: 'main',
+      position: 0,
+    });
+  }, []);
   const renderHoverButton = useCallback((action: PlatformHoverAction) => {
     if (!action.href) {
       return null;

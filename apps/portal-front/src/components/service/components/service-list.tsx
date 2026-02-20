@@ -23,7 +23,8 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext } from 'react';
+import { useContext, useLayoutEffect } from 'react';
+import { useSessionStorage } from 'usehooks-ts';
 
 export interface ServiceListProps {
   active: SubscribableResource[];
@@ -63,6 +64,28 @@ const ServiceList = ({
       reset: removeLabels,
     },
   };
+
+  const [scrollPosition] = useSessionStorage('scrollPosition', {
+    container: 'main',
+    position: 0,
+  });
+  useLayoutEffect(() => {
+    if (scrollPosition.position > 0) {
+      if (scrollPosition.container === 'main') {
+        const el = window.document.querySelector('main');
+        if (!el) return;
+        el.scrollTo({
+          top: scrollPosition.position,
+          behavior: 'auto',
+        });
+      } else {
+        window.scrollTo({
+          top: scrollPosition.position,
+          behavior: 'auto',
+        });
+      }
+    }
+  }, []);
 
   const activeByIntegrationType = active.reduce<
     Record<string, SubscribableResource[]>

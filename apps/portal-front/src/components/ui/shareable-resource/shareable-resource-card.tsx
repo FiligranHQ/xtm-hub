@@ -12,6 +12,7 @@ import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import { useSessionStorage } from 'usehooks-ts';
 
 interface ShareableServiceInstance {
   id: string;
@@ -44,10 +45,23 @@ const ShareableResourceCard = ({
   serviceInstance,
   publicPath = false,
 }: ShareableResourceCardProps) => {
+  const [, setScrollPosition] = useSessionStorage('scrollPosition', {});
+  const handleClick = () => {
+    const scrollContainer = window.document.querySelector('main');
+    const scrollTop =
+      scrollContainer?.scrollTop === 0
+        ? window.scrollY
+        : scrollContainer?.scrollTop;
+    setScrollPosition({
+      container: scrollContainer?.scrollTop === 0 ? 'window' : 'main',
+      position: scrollTop,
+    });
+  };
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover h-[348px]">
       <Link
         className="flex flex-col h-full"
+        onClick={handleClick}
         href={detailUrl}>
         <ShareableResourceCardHeader
           document={document}
