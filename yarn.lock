@@ -387,9 +387,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.990.0":
-  version: 3.990.0
-  resolution: "@aws-sdk/client-s3@npm:3.990.0"
+"@aws-sdk/client-s3@npm:3.991.0":
+  version: 3.991.0
+  resolution: "@aws-sdk/client-s3@npm:3.991.0"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:5.2.0"
     "@aws-crypto/sha256-browser": "npm:5.2.0"
@@ -407,9 +407,9 @@ __metadata:
     "@aws-sdk/middleware-ssec": "npm:^3.972.3"
     "@aws-sdk/middleware-user-agent": "npm:^3.972.10"
     "@aws-sdk/region-config-resolver": "npm:^3.972.3"
-    "@aws-sdk/signature-v4-multi-region": "npm:3.990.0"
+    "@aws-sdk/signature-v4-multi-region": "npm:3.991.0"
     "@aws-sdk/types": "npm:^3.973.1"
-    "@aws-sdk/util-endpoints": "npm:3.990.0"
+    "@aws-sdk/util-endpoints": "npm:3.991.0"
     "@aws-sdk/util-user-agent-browser": "npm:^3.972.3"
     "@aws-sdk/util-user-agent-node": "npm:^3.972.8"
     "@smithy/config-resolver": "npm:^4.4.6"
@@ -446,7 +446,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.2.0"
     "@smithy/util-waiter": "npm:^4.2.8"
     tslib: "npm:^2.6.2"
-  checksum: 10/d7a62c9de55c7529b2570ad5d4cf97a081afbadaf10f0cd871e9eb8bbbe41fbeea09c46d56efe32867d089870dfeb82dffdb3bf9d4f0de91538dadbaf53aa1dc
+  checksum: 10/d04f845e281aa2350dd682cac467a6974d5c3a9fe949690a4912bda3f0183c0d7bf68ce65ddcc843d371cf6bf04caa78aa7f520031d044d7636505ec896e0b95
   languageName: node
   linkType: hard
 
@@ -661,9 +661,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-storage@npm:3.990.0":
-  version: 3.990.0
-  resolution: "@aws-sdk/lib-storage@npm:3.990.0"
+"@aws-sdk/lib-storage@npm:3.991.0":
+  version: 3.991.0
+  resolution: "@aws-sdk/lib-storage@npm:3.991.0"
   dependencies:
     "@smithy/abort-controller": "npm:^4.2.8"
     "@smithy/middleware-endpoint": "npm:^4.4.14"
@@ -673,8 +673,8 @@ __metadata:
     stream-browserify: "npm:3.0.0"
     tslib: "npm:^2.6.2"
   peerDependencies:
-    "@aws-sdk/client-s3": ^3.990.0
-  checksum: 10/5fe55a163ea78e54e3dcd46f873c6b68671551448bba39e27dd20d7b364818269cf51e8a6f44c553443fd638d1a2346532b28a1f16f0d2814190a7101c437d43
+    "@aws-sdk/client-s3": ^3.991.0
+  checksum: 10/cf13a112909a68fcf3c269d493d95b330e7fb66db07e9798ab3ea8ad159ff3bb2e18a1a0032be3c4970d4241478b73ac2d999cafe581a28470ce8426c26ea5b3
   languageName: node
   linkType: hard
 
@@ -881,9 +881,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/signature-v4-multi-region@npm:3.990.0":
-  version: 3.990.0
-  resolution: "@aws-sdk/signature-v4-multi-region@npm:3.990.0"
+"@aws-sdk/signature-v4-multi-region@npm:3.991.0":
+  version: 3.991.0
+  resolution: "@aws-sdk/signature-v4-multi-region@npm:3.991.0"
   dependencies:
     "@aws-sdk/middleware-sdk-s3": "npm:^3.972.10"
     "@aws-sdk/types": "npm:^3.973.1"
@@ -891,7 +891,7 @@ __metadata:
     "@smithy/signature-v4": "npm:^5.3.8"
     "@smithy/types": "npm:^4.12.0"
     tslib: "npm:^2.6.2"
-  checksum: 10/dc2c015e48c58eccd118fd3b7a86204fed287debcdf0d6c92d54a07e14418e7ada67410dad8ed08e8436873a51ca1dde7a95ebb9a43f789e661620e6ab6a63fe
+  checksum: 10/2d0cc0f463e9949c31028bc0953905beb528034beb702c2639785eb24117bacf03faaffed76d6b6e12a9f94912afc6a95e3c5910452a0e3152922ea79ab291ce
   languageName: node
   linkType: hard
 
@@ -949,6 +949,19 @@ __metadata:
     "@smithy/util-endpoints": "npm:^3.2.8"
     tslib: "npm:^2.6.2"
   checksum: 10/8ee421d885161b420dcafa7625ab77aa46fd96234b5fbde538fbcfcaec7268fb4772377b647aeed4ac97efff55618ad51dd1589eb710b1e0e7c03757975f4354
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-endpoints@npm:3.991.0":
+  version: 3.991.0
+  resolution: "@aws-sdk/util-endpoints@npm:3.991.0"
+  dependencies:
+    "@aws-sdk/types": "npm:^3.973.1"
+    "@smithy/types": "npm:^4.12.0"
+    "@smithy/url-parser": "npm:^4.2.8"
+    "@smithy/util-endpoints": "npm:^3.2.8"
+    tslib: "npm:^2.6.2"
+  checksum: 10/2f8c47d5496a496e379413734860e7dbdfaa96856849209f970403f9a20fff2080e4c1ee9ac1503c42e0ba4295c5369088b9a593c932029e08653305b037aa4e
   languageName: node
   linkType: hard
 
@@ -8856,8 +8869,8 @@ __metadata:
   dependencies:
     "@apollo/server": "npm:5.4.0"
     "@as-integrations/express5": "npm:1.1.2"
-    "@aws-sdk/client-s3": "npm:3.990.0"
-    "@aws-sdk/lib-storage": "npm:3.990.0"
+    "@aws-sdk/client-s3": "npm:3.991.0"
+    "@aws-sdk/lib-storage": "npm:3.991.0"
     "@elastic/elasticsearch": "npm:8.19.1"
     "@electric-sql/pglite": "npm:0.3.15"
     "@eslint/js": "npm:9.39.2"
