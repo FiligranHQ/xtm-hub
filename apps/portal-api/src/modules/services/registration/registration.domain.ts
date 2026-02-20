@@ -185,8 +185,10 @@ export const registrationDomain = {
             );
           });
         }
+      })
+      .where(function () {
         if (onlyTrial) {
-          this.whereNull('DeploymentRequest.id').orWhere(function () {
+          this.whereNotNull('DeploymentRequest.id').andWhere(function () {
             this.where(
               'DeploymentRequest.counts_in_orga_quota',
               '=',
