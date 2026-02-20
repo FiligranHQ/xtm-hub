@@ -896,15 +896,15 @@
           "Blocks": {
             "First": {
               "Title": "Établir des priorités",
-              "Description": "Créez des simulations d'attaques offensives complètes pour identifier avec précision les vulnérabilités et les chemins d'attaque exploitables, en tirant parti des renseignements sur les menaces d'OpenCTI et de la cartographie ATT&CK de MITRE. Vous pouvez ensuite facilement hiérarchiser les menaces qui vous importent en fonction de vos exigences prioritaires en matière de renseignements (PIR)."
+              "Description": "Créez des simulations d'attaques offensives pour identifier les vulnérabilités et les chemins d'attaque exploitables, en tirant parti des renseignements sur les menaces d'OpenCTI et de la cartographie ATT&CK de MITRE pour hiérarchiser en fonction de vos PIR."
             },
             "Second": {
               "Title": "Test",
-              "Description": "Validez vos défenses en testant en permanence votre sécurité, vos processus et votre personnel en effectuant des tests atomiques spécifiques, en élaborant vos propres séquences d'attaque ou en important des scénarios préétablis. Vous pouvez organiser des exercices réalistes sur table pour tester les réponses de vos équipes aux escalades de sécurité. Utilisez l'EDR d'OpenAEV ou intégrez des collecteurs prédéfinis provenant des fournisseurs les plus courants."
+              "Description": "Validez vos défenses en continu en effectuant des tests atomiques spécifiques, vos propres séquences d'attaque ou en important des scénarios préétablis. Lancez des exercices réalistes pour tester les réponses de vos équipes en utilisant l'EDR d'OpenAEV ou intégrez des collecteurs prédéfinis provenant des fournisseurs les plus courants."
             },
             "Third": {
               "Title": "Fixer",
-              "Description": "Identifiez les points sur lesquels vous devez concentrer votre attention pour améliorer votre posture de sécurité. Visualisez et approfondissez les zones problématiques, accédez à des conseils de remédiation alimentés par l'IA et recueillez les commentaires qualitatifs de vos équipes. Vous pouvez construire une boucle de remédiation continue en créant automatiquement de nouveaux scénarios grâce à la création de scénarios assistée par l'IA."
+              "Description": "Identifiez précisément les points à améliorer dans votre posture de sécurité grâce à des analyses détaillées, des recommandations de correction basées sur l’IA et les retours de votre équipe — puis bouclez le processus avec la création de scénarios assistée par l’IA."
             }
           }
         },

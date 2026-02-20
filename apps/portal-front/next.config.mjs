@@ -53,22 +53,23 @@ const nextConfig = {
 
       {
         source:
-          '/cybersecurity-solutions/(open-bas-scenarios|obas-scenarios)/:path*',
-        destination: '/cybersecurity-solutions/open-aev-scenarios/:path*',
+          '/cybersecurity-solutions/(open-bas-scenarios|obas-scenarios|open-aev-scenarios)/:path*',
+        destination: '/cybersecurity-solutions/openaev-scenarios/:path*',
         permanent: true,
       },
 
       {
         source:
-          '/cybersecurity-solutions/(octi_integration_feeds|open-cti-integration-feeds)/:path*',
-        destination: '/cybersecurity-solutions/open-cti-integrations/:path*',
+          '/cybersecurity-solutions/(octi_integration_feeds|open-cti-integration-feeds|open-cti-integrations)/:path*',
+        destination: '/cybersecurity-solutions/opencti-integrations/:path*',
         permanent: true,
       },
 
       {
-        source: '/cybersecurity-solutions/octi_custom_dashboards/:path*',
+        source:
+          '/cybersecurity-solutions/(octi_custom_dashboards|open-cti-custom-dashboards)/:path*',
         destination:
-          '/cybersecurity-solutions/open-cti-custom-dashboards/:path*',
+          '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
         permanent: true,
       },
     ];

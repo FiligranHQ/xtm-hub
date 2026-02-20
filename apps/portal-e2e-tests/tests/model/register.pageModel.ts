@@ -8,6 +8,12 @@ export type PlatformDetails = {
   version?: string;
 };
 
+export const OPENCTI_PLATFORM_URL: PlatformDetails = {
+  url: 'http://localhost:3000',
+  title: 'Open%20CTI%20Instance',
+  id: '916121bf-d246-4a43-8522-24be19537b91',
+  contract: 'EE',
+};
 export default class RegisterPage {
   constructor(private page: Page) {}
 
@@ -16,11 +22,8 @@ export default class RegisterPage {
     await this.page.goto(encodeURI(url));
   }
 
-  async navigateToAndRegister(
-    redirectionKey: string,
-    platformDetails: PlatformDetails
-  ) {
-    await this.navigateTo(redirectionKey, platformDetails);
+  async navigateToAndRegister(redirectionKey: string) {
+    await this.navigateTo(redirectionKey, OPENCTI_PLATFORM_URL);
     await this.page.getByRole('button', { name: 'Register' }).click();
   }
 }

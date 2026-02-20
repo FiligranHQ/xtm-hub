@@ -8,6 +8,12 @@ on:
         description: "Pull Request Number"
         type: string
         required: true
+  workflow_call:
+    inputs:
+      pr_number:
+        description: "Pull Request Number"
+        type: string
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.pr_number }}

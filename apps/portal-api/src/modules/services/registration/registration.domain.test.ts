@@ -546,5 +546,47 @@ describe('Registration domain', () => {
       expect(platforms.length).toBe(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
+    it('should return platforms only active trials when onlyActiveTrials is true AND onlyTrial is true', async () => {
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Active,
+        platform_token: uuidv4(),
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        user_requester_id: contextBypassUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+      await DeploymentRequestDomain.insertDeploymentRequest({
+        id: uuidv4() as DeploymentRequest['id'],
+        service_instance_id: openCTIServiceInstanceId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        platform_token: uuidv4(),
+        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        user_requester_id: contextBypassUser.user.id,
+        ordering: 1,
+        request_date: new Date(),
+      });
+      await registrationDomain.registerNewPlatform({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceDefinitionId,
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+
+      const platforms = await registrationDomain.loadRegisteredPlatforms({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        onlyActive: true,
+        onlyTrial: true,
+      });
+
+      expect(platforms.length).toBe(1);
+      expect(platforms[0]?.config.platform_id).toBe(platformId);
+    });
   });
 });

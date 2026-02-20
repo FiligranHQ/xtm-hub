@@ -1,4 +1,4 @@
-import { JSONSchemaToZod } from '@dmitryrechkin/json-schema-to-zod';
+import z from 'zod';
 import { db } from '../../../../knexfile';
 import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration, {
@@ -9,6 +9,7 @@ import ServiceContract, {
 } from '../../../model/kanel/public/ServiceContract';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 
 const loadServiceContractBy = async (
@@ -29,8 +30,13 @@ export const serviceContractDomain = {
       throw new Error(ErrorCode.ServiceContractNotFound);
     }
 
-    const schema = JSONSchemaToZod.convert(serviceContract.schema);
-    const { success } = schema.safeParse(config);
+    const schema = z.fromJSONSchema(
+      serviceContract.schema as Parameters<typeof z.fromJSONSchema>[0]
+    );
+    const { success, error } = schema.safeParse(config);
+    if (!success) {
+      logApp.error('Invalid service configuration', { error });
+    }
     return success;
   },
 
