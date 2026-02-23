@@ -36,9 +36,12 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({
     if (!serviceInstanceId || !loadQuery) {
       return;
     }
-    loadQuery({
-      serviceInstanceId,
-    });
+    loadQuery(
+      {
+        serviceInstanceId,
+      },
+      { fetchPolicy: 'store-and-network' }
+    );
   }, [loadQuery, serviceInstanceId]);
 
   const onCompleted = () => {
