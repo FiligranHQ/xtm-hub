@@ -6,6 +6,7 @@ import pkg from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 
+import config from 'config';
 import promBundle from 'express-prom-bundle';
 import expressSession, { SessionData } from 'express-session/index.js';
 import { createHandler } from 'graphql-sse/lib/use/express';
@@ -277,7 +278,12 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
 
   await platformInit();
 
-  if (process.env.DATA_SEEDING || portalConfig.environment === 'development') {
+  const baseURLFront: string = config.get('base_url_front');
+  if (
+    process.env.DATA_SEEDING ||
+    (portalConfig.environment === 'development' &&
+      !baseURLFront.includes('https://dev.hub.staging.filigran.io'))
+  ) {
     logApp.info('[SEEDING] Running development seeds...');
     await dbMigration.seed();
     logApp.info('[SEEDING] Development seeds completed');
