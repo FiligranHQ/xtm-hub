@@ -18,6 +18,8 @@ env:
 jobs:
   manage-pr-and-issues:
     runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.extract_issues.outputs.pr_number }}
     permissions:
       issues: write
       pull-requests: write
@@ -34,7 +36,7 @@ jobs:
       - name: Check if PR is from Renovate
         id: check_renovate
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
@@ -52,7 +54,7 @@ jobs:
 
       - name: Assign PR to creator
         if: github.event_name == 'pull_request' && github.event.action == 'opened' && steps.check_renovate.outputs.result != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -74,7 +76,7 @@ jobs:
       - name: Check if creator is in FiligranHQ organization
         if: github.event_name == 'pull_request' && github.event.action == 'opened'
         id: check_org_membership
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -93,7 +95,7 @@ jobs:
 
       - name: Add Filigran Team label
         if: steps.check_org_membership.outputs.result == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -106,7 +108,7 @@ jobs:
 
       - name: Extract issue numbers from PR body and title
         id: extract_issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -205,7 +207,7 @@ jobs:
 
       - name: Update Feature env field when "needs feature env" label is added
         if: github.event_name == 'pull_request_target' && github.event.action == 'labeled' && github.event.label.name == 'needs feature env' && steps.extract_issues.outputs.issue_numbers != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -214,6 +216,7 @@ jobs:
             const featureEnvUrl = `https://dev-pr-${prNumber}.hub.staging.filigran.io/`;
             console.log(`"needs feature env" label added to PR #${prNumber}`);
             console.log(`Setting Feature env URL: ${featureEnvUrl}`);
+            
             if (issueNumbers.length === 0) {
               console.log('No linked issues to update');
               return;
@@ -318,7 +321,7 @@ jobs:
 
       - name: Update issues status and start date in project
         if: steps.extract_issues.outputs.issue_numbers != '' && github.event.action != 'closed'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -579,7 +582,7 @@ jobs:
 
       - name: Update issues status to Ready to be deployed and set Effective end date on merge
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && steps.extract_issues.outputs.issue_numbers != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -764,7 +767,7 @@ jobs:
 
       - name: Check for approval and label
         if: github.event_name == 'pull_request_review' || github.event_name == 'pull_request_target' || github.event_name == 'workflow_run'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -1007,3 +1010,10 @@ jobs:
             } catch (error) {
               console.error('Error updating project status:', error);
             }
+
+  deploy-feature-env:
+    if: github.event_name == 'pull_request_target' && github.event.action == 'labeled' && github.event.label.name == 'needs feature env' && needs.manage-pr-and-issues.outputs.pr_number != ''
+    uses: ./.github/workflows/test-feature-branch.yml
+    with:
+      pr_number: ${{ needs.manage-pr-and-issues.outputs.pr_number }}
+    secrets: inherit

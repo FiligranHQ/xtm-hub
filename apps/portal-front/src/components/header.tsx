@@ -4,13 +4,16 @@ import I18nSelect from '@/components/i18n-select';
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { NavigationApp } from '@/components/navigation';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { cn, isDevelopment } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
 import { NotificationButton } from '@/components/notification/notification-button';
+import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/display-trial-list';
+import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
+import { FeatureFlag } from '@/utils/constant';
+import { MenuIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui';
 import {
   Sheet,
@@ -20,7 +23,6 @@ import {
   SheetTrigger,
 } from '@filigran/ui/clients';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { MenuIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -42,7 +44,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const router = useRouter();
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
-
+  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
   // Legitimate effect: close the menu on route change.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setOpen(false), [currentPath]);
@@ -68,6 +70,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       />
 
       <div className="mobile:hidden flex items-center gap-s">
+        {isOpenAEVTrialsEnabled && <DisplayTrialList />}
         {canManageUser && <NotificationButton />}
         <IconActions
           className="rounded-full"
@@ -100,7 +103,6 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         </IconActions>
         {isDevelopment() && (
           <>
-            <ThemeToggle />
             <I18nSelect />
           </>
         )}
@@ -108,7 +110,6 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       <div className="flex gap-xs items-center sm:hidden">
         {isDevelopment() && (
           <>
-            <ThemeToggle />
             <I18nSelect />
           </>
         )}

@@ -1450,6 +1450,7 @@ export type RegisteredPlatformInput = {
 export type RegisteredPlatformsInput = {
   identifier?: InputMaybe<PlatformIdentifier>;
   onlyActive?: InputMaybe<Scalars['Boolean']['input']>;
+  onlyTrial?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type RegistrationResponse = {

@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
 import {
+  DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   OrganizationCapability,
   PlatformContract,
@@ -151,9 +152,10 @@ export const registrationDomain = {
     query: {
       platformIdentifier?: PlatformIdentifier;
       onlyActive?: boolean;
+      onlyTrial?: boolean;
     } = {}
   ): Promise<DomainRegisteredPlatform[]> => {
-    const { platformIdentifier, onlyActive } = query;
+    const { platformIdentifier, onlyActive, onlyTrial } = query;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
           serviceDefinitionIdentifierMappedByPlatformIdentifier[
@@ -171,11 +173,32 @@ export const registrationDomain = {
       })
       .where(function () {
         if (onlyActive) {
-          this.where(
-            'DeploymentRequest.hub_status',
-            '=',
-            DeploymentRequestHubStatus.Active
-          ).orWhereNull('DeploymentRequest.id');
+          this.whereNull('DeploymentRequest.id').orWhere(function () {
+            this.where(
+              'DeploymentRequest.counts_in_orga_quota',
+              '=',
+              true
+            ).andWhere(
+              'DeploymentRequest.hub_status',
+              '=',
+              DeploymentRequestHubStatus.Active
+            );
+          });
+        }
+      })
+      .where(function () {
+        if (onlyTrial) {
+          this.whereNotNull('DeploymentRequest.id').andWhere(function () {
+            this.where(
+              'DeploymentRequest.counts_in_orga_quota',
+              '=',
+              true
+            ).andWhere(
+              'DeploymentRequest.type',
+              '=',
+              DeploymentRequestDeploymentType.Trial
+            );
+          });
         }
       });
   },

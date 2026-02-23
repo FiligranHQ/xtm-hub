@@ -30,7 +30,11 @@ import DeploymentRequest, {
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
-import { SYSTEM_USER_UUID, XTM_HUB_SUPPORT_EMAIL } from '../../../portal.const';
+import {
+  SYSTEM_USER_UUID,
+  XTM_HUB_DEV_TEAM_EMAIL,
+  XTM_HUB_SUPPORT_EMAIL,
+} from '../../../portal.const';
 import * as mailService from '../../../server/mail-service';
 import {
   BadRequestErrorCode,
@@ -46,11 +50,15 @@ import {
   TelemetryOrganizationType,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { ServiceGroupDomain } from '../group/service-group.domain';
+import {
+  ServiceGroupDomain,
+  ServiceGroupName,
+} from '../group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../knexfile';
+import portalConfig from '../../../config';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { PortalContext } from '../../../model/portal-context';
@@ -329,80 +337,172 @@ describe('Deployment app', () => {
     });
 
     describe('mail', () => {
-      it('should send a mail if status is pending', async () => {
-        await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        expect(mockSendMail).toHaveBeenCalledTimes(2);
-
-        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'free_trial_requested',
-          params: {
-            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
-          },
-        });
-
-        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: XTM_HUB_SUPPORT_EMAIL,
-          template: 'admin_saas_instance_requested',
-          params: {
-            activitySector: 'cybersecurity',
-            deploymentType: 'Trial',
-            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
+      describe('development environment', () => {
+        it('should send a mail if status is pending to dev team', async () => {
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
-            useCase: 'use_case',
-            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
-          },
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_requested',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_DEV_TEAM_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: DeploymentRequestPlatformRegion.UsEast,
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
+        });
+
+        it('should send a mail if there is no space available', async () => {
+          vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+            isPlaceAvailable: false,
+          });
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_queued',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_DEV_TEAM_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: 'us_east',
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
         });
       });
 
-      it('should send a mail if there is no space available', async () => {
-        vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
-          isPlaceAvailable: false,
-        });
-        await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
+      describe('production environment', () => {
+        let originalEnvironment: typeof portalConfig.environment;
+
+        beforeEach(async () => {
+          originalEnvironment = portalConfig.environment;
+          portalConfig.environment = 'production';
         });
 
-        expect(mockSendMail).toHaveBeenCalledTimes(2);
-
-        expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'free_trial_queued',
-          params: {
-            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
-          },
+        afterEach(async () => {
+          portalConfig.environment = originalEnvironment;
         });
 
-        expect(mockSendMail).toHaveBeenNthCalledWith(2, {
-          to: XTM_HUB_SUPPORT_EMAIL,
-          template: 'admin_saas_instance_requested',
-          params: {
-            activitySector: 'cybersecurity',
-            deploymentType: 'Trial',
-            organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
-            region: 'us_east',
-            useCase: 'use_case',
-            userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
-          },
+        it('should send a mail if status is pending to dev team', async () => {
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_requested',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_SUPPORT_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: DeploymentRequestPlatformRegion.UsEast,
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
+        });
+
+        it('should send a mail if there is no space available', async () => {
+          vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+            isPlaceAvailable: false,
+          });
+          await DeploymentsApp.createDeploymentRequest({
+            activity_sector: 'cybersecurity',
+            job_title: 'myJob',
+            use_case: 'use_case',
+            platform_identifier: PlatformIdentifier.Opencti,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Trial,
+          });
+
+          expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(1, {
+            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            template: 'free_trial_queued',
+            params: {
+              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+            },
+          });
+
+          expect(mockSendMail).toHaveBeenNthCalledWith(2, {
+            to: XTM_HUB_SUPPORT_EMAIL,
+            template: 'admin_saas_instance_requested',
+            params: {
+              activitySector: 'cybersecurity',
+              deploymentType: 'Trial',
+              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              platformIdentifier: PlatformIdentifier.Opencti,
+              region: 'us_east',
+              useCase: 'use_case',
+              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+            },
+          });
         });
       });
     });
@@ -674,7 +774,7 @@ describe('Deployment app', () => {
       }
     });
 
-    it(' with Active status, it should create ServiceGroup with admin', async () => {
+    it('with Active status for OpenCTI, it should create OpenCTI ServiceGroups (Admin, Analyst, Reader) with admin user', async () => {
       const deployment = await DeploymentsApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -687,14 +787,20 @@ describe('Deployment app', () => {
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
-      const getUserGroup = await ServiceGroupDomain.loadServiceGroups({
+      const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
-      expect(getUserGroup.length).toBe(3);
+      expect(serviceGroups.length).toBe(3);
+      expect(serviceGroups.map((g) => g.name).sort()).toEqual([
+        ServiceGroupName.Admin,
+        ServiceGroupName.Analyst,
+        ServiceGroupName.Reader,
+      ]);
+
       const userAdminGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
           dbDeploymentRequest!.service_instance_id,
-          'Admin'
+          ServiceGroupName.Admin
         );
       expect(userAdminGroup.length).toBe(1);
       expect(
@@ -706,16 +812,72 @@ describe('Deployment app', () => {
       const userAnalystGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
           dbDeploymentRequest!.service_instance_id,
-          'Analyst'
+          ServiceGroupName.Analyst
         );
       expect(userAnalystGroup.length).toBe(0);
       const userReaderGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
           dbDeploymentRequest!.service_instance_id,
-          'Reader'
+          ServiceGroupName.Reader
         );
 
       expect(userReaderGroup.length).toBe(0);
+    });
+
+    it('with Active status for OpenAEV, it should create OpenAEV ServiceGroups (Admin, Manager, Observer) with admin user', async () => {
+      const openaevDeployment = (await insertDeploymentRequest({
+        platform_identifier: PlatformIdentifier.Openaev,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Provisioning,
+      })) as DeploymentRequest;
+
+      const deployment = await DeploymentsApp.updateDeploymentRequest({
+        id: openaevDeployment.id as string,
+        actual_state: DeploymentRequestPlatformState.Active,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        platform_id: 'fake openaev instance id',
+        failure_reason: 'not failed',
+      });
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
+        service_instance_id: dbDeploymentRequest!.service_instance_id,
+      });
+      expect(serviceGroups.length).toBe(3);
+      expect(serviceGroups.map((g) => g.name).sort()).toEqual([
+        ServiceGroupName.Admin,
+        ServiceGroupName.Manager,
+        ServiceGroupName.Observer,
+      ]);
+
+      const userAdminGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest!.service_instance_id,
+          ServiceGroupName.Admin
+        );
+      expect(userAdminGroup.length).toBe(1);
+      expect(
+        userAdminGroup.find(
+          ({ email }) =>
+            email === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+        )
+      ).toBeTruthy();
+      const userManagerGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest!.service_instance_id,
+          ServiceGroupName.Manager
+        );
+      expect(userManagerGroup.length).toBe(0);
+      const userObserverGroup =
+        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+          dbDeploymentRequest!.service_instance_id,
+          ServiceGroupName.Observer
+        );
+      expect(userObserverGroup.length).toBe(0);
     });
     it('should throw if deployment request does not exist', async () => {
       const call = DeploymentsApp.updateDeploymentRequest({

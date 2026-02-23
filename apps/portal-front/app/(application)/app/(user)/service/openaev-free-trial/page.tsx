@@ -64,7 +64,6 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
                 OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
               ]}>
               <StartTrialButton
-                variant="gradient"
                 openForm={openTrialForm}
                 platformIdentifier={PlatformIdentifierEnum.OPENAEV}
               />

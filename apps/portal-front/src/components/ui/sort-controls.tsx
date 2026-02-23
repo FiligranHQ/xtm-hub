@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { ArrowDownwardIcon, ArrowUpwardIcon } from '@filigran/icon';
 import {
   Select,
   SelectContent,
@@ -8,7 +9,6 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
-import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
@@ -53,7 +53,8 @@ export const SortControls: React.FC<Props> = ({
         </SelectContent>
       </Select>
       <Button
-        className="p-1"
+        size="icon"
+        className="flex-none basis-9"
         variant="ghost-primary"
         aria-label={`${t('SortControls.SortBy')} ${selectedOrderMode}`}
         onClick={() =>
@@ -64,9 +65,9 @@ export const SortControls: React.FC<Props> = ({
           )
         }>
         {selectedOrderMode === OrderingModeEnum.DESC ? (
-          <ArrowUp />
+          <ArrowUpwardIcon className="h-4 w-4" />
         ) : (
-          <ArrowDown />
+          <ArrowDownwardIcon className="h-4 w-4" />
         )}
       </Button>
     </div>

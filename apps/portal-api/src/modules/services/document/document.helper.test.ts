@@ -14,6 +14,8 @@ import {
   IntegrationType,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
+import { default as DocumentModel } from '../../../model/kanel/public/Document';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { MinioFile } from '../../../thirdparty/minio/types';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -26,6 +28,7 @@ import {
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import { DocumentApp } from './document.app';
 import {
+  type Document,
   DocumentHelper,
   loadDocumentWithCountersById,
   loadSeoDocumentWithCountersBySlug,
@@ -346,6 +349,57 @@ describe('DocumentHelper', () => {
       expect(result).toBeDefined();
       expect(result.download_number).toBe(5);
       expect(result.share_number).toBe(12);
+    });
+  });
+
+  describe('deleteFileFromMinIO', () => {
+    const parentDocument = {
+      id: 'parent-id',
+      minio_name: 'parent-file',
+    } as DocumentModel;
+
+    beforeEach(() => {
+      vi.restoreAllMocks();
+      vi.spyOn(MinIOClient, 'deleteFile').mockResolvedValue(undefined);
+    });
+
+    it('should delete file of parent document', async () => {
+      await DocumentHelper.deleteFileFromMinIO([], parentDocument);
+
+      expect(MinIOClient.deleteFile).toHaveBeenCalledWith('parent-file');
+      expect(MinIOClient.deleteFile).toHaveBeenCalledTimes(1);
+    });
+
+    it('should delete file of parent and children documents', async () => {
+      // Given
+      const childDocuments = [
+        {
+          id: '854f57e7-fb3d-4aed-a719-825ec9c0626e',
+          minio_name: 'child-file-1',
+          use_cases: [],
+        } as unknown as Partial<Document>,
+        {
+          id: '0df534f5-0e38-41ac-a19f-3ac76e3e334d',
+          minio_name: 'child-file-2',
+          use_cases: [],
+        } as unknown as Partial<Document>,
+      ];
+
+      // When
+      await DocumentHelper.deleteFileFromMinIO(
+        childDocuments as Document[],
+        parentDocument
+      );
+
+      // Then
+      expect(MinIOClient.deleteFile).toHaveBeenCalledTimes(3);
+    });
+
+    it('should handle empty children array', async () => {
+      await DocumentHelper.deleteFileFromMinIO([], parentDocument);
+
+      expect(MinIOClient.deleteFile).toHaveBeenCalledTimes(1);
+      expect(MinIOClient.deleteFile).toHaveBeenCalledWith('parent-file');
     });
   });
 });

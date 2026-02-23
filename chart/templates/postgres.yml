@@ -13,6 +13,8 @@ spec:
     enablePodMonitor: true
   imageName: "ghcr.io/cloudnative-pg/postgresql:{{ .Values.postgres.version }}"
   imagePullPolicy: "IfNotPresent"
+  primaryUpdateMethod: switchover
+  primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:
       database: xtmhub

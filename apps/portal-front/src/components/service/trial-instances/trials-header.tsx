@@ -1,4 +1,4 @@
-import { PlatformTranslationMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import React from 'react';
 
@@ -11,7 +11,7 @@ export const TrialsHeader: React.FC<Props> = ({
   actions,
   platformIdentifier = PlatformIdentifierEnum.OPENCTI,
 }) => {
-  const platformName = PlatformTranslationMapping[platformIdentifier];
+  const platformName = PlatformMetadataMapping[platformIdentifier].name;
 
   return (
     <header className="flex justify-between items-start my-xl">

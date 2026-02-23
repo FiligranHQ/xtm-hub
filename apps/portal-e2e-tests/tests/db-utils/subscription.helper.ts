@@ -12,3 +12,7 @@ export const removeSubscriptionFromService = async (subscription: {
     .delete('*');
 };
 export const getSubscriptions = () => db('Subscription').select('*');
+
+export const addSubscription = async (subscriptionData) => {
+  await db('Subscription').insert(subscriptionData).onConflict('id').ignore();
+};
