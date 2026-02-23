@@ -11,8 +11,6 @@ import { APP_PATH } from '@/utils/path/constant';
 
 import { NotificationButton } from '@/components/notification/notification-button';
 import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/display-trial-list';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { MenuIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui';
 import {
@@ -44,7 +42,6 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
   const router = useRouter();
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
-  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
   // Legitimate effect: close the menu on route change.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setOpen(false), [currentPath]);
@@ -70,7 +67,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       />
 
       <div className="mobile:hidden flex items-center gap-s">
-        {isOpenAEVTrialsEnabled && <DisplayTrialList />}
+        <DisplayTrialList />
         {canManageUser && <NotificationButton />}
         <IconActions
           className="rounded-full"

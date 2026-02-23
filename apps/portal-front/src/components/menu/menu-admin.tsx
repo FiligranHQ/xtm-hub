@@ -1,8 +1,6 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
-import { FeatureFlag } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
 import { SettingsIcon } from '@filigran/icon';
 import {
@@ -106,10 +104,7 @@ const ClosedMenuAdmin = () => {
   );
 };
 
-const adminLinksData = (
-  t: UseTranslationsProps,
-  isOpenAEVTrialsEnabled: boolean
-) => [
+const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/parameters`,
     label: t('MenuLinks.Parameters'),
@@ -136,37 +131,30 @@ const adminLinksData = (
     label: t('MenuLinks.OpenCTITrials'),
     restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
-  ...(isOpenAEVTrialsEnabled
-    ? [
-        {
-          href: `/${APP_PATH}/admin/openaev-trials`,
-          label: t('MenuLinks.OpenAEVTrials'),
-          restriction: [PortalCapabilityEnum.READ_TRIALS],
-        },
-      ]
-    : []),
+  {
+    href: `/${APP_PATH}/admin/openaev-trials`,
+    label: t('MenuLinks.OpenAEVTrials'),
+    restriction: [PortalCapabilityEnum.READ_TRIALS],
+  },
 ];
 
 const AdminLinks = ({ className }: { className?: string }) => {
   const t = useTranslations();
-  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
   return (
     <>
-      {adminLinksData(t, isOpenAEVTrialsEnabled).map(
-        ({ href, label, restriction = [] }) => (
-          <GuardCapacityComponent
-            key={href}
-            portalCapabilityRestriction={[...restriction]}>
-            <li>
-              <AdminButton
-                className={className}
-                href={href}
-                label={label}
-              />
-            </li>
-          </GuardCapacityComponent>
-        )
-      )}
+      {adminLinksData(t).map(({ href, label, restriction = [] }) => (
+        <GuardCapacityComponent
+          key={href}
+          portalCapabilityRestriction={[...restriction]}>
+          <li>
+            <AdminButton
+              className={className}
+              href={href}
+              label={label}
+            />
+          </li>
+        </GuardCapacityComponent>
+      ))}
     </>
   );
 };
