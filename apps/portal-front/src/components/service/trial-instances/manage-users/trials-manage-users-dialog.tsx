@@ -37,7 +37,7 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({
       return;
     }
     loadQuery({
-      serviceInstanceId: serviceInstanceId,
+      serviceInstanceId,
     });
   }, [loadQuery, serviceInstanceId]);
 
