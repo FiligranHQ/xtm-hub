@@ -186,7 +186,7 @@ export type MakeQueryMapParams = {
 
 export type ServiceInfo = { link: string; description: string };
 export enum ServiceSlug {
-  OPEN_CTI_INTEGRATIONS = 'open-cti-integrations',
-  OPEN_CTI_CUSTOM_DASHBOARDS = 'open-cti-custom-dashboards',
-  OPEN_AEV_SCENARIOS = 'open-aev-scenarios',
+  OPEN_CTI_INTEGRATIONS = 'opencti-integrations',
+  OPEN_CTI_CUSTOM_DASHBOARDS = 'opencti-custom-dashboards',
+  OPEN_AEV_SCENARIOS = 'openaev-scenarios',
 }
