@@ -10,7 +10,7 @@ jobs:
   helm-suite:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: "Helm publish"
       uses: mbovo/action-helm-artifactory@v1.0.6
