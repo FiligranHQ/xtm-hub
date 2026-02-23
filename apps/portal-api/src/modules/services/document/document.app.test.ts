@@ -475,12 +475,12 @@ describe('DocumentApp', () => {
 
       const loadedDocuments =
         await DocumentApp.loadPublicDocumentsByServiceSlug(
-          'open-cti-custom-dashboards'
+          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG
         );
 
       expect(loadSeoDocumentsByServiceSlugSpy).toHaveBeenCalledWith(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-        'open-cti-custom-dashboards',
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG,
         CUSTOM_DASHBOARD_METADATA_KEYS
       );
       expect(loadedDocuments).toBeDefined();

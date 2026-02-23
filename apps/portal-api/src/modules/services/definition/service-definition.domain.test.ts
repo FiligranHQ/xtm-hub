@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
+import { SERVICES } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ServiceDefinitionDomain } from './service-definition.domain';
@@ -19,7 +20,7 @@ describe('ServiceDefinitionDomain', () => {
     it('should return service definition when is it linked to the service instance', async () => {
       const result =
         await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstanceSlug(
-          'open-cti-custom-dashboards'
+          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG
         );
 
       expect(result).toBeDefined();
@@ -41,7 +42,7 @@ describe('ServiceDefinitionDomain', () => {
 
     it('should return service definition when is it linked to the service instance', async () => {
       const serviceInstance = await db('ServiceInstance')
-        .where({ slug: 'open-cti-custom-dashboards' })
+        .where({ slug: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG })
         .first();
 
       expect(serviceInstance).toBeDefined();
