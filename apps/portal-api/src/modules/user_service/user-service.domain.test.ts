@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import User from '../../model/kanel/public/User';
 import UserService, {
@@ -20,16 +21,31 @@ import {
 } from './service-capability/generic_service_capability.const';
 import { UserServiceDomain } from './user_service.domain';
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const SIMPLE = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE;
+const ADMIN = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA;
+const SECOND_ORG_ID = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+
+const DAY = 86_400_000;
+
+// ---------------------------------------------------------------------------
+// Shared DB helpers
+// ---------------------------------------------------------------------------
+
 const cleanupUserServices = async (subscriptionId: SubscriptionId) => {
-  // Capabilities must be deleted before User_Service due to FK constraints
   const userServices = await db<UserService[]>('User_Service')
     .where('subscription_id', subscriptionId)
     .select('*');
 
   if (userServices.length > 0) {
-    const ids = userServices.map((us) => us.id);
     await db<UserServiceCapability>('UserService_Capability')
-      .whereIn('user_service_id', ids)
+      .whereIn(
+        'user_service_id',
+        userServices.map((us) => us.id)
+      )
       .delete();
   }
 
@@ -38,73 +54,138 @@ const cleanupUserServices = async (subscriptionId: SubscriptionId) => {
     .delete();
 };
 
-const seedUserServiceForSimpleUser = async (subscriptionId: SubscriptionId) => {
-  const email = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-  const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+const makeSubscription = (overrides?: {
+  id?: SubscriptionId;
+  service_instance_id?: ServiceInstanceId;
+  organization_id?: OrganizationId;
+  start_date?: Date;
+  end_date?: Date | null;
+  status?: string;
+}) => ({
+  id: (overrides?.id ?? uuidv4()) as SubscriptionId,
+  service_instance_id:
+    overrides?.service_instance_id ?? SERVICES.INSTANCES.VAULT.ID,
+  organization_id: overrides?.organization_id ?? SECOND_ORG_ID,
+  start_date: overrides?.start_date ?? new Date(),
+  end_date: overrides?.end_date !== undefined ? overrides.end_date : undefined,
+  billing: 0,
+  status: overrides?.status ?? SubscriptionStatus.ACCEPTED,
+});
 
-  const subscription = await db('Subscription')
-    .where('id', subscriptionId)
-    .first();
-
-  const result = await UserServiceDomain.addServiceToUsers(
-    subscription,
-    [email],
-    [GenericServiceCapabilityName.ACCESS]
-  );
-
-  return { email, userId, subscription, result };
+/** Creates a subscription and returns its id. */
+const createTestSubscription = async (
+  overrides?: Parameters<typeof makeSubscription>[0]
+) => {
+  const data = makeSubscription(overrides);
+  await createSubscription(data);
+  return data.id;
 };
+
+/** Inserts a bare User_Service row and returns its id. */
+const insertUserService = async (
+  userId: string,
+  subId: SubscriptionId
+): Promise<UserServiceId> => {
+  const id = uuidv4() as UserServiceId;
+  await db('User_Service').insert({
+    id,
+    user_id: userId,
+    subscription_id: subId,
+  });
+  return id;
+};
+
+/** Inserts a User_Service row plus one ACCESS capability row. */
+const insertUserServiceWithCapability = async (
+  userId: string,
+  subId: SubscriptionId
+): Promise<{ userServiceId: UserServiceId; capabilityId: string }> => {
+  const userServiceId = await insertUserService(userId, subId);
+  const capabilityId = uuidv4();
+  await db('UserService_Capability').insert({
+    id: capabilityId,
+    user_service_id: userServiceId,
+    generic_service_capability_id: GenericServiceCapabilityIds.AccessId,
+  });
+  return { userServiceId, capabilityId };
+};
+
+// ---------------------------------------------------------------------------
+// Shared lifecycle helpers for describe blocks that own one subscription
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates a fresh ACCEPTED subscription before each test and tears it down
+ * (plus all its User_Service rows) after each test.
+ * Returns a ref object so the `subscriptionId` is always current.
+ */
+const useSubscription = () => {
+  const ref = { id: '' as SubscriptionId };
+
+  beforeEach(async () => {
+    ref.id = await createTestSubscription({
+      start_date: new Date(),
+      end_date: undefined,
+    });
+  });
+
+  afterEach(async () => {
+    await cleanupUserServices(ref.id);
+    await db('Subscription').where('id', ref.id).delete();
+  });
+
+  return ref;
+};
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
 
 describe('UserServiceDomain', () => {
   describe('addServiceToUsers', () => {
-    let subscriptionId: SubscriptionId;
+    const sub = useSubscription();
 
-    beforeEach(async () => {
+    beforeEach(() => {
       vi.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
-
-      subscriptionId = uuidv4() as SubscriptionId;
-      await createSubscription({
-        id: subscriptionId,
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(),
-        end_date: undefined,
-        billing: 0,
-        status: SubscriptionStatus.ACCEPTED,
-      });
     });
 
-    afterEach(async () => {
+    afterEach(() => {
       vi.restoreAllMocks();
-      await cleanupUserServices(subscriptionId);
-      await db('Subscription').where('id', subscriptionId).delete();
     });
 
-    it('should create a UserService record for an existing user in the organization', async () => {
-      const { userId, result } =
-        await seedUserServiceForSimpleUser(subscriptionId);
+    const getSubscription = () =>
+      db('Subscription').where('id', sub.id).first();
+
+    const addSimpleUser = async (
+      capabilities = [GenericServiceCapabilityName.ACCESS]
+    ) => {
+      const subscription = await getSubscription();
+      return UserServiceDomain.addServiceToUsers(
+        subscription,
+        [SIMPLE.EMAIL],
+        capabilities
+      );
+    };
+
+    it('should create a UserService for an existing org user', async () => {
+      const result = await addSimpleUser();
 
       expect(result).toHaveLength(1);
-      expect(result[0]!.subscription_id).toBe(subscriptionId);
-      expect(result[0]!.user_id).toBe(userId);
+      expect(result[0]!.subscription_id).toBe(sub.id);
+      expect(result[0]!.user_id).toBe(SIMPLE.ID);
 
       const persisted = await db<UserService>('User_Service')
         .where({ id: result[0]!.id })
         .first();
       expect(persisted).toBeDefined();
-      expect(persisted!.subscription_id).toBe(subscriptionId);
+      expect(persisted!.subscription_id).toBe(sub.id);
     });
 
-    it('should still create a UserService and add the ACCESS capability when capabilities array is empty', async () => {
-      const email = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
+    it('should add the ACCESS capability even when capabilities array is empty', async () => {
+      const subscription = await getSubscription();
       const result = await UserServiceDomain.addServiceToUsers(
         subscription,
-        [email],
+        [SIMPLE.EMAIL],
         []
       );
 
@@ -128,124 +209,77 @@ describe('UserServiceDomain', () => {
       ).toBe(true);
     });
 
-    it('should create UserService records for multiple users in a single call', async () => {
-      const email1 = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-      const email2 =
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
+    it('should create UserService records for multiple users in one call', async () => {
+      const subscription = await getSubscription();
       const result = await UserServiceDomain.addServiceToUsers(
         subscription,
-        [email1, email2],
+        [SIMPLE.EMAIL, ADMIN.EMAIL],
         [GenericServiceCapabilityName.ACCESS]
       );
 
       expect(result).toHaveLength(2);
 
-      const userServiceIds = result.map((us) => us.id);
       const persisted = await db<UserService[]>('User_Service')
-        .whereIn('id', userServiceIds)
+        .whereIn(
+          'id',
+          result.map((us) => us.id)
+        )
         .select('*');
 
       expect(persisted).toHaveLength(2);
-
-      const subscriptionIds = persisted.map((us) => us.subscription_id);
-      expect(subscriptionIds.every((sid) => sid === subscriptionId)).toBe(true);
+      expect(persisted.every((us) => us.subscription_id === sub.id)).toBe(true);
     });
 
     it('should return an empty array and create no DB records when emails list is empty', async () => {
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
+      const subscription = await getSubscription();
       const result = await UserServiceDomain.addServiceToUsers(
         subscription,
         [],
         [GenericServiceCapabilityName.ACCESS]
       );
 
-      expect(result).toHaveLength(0);
       expect(result).toEqual([]);
 
-      const userServices = await db<UserService>('User_Service')
-        .where('subscription_id', subscriptionId)
+      const rows = await db<UserService>('User_Service')
+        .where('subscription_id', sub.id)
         .select('*');
-
-      expect(userServices).toHaveLength(0);
+      expect(rows).toHaveLength(0);
     });
 
     it('should skip users that already have a UserService for the subscription', async () => {
-      const email = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
-      // First call creates the UserService
-      const firstResult = await UserServiceDomain.addServiceToUsers(
-        subscription,
-        [email],
-        [GenericServiceCapabilityName.ACCESS]
-      );
-
-      expect(firstResult).toHaveLength(1);
-
-      // Second call for the same user should return an empty array (user service
-      // already exists; doesUserServiceExist returns true)
-      const secondResult = await UserServiceDomain.addServiceToUsers(
-        subscription,
-        [email],
-        [GenericServiceCapabilityName.ACCESS]
-      );
+      await addSimpleUser();
+      const secondResult = await addSimpleUser();
 
       expect(secondResult).toHaveLength(0);
 
-      // Only one User_Service row should exist in the DB
-      const allUserServices = await db<UserService>('User_Service')
-        .where({ subscription_id: subscriptionId })
+      const rows = await db<UserService>('User_Service')
+        .where({ subscription_id: sub.id })
         .select('*');
-
-      expect(allUserServices).toHaveLength(1);
+      expect(rows).toHaveLength(1);
     });
 
-    it('should only return newly created UserService records when some users already have access', async () => {
-      const email1 = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-      const email2 =
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
-      // Seed: add email1 first
+    it('should only return newly created records when some users already have access', async () => {
+      const subscription = await getSubscription();
       await UserServiceDomain.addServiceToUsers(
         subscription,
-        [email1],
+        [SIMPLE.EMAIL],
         [GenericServiceCapabilityName.ACCESS]
       );
 
-      // Now add both; only email2 should come back as newly created
       const result = await UserServiceDomain.addServiceToUsers(
         subscription,
-        [email1, email2],
+        [SIMPLE.EMAIL, ADMIN.EMAIL],
         [GenericServiceCapabilityName.ACCESS]
       );
 
       expect(result).toHaveLength(1);
-
-      const user2 = await loadUserBy({ email: email2 });
+      const user2 = await loadUserBy({ email: ADMIN.EMAIL });
       expect(result[0]!.user_id).toBe(user2.id);
     });
 
-    it('should create a new User record for a previously unknown email in the org domain', async () => {
-      // Use a unique email within the second-orga domain so the domain check passes
+    it('should create a new User record for an unknown email in the org domain', async () => {
       const newEmail = `new-user-${uuidv4()}@second-orga.com`;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
+      const subscription = await getSubscription();
 
       const result = await UserServiceDomain.addServiceToUsers(
         subscription,
@@ -260,52 +294,24 @@ describe('UserServiceDomain', () => {
       expect(createdUser.email).toBe(newEmail);
       expect(result[0]!.user_id).toBe(createdUser.id);
 
-      // Cleanup the dynamically-created user and its personal-space organization
-      await cleanupUserServices(subscriptionId);
+      await cleanupUserServices(sub.id);
       await removeUser({ email: newEmail });
     });
 
-    it('should reuse an existing user when the email already exists in the DB', async () => {
-      const existingEmail =
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-      const existingUserId =
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
-      const result = await UserServiceDomain.addServiceToUsers(
-        subscription,
-        [existingEmail],
-        [GenericServiceCapabilityName.ACCESS]
-      );
+    it('should reuse an existing user when the email is already in the DB', async () => {
+      const result = await addSimpleUser();
 
       expect(result).toHaveLength(1);
-      expect(result[0]!.user_id).toBe(existingUserId);
+      expect(result[0]!.user_id).toBe(SIMPLE.ID);
 
-      // Confirm no duplicate user was created
-      const usersWithSameEmail = await db<User>('User')
-        .where('email', existingEmail)
+      const usersWithEmail = await db<User>('User')
+        .where('email', SIMPLE.EMAIL)
         .select('id');
-
-      expect(usersWithSameEmail).toHaveLength(1);
+      expect(usersWithEmail).toHaveLength(1);
     });
 
-    it('should persist UserService_Capability rows including the ACCESS generic capability', async () => {
-      const email = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
-      const result = await UserServiceDomain.addServiceToUsers(
-        subscription,
-        [email],
-        [GenericServiceCapabilityName.ACCESS]
-      );
-
-      expect(result).toHaveLength(1);
+    it('should persist UserService_Capability rows including ACCESS', async () => {
+      const result = await addSimpleUser();
 
       const capabilities = await db<UserServiceCapability[]>(
         'UserService_Capability'
@@ -314,29 +320,19 @@ describe('UserServiceDomain', () => {
         .select('*');
 
       expect(capabilities.length).toBeGreaterThan(0);
-
-      const hasAccess = capabilities.some(
-        (c) =>
-          c.generic_service_capability_id ===
-          GenericServiceCapabilityIds.AccessId
-      );
-      expect(hasAccess).toBe(true);
+      expect(
+        capabilities.some(
+          (c) =>
+            c.generic_service_capability_id ===
+            GenericServiceCapabilityIds.AccessId
+        )
+      ).toBe(true);
     });
 
-    it('should persist MANAGE_ACCESS capability when included in the capabilities array', async () => {
-      const email = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
-      const result = await UserServiceDomain.addServiceToUsers(
-        subscription,
-        [email],
-        [GenericServiceCapabilityName.MANAGE_ACCESS]
-      );
-
-      expect(result).toHaveLength(1);
+    it('should persist MANAGE_ACCESS capability when requested', async () => {
+      const result = await addSimpleUser([
+        GenericServiceCapabilityName.MANAGE_ACCESS,
+      ]);
 
       const capabilities = await db<UserServiceCapability[]>(
         'UserService_Capability'
@@ -344,21 +340,18 @@ describe('UserServiceDomain', () => {
         .where('user_service_id', result[0]!.id)
         .select('*');
 
-      const hasManageAccess = capabilities.some(
-        (c) =>
-          c.generic_service_capability_id ===
-          GenericServiceCapabilityIds.ManageAccessId
-      );
-      expect(hasManageAccess).toBe(true);
+      expect(
+        capabilities.some(
+          (c) =>
+            c.generic_service_capability_id ===
+            GenericServiceCapabilityIds.ManageAccessId
+        )
+      ).toBe(true);
     });
 
-    it('should throw a GraphQL error when an email domain does not match the subscription organization', async () => {
-      // filigran.io domain does not belong to SECOND_ORGANIZATION
+    it('should throw a GraphQL error when an email domain does not match the org', async () => {
       const outsiderEmail = `outsider-${uuidv4()}@filigran.io`;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
+      const subscription = await getSubscription();
 
       await UserServiceDomain.addServiceToUsers(
         subscription,
@@ -370,93 +363,58 @@ describe('UserServiceDomain', () => {
         );
       });
 
-      const userServices = await db<UserService>('User_Service')
-        .where('subscription_id', subscriptionId)
+      const rows = await db<UserService>('User_Service')
+        .where('subscription_id', sub.id)
         .select('*');
-
-      expect(userServices).toHaveLength(0);
+      expect(rows).toHaveLength(0);
     });
 
     it('should call sendMail once per newly created UserService', async () => {
-      const email1 = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-      const email2 =
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL;
-
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
+      const subscription = await getSubscription();
       await UserServiceDomain.addServiceToUsers(
         subscription,
-        [email1, email2],
+        [SIMPLE.EMAIL, ADMIN.EMAIL],
         [GenericServiceCapabilityName.ACCESS]
       );
 
       expect(mailService.sendMail).toHaveBeenCalledTimes(2);
     });
 
-    it('should not call sendMail when the user already has access (service already exists)', async () => {
-      const email = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
-      // First call – creates the user service
-      await UserServiceDomain.addServiceToUsers(
-        subscription,
-        [email],
-        [GenericServiceCapabilityName.ACCESS]
-      );
+    it('should not call sendMail when the user already has access', async () => {
+      await addSimpleUser();
 
       vi.clearAllMocks();
       vi.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
 
-      // Second call – skipped because user service already exists
-      await UserServiceDomain.addServiceToUsers(
-        subscription,
-        [email],
-        [GenericServiceCapabilityName.ACCESS]
-      );
+      await addSimpleUser();
 
       expect(mailService.sendMail).not.toHaveBeenCalled();
     });
 
     it('should return UserService objects with the correct shape', async () => {
-      const { userId, result } =
-        await seedUserServiceForSimpleUser(subscriptionId);
+      const result = await addSimpleUser();
 
-      expect(result).toHaveLength(1);
-      const userService = result[0];
-
-      expect(userService).toMatchObject({
+      expect(result[0]).toMatchObject({
         id: expect.any(String),
-        user_id: userId,
-        subscription_id: subscriptionId,
+        user_id: SIMPLE.ID,
+        subscription_id: sub.id,
       });
     });
 
-    it('should handle duplicate emails in the same call gracefully (second occurrence is skipped)', async () => {
-      const email = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL;
-      const subscription = await db('Subscription')
-        .where('id', subscriptionId)
-        .first();
-
-      // The same email appears twice in the array
+    it('should handle duplicate emails in the same call gracefully', async () => {
+      const subscription = await getSubscription();
       const result = await UserServiceDomain.addServiceToUsers(
         subscription,
-        [email, email],
+        [SIMPLE.EMAIL, SIMPLE.EMAIL],
         [GenericServiceCapabilityName.ACCESS]
       );
 
-      // First iteration creates the UserService; second iteration detects it
-      // already exists and skips it.
       expect(result).toHaveLength(1);
 
-      const allUserServices = await db<UserService>('User_Service')
-        .where({ subscription_id: subscriptionId })
+      const rows = await db<UserService>('User_Service')
+        .where({ subscription_id: sub.id })
         .select('*');
-
-      expect(allUserServices).toHaveLength(1);
+      expect(rows).toHaveLength(1);
     });
   });
 
@@ -464,11 +422,10 @@ describe('UserServiceDomain', () => {
     const createdSubscriptionIds: SubscriptionId[] = [];
 
     const simpleUser = {
-      id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-      selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      id: SIMPLE.ID,
+      selected_organization_id: SECOND_ORG_ID,
     } as Parameters<typeof UserServiceDomain.loadUserServiceByUser>[0];
 
-    // Pagination opts with a generous page size so all created records show up.
     const defaultOpts = {
       first: 50,
       orderBy: 'User_Service.id',
@@ -481,68 +438,52 @@ describe('UserServiceDomain', () => {
 
     afterEach(async () => {
       vi.restoreAllMocks();
-
-      // Remove all test-created UserService rows and their capabilities, then
-      // the subscriptions themselves.
       for (const subId of createdSubscriptionIds) {
         await cleanupUserServices(subId);
         await db('Subscription').where('id', subId).delete();
       }
-      // Reset for the next test
       createdSubscriptionIds.length = 0;
     });
 
-    /**
-     * Helper: creates an ACCEPTED subscription tied to SECOND_ORGANIZATION and
-     * enrolls the SIMPLE user into it. Returns the subscription DB record.
-     */
-    async function createAcceptedSubscriptionWithUser(opts?: {
+    /** Creates an ACCEPTED subscription and enrols simpleUser into it. */
+    const createSubscriptionWithUser = async (overrides?: {
       start_date?: Date;
       end_date?: Date | null;
       status?: string;
       organization_id?: OrganizationId;
-    }) {
+      service_instance_id?: ServiceInstanceId;
+    }) => {
       const subId = uuidv4() as SubscriptionId;
       createdSubscriptionIds.push(subId);
 
       await createSubscription({
         id: subId,
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id:
-          opts?.organization_id ?? TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: opts?.start_date ?? new Date(Date.now() - 86_400_000), // yesterday
+        service_instance_id:
+          overrides?.service_instance_id ?? SERVICES.INSTANCES.VAULT.ID,
+        organization_id: overrides?.organization_id ?? SECOND_ORG_ID,
+        start_date: overrides?.start_date ?? new Date(Date.now() - DAY),
         end_date:
-          opts?.end_date !== undefined
-            ? opts.end_date
-            : new Date(Date.now() + 86_400_000 * 365), // 1 year from now
+          overrides?.end_date !== undefined
+            ? overrides.end_date
+            : new Date(Date.now() + DAY * 365),
         billing: 0,
-        status: opts?.status ?? SubscriptionStatus.ACCEPTED,
+        status: overrides?.status ?? SubscriptionStatus.ACCEPTED,
       });
 
       const subscription = await db('Subscription').where('id', subId).first();
 
-      // Only enroll the user when the subscription is ACCEPTED (otherwise the
-      // business logic in insertUserIntoOrganization may reject it).
       if (
-        (opts?.status ?? SubscriptionStatus.ACCEPTED) ===
+        (overrides?.status ?? SubscriptionStatus.ACCEPTED) ===
         SubscriptionStatus.ACCEPTED
       ) {
-        // Insert the User_Service row directly to avoid coupling to
-        // createUserServiceAccess (which requires the org domain to match and
-        // also fires sendMail).  We want to test the *query*, not the creation.
-        const userServiceId = uuidv4() as UserServiceId;
-        await db('User_Service').insert({
-          id: userServiceId,
-          user_id: simpleUser.id,
-          subscription_id: subId,
-        });
+        await insertUserService(simpleUser.id, subId);
       }
 
       return { subId, subscription };
-    }
+    };
 
-    it('should return a paginated connection with one edge for a user enrolled in a single active subscription', async () => {
-      await createAcceptedSubscriptionWithUser();
+    it('should return one edge for a user enrolled in a single active subscription', async () => {
+      await createSubscriptionWithUser();
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
@@ -554,27 +495,21 @@ describe('UserServiceDomain', () => {
       expect(result.edges[0]!.node!.user_id).toBe(simpleUser.id);
     });
 
-    it('should return one edge per active subscription when the user is enrolled in multiple services', async () => {
-      // Enrol the simple user in two separate subscriptions
-      await createAcceptedSubscriptionWithUser();
+    it('should return one edge per active subscription when enrolled in multiple services', async () => {
+      await createSubscriptionWithUser();
 
       const subId2 = uuidv4() as SubscriptionId;
       createdSubscriptionIds.push(subId2);
       await createSubscription({
         id: subId2,
         service_instance_id: SERVICES.INSTANCES.MALWARE.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(Date.now() - 86_400_000),
-        end_date: new Date(Date.now() + 86_400_000 * 365),
+        organization_id: SECOND_ORG_ID,
+        start_date: new Date(Date.now() - DAY),
+        end_date: new Date(Date.now() + DAY * 365),
         billing: 0,
         status: SubscriptionStatus.ACCEPTED,
       });
-      const userServiceId2 = uuidv4() as UserServiceId;
-      await db('User_Service').insert({
-        id: userServiceId2,
-        user_id: simpleUser.id,
-        subscription_id: subId2,
-      });
+      await insertUserService(simpleUser.id, subId2);
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
@@ -583,12 +518,12 @@ describe('UserServiceDomain', () => {
 
       expect(result.totalCount).toBe('2');
       expect(result.edges).toHaveLength(2);
-      const userIds = result.edges.map((e) => e.node!.user_id);
-      expect(userIds.every((id) => id === simpleUser.id)).toBe(true);
+      expect(result.edges.every((e) => e.node!.user_id === simpleUser.id)).toBe(
+        true
+      );
     });
 
-    it('should return an empty connection for a user with no UserService rows in their selected org', async () => {
-      // No subscriptions or UserService rows created for simpleUser in this test
+    it('should return an empty connection when the user has no UserService rows', async () => {
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
         defaultOpts
@@ -598,10 +533,10 @@ describe('UserServiceDomain', () => {
       expect(result.edges).toHaveLength(0);
     });
 
-    it('should return an empty connection when the user ID does not exist in the database', async () => {
+    it('should return an empty connection for a non-existent user id', async () => {
       const ghostUser = {
         id: uuidv4(),
-        selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        selected_organization_id: SECOND_ORG_ID,
       } as Parameters<typeof UserServiceDomain.loadUserServiceByUser>[0];
 
       const result = await UserServiceDomain.loadUserServiceByUser(
@@ -614,20 +549,17 @@ describe('UserServiceDomain', () => {
     });
 
     it('should exclude subscriptions whose status is not ACCEPTED', async () => {
-      // Create a subscription with a non-ACCEPTED status and manually insert a
-      // User_Service row — the query filters on sub.status = 'ACCEPTED'.
       const subId = uuidv4() as SubscriptionId;
       createdSubscriptionIds.push(subId);
       await createSubscription({
         id: subId,
         service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(Date.now() - 86_400_000),
-        end_date: new Date(Date.now() + 86_400_000 * 365),
+        organization_id: SECOND_ORG_ID,
+        start_date: new Date(Date.now() - DAY),
+        end_date: new Date(Date.now() + DAY * 365),
         billing: 0,
         status: SubscriptionStatus.REQUESTED,
       });
-      // Bypass the domain to force a UserService row pointing at the PENDING sub
       await db('User_Service').insert({
         id: uuidv4(),
         user_id: simpleUser.id,
@@ -643,24 +575,19 @@ describe('UserServiceDomain', () => {
       expect(result.edges).toHaveLength(0);
     });
 
-    it('should exclude subscriptions whose end_date is strictly in the past', async () => {
+    it('should exclude subscriptions whose end_date is in the past', async () => {
       const subId = uuidv4() as SubscriptionId;
       createdSubscriptionIds.push(subId);
-      // end_date is set to yesterday — the subscription has expired
       await createSubscription({
         id: subId,
         service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(Date.now() - 86_400_000 * 30), // 30 days ago
-        end_date: new Date(Date.now() - 86_400_000), // yesterday
+        organization_id: SECOND_ORG_ID,
+        start_date: new Date(Date.now() - DAY * 30),
+        end_date: new Date(Date.now() - DAY),
         billing: 0,
         status: SubscriptionStatus.ACCEPTED,
       });
-      await db('User_Service').insert({
-        id: uuidv4(),
-        user_id: simpleUser.id,
-        subscription_id: subId,
-      });
+      await insertUserService(simpleUser.id, subId);
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
@@ -671,24 +598,8 @@ describe('UserServiceDomain', () => {
       expect(result.edges).toHaveLength(0);
     });
 
-    it('should include subscriptions that are active and have no end_date (ongoing)', async () => {
-      const subId = uuidv4() as SubscriptionId;
-      createdSubscriptionIds.push(subId);
-      // end_date = undefined → stored as NULL, matching the orWhereNull branch
-      await createSubscription({
-        id: subId,
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(Date.now() - 86_400_000),
-        end_date: undefined,
-        billing: 0,
-        status: SubscriptionStatus.ACCEPTED,
-      });
-      await db('User_Service').insert({
-        id: uuidv4(),
-        user_id: simpleUser.id,
-        subscription_id: subId,
-      });
+    it('should include active subscriptions with no end_date (ongoing)', async () => {
+      await createSubscriptionWithUser({ end_date: null });
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
@@ -702,21 +613,16 @@ describe('UserServiceDomain', () => {
     it('should exclude subscriptions whose start_date is in the future', async () => {
       const subId = uuidv4() as SubscriptionId;
       createdSubscriptionIds.push(subId);
-      // start_date is tomorrow — the subscription has not started yet
       await createSubscription({
         id: subId,
         service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(Date.now() + 86_400_000), // tomorrow
-        end_date: new Date(Date.now() + 86_400_000 * 365),
+        organization_id: SECOND_ORG_ID,
+        start_date: new Date(Date.now() + DAY),
+        end_date: new Date(Date.now() + DAY * 365),
         billing: 0,
         status: SubscriptionStatus.ACCEPTED,
       });
-      await db('User_Service').insert({
-        id: uuidv4(),
-        user_id: simpleUser.id,
-        subscription_id: subId,
-      });
+      await insertUserService(simpleUser.id, subId);
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
@@ -727,25 +633,19 @@ describe('UserServiceDomain', () => {
       expect(result.edges).toHaveLength(0);
     });
 
-    it('should exclude active subscriptions that belong to a different organization', async () => {
-      // The FILIGRAN org subscription must not appear when the user has
-      // selected_organization_id = SECOND_ORGANIZATION.ID
+    it('should exclude subscriptions belonging to a different organization', async () => {
       const subId = uuidv4() as SubscriptionId;
       createdSubscriptionIds.push(subId);
       await createSubscription({
         id: subId,
         service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID, // different org
-        start_date: new Date(Date.now() - 86_400_000),
-        end_date: new Date(Date.now() + 86_400_000 * 365),
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        start_date: new Date(Date.now() - DAY),
+        end_date: new Date(Date.now() + DAY * 365),
         billing: 0,
         status: SubscriptionStatus.ACCEPTED,
       });
-      await db('User_Service').insert({
-        id: uuidv4(),
-        user_id: simpleUser.id,
-        subscription_id: subId,
-      });
+      await insertUserService(simpleUser.id, subId);
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
@@ -756,22 +656,20 @@ describe('UserServiceDomain', () => {
       expect(result.edges).toHaveLength(0);
     });
 
-    it('should return correct pagination shape (edges, pageInfo, totalCount) for a single result', async () => {
-      await createAcceptedSubscriptionWithUser();
+    it('should return correct pagination shape (edges, pageInfo, totalCount)', async () => {
+      await createSubscriptionWithUser();
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
         defaultOpts
       );
 
-      // Top-level pagination fields
       expect(typeof result.totalCount).toBe('string');
       expect(Array.isArray(result.edges)).toBe(true);
       expect(result.pageInfo).toBeDefined();
       expect(typeof result.pageInfo.hasNextPage).toBe('boolean');
       expect(typeof result.pageInfo.hasPreviousPage).toBe('boolean');
 
-      // Each edge must have a cursor and a node
       const edge = result.edges[0]!;
       expect(typeof edge.cursor).toBe('string');
       expect(edge.cursor.length).toBeGreaterThan(0);
@@ -779,57 +677,45 @@ describe('UserServiceDomain', () => {
     });
 
     it('should include service_name and ordering columns on each edge node', async () => {
-      // The query explicitly selects service.name as service_name and
-      // service.ordering as ordering — verify they are present on the node.
-      await createAcceptedSubscriptionWithUser();
+      await createSubscriptionWithUser();
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
         defaultOpts
       );
 
-      expect(result.edges).toHaveLength(1);
       const node = result.edges[0]!.node as UserService & {
         service_name: string | null;
         ordering: number | null;
       };
 
-      // service_name and ordering keys must exist on the returned node
       expect(Object.prototype.hasOwnProperty.call(node, 'service_name')).toBe(
         true
       );
       expect(Object.prototype.hasOwnProperty.call(node, 'ordering')).toBe(true);
     });
 
-    it('should only return services belonging to the user identified by the provided user object', async () => {
-      // Enrol the SIMPLE user
-      await createAcceptedSubscriptionWithUser();
+    it('should only return services belonging to the queried user', async () => {
+      await createSubscriptionWithUser();
 
-      // Also create a subscription for the ADMIN user (different user) in the
-      // same org — it must NOT show up in the SIMPLE user's results.
       const adminSubId = uuidv4() as SubscriptionId;
       createdSubscriptionIds.push(adminSubId);
       await createSubscription({
         id: adminSubId,
         service_instance_id: SERVICES.INSTANCES.MALWARE.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(Date.now() - 86_400_000),
-        end_date: new Date(Date.now() + 86_400_000 * 365),
+        organization_id: SECOND_ORG_ID,
+        start_date: new Date(Date.now() - DAY),
+        end_date: new Date(Date.now() + DAY * 365),
         billing: 0,
         status: SubscriptionStatus.ACCEPTED,
       });
-      await db('User_Service').insert({
-        id: uuidv4(),
-        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-        subscription_id: adminSubId,
-      });
+      await insertUserService(ADMIN.ID, adminSubId);
 
       const result = await UserServiceDomain.loadUserServiceByUser(
         simpleUser,
         defaultOpts
       );
 
-      // Only the SIMPLE user's service should be returned
       expect(result.totalCount).toBe('1');
       expect(result.edges).toHaveLength(1);
       expect(result.edges[0]!.node!.user_id).toBe(simpleUser.id);
@@ -837,100 +723,45 @@ describe('UserServiceDomain', () => {
   });
 
   describe('deleteUserService', () => {
-    let subscriptionId: SubscriptionId;
-
-    // Seed a single UserService (without capabilities) for the SIMPLE user and
-    // return its id so individual tests can reference it.
-    async function seedRawUserService(
-      userId: string,
-      subId: SubscriptionId
-    ): Promise<UserServiceId> {
-      const userServiceId = uuidv4() as UserServiceId;
-      await db('User_Service').insert({
-        id: userServiceId,
-        user_id: userId,
-        subscription_id: subId,
-      });
-      return userServiceId;
-    }
-
-    // Seed a UserService together with one generic capability row (ACCESS) so
-    // we can assert the cascade deletion behaviour.
-    async function seedUserServiceWithCapability(
-      userId: string,
-      subId: SubscriptionId
-    ): Promise<{ userServiceId: UserServiceId; capabilityId: string }> {
-      const userServiceId = await seedRawUserService(userId, subId);
-      const capabilityId = uuidv4();
-      await db('UserService_Capability').insert({
-        id: capabilityId,
-        user_service_id: userServiceId,
-        generic_service_capability_id: GenericServiceCapabilityIds.AccessId,
-      });
-      return { userServiceId, capabilityId };
-    }
-
-    beforeEach(async () => {
-      subscriptionId = uuidv4() as SubscriptionId;
-      await createSubscription({
-        id: subscriptionId,
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(),
-        end_date: undefined,
-        billing: 0,
-        status: SubscriptionStatus.ACCEPTED,
-      });
-    });
-
-    afterEach(async () => {
-      // cleanupUserServices handles capabilities first (respecting FK order),
-      // then User_Service rows, matching the pattern used by other describe blocks.
-      await cleanupUserServices(subscriptionId);
-      await db('Subscription').where('id', subscriptionId).delete();
-    });
+    const sub = useSubscription();
 
     it('should delete the matching User_Service row and return it', async () => {
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-      const userServiceId = await seedRawUserService(userId, subscriptionId);
+      const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
 
       const result = await UserServiceDomain.deleteUserService(
-        userId,
-        subscriptionId
+        SIMPLE.ID,
+        sub.id
       );
 
       expect(result).toBeDefined();
-      expect(result!.id).toBe(userServiceId);
-      expect(result!.user_id).toBe(userId);
-      expect(result!.subscription_id).toBe(subscriptionId);
+      expect(result).toMatchObject({
+        id: userServiceId,
+        user_id: SIMPLE.ID,
+        subscription_id: sub.id,
+      });
 
-      // Verify the row is actually gone from the database.
       const remaining = await db<UserService>('User_Service')
         .where('id', userServiceId)
         .first();
       expect(remaining).toBeUndefined();
     });
 
-    it('should cascade-delete all UserService_Capability rows when the parent User_Service is deleted', async () => {
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+    it('should cascade-delete all UserService_Capability rows when the parent is deleted', async () => {
       const { userServiceId, capabilityId } =
-        await seedUserServiceWithCapability(userId, subscriptionId);
+        await insertUserServiceWithCapability(SIMPLE.ID, sub.id);
 
-      // Pre-condition: the capability exists before deletion.
       const before = await db<UserServiceCapability>('UserService_Capability')
         .where('id', capabilityId)
         .first();
       expect(before).toBeDefined();
 
-      await UserServiceDomain.deleteUserService(userId, subscriptionId);
+      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
 
-      // The User_Service row itself is gone.
       const deletedService = await db<UserService>('User_Service')
         .where('id', userServiceId)
         .first();
       expect(deletedService).toBeUndefined();
 
-      // The capability must also be gone via the cascade.
       const deletedCapability = await db<UserServiceCapability>(
         'UserService_Capability'
       )
@@ -940,10 +771,8 @@ describe('UserServiceDomain', () => {
     });
 
     it('should cascade-delete multiple UserService_Capability rows for the same User_Service', async () => {
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-      const userServiceId = await seedRawUserService(userId, subscriptionId);
+      const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
 
-      // Insert two capability rows: ACCESS and MANAGE_ACCESS.
       const cap1Id = uuidv4();
       const cap2Id = uuidv4();
       await db('UserService_Capability').insert([
@@ -960,7 +789,7 @@ describe('UserServiceDomain', () => {
         },
       ]);
 
-      await UserServiceDomain.deleteUserService(userId, subscriptionId);
+      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
 
       const survivors = await db<UserServiceCapability>(
         'UserService_Capability'
@@ -970,162 +799,125 @@ describe('UserServiceDomain', () => {
       expect(survivors).toHaveLength(0);
     });
 
-    it('should return undefined when no User_Service row matches the given userId', async () => {
-      await seedRawUserService(
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        subscriptionId
-      );
-      const ghostUserId = uuidv4();
+    it('should return undefined when userId does not match any row', async () => {
+      await insertUserService(SIMPLE.ID, sub.id);
+      const ghostId = uuidv4();
 
       const result = await UserServiceDomain.deleteUserService(
-        ghostUserId as unknown as Parameters<
+        ghostId as unknown as Parameters<
           typeof UserServiceDomain.deleteUserService
         >[0],
-        subscriptionId
+        sub.id
       );
 
       expect(result).toBeUndefined();
 
-      // The seeded row must still be present.
       const remaining = await db<UserService>('User_Service')
-        .where('subscription_id', subscriptionId)
+        .where('subscription_id', sub.id)
         .select('id');
       expect(remaining).toHaveLength(1);
     });
 
-    it('should return undefined when no User_Service row matches the given subscriptionId', async () => {
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-      await seedRawUserService(userId, subscriptionId);
-      const ghostSubscriptionId = uuidv4() as SubscriptionId;
+    it('should return undefined when subscriptionId does not match any row', async () => {
+      await insertUserService(SIMPLE.ID, sub.id);
+      const ghostSubId = uuidv4() as SubscriptionId;
 
       const result = await UserServiceDomain.deleteUserService(
-        userId,
-        ghostSubscriptionId
+        SIMPLE.ID,
+        ghostSubId
       );
 
       expect(result).toBeUndefined();
 
-      // The original row must be untouched.
       const remaining = await db<UserService>('User_Service')
-        .where({ user_id: userId, subscription_id: subscriptionId })
+        .where({ user_id: SIMPLE.ID, subscription_id: sub.id })
         .first();
       expect(remaining).toBeDefined();
     });
 
-    it('should return undefined and delete nothing when both userId and subscriptionId are non-existent', async () => {
-      const ghostUserId = uuidv4();
-      const ghostSubscriptionId = uuidv4() as SubscriptionId;
+    it('should return undefined and delete nothing when both ids are non-existent', async () => {
+      const ghostId = uuidv4();
+      const ghostSubId = uuidv4() as SubscriptionId;
 
       const result = await UserServiceDomain.deleteUserService(
-        ghostUserId as unknown as Parameters<
+        ghostId as unknown as Parameters<
           typeof UserServiceDomain.deleteUserService
         >[0],
-        ghostSubscriptionId
+        ghostSubId
       );
 
       expect(result).toBeUndefined();
     });
 
     it('should only delete the targeted row when multiple users share the same subscription', async () => {
-      const simpleUserId =
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-      const adminUserId =
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID;
+      await insertUserService(SIMPLE.ID, sub.id);
+      const adminServiceId = await insertUserService(ADMIN.ID, sub.id);
 
-      // Two different users enrolled in the same subscription.
-      await seedRawUserService(simpleUserId, subscriptionId);
-      const adminServiceId = await seedRawUserService(
-        adminUserId,
-        subscriptionId
-      );
+      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
 
-      await UserServiceDomain.deleteUserService(simpleUserId, subscriptionId);
-
-      // The admin's User_Service row must survive.
       const adminService = await db<UserService>('User_Service')
         .where('id', adminServiceId)
         .first();
       expect(adminService).toBeDefined();
-      expect(adminService!.user_id).toBe(adminUserId);
+      expect(adminService!.user_id).toBe(ADMIN.ID);
 
-      // Only one row remains.
       const remaining = await db<UserService>('User_Service')
-        .where('subscription_id', subscriptionId)
+        .where('subscription_id', sub.id)
         .select('id');
       expect(remaining).toHaveLength(1);
     });
 
-    it('should not delete User_Service rows that belong to a different subscription for the same user', async () => {
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-
-      // Create a second subscription in the same org.
-      const secondSubscriptionId = uuidv4() as SubscriptionId;
-      await createSubscription({
-        id: secondSubscriptionId,
+    it('should not delete rows belonging to a different subscription for the same user', async () => {
+      const secondSubId = await createTestSubscription({
         service_instance_id: SERVICES.INSTANCES.MALWARE.ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         start_date: new Date(),
         end_date: undefined,
-        billing: 0,
-        status: SubscriptionStatus.ACCEPTED,
       });
 
-      await seedRawUserService(userId, subscriptionId);
-      const secondServiceId = await seedRawUserService(
-        userId,
-        secondSubscriptionId
-      );
+      await insertUserService(SIMPLE.ID, sub.id);
+      const secondServiceId = await insertUserService(SIMPLE.ID, secondSubId);
 
-      // Delete only the first subscription's service.
-      await UserServiceDomain.deleteUserService(userId, subscriptionId);
+      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
 
-      // The second subscription's User_Service must remain.
       const secondService = await db<UserService>('User_Service')
         .where('id', secondServiceId)
         .first();
       expect(secondService).toBeDefined();
-      expect(secondService!.subscription_id).toBe(secondSubscriptionId);
+      expect(secondService!.subscription_id).toBe(secondSubId);
 
-      // Cleanup the second subscription (afterEach only handles subscriptionId).
-      await cleanupUserServices(secondSubscriptionId);
-      await db('Subscription').where('id', secondSubscriptionId).delete();
+      await cleanupUserServices(secondSubId);
+      await db('Subscription').where('id', secondSubId).delete();
     });
 
-    it('should be idempotent — the second call for the same pair returns undefined without throwing', async () => {
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-      await seedRawUserService(userId, subscriptionId);
+    it('should be idempotent — second call returns undefined without throwing', async () => {
+      await insertUserService(SIMPLE.ID, sub.id);
 
-      const firstResult = await UserServiceDomain.deleteUserService(
-        userId,
-        subscriptionId
+      const first = await UserServiceDomain.deleteUserService(
+        SIMPLE.ID,
+        sub.id
       );
-      expect(firstResult).toBeDefined();
+      expect(first).toBeDefined();
 
-      // The row is already gone; the second call must not throw and must return
-      // undefined because the WHERE clause matches zero rows.
-      const secondResult = await UserServiceDomain.deleteUserService(
-        userId,
-        subscriptionId
+      const second = await UserServiceDomain.deleteUserService(
+        SIMPLE.ID,
+        sub.id
       );
-      expect(secondResult).toBeUndefined();
+      expect(second).toBeUndefined();
     });
 
-    it('should return an object that matches the UserService shape', async () => {
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
-      const userServiceId = await seedRawUserService(userId, subscriptionId);
+    it('should return an object matching the UserService shape', async () => {
+      const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
 
       const result = await UserServiceDomain.deleteUserService(
-        userId,
-        subscriptionId
+        SIMPLE.ID,
+        sub.id
       );
 
       expect(result).toMatchObject({
         id: userServiceId,
-        user_id: userId,
-        subscription_id: subscriptionId,
+        user_id: SIMPLE.ID,
+        subscription_id: sub.id,
       });
-      // service_personal_data is nullable in the schema; seeded without it so
-      // it should be null.
       expect(
         Object.prototype.hasOwnProperty.call(result, 'service_personal_data')
       ).toBe(true);
