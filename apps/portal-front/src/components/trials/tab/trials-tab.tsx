@@ -1,3 +1,4 @@
+import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
 import { useTrialsListLocalstorage } from '@/components/trials/trial-list-localstorage';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import {
@@ -26,6 +27,7 @@ import {
   ArrowShapeUpStackIcon,
   CheckIndeterminateIcon,
   CloseIcon,
+  GroupIcon,
 } from '@filigran/icon';
 import {
   DataTable,
@@ -475,6 +477,36 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
                       </TooltipProvider>
                     </>
                   )}
+                  {type === TrialsTabType.Running &&
+                    isAdminByPass &&
+                    row.original.hub_status ===
+                      DeploymentRequestHubStatusEnum.ACTIVE && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <TrialsManageUsersDialog
+                              serviceInstanceId={
+                                row.original.service_instance_id
+                              }
+                              organizationId={
+                                row.original.organization_requester_id
+                              }
+                              trigger={
+                                <Button
+                                  variant="ghost-primary"
+                                  size="icon"
+                                  className="border m-1">
+                                  <GroupIcon className="h-4 w-4" />
+                                </Button>
+                              }
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-gray-50">
+                            {t('Service.Trials.ManageUsers.Title')}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                 </>
               );
             },
