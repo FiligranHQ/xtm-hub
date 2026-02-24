@@ -835,4 +835,300 @@ describe('UserServiceDomain', () => {
       expect(result.edges[0]!.node!.user_id).toBe(simpleUser.id);
     });
   });
+
+  describe('deleteUserService', () => {
+    let subscriptionId: SubscriptionId;
+
+    // Seed a single UserService (without capabilities) for the SIMPLE user and
+    // return its id so individual tests can reference it.
+    async function seedRawUserService(
+      userId: string,
+      subId: SubscriptionId
+    ): Promise<UserServiceId> {
+      const userServiceId = uuidv4() as UserServiceId;
+      await db('User_Service').insert({
+        id: userServiceId,
+        user_id: userId,
+        subscription_id: subId,
+      });
+      return userServiceId;
+    }
+
+    // Seed a UserService together with one generic capability row (ACCESS) so
+    // we can assert the cascade deletion behaviour.
+    async function seedUserServiceWithCapability(
+      userId: string,
+      subId: SubscriptionId
+    ): Promise<{ userServiceId: UserServiceId; capabilityId: string }> {
+      const userServiceId = await seedRawUserService(userId, subId);
+      const capabilityId = uuidv4();
+      await db('UserService_Capability').insert({
+        id: capabilityId,
+        user_service_id: userServiceId,
+        generic_service_capability_id: GenericServiceCapabilityIds.AccessId,
+      });
+      return { userServiceId, capabilityId };
+    }
+
+    beforeEach(async () => {
+      subscriptionId = uuidv4() as SubscriptionId;
+      await createSubscription({
+        id: subscriptionId,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        start_date: new Date(),
+        end_date: undefined,
+        billing: 0,
+        status: SubscriptionStatus.ACCEPTED,
+      });
+    });
+
+    afterEach(async () => {
+      // cleanupUserServices handles capabilities first (respecting FK order),
+      // then User_Service rows, matching the pattern used by other describe blocks.
+      await cleanupUserServices(subscriptionId);
+      await db('Subscription').where('id', subscriptionId).delete();
+    });
+
+    it('should delete the matching User_Service row and return it', async () => {
+      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      const userServiceId = await seedRawUserService(userId, subscriptionId);
+
+      const result = await UserServiceDomain.deleteUserService(
+        userId,
+        subscriptionId
+      );
+
+      expect(result).toBeDefined();
+      expect(result!.id).toBe(userServiceId);
+      expect(result!.user_id).toBe(userId);
+      expect(result!.subscription_id).toBe(subscriptionId);
+
+      // Verify the row is actually gone from the database.
+      const remaining = await db<UserService>('User_Service')
+        .where('id', userServiceId)
+        .first();
+      expect(remaining).toBeUndefined();
+    });
+
+    it('should cascade-delete all UserService_Capability rows when the parent User_Service is deleted', async () => {
+      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      const { userServiceId, capabilityId } =
+        await seedUserServiceWithCapability(userId, subscriptionId);
+
+      // Pre-condition: the capability exists before deletion.
+      const before = await db<UserServiceCapability>('UserService_Capability')
+        .where('id', capabilityId)
+        .first();
+      expect(before).toBeDefined();
+
+      await UserServiceDomain.deleteUserService(userId, subscriptionId);
+
+      // The User_Service row itself is gone.
+      const deletedService = await db<UserService>('User_Service')
+        .where('id', userServiceId)
+        .first();
+      expect(deletedService).toBeUndefined();
+
+      // The capability must also be gone via the cascade.
+      const deletedCapability = await db<UserServiceCapability>(
+        'UserService_Capability'
+      )
+        .where('id', capabilityId)
+        .first();
+      expect(deletedCapability).toBeUndefined();
+    });
+
+    it('should cascade-delete multiple UserService_Capability rows for the same User_Service', async () => {
+      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      const userServiceId = await seedRawUserService(userId, subscriptionId);
+
+      // Insert two capability rows: ACCESS and MANAGE_ACCESS.
+      const cap1Id = uuidv4();
+      const cap2Id = uuidv4();
+      await db('UserService_Capability').insert([
+        {
+          id: cap1Id,
+          user_service_id: userServiceId,
+          generic_service_capability_id: GenericServiceCapabilityIds.AccessId,
+        },
+        {
+          id: cap2Id,
+          user_service_id: userServiceId,
+          generic_service_capability_id:
+            GenericServiceCapabilityIds.ManageAccessId,
+        },
+      ]);
+
+      await UserServiceDomain.deleteUserService(userId, subscriptionId);
+
+      const survivors = await db<UserServiceCapability>(
+        'UserService_Capability'
+      )
+        .whereIn('id', [cap1Id, cap2Id])
+        .select('id');
+      expect(survivors).toHaveLength(0);
+    });
+
+    it('should return undefined when no User_Service row matches the given userId', async () => {
+      await seedRawUserService(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        subscriptionId
+      );
+      const ghostUserId = uuidv4();
+
+      const result = await UserServiceDomain.deleteUserService(
+        ghostUserId as unknown as Parameters<
+          typeof UserServiceDomain.deleteUserService
+        >[0],
+        subscriptionId
+      );
+
+      expect(result).toBeUndefined();
+
+      // The seeded row must still be present.
+      const remaining = await db<UserService>('User_Service')
+        .where('subscription_id', subscriptionId)
+        .select('id');
+      expect(remaining).toHaveLength(1);
+    });
+
+    it('should return undefined when no User_Service row matches the given subscriptionId', async () => {
+      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      await seedRawUserService(userId, subscriptionId);
+      const ghostSubscriptionId = uuidv4() as SubscriptionId;
+
+      const result = await UserServiceDomain.deleteUserService(
+        userId,
+        ghostSubscriptionId
+      );
+
+      expect(result).toBeUndefined();
+
+      // The original row must be untouched.
+      const remaining = await db<UserService>('User_Service')
+        .where({ user_id: userId, subscription_id: subscriptionId })
+        .first();
+      expect(remaining).toBeDefined();
+    });
+
+    it('should return undefined and delete nothing when both userId and subscriptionId are non-existent', async () => {
+      const ghostUserId = uuidv4();
+      const ghostSubscriptionId = uuidv4() as SubscriptionId;
+
+      const result = await UserServiceDomain.deleteUserService(
+        ghostUserId as unknown as Parameters<
+          typeof UserServiceDomain.deleteUserService
+        >[0],
+        ghostSubscriptionId
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should only delete the targeted row when multiple users share the same subscription', async () => {
+      const simpleUserId =
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      const adminUserId =
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID;
+
+      // Two different users enrolled in the same subscription.
+      await seedRawUserService(simpleUserId, subscriptionId);
+      const adminServiceId = await seedRawUserService(
+        adminUserId,
+        subscriptionId
+      );
+
+      await UserServiceDomain.deleteUserService(simpleUserId, subscriptionId);
+
+      // The admin's User_Service row must survive.
+      const adminService = await db<UserService>('User_Service')
+        .where('id', adminServiceId)
+        .first();
+      expect(adminService).toBeDefined();
+      expect(adminService!.user_id).toBe(adminUserId);
+
+      // Only one row remains.
+      const remaining = await db<UserService>('User_Service')
+        .where('subscription_id', subscriptionId)
+        .select('id');
+      expect(remaining).toHaveLength(1);
+    });
+
+    it('should not delete User_Service rows that belong to a different subscription for the same user', async () => {
+      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+
+      // Create a second subscription in the same org.
+      const secondSubscriptionId = uuidv4() as SubscriptionId;
+      await createSubscription({
+        id: secondSubscriptionId,
+        service_instance_id: SERVICES.INSTANCES.MALWARE.ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        start_date: new Date(),
+        end_date: undefined,
+        billing: 0,
+        status: SubscriptionStatus.ACCEPTED,
+      });
+
+      await seedRawUserService(userId, subscriptionId);
+      const secondServiceId = await seedRawUserService(
+        userId,
+        secondSubscriptionId
+      );
+
+      // Delete only the first subscription's service.
+      await UserServiceDomain.deleteUserService(userId, subscriptionId);
+
+      // The second subscription's User_Service must remain.
+      const secondService = await db<UserService>('User_Service')
+        .where('id', secondServiceId)
+        .first();
+      expect(secondService).toBeDefined();
+      expect(secondService!.subscription_id).toBe(secondSubscriptionId);
+
+      // Cleanup the second subscription (afterEach only handles subscriptionId).
+      await cleanupUserServices(secondSubscriptionId);
+      await db('Subscription').where('id', secondSubscriptionId).delete();
+    });
+
+    it('should be idempotent — the second call for the same pair returns undefined without throwing', async () => {
+      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      await seedRawUserService(userId, subscriptionId);
+
+      const firstResult = await UserServiceDomain.deleteUserService(
+        userId,
+        subscriptionId
+      );
+      expect(firstResult).toBeDefined();
+
+      // The row is already gone; the second call must not throw and must return
+      // undefined because the WHERE clause matches zero rows.
+      const secondResult = await UserServiceDomain.deleteUserService(
+        userId,
+        subscriptionId
+      );
+      expect(secondResult).toBeUndefined();
+    });
+
+    it('should return an object that matches the UserService shape', async () => {
+      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      const userServiceId = await seedRawUserService(userId, subscriptionId);
+
+      const result = await UserServiceDomain.deleteUserService(
+        userId,
+        subscriptionId
+      );
+
+      expect(result).toMatchObject({
+        id: userServiceId,
+        user_id: userId,
+        subscription_id: subscriptionId,
+      });
+      // service_personal_data is nullable in the schema; seeded without it so
+      // it should be null.
+      expect(
+        Object.prototype.hasOwnProperty.call(result, 'service_personal_data')
+      ).toBe(true);
+    });
+  });
 });
