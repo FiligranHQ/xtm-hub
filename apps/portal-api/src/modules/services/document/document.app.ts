@@ -138,7 +138,7 @@ export const DocumentApp = {
 
     try {
       const createEvent = await buildCreateEvent(createdDocument);
-      void telemetryApp.sendTelemetryEvent(createEvent);
+      await telemetryApp.sendTelemetryEvent(createEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for document creation', {
         error,

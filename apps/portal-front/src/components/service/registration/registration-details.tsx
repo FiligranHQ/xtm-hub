@@ -1,3 +1,4 @@
+import GuardCapacityComponent from '@/components/admin-guard';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
@@ -149,7 +150,16 @@ export const RegistrationDetails: React.FC<Props> = ({
         )}
 
         {displayAccessPlatformButtonForTrial && isTrial && (
-          <TrialsManageUsersDialog platform={platform} />
+          <GuardCapacityComponent
+            capacityRestriction={[
+              OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+              OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+            ]}>
+            <TrialsManageUsersDialog
+              serviceInstanceId={platform.subscription?.service_instance?.id}
+              organizationId={platform.subscription?.organization.id}
+            />
+          </GuardCapacityComponent>
         )}
         {displayUpdatePlatform && (
           <Button

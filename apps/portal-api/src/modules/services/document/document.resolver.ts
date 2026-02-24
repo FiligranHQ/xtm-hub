@@ -114,7 +114,7 @@ const resolvers: Resolvers = {
               document.id,
               document.name
             );
-            telemetryApp.sendTelemetryEvent(shareEvent);
+            await telemetryApp.sendTelemetryEvent(shareEvent);
           }
         } catch (error) {
           logApp.error('Unable to send telemetry event', {

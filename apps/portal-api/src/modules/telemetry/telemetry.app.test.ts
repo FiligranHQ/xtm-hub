@@ -1,5 +1,9 @@
+import { MockInstance } from '@vitest/spy';
+import config from 'config';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
+import { PgBossProducer } from '../../thirdparty/pgboss/producer';
+import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { telemetryApp } from './telemetry.app';
 import {
@@ -9,7 +13,11 @@ import {
   TelemetryOrganizationType,
   TelemetryTargetProduct,
 } from './telemetry.const';
-import { LoginEvent, TelemetryEventType } from './telemetry.types';
+import {
+  LoginEvent,
+  SubscribeEvent,
+  TelemetryEventType,
+} from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
@@ -53,54 +61,6 @@ describe('TelemetryApp', () => {
     await deleteDocuments();
   });
 
-  describe('sendTelemetryEvent', () => {
-    it('should index the document in elastic search', async () => {
-      const indexSpy = vi
-        .spyOn(esDbClient, 'index')
-        .mockResolvedValue(mockWriteResponse);
-
-      const timestamp = new Date();
-
-      const event: LoginEvent = {
-        event_type: TelemetryEventType.LOGIN,
-        organization_id: 'fakeOrgId',
-        organization_name: 'fakeOrgName',
-        organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        user_id: 'fakeUserId',
-        '@timestamp': timestamp.toISOString(),
-        source: 'xtm-hub',
-      };
-
-      await telemetryApp.sendTelemetryEvent(event);
-
-      expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
-        index: 'telemetry',
-        document: event,
-      });
-    });
-
-    it('should not throw if there is an error but log an error', async () => {
-      vi.spyOn(esDbClient, 'index').mockRejectedValue(
-        new Error('Connection failed')
-      );
-      const logErrorSpy = vi.spyOn(logApp, 'error');
-
-      const timestamp = new Date();
-
-      const event: LoginEvent = {
-        event_type: TelemetryEventType.LOGIN,
-        organization_id: 'fakeOrgId',
-        organization_name: 'fakeOrgName',
-        organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        user_id: 'fakeUserId',
-        '@timestamp': timestamp.toISOString(),
-        source: 'xtm-hub',
-      };
-
-      await telemetryApp.sendTelemetryEvent(event);
-      expect(logErrorSpy).toHaveBeenCalledOnce();
-    });
-  });
   describe('sendOneClickDeployEvent', () => {
     it('should send a OneClickDeployEvent with version', async () => {
       vi.useFakeTimers();
@@ -345,7 +305,159 @@ describe('TelemetryApp', () => {
     });
   });
 
+  describe('sendTelemetryEvent', () => {
+    const originalConfigGet = config.get;
+    let pgBossSendSpy: MockInstance;
+    let indexSpy: MockInstance;
+    let logSpy: MockInstance;
+
+    const loginEvent: LoginEvent = {
+      event_type: TelemetryEventType.LOGIN,
+      organization_id: 'fakeOrgId',
+      organization_name: 'fakeOrgName',
+      organization_type: TelemetryOrganizationType.PROFESSIONAL,
+      user_id: 'fakeUserId',
+      '@timestamp': new Date().toISOString(),
+      source: 'xtm-hub',
+    };
+
+    const subscribeEvent: SubscribeEvent = {
+      event_type: TelemetryEventType.SUBSCRIBE,
+      organization_id: 'fakeOrgId',
+      organization_name: 'fakeOrgName',
+      organization_type: TelemetryOrganizationType.PROFESSIONAL,
+      user_id: 'fakeUserId',
+      '@timestamp': new Date().toISOString(),
+      source: 'xtm-hub',
+      service: TelemetryEventService.INTEGRATIONS_LIBRARY,
+    };
+
+    describe('when queue processing is disabled', () => {
+      beforeEach(() => {
+        indexSpy = vi
+          .spyOn(esDbClient, 'index')
+          .mockResolvedValue(mockWriteResponse);
+        pgBossSendSpy = vi
+          .spyOn(PgBossProducer, 'send')
+          .mockResolvedValue('job-id');
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'telemetry_use_queue_processing') return false;
+          if (key === 'telemetry_queued_event_types') return [];
+          return originalConfigGet.call(config, key);
+        });
+      });
+
+      it('should send directly to Elasticsearch', async () => {
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+
+        expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
+          index: 'telemetry',
+          document: loginEvent,
+        });
+        expect(pgBossSendSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not throw if there is an error but log an error', async () => {
+        indexSpy.mockRejectedValue(new Error('Connection failed'));
+        const logErrorSpy = vi.spyOn(logApp, 'error');
+
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+        await Promise.resolve();
+        expect(logErrorSpy).toHaveBeenCalledOnce();
+        expect(pgBossSendSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when queue processing is enabled with empty event types list', () => {
+      beforeEach(() => {
+        indexSpy = vi
+          .spyOn(esDbClient, 'index')
+          .mockResolvedValue(mockWriteResponse);
+        pgBossSendSpy = vi
+          .spyOn(PgBossProducer, 'send')
+          .mockResolvedValue('job-id');
+        logSpy = vi.spyOn(logApp, 'error');
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'telemetry_use_queue_processing') return true;
+          if (key === 'telemetry_queued_event_types') return [];
+          return originalConfigGet.call(config, key);
+        });
+      });
+
+      it('should enqueue all events via PgBossProducer', async () => {
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+
+        expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
+          TELEMETRY_QUEUES.EVENTS,
+          { event: loginEvent }
+        );
+        expect(indexSpy).not.toHaveBeenCalled();
+      });
+
+      it('should enqueue any event type when list is empty', async () => {
+        await telemetryApp.sendTelemetryEvent(subscribeEvent);
+
+        expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
+          TELEMETRY_QUEUES.EVENTS,
+          { event: subscribeEvent }
+        );
+        expect(indexSpy).not.toHaveBeenCalled();
+      });
+
+      it('should log error when PgBossProducer.send fails', async () => {
+        const sendError = new Error('PgBoss connection lost');
+        pgBossSendSpy.mockRejectedValue(sendError);
+
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+
+        expect(logSpy).toHaveBeenCalledWith(
+          'Failed to enqueue telemetry event',
+          { event: loginEvent, error: sendError }
+        );
+        expect(indexSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when queue processing is enabled with specific event types', () => {
+      beforeEach(() => {
+        indexSpy = vi
+          .spyOn(esDbClient, 'index')
+          .mockResolvedValue(mockWriteResponse);
+        pgBossSendSpy = vi
+          .spyOn(PgBossProducer, 'send')
+          .mockResolvedValue('job-id');
+        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+          if (key === 'telemetry_use_queue_processing') return true;
+          if (key === 'telemetry_queued_event_types')
+            return [TelemetryEventType.LOGIN];
+          return originalConfigGet.call(config, key);
+        });
+      });
+
+      it('should enqueue events whose type is in the list', async () => {
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+
+        expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
+          TELEMETRY_QUEUES.EVENTS,
+          { event: loginEvent }
+        );
+        expect(indexSpy).not.toHaveBeenCalled();
+      });
+
+      it('should send directly to ES for events not in the list', async () => {
+        await telemetryApp.sendTelemetryEvent(subscribeEvent);
+
+        expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
+          index: 'telemetry',
+          document: subscribeEvent,
+        });
+        expect(pgBossSendSpy).not.toHaveBeenCalled();
+      });
+    });
+  });
+
   afterEach(async () => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 });

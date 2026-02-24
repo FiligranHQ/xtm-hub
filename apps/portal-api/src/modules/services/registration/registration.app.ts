@@ -273,7 +273,7 @@ export const registrationApp = {
         platform.version,
         platform.url
       );
-      telemetryApp.sendTelemetryEvent(registerEvent);
+      await telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for registration', {
         error,
@@ -462,28 +462,28 @@ export const registrationApp = {
           creation_status: ServiceInstanceCreationStatus.Ready,
         }),
       ]);
+
+      try {
+        const selectedOrga = await loadOrganizationBy({
+          id: deploymentRequest.organization_requester_id,
+        });
+
+        const registerEvent = buildRegisterEvent(
+          selectedOrga,
+          deploymentRequest.user_requester_id,
+          deploymentRequest.platform_identifier as PlatformIdentifier,
+          platform.id,
+          platform.contract,
+          platform.version,
+          platform.url
+        );
+        await telemetryApp.sendTelemetryEvent(registerEvent);
+      } catch (error) {
+        logApp.error('Unable to send telemetry event for registration', {
+          error,
+        });
+      }
     });
-
-    try {
-      const selectedOrga = await loadOrganizationBy({
-        id: deploymentRequest.organization_requester_id,
-      });
-
-      const registerEvent = buildRegisterEvent(
-        selectedOrga,
-        deploymentRequest.user_requester_id,
-        deploymentRequest.platform_identifier as PlatformIdentifier,
-        platform.id,
-        platform.contract,
-        platform.version,
-        platform.url
-      );
-      telemetryApp.sendTelemetryEvent(registerEvent);
-    } catch (error) {
-      logApp.error('Unable to send telemetry event for registration', {
-        error,
-      });
-    }
   },
 };
 
