@@ -28,7 +28,7 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
       const newDocIsCreated = !doc.updated_at;
       if (newDocIsCreated) {
         const createEvent = await buildCreateEvent(doc);
-        telemetryApp.sendTelemetryEvent(createEvent);
+        await telemetryApp.sendTelemetryEvent(createEvent);
       }
 
       results.push(doc);

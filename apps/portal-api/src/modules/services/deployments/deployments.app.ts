@@ -173,7 +173,7 @@ export const DeploymentsApp = {
               createdDeploymentRequest.type as DeploymentRequestDeploymentType,
           }
         );
-        telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+        await telemetryApp.sendTelemetryEvent(createDeploymentEvent);
       } catch (error) {
         logApp.error('Unable to send telemetry event', {
           error,
@@ -827,7 +827,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
       }
     );
 
-    void telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    await telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
   } catch (error) {
     logApp.error(
       `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,

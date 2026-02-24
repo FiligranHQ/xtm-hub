@@ -122,7 +122,7 @@ async function createOrganisationWithAdminUser(email: string) {
       newOrganization,
       addedUser.id
     );
-    telemetryApp.sendTelemetryEvent(createOrgaEvent);
+    await telemetryApp.sendTelemetryEvent(createOrgaEvent);
   } catch (error) {
     logApp.error('Unable to send telemetry event for create organization', {
       error,

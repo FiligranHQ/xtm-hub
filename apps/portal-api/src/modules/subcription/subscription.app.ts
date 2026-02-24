@@ -102,7 +102,7 @@ export const subscriptionApp = {
     //   filledSubscription.id
     // );
 
-    sendSubscriptionTelemetryEvent({
+    await sendSubscriptionTelemetryEvent({
       selectedOrganization,
       serviceDefinitionIdentifier:
         serviceDefinition.identifier as ServiceDefinitionIdentifier,
@@ -221,7 +221,7 @@ const createSubscriptionWithAdminAccess = async ({
   };
 };
 
-const sendSubscriptionTelemetryEvent = ({
+const sendSubscriptionTelemetryEvent = async ({
   selectedOrganization,
   serviceDefinitionIdentifier,
 }: {
@@ -236,7 +236,7 @@ const sendSubscriptionTelemetryEvent = ({
         user.id,
         serviceDefinitionIdentifier
       );
-      telemetryApp.sendTelemetryEvent(subscribeEvent);
+      await telemetryApp.sendTelemetryEvent(subscribeEvent);
     }
   } catch (error) {
     logApp.error('Unable to send telemetry event for subscription', {

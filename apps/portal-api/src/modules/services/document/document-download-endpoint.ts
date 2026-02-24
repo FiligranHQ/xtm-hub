@@ -129,7 +129,7 @@ export const documentDownloadEndpoint = (app) => {
                 document.id,
                 document.name
               );
-              telemetryApp.sendTelemetryEvent(downloadEvent);
+              await telemetryApp.sendTelemetryEvent(downloadEvent);
             }
           } catch (error) {
             logApp.error('Unable to send telemetry event for download', {
