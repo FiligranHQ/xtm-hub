@@ -5,7 +5,7 @@ import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import User from '../../model/kanel/public/User';
+import User, { UserId } from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
@@ -353,15 +353,14 @@ describe('UserServiceDomain', () => {
       const outsiderEmail = `outsider-${uuidv4()}@filigran.io`;
       const subscription = await getSubscription();
 
-      await UserServiceDomain.addServiceToUsers(
+      const call = UserServiceDomain.addServiceToUsers(
         subscription,
         [outsiderEmail],
         [GenericServiceCapabilityName.ACCESS]
-      ).catch((err: Error) => {
-        expect(err.message).toContain(
-          'The email address does not correspond to the current organization'
-        );
-      });
+      );
+      await expect(call).rejects.toThrow(
+        'The email address does not correspond to the current organization'
+      );
 
       const rows = await db<UserService>('User_Service')
         .where('subscription_id', sub.id)
@@ -801,14 +800,9 @@ describe('UserServiceDomain', () => {
 
     it('should return undefined when userId does not match any row', async () => {
       await insertUserService(SIMPLE.ID, sub.id);
-      const ghostId = uuidv4();
+      const ghostId = uuidv4() as UserId;
 
-      const result = await UserServiceDomain.deleteUserService(
-        ghostId as unknown as Parameters<
-          typeof UserServiceDomain.deleteUserService
-        >[0],
-        sub.id
-      );
+      const result = await UserServiceDomain.deleteUserService(ghostId, sub.id);
 
       expect(result).toBeUndefined();
 
@@ -836,13 +830,11 @@ describe('UserServiceDomain', () => {
     });
 
     it('should return undefined and delete nothing when both ids are non-existent', async () => {
-      const ghostId = uuidv4();
+      const ghostId = uuidv4() as UserId;
       const ghostSubId = uuidv4() as SubscriptionId;
 
       const result = await UserServiceDomain.deleteUserService(
-        ghostId as unknown as Parameters<
-          typeof UserServiceDomain.deleteUserService
-        >[0],
+        ghostId,
         ghostSubId
       );
 
