@@ -7,6 +7,7 @@ import {
 } from '@/components/service/document/public-document.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
 import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
+import useScrollPosition from '@/hooks/useScrollPosition';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { publicDocumentItemFragment$key } from '@generated/publicDocumentItemFragment.graphql';
@@ -26,7 +27,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { useSessionStorage } from 'usehooks-ts';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;
@@ -69,21 +69,10 @@ const PublicDocumentsList: React.FC<Props> = ({
     pageSize,
   });
 
-  const [scrollPosition] = useSessionStorage('scrollPosition', {
-    container: 'main',
-    position: 0,
-  });
+  const { restore } = useScrollPosition();
 
   useLayoutEffect(() => {
-    if (scrollPosition.position) {
-      const el = window.document.querySelector('main');
-      if (!el) return;
-
-      el.scrollTo({
-        top: scrollPosition.position,
-        behavior: 'auto',
-      });
-    }
+    restore();
   }, []);
 
   const handleRefetchData = (

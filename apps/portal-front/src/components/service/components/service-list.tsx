@@ -16,6 +16,7 @@ import { useServiceContext } from '@/components/service/components/service-conte
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { SettingsContext } from '@/components/settings/env-portal-context';
+import useScrollPosition from '@/hooks/useScrollPosition';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import {
   isIntegrationItem,
@@ -24,7 +25,6 @@ import {
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useLayoutEffect } from 'react';
-import { useSessionStorage } from 'usehooks-ts';
 
 export interface ServiceListProps {
   active: SubscribableResource[];
@@ -65,26 +65,9 @@ const ServiceList = ({
     },
   };
 
-  const [scrollPosition] = useSessionStorage('scrollPosition', {
-    container: 'main',
-    position: 0,
-  });
+  const { restore } = useScrollPosition();
   useLayoutEffect(() => {
-    if (scrollPosition.position > 0) {
-      if (scrollPosition.container === 'main') {
-        const el = window.document.querySelector('main');
-        if (!el) return;
-        el.scrollTo({
-          top: scrollPosition.position,
-          behavior: 'auto',
-        });
-      } else {
-        window.scrollTo({
-          top: scrollPosition.position,
-          behavior: 'auto',
-        });
-      }
-    }
+    restore();
   }, []);
 
   const activeByIntegrationType = active.reduce<
