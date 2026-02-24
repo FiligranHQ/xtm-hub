@@ -276,6 +276,8 @@ type DeploymentRequest implements Node {
   hub_status: DeploymentRequestHubStatus!
   ordering: Int!
   requester_email: String
+  organization_requester_id: ID!
+  service_instance_id: ID!
   organization_name: String
   request_date: Date!
   counts_in_orga_quota: Boolean!

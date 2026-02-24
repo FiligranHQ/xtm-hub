@@ -13,41 +13,85 @@ import {
 import { loadUserBy } from '../../modules/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
+import {
+  HUBSPOT_TYPE_TO_QUEUE,
+  type HubspotPayloadMap,
+  type HubspotWebhookType,
+} from '../pgboss/hubspot.jobs';
+import { PgBossProducer } from '../pgboss/producer';
 
-async function hubspotHook(
-  type: string,
-  buildPayload: () => Promise<Record<string, unknown>>
+/**
+ * Toggle between queue-based processing (PgBoss with retries) and live/direct sending.
+ */
+const useQueueProcessing = (): boolean =>
+  config.get<boolean>('hubspot_use_queue_processing');
+
+export async function hubspotHook<T extends HubspotWebhookType>(
+  type: T,
+  buildPayload: () => Promise<HubspotPayloadMap[T]>
 ) {
   try {
-    const webHookUrl = config.get<string>('hubspot_webhook_url');
-    if (isValidUrl(webHookUrl)) {
-      // 3 seconds timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
-      const payload = await buildPayload();
-
+    const payload = await buildPayload();
+    if (useQueueProcessing()) {
       try {
-        await fetch(webHookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            type,
-            ...payload,
-          }),
-          signal: controller.signal,
-        });
-      } finally {
-        clearTimeout(timeoutId);
+        const queueName = HUBSPOT_TYPE_TO_QUEUE[type];
+        await PgBossProducer.send(queueName, { type, payload });
+      } catch (error) {
+        logApp.error(`Failed to enqueue Hubspot ${type} job`, { error });
       }
-
-      logApp.info(`Hubspot ${type} hook sent`);
+      return;
     }
-  } catch (error) {
-    logApp.error(`An error occurred while sending the Hubspot ${type} hook`, {
-      error,
+
+    hubspotWebhookSend(type, payload).catch((error) => {
+      logApp.error(`Failed to send Hubspot ${type} hook synchronously`, {
+        error,
+      });
     });
+  } catch (error) {
+    logApp.error(`Failed to send Hubspot ${type} hook`, { error });
+  }
+}
+
+/**
+ * Called by PgBoss workers to actually send the webhook.
+ * Throws on failure so PgBoss can retry.
+ */
+export async function hubspotWebhookSend<T extends HubspotWebhookType>(
+  type: T,
+  payload: HubspotPayloadMap[T]
+) {
+  const webHookUrl = config.get<string>('hubspot_webhook_url');
+  if (!isValidUrl(webHookUrl)) {
+    logApp.debug(`Hubspot ${type} hook skipped: invalid or empty webhook URL`);
+    return;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
+
+  try {
+    const response = await fetch(webHookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type,
+        ...payload,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      throw new Error(
+        `HubSpot webhook returned HTTP ${response.status}: ${body}`
+      );
+    }
+
+    logApp.info(`Hubspot ${type} hook sent`);
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

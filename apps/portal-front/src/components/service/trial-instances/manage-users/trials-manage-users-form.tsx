@@ -12,7 +12,6 @@ import {
   toast,
 } from '@filigran/ui';
 import { MultiSelectFormField } from '@filigran/ui/clients';
-import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { serviceGroup_fragment$key } from '@generated/serviceGroup_fragment.graphql';
 import ServiceGroupsByServiceInstanceIdQueryGraphql, {
   serviceGroupsByServiceInstanceIdQuery,
@@ -44,13 +43,13 @@ const formSchema = z.object({
 interface Props {
   onCancel: () => void;
   onCompleted: () => void;
-  platform: registeredPlatformByServiceInstanceId_fragment$data;
+  organizationId?: string;
   queryRef: PreloadedQuery<serviceGroupsByServiceInstanceIdQuery>;
 }
 
 export const TrialsManageUsersForm: React.FC<Props> = ({
   onCancel,
-  platform,
+  organizationId,
   queryRef,
   onCompleted,
 }) => {
@@ -60,7 +59,7 @@ export const TrialsManageUsersForm: React.FC<Props> = ({
     orderMode,
     orderBy,
     pageSize,
-    filter: { organization: platform.subscription?.organization?.id },
+    filter: { organization: organizationId },
   });
   const data = usePreloadedQuery<serviceGroupsByServiceInstanceIdQuery>(
     ServiceGroupsByServiceInstanceIdQueryGraphql,

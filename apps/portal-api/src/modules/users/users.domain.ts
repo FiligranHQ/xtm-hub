@@ -437,8 +437,7 @@ export const userHasOrganizationWithSubscription = async () => {
 export const updateUserAtLogin = async (
   user: UserLoadUserBy
 ): Promise<UserLoadUserBy> => {
-  // Send data to HubSpot, fire-and-forget, don't wait for promise
-  hubspotLoginHook(user.id);
+  await hubspotLoginHook(user.id);
 
   const organizations = user.organizations.filter((o) => !o.personal_space);
   const fields: UserMutator = {
@@ -458,7 +457,7 @@ export const updateUserAtLogin = async (
       (org) => org.id === updatedUser.selected_organization_id
     );
     const loginEvent = buildLoginEvent(selectedOrga, user.id);
-    telemetryApp.sendTelemetryEvent(loginEvent);
+    await telemetryApp.sendTelemetryEvent(loginEvent);
   } catch (error) {
     logApp.error('Unable to send telemetry event for login', {
       error,
