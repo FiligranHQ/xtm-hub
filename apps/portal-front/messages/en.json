@@ -978,6 +978,8 @@
     "Title": "Something unexpected happened."
   },
   "Unregister": {
+    "Unregister": "Unregister",
+    "Description": "Are you sure you want to unregister your {platformName} platform? If you do, you’ll need to go through the registration process in {productName} again.",
     "Confirm": {
       "Description": "Do you want to proceed with the unregistration ?",
       "Title": "You are about to unregister your {platformIdentifier} platform from the {name} organization on the Hub."

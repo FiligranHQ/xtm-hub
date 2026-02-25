@@ -3,6 +3,7 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
 import { PlatformUpdateSheet } from '@/components/service/components/platform-update-sheet';
+import { UnregisterButton } from '@/components/service/registration/unregister-button';
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
 import { TrialCancelSheet } from '@/components/service/trial-instances/trial-cancel-sheet';
 import { formatDate } from '@/utils/date';
@@ -26,6 +27,7 @@ export const RegistrationDetails: React.FC<Props> = ({
   registeredPlatform,
 }) => {
   const t = useTranslations();
+
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
   const [openCancelSheet, setOpenCancelSheet] = useState(false);
 
@@ -168,6 +170,7 @@ export const RegistrationDetails: React.FC<Props> = ({
             {t('Platform.Update')}
           </Button>
         )}
+        <UnregisterButton platform={platform} />
       </div>
 
       {displayUpdatePlatform && (
