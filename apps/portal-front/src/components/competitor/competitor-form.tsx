@@ -28,7 +28,13 @@ export const TIERS = Object.values(CompetitorTierEnum).map((tier) => ({
 
 export const competitorFormSchema = z.object({
   name: z.string().min(2, { error: 'Name must be at least 2 characters.' }),
-  domain: z.string().min(2, { error: 'Domain must be at least 2 characters.' }),
+  domain: z
+    .string()
+    .min(2, { error: 'Domain must be at least 2 characters.' })
+    .regex(
+      /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/,
+      { error: 'Domain must be a valid mail domain (e.g. example.com).' }
+    ),
   tier: z.enum(TIER_VALUES),
 });
 
