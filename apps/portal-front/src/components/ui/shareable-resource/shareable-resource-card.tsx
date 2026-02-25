@@ -2,6 +2,7 @@
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-footer-author';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-footer-versions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/shareable-resource-card-header';
+import useScrollPosition from '@/hooks/useScrollPosition';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -42,10 +43,15 @@ const ShareableResourceCard = ({
   serviceInstance,
   publicPath = false,
 }: ShareableResourceCardProps) => {
+  const { save } = useScrollPosition();
+  const handleClick = () => {
+    save();
+  };
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover h-[348px]">
       <Link
         className="flex flex-col h-full"
+        onClick={handleClick}
         href={detailUrl}>
         <ShareableResourceCardHeader
           document={document}

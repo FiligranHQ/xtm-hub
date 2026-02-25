@@ -16,11 +16,12 @@ import { useServiceContext } from '@/components/service/components/service-conte
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { SettingsContext } from '@/components/settings/env-portal-context';
+import useScrollPosition from '@/hooks/useScrollPosition';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext } from 'react';
+import { useContext, useLayoutEffect } from 'react';
 
 export interface ServiceListProps {
   active: documentItem_fragment$data[];
@@ -60,6 +61,11 @@ const ServiceList = ({
       reset: removeLabels,
     },
   };
+
+  const { restore } = useScrollPosition();
+  useLayoutEffect(() => {
+    restore();
+  }, []);
 
   const activeByIntegrationType = active.reduce<
     Record<string, documentItem_fragment$data[]>
