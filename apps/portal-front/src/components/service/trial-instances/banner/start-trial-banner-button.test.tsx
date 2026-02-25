@@ -59,9 +59,6 @@ describe('Start trial button in the banner', () => {
       me: {
         email: 'domain@test.com',
       },
-      settings: {
-        domains_blacklist: 'autre.fr, test.com, coucou.io',
-      },
       relayConfig: environment,
     });
     //AND The user has no trial
