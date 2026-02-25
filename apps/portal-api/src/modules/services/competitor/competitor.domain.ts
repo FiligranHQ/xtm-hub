@@ -22,7 +22,9 @@ export const CompetitorDomain = {
     const [createdCompetitor] = await db<Competitor>('Competitor')
       .insert({
         ...data,
-        ...(data.domain != null && { domain: data.domain.toLowerCase() }),
+        ...(data.domain != null && {
+          domain: data.domain.trim().toLowerCase(),
+        }),
       })
       .returning('*');
 
@@ -37,7 +39,9 @@ export const CompetitorDomain = {
       .where(field)
       .update({
         ...data,
-        ...(data.domain != null && { domain: data.domain.toLowerCase() }),
+        ...(data.domain != null && {
+          domain: data.domain.trim().toLowerCase(),
+        }),
       })
       .returning('*');
 
@@ -49,5 +53,12 @@ export const CompetitorDomain = {
       .delete()
       .returning('*');
     return deletedCompetitor;
+  },
+  async isAnyDomainACompetitor(domains: string[]): Promise<boolean> {
+    const lowerDomains = domains.map((d) => d.toLowerCase());
+    const result = await db<Competitor>('Competitor')
+      .whereIn('domain', lowerDomains)
+      .first();
+    return result != null;
   },
 };

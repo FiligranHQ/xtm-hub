@@ -1,3 +1,4 @@
+import config from 'config';
 import {
   Competitor,
   CompetitorInput,
@@ -5,6 +6,7 @@ import {
   UpdateCompetitorInput,
 } from '../../../__generated__/resolvers-types';
 import { CompetitorId } from '../../../model/kanel/public/Competitor';
+import Organization from '../../../model/kanel/public/Organization';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { extractId, omit } from '../../../utils/utils';
@@ -16,6 +18,15 @@ const throwIfUniqueViolation = (error: Error) => {
       detail: error,
     });
   }
+};
+
+const isOrganizationBlacklistedFromSettings = (organization: Organization) => {
+  const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
+    .split(',')
+    .map((d) => d.trim());
+  return organization.domains.some((domain) =>
+    domainsBlacklist.includes(domain)
+  );
 };
 
 export const CompetitorApp = {
@@ -54,5 +65,15 @@ export const CompetitorApp = {
       ...competitor,
       tier: competitor.tier as CompetitorTier,
     };
+  },
+  async isOrganizationBlacklisted(
+    organization: Organization
+  ): Promise<boolean> {
+    if (!organization.domains?.length) return false;
+    return (
+      // check from settings can be removed once we have filled the competitors table
+      isOrganizationBlacklistedFromSettings(organization) ||
+      CompetitorDomain.isAnyDomainACompetitor(organization.domains)
+    );
   },
 };

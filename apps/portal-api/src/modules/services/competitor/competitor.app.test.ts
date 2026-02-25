@@ -1,12 +1,15 @@
+import config from 'config';
 import { toGlobalId } from 'graphql-relay';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { CompetitorTier } from '../../../__generated__/resolvers-types';
 import Competitor, {
   CompetitorId,
   CompetitorInitializer,
 } from '../../../model/kanel/public/Competitor';
 import { ErrorCode } from '../../../utils/error/error.code';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { CompetitorApp } from './competitor.app';
 import { CompetitorDomain } from './competitor.domain';
 
@@ -37,6 +40,16 @@ describe('CompetitorApp', () => {
         name: 'Competitor',
         domain: 'other.com',
       });
+    });
+
+    it('should insert competitor with domain trimmed', async () => {
+      const competitor = await CompetitorApp.insertCompetitor({
+        tier: CompetitorTier.Tier1,
+        name: 'Competitor',
+        domain: '  competitor.com  ',
+      });
+
+      expect(competitor.domain).toBe('competitor.com');
     });
 
     it('should throw CompetitorDomainAlreadyExists when a competitor with the same domain exists in a different case', async () => {
@@ -101,6 +114,59 @@ describe('CompetitorApp', () => {
 
       expect(competitor).not.toBeDefined();
       expect(result).toMatchObject(DEFAULT_COMPETITOR);
+    });
+  });
+
+  describe('isOrganizationBlacklisted', () => {
+    it('should return false when the competitor table is empty', async () => {
+      const org = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+      const result = await CompetitorApp.isOrganizationBlacklisted(org);
+      expect(result).toBe(false);
+    });
+
+    it('should return true when one of the org domains matches a competitor', async () => {
+      await createCompetitor({
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+      });
+
+      const org = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+      const result = await CompetitorApp.isOrganizationBlacklisted(org);
+      expect(result).toBe(true);
+    });
+
+    it('should return false when no org domain matches any competitor', async () => {
+      await createCompetitor({
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+      });
+
+      const org = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      const result = await CompetitorApp.isOrganizationBlacklisted(org);
+      expect(result).toBe(false);
+    });
+
+    it('should return true if org is blacklisted from settings', async () => {
+      const originalConfigGet = config.get;
+
+      vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        if (key === 'domains_blacklist') {
+          return TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST;
+        }
+        return originalConfigGet.call(config, key);
+      });
+
+      const org = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+      const result = await CompetitorApp.isOrganizationBlacklisted(org);
+      expect(result).toBe(true);
+
+      vi.mocked(config.get).mockImplementation(originalConfigGet);
     });
   });
 });

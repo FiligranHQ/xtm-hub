@@ -1,4 +1,3 @@
-import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
 import {
   afterAll,
@@ -58,10 +57,12 @@ import {
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../knexfile';
+import { CompetitorTier } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { PortalContext } from '../../../model/portal-context';
+import { CompetitorDomain } from '../competitor/competitor.domain';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
@@ -187,18 +188,15 @@ describe('Deployment app', () => {
     });
 
     describe('domains blacklist', () => {
-      const originalConfigGet = config.get;
-
-      afterEach(() => {
-        vi.mocked(config.get).mockImplementation(originalConfigGet);
+      afterEach(async () => {
+        await db('Competitor').delete();
       });
 
       it('should throw error when organization domain is blacklisted', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
-          }
-          return originalConfigGet.call(config, key);
+        await CompetitorDomain.insertCompetitor({
+          name: 'Filigran',
+          tier: CompetitorTier.Tier1,
+          domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
         });
 
         const call = DeploymentsApp.createDeploymentRequest({
@@ -214,11 +212,10 @@ describe('Deployment app', () => {
       });
 
       it('should allow deployment when organization domain is not blacklisted', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return 'blocked.com,forbidden.net';
-          }
-          return originalConfigGet.call(config, key);
+        await CompetitorDomain.insertCompetitor({
+          name: 'Blocked',
+          tier: CompetitorTier.Tier1,
+          domain: 'blocked.com',
         });
 
         const deployment = await DeploymentsApp.createDeploymentRequest({
@@ -234,14 +231,7 @@ describe('Deployment app', () => {
         expect(deployment.id).toBeDefined();
       });
 
-      it('should allow deployment when blacklist is empty', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return '';
-          }
-          return originalConfigGet.call(config, key);
-        });
-
+      it('should allow deployment when no competitors exist', async () => {
         const deployment = await DeploymentsApp.createDeploymentRequest({
           activity_sector: 'cybersecurity',
           job_title: 'myJob',
@@ -253,26 +243,6 @@ describe('Deployment app', () => {
 
         expect(deployment).toBeDefined();
         expect(deployment.id).toBeDefined();
-      });
-
-      it('should handle blacklist with spaces correctly', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST} , blocked.net , test.org`;
-          }
-          return originalConfigGet.call(config, key);
-        });
-
-        const call = DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
       });
     });
 
@@ -1080,12 +1050,10 @@ describe('Deployment app', () => {
     });
 
     it('should return blacklisted = true if orga is blacklisted', async () => {
-      const originalConfigGet = config.get;
-      vi.spyOn(config, 'get').mockImplementation((key: string) => {
-        if (key === 'domains_blacklist') {
-          return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
-        }
-        return originalConfigGet.call(config, key);
+      await CompetitorDomain.insertCompetitor({
+        name: 'Filigran',
+        tier: CompetitorTier.Tier1,
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
@@ -1097,7 +1065,8 @@ describe('Deployment app', () => {
         deployed: [],
         isBlacklisted: true,
       });
-      vi.mocked(config.get).mockImplementation(originalConfigGet);
+
+      await db('Competitor').delete();
     });
     it('should return trial as available if the created one does not count in quota', async () => {
       await insertDeploymentRequest({
