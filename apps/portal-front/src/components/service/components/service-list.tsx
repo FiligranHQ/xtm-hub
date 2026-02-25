@@ -16,6 +16,7 @@ import { useServiceContext } from '@/components/service/components/service-conte
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/service-list-local-storage-key-context';
 import { useServiceListLocalStorage } from '@/components/service/components/use-service-list-local-storage';
 import { SettingsContext } from '@/components/settings/env-portal-context';
+import useScrollPosition from '@/hooks/useScrollPosition';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import {
   isIntegrationItem,
@@ -23,7 +24,7 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext } from 'react';
+import { useContext, useLayoutEffect } from 'react';
 
 export interface ServiceListProps {
   active: SubscribableResource[];
@@ -63,6 +64,11 @@ const ServiceList = ({
       reset: removeLabels,
     },
   };
+
+  const { restore } = useScrollPosition();
+  useLayoutEffect(() => {
+    restore();
+  }, []);
 
   const activeByIntegrationType = active.reduce<
     Record<string, SubscribableResource[]>

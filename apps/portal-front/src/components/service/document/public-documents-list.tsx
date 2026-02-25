@@ -7,6 +7,7 @@ import {
 } from '@/components/service/document/public-document.graphql';
 import { PaginationControls } from '@/components/ui/pagination/pagination-controls';
 import { PublicShareableResourceList } from '@/components/ui/shareable-resource/public-shareable-resource-list';
+import useScrollPosition from '@/hooks/useScrollPosition';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { publicDocumentItemFragment$key } from '@generated/publicDocumentItemFragment.graphql';
@@ -19,7 +20,7 @@ import {
 } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
-import React, { useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
@@ -67,6 +68,12 @@ const PublicDocumentsList: React.FC<Props> = ({
     pageIndex: 0,
     pageSize,
   });
+
+  const { restore } = useScrollPosition();
+
+  useLayoutEffect(() => {
+    restore();
+  }, []);
 
   const handleRefetchData = (
     args?: Partial<publicDocumentsQuery$variables>
