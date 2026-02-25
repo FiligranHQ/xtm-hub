@@ -65,10 +65,10 @@ const compareLtsVersions = (a: string, b: string) => {
     return aMinorVersion > bMinorVersion ? 1 : -1;
   }
 
-  const aPatchVersion = splittedA[3];
-  const bPatchVersion = splittedB[3];
+  const aPatchVersion = +(splittedA[3] ?? 0);
+  const bPatchVersion = +(splittedB[3] ?? 0);
   if (aPatchVersion !== bPatchVersion) {
-    return (aPatchVersion ?? 0) > (bPatchVersion ?? 0) ? 1 : -1;
+    return aPatchVersion > bPatchVersion ? 1 : -1;
   }
 
   return 0;
