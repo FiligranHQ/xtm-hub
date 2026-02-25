@@ -1065,6 +1065,7 @@ export enum PlatformRegistrationStatus {
 export enum PortalCapability {
   Bypass = 'BYPASS',
   ModifyTrials = 'MODIFY_TRIALS',
+  ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
 }
 
