@@ -145,6 +145,11 @@ const adminLinksData = (
         },
       ]
     : []),
+  {
+    href: `/${APP_PATH}/admin/competitors`,
+    label: t('MenuLinks.Competitors'),
+    restriction: [PortalCapabilityEnum.BYPASS],
+  },
 ];
 
 const AdminLinks = ({ className }: { className?: string }) => {

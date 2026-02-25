@@ -67,6 +67,7 @@
       "CANT_REQUEST_FREE_TRIAL": "Vous ne pouvez pas demander d'essai gratuit",
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "Vous ne pouvez pas demander d'essai gratuit dans votre espace personnel",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
+      "COMPETITOR_DOMAIN_ALREADY_EXISTS": "Il existe déjà un concurrent avec le même domaine",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
       "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
       "DELETE_ORGANIZATION_ERROR": "Erreur lors de la suppression de l'organisation",
@@ -216,7 +217,29 @@
     "SettingsLabel": "Menu des paramètres",
     "Users": "Utilisateurs",
     "OpenCTITrials": "Essais OpenCTI",
-    "OpenAEVTrials": "Essais OpenAEV"
+    "OpenAEVTrials": "Essais OpenAEV",
+    "Competitors": "Concurrents"
+  },
+  "CompetitorListPage": {
+    "Name": "Nom",
+    "Domain": "Domaine",
+    "Tier": "Niveau",
+    "Edit": "Éditer",
+    "Delete": "Supprimer",
+    "AddCompetitor": "Ajouter un concurrent",
+    "DeleteDialog": {
+      "Title": "Supprimer le concurrent",
+      "Text": "Etes-vous sûr de vouloir supprimer le concurrent {name} ?"
+    }
+  },
+  "CompetitorForm": {
+    "AddTitle": "Ajouter un concurrent",
+    "EditTitle": "Modifier un concurrent",
+    "Name": "Nom",
+    "Domain": "Domaine",
+    "Tier": "Niveau",
+    "AddButton": "Ajouter un concurrent",
+    "EditButton": "Mettre à jour le concurrent"
   },
   "MenuUser": {
     "Profile": "Profile",
