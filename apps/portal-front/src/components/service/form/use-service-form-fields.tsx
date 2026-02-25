@@ -30,9 +30,11 @@ const integrationTypeMappedByDocumentType: Record<
   'Third Party Integration': IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
 };
 
+type Platform = 'OpenCTI' | 'OpenAEV';
+
 interface Props {
   documentType: DocumentType;
-  platform: string;
+  platform: Platform;
   isCreation: boolean;
   document?: documentItem_fragment$data;
 }
