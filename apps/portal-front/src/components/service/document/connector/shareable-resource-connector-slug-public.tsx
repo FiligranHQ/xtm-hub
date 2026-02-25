@@ -3,21 +3,15 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import { Merge } from '@/utils/typescript';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
-import { seoIntegrationConnectorFragment$data } from '@generated/seoIntegrationConnectorFragment.graphql';
-import { seoIntegrationFragment$data } from '@generated/seoIntegrationFragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import Image from 'next/image';
 import React from 'react';
 import { MarkdownAsync } from 'react-markdown';
 
-export type ShareableResourceConnectorType = Merge<
-  Merge<SubscribableResource, seoIntegrationFragment$data>,
-  seoIntegrationConnectorFragment$data
->;
 interface ShareableResourceConnectorSlugPublicProps {
-  documentData: ShareableResourceConnectorType;
+  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
   pageUrl: string;
   logo: string;
 }
@@ -82,7 +76,9 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
             </div>
           </section>
         </div>
-        <ShareableResourceConnectorDetails connectorDetails={documentData} />
+        <ShareableResourceConnectorDetails
+          connectorDetails={{ ...documentData, name: documentData.name ?? '' }}
+        />
       </div>
     </>
   );

@@ -18,17 +18,14 @@ import { useServiceListLocalStorage } from '@/components/service/components/use-
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import useScrollPosition from '@/hooks/useScrollPosition';
 import useServiceCapability from '@/hooks/useServiceCapability';
-import {
-  isIntegrationItem,
-  SubscribableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useLayoutEffect } from 'react';
 
 export interface ServiceListProps {
-  active: SubscribableResource[];
-  draft: SubscribableResource[];
+  active: documentItem_fragment$data[];
+  draft: documentItem_fragment$data[];
   search: string;
   onSearchChange: (v: string) => void;
   additionalFilters?: ServiceListFilterMap;
@@ -71,12 +68,11 @@ const ServiceList = ({
   }, []);
 
   const activeByIntegrationType = active.reduce<
-    Record<string, SubscribableResource[]>
+    Record<string, documentItem_fragment$data[]>
   >((acc, resource) => {
-    const type =
-      isIntegrationItem(resource) && resource.integration_type
-        ? resource.integration_type
-        : resource.type;
+    const type = resource.integration_type
+      ? resource.integration_type
+      : resource.type;
 
     if (!acc[type]) {
       acc[type] = [];

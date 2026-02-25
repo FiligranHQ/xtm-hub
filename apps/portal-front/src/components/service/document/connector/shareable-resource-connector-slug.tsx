@@ -19,13 +19,13 @@ import { getPlatformIdentifier } from '@/utils/platform';
 import { InfoIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import Image from 'next/image';
 import Link from 'next/link';
 
 // Component interface
 interface ShareableResourceConnectorSlugProps {
-  documentData: integrationsItem_fragment$data;
+  documentData: documentItem_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   shareUrl: string;
   logo?: string;
@@ -123,7 +123,7 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
           longDescription={documentData?.description ?? ''}
         />
         <ShareableResourceConnectorPrivateDetails
-          connectorDetails={documentData}
+          connectorDetails={{ ...documentData, name: documentData.name ?? '' }}
         />
       </div>
     </>

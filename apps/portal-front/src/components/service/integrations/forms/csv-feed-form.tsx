@@ -6,7 +6,6 @@ import MarkdownInput from '@/components/ui/MarkdownInput';
 import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListCheck } from '@/utils/documents';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AutoForm,
   Button,
@@ -22,6 +21,7 @@ import {
   SelectValue,
   SheetFooter,
 } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
@@ -45,7 +45,7 @@ export type CsvFeedFormValues = z.infer<typeof csvFeedFormSchema>;
 
 interface CsvFeedFormProps {
   handleSubmit?: (values: CsvFeedFormValues) => void;
-  document: SubscribableResource | undefined;
+  document: documentItem_fragment$data | undefined;
 }
 
 export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {

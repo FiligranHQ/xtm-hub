@@ -14,7 +14,6 @@ import {
   fileListCheck,
   NewFile,
 } from '@/utils/documents';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { AddIcon, DeleteIcon, ReplayIcon } from '@filigran/icon';
 import {
   AutoForm,
@@ -36,6 +35,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useContext, useMemo, useRef, useState } from 'react';
 import slugify from 'slugify';
@@ -60,7 +60,7 @@ const customDashboardSchema = z.object({
 export type CustomDashboardFormValues = z.infer<typeof customDashboardSchema>;
 
 interface CustomDashboardFormProps {
-  document: SubscribableResource | undefined;
+  document: documentItem_fragment$data | undefined;
   handleSubmit: (values: CustomDashboardFormValues) => void;
 }
 
@@ -96,7 +96,7 @@ export const CustomDashboardForm = ({
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
-    customDashboard?.children_documents as ExistingFile[]
+    customDashboard?.children_documents as unknown as ExistingFile[]
   );
 
   const userCanUpdate = useServiceCapability(

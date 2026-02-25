@@ -18,17 +18,17 @@ import {
 import {
   isIntegrationItem,
   ShareableResourceType,
-  SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { MoreVertIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface ServiceCardProps {
-  document: SubscribableResource;
+  document: documentItem_fragment$data;
   detailUrl: string;
   shareLinkUrl: string;
   requiredProductVersion?: string;
