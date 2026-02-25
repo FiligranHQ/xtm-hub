@@ -18,13 +18,11 @@ import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
-import {
-  ShareableResource,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -123,7 +121,7 @@ export function useDocumentContext({
   );
 
   const handleDeleteSheet = async (
-    document: ShareableResource,
+    document: documentItem_fragment$data,
     onCompleted: () => void
   ) => {
     deleteMutation({
@@ -145,7 +143,7 @@ export function useDocumentContext({
 
   const handleUpdateSheet = async (
     values: ServiceFormValues,
-    resource: ShareableResource,
+    resource: documentItem_fragment$data,
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {

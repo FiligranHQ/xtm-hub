@@ -1,11 +1,12 @@
 'use client';
 
+import useScrollPosition from '@/hooks/useScrollPosition';
 import { cn } from '@/lib/utils';
 import { ArrowOutwardIcon, LogoFiligranIcon } from '@filigran/icon';
 import { AspectRatio, Button } from '@filigran/ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
 
 export type PlatformHoverAction = {
   id: string;
@@ -44,6 +45,10 @@ interface ServiceInstanceCardProps {
 const ServiceInstanceCard: React.FunctionComponent<
   ServiceInstanceCardProps
 > = ({ serviceInstance, rightAction, className }) => {
+  const { reset } = useScrollPosition();
+  useEffect(() => {
+    reset();
+  }, []);
   const renderHoverButton = useCallback((action: PlatformHoverAction) => {
     if (!action.href) {
       return null;

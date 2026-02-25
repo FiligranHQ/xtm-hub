@@ -61,7 +61,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
             <TestEnvBanner />
             <AdminBanner />
             <TryFiligranProductsBanner />
-            <div className="flex flex-row flex-grow overflow-hidden">
+            <div className="flex flex-row flex-grow">
               <Menu />
               <div className="flex flex-col w-full h-full overflow-auto">
                 <HeaderComponent />

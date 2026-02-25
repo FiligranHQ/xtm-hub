@@ -1,5 +1,5 @@
 export const semanticVersionRegex = /^[0-9]+\.[0-9]+\.[0-9]+$/;
-const validLtsVersionRegex = /^[0-9]+\.[0-9]+[0-9]{4}-lts(\.[a-zA-Z0-9]+)?$/;
+const validLtsVersionRegex = /^[0-9]+\.[0-9]+\.[0-9]+-lts(\.[0-9]+)?$/;
 
 const isSemanticVersion = (version: string): boolean => {
   return semanticVersionRegex.test(version);
@@ -51,17 +51,24 @@ const compareLtsVersions = (a: string, b: string) => {
     return aMajorVersion > bMajorVersion ? 1 : -1;
   }
 
-  const aDateVersion = +splittedA[1].replace('-lts', '');
-  const bDateVersion = +splittedB[1].replace('-lts', '');
+  const aDateVersion = +splittedA[1];
+  const bDateVersion = +splittedB[1];
 
   if (aDateVersion !== bDateVersion) {
     return aDateVersion > bDateVersion ? 1 : -1;
   }
 
-  const aPatchVersion = splittedA[2];
-  const bPatchVersion = splittedB[2];
+  const aMinorVersion = +splittedA[2].replace('-lts', '');
+  const bMinorVersion = +splittedB[2].replace('-lts', '');
+
+  if (aMinorVersion !== bMinorVersion) {
+    return aMinorVersion > bMinorVersion ? 1 : -1;
+  }
+
+  const aPatchVersion = +(splittedA[3] ?? 0);
+  const bPatchVersion = +(splittedB[3] ?? 0);
   if (aPatchVersion !== bPatchVersion) {
-    return (aPatchVersion ?? 0) > (bPatchVersion ?? 0) ? 1 : -1;
+    return aPatchVersion > bPatchVersion ? 1 : -1;
   }
 
   return 0;

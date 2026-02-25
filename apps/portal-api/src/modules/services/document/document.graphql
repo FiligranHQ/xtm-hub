@@ -143,6 +143,8 @@ type Query {
     logicalFilters: LogicalFilterInput
     serviceInstanceId: ID!
   ): DocumentConnection!
+  publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
+  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
   documents(
     first: Int!
     after: ID
@@ -153,5 +155,5 @@ type Query {
     serviceInstanceId: String
     parentsOnly: Boolean
   ): DocumentConnection! @auth
-  document(documentId: ID, serviceInstanceId: ID): Document
+  document(documentId: ID, serviceInstanceId: ID): Document @auth
 }

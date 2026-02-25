@@ -1,10 +1,10 @@
 'use client';
 
 import Loader from '@/components/loader';
+import { DocumentsItemQuery } from '@/components/service/document/document.graphql';
 import OpenaevScenarioSlug from '@/components/service/openaev-scenarios/[slug]/openaev-scenario-slug';
-import { OpenaevScenarioQuery } from '@/components/service/openaev-scenarios/openaev-scenario.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { openaevScenarioQuery } from '@generated/openaevScenarioQuery.graphql';
+import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
 
@@ -20,7 +20,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   serviceInstance,
 }) => {
   const [queryRef, loadQuery] =
-    useQueryLoader<openaevScenarioQuery>(OpenaevScenarioQuery);
+    useQueryLoader<documentQuery>(DocumentsItemQuery);
   useMountingLoader(loadQuery, {
     documentId,
     serviceInstanceId: serviceInstance?.id,

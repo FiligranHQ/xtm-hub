@@ -34,7 +34,7 @@ import {
 } from '../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { updateSubscriptionBy } from '../../subcription/subscription.domain';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
@@ -93,7 +93,7 @@ export const DeploymentsApp = {
     );
 
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
+      await ServiceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
         input.platform_identifier
       );
     if (!serviceDefinition) {
@@ -173,7 +173,7 @@ export const DeploymentsApp = {
               createdDeploymentRequest.type as DeploymentRequestDeploymentType,
           }
         );
-        telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+        await telemetryApp.sendTelemetryEvent(createDeploymentEvent);
       } catch (error) {
         logApp.error('Unable to send telemetry event', {
           error,
@@ -827,7 +827,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
       }
     );
 
-    void telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    await telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
   } catch (error) {
     logApp.error(
       `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,

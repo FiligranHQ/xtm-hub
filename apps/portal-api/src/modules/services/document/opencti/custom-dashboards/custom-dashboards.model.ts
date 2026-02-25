@@ -1,6 +1,6 @@
-import { Document as DocumentResolverType } from '../../../__generated__/resolvers-types';
-import Document from '../../../model/kanel/public/Document';
-import { MetadataArray } from '../../../utils/metadata';
+import { Document as DocumentResolverType } from '../../../../../__generated__/resolvers-types';
+import Document from '../../../../../model/kanel/public/Document';
+import { MetadataArray } from '../../../../../utils/metadata';
 
 export const OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE =
   'opencti_custom_dashboard';

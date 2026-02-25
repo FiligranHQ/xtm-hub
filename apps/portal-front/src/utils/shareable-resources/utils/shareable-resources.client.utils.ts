@@ -21,6 +21,6 @@ export function getServiceInfo(
 export const docHasMetadata = <T, K extends string>(
   documentData: T,
   metadataKey: K
-): documentData is T & Record<K, string> =>
-  hasProperty<T, K, string>(documentData, metadataKey) &&
+): documentData is T & Record<K, unknown> =>
+  hasProperty<T, K, unknown>(documentData, metadataKey) &&
   !!documentData[metadataKey];

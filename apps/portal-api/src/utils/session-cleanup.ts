@@ -32,16 +32,8 @@ export const startSessionCleanup = (options: SessionCleanupOptions = {}) => {
 
   // Schedule periodic cleanup
   cleanupInterval = setInterval(runCleanup, intervalMinutes * 60 * 1000);
-
-  // Handle graceful shutdown
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
 };
 
-const shutdown = () => {
-  stopSessionCleanup();
-  process.exit(0);
-};
 /**
  * Stop the automatic session cleanup process
  */
