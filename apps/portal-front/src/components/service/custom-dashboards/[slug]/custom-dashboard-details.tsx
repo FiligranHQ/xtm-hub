@@ -1,23 +1,23 @@
 import { AppServiceContext } from '@/components/service/components/service-context';
 import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
+import {
+  documentItem,
+  DocumentsItemQuery,
+} from '@/components/service/document/document.graphql';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
 import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
-import { customDashboardQuery } from '@generated/customDashboardQuery.graphql';
-import { customDashboardsItem_fragment$key } from '@generated/customDashboardsItem_fragment.graphql';
+import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
+import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
-import {
-  CustomDashboardQuery,
-  customDashboardsItem,
-} from '../custom-dashboard.graphql';
 
 // Component interface
 interface DashboardSlugProps {
-  queryRef: PreloadedQuery<customDashboardQuery>;
+  queryRef: PreloadedQuery<documentQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
@@ -26,13 +26,10 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
   queryRef,
   serviceInstance,
 }) => {
-  const data = usePreloadedQuery<customDashboardQuery>(
-    CustomDashboardQuery,
-    queryRef
-  );
-  const documentData = readInlineData<customDashboardsItem_fragment$key>(
-    customDashboardsItem,
-    data.customDashboard
+  const data = usePreloadedQuery<documentQuery>(DocumentsItemQuery, queryRef);
+  const documentData = readInlineData<documentItem_fragment$key>(
+    documentItem,
+    data.document
   );
 
   const breadcrumbValue = [

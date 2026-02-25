@@ -1,13 +1,11 @@
-import {
-  PublicShareableResource,
-  ShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from '@filigran/icon';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import Image from 'next/image';
 import { FunctionComponent } from 'react';
 
 interface ShareableResourceCardImageProps {
-  document: ShareableResource | PublicShareableResource;
+  document: documentItem_fragment$data | publicDocumentItemFragment$data;
   serviceInstanceId: string;
 }
 export const ShareableResourceCardImage: FunctionComponent<

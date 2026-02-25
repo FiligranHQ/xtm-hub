@@ -6,13 +6,13 @@ import ingestManifestResolver from '../modules/ingest-manifest/ingest-manifest.r
 import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
-import customDashboardsResolver from '../modules/services/custom-dashboards/custom-dashboards.resolver';
 import ServiceDefinitionResolver from '../modules/services/definition/service-definition.resolver';
 import deploymentResolver from '../modules/services/deployments/deployments.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
+import openAEVScenariosResolver from '../modules/services/document/openaev/scenarios/scenarios.resolver';
+import customDashboardsResolver from '../modules/services/document/opencti/custom-dashboards/custom-dashboards.resolver';
+import integrationsResolver from '../modules/services/document/opencti/integrations/integrations.resolver';
 import serviceGroupResolver from '../modules/services/group/service-group.resolver';
-import integrationsResolver from '../modules/services/integrations/integrations.resolver';
-import openAEVScenariosResolver from '../modules/services/openaev-scenarios/openaev-scenarios.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';

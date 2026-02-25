@@ -1,10 +1,10 @@
 'use client';
 
 import Loader from '@/components/loader';
+import { DocumentsItemQuery } from '@/components/service/document/document.graphql';
 import IntegrationSlug from '@/components/service/integrations/[slug]/integration-slug';
-import { IntegrationQuery } from '@/components/service/integrations/integration.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
-import { integrationQuery } from '@generated/integrationQuery.graphql';
+import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
 
@@ -20,7 +20,7 @@ const PageLoader: React.FunctionComponent<PreloaderProps> = ({
   serviceInstance,
 }) => {
   const [queryRef, loadQuery] =
-    useQueryLoader<integrationQuery>(IntegrationQuery);
+    useQueryLoader<documentQuery>(DocumentsItemQuery);
   useMountingLoader(loadQuery, {
     documentId,
     serviceInstanceId: serviceInstance?.id,

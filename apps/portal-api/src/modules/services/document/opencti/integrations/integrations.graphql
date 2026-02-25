@@ -59,7 +59,7 @@ type IntegrationHack implements Node & Document & Integration {
   # Document
   type: String!
   uploader: User
-  uploader_organization: Organization @auth
+  uploader_organization: Organization
   name: String!
   short_description: String
   description: String
@@ -90,7 +90,7 @@ type CsvFeed implements Node & Document & Integration {
   # Document
   type: String!
   uploader: User
-  uploader_organization: Organization @auth
+  uploader_organization: Organization
   name: String!
   short_description: String
   description: String
@@ -122,7 +122,7 @@ type Connector implements Node & Document & Integration {
   # Document
   type: String!
   uploader: User
-  uploader_organization: Organization @auth
+  uploader_organization: Organization
   name: String!
   short_description: String
   description: String
@@ -161,7 +161,7 @@ type TaxiiFeed implements Node & Document & Integration {
   # Document
   type: String!
   uploader: User
-  uploader_organization: Organization @auth
+  uploader_organization: Organization
   name: String!
   short_description: String
   description: String
@@ -194,7 +194,7 @@ type Stream implements Node & Document & Integration {
   # Document
   type: String!
   uploader: User
-  uploader_organization: Organization @auth
+  uploader_organization: Organization
   name: String!
   short_description: String
   description: String
@@ -227,7 +227,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   # Document
   type: String!
   uploader: User
-  uploader_organization: Organization @auth
+  uploader_organization: Organization
   name: String!
   short_description: String
   description: String
@@ -253,10 +253,4 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   vendor_url: String!
   product_version: String
   github_url: String
-}
-
-type Query {
-  integration(id: ID, serviceInstanceId: ID): Integration @auth
-  publicIntegrationsByServiceSlug(serviceSlug: String): [Integration]
-  publicIntegrationBySlug(slug: String): Integration
 }
