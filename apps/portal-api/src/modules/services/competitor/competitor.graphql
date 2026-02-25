@@ -1,0 +1,57 @@
+enum CompetitorOrdering {
+  name
+  tier
+  domain
+}
+
+enum CompetitorTier {
+  tier1
+  tier2
+  tier3
+}
+
+type Competitor implements Node {
+  id: ID!
+  name: String!
+  tier: CompetitorTier!
+  domain: String!
+}
+
+type CompetitorEdge {
+  cursor: String!
+  node: Competitor!
+}
+
+type CompetitorConnection {
+  totalCount: Int!
+  edges: [CompetitorEdge!]!
+  pageInfo: PageInfo!
+}
+
+input CompetitorInput {
+  name: String!
+  tier: CompetitorTier!
+  domain: String!
+}
+
+input UpdateCompetitorInput {
+  id: ID!
+  name: String
+  tier: CompetitorTier
+  domain: String
+}
+
+extend type Query {
+  competitors(
+    first: Int!
+    after: ID
+    orderBy: CompetitorOrdering!
+    orderMode: OrderingMode!
+  ): CompetitorConnection!
+}
+
+extend type Mutation {
+  addCompetitor(input: CompetitorInput!): Competitor!
+  updateCompetitor(input: UpdateCompetitorInput!): Competitor!
+  deleteCompetitor(id: ID!): Competitor!
+}

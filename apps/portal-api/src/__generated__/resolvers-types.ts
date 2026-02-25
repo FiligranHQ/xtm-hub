@@ -82,6 +82,45 @@ export type Capability = Node & {
   name: PortalCapability;
 };
 
+export type Competitor = Node & {
+  __typename?: 'Competitor';
+  domain: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  tier: CompetitorTier;
+};
+
+export type CompetitorConnection = {
+  __typename?: 'CompetitorConnection';
+  edges: Array<CompetitorEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type CompetitorEdge = {
+  __typename?: 'CompetitorEdge';
+  cursor: Scalars['String']['output'];
+  node: Competitor;
+};
+
+export type CompetitorInput = {
+  domain: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tier: CompetitorTier;
+};
+
+export enum CompetitorOrdering {
+  Domain = 'domain',
+  Name = 'name',
+  Tier = 'tier'
+}
+
+export enum CompetitorTier {
+  Tier1 = 'tier1',
+  Tier2 = 'tier2',
+  Tier3 = 'tier3'
+}
+
 export type Connector = Document & Integration & Node & {
   __typename?: 'Connector';
   active: Scalars['Boolean']['output'];
@@ -542,6 +581,7 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCompetitor: Competitor;
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
@@ -561,6 +601,7 @@ export type Mutation = {
   contactUs: Success;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
+  deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteOrganization?: Maybe<Organization>;
   deleteSubscription?: Maybe<ServiceInstance>;
@@ -587,11 +628,17 @@ export type Mutation = {
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
+  updateCompetitor: Competitor;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateDocument: Document;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
+};
+
+
+export type MutationAddCompetitorArgs = {
+  input: CompetitorInput;
 };
 
 
@@ -700,6 +747,11 @@ export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationDeleteCompetitorArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -822,6 +874,11 @@ export type MutationTransferPersonalSpaceArgs = {
 
 export type MutationUnregisterPlatformArgs = {
   input?: InputMaybe<UnregisterPlatformInput>;
+};
+
+
+export type MutationUpdateCompetitorArgs = {
+  input: UpdateCompetitorInput;
 };
 
 
@@ -1059,6 +1116,7 @@ export enum PortalCapability {
 export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
+  competitors: CompetitorConnection;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -1107,6 +1165,14 @@ export type Query = {
 
 export type QueryCanUnregisterPlatformArgs = {
   input: CanUnregisterPlatformInput;
+};
+
+
+export type QueryCompetitorsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: CompetitorOrdering;
+  orderMode: OrderingMode;
 };
 
 
@@ -1787,6 +1853,13 @@ export type UnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
 };
 
+export type UpdateCompetitorInput = {
+  domain?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  tier?: InputMaybe<CompetitorTier>;
+};
+
 export type UpdateDeploymentQuotaCapacityInput = {
   newCapacity: Scalars['Int']['input'];
   platformIdentifier: PlatformIdentifier;
@@ -2050,7 +2123,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2065,6 +2138,12 @@ export type ResolversTypes = ResolversObject<{
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
+  Competitor: ResolverTypeWrapper<Competitor>;
+  CompetitorConnection: ResolverTypeWrapper<CompetitorConnection>;
+  CompetitorEdge: ResolverTypeWrapper<CompetitorEdge>;
+  CompetitorInput: CompetitorInput;
+  CompetitorOrdering: CompetitorOrdering;
+  CompetitorTier: CompetitorTier;
   Connector: ResolverTypeWrapper<Connector>;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
@@ -2186,6 +2265,7 @@ export type ResolversTypes = ResolversObject<{
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: ResolverTypeWrapper<TrialsDeployments>;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
@@ -2227,6 +2307,10 @@ export type ResolversParentTypes = ResolversObject<{
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
+  Competitor: Competitor;
+  CompetitorConnection: CompetitorConnection;
+  CompetitorEdge: CompetitorEdge;
+  CompetitorInput: CompetitorInput;
   Connector: Connector;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
@@ -2319,6 +2403,7 @@ export type ResolversParentTypes = ResolversObject<{
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: TrialsDeployments;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
@@ -2377,6 +2462,27 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
 export type CapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['PortalCapability'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Competitor'] = ResolversParentTypes['Competitor']> = ResolversObject<{
+  domain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tier?: Resolver<ResolversTypes['CompetitorTier'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CompetitorConnection'] = ResolversParentTypes['CompetitorConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['CompetitorEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CompetitorEdge'] = ResolversParentTypes['CompetitorEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2679,6 +2785,7 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  addCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationAddCompetitorArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
@@ -2698,6 +2805,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
+  deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
@@ -2724,6 +2832,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
+  updateCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationUpdateCompetitorArgs, 'input'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;
@@ -2732,7 +2841,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2857,6 +2966,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
+  competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -3320,6 +3430,9 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
+  Competitor?: CompetitorResolvers<ContextType>;
+  CompetitorConnection?: CompetitorConnectionResolvers<ContextType>;
+  CompetitorEdge?: CompetitorEdgeResolvers<ContextType>;
   Connector?: ConnectorResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
