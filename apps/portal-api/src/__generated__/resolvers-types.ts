@@ -894,19 +894,6 @@ export type OpenAevScenario = Document & Node & {
   use_cases?: Maybe<Array<UseCase>>;
 };
 
-export type OpenAevScenarioConnection = {
-  __typename?: 'OpenAEVScenarioConnection';
-  edges: Array<OpenAevScenarioEdge>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type OpenAevScenarioEdge = {
-  __typename?: 'OpenAEVScenarioEdge';
-  cursor: Scalars['String']['output'];
-  node: OpenAevScenario;
-};
-
 export type OpenCtiPlatformRegistrationStatusInput = {
   platformId: Scalars['String']['input'];
   token: Scalars['String']['input'];
@@ -1086,18 +1073,14 @@ export type Query = {
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
+  publicDocumentBySlug?: Maybe<Document>;
   publicDocuments: DocumentConnection;
-  publicIntegrationBySlug?: Maybe<Integration>;
-  publicIntegrationsByServiceSlug?: Maybe<Array<Maybe<Integration>>>;
+  publicDocumentsByServiceSlug: Array<Document>;
   publicServiceInstances: ServiceConnection;
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
-  seoCustomDashboardBySlug?: Maybe<CustomDashboard>;
-  seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<CustomDashboard>>>;
-  seoOpenAEVScenarioBySlug?: Maybe<OpenAevScenario>;
-  seoOpenAEVScenariosByServiceSlug?: Maybe<Array<Maybe<OpenAevScenario>>>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
@@ -1216,6 +1199,12 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
+export type QueryPublicDocumentBySlugArgs = {
+  serviceInstanceId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
 export type QueryPublicDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1228,13 +1217,8 @@ export type QueryPublicDocumentsArgs = {
 };
 
 
-export type QueryPublicIntegrationBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryPublicIntegrationsByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
+export type QueryPublicDocumentsByServiceSlugArgs = {
+  serviceInstanceSlug: Scalars['String']['input'];
 };
 
 
@@ -1258,26 +1242,6 @@ export type QueryRegisteredPlatformsArgs = {
 
 export type QueryRolePortalArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QuerySeoCustomDashboardBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoCustomDashboardsByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoOpenAevScenarioBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoOpenAevScenariosByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2149,8 +2113,6 @@ export type ResolversTypes = ResolversObject<{
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
-  OpenAEVScenarioConnection: ResolverTypeWrapper<OpenAevScenarioConnection>;
-  OpenAEVScenarioEdge: ResolverTypeWrapper<OpenAevScenarioEdge>;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: ResolverTypeWrapper<OpenCtiPlatformRegistrationStatusResponse>;
   OrderingMode: OrderingMode;
@@ -2302,8 +2264,6 @@ export type ResolversParentTypes = ResolversObject<{
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: OpenAevScenario;
-  OpenAEVScenarioConnection: OpenAevScenarioConnection;
-  OpenAEVScenarioEdge: OpenAevScenarioEdge;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: OpenCtiPlatformRegistrationStatusResponse;
   Organization: Organization;
@@ -2801,19 +2761,6 @@ export type OpenAevScenarioResolvers<ContextType = PortalContext, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OpenAevScenarioConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenAEVScenarioConnection'] = ResolversParentTypes['OpenAEVScenarioConnection']> = ResolversObject<{
-  edges?: Resolver<Array<ResolversTypes['OpenAEVScenarioEdge']>, ParentType, ContextType>;
-  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
-  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type OpenAevScenarioEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenAEVScenarioEdge'] = ResolversParentTypes['OpenAEVScenarioEdge']> = ResolversObject<{
-  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse'] = ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse']> = ResolversObject<{
   status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2923,18 +2870,14 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
+  publicDocumentBySlug?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentBySlugArgs, 'serviceInstanceId' | 'slug'>>;
   publicDocuments?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryPublicDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId' | 'slug'>>;
-  publicIntegrationBySlug?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryPublicIntegrationBySlugArgs>>;
-  publicIntegrationsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['Integration']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationsByServiceSlugArgs>>;
+  publicDocumentsByServiceSlug?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentsByServiceSlugArgs, 'serviceInstanceSlug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
-  seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
-  seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
-  seoOpenAEVScenarioBySlug?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QuerySeoOpenAevScenarioBySlugArgs>>;
-  seoOpenAEVScenariosByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['OpenAEVScenario']>>>, ParentType, ContextType, Partial<QuerySeoOpenAevScenariosByServiceSlugArgs>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
@@ -3400,8 +3343,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
-  OpenAEVScenarioConnection?: OpenAevScenarioConnectionResolvers<ContextType>;
-  OpenAEVScenarioEdge?: OpenAevScenarioEdgeResolvers<ContextType>;
   OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;

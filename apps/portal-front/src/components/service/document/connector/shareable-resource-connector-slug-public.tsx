@@ -3,21 +3,15 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
-import { Merge } from '@/utils/typescript';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { seoIntegrationConnectorFragment$data } from '@generated/seoIntegrationConnectorFragment.graphql';
-import { seoIntegrationFragment$data } from '@generated/seoIntegrationFragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import Image from 'next/image';
 import React from 'react';
 import { MarkdownAsync } from 'react-markdown';
 
-export type ShareableResourceConnectorType = Merge<
-  Merge<documentItem_fragment$data, seoIntegrationFragment$data>,
-  seoIntegrationConnectorFragment$data
->;
 interface ShareableResourceConnectorSlugPublicProps {
-  documentData: documentItem_fragment$data;
+  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
   pageUrl: string;
   logo: string;
 }

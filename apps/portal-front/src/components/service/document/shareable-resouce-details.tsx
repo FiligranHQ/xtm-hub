@@ -16,11 +16,12 @@ import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-reso
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
 
 // Component interface
 interface ShareableResourceDetailsProps {
-  documentData: documentItem_fragment$data;
+  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
   downloadNumber?: number | null;
 }
 

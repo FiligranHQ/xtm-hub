@@ -1,4 +1,4 @@
-type CustomDashboard implements Document & Node {
+type OpenAEVScenario implements Document & Node {
   id: ID!
   type: String!
   uploader: User
@@ -20,11 +20,6 @@ type CustomDashboard implements Document & Node {
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
-  # Specific fields for custom dashboards
+  # Specific fields for OpenAEVScenario scenarios
   product_version: String
-}
-
-type Query {
-  seoCustomDashboardsByServiceSlug(serviceSlug: String): [CustomDashboard]
-  seoCustomDashboardBySlug(slug: String): CustomDashboard
 }

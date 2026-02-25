@@ -90,6 +90,7 @@ export const SERVICES = {
     },
     CUSTOM_DASHBOARDS: {
       ID: 'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4' as ServiceInstanceId,
+      SLUG: 'opencti-custom-dashboards',
     },
   },
 };

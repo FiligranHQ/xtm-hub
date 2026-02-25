@@ -7,7 +7,7 @@ import { DocumentChildrenDomain } from '../services/document/domain/document.chi
 import {
   Connector,
   INTEGRATION_SERVICE_INSTANCE_ID,
-} from '../services/integrations/integrations.model';
+} from '../services/document/opencti/integrations/integrations.model';
 import { useCaseDomain } from '../settings/useCase/use-case.domain';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
