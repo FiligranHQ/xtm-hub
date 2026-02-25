@@ -8,7 +8,7 @@ import PageLoader from './page-loader';
 const Page: React.FunctionComponent = () => {
   return (
     <GuardCapacityComponent
-      portalCapabilityRestriction={[PortalCapabilityEnum.BYPASS]}
+      portalCapabilityRestriction={[PortalCapabilityEnum.MODIFY_COMPETITORS]}
       displayError>
       <PageLoader />
     </GuardCapacityComponent>

@@ -47,11 +47,13 @@ extend type Query {
     after: ID
     orderBy: CompetitorOrdering!
     orderMode: OrderingMode!
-  ): CompetitorConnection!
+  ): CompetitorConnection! @auth(portalCapa: MODIFY_COMPETITORS)
 }
 
 extend type Mutation {
   addCompetitor(input: CompetitorInput!): Competitor!
+    @auth(portalCapa: MODIFY_COMPETITORS)
   updateCompetitor(input: UpdateCompetitorInput!): Competitor!
-  deleteCompetitor(id: ID!): Competitor!
+    @auth(portalCapa: MODIFY_COMPETITORS)
+  deleteCompetitor(id: ID!): Competitor! @auth(portalCapa: MODIFY_COMPETITORS)
 }
