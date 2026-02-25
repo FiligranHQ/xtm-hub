@@ -57,10 +57,12 @@ export const ThirdPartyIntegrationForm = ({
     () =>
       ({
         ...document,
-        images: document?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
+        images: (document?.children_documents?.length
+          ? document.children_documents.map((doc) => ({
+              ...doc,
+              name: doc.file_name,
+            }))
+          : undefined) as unknown as FileList,
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
