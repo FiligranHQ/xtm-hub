@@ -1,7 +1,3 @@
-import {
-  PublicShareableResource,
-  ShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { CampaignIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import {
@@ -10,11 +6,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/ui/clients';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 
 interface ShareableResourceCardIconProps {
-  document: ShareableResource | PublicShareableResource;
+  document: documentItem_fragment$data | publicDocumentItemFragment$data;
   shouldDisplayBothIcons: boolean;
 }
 export const ShareableResourceCardIcon: FunctionComponent<

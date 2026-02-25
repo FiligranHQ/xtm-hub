@@ -20,11 +20,19 @@ import { WithUseCases } from '../../../utils/types';
 import { isValidUrl } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
+import { DocumentApp } from './document.app';
+import { Upload } from './document.uploads.helper';
+import { DocumentDomain } from './domain/document.domain';
+import {
+  OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  OPENAEV_SCENARIO_METADATA,
+  OPENAEV_SCENARIO_METADATA_KEYS,
+} from './openaev/scenarios/scenarios.model';
 import {
   CUSTOM_DASHBOARD_METADATA,
   CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-} from '../custom-dashboards/custom-dashboards.domain';
+} from './opencti/custom-dashboards/custom-dashboards.model';
 import {
   INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_METADATA_KEYS,
@@ -33,15 +41,7 @@ import {
   INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
   isIntegrationType,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../integrations/integrations.model';
-import {
-  OPENAEV_SCENARIO_DOCUMENT_TYPE,
-  OPENAEV_SCENARIO_METADATA,
-  OPENAEV_SCENARIO_METADATA_KEYS,
-} from '../openaev-scenarios/openaev-scenarios.domain';
-import { DocumentApp } from './document.app';
-import { Upload } from './document.uploads.helper';
-import { DocumentDomain } from './domain/document.domain';
+} from './opencti/integrations/integrations.model';
 
 export const BOOLEAN_METADATA = [
   'verified',
@@ -71,9 +71,15 @@ export type ManageableServiceDefinitionIdentifier =
 
 export const VAULT_DOCUMENT_TYPE = 'vault';
 
+export type DOCUMENT_TYPE =
+  | typeof OPENCTI_INTEGRATION_DOCUMENT_TYPE
+  | typeof OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE
+  | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE
+  | typeof VAULT_DOCUMENT_TYPE;
+
 const DocumentTypeMappedByServiceDefinition: Record<
   ManageableServiceDefinitionIdentifier,
-  string
+  DOCUMENT_TYPE
 > = {
   [ServiceDefinitionIdentifier.OpenctiIntegrations]:
     OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -161,8 +167,8 @@ export const DocumentHelper = {
 
   retrieveDocumentTypeFromServiceDefinition: (
     serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier
-  ): string => {
-    const documentType: string | undefined =
+  ): DOCUMENT_TYPE => {
+    const documentType =
       DocumentTypeMappedByServiceDefinition[serviceDefinitionIdentifier];
     if (!documentType) {
       throw new Error(ErrorCode.ServiceNotManageable);
@@ -326,14 +332,15 @@ export const loadDocumentWithCountersById = async <T extends Document>(
     id,
     include_metadata
   );
+  if (!document) {
+    throw new Error(ErrorCode.DocumentNotFound);
+  }
+
   return updateDocumentWithCounters(document);
 };
 
 export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
-  type:
-    | typeof OPENCTI_INTEGRATION_DOCUMENT_TYPE
-    | typeof OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE
-    | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  type: DOCUMENT_TYPE,
   slug: string,
   include_metadata: string[] = []
 ) => {

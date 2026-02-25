@@ -1,18 +1,4 @@
-import SeoCustomDashboardBySlugQuery from '@generated/seoCustomDashboardBySlugQuery.graphql';
-import SeoCustomDashboardsByServiceSlugQuery from '@generated/seoCustomDashboardsByServiceSlugQuery.graphql';
-import SeoIntegrationBySlugQuery from '@generated/seoIntegrationBySlugQuery.graphql';
-import SeoIntegrationsByServiceSlugQuery from '@generated/seoIntegrationsByServiceSlugQuery.graphql';
-import SeoOpenaevScenarioBySlugQuery from '@generated/seoOpenaevScenarioBySlugQuery.graphql';
-import SeoOpenaevScenariosByServiceSlugQuery from '@generated/seoOpenaevScenariosByServiceSlugQuery.graphql';
-import {
-  MakeQueryMapParams,
-  QueryMapEntry,
-  SeoCustomDashboard,
-  SeoIntegration,
-  SeoOpenAEVScenario,
-  SeoResource,
-  ServiceSlug,
-} from './shareable-resources.types';
+import { ServiceSlug } from './shareable-resources.types';
 
 export interface ServiceConfig {
   redirectPath: string;
@@ -37,64 +23,8 @@ export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
   },
 };
 
-function makeQueryMapEntry<TReturn>({
-  query,
-  key,
-}: Omit<MakeQueryMapParams, 'isList'>): QueryMapEntry<TReturn[]> {
-  const cast = (data: unknown): TReturn[] => {
-    const safeData = data as Record<string, unknown>;
-    return safeData[key] as TReturn[];
-  };
-  return { query, cast };
-}
-
-function makeSingleQueryMapEntry<TReturn>({
-  query,
-  key,
-}: Omit<MakeQueryMapParams, 'isList'>): QueryMapEntry<TReturn> {
-  const cast = (data: unknown): TReturn => {
-    const safeData = data as Record<string, unknown>;
-    return safeData[key] as TReturn;
-  };
-  return { query, cast };
-}
-
 export const localeMap: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]: 'OpenctiIntegrations',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
   [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
-};
-
-export const queryMap: Record<ServiceSlug, QueryMapEntry<SeoResource[]>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: makeQueryMapEntry<SeoIntegration>({
-    query: SeoIntegrationsByServiceSlugQuery,
-    key: 'publicIntegrationsByServiceSlug',
-  }),
-  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
-    makeQueryMapEntry<SeoCustomDashboard>({
-      query: SeoCustomDashboardsByServiceSlugQuery,
-      key: 'seoCustomDashboardsByServiceSlug',
-    }),
-  [ServiceSlug.OPEN_AEV_SCENARIOS]: makeQueryMapEntry<SeoOpenAEVScenario>({
-    query: SeoOpenaevScenariosByServiceSlugQuery,
-    key: 'seoOpenAEVScenariosByServiceSlug',
-  }),
-};
-
-export const querySlugMap: Record<ServiceSlug, QueryMapEntry<SeoResource>> = {
-  [ServiceSlug.OPEN_CTI_INTEGRATIONS]: makeSingleQueryMapEntry<SeoIntegration>({
-    query: SeoIntegrationBySlugQuery,
-    key: 'publicIntegrationBySlug',
-  }),
-  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
-    makeSingleQueryMapEntry<SeoCustomDashboard>({
-      query: SeoCustomDashboardBySlugQuery,
-      key: 'seoCustomDashboardBySlug',
-    }),
-  [ServiceSlug.OPEN_AEV_SCENARIOS]: makeSingleQueryMapEntry<SeoOpenAEVScenario>(
-    {
-      query: SeoOpenaevScenarioBySlugQuery,
-      key: 'seoOpenAEVScenarioBySlug',
-    }
-  ),
 };

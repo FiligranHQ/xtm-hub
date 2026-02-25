@@ -18,9 +18,6 @@ import {
   buildShareEvent,
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../custom-dashboards/custom-dashboards.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../openaev-scenarios/openaev-scenarios.domain';
 import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
@@ -33,6 +30,9 @@ import {
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev/scenarios/scenarios.model';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './opencti/custom-dashboards/custom-dashboards.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integrations.model';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -184,7 +184,6 @@ const resolvers: Resolvers = {
           fromGlobalId(input.service_instance_id).id as ServiceInstanceId
         );
       } catch (error) {
-        logApp.error('Error while fetching documents:', { error });
         throw mapToGraphQLError(error);
       }
     },
@@ -192,7 +191,25 @@ const resolvers: Resolvers = {
       try {
         return DocumentApp.loadPublicDocuments(input);
       } catch (error) {
-        logApp.error('Error while fetching documents:', { error });
+        throw mapToGraphQLError(error);
+      }
+    },
+    publicDocumentsByServiceSlug: async (_, { serviceInstanceSlug }) => {
+      try {
+        return DocumentApp.loadPublicDocumentsByServiceSlug(
+          serviceInstanceSlug
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
+    publicDocumentBySlug: async (_, { serviceInstanceId, slug }) => {
+      try {
+        return DocumentApp.loadPublicDocumentBySlug(
+          extractId<ServiceInstanceId>(serviceInstanceId),
+          slug
+        );
+      } catch (error) {
         throw mapToGraphQLError(error);
       }
     },
@@ -200,14 +217,11 @@ const resolvers: Resolvers = {
       try {
         return DocumentApp.loadDocuments(input);
       } catch (error) {
-        logApp.error('Error while fetching documents:', { error });
         throw mapToGraphQLError(error);
       }
     },
     document: async (_, { documentId }) =>
-      DocumentDomain.loadDocumentWithMetadataById(
-        extractId<DocumentId>(documentId)
-      ),
+      DocumentApp.loadDocument(extractId<DocumentId>(documentId)),
   },
 };
 

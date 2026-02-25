@@ -30,7 +30,7 @@ import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance
 import { DocumentApp } from '../services/document/document.app';
 import { deleteDocuments } from '../services/document/document.helper';
 import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
-import { INTEGRATION_SERVICE_INSTANCE_ID } from '../services/integrations/integrations.model';
+import { INTEGRATION_SERVICE_INSTANCE_ID } from '../services/document/opencti/integrations/integrations.model';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
 
 // Mock the ES Client

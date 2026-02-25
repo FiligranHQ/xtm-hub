@@ -14,6 +14,7 @@ import Document, {
 } from '../../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { UserId } from '../../../model/kanel/public/User';
@@ -24,10 +25,13 @@ import { objectUseCaseDomain } from '../../settings/objectUseCase/object-useCase
 import { useCaseApp } from '../../settings/useCase/use-case.app';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integrations/integrations.model';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import {
+  ALL_METADATA_KEYS,
+  DOCUMENT_TYPE,
   DocumentHelper,
+  loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
   ManageableServiceDefinitionIdentifier,
 } from './document.helper';
 import {
@@ -41,6 +45,7 @@ import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integrations.model';
 
 export const DocumentApp = {
   createDocument: async (
@@ -50,7 +55,7 @@ export const DocumentApp = {
     uploads: Upload[]
   ) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
       );
     if (!serviceDefinition) {
@@ -154,7 +159,7 @@ export const DocumentApp = {
     >
   ) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
       );
     if (!serviceDefinition) {
@@ -365,24 +370,15 @@ export const DocumentApp = {
 
   loadDocuments: async (input: QueryDocumentsArgs) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         extractId<ServiceInstanceId>(input.serviceInstanceId)
       );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const serviceDefinitionIdentifier =
-      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
-
-    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
-      serviceDefinitionIdentifier
-    );
-
-    const documentType =
-      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
-        serviceDefinitionIdentifier
-      );
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
 
     return DocumentDomain.loadParentDocumentsByServiceInstance(
       documentType,
@@ -391,9 +387,48 @@ export const DocumentApp = {
     );
   },
 
+  loadPublicDocumentsByServiceSlug: async (
+    serviceInstanceSlug: string
+  ): Promise<Document[]> => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstanceSlug(
+        serviceInstanceSlug
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
+
+    return DocumentDomain.loadSeoDocumentsByServiceSlug(
+      documentType,
+      serviceInstanceSlug,
+      metadataKeys
+    );
+  },
+
+  loadPublicDocumentBySlug: async (
+    serviceInstanceId: ServiceInstanceId,
+    slug: string
+  ) => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
+
+    return loadSeoDocumentWithCountersBySlug(documentType, slug, metadataKeys);
+  },
+
   loadPublicDocuments: async (input: QueryPublicDocumentsArgs) => {
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         extractId<ServiceInstanceId>(input.serviceInstanceId)
       );
     if (!serviceDefinition) {
@@ -419,6 +454,10 @@ export const DocumentApp = {
       opts,
       metadataKeys
     );
+  },
+
+  loadDocument: async (documentId: DocumentId) => {
+    return loadDocumentWithCountersById(documentId, ALL_METADATA_KEYS);
   },
 };
 
@@ -502,6 +541,26 @@ const upsertDocument = async <T extends DocumentModel>(
 
     return document as T;
   });
+};
+
+const getMetadataKeysAndDocumentTypeFromServiceDefinition = (
+  serviceDefinition: ServiceDefinition
+): { documentType: DOCUMENT_TYPE; metadataKeys: string[] } => {
+  const serviceDefinitionIdentifier =
+    serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+  const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+    serviceDefinitionIdentifier
+  );
+
+  const documentType = DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+    serviceDefinitionIdentifier
+  );
+
+  return {
+    documentType,
+    metadataKeys,
+  };
 };
 
 const shouldHandleFirstFileAsDocument = (

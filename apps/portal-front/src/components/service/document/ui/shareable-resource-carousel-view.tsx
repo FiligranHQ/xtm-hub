@@ -4,17 +4,18 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { Dialog } from '@filigran/ui';
-import { customDashboardsItem_fragment$data } from '@generated/customDashboardsItem_fragment.graphql';
-import { openaevScenariosItem_fragment$data } from '@generated/openaevScenariosItem_fragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
 // Component interface
 interface ShareableResourceCarouselProps {
-  documentData:
-    | customDashboardsItem_fragment$data
-    | openaevScenariosItem_fragment$data;
-  serviceInstance: serviceInstance_fragment$data;
+  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  serviceInstance:
+    | seoServiceInstanceFragment$data
+    | serviceInstance_fragment$data;
 }
 
 const ShareableResourceCarousel: React.FunctionComponent<

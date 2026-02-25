@@ -24,11 +24,6 @@ import {
   TelemetryEventServiceType,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import {
-  CsvFeed,
-  INTEGRATION_CSV_FEED_METADATA_KEYS,
-  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../integrations/integrations.model';
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,
@@ -38,6 +33,11 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
+import {
+  CsvFeed,
+  INTEGRATION_CSV_FEED_METADATA_KEYS,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from './opencti/integrations/integrations.model';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {
