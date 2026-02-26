@@ -26,17 +26,14 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import {
-  isIntegrationItem,
-  ShareableResource,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
 // Component interface
 interface ShareableResourceSlugProps {
-  documentData: ShareableResource;
+  documentData: documentItem_fragment$data;
   serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   children?: ReactNode;
@@ -66,7 +63,7 @@ const ShareableResourceSlug: React.FunctionComponent<
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
-    if (isIntegrationItem(documentData)) {
+    if (documentData.integration_type) {
       return documentData.integration_type in OPENCTI_INTEGRATION_URL_CONFIGS;
     }
 
@@ -159,7 +156,7 @@ const ShareableResourceSlug: React.FunctionComponent<
         {documentData && (
           <ShareableResourceDetails
             documentData={documentData}
-            downloadNumber={documentDownloadNumber ?? 0}
+            downloadNumber={documentDownloadNumber}
           />
         )}
       </div>

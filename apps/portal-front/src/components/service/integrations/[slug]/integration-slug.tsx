@@ -13,16 +13,13 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 
+import {
+  documentItem,
+  DocumentsItemQuery,
+} from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
-import {
-  IntegrationQuery,
-  integrationsItem,
-} from '@/components/service/integrations/integration.graphql';
-import { integrationQuery } from '@generated/integrationQuery.graphql';
-import {
-  integrationsItem_fragment$data,
-  integrationsItem_fragment$key,
-} from '@generated/integrationsItem_fragment.graphql';
+import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
+import { documentQuery } from '@generated/documentQuery.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useContext, useEffect } from 'react';
@@ -30,7 +27,7 @@ import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
 // Component interface
 interface IntegrationSlugProps {
-  queryRef: PreloadedQuery<integrationQuery>;
+  queryRef: PreloadedQuery<documentQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
@@ -39,12 +36,12 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
   queryRef,
   serviceInstance,
 }) => {
-  const data = usePreloadedQuery<integrationQuery>(IntegrationQuery, queryRef);
+  const data = usePreloadedQuery<documentQuery>(DocumentsItemQuery, queryRef);
   const { settings } = useContext(SettingsContext);
 
-  const documentData = readInlineData<integrationsItem_fragment$key>(
-    integrationsItem,
-    data.integration
+  const documentData = readInlineData<documentItem_fragment$key>(
+    documentItem,
+    data.document
   );
 
   const breadcrumbValue = [
@@ -87,7 +84,7 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
             breadcrumbValue={breadcrumbValue}
             documentData={documentData}
             shareUrl={shareUrl}
-            logo={`/document/images/${serviceInstance.id}/${(documentData as integrationsItem_fragment$data).children_documents?.[0]?.id}`}
+            logo={`/document/images/${serviceInstance.id}/${documentData.children_documents?.[0]?.id}`}
           />
         ) : (
           <ShareableResourceSlug

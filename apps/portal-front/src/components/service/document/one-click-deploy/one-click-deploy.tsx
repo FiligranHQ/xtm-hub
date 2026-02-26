@@ -6,7 +6,6 @@ import { useOneClickDeployTab } from '@/components/service/document/one-click-de
 import { useBuildCompatibilityTranslationKey } from '@/hooks/useBuildCompatibilityTranslationKey';
 import { useRegisteredPlatforms } from '@/hooks/useRegisteredPlatforms';
 import { getPlatformIdentifier } from '@/utils/platform';
-import { ShareableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -14,13 +13,14 @@ import {
   SimpleTooltip,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { oneClickDeployMutation } from '@generated/oneClickDeployMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 
 interface OneClickDeployProps {
-  documentData: ShareableResource;
+  documentData: documentItem_fragment$data;
   requiredProductVersion?: string | null;
 }
 

@@ -6,17 +6,32 @@ import ServiceDefinition, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from '../registration/registration.mapping';
 
-export const serviceDefinitionDomain = {
+export const ServiceDefinitionDomain = {
   loadServiceDefinitionBy(
     field: ServiceDefinitionMutator
   ): Promise<ServiceDefinition | undefined> {
-    return db('ServiceDefinition').where(field).select('id').first();
+    return db('ServiceDefinition').where(field).select('*').first();
+  },
+
+  loadServiceDefinitionByServiceInstanceSlug(
+    serviceInstanceSlug: string
+  ): Promise<ServiceDefinition | undefined> {
+    return db('ServiceDefinition')
+      .leftJoin(
+        'ServiceInstance',
+        'ServiceInstance.service_definition_id',
+        '=',
+        'ServiceDefinition.id'
+      )
+      .where('ServiceInstance.slug', '=', serviceInstanceSlug)
+      .select('ServiceDefinition.*')
+      .first();
   },
 
   loadServiceDefinitionByServiceInstance(
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceDefinition | undefined> {
-    return db('ServiceDefinition')
+    return db<ServiceDefinition>('ServiceDefinition')
       .leftJoin(
         'ServiceInstance',
         'ServiceInstance.service_definition_id',
@@ -30,11 +45,11 @@ export const serviceDefinitionDomain = {
 
   loadServiceDefinitionByPlatformIdentifier(
     platformIdentifier: PlatformIdentifier
-  ): Promise<ServiceDefinition> {
+  ): Promise<ServiceDefinition | undefined> {
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
 
-    return serviceDefinitionDomain.loadServiceDefinitionBy({
+    return ServiceDefinitionDomain.loadServiceDefinitionBy({
       identifier: serviceDefinitionIdentifier,
     });
   },

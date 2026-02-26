@@ -8,7 +8,6 @@ import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListCheck } from '@/utils/documents';
 import { formatTitleCase } from '@/utils/format/case';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AutoForm,
   Button,
@@ -24,7 +23,7 @@ import {
   SelectValue,
   SheetFooter,
 } from '@filigran/ui';
-import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
@@ -49,7 +48,7 @@ export type StreamFormValues = z.infer<typeof streamFormSchema>;
 
 interface StreamFormProps {
   handleSubmit?: (values: StreamFormValues) => void;
-  document: SubscribableResource | undefined;
+  document: documentItem_fragment$data | undefined;
 }
 
 export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
@@ -76,8 +75,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
             ? me?.selected_organization_id
             : stream?.uploader_organization?.id) ?? '',
         integration_type: IntegrationTypeEnum.STREAM,
-        integration_subtype:
-          (stream as integrationsItem_fragment$data)?.integration_subtype ?? '',
+        integration_subtype: stream?.integration_subtype ?? '',
       }) as StreamFormValues,
     [me, stream, isCreation]
   );
@@ -276,10 +274,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={
-                    (stream as integrationsItem_fragment$data)
-                      ?.integration_subtype
-                  }>
+                  defaultValue={stream?.integration_subtype}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue

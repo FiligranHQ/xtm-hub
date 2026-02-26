@@ -3,6 +3,7 @@ import {
   isLogicalMultiSelectSelection,
   LogicalMultiSelectSelection,
 } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
+import usePublicPath from '@/hooks/usePublicPath';
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { useLocalStorage } from 'usehooks-ts';
@@ -48,19 +49,21 @@ const deserializeLogicalMultiSelectSelection = (
 export const useServiceListLocalStorage = (
   serviceName: ServiceListLocalStorageKey
 ) => {
+  const isPublicPath = usePublicPath();
+  const pagePrefix = isPublicPath ? 'Public' : 'Private';
   const [count, setCount, removeCount] = useLocalStorage(
-    `count${serviceName}List`,
+    `count${pagePrefix}${serviceName}List`,
     50
   );
 
   const [search, setSearch, removeSearch] = useLocalStorage<string>(
-    `search${serviceName}List`,
+    `search${pagePrefix}${serviceName}List`,
     ''
   );
 
   const [labels, setLabels, removeLabels] =
     useLocalStorage<LogicalMultiSelectSelection>(
-      `label${serviceName}List`,
+      `label${pagePrefix}${serviceName}List`,
       {},
       {
         deserializer: deserializeLogicalMultiSelectSelection,
@@ -69,7 +72,7 @@ export const useServiceListLocalStorage = (
 
   const [selectedFilters, setSelectedFilters, removeSelectedFilters] =
     useLocalStorage<ServiceListFilterKey[]>(
-      `selectedFilters${serviceName}List`,
+      `selectedFilters${pagePrefix}${serviceName}List`,
       [],
       {
         deserializer: deserializeSelectedFilters,
@@ -78,7 +81,7 @@ export const useServiceListLocalStorage = (
 
   const [integrationTypes, setIntegrationTypes, removeIntegrationTypes] =
     useLocalStorage<LogicalMultiSelectSelection>(
-      `integrationType${serviceName}List`,
+      `integrationType${pagePrefix}${serviceName}List`,
       {},
       {
         deserializer: deserializeLogicalMultiSelectSelection,
@@ -87,7 +90,7 @@ export const useServiceListLocalStorage = (
 
   const [productVersions, setProductVersions, removeProductVersions] =
     useLocalStorage<LogicalMultiSelectSelection>(
-      `productVersion${serviceName}List`,
+      `productVersion${pagePrefix}${serviceName}List`,
       {},
       {
         deserializer: deserializeLogicalMultiSelectSelection,
@@ -96,7 +99,7 @@ export const useServiceListLocalStorage = (
 
   const [deployable, setDeployable, removeDeployable] =
     useLocalStorage<LogicalMultiSelectSelection>(
-      `deployable${serviceName}List`,
+      `deployable${pagePrefix}${serviceName}List`,
       {},
       {
         deserializer: deserializeLogicalMultiSelectSelection,
@@ -105,7 +108,7 @@ export const useServiceListLocalStorage = (
 
   const [verified, setVerified, removeVerified] =
     useLocalStorage<LogicalMultiSelectSelection>(
-      `verified${serviceName}List`,
+      `verified${pagePrefix}${serviceName}List`,
       {},
       {
         deserializer: deserializeLogicalMultiSelectSelection,
@@ -113,7 +116,7 @@ export const useServiceListLocalStorage = (
     );
 
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
-    `count${serviceName}List`,
+    `count${pagePrefix}${serviceName}List`,
     50
   );
 
@@ -124,13 +127,13 @@ export const useServiceListLocalStorage = (
 
   const [orderBy, setOrderBy, removeOrderBy] =
     useLocalStorage<DocumentOrderingEnum>(
-      `orderBy${serviceName}List`,
+      `orderBy${pagePrefix}${serviceName}List`,
       defaultOrderBy
     );
 
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingModeEnum>(
-      `orderMode${serviceName}List`,
+      `orderMode${pagePrefix}${serviceName}List`,
       OrderingModeEnum.ASC
     );
 

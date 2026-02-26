@@ -4,7 +4,7 @@ import {
   Connector,
   INTEGRATION_CONNECTOR_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../services/integrations/integrations.model';
+} from '../services/document/opencti/integrations/integrations.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildCreateEvent } from '../telemetry/telemetry.helper';
 import { base64ToUpload } from './ingest-manifest.helper';

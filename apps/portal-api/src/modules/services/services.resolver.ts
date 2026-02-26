@@ -10,9 +10,9 @@ import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './custom-dashboards/custom-dashboards.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './integrations/integrations.model';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev-scenarios/openaev-scenarios.domain';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './document/openaev/scenarios/scenarios.model';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './document/opencti/custom-dashboards/custom-dashboards.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './document/opencti/integrations/integrations.model';
 import { ServiceInstanceApp } from './service-instance.app';
 import {
   getUserJoined,
