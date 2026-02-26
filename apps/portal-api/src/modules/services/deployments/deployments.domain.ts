@@ -4,6 +4,7 @@ import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   DeploymentRequestUseCase,
@@ -58,6 +59,7 @@ export const DeploymentRequestDomain = {
       use_case: result.use_case as DeploymentRequestUseCase,
       activity_sector:
         result.activity_sector as DeploymentRequestActivitySector,
+      job_title: result.job_title as DeploymentRequestJobTitle,
     };
   },
 

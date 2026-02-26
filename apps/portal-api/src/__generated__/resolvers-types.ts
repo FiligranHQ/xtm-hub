@@ -158,7 +158,7 @@ export type CreateCompetitorInput = {
 
 export type CreateDeploymentRequestInput = {
   activity_sector?: InputMaybe<DeploymentRequestActivitySector>;
-  job_title?: InputMaybe<Scalars['String']['input']>;
+  job_title?: InputMaybe<DeploymentRequestJobTitle>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
   type: DeploymentRequestDeploymentType;
@@ -282,7 +282,7 @@ export type DeploymentRequest = Node & {
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_name?: Maybe<Scalars['String']['output']>;
   organization_requester_id: Scalars['ID']['output'];
@@ -369,6 +369,28 @@ export enum DeploymentRequestHubStatus {
   Pending = 'pending',
   Provisioning = 'provisioning',
   Queued = 'queued'
+}
+
+export enum DeploymentRequestJobTitle {
+  ApplicationSecuritySpecialist = 'application_security_specialist',
+  CLevel = 'c_level',
+  Ceo = 'ceo',
+  CisoCsoCio = 'ciso_cso_cio',
+  CloudSecuritySpecialist = 'cloud_security_specialist',
+  Consultant = 'consultant',
+  CybersecurityArchitect = 'cybersecurity_architect',
+  CybersecurityEngineer = 'cybersecurity_engineer',
+  CybersecurityTeamLead = 'cybersecurity_team_lead',
+  DfirSpecialist = 'dfir_specialist',
+  DirectorHeadCybersecurity = 'director_head_cybersecurity',
+  GeneralManagerVp = 'general_manager_vp',
+  GrcSpecialist = 'grc_specialist',
+  IamSpecialist = 'iam_specialist',
+  Other = 'other',
+  PenetrationTester = 'penetration_tester',
+  SocAnalyst = 'soc_analyst',
+  ThreatIntelligenceAnalyst = 'threat_intelligence_analyst',
+  VulnerabilityAnalyst = 'vulnerability_analyst'
 }
 
 export enum DeploymentRequestOrdering {
@@ -1094,7 +1116,7 @@ export type PlatformDeploymentRequest = {
   failure_reason?: Maybe<Scalars['String']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
@@ -2212,6 +2234,7 @@ export type ResolversTypes = ResolversObject<{
   DeploymentRequestFilter: DeploymentRequestFilter;
   DeploymentRequestFilterKey: DeploymentRequestFilterKey;
   DeploymentRequestHubStatus: DeploymentRequestHubStatus;
+  DeploymentRequestJobTitle: DeploymentRequestJobTitle;
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
@@ -2680,7 +2703,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization_requester_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2978,7 +3001,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   failure_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

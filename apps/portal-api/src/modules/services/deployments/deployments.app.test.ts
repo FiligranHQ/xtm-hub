@@ -18,6 +18,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   DeploymentRequestUseCase,
@@ -103,7 +104,7 @@ describe('Deployment app', () => {
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CLevel,
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -118,7 +119,7 @@ describe('Deployment app', () => {
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CLevel,
         organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
@@ -152,7 +153,7 @@ describe('Deployment app', () => {
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CLevel,
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -167,7 +168,7 @@ describe('Deployment app', () => {
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CLevel,
         organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
@@ -208,7 +209,7 @@ describe('Deployment app', () => {
         const call = DeploymentsApp.createDeploymentRequest({
           activity_sector:
             DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: 'myJob',
+          job_title: DeploymentRequestJobTitle.CLevel,
           use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
@@ -228,7 +229,7 @@ describe('Deployment app', () => {
         const deployment = await DeploymentsApp.createDeploymentRequest({
           activity_sector:
             DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: 'myJob',
+          job_title: DeploymentRequestJobTitle.CLevel,
           use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
@@ -243,7 +244,7 @@ describe('Deployment app', () => {
         const deployment = await DeploymentsApp.createDeploymentRequest({
           activity_sector:
             DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: 'myJob',
+          job_title: DeploymentRequestJobTitle.CLevel,
           use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
@@ -270,7 +271,7 @@ describe('Deployment app', () => {
           const deployment = await DeploymentsApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CLevel,
             use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: product,
             region: DeploymentRequestPlatformRegion.UsEast,
@@ -285,7 +286,7 @@ describe('Deployment app', () => {
             organization_type: TelemetryOrganizationType.PROFESSIONAL,
             source: TELEMETRY_SOURCE,
             email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CLevel,
             user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             deployment_id: deployment.id,
             region: DeploymentRequestPlatformRegion.UsEast,
@@ -307,7 +308,7 @@ describe('Deployment app', () => {
         const deployment = await DeploymentsApp.createDeploymentRequest({
           activity_sector:
             DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: 'myJob',
+          job_title: DeploymentRequestJobTitle.CLevel,
           use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
@@ -324,7 +325,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CLevel,
             use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
@@ -366,7 +367,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CLevel,
             use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
@@ -418,7 +419,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CLevel,
             use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
@@ -460,7 +461,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CLevel,
             use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
@@ -732,7 +733,7 @@ describe('Deployment app', () => {
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
         organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),

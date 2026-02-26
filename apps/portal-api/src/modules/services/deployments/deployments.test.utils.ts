@@ -4,6 +4,7 @@ import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   DeploymentRequestUseCase,
@@ -44,7 +45,7 @@ export async function insertDeploymentRequest(
   const defaultDeploymentRequestValues = {
     activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
     id: uuidv4() as DeploymentRequestId,
-    job_title: 'myJob',
+    job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
     organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
     platform_identifier: PlatformIdentifier.Opencti,
     platform_token: uuidv4(),

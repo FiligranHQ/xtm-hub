@@ -1,6 +1,5 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import {
-  JOB_TITLES,
   REGIONS,
   REGIONS_VALUES,
 } from '@/components/service/trial-instances/form-constants';
@@ -21,17 +20,59 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { DeploymentRequestActivitySectorEnum } from '@generated/models/DeploymentRequestActivitySector.enum';
+import { DeploymentRequestJobTitleEnum } from '@generated/models/DeploymentRequestJobTitle.enum';
 import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { FunctionComponent, useContext, useState } from 'react';
+import { ControllerRenderProps } from 'react-hook-form';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 
+const EnumSelectField = ({
+  field,
+  label,
+  placeholder,
+  values,
+  translationNamespace,
+}: {
+  field: ControllerRenderProps;
+  label: string;
+  placeholder: string;
+  values: string[];
+  translationNamespace: string;
+}) => {
+  const t = useTranslations();
+  return (
+    <FormItem>
+      <FormLabel>
+        {label} <span className="text-sm text-destructive">*</span>
+      </FormLabel>
+      <Select
+        value={field.value}
+        onValueChange={field.onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {values.map((value) => (
+            <SelectItem
+              key={value}
+              value={value}>
+              {t(`${translationNamespace}.${value}`)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <FormMessage className="text-sm text-destructive" />
+    </FormItem>
+  );
+};
+
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
-  job_title: z.enum(JOB_TITLES),
+  job_title: z.enum(DeploymentRequestJobTitleEnum),
   activity_sector: z.enum(DeploymentRequestActivitySectorEnum),
   use_case: z.enum(DeploymentRequestUseCaseEnum),
   acceptTerms: z
@@ -134,76 +175,40 @@ export const TryFiligranProductForm: FunctionComponent<
             },
             job_title: {
               label: t('Service.Trials.Form.JobTitle'),
-              inputProps: {
-                placeholder: t('Service.Trials.Form.JobTitlePlaceholder'),
-              },
+              fieldType: ({ field }) => (
+                <EnumSelectField
+                  field={field}
+                  label={t('Service.Trials.Form.JobTitle')}
+                  placeholder={t('Service.Trials.Form.JobTitlePlaceholder')}
+                  values={Object.values(DeploymentRequestJobTitleEnum)}
+                  translationNamespace="DeploymentRequestJobTitle"
+                />
+              ),
             },
             activity_sector: {
               label: t('Service.Trials.Form.ActivitySector'),
               fieldType: ({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t('Service.Trials.Form.ActivitySector')}{' '}
-                    <span className="text-sm text-destructive">*</span>
-                  </FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'Service.Trials.Form.ActivitySectorPlaceholder'
-                        )}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(DeploymentRequestActivitySectorEnum).map(
-                        (value) => (
-                          <SelectItem
-                            key={value}
-                            value={value}>
-                            {t(`DeploymentRequestActivitySector.${value}`)}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-sm text-destructive" />
-                </FormItem>
+                <EnumSelectField
+                  field={field}
+                  label={t('Service.Trials.Form.ActivitySector')}
+                  placeholder={t(
+                    'Service.Trials.Form.ActivitySectorPlaceholder'
+                  )}
+                  values={Object.values(DeploymentRequestActivitySectorEnum)}
+                  translationNamespace="DeploymentRequestActivitySector"
+                />
               ),
             },
             use_case: {
               label: t('Service.Trials.Form.UseCase'),
               fieldType: ({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t('Service.Trials.Form.UseCase')}{' '}
-                    <span className="text-sm text-destructive">*</span>
-                  </FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'Service.Trials.Form.UseCasePlaceholder'
-                        )}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(DeploymentRequestUseCaseEnum).map(
-                        (value) => (
-                          <SelectItem
-                            key={value}
-                            value={value}>
-                            {t(`DeploymentRequestUseCase.${value}`)}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-sm text-destructive" />
-                </FormItem>
+                <EnumSelectField
+                  field={field}
+                  label={t('Service.Trials.Form.UseCase')}
+                  placeholder={t('Service.Trials.Form.UseCasePlaceholder')}
+                  values={Object.values(DeploymentRequestUseCaseEnum)}
+                  translationNamespace="DeploymentRequestUseCase"
+                />
               ),
             },
             acceptTerms: {

@@ -5,6 +5,7 @@ import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   DeploymentRequestUseCase,
@@ -32,7 +33,7 @@ describe('Deployment app', () => {
           input: {
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
             use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
@@ -43,7 +44,7 @@ describe('Deployment app', () => {
       expect(deployment).toMatchObject({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -60,7 +61,7 @@ describe('Deployment app', () => {
       const initialDeployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -113,7 +114,7 @@ describe('Deployment app', () => {
       expect(updatedActiveDeployment).toMatchObject({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -140,7 +141,7 @@ describe('Deployment app', () => {
       const initialDeployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,

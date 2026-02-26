@@ -332,12 +332,34 @@ enum DeploymentRequestActivitySector {
   wireless
 }
 
+enum DeploymentRequestJobTitle {
+  ceo
+  ciso_cso_cio
+  c_level
+  general_manager_vp
+  director_head_cybersecurity
+  cybersecurity_team_lead
+  application_security_specialist
+  cloud_security_specialist
+  cybersecurity_architect
+  cybersecurity_engineer
+  dfir_specialist
+  grc_specialist
+  iam_specialist
+  penetration_tester
+  soc_analyst
+  threat_intelligence_analyst
+  vulnerability_analyst
+  consultant
+  other
+}
+
 type DeploymentRequest implements Node {
   id: ID!
   platform_identifier: PlatformIdentifier!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
-  job_title: String
+  job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
   start_date: Date
@@ -369,7 +391,7 @@ type PlatformDeploymentRequest {
   ordering: Int!
   start_date: Date
   end_date: Date
-  job_title: String
+  job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
   organization_name: String!
@@ -386,7 +408,7 @@ input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
-  job_title: String
+  job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
 }

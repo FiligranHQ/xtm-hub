@@ -2,6 +2,7 @@ import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestUseCase,
 } from '../../__generated__/resolvers-types';
@@ -108,7 +109,7 @@ export interface CreateDeploymentEvent extends BaseTelemetryEvent {
   deployment_type: DeploymentRequestDeploymentType;
   email: string;
   event_type: TelemetryEventType.CREATE_DEPLOYMENT;
-  job_title: string;
+  job_title: DeploymentRequestJobTitle;
   region: DeploymentRequestPlatformRegion;
   status: DeploymentRequestHubStatus;
   use_case: DeploymentRequestUseCase;

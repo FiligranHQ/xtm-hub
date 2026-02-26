@@ -182,7 +182,6 @@ export const hubspotReachOutSalesHook = async ({
             user.organizations.find(
               (org) => org.id === user.selected_organization_id
             )?.name || '',
-          job_title: '',
           message: `${platformIdentifier}: ${message}`,
         };
       }
@@ -197,7 +196,6 @@ export const hubspotReachOutSalesHook = async ({
       firstname: deploymentRequest.requester_first_name,
       lastname: deploymentRequest.requester_last_name,
       company: deploymentRequest.organization_name,
-      job_title: deploymentRequest.job_title,
       message: `${deploymentRequest.platform_identifier}: Message sent for free trial: ${deploymentRequest.hub_status.toLowerCase()} ${deploymentRequest.type}.\n\n${message}`,
     };
   });

@@ -12,7 +12,6 @@ export interface HubspotReachOutSalesPayload {
   firstname: string | null | undefined;
   lastname: string | null | undefined;
   company: string;
-  job_title: string | null;
   message: string;
 }
 

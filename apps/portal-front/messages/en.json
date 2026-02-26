@@ -1224,5 +1224,26 @@
     "DocumentUpdated": "{file_name} has been modified",
     "UpdateDocument": "Update document"
   },
-  "entitie(s)": "entitie(s)"
+  "entitie(s)": "entitie(s)",
+  "DeploymentRequestJobTitle": {
+    "ceo": "CEO",
+    "ciso_cso_cio": "CISO/CSO/CIO",
+    "c_level": "C-level",
+    "general_manager_vp": "General Manager/Vice President",
+    "director_head_cybersecurity": "Director/Head of Cybersecurity",
+    "cybersecurity_team_lead": "Cybersecurity Team Lead",
+    "application_security_specialist": "Application Security Specialist",
+    "cloud_security_specialist": "Cloud Security Specialist",
+    "cybersecurity_architect": "Cybersecurity Architect",
+    "cybersecurity_engineer": "Cybersecurity Engineer",
+    "dfir_specialist": "Digital Forensics and Incident Response Specialist",
+    "grc_specialist": "Governance, Risk, and Compliance Specialist",
+    "iam_specialist": "Identity and Access Management Specialist",
+    "penetration_tester": "Penetration Tester",
+    "soc_analyst": "Security Operations Center (SOC) Analyst",
+    "threat_intelligence_analyst": "Threat Intelligence Analyst",
+    "vulnerability_analyst": "Vulnerability Analyst",
+    "consultant": "Consultant",
+    "other": "Other"
+  }
 }

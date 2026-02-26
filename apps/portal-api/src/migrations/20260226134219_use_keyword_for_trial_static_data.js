@@ -49,6 +49,28 @@ const activitySectorMapping = {
   Wireless: 'wireless',
 };
 
+const jobTitleMapping = {
+  CEO: 'ceo',
+  'CISO/CSO/CIO': 'ciso_cso_cio',
+  'C-level': 'c_level',
+  'General Manager/Vice President': 'general_manager_vp',
+  'Director/Head of Cybersecurity': 'director_head_cybersecurity',
+  'Cybersecurity Team Lead': 'cybersecurity_team_lead',
+  'Application Security Specialist': 'application_security_specialist',
+  'Cloud Security Specialit': 'cloud_security_specialist',
+  'Cybersecurity Architect': 'cybersecurity_architect',
+  'Cybersecurity Engineer': 'cybersecurity_engineer',
+  'Digital Forensics and Incident Response Specialist': 'dfir_specialist',
+  'Governance, Risk, and Compliance Specialist': 'grc_specialist',
+  'Identity and Access Management Specialist': 'iam_specialist',
+  'Penetration Tester': 'penetration_tester',
+  'Security Operations Center (SOC) Analyst': 'soc_analyst',
+  'Threat Intelligence Analyst': 'threat_intelligence_analyst',
+  'Vulnerability Analyst': 'vulnerability_analyst',
+  Consultant: 'consultant',
+  Other: 'other',
+};
+
 const invertMapping = (mapping) =>
   Object.fromEntries(Object.entries(mapping).map(([from, to]) => [to, from]));
 
@@ -81,6 +103,7 @@ async function applyMapping(knex, field, mapping) {
 export async function up(knex) {
   await applyMapping(knex, 'use_case', useCaseMapping);
   await applyMapping(knex, 'activity_sector', activitySectorMapping);
+  await applyMapping(knex, 'job_title', jobTitleMapping);
 }
 
 /**
@@ -94,4 +117,5 @@ export async function down(knex) {
     'activity_sector',
     invertMapping(activitySectorMapping)
   );
+  await applyMapping(knex, 'job_title', invertMapping(jobTitleMapping));
 }
