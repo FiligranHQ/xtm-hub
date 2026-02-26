@@ -228,5 +228,5 @@ extend type Mutation {
     @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
   updateDeploymentQuotaCapacity(
     input: UpdateDeploymentQuotaCapacityInput!
-  ): Success! @auth(portalCapa: [BYPASS])
+  ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS_QUOTA])
 }

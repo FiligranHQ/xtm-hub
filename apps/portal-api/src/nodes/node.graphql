@@ -11,6 +11,7 @@ enum PortalCapability {
   BYPASS
   READ_TRIALS
   MODIFY_TRIALS
+  MODIFY_TRIALS_QUOTA
 }
 
 enum OrganizationCapability {

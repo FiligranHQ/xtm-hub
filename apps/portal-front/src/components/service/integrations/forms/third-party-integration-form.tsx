@@ -10,7 +10,6 @@ import SelectUsersFormField from '@/components/ui/select-users';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListCheck } from '@/utils/documents';
 import { formatTitleCase } from '@/utils/format/case';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   AutoForm,
   Button,
@@ -26,7 +25,7 @@ import {
   SelectValue,
   SheetFooter,
 } from '@filigran/ui';
-import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
@@ -62,7 +61,7 @@ export type ThirdPartyIntegrationFormValues = z.infer<
 
 interface ThirdPartyIntegrationFormProps {
   handleSubmit?: (values: ThirdPartyIntegrationFormValues) => void;
-  document: SubscribableResource | undefined;
+  document: documentItem_fragment$data | undefined;
 }
 
 export const ThirdPartyIntegrationForm = ({
@@ -76,8 +75,6 @@ export const ThirdPartyIntegrationForm = ({
   const { translationKey } = useServiceContext();
 
   const isCreation = !thirdPartyIntegration;
-  const thirdPartyIntegrationItem =
-    thirdPartyIntegration as integrationsItem_fragment$data;
 
   const values = useMemo(
     () =>
@@ -96,13 +93,12 @@ export const ThirdPartyIntegrationForm = ({
             ? me?.selected_organization_id
             : thirdPartyIntegration?.uploader_organization?.id) ?? '',
         integration_type: IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
-        integration_subtype:
-          thirdPartyIntegrationItem?.integration_subtype ?? '',
-        github_url: thirdPartyIntegrationItem?.github_url,
-        product_version: thirdPartyIntegrationItem?.product_version,
-        vendor_url: thirdPartyIntegrationItem?.vendor_url,
+        integration_subtype: thirdPartyIntegration?.integration_subtype ?? '',
+        github_url: thirdPartyIntegration?.github_url,
+        product_version: thirdPartyIntegration?.product_version,
+        vendor_url: thirdPartyIntegration?.vendor_url,
       }) as ThirdPartyIntegrationFormValues,
-    [me, thirdPartyIntegration, isCreation, thirdPartyIntegrationItem]
+    [me, thirdPartyIntegration, isCreation]
   );
   const formSchema = useMemo(() => {
     const extendedSchema = thirdPartyIntegration
@@ -286,10 +282,7 @@ export const ThirdPartyIntegrationForm = ({
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={
-                    (thirdPartyIntegration as integrationsItem_fragment$data)
-                      ?.integration_subtype
-                  }>
+                  defaultValue={thirdPartyIntegration?.integration_subtype}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue

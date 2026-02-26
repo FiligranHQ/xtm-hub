@@ -16,15 +16,15 @@ import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import {
   isIntegrationItem,
   ShareableResourceType,
-  SubscribableResource,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 // Component interface
 interface DeleteIntegrationSlugProps {
-  document: SubscribableResource;
+  document: documentItem_fragment$data;
 }
 
 // Component

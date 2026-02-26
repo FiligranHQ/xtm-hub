@@ -7,123 +7,76 @@ import {
 
 describe('Versioning', () => {
   describe('isValidVersion', () => {
-    it('should return true when given string is a semantic version', () => {
-      expect(isValidVersion('1.0.0')).toBe(true);
-    });
-
-    it('should return when given string is an lts version without patch', () => {
-      expect(isValidVersion('7.260201-lts')).toBe(true);
-    });
-
-    it('should return when given string is an lts version with patch', () => {
-      expect(isValidVersion('7.260201-lts.version')).toBe(true);
-    });
-
-    it('should return false when given string is not a semantic version', () => {
-      expect(isValidVersion('1.0.X')).toBe(false);
+    it.each`
+      version               | expected
+      ${'1.0.0'}            | ${true}
+      ${'7.260801.0-lts'}   | ${true}
+      ${'7.260801.0-lts.1'} | ${true}
+      ${'1.0.X'}            | ${false}
+      ${'7.260201-lts'}     | ${false}
+    `('should return $expected for $version', ({ version, expected }) => {
+      expect(isValidVersion(version)).toBe(expected);
     });
   });
 
   describe('doesVersionSatisfy', () => {
-    it('should return true when versions are identical', () => {
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '1.0.0',
-          requiredVersion: '1.0.0',
-        })
-      ).toBe(true);
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '7.260201-lts',
-          requiredVersion: '7.260201-lts',
-        })
-      ).toBe(true);
-    });
-
-    it('should return false when given version is older than required one', () => {
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '0.9.9',
-          requiredVersion: '1.0.0',
-        })
-      ).toBe(false);
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '6.8.3',
-          requiredVersion: '7.260201-lts',
-        })
-      ).toBe(false);
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '7.260201-lts',
-          requiredVersion: '7.260201-lts.1',
-        })
-      ).toBe(false);
-    });
-
-    it('should return true when given version is younger than required one', () => {
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '1.0.0',
-          requiredVersion: '0.9.9',
-        })
-      ).toBe(true);
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '7.260201-lts',
-          requiredVersion: '6.8.3',
-        })
-      ).toBe(true);
-      expect(
-        doesVersionSatisfy({
-          givenVersion: '7.260201-lts.1',
-          requiredVersion: '7.260201-lts',
-        })
-      ).toBe(true);
-    });
+    it.each`
+      given                 | required              | expected
+      ${'1.0.0'}            | ${'1.0.0'}            | ${true}
+      ${'7.260801.0-lts'}   | ${'7.260801.0-lts'}   | ${true}
+      ${'7.260801.0-lts.1'} | ${'7.260801.0-lts.1'} | ${true}
+      ${'1.0.0'}            | ${'0.9.9'}            | ${true}
+      ${'7.260801.0-lts'}   | ${'6.8.3'}            | ${true}
+      ${'7.260801.0-lts.1'} | ${'7.260801.0-lts'}   | ${true}
+      ${'7.260801.0-lts.2'} | ${'7.260801.0-lts.1'} | ${true}
+      ${'0.9.9'}            | ${'1.0.0'}            | ${false}
+      ${'6.8.3'}            | ${'7.260801.0-lts'}   | ${false}
+      ${'7.260801.0-lts'}   | ${'7.260802.0-lts'}   | ${false}
+      ${'7.260801.0-lts'}   | ${'7.260801.0-lts.1'} | ${false}
+      ${'7.260801.0-lts.1'} | ${'7.260801.0-lts.2'} | ${false}
+    `(
+      '$given satisfies $required = $expected',
+      ({ given, required, expected }) => {
+        expect(
+          doesVersionSatisfy({ givenVersion: given, requiredVersion: required })
+        ).toBe(expected);
+      }
+    );
   });
 
   describe('compareVersions', () => {
-    it('should return 0 when versions are identical', () => {
-      expect(compareVersions('1.2.3', '1.2.3')).toBe(0);
-      expect(compareVersions('0.0.0', '0.0.0')).toBe(0);
-
-      expect(compareVersions('7.260201-lts', '7.260201-lts')).toBe(0);
-      expect(compareVersions('7.260201-lts.1', '7.260201-lts.1')).toBe(0);
-    });
-
-    it('should return 1 when a > b', () => {
-      // semantic versions
-      expect(compareVersions('1.2.4', '1.2.3')).toBe(1);
-      expect(compareVersions('2.0.0', '1.9.9')).toBe(1);
-      expect(compareVersions('1.10.0', '1.2.9')).toBe(1);
-
-      // lts versions
-      expect(compareVersions('8.260201-lts', '7.260201-lts')).toBe(1);
-      expect(compareVersions('7.260203-lts', '7.260201-lts')).toBe(1);
-      expect(compareVersions('7.260301-lts', '7.260201-lts')).toBe(1);
-      expect(compareVersions('7.270201-lts', '7.260201-lts')).toBe(1);
-      expect(compareVersions('7.260201-lts.1', '7.260201-lts')).toBe(1);
-
-      // mixed versions
-      expect(compareVersions('7.260201-lts', '6.8.3')).toBe(1);
-    });
-
-    it('should return -1 when a < b', () => {
-      // semantic versions
-      expect(compareVersions('1.2.3', '1.2.4')).toBe(-1);
-      expect(compareVersions('1.9.9', '2.0.0')).toBe(-1);
-      expect(compareVersions('1.2.9', '1.10.0')).toBe(-1);
-
-      // lts versions
-      expect(compareVersions('7.260201-lts', '8.260201-lts')).toBe(-1);
-      expect(compareVersions('7.260201-lts', '7.260203-lts')).toBe(-1);
-      expect(compareVersions('7.260201-lts', '7.260301-lts')).toBe(-1);
-      expect(compareVersions('7.260201-lts', '7.270201-lts')).toBe(-1);
-      expect(compareVersions('7.260201-lts', '7.260201-lts.1')).toBe(-1);
-
-      // mixed versions
-      expect(compareVersions('6.8.3', '7.260201-lts')).toBe(-1);
+    it.each`
+      a                      | b                      | expected
+      ${'1.2.3'}             | ${'1.2.3'}             | ${0}
+      ${'0.0.0'}             | ${'0.0.0'}             | ${0}
+      ${'7.260801.0-lts'}    | ${'7.260801.0-lts'}    | ${0}
+      ${'7.260801.0-lts.1'}  | ${'7.260801.0-lts.1'}  | ${0}
+      ${'1.2.4'}             | ${'1.2.3'}             | ${1}
+      ${'2.0.0'}             | ${'1.9.9'}             | ${1}
+      ${'1.10.0'}            | ${'1.2.9'}             | ${1}
+      ${'8.260801.0-lts'}    | ${'7.260801.0-lts'}    | ${1}
+      ${'7.260803.0-lts'}    | ${'7.260801.0-lts'}    | ${1}
+      ${'7.260901.0-lts'}    | ${'7.260801.0-lts'}    | ${1}
+      ${'7.270801.0-lts'}    | ${'7.260801.0-lts'}    | ${1}
+      ${'7.260801.1-lts'}    | ${'7.260801.0-lts'}    | ${1}
+      ${'7.260801.0-lts.1'}  | ${'7.260801.0-lts'}    | ${1}
+      ${'7.260801.0-lts.12'} | ${'7.260801.0-lts.2'}  | ${1}
+      ${'7.260801.0-lts'}    | ${'6.8.3'}             | ${1}
+      ${'7.260801.0-lts.1'}  | ${'6.8.3'}             | ${1}
+      ${'1.2.3'}             | ${'1.2.4'}             | ${-1}
+      ${'1.9.9'}             | ${'2.0.0'}             | ${-1}
+      ${'1.2.9'}             | ${'1.10.0'}            | ${-1}
+      ${'7.260801.0-lts'}    | ${'8.260801.0-lts'}    | ${-1}
+      ${'7.260801.0-lts'}    | ${'7.260803.0-lts'}    | ${-1}
+      ${'7.260801.0-lts'}    | ${'7.260901.0-lts'}    | ${-1}
+      ${'7.260801.0-lts'}    | ${'7.270801.0-lts'}    | ${-1}
+      ${'7.260801.0-lts'}    | ${'7.260801.1-lts'}    | ${-1}
+      ${'7.260801.0-lts'}    | ${'7.260801.0-lts.1'}  | ${-1}
+      ${'7.260801.0-lts.2'}  | ${'7.260801.0-lts.12'} | ${-1}
+      ${'6.8.3'}             | ${'7.260801.0-lts'}    | ${-1}
+      ${'6.8.3'}             | ${'7.260801.0-lts.1'}  | ${-1}
+    `('compareVersions($a, $b) === $expected', ({ a, b, expected }) => {
+      expect(compareVersions(a, b)).toBe(expected);
     });
   });
 });

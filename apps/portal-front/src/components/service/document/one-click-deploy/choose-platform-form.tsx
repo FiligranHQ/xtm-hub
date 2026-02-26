@@ -1,8 +1,5 @@
 import { cn } from '@/lib/utils';
-import {
-  SHAREABLE_RESOURCE_TYPE_NAME_MAPPING,
-  ShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/utils/shareable-resources/shareable-resources.types';
 import { doesVersionSatisfy } from '@/utils/versioning';
 import {
   AutoForm,
@@ -18,12 +15,13 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
 interface ChoosePlatformFormProps {
-  documentData: ShareableResource;
+  documentData: documentItem_fragment$data;
   platforms: useRegisteredPlatformsFragment$data[];
   translatedPlatformIdentifier: string;
   oneClickDeploy: (platformUrl: string) => void;

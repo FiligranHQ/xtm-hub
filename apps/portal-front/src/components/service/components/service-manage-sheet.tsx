@@ -1,6 +1,7 @@
 'use client';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import { Button, toast } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 
 import { useServiceContext } from '@/components/service/components/service-context';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
@@ -9,12 +10,11 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import useServiceCapability from '@/hooks/useServiceCapability';
 import revalidatePathActions from '@/utils/actions/revalidatePath.actions';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface ServiceManageSheetProps {
-  document?: SubscribableResource;
+  document?: documentItem_fragment$data;
   variant?: 'menu' | 'button';
   open?: boolean;
   setOpen?: (open: boolean) => void;
