@@ -4,7 +4,11 @@ import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
-import { contextBypassUser } from '../../../tests/tests.const';
+import {
+  contextBypassUser,
+  contextSimpleUserSecondOrga,
+  SERVICES,
+} from '../../../tests/tests.const';
 import {
   PlatformContract,
   ServiceConfigurationStatus,
@@ -23,6 +27,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import * as pub from '../../pub';
 import * as securityGuardModule from '../../security/guard';
+import { ErrorCode } from '../../utils/error/error.code';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
@@ -465,7 +470,7 @@ describe('Service Instance app', () => {
           },
           null
         )
-      ).rejects.toThrow('SERVICE_INSTANCE_NOT_FOUND');
+      ).rejects.toThrow(ErrorCode.ServiceInstanceNotFound);
     });
 
     it('should throw SERVICE_DEFINITION_NOT_FOUND when service definition does not exist', async () => {
@@ -492,12 +497,10 @@ describe('Service Instance app', () => {
           },
           null
         )
-      ).rejects.toThrow('SERVICE_DEFINITION_NOT_FOUND');
+      ).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
     it('should throw when user cannot modify platform service', async () => {
-      // Cannot test with real DB: the bypass user always passes
-      // assertUserCanModifyPlatformService due to CAPABILITY_BYPASS.
       const mockId = uuidv4() as ServiceInstanceId;
       vi.spyOn(
         serviceInstanceDomain,
@@ -511,14 +514,10 @@ describe('Service Instance app', () => {
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         name: 'Mock Platform',
       });
-      vi.spyOn(
-        securityGuardModule.securityGuard,
-        'assertUserCanModifyPlatformService'
-      ).mockRejectedValue(new Error('Insufficient permissions'));
 
       await expect(
         ServiceInstanceApp.updatePlatformServiceMetadata(
-          contextBypassUser.user,
+          contextSimpleUserSecondOrga.user,
           mockId,
           {
             serviceInstanceId: toGlobalId('ServiceInstance', mockId),
@@ -526,7 +525,7 @@ describe('Service Instance app', () => {
           },
           null
         )
-      ).rejects.toThrow('Insufficient permissions');
+      ).rejects.toThrow(ErrorCode.MissingCapabilityOnOrganization);
     });
 
     it('should throw when upload fails and not update service instance', async () => {
@@ -609,7 +608,7 @@ describe('Service Instance app', () => {
           },
           null
         )
-      ).rejects.toThrow('SERVICE_CONFIGURATION_NOT_FOUND');
+      ).rejects.toThrow(ErrorCode.ServiceConfigurationNotFound);
     });
   });
 
@@ -637,10 +636,6 @@ describe('Service Instance app', () => {
   });
 
   describe('loadSeoServiceInstance', () => {
-    // Uses the vault ServiceDefinition inserted by seeds
-    const SERVICE_DEF_ID =
-      '2634d52b-f061-4ebc-bed2-c6cc94297ad1' as ServiceDefinitionId;
-
     it('should return the service instance with global document IDs', async () => {
       const slug = 'test-seo-slug-with-docs';
       const logoId = uuidv4() as DocumentId;
@@ -655,7 +650,7 @@ describe('Service Instance app', () => {
         logo_document_id: logoId,
         illustration_document_id: illustrationId,
         tags: [ServiceInstanceTag.OpenCti],
-        service_definition_id: SERVICE_DEF_ID,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
 
       const result = await ServiceInstanceApp.loadSeoServiceInstance(slug);
@@ -671,7 +666,7 @@ describe('Service Instance app', () => {
     it('should throw NotFoundError when the slug does not match any service', async () => {
       await expect(
         ServiceInstanceApp.loadSeoServiceInstance('non-existent-slug')
-      ).rejects.toThrow('SERVICE_NOT_FOUND');
+      ).rejects.toThrow(ErrorCode.ServiceNotFound);
     });
 
     it('should handle null document IDs without converting them', async () => {
@@ -680,7 +675,7 @@ describe('Service Instance app', () => {
         id: uuidv4() as ServiceInstanceId,
         name: 'Test SEO Service No Docs',
         slug,
-        service_definition_id: SERVICE_DEF_ID,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
 
       const result = await ServiceInstanceApp.loadSeoServiceInstance(slug);
@@ -691,10 +686,6 @@ describe('Service Instance app', () => {
   });
 
   describe('loadSeoServiceInstances', () => {
-    // Uses the vault ServiceDefinition inserted by seeds
-    const SERVICE_DEF_ID =
-      '2634d52b-f061-4ebc-bed2-c6cc94297ad1' as ServiceDefinitionId;
-
     it('should return public service instances with document IDs converted to global IDs', async () => {
       const logoId = uuidv4() as DocumentId;
       const illustrationId = uuidv4();
@@ -708,7 +699,7 @@ describe('Service Instance app', () => {
         public: true,
         logo_document_id: logoId,
         illustration_document_id: illustrationId,
-        service_definition_id: SERVICE_DEF_ID,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
 
       const results = await ServiceInstanceApp.loadSeoServiceInstances();
@@ -727,7 +718,7 @@ describe('Service Instance app', () => {
         id: instanceId,
         name: 'Non-Public Service',
         public: false,
-        service_definition_id: SERVICE_DEF_ID,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
 
       const results = await ServiceInstanceApp.loadSeoServiceInstances();
@@ -745,14 +736,14 @@ describe('Service Instance app', () => {
         name: 'SEO Ordering B',
         public: true,
         ordering: 200,
-        service_definition_id: SERVICE_DEF_ID,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
       await serviceInstanceDomain.insertServiceInstance({
         id: firstId,
         name: 'SEO Ordering A',
         public: true,
         ordering: 100,
-        service_definition_id: SERVICE_DEF_ID,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
 
       const results = await ServiceInstanceApp.loadSeoServiceInstances();

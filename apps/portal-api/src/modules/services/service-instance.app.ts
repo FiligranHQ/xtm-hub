@@ -53,13 +53,17 @@ export const ServiceInstanceApp = {
       user_id: user.id,
     });
     if (userService.length === 0) {
-      logApp.warn('USER_MUST_JOIN_SERVICE_BEFORE_ACCESSING_IT');
       if (subscription.joining === 'AUTO_JOIN') {
         await grantServiceAccess(
           [GenericServiceCapabilityIds.AccessId],
           [user.id],
           subscription.id
         );
+      } else {
+        logApp.warn('USER_MUST_JOIN_SERVICE_BEFORE_ACCESSING_IT', {
+          userId: user.id,
+          serviceInstanceId,
+        });
       }
     }
     return loadServiceInstanceBy('id', serviceInstanceId);
