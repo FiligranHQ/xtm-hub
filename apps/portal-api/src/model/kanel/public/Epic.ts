@@ -16,8 +16,6 @@ export default interface Epic {
 
   is_active: boolean | null;
 
-  uploader_id: string | null;
-
   short_description: string;
 
   long_description: string;
@@ -41,8 +39,6 @@ export interface EpicInitializer {
 
   /** Default value: false */
   is_active?: boolean | null;
-
-  uploader_id?: string | null;
 
   short_description: string;
 
@@ -68,8 +64,6 @@ export interface EpicMutator {
   title?: string;
 
   is_active?: boolean | null;
-
-  uploader_id?: string | null;
 
   short_description?: string;
 

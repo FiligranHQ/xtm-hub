@@ -1,0 +1,27 @@
+enum FiligranProduct {
+  OpenCTI
+  OpenAEV
+  XTMHub
+}
+enum Timeline {
+  Now
+  Next
+  Under_Consideration
+}
+type Epic implements Node {
+  id: ID!
+  epic: String!
+  title: String!
+  short_description: String!
+  long_description: String!
+  is_active: Boolean!
+  product: FiligranProduct!
+  timeline: Timeline!
+  tags: [String]!
+  epic_type: String!
+  document: Document
+}
+
+type Query {
+  epics: [Epic!]!
+}
