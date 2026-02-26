@@ -25,6 +25,13 @@ export const isExternalService = (
     ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
 
+export const isAutoJoinService = (
+  service_definition_identifier: ServiceDefinitionIdentifierEnum
+) =>
+  [ServiceDefinitionIdentifierEnum.PUBLIC_ROADMAP].includes(
+    service_definition_identifier
+  );
+
 export const isExpired = (endDate: Date | undefined | null): boolean => {
   return endDate ? new Date(endDate) < new Date() : false;
 };
