@@ -15,13 +15,49 @@ type Epic implements Node {
   short_description: String!
   long_description: String!
   is_active: Boolean!
-  product: FiligranProduct!
-  timeline: Timeline!
+  product: String!
+  timeline: String!
   tags: [String]!
   epic_type: String!
   document: Document
+  uploader_id: String!
+  updater_id: String!
+  created_at: Date!
+  updated_at: Date
+}
+
+input CreateEpicInput {
+  epic: String!
+  title: String!
+  short_description: String!
+  long_description: String!
+  is_active: Boolean
+  product: FiligranProduct!
+  timeline: Timeline!
+  tags: [String!]
+  epic_type: String
+}
+
+input UpdateEpicInput {
+  epic: String
+  title: String
+  short_description: String
+  long_description: String
+  is_active: Boolean
+  product: FiligranProduct
+  timeline: Timeline
+  tags: [String!]
+  epic_type: String
 }
 
 type Query {
   epics: [Epic!]!
+}
+
+type Mutation {
+  createEpic(input: CreateEpicInput!): Epic!
+    @auth
+    @service_capa(requires: [ADD])
+  updateEpic(id: ID!, input: UpdateEpicInput!): Epic! @auth
+  deleteEpic(id: ID!): Epic! @auth
 }

@@ -27,11 +27,18 @@ export default interface Epic {
   epic_type: string | null;
 
   document_id: DocumentId | null;
+
+  created_at: Date;
+
+  updated_at: Date | null;
+
+  updater_id: string | null;
 }
 
 /** Represents the initializer for the table public.Epic */
 export interface EpicInitializer {
-  id: EpicId;
+  /** Default value: gen_random_uuid() */
+  id?: EpicId;
 
   epic: string;
 
@@ -53,6 +60,13 @@ export interface EpicInitializer {
   epic_type?: string | null;
 
   document_id?: DocumentId | null;
+
+  /** Default value: CURRENT_TIMESTAMP */
+  created_at?: Date;
+
+  updated_at?: Date | null;
+
+  updater_id?: string | null;
 }
 
 /** Represents the mutator for the table public.Epic */
@@ -76,4 +90,10 @@ export interface EpicMutator {
   epic_type?: string | null;
 
   document_id?: DocumentId | null;
+
+  created_at?: Date;
+
+  updated_at?: Date | null;
+
+  updater_id?: string | null;
 }
