@@ -14,7 +14,6 @@ export interface HubspotReachOutSalesPayload {
   company: string;
   job_title: string | null;
   message: string;
-  use_case: string | null;
 }
 
 export interface HubspotPayloadMap {

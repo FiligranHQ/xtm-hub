@@ -23,6 +23,7 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
@@ -791,7 +792,7 @@ describe('Registration app', () => {
           actual_state: DeploymentRequestPlatformState.Provisioning,
           ordering: 1,
           type: DeploymentRequestDeploymentType.Trial,
-          use_case: 'use_case',
+          use_case: DeploymentRequestUseCase.ThreatHunting,
           service_instance_id: serviceInstanceId as ServiceInstanceId,
           user_requester_id:
             TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,

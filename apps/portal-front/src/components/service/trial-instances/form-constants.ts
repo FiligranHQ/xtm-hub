@@ -62,22 +62,3 @@ export const ACTIVITIES_SECTOR = [
   'Utilities',
   'Wireless',
 ] as const;
-
-export const USE_CASES = [
-  'Threat Profiling (CTI)',
-  'Threat Profiling (FIMI)',
-  'Threat Profiling (Law enforcement)',
-  'Threat Profiling (Fraud & AML)',
-  'Threat Hunting',
-  'Strategic Reporting (For Executives)',
-  'Strategic Reporting (for Analysts)',
-  'Coordinating Incident Response',
-  'Integrating Security Stack',
-  'Detection Engineering',
-  'Simulating Cyber Attacks',
-  'Simulating Crisis (Tabletop Exercises)',
-  'Vulnerability Management',
-  'Centralizing Knowledge',
-  'Sharing knowledge',
-  'Hosting Threat Sharing Community',
-] as const;

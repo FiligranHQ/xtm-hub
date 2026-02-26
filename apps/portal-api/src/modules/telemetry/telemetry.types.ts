@@ -2,6 +2,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
+  DeploymentRequestUseCase,
 } from '../../__generated__/resolvers-types';
 import {
   TELEMETRY_SOURCE,
@@ -109,7 +110,7 @@ export interface CreateDeploymentEvent extends BaseTelemetryEvent {
   job_title: string;
   region: DeploymentRequestPlatformRegion;
   status: DeploymentRequestHubStatus;
-  use_case: string;
+  use_case: DeploymentRequestUseCase;
   target_product: TelemetryTargetProduct;
 }
 

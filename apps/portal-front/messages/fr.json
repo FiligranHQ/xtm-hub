@@ -37,6 +37,24 @@
     "ResetTable": "Réinitialiser",
     "RowsPerPage": "Lignes par page"
   },
+  "DeploymentRequestUseCase": {
+    "threat_profiling_cti": "Profilage des menaces (CTI)",
+    "threat_profiling_fimi": "Profilage des menaces (FIMI)",
+    "threat_profiling_leo": "Profilage des menaces (Forces de l'ordre)",
+    "threat_profiling_faml": "Profilage des menaces (Fraude & LCB)",
+    "threat_hunting": "Chasse aux menaces",
+    "strategic_reporting": "Reporting stratégique (Pour les dirigeants)",
+    "technical_reporting": "Reporting technique (Pour les analystes)",
+    "incident_response": "Coordination de la réponse aux incidents",
+    "security_stack": "Intégration de la pile de sécurité",
+    "detection_engineering": "Ingénierie de détection",
+    "attack_simulation": "Simulation de cyberattaques",
+    "crisis_simulation": "Simulation de crise (Exercices sur table)",
+    "vulnerability_management": "Gestion des vulnérabilités",
+    "centralizing_knowledge": "Centralisation des connaissances",
+    "sharing_knowledge": "Partage des connaissances",
+    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces"
+  },
   "DeleteUseCaseDialog": {
     "TextDeleteUseCase": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },

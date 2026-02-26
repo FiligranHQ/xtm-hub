@@ -37,6 +37,24 @@
     "ResetTable": "Reset table",
     "RowsPerPage": "Rows per page"
   },
+  "DeploymentRequestUseCase": {
+    "threat_profiling_cti": "Threat Profiling (CTI)",
+    "threat_profiling_fimi": "Threat Profiling (FIMI)",
+    "threat_profiling_leo": "Threat Profiling (Law enforcement)",
+    "threat_profiling_faml": "Threat Profiling (Fraud & AML)",
+    "threat_hunting": "Threat Hunting",
+    "strategic_reporting": "Strategic Reporting (For Executives)",
+    "technical_reporting": "Technical Reporting (for Analysts)",
+    "incident_response": "Coordinating Incident Response",
+    "security_stack": "Integrating Security Stack",
+    "detection_engineering": "Detection Engineering",
+    "attack_simulation": "Simulating Cyber Attacks",
+    "crisis_simulation": "Simulating Crisis (Tabletop Exercises)",
+    "vulnerability_management": "Vulnerability Management",
+    "centralizing_knowledge": "Centralizing Knowledge",
+    "sharing_knowledge": "Sharing Knowledge",
+    "hosting_threat_community": "Hosting Threat Sharing Community"
+  },
   "DeleteUseCaseDialog": {
     "TextDeleteUseCase": "Do you really want to delete this use case {name} ?"
   },

@@ -137,8 +137,7 @@ describe('Hubspot', () => {
             company: 'Filigran',
             job_title: 'myJob',
             message:
-              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
-            use_case: 'use_case',
+              'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
         })
       );
@@ -162,8 +161,7 @@ describe('Hubspot', () => {
             company: 'Filigran',
             job_title: 'myJob',
             message:
-              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
-            use_case: 'use_case',
+              'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
         })
       );
@@ -202,8 +200,7 @@ describe('Hubspot', () => {
             company: 'Filigran',
             job_title: 'myJob',
             message:
-              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
-            use_case: 'use_case',
+              'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
         })
       );

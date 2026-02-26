@@ -6,6 +6,7 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
@@ -30,7 +31,7 @@ describe('Deployment app', () => {
           input: {
             activity_sector: 'cybersecurity',
             job_title: 'myJob',
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -40,7 +41,7 @@ describe('Deployment app', () => {
       expect(deployment).toMatchObject({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -56,7 +57,7 @@ describe('Deployment app', () => {
       const initialDeployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -108,7 +109,7 @@ describe('Deployment app', () => {
       expect(updatedActiveDeployment).toMatchObject({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -131,18 +132,14 @@ describe('Deployment app', () => {
       });
     });
     it('should return an error when status transition is not allowed', async () => {
-      const initialDeploymentData = {
+      const initialDeployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        hub_status: DeploymentRequestHubStatus.Pending,
-      };
-      const initialDeployment = await DeploymentsApp.createDeploymentRequest(
-        initialDeploymentData
-      );
+      });
       const updates = {
         id: initialDeployment.id,
         actual_state: DeploymentRequestPlatformState.Removed,

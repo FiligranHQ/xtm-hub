@@ -5,6 +5,7 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
@@ -53,7 +54,7 @@ export async function insertDeploymentRequest(
     actual_state: undefined,
     ordering: 1,
     type: DeploymentRequestDeploymentType.Trial,
-    use_case: 'use_case',
+    use_case: DeploymentRequestUseCase.ThreatHunting,
     service_instance_id: serviceInstanceId as ServiceInstanceId,
     user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
   };

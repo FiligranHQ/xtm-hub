@@ -19,6 +19,7 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -101,7 +102,7 @@ describe('Deployment app', () => {
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -126,7 +127,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
       });
 
       expect(dbDeploymentRequest).toBeDefined();
@@ -148,7 +149,7 @@ describe('Deployment app', () => {
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector: 'cybersecurity',
         job_title: 'myJob',
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -173,7 +174,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
       });
 
       if (!dbDeploymentRequest) return;
@@ -202,7 +203,7 @@ describe('Deployment app', () => {
         const call = DeploymentsApp.createDeploymentRequest({
           activity_sector: 'cybersecurity',
           job_title: 'myJob',
-          use_case: 'use_case',
+          use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
@@ -221,7 +222,7 @@ describe('Deployment app', () => {
         const deployment = await DeploymentsApp.createDeploymentRequest({
           activity_sector: 'cybersecurity',
           job_title: 'myJob',
-          use_case: 'use_case',
+          use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
@@ -235,7 +236,7 @@ describe('Deployment app', () => {
         const deployment = await DeploymentsApp.createDeploymentRequest({
           activity_sector: 'cybersecurity',
           job_title: 'myJob',
-          use_case: 'use_case',
+          use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
@@ -244,7 +245,7 @@ describe('Deployment app', () => {
         expect(deployment).toBeDefined();
         expect(deployment.id).toBeDefined();
       });
-    });
+
 
     describe('telemetry', () => {
       it.each`
@@ -261,7 +262,7 @@ describe('Deployment app', () => {
           const deployment = await DeploymentsApp.createDeploymentRequest({
             activity_sector: 'cybersecurity',
             job_title: 'myJob',
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: product,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -279,7 +280,7 @@ describe('Deployment app', () => {
             user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             deployment_id: deployment.id,
             region: DeploymentRequestPlatformRegion.UsEast,
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             deployment_type: DeploymentRequestDeploymentType.Trial,
             status: DeploymentRequestHubStatus.Pending,
             activity_sector: 'cybersecurity',
@@ -296,7 +297,7 @@ describe('Deployment app', () => {
         const deployment = await DeploymentsApp.createDeploymentRequest({
           activity_sector: 'cybersecurity',
           job_title: 'myJob',
-          use_case: 'use_case',
+          use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
@@ -312,7 +313,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector: 'cybersecurity',
             job_title: 'myJob',
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -338,7 +339,7 @@ describe('Deployment app', () => {
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: DeploymentRequestPlatformRegion.UsEast,
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -352,7 +353,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector: 'cybersecurity',
             job_title: 'myJob',
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -378,7 +379,7 @@ describe('Deployment app', () => {
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: 'us_east',
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -402,7 +403,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector: 'cybersecurity',
             job_title: 'myJob',
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -428,7 +429,7 @@ describe('Deployment app', () => {
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: DeploymentRequestPlatformRegion.UsEast,
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -442,7 +443,7 @@ describe('Deployment app', () => {
           await DeploymentsApp.createDeploymentRequest({
             activity_sector: 'cybersecurity',
             job_title: 'myJob',
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -468,7 +469,7 @@ describe('Deployment app', () => {
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: 'us_east',
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -723,7 +724,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),

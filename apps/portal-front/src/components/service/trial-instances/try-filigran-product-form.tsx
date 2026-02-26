@@ -4,7 +4,6 @@ import {
   JOB_TITLES,
   REGIONS,
   REGIONS_VALUES,
-  USE_CASES,
 } from '@/components/service/trial-instances/form-constants';
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
@@ -22,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@filigran/ui';
+import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
   job_title: z.enum(JOB_TITLES),
   activity_sector: z.enum(ACTIVITIES_SECTOR),
-  use_case: z.enum(USE_CASES),
+  use_case: z.enum(DeploymentRequestUseCaseEnum),
   acceptTerms: z
     .boolean()
     .default(false)
@@ -146,9 +146,37 @@ export const TryFiligranProductForm: FunctionComponent<
             },
             use_case: {
               label: t('Service.Trials.Form.UseCase'),
-              inputProps: {
-                placeholder: t('Service.Trials.Form.UseCasePlaceholder'),
-              },
+              fieldType: ({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('Service.Trials.Form.UseCase')}{' '}
+                    <span className="text-sm text-destructive">*</span>
+                  </FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t(
+                          'Service.Trials.Form.UseCasePlaceholder'
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(DeploymentRequestUseCaseEnum).map(
+                        (value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}>
+                            {t(`DeploymentRequestUseCase.${value}`)}
+                          </SelectItem>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-sm text-destructive" />
+                </FormItem>
+              ),
             },
             acceptTerms: {
               fieldType: ({ field }) => (

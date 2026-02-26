@@ -27,6 +27,25 @@ enum DeploymentRequestPlatformState {
   removed
 }
 
+enum DeploymentRequestUseCase {
+  threat_profiling_cti
+  threat_profiling_fimi
+  threat_profiling_faml
+  threat_profiling_leo
+  threat_hunting
+  technical_reporting
+  strategic_reporting
+  incident_response
+  security_stack
+  detection_engineering
+  attack_simulation
+  crisis_simulation
+  vulnerability_management
+  centralizing_knowledge
+  sharing_knowledge
+  hosting_threat_community
+}
+
 type DeploymentRequest implements Node {
   id: ID!
   platform_identifier: PlatformIdentifier!
@@ -34,7 +53,7 @@ type DeploymentRequest implements Node {
   type: DeploymentRequestDeploymentType!
   job_title: String
   activity_sector: String
-  use_case: String
+  use_case: DeploymentRequestUseCase
   start_date: Date
   end_date: Date
   hub_status: DeploymentRequestHubStatus!
@@ -66,7 +85,7 @@ type PlatformDeploymentRequest {
   end_date: Date
   job_title: String
   activity_sector: String
-  use_case: String
+  use_case: DeploymentRequestUseCase
   organization_name: String!
   organization_domains: [String!]
   requester_email: String!
@@ -83,7 +102,7 @@ input CreateDeploymentRequestInput {
   type: DeploymentRequestDeploymentType!
   job_title: String
   activity_sector: String
-  use_case: String
+  use_case: DeploymentRequestUseCase
 }
 
 input UpdateDeploymentRequestInput {

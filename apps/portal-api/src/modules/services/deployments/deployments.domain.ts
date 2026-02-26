@@ -5,6 +5,7 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
@@ -53,6 +54,7 @@ export const DeploymentRequestDomain = {
       hub_status: result.hub_status as DeploymentRequestHubStatus,
       target_state: result.target_state as DeploymentRequestPlatformState,
       actual_state: result.actual_state as DeploymentRequestPlatformState,
+      use_case: result.use_case as DeploymentRequestUseCase,
     };
   },
 

@@ -162,7 +162,7 @@ export type CreateDeploymentRequestInput = {
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
   type: DeploymentRequestDeploymentType;
-  use_case?: InputMaybe<Scalars['String']['input']>;
+  use_case?: InputMaybe<DeploymentRequestUseCase>;
 };
 
 export type CreateDocumentInput = {
@@ -295,7 +295,7 @@ export type DeploymentRequest = Node & {
   service_instance_id: Scalars['ID']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
 
 export type DeploymentRequestConnection = {
@@ -366,6 +366,25 @@ export enum DeploymentRequestPlatformState {
   Removed = 'removed',
   Removing = 'removing',
   Unprovisioned = 'unprovisioned'
+}
+
+export enum DeploymentRequestUseCase {
+  AttackSimulation = 'attack_simulation',
+  CentralizingKnowledge = 'centralizing_knowledge',
+  CrisisSimulation = 'crisis_simulation',
+  DetectionEngineering = 'detection_engineering',
+  HostingThreatCommunity = 'hosting_threat_community',
+  IncidentResponse = 'incident_response',
+  SecurityStack = 'security_stack',
+  SharingKnowledge = 'sharing_knowledge',
+  StrategicReporting = 'strategic_reporting',
+  TechnicalReporting = 'technical_reporting',
+  ThreatHunting = 'threat_hunting',
+  ThreatProfilingCti = 'threat_profiling_cti',
+  ThreatProfilingFaml = 'threat_profiling_faml',
+  ThreatProfilingFimi = 'threat_profiling_fimi',
+  ThreatProfilingLeo = 'threat_profiling_leo',
+  VulnerabilityManagement = 'vulnerability_management'
 }
 
 export type Document = {
@@ -1058,7 +1077,7 @@ export type PlatformDeploymentRequest = {
   start_date?: Maybe<Scalars['Date']['output']>;
   target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
 
 export type PlatformDeploymentRequestConnection = {
@@ -2163,6 +2182,7 @@ export type ResolversTypes = ResolversObject<{
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
+  DeploymentRequestUseCase: DeploymentRequestUseCase;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
@@ -2640,7 +2660,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2940,7 +2960,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
