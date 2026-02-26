@@ -30,17 +30,13 @@ interface TrialCancelSheetProps {
   setOpen: (open: boolean) => void;
 }
 
-const OPTIONS = [
-  'Intelligence lacks actionable insight for our specific needs',
-  'Incompatible with our existing security stack',
-  'Configuration is too complex to complete within a reasonable timeframe',
-  'Internal security or legal team required immediate termination',
-  'We lack the internal analysts/expertise to utilise the tool effectively',
+const REASONS = [
+  'value',
+  'compatibility',
+  'complexity',
+  'legal-security',
+  'expertise',
 ];
-const CANCELLATION_REASONS = OPTIONS.map((option) => ({
-  value: option,
-  label: option,
-}));
 
 export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
   deploymentRequestId,
@@ -49,6 +45,10 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
   setOpen,
 }) => {
   const t = useTranslations();
+  const cancellationReasons = REASONS.map((reason) => ({
+    value: reason,
+    label: t(`Service.Trials.CancellationReason.${reason}`),
+  }));
   const { refetch } = useOrgaFreeTrial();
 
   const [cancelDeploymentRequestMutation] =
@@ -115,7 +115,7 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
                 </FormLabel>
                 <SelectWithEditableField
                   onChange={field.onChange}
-                  options={CANCELLATION_REASONS}
+                  options={cancellationReasons}
                   labels={{
                     placeholder: t(
                       'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonPlaceholder'
