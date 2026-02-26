@@ -602,6 +602,8 @@ export type Mutation = {
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
   deleteCompetitor: Competitor;
+  createEpic: Epic;
+  deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteOrganization?: Maybe<Organization>;
   deleteSubscription?: Maybe<ServiceInstance>;
