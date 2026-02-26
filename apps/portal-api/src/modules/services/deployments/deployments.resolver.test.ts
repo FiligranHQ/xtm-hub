@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
@@ -29,7 +30,8 @@ describe('Deployment app', () => {
         undefined,
         {
           input: {
-            activity_sector: 'cybersecurity',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: 'myJob',
             use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
@@ -39,7 +41,8 @@ describe('Deployment app', () => {
         }
       );
       expect(deployment).toMatchObject({
-        activity_sector: 'cybersecurity',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: 'myJob',
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
@@ -55,7 +58,8 @@ describe('Deployment app', () => {
   describe('updateDeploymentRequest', () => {
     it('should return the updated deployment request', async () => {
       const initialDeployment = await DeploymentsApp.createDeploymentRequest({
-        activity_sector: 'cybersecurity',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: 'myJob',
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
@@ -107,7 +111,8 @@ describe('Deployment app', () => {
           },
         });
       expect(updatedActiveDeployment).toMatchObject({
-        activity_sector: 'cybersecurity',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: 'myJob',
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
@@ -133,7 +138,8 @@ describe('Deployment app', () => {
     });
     it('should return an error when status transition is not allowed', async () => {
       const initialDeployment = await DeploymentsApp.createDeploymentRequest({
-        activity_sector: 'cybersecurity',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: 'myJob',
         use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,

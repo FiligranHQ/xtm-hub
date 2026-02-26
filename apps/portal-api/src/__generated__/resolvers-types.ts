@@ -157,7 +157,7 @@ export type CreateCompetitorInput = {
 };
 
 export type CreateDeploymentRequestInput = {
-  activity_sector?: InputMaybe<Scalars['String']['input']>;
+  activity_sector?: InputMaybe<DeploymentRequestActivitySector>;
   job_title?: InputMaybe<Scalars['String']['input']>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
@@ -274,7 +274,7 @@ export type DeploymentAvailability = {
 
 export type DeploymentRequest = Node & {
   __typename?: 'DeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   cancellation_date?: Maybe<Scalars['Date']['output']>;
   cancellation_reason?: Maybe<Scalars['String']['output']>;
   cancellation_user_email?: Maybe<Scalars['String']['output']>;
@@ -297,6 +297,38 @@ export type DeploymentRequest = Node & {
   type: DeploymentRequestDeploymentType;
   use_case?: Maybe<DeploymentRequestUseCase>;
 };
+
+export enum DeploymentRequestActivitySector {
+  ComputerGames = 'computer_games',
+  ComputerNetworkSecurity = 'computer_network_security',
+  ComputerSoftware = 'computer_software',
+  DefenseSpace = 'defense_space',
+  Entertainment = 'entertainment',
+  FinancialServices = 'financial_services',
+  GovernmentAdministration = 'government_administration',
+  GovernmentRelations = 'government_relations',
+  HigherEducation = 'higher_education',
+  HospitalHealthCare = 'hospital_health_care',
+  Hospitality = 'hospitality',
+  InformationTechnology = 'information_technology',
+  Insurance = 'insurance',
+  LegalServices = 'legal_services',
+  LuxuryGoodsJewelry = 'luxury_goods_jewelry',
+  ManagementConsulting = 'management_consulting',
+  MarketingAdvertising = 'marketing_advertising',
+  Military = 'military',
+  NonProfit = 'non_profit',
+  OilEnergy = 'oil_energy',
+  Pharmaceuticals = 'pharmaceuticals',
+  Photography = 'photography',
+  Retail = 'retail',
+  SecurityInvestigations = 'security_investigations',
+  Semiconductors = 'semiconductors',
+  Telecommunications = 'telecommunications',
+  Transportation = 'transportation',
+  Utilities = 'utilities',
+  Wireless = 'wireless'
+}
 
 export type DeploymentRequestConnection = {
   __typename?: 'DeploymentRequestConnection';
@@ -1056,7 +1088,7 @@ export enum PlatformContract {
 
 export type PlatformDeploymentRequest = {
   __typename?: 'PlatformDeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   actual_state?: Maybe<DeploymentRequestPlatformState>;
   end_date?: Maybe<Scalars['Date']['output']>;
   failure_reason?: Maybe<Scalars['String']['output']>;
@@ -2173,6 +2205,7 @@ export type ResolversTypes = ResolversObject<{
   DeployedPlatform: ResolverTypeWrapper<DeployedPlatform>;
   DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
+  DeploymentRequestActivitySector: DeploymentRequestActivitySector;
   DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
   DeploymentRequestDeploymentType: DeploymentRequestDeploymentType;
   DeploymentRequestEdge: ResolverTypeWrapper<DeploymentRequestEdge>;
@@ -2639,7 +2672,7 @@ export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentT
 }>;
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   cancellation_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   cancellation_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancellation_user_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2939,7 +2972,7 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformDeploymentRequest'] = ResolversParentTypes['PlatformDeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   actual_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   failure_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

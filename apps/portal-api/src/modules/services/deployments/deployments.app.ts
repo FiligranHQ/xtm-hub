@@ -3,6 +3,7 @@ import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
   DeploymentRequest,
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
@@ -166,9 +167,11 @@ export const DeploymentsApp = {
               createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
             status:
               createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-            activity_sector: createdDeploymentRequest.activity_sector,
+            activity_sector:
+              createdDeploymentRequest.activity_sector as DeploymentRequestActivitySector,
             job_title: createdDeploymentRequest.job_title,
-            use_case: createdDeploymentRequest.use_case as DeploymentRequestUseCase,
+            use_case:
+              createdDeploymentRequest.use_case as DeploymentRequestUseCase,
             email: user.email,
             deployment_id: createdDeploymentRequest.id,
             deployment_type:

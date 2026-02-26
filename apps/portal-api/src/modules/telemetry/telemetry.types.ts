@@ -1,4 +1,5 @@
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
@@ -102,7 +103,7 @@ export interface CreateOrganizationEvent extends BaseTelemetryEvent {
 }
 
 export interface CreateDeploymentEvent extends BaseTelemetryEvent {
-  activity_sector: string;
+  activity_sector: DeploymentRequestActivitySector;
   deployment_id: string;
   deployment_type: DeploymentRequestDeploymentType;
   email: string;

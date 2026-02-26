@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
@@ -41,7 +42,7 @@ export async function insertDeploymentRequest(
     service_instance_id: serviceInstanceId,
   });
   const defaultDeploymentRequestValues = {
-    activity_sector: 'cybersecurity',
+    activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
     id: uuidv4() as DeploymentRequestId,
     job_title: 'myJob',
     organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,

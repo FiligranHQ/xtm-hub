@@ -300,13 +300,45 @@ enum DeploymentRequestUseCase {
   hosting_threat_community
 }
 
+enum DeploymentRequestActivitySector {
+  computer_network_security
+  computer_games
+  computer_software
+  defense_space
+  entertainment
+  financial_services
+  government_administration
+  government_relations
+  higher_education
+  hospital_health_care
+  hospitality
+  information_technology
+  insurance
+  legal_services
+  luxury_goods_jewelry
+  management_consulting
+  marketing_advertising
+  military
+  non_profit
+  oil_energy
+  pharmaceuticals
+  photography
+  retail
+  security_investigations
+  semiconductors
+  telecommunications
+  transportation
+  utilities
+  wireless
+}
+
 type DeploymentRequest implements Node {
   id: ID!
   platform_identifier: PlatformIdentifier!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: String
-  activity_sector: String
+  activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
   start_date: Date
   end_date: Date
@@ -338,7 +370,7 @@ type PlatformDeploymentRequest {
   start_date: Date
   end_date: Date
   job_title: String
-  activity_sector: String
+  activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
   organization_name: String!
   organization_domains: [String!]
@@ -355,7 +387,7 @@ input CreateDeploymentRequestInput {
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: String
-  activity_sector: String
+  activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
 }
 

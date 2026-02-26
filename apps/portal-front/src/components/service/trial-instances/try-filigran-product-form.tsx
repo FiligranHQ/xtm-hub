@@ -1,6 +1,5 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import {
-  ACTIVITIES_SECTOR,
   JOB_TITLES,
   REGIONS,
   REGIONS_VALUES,
@@ -21,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@filigran/ui';
+import { DeploymentRequestActivitySectorEnum } from '@generated/models/DeploymentRequestActivitySector.enum';
 import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
@@ -32,7 +32,7 @@ import { z } from 'zod';
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
   job_title: z.enum(JOB_TITLES),
-  activity_sector: z.enum(ACTIVITIES_SECTOR),
+  activity_sector: z.enum(DeploymentRequestActivitySectorEnum),
   use_case: z.enum(DeploymentRequestUseCaseEnum),
   acceptTerms: z
     .boolean()
@@ -140,9 +140,37 @@ export const TryFiligranProductForm: FunctionComponent<
             },
             activity_sector: {
               label: t('Service.Trials.Form.ActivitySector'),
-              inputProps: {
-                placeholder: t('Service.Trials.Form.ActivitySectorPlaceholder'),
-              },
+              fieldType: ({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('Service.Trials.Form.ActivitySector')}{' '}
+                    <span className="text-sm text-destructive">*</span>
+                  </FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t(
+                          'Service.Trials.Form.ActivitySectorPlaceholder'
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(DeploymentRequestActivitySectorEnum).map(
+                        (value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}>
+                            {t(`DeploymentRequestActivitySector.${value}`)}
+                          </SelectItem>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-sm text-destructive" />
+                </FormItem>
+              ),
             },
             use_case: {
               label: t('Service.Trials.Form.UseCase'),
