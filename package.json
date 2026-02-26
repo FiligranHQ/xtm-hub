@@ -11,8 +11,8 @@
   "keywords": [],
   "author": "Filigran",
   "scripts": {
-    "dev:api": "yarn workspace portal-api dev",
-    "dev:front": "yarn workspace portal-front dev"
+    "dev:api": "yarn workspace  @xtm-hub/portal-api dev",
+    "dev:front": "yarn workspace  @xtm-hub/portal-front dev"
   },
   "devDependencies": {
     "eslint": "^9.30.1",
