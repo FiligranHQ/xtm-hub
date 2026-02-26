@@ -5,7 +5,6 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
@@ -82,11 +81,10 @@ describe('Subscription mutation resolver', () => {
     afterEach(async () => {
       vi.useRealTimers();
       await deleteSubscription({
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID as ServiceInstanceId,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
       });
       await deleteSubscription({
-        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS
-          .ID as ServiceInstanceId,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
       });
       await deleteSubscription({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
