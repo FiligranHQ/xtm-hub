@@ -13,8 +13,10 @@ import {
   FormMessage,
   toast,
 } from '@filigran/ui';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -28,6 +30,7 @@ interface TrialCancelSheetProps {
   isCancellationDefinitive: boolean;
   open: boolean;
   setOpen: (open: boolean) => void;
+  platformIdentifier: PlatformIdentifierEnum;
 }
 
 const OPTIONS = [
@@ -47,9 +50,11 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
   isCancellationDefinitive,
   open,
   setOpen,
+  platformIdentifier,
 }) => {
   const t = useTranslations();
   const { refetch } = useOrgaFreeTrial();
+  const router = useRouter();
 
   const [cancelDeploymentRequestMutation] =
     useMutation<trialInstancesCancelDeploymentRequestMutation>(
@@ -74,6 +79,8 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
         });
         refetch({}, { fetchPolicy: 'network-only' });
         setOpen(false);
+
+        router.push(`/app/service/${platformIdentifier}-free-trial`);
       },
       onError: (error) => {
         toast({
