@@ -23,6 +23,7 @@ export interface Auth0Client {
     organization_name: string,
     platform_id: string
   ): Promise<void>;
+  deleteAudienceAPI(platform_id: string): Promise<void>;
   updateUserRBACInstance(
     email: string,
     userRBACInstance: Auth0UpdateUserRBACInstance
