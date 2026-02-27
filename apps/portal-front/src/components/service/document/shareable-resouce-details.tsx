@@ -147,6 +147,20 @@ const ShareableResourceDetails: React.FunctionComponent<
           <ShareableResourceDetailsLink url={documentationUrl} />
         </ShareableResourceDetailItem>
       )}
+      {docHasMetadata(documentData, 'datasheet_url') && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.DatasheetURL')}>
+          <ShareableResourceDetailsLink
+            url={documentData.datasheet_url as string}
+          />
+        </ShareableResourceDetailItem>
+      )}
+      {docHasMetadata(documentData, 'demo_url') && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.DemoURL')}>
+          <ShareableResourceDetailsLink url={documentData.demo_url as string} />
+        </ShareableResourceDetailItem>
+      )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Downloads')}>
         <span>{roundToNearest(downloadNumber)}</span>

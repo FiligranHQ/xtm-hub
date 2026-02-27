@@ -121,6 +121,8 @@ export type Connector = Document & Integration & Node & {
   children_documents?: Maybe<Array<ShareableResource>>;
   container_image?: Maybe<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -192,6 +194,8 @@ export type CsvFeed = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   feed_url?: Maybe<Scalars['String']['output']>;
@@ -600,6 +604,8 @@ export type Integration = {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -627,6 +633,8 @@ export type IntegrationHack = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -1831,6 +1839,8 @@ export type Stream = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   feed_url?: Maybe<Scalars['String']['output']>;
@@ -1939,6 +1949,8 @@ export type TaxiiFeed = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   feed_url?: Maybe<Scalars['String']['output']>;
@@ -1974,6 +1986,8 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -2689,6 +2703,8 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   container_image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2723,6 +2739,8 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2936,6 +2954,8 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2962,6 +2982,8 @@ export type IntegrationHackResolvers<ContextType = PortalContext, ParentType ext
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3396,6 +3418,8 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3482,6 +3506,8 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3517,6 +3543,8 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

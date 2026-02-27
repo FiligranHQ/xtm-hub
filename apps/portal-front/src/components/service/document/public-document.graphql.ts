@@ -34,6 +34,8 @@ export const publicDocumentItem = graphql`
 
     ... on Integration {
       integration_type
+      datasheet_url
+      demo_url
     }
 
     ... on CustomDashboard {

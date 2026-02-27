@@ -128,18 +128,24 @@ export const documentItem = graphql`
     ... on CsvFeed {
       integration_type
       feed_url
+      datasheet_url
+      demo_url
     }
 
     ... on TaxiiFeed {
       integration_type
       integration_subtype
       feed_url
+      datasheet_url
+      demo_url
     }
 
     ... on Stream {
       integration_type
       integration_subtype
       feed_url
+      datasheet_url
+      demo_url
     }
 
     ... on ThirdPartyIntegration {
@@ -148,6 +154,8 @@ export const documentItem = graphql`
       product_version
       vendor_url
       github_url
+      datasheet_url
+      demo_url
     }
 
     ... on Connector {
@@ -160,6 +168,8 @@ export const documentItem = graphql`
       subscription_link
       manager_supported
       playbook_supported
+      datasheet_url
+      demo_url
     }
 
     ... on OpenAEVScenario {
