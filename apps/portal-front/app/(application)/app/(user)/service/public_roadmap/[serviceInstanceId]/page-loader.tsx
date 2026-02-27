@@ -1,5 +1,5 @@
 'use client';
-import { EpicList } from '@/components/epic/epic-list';
+import { EpicPage } from '@/components/epic/epic-page';
 import {
   EpicListQuery,
   epicsListFragment,
@@ -9,10 +9,14 @@ import { APP_PATH } from '@/utils/path/constant';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { epicsList_epics$key } from '@generated/epicsList_epics.graphql';
 import { epicsQuery } from '@generated/epicsQuery.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+interface PreloaderProps {
+  serviceInstance: serviceInstance_fragment$data;
+}
 
-const PageLoader = () => {
+const PageLoader = ({ serviceInstance }: PreloaderProps) => {
   const t = useTranslations();
   const queryData = useLazyLoadQuery<epicsQuery>(
     EpicListQuery,
@@ -26,6 +30,9 @@ const PageLoader = () => {
 
   const epics =
     data.epics?.edges.map((epic) => epic?.node as epic_fragment$data) ?? [];
+
+  const connectionID = data.epics!.__id;
+
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
@@ -40,7 +47,11 @@ const PageLoader = () => {
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="sr-only">{t('MenuLinks.XTMRoadmap')}</h1>
-      <EpicList epics={epics} />
+      <EpicPage
+        connectionID={connectionID}
+        serviceInstance={serviceInstance}
+        epics={epics}
+      />
     </>
   );
 };

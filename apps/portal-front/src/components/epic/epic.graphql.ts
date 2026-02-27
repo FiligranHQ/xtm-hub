@@ -8,6 +8,14 @@ export const epicFragment = graphql`
     epic
     title
     timeline
+    product
+    is_active
+    epic_type
+    document {
+      id
+      minio_name
+      service_instance_id
+    }
   }
 `;
 export const epicsListFragment = graphql`
@@ -37,5 +45,34 @@ export const EpicListQuery = graphql`
     $orderMode: OrderingMode!
   ) {
     ...epicsList_epics
+  }
+`;
+
+export const CreateEpicMutation = graphql`
+  mutation epicCreateMutation(
+    $input: CreateEpicInput!
+    $document: [Upload!]
+    $connections: [ID!]!
+  ) {
+    createEpic(input: $input, document: $document)
+      @prependNode(connections: $connections, edgeTypeName: "EpicEdge") {
+      ...epic_fragment
+    }
+  }
+`;
+
+export const UpdateEpicMutation = graphql`
+  mutation epicUpdateMutation($id: ID!, $input: UpdateEpicInput!) {
+    updateEpic(id: $id, input: $input) {
+      ...epic_fragment
+    }
+  }
+`;
+
+export const DeleteEpicMutation = graphql`
+  mutation epicDeleteMutation($id: ID!, $connections: [ID!]!) {
+    deleteEpic(id: $id) {
+      id @deleteEdge(connections: $connections)
+    }
   }
 `;

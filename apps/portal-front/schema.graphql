@@ -112,7 +112,7 @@ type Mutation {
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
-  createEpic(input: CreateEpicInput!): Epic!
+  createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!): Epic!
   deleteEpic(id: ID!): Epic!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
@@ -865,11 +865,10 @@ type Epic implements Node {
   is_active: Boolean!
   product: String!
   timeline: String!
-  tags: [String]!
   epic_type: String!
   document: Document
   uploader_id: String!
-  updater_id: String!
+  updater_id: String
   created_at: Date!
   updated_at: Date
 }
@@ -882,8 +881,8 @@ input CreateEpicInput {
   is_active: Boolean
   product: FiligranProduct!
   timeline: Timeline!
-  tags: [String!]
-  epic_type: String
+  is_integration: Boolean
+  illustration_document: Upload
 }
 
 input UpdateEpicInput {
@@ -894,8 +893,8 @@ input UpdateEpicInput {
   is_active: Boolean
   product: FiligranProduct
   timeline: Timeline
-  tags: [String!]
-  epic_type: String
+  is_integration: Boolean
+  illustration_document: Upload
 }
 
 type EpicEdge {

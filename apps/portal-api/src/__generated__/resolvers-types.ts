@@ -177,12 +177,12 @@ export type CreateDocumentInput = {
 
 export type CreateEpicInput = {
   epic: Scalars['String']['input'];
-  epic_type?: InputMaybe<Scalars['String']['input']>;
+  illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_active?: InputMaybe<Scalars['Boolean']['input']>;
+  is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   long_description: Scalars['String']['input'];
   product: FiligranProduct;
   short_description: Scalars['String']['input'];
-  tags?: InputMaybe<Array<Scalars['String']['input']>>;
   timeline: Timeline;
   title: Scalars['String']['input'];
 };
@@ -463,11 +463,10 @@ export type Epic = Node & {
   long_description: Scalars['String']['output'];
   product: Scalars['String']['output'];
   short_description: Scalars['String']['output'];
-  tags: Array<Maybe<Scalars['String']['output']>>;
   timeline: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
-  updater_id: Scalars['String']['output'];
+  updater_id?: Maybe<Scalars['String']['output']>;
   uploader_id: Scalars['String']['output'];
 };
 
@@ -807,13 +806,14 @@ export type MutationCreateDocumentArgs = {
 };
 
 
-export type MutationDeleteCompetitorArgs = {
-  id: Scalars['ID']['input'];
+export type MutationCreateEpicArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: CreateEpicInput;
 };
 
 
-export type MutationCreateEpicArgs = {
-  input: CreateEpicInput;
+export type MutationDeleteCompetitorArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1979,12 +1979,12 @@ export type UpdateDocumentInput = {
 
 export type UpdateEpicInput = {
   epic?: InputMaybe<Scalars['String']['input']>;
-  epic_type?: InputMaybe<Scalars['String']['input']>;
+  illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_active?: InputMaybe<Scalars['Boolean']['input']>;
+  is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   long_description?: InputMaybe<Scalars['String']['input']>;
   product?: InputMaybe<FiligranProduct>;
   short_description?: InputMaybe<Scalars['String']['input']>;
-  tags?: InputMaybe<Array<Scalars['String']['input']>>;
   timeline?: InputMaybe<Timeline>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2820,11 +2820,10 @@ export type EpicResolvers<ContextType = PortalContext, ParentType extends Resolv
   long_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  tags?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
   timeline?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  updater_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uploader_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2952,8 +2951,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
-  deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
+  deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;

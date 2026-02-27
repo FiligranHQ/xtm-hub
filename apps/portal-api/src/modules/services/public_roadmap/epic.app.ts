@@ -7,20 +7,58 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { extractId } from '../../../utils/utils';
+import { processUploads, Upload } from '../document/document.uploads.helper';
+import { DocumentDomain } from '../document/domain/document.domain';
+import { loadSubscribedServiceInstancesByIdentifier } from '../service-instance.domain';
 import { EpicDomain } from './epic.domain';
 
 export const EpicApp = {
   loadEpics: async (opts: Partial<QueryEpicsArgs>): Promise<EpicConnection> => {
-    // Load data
     return EpicDomain.loadEpics(opts);
   },
-  createEpic: async (input: CreateEpicInput): Promise<Epic> => {
+  createEpic: async (
+    input: CreateEpicInput,
+    uploads: Upload[]
+  ): Promise<Epic> => {
     const { user } = requestContext.require();
+
+    const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
+      user.id,
+      'public_roadmap'
+    );
+    const { is_integration, ...restInput } = input;
+    let createdDocument;
+    if (uploads) {
+      const files = await processUploads(
+        uploads,
+        extractId<ServiceInstanceId>(serviceInstance.service_instance_id)
+      );
+      createdDocument = await DocumentDomain.createDocument(
+        {
+          service_instance_id: extractId<ServiceInstanceId>(
+            serviceInstance.service_instance_id
+          ),
+          description: 'illustration for epic',
+          file_name: files[0].fileName,
+          minio_name: files[0].minioName,
+          active: true,
+          mime_type: files[0].mimeType,
+          type: 'image',
+          source_type: 'internal',
+        },
+        []
+      );
+    }
+
     const epicData: Partial<Epic> = {
-      ...input,
+      ...restInput,
       id: uuidv4() as EpicId,
       uploader_id: user.id,
       created_at: new Date(),
+      epic_type: is_integration ? 'INTEGRATION' : 'OTHER',
+      document_id: createdDocument?.id,
     };
     return EpicDomain.createEpic(epicData);
   },
