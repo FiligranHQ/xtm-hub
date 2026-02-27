@@ -1,7 +1,10 @@
 'use client';
 
 import useDecodedQuery from '@/hooks/useDecodedQuery';
-import { isAutoJoinService, isExternalService } from '@/utils/services';
+import {
+  isAutomaticSubscriptionService,
+  isExternalService,
+} from '@/utils/services';
 import { toast } from '@filigran/ui';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
@@ -84,7 +87,7 @@ const ServiceList = ({
             service.service_definition!
               .identifier as ServiceDefinitionIdentifierEnum
           ) ||
-          isAutoJoinService(
+          isAutomaticSubscriptionService(
             service.service_definition!
               .identifier as ServiceDefinitionIdentifierEnum
           )

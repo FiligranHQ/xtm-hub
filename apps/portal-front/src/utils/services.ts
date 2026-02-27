@@ -25,7 +25,7 @@ export const isExternalService = (
     ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
 
-export const isAutoJoinService = (
+export const isAutomaticSubscriptionService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum
 ) =>
   [ServiceDefinitionIdentifierEnum.PUBLIC_ROADMAP].includes(

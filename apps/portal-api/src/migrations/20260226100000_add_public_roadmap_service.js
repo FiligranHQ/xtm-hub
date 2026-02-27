@@ -57,8 +57,8 @@ export async function up(knex) {
       .insert([
         {
           id: uuidv4(),
-          name: 'ADD',
-          description: 'The user can add new epics',
+          name: 'UPSERT',
+          description: 'The user can insert and update new epics',
           service_definition_id: serviceDefinitionId,
         },
         {
@@ -95,7 +95,7 @@ export async function down(knex) {
       .delete()
       .from('Service_Capability')
       .where({ description: 'The user can delete epics' })
-      .orWhere({ description: 'The user can add new epics' })
+      .orWhere({ description: 'The user can insert and update new epics' })
       .transacting(trx);
     await knex
       .delete()
