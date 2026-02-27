@@ -5,10 +5,37 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
+import { subscriptionApp } from '../../subcription/subscription.app';
+import { UserServiceDomain } from '../../user_service/user_service.domain';
+import { loadServiceInstanceBy } from '../service-instance.domain';
 import { EpicDomain } from './epic.domain';
 
 export const EpicApp = {
   loadEpics: async () => {
+    // Make sure organization has subscription
+    const serviceInstance = await loadServiceInstanceBy(
+      'name',
+      'Public Roadmap'
+    );
+    const { user } = requestContext.require();
+    let subscription;
+    try {
+      subscription = await subscriptionApp.subscribeOrganizationToService({
+        organizationId: user.selected_organization_id,
+        serviceInstanceId: serviceInstance.id,
+        startDate: new Date(),
+        endDate: null,
+        capabilityIds: [],
+        throwError: false,
+      });
+    } catch {
+      return;
+    }
+
+    // Make sure user has user_service
+    await UserServiceDomain.addServiceToUsers(subscription, [user.email], []);
+
+    // Load data
     return EpicDomain.loadEpics();
   },
   createEpic: async (input: CreateEpicInput): Promise<Epic> => {

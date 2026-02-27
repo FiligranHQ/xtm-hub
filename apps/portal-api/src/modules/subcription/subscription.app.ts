@@ -124,16 +124,19 @@ export const subscriptionApp = {
     startDate,
     endDate,
     capabilityIds,
+    throwError = true,
   }: {
     organizationId: OrganizationId;
     serviceInstanceId: ServiceInstanceId;
     startDate: Date;
     endDate: Date;
     capabilityIds: ServiceCapabilityId[];
-  }): Promise<void> => {
+    throwError?: boolean;
+  }): Promise<Subscription> => {
     await assertOrganizationIsNotAlreadySubscribed({
       serviceInstanceId,
       organizationId,
+      throwError,
     });
 
     const subscriptionData = {
@@ -148,6 +151,7 @@ export const subscriptionApp = {
 
     const createdSubscription = await createSubscription(subscriptionData);
     await addCapabilitiesToSubscription(createdSubscription.id, capabilityIds);
+    return createdSubscription;
   },
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
@@ -170,9 +174,11 @@ export const subscriptionApp = {
 const assertOrganizationIsNotAlreadySubscribed = async ({
   serviceInstanceId,
   organizationId,
+  throwError = true,
 }: {
   serviceInstanceId: ServiceInstanceId;
   organizationId: OrganizationId;
+  throwError?: boolean;
 }) => {
   const subscription = await loadSubscriptionBy({
     organization_id: organizationId,
@@ -184,7 +190,7 @@ const assertOrganizationIsNotAlreadySubscribed = async ({
       'Forbidden access while adding subscription: you have already subscribed this service.'
     );
 
-    throw new Error(ErrorCode.AlreadySubscribed);
+    if (throwError) throw new Error(ErrorCode.AlreadySubscribed);
   }
 };
 
