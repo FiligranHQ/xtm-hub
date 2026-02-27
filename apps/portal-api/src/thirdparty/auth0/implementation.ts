@@ -83,4 +83,9 @@ export const auth0ClientImplementation: Auth0Client = {
       signing_alg: 'RS256',
     });
   },
+  deleteAudienceAPI: async (platform_id: string): Promise<void> => {
+    await managementClient.resourceServers.delete({
+      id: platform_id,
+    });
+  },
 };
