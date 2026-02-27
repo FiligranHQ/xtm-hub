@@ -562,20 +562,22 @@ export const grantServiceAccess = async (
       serviceInstance.id
     );
 
-    await sendMail({
-      to: user.email,
-      template: ServiceIdentifierToMailTemplate.get(
-        service_definition.identifier
-      ),
-      params: {
-        name: user.email,
-        serviceLink: buildServiceLink({
-          serviceDefinitionIdentifier: service_definition.identifier,
-          serviceInstanceId: serviceInstance.id,
-        }),
-        serviceName: serviceInstance.name,
-      },
-    });
+    if (ServiceIdentifierToMailTemplate.get(service_definition.identifier)) {
+      await sendMail({
+        to: user.email,
+        template: ServiceIdentifierToMailTemplate.get(
+          service_definition.identifier
+        ),
+        params: {
+          name: user.email,
+          serviceLink: buildServiceLink({
+            serviceDefinitionIdentifier: service_definition.identifier,
+            serviceInstanceId: serviceInstance.id,
+          }),
+          serviceName: serviceInstance.name,
+        },
+      });
+    }
   }
 
   for (const capabilityId of capabilitiesIds) {

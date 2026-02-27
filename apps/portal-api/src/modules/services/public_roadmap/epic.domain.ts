@@ -1,9 +1,14 @@
-import { db } from '../../../../knexfile';
+import { db, paginate } from '../../../../knexfile';
+import {
+  EpicConnection,
+  QueryEpicsArgs,
+} from '../../../__generated__/resolvers-types';
 import Epic, { EpicId, EpicMutator } from '../../../model/kanel/public/Epic';
 
 export const EpicDomain = {
-  loadEpics: async () => {
-    return db<Epic>('Epic').select(['Epic.*']);
+  loadEpics: async (opts: Partial<QueryEpicsArgs>) => {
+    const epicQuery = db<Epic>('Epic').select(['Epic.*']);
+    return paginate<Epic, EpicConnection>('Epic', opts, undefined, epicQuery);
   },
   loadEpicsBy: async (field: EpicMutator): Promise<Epic[]> => {
     return db<Epic>('Epic').where(field).select(['Epic.*']);

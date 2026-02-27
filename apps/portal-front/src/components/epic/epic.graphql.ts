@@ -1,7 +1,7 @@
 import { graphql } from 'react-relay';
 
-export const epicListFragment = graphql`
-  fragment epicList_fragment on Epic {
+export const epicFragment = graphql`
+  fragment epic_fragment on Epic {
     id
     short_description
     long_description
@@ -13,14 +13,29 @@ export const epicListFragment = graphql`
 export const epicsListFragment = graphql`
   fragment epicsList_epics on Query
   @refetchable(queryName: "EpicPaginationQuery") {
-    epics {
+    epics(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+    ) {
       __id
-      ...epicList_fragment @relay(mask: false)
+      edges {
+        node {
+          id
+          ...epic_fragment @relay(mask: false)
+        }
+      }
     }
   }
 `;
-export const epicListQuery = graphql`
-  query epicsQuery {
+export const EpicListQuery = graphql`
+  query epicsQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: EpicOrdering!
+    $orderMode: OrderingMode!
+  ) {
     ...epicsList_epics
   }
 `;

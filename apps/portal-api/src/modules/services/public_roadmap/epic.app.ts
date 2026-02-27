@@ -1,42 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   CreateEpicInput,
+  EpicConnection,
+  QueryEpicsArgs,
   UpdateEpicInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
-import { subscriptionApp } from '../../subcription/subscription.app';
-import { UserServiceDomain } from '../../user_service/user_service.domain';
-import { loadServiceInstanceBy } from '../service-instance.domain';
 import { EpicDomain } from './epic.domain';
 
 export const EpicApp = {
-  loadEpics: async () => {
-    // Make sure organization has subscription
-    const serviceInstance = await loadServiceInstanceBy(
-      'name',
-      'Public Roadmap'
-    );
-    const { user } = requestContext.require();
-    let subscription;
-    try {
-      subscription = await subscriptionApp.subscribeOrganizationToService({
-        organizationId: user.selected_organization_id,
-        serviceInstanceId: serviceInstance.id,
-        startDate: new Date(),
-        endDate: null,
-        capabilityIds: [],
-        throwError: false,
-      });
-    } catch {
-      return;
-    }
-
-    // Make sure user has user_service
-    await UserServiceDomain.addServiceToUsers(subscription, [user.email], []);
-
+  loadEpics: async (opts: Partial<QueryEpicsArgs>): Promise<EpicConnection> => {
     // Load data
-    return EpicDomain.loadEpics();
+    return EpicDomain.loadEpics(opts);
   },
   createEpic: async (input: CreateEpicInput): Promise<Epic> => {
     const { user } = requestContext.require();

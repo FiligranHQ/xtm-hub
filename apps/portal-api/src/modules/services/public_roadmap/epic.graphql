@@ -50,8 +50,25 @@ input UpdateEpicInput {
   epic_type: String
 }
 
+type EpicEdge {
+  cursor: String!
+  node: Epic!
+}
+type EpicConnection {
+  totalCount: Int!
+  edges: [EpicEdge!]!
+  pageInfo: PageInfo!
+}
+enum EpicOrdering {
+  epic
+}
 type Query {
-  epics: [Epic!]!
+  epics(
+    first: Int!
+    after: ID
+    orderBy: EpicOrdering!
+    orderMode: OrderingMode!
+  ): EpicConnection
 }
 
 type Mutation {

@@ -15,8 +15,8 @@ const resolvers: Resolvers = {
       ),
   },
   Query: {
-    epics: async (_parent, _args, _context) => {
-      return EpicApp.loadEpics();
+    epics: async (_parent, opts, _context) => {
+      return EpicApp.loadEpics(opts);
     },
   },
   Mutation: {

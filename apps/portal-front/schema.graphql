@@ -64,7 +64,7 @@ type Query {
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  epics: [Epic!]!
+  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!): EpicConnection
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
@@ -896,6 +896,21 @@ input UpdateEpicInput {
   timeline: Timeline
   tags: [String!]
   epic_type: String
+}
+
+type EpicEdge {
+  cursor: String!
+  node: Epic!
+}
+
+type EpicConnection {
+  totalCount: Int!
+  edges: [EpicEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum EpicOrdering {
+  epic
 }
 
 input OpenCTIPlatformRegistrationStatusInput {
