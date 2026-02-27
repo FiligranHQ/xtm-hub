@@ -88,7 +88,7 @@ test.describe('Custom dashboards', () => {
         .getByRole('textbox', { name: 'This is a paragraph to' })
         .fill(UPDATED_DASHBOARD_TEST.description);
       await page
-        .getByRole('checkbox', { name: 'Is the dashboard published?' })
+        .getByRole('checkbox', { name: 'Is the Custom Dashboard published?' })
         .click();
       await page.getByRole('button', { name: 'Validate' }).click();
       await waitForDrawerToClose(page);

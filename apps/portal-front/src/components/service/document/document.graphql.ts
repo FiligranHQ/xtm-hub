@@ -132,11 +132,13 @@ export const documentItem = graphql`
 
     ... on TaxiiFeed {
       integration_type
+      integration_subtype
       feed_url
     }
 
     ... on Stream {
       integration_type
+      integration_subtype
       feed_url
     }
 
