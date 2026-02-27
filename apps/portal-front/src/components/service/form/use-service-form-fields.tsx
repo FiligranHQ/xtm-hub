@@ -1,8 +1,10 @@
 import { ServiceFormDescriptionField } from '@/components/service/form/description-field';
 import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/integration-subtype-field';
+import { ServiceFormMultipleImagesField } from '@/components/service/form/multiple-images-field';
 import { ServiceFormUploaderIdField } from '@/components/service/form/uploader-id-field';
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/uploader-organization-id-field';
 import { ServiceFormUseCasesField } from '@/components/service/form/use-cases-field';
+import { ExistingFile, NewFile } from '@/utils/documents';
 import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -37,6 +39,11 @@ interface Props {
   platform: Platform;
   isCreation: boolean;
   document?: documentItem_fragment$data;
+  images: Array<ExistingFile | NewFile>;
+  setImages: (images: Array<ExistingFile | NewFile>) => void;
+  imagesToDelete: string[];
+  setImagesToDelete: (ids: string[]) => void;
+  setIsDirty: (isDirty: boolean) => void;
 }
 
 export const useSimpleServiceFormField = ({
@@ -44,6 +51,11 @@ export const useSimpleServiceFormField = ({
   platform,
   isCreation,
   document,
+  images,
+  setImages,
+  imagesToDelete,
+  setImagesToDelete,
+  setIsDirty,
 }: Props) => {
   const integrationType = integrationTypeMappedByDocumentType[documentType];
   const t = useTranslations();
@@ -106,6 +118,37 @@ export const useSimpleServiceFormField = ({
             },
           }
         : {}),
+      images: !document
+        ? {
+            label: t('Service.Form.ImageLabel'),
+            fieldType: 'file',
+            inputProps: {
+              allowedTypes: 'image/jpeg, image/png',
+              multiple: 'multiple',
+              texts: {
+                selectFile: t('Service.Form.SelectImage'),
+                noFile: t('Service.Form.NoImage'),
+                dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+              },
+            },
+          }
+        : {
+            fieldType: ({
+              field,
+            }: {
+              field: ControllerRenderProps<FieldValues, string>;
+            }) => (
+              <ServiceFormMultipleImagesField
+                field={field}
+                document={document}
+                images={images}
+                setImages={setImages}
+                imagesToDelete={imagesToDelete}
+                setImagesToDelete={setImagesToDelete}
+                setIsDirty={setIsDirty}
+              />
+            ),
+          },
       integration_type: { fieldType: () => <FormItem hidden={true} /> },
       active: {
         label: t('Service.Form.PublishedPlaceholder', {
@@ -161,6 +204,18 @@ export const useSimpleServiceFormField = ({
         },
       },
     }),
-    [documentType, platform, t, isCreation, document, integrationType]
+    [
+      documentType,
+      platform,
+      t,
+      isCreation,
+      document,
+      integrationType,
+      images,
+      setImages,
+      imagesToDelete,
+      setImagesToDelete,
+      setIsDirty,
+    ]
   );
 };

@@ -2,12 +2,11 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck } from '@/utils/documents';
+import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { useTranslations } from 'next-intl';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
 
@@ -33,7 +32,7 @@ const thirdPartyIntegrationFormSchema = z.object({
   datasheet_url: z.url().nullish(),
   demo_url: z.url().nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
-  images: z.custom<FileList>(fileListCheck).optional(),
+  images: z.custom<FileList>(fileListCheck),
 });
 
 export type ThirdPartyIntegrationFormValues = z.infer<
@@ -41,7 +40,7 @@ export type ThirdPartyIntegrationFormValues = z.infer<
 >;
 
 interface ThirdPartyIntegrationFormProps {
-  handleSubmit?: (values: ThirdPartyIntegrationFormValues) => void;
+  handleSubmit: (values: ThirdPartyIntegrationFormValues) => void;
   document: documentItem_fragment$data | undefined;
 }
 
@@ -49,11 +48,31 @@ export const ThirdPartyIntegrationForm = ({
   handleSubmit,
   document,
 }: ThirdPartyIntegrationFormProps) => {
-  const t = useTranslations();
   const { me } = useContext(PortalContext);
-  const { handleCloseSheet } = useDialogContext();
+  const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const isCreation = !document;
+
+  const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
+    document?.children_documents as unknown as ExistingFile[]
+  );
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+
+  const onSubmit = (values: ThirdPartyIntegrationFormValues) => {
+    if (isCreation) {
+      handleSubmit(values);
+    } else {
+      const finalImages = images.filter(
+        (img) => !imagesToDelete.includes(img.id)
+      );
+
+      const finalValues = {
+        ...values,
+        images: finalImages as unknown as FileList,
+      };
+      handleSubmit(finalValues);
+    }
+  };
 
   const values = useMemo(
     () =>
@@ -122,18 +141,24 @@ export const ThirdPartyIntegrationForm = ({
     integration_subtype,
     datasheet_url,
     demo_url,
+    images: imagesField,
   } = useSimpleServiceFormField({
     documentType: 'Third Party Integration',
     platform: 'OpenCTI',
     isCreation,
     document,
+    images,
+    setImages,
+    imagesToDelete,
+    setImagesToDelete,
+    setIsDirty,
   });
 
   return (
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit?.(values as ThirdPartyIntegrationFormValues);
+          onSubmit(values as ThirdPartyIntegrationFormValues);
         }}
         onValuesChange={(values, form) => {
           if (values.name) {
@@ -161,13 +186,7 @@ export const ThirdPartyIntegrationForm = ({
           uploader_id,
           uploader_organization_id,
           document: { fieldType: () => <FormItem hidden={true} /> },
-          images: {
-            label: t('Service.Form.Illustration'),
-            fieldType: 'file',
-            inputProps: {
-              accept: 'image/jpeg, image/png',
-            },
-          },
+          images: imagesField,
           active,
           short_description,
           slug,

@@ -1,6 +1,5 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
-import { ServiceFormMultipleImagesField } from '@/components/service/form/multiple-images-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
@@ -105,11 +104,17 @@ export const CustomDashboardForm = ({
     use_cases,
     uploader_id,
     uploader_organization_id,
+    images: imagesField,
   } = useSimpleServiceFormField({
     documentType: 'Custom Dashboard',
     platform: 'OpenCTI',
     isCreation,
     document,
+    images,
+    setImages,
+    imagesToDelete,
+    setImagesToDelete,
+    setIsDirty,
   });
 
   return (
@@ -154,33 +159,7 @@ export const CustomDashboardForm = ({
                 />
               ),
             },
-        images: isCreation
-          ? {
-              label: t('Service.Form.ImageLabel'),
-              fieldType: 'file',
-              inputProps: {
-                allowedTypes: 'image/jpeg, image/png',
-                multiple: 'multiple',
-                texts: {
-                  selectFile: t('Service.Form.SelectImage'),
-                  noFile: t('Service.Form.NoImage'),
-                  dropFiles: t('Service.Vault.FileForm.DropDocuments'),
-                },
-              },
-            }
-          : {
-              fieldType: ({ field }) => (
-                <ServiceFormMultipleImagesField
-                  field={field}
-                  document={document}
-                  images={images}
-                  setImages={setImages}
-                  imagesToDelete={imagesToDelete}
-                  setImagesToDelete={setImagesToDelete}
-                  setIsDirty={setIsDirty}
-                />
-              ),
-            },
+        images: imagesField,
         active,
         short_description,
         slug,
