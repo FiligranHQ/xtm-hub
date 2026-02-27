@@ -34,7 +34,7 @@ import {
 } from '../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { updateSubscriptionBy } from '../../subcription/subscription.domain';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
@@ -94,7 +94,7 @@ export const DeploymentsApp = {
     );
 
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
+      await ServiceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
         input.platform_identifier
       );
     if (!serviceDefinition) {

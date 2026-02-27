@@ -11,7 +11,6 @@ import {
   fileListCheck,
   NewFile,
 } from '@/utils/documents';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
 import { AddIcon, DeleteIcon, ReplayIcon } from '@filigran/icon';
 import {
   AutoForm,
@@ -33,6 +32,7 @@ import {
   TooltipTrigger,
 } from '@filigran/ui';
 import { TooltipProvider } from '@filigran/ui/clients';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useContext, useMemo, useRef, useState } from 'react';
 import slugify from 'slugify';
@@ -59,7 +59,7 @@ export type OpenAEVScenarioFormValues = z.infer<
 
 export interface OpenAEVScenarioFormProps {
   handleSubmit: (values: OpenAEVScenarioFormValues) => void;
-  document?: SubscribableResource;
+  document?: documentItem_fragment$data;
 }
 
 export const OpenaevScenarioForm = ({
@@ -75,7 +75,7 @@ export const OpenaevScenarioForm = ({
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
-    openAEVScenario?.children_documents as ExistingFile[]
+    openAEVScenario?.children_documents as unknown as ExistingFile[]
   );
   const onSubmit = (values: OpenAEVScenarioFormValues) => {
     if (isCreation) {

@@ -165,6 +165,7 @@ export const documentItem = graphql`
     }
   }
 `;
+
 export const documentsFragment = graphql`
   fragment documentsList on Query
   @refetchable(queryName: "DocumentsPaginationQuery") {
@@ -203,5 +204,13 @@ export const DocumentsListQuery = graphql`
     $parentsOnly: Boolean
   ) {
     ...documentsList
+  }
+`;
+
+export const DocumentsItemQuery = graphql`
+  query documentQuery($documentId: ID!, $serviceInstanceId: ID!) {
+    document(documentId: $documentId, serviceInstanceId: $serviceInstanceId) {
+      ...documentItem_fragment
+    }
   }
 `;

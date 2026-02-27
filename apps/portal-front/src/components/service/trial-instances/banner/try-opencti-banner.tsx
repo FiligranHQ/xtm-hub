@@ -172,6 +172,12 @@ export const TryOpenCTIBanner = () => {
     return 'active';
   };
 
+  if (freeTrial?.subscription?.end_date) {
+    const subscriptionEndDate = new Date(freeTrial.subscription.end_date);
+    const daysUntilEnd = daysUntil(subscriptionEndDate);
+    if (daysUntilEnd <= -2) return null;
+  }
+
   const content = CONTENT_CONFIG[getContentKey()];
   return (
     <Callout

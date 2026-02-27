@@ -2,11 +2,11 @@ import { RefreshUserPlatformTokenMutation } from '@/components/registration/regi
 import useExternalTab from '@/hooks/useExternalTab';
 import {
   isConnectorResource,
-  isIntegrationItem,
-  ShareableResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { toast } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import {
   registerRefreshUserPlatformTokenMutation,
@@ -30,7 +30,7 @@ export const OPENCTI_INTEGRATION_URL_CONFIGS: Partial<
 
 interface Props {
   platformBasePath: string;
-  documentData: ShareableResource;
+  documentData: documentItem_fragment$data;
 }
 
 interface Return {
@@ -38,7 +38,7 @@ interface Return {
 }
 
 function computeDeployUrl(
-  documentData: ShareableResource,
+  documentData: documentItem_fragment$data,
   platformBasePath: string
 ): string {
   const { id, service_instance, type } = documentData;
@@ -51,7 +51,10 @@ function computeDeployUrl(
     return `${platformBasePath}/dashboard/xtm-hub/deploy-connector/${documentData.slug}?openConfig=true`;
   }
 
-  if (isIntegrationItem(documentData)) {
+  if (
+    docHasMetadata(documentData, 'integration_type') &&
+    documentData.integration_type
+  ) {
     const urlIntegrationKey =
       OPENCTI_INTEGRATION_URL_CONFIGS[documentData.integration_type];
     return `${platformBasePath}/dashboard/xtm-hub/${urlIntegrationKey}/${service_instance?.id}/${id}`;

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { contextBypassUser } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import { serviceContractDomain } from './service-configuration.domain';
 
 describe('Service Contract Domain', () => {
@@ -20,7 +20,7 @@ describe('Service Contract Domain', () => {
 
     it('should return true when configuration match the schema specifications', async () => {
       const serviceDefinition =
-        await serviceDefinitionDomain.loadServiceDefinitionBy({
+        await ServiceDefinitionDomain.loadServiceDefinitionBy({
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
@@ -45,7 +45,7 @@ describe('Service Contract Domain', () => {
 
     it('should return false when configuration does not match the schema specifications', async () => {
       const serviceDefinition =
-        await serviceDefinitionDomain.loadServiceDefinitionBy({
+        await ServiceDefinitionDomain.loadServiceDefinitionBy({
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 

@@ -1069,6 +1069,8 @@
     "Title": "Un événement inattendu s'est produit."
   },
   "Unregister": {
+    "Unregister": "Désenregistrer",
+    "Description": "Êtes-vous sûr de vouloir désenregistrer la plateforme {platformName} ? Si vous le faites, vous devrez refaire le processus d'enregistrement de {productName}.",
     "Confirm": {
       "Description": "Voulez-vous procéder à la désinscription ?",
       "Title": "Vous êtes sur le point de désenregistrer votre plateforme {platformTitle} de l'organisation {platformIdentifier} sur le Hub."
