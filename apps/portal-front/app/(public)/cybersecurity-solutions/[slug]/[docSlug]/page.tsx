@@ -250,7 +250,6 @@ const Page = async ({
           }}
         />
         <BreadcrumbNav value={breadcrumbValue} />
-
         <div className="flex gap-s pb-l flex-col md:flex-row">
           {mainChild?.id && (
             <div className="w-24 flex-shrink-0 rounded overflow-hidden">
@@ -290,14 +289,12 @@ const Page = async ({
             </div>
           </div>
         </div>
-        {(serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ||
-          serviceInstance.slug === ServiceSlug.OPEN_AEV_SCENARIOS) &&
-          mainChild && (
-            <ShareableResourceCarousel
-              serviceInstance={serviceInstance}
-              documentData={document}
-            />
-          )}
+        {mainChild && (
+          <ShareableResourceCarousel
+            serviceInstance={serviceInstance}
+            documentData={document}
+          />
+        )}
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
           <div className="flex-[3_3_0%]">
             <h3 className="py-s txt-container-title truncate text-muted-foreground">

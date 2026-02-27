@@ -19,6 +19,7 @@ import OneClickDeploy from '@/components/service/document/one-click-deploy/one-c
 import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/one-click-deploy/useOneClickDeployTab';
 import ShareableResourceDetails from '@/components/service/document/shareable-resouce-details';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -147,6 +148,10 @@ const ShareableResourceSlug: React.FunctionComponent<
           </div>
         </div>
       </div>
+      <ShareableResourceCarousel
+        serviceInstance={serviceInstance}
+        documentData={documentData}
+      />
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <ShareableResourceDescription
