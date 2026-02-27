@@ -616,6 +616,8 @@
     "Form": {
       "Author": "Auteur",
       "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
+      "DatasheetUrlLabel": "Lien vers la fiche technique (url)",
+      "DemoUrlLabel": "Lien vers la démo (url)",
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le {documentType}.",
       "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
@@ -639,6 +641,7 @@
       "SlugPlaceholder": "slug",
       "UpdateJSONFile": "Mise à jour du fichier JSON",
       "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
+      "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Cas d'utilisation",
       "UseCasesPlaceholder": "Ajouter des cas d'utilisation",
       "VendorUrlLabel": "URL du fournisseur"

@@ -132,9 +132,27 @@ export const useSimpleServiceFormField = ({
       },
       vendor_url: {
         label: t('Service.Form.VendorUrlLabel'),
+        inputProps: {
+          placeholder: t('Service.Form.UrlPlaceholder'),
+        },
       },
       github_url: {
         label: t('Service.Form.GithubUrlLabel'),
+        inputProps: {
+          placeholder: t('Service.Form.UrlPlaceholder'),
+        },
+      },
+      datasheet_url: {
+        label: t('Service.Form.DatasheetUrlLabel'),
+        inputProps: {
+          placeholder: t('Service.Form.UrlPlaceholder'),
+        },
+      },
+      demo_url: {
+        label: t('Service.Form.DemoUrlLabel'),
+        inputProps: {
+          placeholder: t('Service.Form.UrlPlaceholder'),
+        },
       },
       product_version: {
         label: t('Service.Form.ProductVersionLabel', { platform }),

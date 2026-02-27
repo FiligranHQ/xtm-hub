@@ -595,6 +595,8 @@
     "Form": {
       "Author": "Author",
       "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
+      "DatasheetUrlLabel": "Datasheet link (url)",
+      "DemoUrlLabel": "Demo link (url)",
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "This is a paragraph to describe the {documentType}.",
       "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
@@ -618,6 +620,7 @@
       "SlugPlaceholder": "slug",
       "UpdateJSONFile": "Update JSON file",
       "UploadImage": "Upload new image(s)",
+      "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Use cases",
       "UseCasesPlaceholder": "Add use cases",
       "VendorUrlLabel": "Vendor URL"

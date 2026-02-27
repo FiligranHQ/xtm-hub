@@ -30,6 +30,8 @@ const thirdPartyIntegrationFormSchema = z.object({
     })
     .nullish(),
   active: z.boolean().optional(),
+  datasheet_url: z.url().nullish(),
+  demo_url: z.url().nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
   images: z.custom<FileList>(fileListCheck).optional(),
 });
@@ -118,6 +120,8 @@ export const ThirdPartyIntegrationForm = ({
     uploader_organization_id,
     integration_type,
     integration_subtype,
+    datasheet_url,
+    demo_url,
   } = useSimpleServiceFormField({
     documentType: 'Third Party Integration',
     platform: 'OpenCTI',
@@ -173,6 +177,8 @@ export const ThirdPartyIntegrationForm = ({
           vendor_url,
           github_url,
           product_version,
+          datasheet_url,
+          demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>

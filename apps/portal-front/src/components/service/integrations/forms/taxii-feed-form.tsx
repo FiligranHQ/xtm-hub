@@ -23,6 +23,8 @@ const taxiiFeedFormSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
+  datasheet_url: z.url().nullish(),
+  demo_url: z.url().nullish(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck).optional(),
 });
@@ -86,6 +88,8 @@ export const TaxiiFeedForm = ({
     uploader_id,
     integration_type,
     integration_subtype,
+    datasheet_url,
+    demo_url,
   } = useSimpleServiceFormField({
     documentType: 'TAXII Feed',
     platform: 'OpenCTI',
@@ -123,8 +127,7 @@ export const TaxiiFeedForm = ({
                 label: t('Service.Form.SelectJSONFile'),
                 fieldType: 'file',
                 inputProps: {
-                  allowedTypes: 'application/json',
-                  multiple: 'multiple',
+                  accept: 'application/json',
                 },
               }
             : {
@@ -149,6 +152,8 @@ export const TaxiiFeedForm = ({
           name,
           integration_type,
           integration_subtype,
+          datasheet_url,
+          demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>

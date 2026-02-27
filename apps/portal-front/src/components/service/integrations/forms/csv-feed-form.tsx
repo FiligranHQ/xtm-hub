@@ -22,6 +22,8 @@ const csvFeedFormSchema = z.object({
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
+  datasheet_url: z.url().nullish(),
+  demo_url: z.url().nullish(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck).optional(),
 });
@@ -80,6 +82,8 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
     uploader_id,
     uploader_organization_id,
     integration_type,
+    datasheet_url,
+    demo_url,
   } = useSimpleServiceFormField({
     documentType: 'CSV Feed',
     platform: 'OpenCTI',
@@ -141,6 +145,8 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
           slug,
           name,
           integration_type,
+          datasheet_url,
+          demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>
