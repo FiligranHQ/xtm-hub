@@ -111,6 +111,7 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
       hub_status
       region
       counts_in_orga_quota
+      platform_identifier
     }
   }
 `;
