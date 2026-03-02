@@ -47,6 +47,7 @@ import {
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
+import { auth0Client } from '../../../thirdparty/auth0/client';
 import { formatName } from '../../../utils/format';
 import { ucfirst } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -414,6 +415,20 @@ export const DeploymentsApp = {
       });
     }
 
+    try {
+      if (
+        newStatus === DeploymentRequestHubStatus.Expired &&
+        newStatus !== deploymentRequest.hub_status
+      ) {
+        await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+      }
+    } catch (error) {
+      logApp.error('Unable to delete audience', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+
     return updatedDeploymentRequest;
   },
 
@@ -642,6 +657,15 @@ export const DeploymentsApp = {
       logApp.error('Unable to send mail for trial cancellation', {
         error,
         deploymentRequestId: updatedDeploymentRequest.id,
+      });
+    }
+
+    try {
+      await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+    } catch (error) {
+      logApp.error('Unable to delete audience', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
       });
     }
 
