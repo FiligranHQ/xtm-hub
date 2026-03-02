@@ -456,14 +456,15 @@ export type Epic = Node & {
   __typename?: 'Epic';
   created_at: Scalars['Date']['output'];
   document?: Maybe<Document>;
+  document_id?: Maybe<Scalars['ID']['output']>;
   epic: Scalars['String']['output'];
-  epic_type: Scalars['String']['output'];
+  epic_type: EpicType;
   id: Scalars['ID']['output'];
   is_active: Scalars['Boolean']['output'];
   long_description: Scalars['String']['output'];
-  product: Scalars['String']['output'];
+  product: FiligranProduct;
   short_description: Scalars['String']['output'];
-  timeline: Scalars['String']['output'];
+  timeline: Timeline;
   title: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
   updater_id?: Maybe<Scalars['String']['output']>;
@@ -485,6 +486,11 @@ export type EpicEdge = {
 
 export enum EpicOrdering {
   Epic = 'epic'
+}
+
+export enum EpicType {
+  Integration = 'INTEGRATION',
+  Other = 'OTHER'
 }
 
 export enum FiligranProduct {
@@ -654,8 +660,8 @@ export type Mutation = {
   createCompetitor: Competitor;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
-  deleteCompetitor: Competitor;
   createEpic: Epic;
+  deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Epic;
   deleteOrganization?: Maybe<Organization>;
@@ -2279,6 +2285,7 @@ export type ResolversTypes = ResolversObject<{
   EpicConnection: ResolverTypeWrapper<Omit<EpicConnection, 'edges'> & { edges: Array<ResolversTypes['EpicEdge']> }>;
   EpicEdge: ResolverTypeWrapper<Omit<EpicEdge, 'node'> & { node: ResolversTypes['Epic'] }>;
   EpicOrdering: EpicOrdering;
+  EpicType: EpicType;
   FiligranProduct: FiligranProduct;
   Filter: Filter;
   FilterKey: FilterKey;
@@ -2813,14 +2820,15 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
 export type EpicResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Epic'] = ResolversParentTypes['Epic']> = ResolversObject<{
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
+  document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   epic?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  epic_type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   is_active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   long_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  product?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
   short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  timeline?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  timeline?: Resolver<ResolversTypes['Timeline'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

@@ -856,6 +856,11 @@ enum Timeline {
   Under_Consideration
 }
 
+enum EpicType {
+  OTHER
+  INTEGRATION
+}
+
 type Epic implements Node {
   id: ID!
   epic: String!
@@ -863,10 +868,11 @@ type Epic implements Node {
   short_description: String!
   long_description: String!
   is_active: Boolean!
-  product: String!
-  timeline: String!
-  epic_type: String!
+  product: FiligranProduct!
+  timeline: Timeline!
+  epic_type: EpicType!
   document: Document
+  document_id: ID
   uploader_id: String!
   updater_id: String
   created_at: Date!
