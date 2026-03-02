@@ -42,10 +42,10 @@ export const CompetitorListQuery = graphql`
 
 export const CompetitorAddMutation = graphql`
   mutation competitorAddMutation(
-    $input: CompetitorInput!
+    $input: CreateCompetitorInput!
     $connections: [ID!]!
   ) {
-    addCompetitor(input: $input)
+    createCompetitor(input: $input)
       @prependNode(connections: $connections, edgeTypeName: "CompetitorEdge") {
       ...competitor_fragment
     }

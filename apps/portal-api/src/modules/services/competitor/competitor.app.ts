@@ -1,8 +1,8 @@
 import config from 'config';
 import {
   Competitor,
-  CompetitorInput,
   CompetitorTier,
+  CreateCompetitorInput,
   UpdateCompetitorInput,
 } from '../../../__generated__/resolvers-types';
 import { CompetitorId } from '../../../model/kanel/public/Competitor';
@@ -30,7 +30,7 @@ const isOrganizationBlacklistedFromSettings = (organization: Organization) => {
 };
 
 export const CompetitorApp = {
-  async insertCompetitor(data: CompetitorInput): Promise<Competitor> {
+  async insertCompetitor(data: CreateCompetitorInput): Promise<Competitor> {
     try {
       const competitor = await CompetitorDomain.insertCompetitor(data);
       return {
@@ -71,7 +71,7 @@ export const CompetitorApp = {
   ): Promise<boolean> {
     if (!organization.domains?.length) return false;
     return (
-      // check from settings can be removed once we have filled the competitors table
+      // TODO: check from settings can be removed once we have filled the competitors table
       isOrganizationBlacklistedFromSettings(organization) ||
       CompetitorDomain.isAnyDomainACompetitor(organization.domains)
     );

@@ -1,5 +1,5 @@
 import {
-  MutationAddCompetitorArgs,
+  MutationCreateCompetitorArgs,
   QueryCompetitorsArgs,
   Resolvers,
 } from '../../../__generated__/resolvers-types';
@@ -13,16 +13,16 @@ const resolvers: Resolvers = {
   Query: {
     competitors: async (_, args: QueryCompetitorsArgs) => {
       try {
-        return CompetitorDomain.loadCompetitors(args);
+        return await CompetitorDomain.loadCompetitors(args);
       } catch (error) {
         throw mapToGraphQLError(error);
       }
     },
   },
   Mutation: {
-    addCompetitor: async (_, { input }: MutationAddCompetitorArgs) => {
+    createCompetitor: async (_, { input }: MutationCreateCompetitorArgs) => {
       try {
-        return CompetitorApp.insertCompetitor(input);
+        return await CompetitorApp.insertCompetitor(input);
       } catch (error) {
         throw mapToGraphQLError(error);
       }
@@ -30,7 +30,7 @@ const resolvers: Resolvers = {
 
     updateCompetitor: async (_, { input }) => {
       try {
-        return CompetitorApp.updateCompetitorById(input);
+        return await CompetitorApp.updateCompetitorById(input);
       } catch (error) {
         throw mapToGraphQLError(error);
       }
@@ -38,7 +38,7 @@ const resolvers: Resolvers = {
 
     deleteCompetitor: async (_, { id }) => {
       try {
-        return CompetitorApp.deleteCompetitorById(id as CompetitorId);
+        return await CompetitorApp.deleteCompetitorById(id as CompetitorId);
       } catch (error) {
         throw mapToGraphQLError(error);
       }

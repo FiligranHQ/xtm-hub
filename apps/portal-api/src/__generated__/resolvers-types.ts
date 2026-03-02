@@ -103,12 +103,6 @@ export type CompetitorEdge = {
   node: Competitor;
 };
 
-export type CompetitorInput = {
-  domain: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  tier: CompetitorTier;
-};
-
 export enum CompetitorOrdering {
   Domain = 'domain',
   Name = 'name',
@@ -154,6 +148,12 @@ export type Connector = Document & Integration & Node & {
   uploader_organization?: Maybe<Organization>;
   use_cases?: Maybe<Array<UseCase>>;
   verified: Scalars['Boolean']['output'];
+};
+
+export type CreateCompetitorInput = {
+  domain: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tier: CompetitorTier;
 };
 
 export type CreateDeploymentRequestInput = {
@@ -581,7 +581,6 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addCompetitor: Competitor;
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
@@ -599,6 +598,7 @@ export type Mutation = {
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
   changeSelectedOrganization?: Maybe<User>;
   contactUs: Success;
+  createCompetitor: Competitor;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
   deleteCompetitor: Competitor;
@@ -634,11 +634,6 @@ export type Mutation = {
   updateDocument: Document;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
-};
-
-
-export type MutationAddCompetitorArgs = {
-  input: CompetitorInput;
 };
 
 
@@ -734,6 +729,11 @@ export type MutationContactUsArgs = {
   message?: InputMaybe<Scalars['String']['input']>;
   platformId?: InputMaybe<Scalars['ID']['input']>;
   platformIdentifier?: InputMaybe<PlatformIdentifier>;
+};
+
+
+export type MutationCreateCompetitorArgs = {
+  input: CreateCompetitorInput;
 };
 
 
@@ -2141,10 +2141,10 @@ export type ResolversTypes = ResolversObject<{
   Competitor: ResolverTypeWrapper<Competitor>;
   CompetitorConnection: ResolverTypeWrapper<CompetitorConnection>;
   CompetitorEdge: ResolverTypeWrapper<CompetitorEdge>;
-  CompetitorInput: CompetitorInput;
   CompetitorOrdering: CompetitorOrdering;
   CompetitorTier: CompetitorTier;
   Connector: ResolverTypeWrapper<Connector>;
+  CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
@@ -2310,8 +2310,8 @@ export type ResolversParentTypes = ResolversObject<{
   Competitor: Competitor;
   CompetitorConnection: CompetitorConnection;
   CompetitorEdge: CompetitorEdge;
-  CompetitorInput: CompetitorInput;
   Connector: Connector;
+  CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CsvFeed: CsvFeed;
@@ -2785,7 +2785,6 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  addCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationAddCompetitorArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
@@ -2803,6 +2802,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
+  createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;

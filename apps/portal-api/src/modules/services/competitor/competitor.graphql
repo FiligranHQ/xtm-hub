@@ -28,7 +28,7 @@ type CompetitorConnection {
   pageInfo: PageInfo!
 }
 
-input CompetitorInput {
+input CreateCompetitorInput {
   name: String!
   tier: CompetitorTier!
   domain: String!
@@ -51,7 +51,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  addCompetitor(input: CompetitorInput!): Competitor!
+  createCompetitor(input: CreateCompetitorInput!): Competitor!
     @auth(portalCapa: MODIFY_COMPETITORS)
   updateCompetitor(input: UpdateCompetitorInput!): Competitor!
     @auth(portalCapa: MODIFY_COMPETITORS)

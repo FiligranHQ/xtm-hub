@@ -97,7 +97,7 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  addCompetitor(input: CompetitorInput!): Competitor!
+  createCompetitor(input: CreateCompetitorInput!): Competitor!
   updateCompetitor(input: UpdateCompetitorInput!): Competitor!
   deleteCompetitor(id: ID!): Competitor!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
@@ -215,7 +215,7 @@ type CompetitorConnection {
   pageInfo: PageInfo!
 }
 
-input CompetitorInput {
+input CreateCompetitorInput {
   name: String!
   tier: CompetitorTier!
   domain: String!
