@@ -10,7 +10,7 @@ const useCaseMapping: Record<string, string> = {
   'Threat Profiling (Fraud & AML)': 'threat_profiling_faml',
   'Threat Hunting': 'threat_hunting',
   'Strategic Reporting (For Executives)': 'strategic_reporting',
-  'Technical Reporting (for Analysts)': 'technical_reporting',
+  'Strategic Reporting (for Analysts)': 'technical_reporting',
   'Coordinating Incident Response': 'incident_response',
   'Integrating Security Stack': 'security_stack',
   'Detection Engineering': 'detection_engineering',
@@ -18,7 +18,7 @@ const useCaseMapping: Record<string, string> = {
   'Simulating Crisis (Tabletop Exercises)': 'crisis_simulation',
   'Vulnerability Management': 'vulnerability_management',
   'Centralizing Knowledge': 'centralizing_knowledge',
-  'Sharing Knowledge': 'sharing_knowledge',
+  'Sharing knowledge': 'sharing_knowledge',
   'Hosting Threat Sharing Community': 'hosting_threat_community',
 };
 

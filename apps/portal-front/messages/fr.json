@@ -44,7 +44,7 @@
     "threat_profiling_faml": "Profilage des menaces (Fraude & LCB)",
     "threat_hunting": "Chasse aux menaces",
     "strategic_reporting": "Reporting stratégique (Pour les dirigeants)",
-    "technical_reporting": "Reporting technique (Pour les analystes)",
+    "technical_reporting": "Reporting stratégique (Pour les analystes)",
     "incident_response": "Coordination de la réponse aux incidents",
     "security_stack": "Intégration de la pile de sécurité",
     "detection_engineering": "Ingénierie de détection",

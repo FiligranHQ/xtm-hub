@@ -193,68 +193,67 @@ describe('Deployment app', () => {
         ServiceInstanceCreationStatus.Pending
       );
     });
+  });
+  describe('domains blacklist', () => {
+    afterEach(async () => {
+      await db('Competitor').delete();
+    });
 
-    describe('domains blacklist', () => {
-      afterEach(async () => {
-        await db('Competitor').delete();
+    it('should throw error when organization domain is blacklisted', async () => {
+      await CompetitorDomain.insertCompetitor({
+        name: 'Filigran',
+        tier: CompetitorTier.Tier1,
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      it('should throw error when organization domain is blacklisted', async () => {
-        await CompetitorDomain.insertCompetitor({
-          name: 'Filigran',
-          tier: CompetitorTier.Tier1,
-          domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
-        });
-
-        const call = DeploymentsApp.createDeploymentRequest({
-          activity_sector:
-            DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: DeploymentRequestJobTitle.CLevel,
-          use_case: DeploymentRequestUseCase.ThreatHunting,
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
       });
 
-      it('should allow deployment when organization domain is not blacklisted', async () => {
-        await CompetitorDomain.insertCompetitor({
-          name: 'Blocked',
-          tier: CompetitorTier.Tier1,
-          domain: 'blocked.com',
-        });
+      await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+    });
 
-        const deployment = await DeploymentsApp.createDeploymentRequest({
-          activity_sector:
-            DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: DeploymentRequestJobTitle.CLevel,
-          use_case: DeploymentRequestUseCase.ThreatHunting,
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        expect(deployment).toBeDefined();
-        expect(deployment.id).toBeDefined();
+    it('should allow deployment when organization domain is not blacklisted', async () => {
+      await CompetitorDomain.insertCompetitor({
+        name: 'Blocked',
+        tier: CompetitorTier.Tier1,
+        domain: 'blocked.com',
       });
 
-      it('should allow deployment when no competitors exist', async () => {
-        const deployment = await DeploymentsApp.createDeploymentRequest({
-          activity_sector:
-            DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: DeploymentRequestJobTitle.CLevel,
-          use_case: DeploymentRequestUseCase.ThreatHunting,
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        expect(deployment).toBeDefined();
-        expect(deployment.id).toBeDefined();
+      const deployment = await DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
       });
 
+      expect(deployment).toBeDefined();
+      expect(deployment.id).toBeDefined();
+    });
+
+    it('should allow deployment when no competitors exist', async () => {
+      const deployment = await DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      expect(deployment).toBeDefined();
+      expect(deployment.id).toBeDefined();
+    });
 
     describe('telemetry', () => {
       it.each`

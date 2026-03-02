@@ -19,8 +19,10 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   DeploymentRequestUseCase,
@@ -779,9 +781,9 @@ describe('Registration app', () => {
 
       deploymentRequest =
         (await DeploymentRequestDomain.insertDeploymentRequest({
-          activity_sector: 'cybersecurity',
+          activity_sector: DeploymentRequestActivitySector.ComputerGames,
           id: uuidv4() as DeploymentRequestId,
-          job_title: 'myJob',
+          job_title: DeploymentRequestJobTitle.CLevel,
           organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           platform_identifier: PlatformIdentifier.Opencti,
           platform_token: uuidv4(),

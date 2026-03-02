@@ -44,7 +44,7 @@
     "threat_profiling_faml": "Threat Profiling (Fraud & AML)",
     "threat_hunting": "Threat Hunting",
     "strategic_reporting": "Strategic Reporting (For Executives)",
-    "technical_reporting": "Technical Reporting (for Analysts)",
+    "technical_reporting": "Strategic Reporting (for Analysts)'",
     "incident_response": "Coordinating Incident Response",
     "security_stack": "Integrating Security Stack",
     "detection_engineering": "Detection Engineering",

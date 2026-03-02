@@ -6,6 +6,7 @@ import {
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { TranslatableEnumSelectField } from '@/components/ui/translatable-enum-select-field';
 import {
   AutoForm,
   Button,
@@ -26,49 +27,8 @@ import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trial
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { FunctionComponent, useContext, useState } from 'react';
-import { ControllerRenderProps } from 'react-hook-form';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
-
-const EnumSelectField = ({
-  field,
-  label,
-  placeholder,
-  values,
-  translationNamespace,
-}: {
-  field: ControllerRenderProps;
-  label: string;
-  placeholder: string;
-  values: string[];
-  translationNamespace: string;
-}) => {
-  const t = useTranslations();
-  return (
-    <FormItem>
-      <FormLabel>
-        {label} <span className="text-sm text-destructive">*</span>
-      </FormLabel>
-      <Select
-        value={field.value}
-        onValueChange={field.onChange}>
-        <SelectTrigger>
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {values.map((value) => (
-            <SelectItem
-              key={value}
-              value={value}>
-              {t(`${translationNamespace}.${value}`)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <FormMessage className="text-sm text-destructive" />
-    </FormItem>
-  );
-};
 
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
@@ -176,7 +136,7 @@ export const TryFiligranProductForm: FunctionComponent<
             job_title: {
               label: t('Service.Trials.Form.JobTitle'),
               fieldType: ({ field }) => (
-                <EnumSelectField
+                <TranslatableEnumSelectField
                   field={field}
                   label={t('Service.Trials.Form.JobTitle')}
                   placeholder={t('Service.Trials.Form.JobTitlePlaceholder')}
@@ -188,7 +148,7 @@ export const TryFiligranProductForm: FunctionComponent<
             activity_sector: {
               label: t('Service.Trials.Form.ActivitySector'),
               fieldType: ({ field }) => (
-                <EnumSelectField
+                <TranslatableEnumSelectField
                   field={field}
                   label={t('Service.Trials.Form.ActivitySector')}
                   placeholder={t(
@@ -202,7 +162,7 @@ export const TryFiligranProductForm: FunctionComponent<
             use_case: {
               label: t('Service.Trials.Form.UseCase'),
               fieldType: ({ field }) => (
-                <EnumSelectField
+                <TranslatableEnumSelectField
                   field={field}
                   label={t('Service.Trials.Form.UseCase')}
                   placeholder={t('Service.Trials.Form.UseCasePlaceholder')}
