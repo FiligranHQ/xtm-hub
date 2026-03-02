@@ -8887,7 +8887,7 @@ __metadata:
     express-session: "npm:1.19.0"
     glob: "npm:11.1.0"
     globals: "npm:15.15.0"
-    graphql: "npm:16.12.0"
+    graphql: "npm:16.13.0"
     graphql-relay: "npm:0.10.2"
     graphql-sse: "npm:2.6.0"
     graphql-subscriptions: "npm:2.0.0"
@@ -8950,7 +8950,7 @@ __metadata:
     eslint-config-next: "npm:16.1.6"
     eslint-config-prettier: "npm:10.1.8"
     extract-files: "npm:13.0.0"
-    graphql: "npm:16.12.0"
+    graphql: "npm:16.13.0"
     graphql-sse: "npm:2.6.0"
     husky: "npm:9.1.7"
     i18n-auto-translation: "npm:2.2.3"
@@ -13305,6 +13305,13 @@ __metadata:
   version: 16.12.0
   resolution: "graphql@npm:16.12.0"
   checksum: 10/e299bc97cca178e549c8c1ed4cb164f631f07be987d3657f76cdf18c0250040cc0d456d4b6d41c87b855cac97b15a62ed345557527efcb0546492895a893bb87
+  languageName: node
+  linkType: hard
+
+"graphql@npm:16.13.0":
+  version: 16.13.0
+  resolution: "graphql@npm:16.13.0"
+  checksum: 10/c04bd2f168635a7f960bce0447264be84ff633ee0f9f0044b57a9f8a9766f1496860c7f9f89e492f73b46ff0b6f709caef2d7688220d70a9f445b180e605b846
   languageName: node
   linkType: hard
 
