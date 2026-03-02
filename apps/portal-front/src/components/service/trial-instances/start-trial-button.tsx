@@ -3,6 +3,7 @@
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { Button, GradientButton } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
@@ -47,6 +48,7 @@ export const StartTrialButton: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
+  const router = useRouter();
 
   const { availableTrials, isBlacklisted, refetch } = useOrgaFreeTrial();
 
@@ -100,14 +102,20 @@ export const StartTrialButton: React.FC<Props> = ({
         }).subscribe({});
         refetch({}, { fetchPolicy: 'network-only' });
       },
-
-      onCompleted: () => {
+      onCompleted: (response) => {
         setOpenSheet(false);
-
         toast({
           title: t('Utils.Success'),
           description: t('Service.Trials.Form.FormRequested'),
         });
+
+        const serviceInstanceId =
+          response?.createDeploymentRequest?.service_instance_id;
+        if (serviceInstanceId) {
+          router.push(
+            `/app/service/${platformIdentifier}_registration/${serviceInstanceId}`
+          );
+        }
       },
       onError: (error) => {
         toast({

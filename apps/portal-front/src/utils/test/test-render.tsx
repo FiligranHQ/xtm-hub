@@ -67,7 +67,6 @@ export const generateSettings = (
     environment: 'local',
     base_url_front: 'http://localhost:3002',
     platform_feature_flags: ['*'],
-    domains_blacklist: '',
     ...settings,
   } as settingsContext_fragment$data;
 };

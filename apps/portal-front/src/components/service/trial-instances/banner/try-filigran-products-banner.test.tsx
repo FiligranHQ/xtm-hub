@@ -5,6 +5,13 @@ import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 
+vi.mock('next/navigation', (importOriginal) => ({
+  ...importOriginal(),
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
+
 const OpenCTITrial = {
   serviceInstanceId: 'id',
   platformIdentifier: PlatformIdentifierEnum.OPENCTI,

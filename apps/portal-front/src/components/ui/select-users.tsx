@@ -28,8 +28,7 @@ import { useUsersList } from '@/hooks/useUsersList';
 import { readInlineData } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
-interface SelectUsersFormFieldProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface SelectUsersFormFieldProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   defaultValue?: string;
   onValueChange: (value: string) => void;
 }
@@ -65,6 +64,7 @@ const SelectUsersFormField = React.forwardRef<
       if (!node || !measurementRef.current) return;
 
       const updateVisibility = () => {
+        if (!measurementRef.current) return;
         const containerWidth = node.offsetWidth - 10; // Save space for controls
         let totalWidth = 0;
         let lastVisibleIndex = 0;

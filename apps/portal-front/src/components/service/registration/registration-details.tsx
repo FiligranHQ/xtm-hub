@@ -12,6 +12,7 @@ import { Button } from '@filigran/ui/servers';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { useTranslations } from 'next-intl';
@@ -184,6 +185,10 @@ export const RegistrationDetails: React.FC<Props> = ({
       )}
       {platform.deployment_request && (
         <TrialCancelSheet
+          platformIdentifier={
+            platform.deployment_request
+              .platform_identifier as PlatformIdentifierEnum
+          }
           deploymentRequestId={platform.deployment_request.id}
           isCancellationDefinitive={isCancellationDefinitive}
           open={openCancelSheet}
