@@ -176,7 +176,7 @@ export const ServiceInstanceApp = {
       url: platformConfig.platform_url,
       contract: platformConfig.platform_contract,
       version: platformConfig.platform_version,
-      identifier: updatedServiceInstance.identifier,
+      identifier: serviceDefinition.identifier,
       illustration_document_id: updatedServiceInstance.illustration_document_id
         ? toGlobalId(
             'Document',
