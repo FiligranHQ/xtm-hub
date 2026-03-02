@@ -1,10 +1,18 @@
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import { TrialCancelSheet } from './trial-cancel-sheet';
 
 let lastCancelDeploymentRequestVariables: Record<string, unknown> | null = null;
+
+vi.mock('next/navigation', (importOriginal) => ({
+  ...importOriginal(),
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
 
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -66,6 +74,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive={false}
         open
         setOpen={setOpen}
+        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
       />,
       { relayConfig: environment }
     );
@@ -87,6 +96,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive
         open
         setOpen={vi.fn()}
+        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
       />,
       { relayConfig: createMockEnvironment() }
     );
@@ -105,6 +115,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive={false}
         open
         setOpen={setOpen}
+        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
       />,
       { relayConfig: createMockEnvironment() }
     );
@@ -134,6 +145,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive={false}
         open
         setOpen={vi.fn()}
+        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
       />,
       { relayConfig: createMockEnvironment() }
     );
