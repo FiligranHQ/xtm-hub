@@ -1,7 +1,7 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
-import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
+import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
@@ -109,7 +109,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
     datasheet_url,
     demo_url,
     images: imagesField,
-  } = useSimpleServiceFormField({
+  } = useServiceFormFields({
     documentType: 'Stream',
     platform: 'OpenCTI',
     isCreation,

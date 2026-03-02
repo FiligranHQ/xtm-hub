@@ -46,7 +46,7 @@ interface Props {
   setIsDirty: (isDirty: boolean) => void;
 }
 
-export const useSimpleServiceFormField = ({
+export const useServiceFormFields = ({
   documentType,
   platform,
   isCreation,

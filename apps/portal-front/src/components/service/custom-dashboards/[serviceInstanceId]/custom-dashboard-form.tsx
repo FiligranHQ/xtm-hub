@@ -1,7 +1,7 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
-import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
+import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
@@ -105,7 +105,7 @@ export const CustomDashboardForm = ({
     uploader_id,
     uploader_organization_id,
     images: imagesField,
-  } = useSimpleServiceFormField({
+  } = useServiceFormFields({
     documentType: 'Custom Dashboard',
     platform: 'OpenCTI',
     isCreation,

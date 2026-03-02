@@ -1,6 +1,6 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
-import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
+import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
@@ -111,7 +111,7 @@ export const OpenaevScenarioForm = ({
     uploader_id,
     use_cases,
     images: imagesField,
-  } = useSimpleServiceFormField({
+  } = useServiceFormFields({
     documentType: 'Scenario',
     platform: 'OpenAEV',
     isCreation,
