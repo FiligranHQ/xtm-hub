@@ -1,14 +1,17 @@
 import { exec } from 'child_process';
 import chokidar from 'chokidar';
+import { glob } from 'node:fs/promises';
 
-const watcher = chokidar.watch('src/**/*.graphql', {
-  ignored: ['node_modules', 'dist'],
-  persistent: true,
-});
+const watcher = chokidar.watch(
+  await Array.fromAsync(glob('src/**/*.graphql')),
+  {
+    ignored: ['node_modules', 'dist'],
+    persistent: true,
+  }
+);
 
 let timeout;
 const debounceTime = 100; // Adjust debounce time as needed
-
 const runCodegen = () => {
   clearTimeout(timeout);
   timeout = setTimeout(() => {
