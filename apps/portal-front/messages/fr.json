@@ -552,6 +552,7 @@
       "ExistingJSONFile": "Fichier JSON existant : {file_name}",
       "GithubUrlLabel": "URL Github",
       "Illustration": "Illustration",
+      "IllustrationDisclaimer": "Par défaut, le logo Filigran sera affiché sur la carte, mais vous pouvez le remplacer par un autre logo si vous le souhaitez.",
       "ImageLabel": "Images",
       "NameLabel": "Nom",
       "NamePlaceholder": "nom {documentType}",
