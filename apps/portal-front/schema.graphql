@@ -52,6 +52,7 @@ type Query {
   userOrganizations: [Organization!]!
   rolePortal(id: ID!): RolePortal
   rolesPortal: [RolePortal!]!
+  competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
@@ -96,6 +97,9 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
+  createCompetitor(input: CreateCompetitorInput!): Competitor!
+  updateCompetitor(input: UpdateCompetitorInput!): Competitor!
+  deleteCompetitor(id: ID!): Competitor!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
   reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
@@ -179,6 +183,49 @@ input OrganizationInput {
 type RolePortal implements Node {
   id: ID!
   name: String!
+}
+
+enum CompetitorOrdering {
+  name
+  tier
+  domain
+}
+
+enum CompetitorTier {
+  tier1
+  tier2
+  tier3
+}
+
+type Competitor implements Node {
+  id: ID!
+  name: String!
+  tier: CompetitorTier!
+  domain: String!
+}
+
+type CompetitorEdge {
+  cursor: String!
+  node: Competitor!
+}
+
+type CompetitorConnection {
+  totalCount: Int!
+  edges: [CompetitorEdge!]!
+  pageInfo: PageInfo!
+}
+
+input CreateCompetitorInput {
+  name: String!
+  tier: CompetitorTier!
+  domain: String!
+}
+
+input UpdateCompetitorInput {
+  id: ID!
+  name: String
+  tier: CompetitorTier
+  domain: String
 }
 
 enum ServiceConfigurationStatus {
@@ -1045,7 +1092,6 @@ type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
-  domains_blacklist: String!
 }
 
 type UseCase implements Node {
@@ -1333,6 +1379,7 @@ enum PortalCapability {
   READ_TRIALS
   MODIFY_TRIALS
   MODIFY_TRIALS_QUOTA
+  MODIFY_COMPETITORS
 }
 
 enum OrganizationCapability {

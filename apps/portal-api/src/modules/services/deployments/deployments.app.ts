@@ -56,13 +56,13 @@ import {
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
 import { loadUser } from '../../users/users.domain';
+import { CompetitorApp } from '../competitor/competitor.app';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
   hasDeploymentTelemetryDataChanged,
-  isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
@@ -81,7 +81,7 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
 
-    if (isOrganizationBlacklisted(chosenOrganization)) {
+    if (await CompetitorApp.isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
         `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
       );
@@ -809,7 +809,8 @@ export const DeploymentsApp = {
             deployment.platform_identifier as PlatformIdentifier,
         };
       }),
-      isBlacklisted: isOrganizationBlacklisted(organization),
+      isBlacklisted:
+        await CompetitorApp.isOrganizationBlacklisted(organization),
     };
   },
 };
