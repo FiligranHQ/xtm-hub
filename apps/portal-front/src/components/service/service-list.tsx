@@ -1,7 +1,10 @@
 'use client';
 
 import useDecodedQuery from '@/hooks/useDecodedQuery';
-import { isExternalService } from '@/utils/services';
+import {
+  isAutomaticSubscriptionService,
+  isExternalService,
+} from '@/utils/services';
 import { toast } from '@filigran/ui';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { publicServiceQuery } from '@generated/publicServiceQuery.graphql';
@@ -77,10 +80,14 @@ const ServiceList = ({
         if (service.service_definition?.identifier === h) {
           acc.highlighted.push(service);
         }
-        // A service is owned if it is subscribed or if it is an external service
+        // A service is owned if it is subscribed or if it is an external service or an autoJoin service
         else if (
           service.organization_subscribed ||
           isExternalService(
+            service.service_definition!
+              .identifier as ServiceDefinitionIdentifierEnum
+          ) ||
+          isAutomaticSubscriptionService(
             service.service_definition!
               .identifier as ServiceDefinitionIdentifierEnum
           )

@@ -9,7 +9,6 @@ type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
-  domains_blacklist: String!
 }
 
 type Query {

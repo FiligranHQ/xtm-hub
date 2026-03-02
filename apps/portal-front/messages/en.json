@@ -67,6 +67,7 @@
       "CANT_REQUEST_FREE_TRIAL": "You cannot request a free trial",
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "You cannot request a free trial in your personal space",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
+      "COMPETITOR_DOMAIN_ALREADY_EXISTS": "A competitor with the same domain already exists",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_ORGANIZATION_ERROR": "Error while deleting organization",
@@ -216,7 +217,29 @@
     "SettingsLabel": "Settings menu",
     "Users": "Users",
     "OpenCTITrials": "OpenCTI Trials",
-    "OpenAEVTrials": "OpenAEV Trials"
+    "OpenAEVTrials": "OpenAEV Trials",
+    "Competitors": "Competitors"
+  },
+  "CompetitorListPage": {
+    "Name": "Name",
+    "Domain": "Domain",
+    "Tier": "Tier",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "AddCompetitor": "Add competitor",
+    "DeleteDialog": {
+      "Title": "Delete competitor",
+      "Text": "Are you sure you want to delete the {name} competitor?"
+    }
+  },
+  "CompetitorForm": {
+    "AddTitle": "Add competitor",
+    "EditTitle": "Edit competitor",
+    "Name": "Name",
+    "Domain": "Domain",
+    "Tier": "Tier",
+    "AddButton": "Add competitor",
+    "EditButton": "Update competitor"
   },
   "MenuUser": {
     "Profile": "Profile",

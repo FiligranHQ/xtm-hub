@@ -6,6 +6,7 @@ import ingestManifestResolver from '../modules/ingest-manifest/ingest-manifest.r
 import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
 import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
+import competitorResolver from '../modules/services/competitor/competitor.resolver';
 import ServiceDefinitionResolver from '../modules/services/definition/service-definition.resolver';
 import deploymentResolver from '../modules/services/deployments/deployments.resolver';
 import vaultResolver from '../modules/services/document/document.resolver';
@@ -55,6 +56,7 @@ const resolvers = mergeResolvers([
   ingestManifestResolver,
   integrationsResolver,
   serviceGroupResolver,
+  competitorResolver,
 ]);
 
 const createSchema = () => {
