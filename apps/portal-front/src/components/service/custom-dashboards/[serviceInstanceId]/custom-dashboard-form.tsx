@@ -33,7 +33,7 @@ const customDashboardSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 
 export type CustomDashboardFormValues = z.infer<typeof customDashboardSchema>;
