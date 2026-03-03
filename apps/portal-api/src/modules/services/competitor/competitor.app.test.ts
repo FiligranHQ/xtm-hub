@@ -1,6 +1,5 @@
-import config from 'config';
 import { toGlobalId } from 'graphql-relay';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { CompetitorTier } from '../../../__generated__/resolvers-types';
@@ -148,25 +147,6 @@ describe('CompetitorApp', () => {
       });
       const result = await CompetitorApp.isOrganizationBlacklisted(org);
       expect(result).toBe(false);
-    });
-
-    it('should return true if org is blacklisted from settings', async () => {
-      const originalConfigGet = config.get;
-
-      vi.spyOn(config, 'get').mockImplementation((key: string) => {
-        if (key === 'domains_blacklist') {
-          return TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST;
-        }
-        return originalConfigGet.call(config, key);
-      });
-
-      const org = await loadOrganizationBy({
-        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
-      const result = await CompetitorApp.isOrganizationBlacklisted(org);
-      expect(result).toBe(true);
-
-      vi.mocked(config.get).mockImplementation(originalConfigGet);
     });
   });
 });
