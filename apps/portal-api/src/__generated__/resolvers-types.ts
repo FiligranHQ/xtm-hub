@@ -157,12 +157,12 @@ export type CreateCompetitorInput = {
 };
 
 export type CreateDeploymentRequestInput = {
-  activity_sector?: InputMaybe<Scalars['String']['input']>;
-  job_title?: InputMaybe<Scalars['String']['input']>;
+  activity_sector?: InputMaybe<DeploymentRequestActivitySector>;
+  job_title?: InputMaybe<DeploymentRequestJobTitle>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
   type: DeploymentRequestDeploymentType;
-  use_case?: InputMaybe<Scalars['String']['input']>;
+  use_case?: InputMaybe<DeploymentRequestUseCase>;
 };
 
 export type CreateDocumentInput = {
@@ -274,7 +274,7 @@ export type DeploymentAvailability = {
 
 export type DeploymentRequest = Node & {
   __typename?: 'DeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   cancellation_date?: Maybe<Scalars['Date']['output']>;
   cancellation_reason?: Maybe<Scalars['String']['output']>;
   cancellation_user_email?: Maybe<Scalars['String']['output']>;
@@ -282,7 +282,7 @@ export type DeploymentRequest = Node & {
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_name?: Maybe<Scalars['String']['output']>;
   organization_requester_id: Scalars['ID']['output'];
@@ -295,8 +295,40 @@ export type DeploymentRequest = Node & {
   service_instance_id: Scalars['ID']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
+
+export enum DeploymentRequestActivitySector {
+  ComputerGames = 'computer_games',
+  ComputerNetworkSecurity = 'computer_network_security',
+  ComputerSoftware = 'computer_software',
+  DefenseSpace = 'defense_space',
+  Entertainment = 'entertainment',
+  FinancialServices = 'financial_services',
+  GovernmentAdministration = 'government_administration',
+  GovernmentRelations = 'government_relations',
+  HigherEducation = 'higher_education',
+  HospitalHealthCare = 'hospital_health_care',
+  Hospitality = 'hospitality',
+  InformationTechnology = 'information_technology',
+  Insurance = 'insurance',
+  LegalServices = 'legal_services',
+  LuxuryGoodsJewelry = 'luxury_goods_jewelry',
+  ManagementConsulting = 'management_consulting',
+  MarketingAdvertising = 'marketing_advertising',
+  Military = 'military',
+  NonProfit = 'non_profit',
+  OilEnergy = 'oil_energy',
+  Pharmaceuticals = 'pharmaceuticals',
+  Photography = 'photography',
+  Retail = 'retail',
+  SecurityInvestigations = 'security_investigations',
+  Semiconductors = 'semiconductors',
+  Telecommunications = 'telecommunications',
+  Transportation = 'transportation',
+  Utilities = 'utilities',
+  Wireless = 'wireless'
+}
 
 export type DeploymentRequestConnection = {
   __typename?: 'DeploymentRequestConnection';
@@ -339,6 +371,28 @@ export enum DeploymentRequestHubStatus {
   Queued = 'queued'
 }
 
+export enum DeploymentRequestJobTitle {
+  ApplicationSecuritySpecialist = 'application_security_specialist',
+  CLevel = 'c_level',
+  Ceo = 'ceo',
+  CisoCsoCio = 'ciso_cso_cio',
+  CloudSecuritySpecialist = 'cloud_security_specialist',
+  Consultant = 'consultant',
+  CybersecurityArchitect = 'cybersecurity_architect',
+  CybersecurityEngineer = 'cybersecurity_engineer',
+  CybersecurityTeamLead = 'cybersecurity_team_lead',
+  DfirSpecialist = 'dfir_specialist',
+  DirectorHeadCybersecurity = 'director_head_cybersecurity',
+  GeneralManagerVp = 'general_manager_vp',
+  GrcSpecialist = 'grc_specialist',
+  IamSpecialist = 'iam_specialist',
+  Other = 'other',
+  PenetrationTester = 'penetration_tester',
+  SocAnalyst = 'soc_analyst',
+  ThreatIntelligenceAnalyst = 'threat_intelligence_analyst',
+  VulnerabilityAnalyst = 'vulnerability_analyst'
+}
+
 export enum DeploymentRequestOrdering {
   CancellationDate = 'cancellation_date',
   CancellationReason = 'cancellation_reason',
@@ -366,6 +420,25 @@ export enum DeploymentRequestPlatformState {
   Removed = 'removed',
   Removing = 'removing',
   Unprovisioned = 'unprovisioned'
+}
+
+export enum DeploymentRequestUseCase {
+  AttackSimulation = 'attack_simulation',
+  CentralizingKnowledge = 'centralizing_knowledge',
+  CrisisSimulation = 'crisis_simulation',
+  DetectionEngineering = 'detection_engineering',
+  HostingThreatCommunity = 'hosting_threat_community',
+  IncidentResponse = 'incident_response',
+  SecurityStack = 'security_stack',
+  SharingKnowledge = 'sharing_knowledge',
+  StrategicReporting = 'strategic_reporting',
+  TechnicalReporting = 'technical_reporting',
+  ThreatHunting = 'threat_hunting',
+  ThreatProfilingCti = 'threat_profiling_cti',
+  ThreatProfilingFaml = 'threat_profiling_faml',
+  ThreatProfilingFimi = 'threat_profiling_fimi',
+  ThreatProfilingLeo = 'threat_profiling_leo',
+  VulnerabilityManagement = 'vulnerability_management'
 }
 
 export type Document = {
@@ -1037,13 +1110,13 @@ export enum PlatformContract {
 
 export type PlatformDeploymentRequest = {
   __typename?: 'PlatformDeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   actual_state?: Maybe<DeploymentRequestPlatformState>;
   end_date?: Maybe<Scalars['Date']['output']>;
   failure_reason?: Maybe<Scalars['String']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
@@ -1058,7 +1131,7 @@ export type PlatformDeploymentRequest = {
   start_date?: Maybe<Scalars['Date']['output']>;
   target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
 
 export type PlatformDeploymentRequestConnection = {
@@ -2155,15 +2228,18 @@ export type ResolversTypes = ResolversObject<{
   DeployedPlatform: ResolverTypeWrapper<DeployedPlatform>;
   DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
+  DeploymentRequestActivitySector: DeploymentRequestActivitySector;
   DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
   DeploymentRequestDeploymentType: DeploymentRequestDeploymentType;
   DeploymentRequestEdge: ResolverTypeWrapper<DeploymentRequestEdge>;
   DeploymentRequestFilter: DeploymentRequestFilter;
   DeploymentRequestFilterKey: DeploymentRequestFilterKey;
   DeploymentRequestHubStatus: DeploymentRequestHubStatus;
+  DeploymentRequestJobTitle: DeploymentRequestJobTitle;
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
+  DeploymentRequestUseCase: DeploymentRequestUseCase;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
@@ -2620,7 +2696,7 @@ export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentT
 }>;
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   cancellation_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   cancellation_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancellation_user_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2628,7 +2704,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization_requester_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2641,7 +2717,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2920,13 +2996,13 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformDeploymentRequest'] = ResolversParentTypes['PlatformDeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   actual_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   failure_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2941,7 +3017,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
