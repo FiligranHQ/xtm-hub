@@ -1,10 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
@@ -40,9 +43,9 @@ export async function insertDeploymentRequest(
     service_instance_id: serviceInstanceId,
   });
   const defaultDeploymentRequestValues = {
-    activity_sector: 'cybersecurity',
+    activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
     id: uuidv4() as DeploymentRequestId,
-    job_title: 'myJob',
+    job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
     organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
     platform_identifier: PlatformIdentifier.Opencti,
     platform_token: uuidv4(),
@@ -53,7 +56,7 @@ export async function insertDeploymentRequest(
     actual_state: undefined,
     ordering: 1,
     type: DeploymentRequestDeploymentType.Trial,
-    use_case: 'use_case',
+    use_case: DeploymentRequestUseCase.ThreatHunting,
     service_instance_id: serviceInstanceId as ServiceInstanceId,
     user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
   };

@@ -5,7 +5,6 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TELEMETRY_SOURCE,
@@ -24,13 +23,13 @@ describe('Subscription mutation resolver', () => {
         {
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICES.INSTANCES.MALWARE.ID
+            SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
           ),
         },
         contextBypassUser
       );
       expect(response).toBeTruthy();
-      expect(response?.name).toEqual('Malware analysis');
+      expect(response?.name).toEqual(SERVICES.INSTANCES.OPENAEV_SCENARIOS.NAME);
     });
     it('should send a telemetry event for subscription integrations service', async () => {
       vi.useFakeTimers();
@@ -71,7 +70,7 @@ describe('Subscription mutation resolver', () => {
         {
           service_instance_id: toGlobalId(
             'ServiceInstance',
-            SERVICES.INSTANCES.MALWARE.ID
+            SERVICES.INSTANCES.VAULT.ID
           ),
         },
         contextBypassUser
@@ -82,7 +81,10 @@ describe('Subscription mutation resolver', () => {
     afterEach(async () => {
       vi.useRealTimers();
       await deleteSubscription({
-        service_instance_id: SERVICES.INSTANCES.MALWARE.ID as ServiceInstanceId,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+      });
+      await deleteSubscription({
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
       });
       await deleteSubscription({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,

@@ -2,10 +2,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
@@ -28,9 +31,10 @@ describe('Deployment app', () => {
         undefined,
         {
           input: {
-            activity_sector: 'cybersecurity',
-            job_title: 'myJob',
-            use_case: 'use_case',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
+            job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -38,9 +42,10 @@ describe('Deployment app', () => {
         }
       );
       expect(deployment).toMatchObject({
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -54,9 +59,10 @@ describe('Deployment app', () => {
   describe('updateDeploymentRequest', () => {
     it('should return the updated deployment request', async () => {
       const initialDeployment = await DeploymentsApp.createDeploymentRequest({
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -106,9 +112,10 @@ describe('Deployment app', () => {
           },
         });
       expect(updatedActiveDeployment).toMatchObject({
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -131,18 +138,15 @@ describe('Deployment app', () => {
       });
     });
     it('should return an error when status transition is not allowed', async () => {
-      const initialDeploymentData = {
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
+      const initialDeployment = await DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        hub_status: DeploymentRequestHubStatus.Pending,
-      };
-      const initialDeployment = await DeploymentsApp.createDeploymentRequest(
-        initialDeploymentData
-      );
+      });
       const updates = {
         id: initialDeployment.id,
         actual_state: DeploymentRequestPlatformState.Removed,

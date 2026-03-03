@@ -1,14 +1,12 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import {
-  ACTIVITIES_SECTOR,
-  JOB_TITLES,
   REGIONS,
   REGIONS_VALUES,
-  USE_CASES,
 } from '@/components/service/trial-instances/form-constants';
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { TranslatableEnumSelectField } from '@/components/ui/translatable-enum-select-field';
 import {
   AutoForm,
   Button,
@@ -22,6 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@filigran/ui';
+import { DeploymentRequestActivitySectorEnum } from '@generated/models/DeploymentRequestActivitySector.enum';
+import { DeploymentRequestJobTitleEnum } from '@generated/models/DeploymentRequestJobTitle.enum';
+import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -31,9 +32,9 @@ import { z } from 'zod';
 
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
-  job_title: z.enum(JOB_TITLES),
-  activity_sector: z.enum(ACTIVITIES_SECTOR),
-  use_case: z.enum(USE_CASES),
+  job_title: z.enum(DeploymentRequestJobTitleEnum),
+  activity_sector: z.enum(DeploymentRequestActivitySectorEnum),
+  use_case: z.enum(DeploymentRequestUseCaseEnum),
   acceptTerms: z
     .boolean()
     .default(false)
@@ -134,21 +135,41 @@ export const TryFiligranProductForm: FunctionComponent<
             },
             job_title: {
               label: t('Service.Trials.Form.JobTitle'),
-              inputProps: {
-                placeholder: t('Service.Trials.Form.JobTitlePlaceholder'),
-              },
+              fieldType: ({ field }) => (
+                <TranslatableEnumSelectField
+                  field={field}
+                  label={t('Service.Trials.Form.JobTitle')}
+                  placeholder={t('Service.Trials.Form.JobTitlePlaceholder')}
+                  values={Object.values(DeploymentRequestJobTitleEnum)}
+                  translationNamespace="DeploymentRequestJobTitle"
+                />
+              ),
             },
             activity_sector: {
               label: t('Service.Trials.Form.ActivitySector'),
-              inputProps: {
-                placeholder: t('Service.Trials.Form.ActivitySectorPlaceholder'),
-              },
+              fieldType: ({ field }) => (
+                <TranslatableEnumSelectField
+                  field={field}
+                  label={t('Service.Trials.Form.ActivitySector')}
+                  placeholder={t(
+                    'Service.Trials.Form.ActivitySectorPlaceholder'
+                  )}
+                  values={Object.values(DeploymentRequestActivitySectorEnum)}
+                  translationNamespace="DeploymentRequestActivitySector"
+                />
+              ),
             },
             use_case: {
               label: t('Service.Trials.Form.UseCase'),
-              inputProps: {
-                placeholder: t('Service.Trials.Form.UseCasePlaceholder'),
-              },
+              fieldType: ({ field }) => (
+                <TranslatableEnumSelectField
+                  field={field}
+                  label={t('Service.Trials.Form.UseCase')}
+                  placeholder={t('Service.Trials.Form.UseCasePlaceholder')}
+                  values={Object.values(DeploymentRequestUseCaseEnum)}
+                  translationNamespace="DeploymentRequestUseCase"
+                />
+              ),
             },
             acceptTerms: {
               fieldType: ({ field }) => (
