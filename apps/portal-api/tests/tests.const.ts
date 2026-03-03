@@ -66,15 +66,16 @@ export const SERVICES = {
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
+    VAULT: {
+      ID: '2634d52b-f061-4ebc-bed2-c6cc94297ad1' as ServiceDefinitionId,
+    },
   },
   INSTANCES: {
-    MALWARE: {
-      ID: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4' as ServiceInstanceId,
-    },
     VAULT: {
       ID: 'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceInstanceId,
     },
     INTEGRATIONS: {
+      NAME: 'csv feeds',
       ID: 'ad003d3f-c406-4be8-a650-880d72f952e9' as ServiceInstanceId,
       CAPABILITIES: {
         UPLOAD: {
@@ -86,6 +87,7 @@ export const SERVICES = {
       },
     },
     OPENAEV_SCENARIOS: {
+      NAME: 'open aev scenarios',
       ID: 'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2' as ServiceInstanceId,
     },
     CUSTOM_DASHBOARDS: {
