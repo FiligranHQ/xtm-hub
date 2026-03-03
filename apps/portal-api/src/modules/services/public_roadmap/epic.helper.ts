@@ -5,7 +5,7 @@ import {
   Timeline,
 } from '../../../__generated__/resolvers-types';
 import Epic from '../../../model/kanel/public/Epic';
-export const mapToGraphqlEpic = (epic: Epic): GraphqlEpic => {
+export const mapToGraphQLEpic = (epic: Epic): GraphqlEpic => {
   return {
     ...epic,
     product: epic.product as FiligranProduct,

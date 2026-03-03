@@ -1731,7 +1731,8 @@ export enum ServiceRestriction {
   Add = 'ADD',
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
-  Upload = 'UPLOAD'
+  Upload = 'UPLOAD',
+  Upsert = 'UPSERT'
 }
 
 export type Settings = {

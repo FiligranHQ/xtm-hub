@@ -6,7 +6,7 @@ import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { extractId } from '../../../utils/utils';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { EpicApp } from './epic.app';
-import { mapToGraphqlEpic } from './epic.helper';
+import { mapToGraphQLEpic } from './epic.helper';
 
 const resolvers: Resolvers = {
   Epic: {
@@ -28,7 +28,7 @@ const resolvers: Resolvers = {
     createEpic: async (_, { input, document }) => {
       try {
         const createdEpic = await EpicApp.createEpic(input, document);
-        return mapToGraphqlEpic(createdEpic);
+        return mapToGraphQLEpic(createdEpic);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicCreateError);
       }
@@ -39,7 +39,7 @@ const resolvers: Resolvers = {
           extractId<EpicId>(id),
           input
         );
-        return mapToGraphqlEpic(updatedEpic);
+        return mapToGraphQLEpic(updatedEpic);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicUpdateError);
       }
@@ -47,7 +47,7 @@ const resolvers: Resolvers = {
     deleteEpic: async (_, { id }) => {
       try {
         const deletedEpic = await EpicApp.deleteEpic(extractId<EpicId>(id));
-        return mapToGraphqlEpic(deletedEpic);
+        return mapToGraphQLEpic(deletedEpic);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicDeleteError);
       }

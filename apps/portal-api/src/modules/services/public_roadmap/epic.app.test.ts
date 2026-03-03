@@ -1,18 +1,37 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { toGlobalId } from 'graphql-relay/node/node.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../knexfile';
+import { SERVICES } from '../../../../tests/tests.const';
 import {
   EpicOrdering,
   FiligranProduct,
   OrderingMode,
   Timeline,
 } from '../../../__generated__/resolvers-types';
+import Document from '../../../model/kanel/public/Document';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
+import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import * as ServiceInstanceDomain from '../service-instance.domain';
 import { EpicApp } from './epic.app';
 
 describe('EpicApp', () => {
+  const minioFileMock = {
+    minioName: 'epic-image.png',
+    mimeType: 'image/png',
+    fileName: 'epic-image.png',
+  };
+
+  beforeEach(async () => {
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
+      minioFileMock,
+    ]);
+  });
+
   afterEach(async () => {
-    // Clean up the Epic table before each test
+    // Clean up the Document and Epic tables before each test
     await db('Epic').delete();
+    await db('Document').delete('*').where('file_name', '=', 'epic-image.png');
+    vi.restoreAllMocks();
   });
 
   describe('createEpic', () => {
@@ -41,6 +60,60 @@ describe('EpicApp', () => {
       expect(dbEpic).toBeDefined();
       expect(dbEpic?.epic).toBe('EPI-001');
       expect(dbEpic?.title).toBe('Test Epic');
+    });
+
+    it('should create an image document when upload is provided', async () => {
+      vi.spyOn(
+        ServiceInstanceDomain,
+        'loadSubscribedServiceInstancesByIdentifier'
+      ).mockResolvedValue([
+        {
+          service_instance_id: toGlobalId(
+            'ServiceInstance',
+            SERVICES.INSTANCES.INTEGRATIONS.ID
+          ),
+          organization_id: 'test-org-id',
+          is_personal_space: false,
+          configurations: [],
+        },
+      ] as never);
+
+      const input = {
+        epic: 'EPI-002',
+        title: 'Epic with Image',
+        short_description: 'Short desc',
+        long_description: 'Long description for the epic',
+        is_active: true,
+        product: FiligranProduct.OpenCti,
+        timeline: Timeline.Now,
+      };
+
+      const uploads = [
+        {
+          file: {} as never,
+          promise: Promise.resolve({} as never),
+        },
+      ];
+
+      const createdEpic = await EpicApp.createEpic(input, uploads);
+
+      expect(createdEpic).toBeDefined();
+      expect(createdEpic.id).toBeDefined();
+      expect(createdEpic.document_id).toBeDefined();
+
+      // Verify document was created in DB
+      const dbDocument = await db<Document>('Document')
+        .where('id', createdEpic.document_id)
+        .first();
+
+      expect(dbDocument).toBeDefined();
+      expect(dbDocument?.file_name).toBe('epic-image.png');
+      expect(dbDocument?.minio_name).toBe('epic-image.png');
+      expect(dbDocument?.mime_type).toBe('image/png');
+      expect(dbDocument?.type).toBe('image');
+      expect(dbDocument?.description).toBe('Epic illustration');
+      expect(dbDocument?.active).toBe(true);
+      expect(dbDocument?.source_type).toBe('internal');
     });
   });
 

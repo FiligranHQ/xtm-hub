@@ -8,7 +8,7 @@ import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface EpicListProps {
   epics: epic_fragment$data[];
@@ -23,6 +23,19 @@ export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
     ServiceCapabilityName.Upsert,
     serviceInstance
   );
+
+  const epicItems = useMemo(
+    () =>
+      epics.map((epic) => (
+        <EpicItem
+          key={epic.id}
+          epic={epic}
+          serviceInstanceId={serviceInstance.id}
+        />
+      )),
+    [epics, serviceInstance.id]
+  );
+
   return (
     <>
       <div className="flex flex-row">
@@ -44,13 +57,7 @@ export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
         className={
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
         }>
-        {epics.map((epic) => (
-          <EpicItem
-            key={epic.id}
-            epic={epic}
-            serviceInstanceId={serviceInstance.id}
-          />
-        ))}
+        {epicItems}
       </ul>
     </>
   );

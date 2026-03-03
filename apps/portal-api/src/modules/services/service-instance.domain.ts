@@ -561,13 +561,13 @@ export const grantServiceAccess = async (
     const service_definition = await loadServiceDefinitionByServiceInstance(
       serviceInstance.id
     );
-
-    if (ServiceIdentifierToMailTemplate.get(service_definition.identifier)) {
+    const mailTemplate = ServiceIdentifierToMailTemplate.get(
+      service_definition.identifier
+    );
+    if (mailTemplate) {
       await sendMail({
         to: user.email,
-        template: ServiceIdentifierToMailTemplate.get(
-          service_definition.identifier
-        ),
+        template: mailTemplate,
         params: {
           name: user.email,
           serviceLink: buildServiceLink({

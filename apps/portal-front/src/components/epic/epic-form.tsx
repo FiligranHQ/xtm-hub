@@ -1,6 +1,6 @@
 'use client';
 
-import { getEpicListContext } from '@/components/epic/epic-page';
+import { useEpicListContext } from '@/components/epic/epic-page';
 import { CreateEpicMutation } from '@/components/epic/epic.graphql';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { AutoForm, Button, useToast } from '@filigran/ui';
@@ -35,7 +35,7 @@ const EpicForm = ({
   const t = useTranslations();
   const [commitEpicMutation] = useMutation(CreateEpicMutation);
   const { toast } = useToast();
-  const { connectionID } = getEpicListContext();
+  const { connectionID } = useEpicListContext();
 
   const onSubmit = (values: z.infer<typeof epicFormSchema>) => {
     const document = !values.illustration_document

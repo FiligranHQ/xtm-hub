@@ -40,7 +40,7 @@ export const EpicApp = {
           service_instance_id: extractId<ServiceInstanceId>(
             serviceInstance.service_instance_id
           ),
-          description: 'illustration for epic',
+          description: 'Epic illustration',
           file_name: files[0].fileName,
           minio_name: files[0].minioName,
           active: true,

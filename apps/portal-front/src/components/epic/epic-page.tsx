@@ -8,10 +8,12 @@ interface EpicListConnectionContextType {
 }
 
 // Custom hook to use the ConnectionContext
-export const getEpicListContext = (): EpicListConnectionContextType => {
+export const useEpicListContext = (): EpicListConnectionContextType => {
   const context = useContext(EpicListContext);
   if (!context) {
-    throw new Error('useConnection must be used within a ConnectionProvider');
+    throw new Error(
+      'useEpicListContext must be used within a ConnectionProvider'
+    );
   }
   return context;
 };

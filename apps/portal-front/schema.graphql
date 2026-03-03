@@ -1474,6 +1474,7 @@ enum ServiceRestriction {
   UPLOAD
   DELETE
   ADD
+  UPSERT
 }
 
 interface Node {

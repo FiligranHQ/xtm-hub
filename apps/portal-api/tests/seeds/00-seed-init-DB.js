@@ -181,6 +181,13 @@ export async function seed(knex) {
         public: true,
         identifier: 'opencti_custom_dashboards',
       },
+      {
+        id: 'ecc973c4-575f-4618-b3a4-ebabb9b42a81',
+        name: 'Public Roadmap',
+        description: 'Explore and follow the Filigran XTM Suite roadmap',
+        public: true,
+        identifier: 'public_roadmap',
+      },
     ])
     .onConflict('id')
     .ignore();
@@ -253,6 +260,17 @@ export async function seed(knex) {
         join_type: 'JOIN_AUTO',
         tags: '{others}',
         service_definition_id: 'e974c9c3-f3c5-4b48-b183-a73ff218dec1',
+        ordering: 15,
+      },
+      {
+        id: '3260f536-49b8-4c6f-8e87-61c8be1ae103',
+        name: 'Public Roadmap',
+        description: 'Explore and follow the Filigran XTM Suite roadmap',
+        creation_status: 'READY',
+        public: false,
+        join_type: 'JOIN_AUTO',
+        tags: '{others}',
+        service_definition_id: 'ecc973c4-575f-4618-b3a4-ebabb9b42a81',
         ordering: 15,
       },
     ])
