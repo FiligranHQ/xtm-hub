@@ -66,6 +66,9 @@ export const SERVICES = {
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
+    VAULT: {
+      ID: '2634d52b-f061-4ebc-bed2-c6cc94297ad1' as ServiceDefinitionId,
+    },
   },
   INSTANCES: {
     VAULT: {
