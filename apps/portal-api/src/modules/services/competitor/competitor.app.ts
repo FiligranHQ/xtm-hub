@@ -1,4 +1,3 @@
-import config from 'config';
 import {
   Competitor,
   CompetitorTier,
@@ -18,15 +17,6 @@ const throwIfUniqueViolation = (error: Error) => {
       detail: error,
     });
   }
-};
-
-const isOrganizationBlacklistedFromSettings = (organization: Organization) => {
-  const domainsBlacklist = (config.get<string>('domains_blacklist') ?? '')
-    .split(',')
-    .map((d) => d.trim());
-  return organization.domains.some((domain) =>
-    domainsBlacklist.includes(domain)
-  );
 };
 
 export const CompetitorApp = {
@@ -70,10 +60,6 @@ export const CompetitorApp = {
     organization: Organization
   ): Promise<boolean> {
     if (!organization.domains?.length) return false;
-    return (
-      // TODO: check from settings can be removed once we have filled the competitors table
-      isOrganizationBlacklistedFromSettings(organization) ||
-      CompetitorDomain.isAnyDomainACompetitor(organization.domains)
-    );
+    return CompetitorDomain.isAnyDomainACompetitor(organization.domains);
   },
 };
