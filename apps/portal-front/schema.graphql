@@ -241,6 +241,7 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
   openaev_registration
+  public_roadmap
 }
 
 type ServiceDefinition implements Node {

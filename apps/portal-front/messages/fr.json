@@ -881,6 +881,13 @@
       "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
       "Expired": "Votre essai gratuit d'OpenCTI a expiré.",
       "Cancelled": "Votre essai gratuit d'OpenCTI a été annulé.",
+      "CancellationReason": {
+        "value": "Les renseignements manquent d'informations exploitables pour nos besoins spécifiques",
+        "compatibility": "Incompatible avec notre pile de sécurité existante",
+        "complexity": "La configuration est trop complexe pour être réalisée dans un délai raisonnable",
+        "legal-security": "L'équipe de sécurité interne ou l'équipe juridique a exigé une résiliation immédiate",
+        "expertise": "Nous n'avons pas les analystes/expertises internes pour utiliser l'outil efficacement"
+      },
       "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
       "Header": {
         "ActiveTrial": "Essai actif",

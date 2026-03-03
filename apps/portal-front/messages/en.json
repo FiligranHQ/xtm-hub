@@ -860,6 +860,13 @@
       "Requested": "Your OpenCTI free trial has been requested.",
       "Expired": "Your OpenCTI free trial has expired.",
       "Cancelled": "Your OpenCTI free trial has been cancelled.",
+      "CancellationReason": {
+        "value": "Intelligence lacks actionable insight for our specific needs",
+        "compatibility": "Incompatible with our existing security stack",
+        "complexity": "Configuration is too complex to complete within a reasonable timeframe",
+        "legal-security": "Internal security or legal team required immediate termination",
+        "expertise": "We lack the internal analysts/expertise to utilise the tool effectively"
+      },
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "Header": {
         "ActiveTrial": "Active trial",
