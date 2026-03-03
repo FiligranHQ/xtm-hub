@@ -1,4 +1,3 @@
-import { ServiceDefinitionIdentifierEnum } from '@xtm-hub/portal-front/__generated__/models/ServiceDefinitionIdentifier.enum';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -8,7 +7,10 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
-import { IntegrationType } from '../../../__generated__/resolvers-types';
+import {
+  IntegrationType,
+  ServiceDefinitionIdentifier,
+} from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -34,6 +36,7 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './opencti/custom-dashboards/custom-dashboards.model';
 import {
   CsvFeed,
   INTEGRATION_CSV_FEED_METADATA_KEYS,
@@ -97,7 +100,7 @@ describe('Should modify document', () => {
         uploader_organization_id:
           'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId,
         service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        type: ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_DASHBOARDS,
+        type: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
       },
       []
     );
@@ -178,7 +181,7 @@ describe('Documents loading', () => {
         minio_name: 'minioName',
         file_name: 'filename',
         service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        type: 'opencti_custom_dashboard',
+        type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       },
       []
     );
@@ -190,7 +193,7 @@ describe('Documents loading', () => {
         minio_name: 'xminioName',
         file_name: 'xfilename',
         service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        type: 'opencti_custom_dashboard',
+        type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       },
       []
     );
