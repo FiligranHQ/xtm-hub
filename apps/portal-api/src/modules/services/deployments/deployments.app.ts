@@ -3,12 +3,15 @@ import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
   DeploymentRequest,
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestOrdering,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   OrderingMode,
   PlatformDeploymentRequest,
   PlatformDeploymentRequestConnection,
@@ -47,6 +50,7 @@ import {
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../../portal.const';
 import { sendMail } from '../../../server/mail-service';
+import { auth0Client } from '../../../thirdparty/auth0/client';
 import { formatName } from '../../../utils/format';
 import { ucfirst } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -55,13 +59,13 @@ import {
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
 import { loadUser } from '../../users/users.domain';
+import { CompetitorApp } from '../competitor/competitor.app';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
   hasDeploymentTelemetryDataChanged,
-  isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
@@ -80,7 +84,7 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
 
-    if (isOrganizationBlacklisted(chosenOrganization)) {
+    if (await CompetitorApp.isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
         `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
       );
@@ -164,9 +168,12 @@ export const DeploymentsApp = {
               createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
             status:
               createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-            activity_sector: createdDeploymentRequest.activity_sector,
-            job_title: createdDeploymentRequest.job_title,
-            use_case: createdDeploymentRequest.use_case,
+            activity_sector:
+              createdDeploymentRequest.activity_sector as DeploymentRequestActivitySector,
+            job_title:
+              createdDeploymentRequest.job_title as DeploymentRequestJobTitle,
+            use_case:
+              createdDeploymentRequest.use_case as DeploymentRequestUseCase,
             email: user.email,
             deployment_id: createdDeploymentRequest.id,
             deployment_type:
@@ -414,6 +421,20 @@ export const DeploymentsApp = {
       });
     }
 
+    try {
+      if (
+        newStatus === DeploymentRequestHubStatus.Expired &&
+        newStatus !== deploymentRequest.hub_status
+      ) {
+        await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+      }
+    } catch (error) {
+      logApp.error('Unable to delete audience', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+
     return updatedDeploymentRequest;
   },
 
@@ -645,6 +666,15 @@ export const DeploymentsApp = {
       });
     }
 
+    try {
+      await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+    } catch (error) {
+      logApp.error('Unable to delete audience', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+
     return updatedDeploymentRequest;
   },
 
@@ -785,7 +815,8 @@ export const DeploymentsApp = {
             deployment.platform_identifier as PlatformIdentifier,
         };
       }),
-      isBlacklisted: isOrganizationBlacklisted(organization),
+      isBlacklisted:
+        await CompetitorApp.isOrganizationBlacklisted(organization),
     };
   },
 };

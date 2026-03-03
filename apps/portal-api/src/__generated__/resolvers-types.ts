@@ -82,6 +82,39 @@ export type Capability = Node & {
   name: PortalCapability;
 };
 
+export type Competitor = Node & {
+  __typename?: 'Competitor';
+  domain: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  tier: CompetitorTier;
+};
+
+export type CompetitorConnection = {
+  __typename?: 'CompetitorConnection';
+  edges: Array<CompetitorEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type CompetitorEdge = {
+  __typename?: 'CompetitorEdge';
+  cursor: Scalars['String']['output'];
+  node: Competitor;
+};
+
+export enum CompetitorOrdering {
+  Domain = 'domain',
+  Name = 'name',
+  Tier = 'tier'
+}
+
+export enum CompetitorTier {
+  Tier1 = 'tier1',
+  Tier2 = 'tier2',
+  Tier3 = 'tier3'
+}
+
 export type Connector = Document & Integration & Node & {
   __typename?: 'Connector';
   active: Scalars['Boolean']['output'];
@@ -117,13 +150,19 @@ export type Connector = Document & Integration & Node & {
   verified: Scalars['Boolean']['output'];
 };
 
+export type CreateCompetitorInput = {
+  domain: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tier: CompetitorTier;
+};
+
 export type CreateDeploymentRequestInput = {
-  activity_sector?: InputMaybe<Scalars['String']['input']>;
-  job_title?: InputMaybe<Scalars['String']['input']>;
+  activity_sector?: InputMaybe<DeploymentRequestActivitySector>;
+  job_title?: InputMaybe<DeploymentRequestJobTitle>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
   type: DeploymentRequestDeploymentType;
-  use_case?: InputMaybe<Scalars['String']['input']>;
+  use_case?: InputMaybe<DeploymentRequestUseCase>;
 };
 
 export type CreateDocumentInput = {
@@ -235,7 +274,7 @@ export type DeploymentAvailability = {
 
 export type DeploymentRequest = Node & {
   __typename?: 'DeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   cancellation_date?: Maybe<Scalars['Date']['output']>;
   cancellation_reason?: Maybe<Scalars['String']['output']>;
   cancellation_user_email?: Maybe<Scalars['String']['output']>;
@@ -243,7 +282,7 @@ export type DeploymentRequest = Node & {
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_name?: Maybe<Scalars['String']['output']>;
   organization_requester_id: Scalars['ID']['output'];
@@ -256,8 +295,40 @@ export type DeploymentRequest = Node & {
   service_instance_id: Scalars['ID']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
+
+export enum DeploymentRequestActivitySector {
+  ComputerGames = 'computer_games',
+  ComputerNetworkSecurity = 'computer_network_security',
+  ComputerSoftware = 'computer_software',
+  DefenseSpace = 'defense_space',
+  Entertainment = 'entertainment',
+  FinancialServices = 'financial_services',
+  GovernmentAdministration = 'government_administration',
+  GovernmentRelations = 'government_relations',
+  HigherEducation = 'higher_education',
+  HospitalHealthCare = 'hospital_health_care',
+  Hospitality = 'hospitality',
+  InformationTechnology = 'information_technology',
+  Insurance = 'insurance',
+  LegalServices = 'legal_services',
+  LuxuryGoodsJewelry = 'luxury_goods_jewelry',
+  ManagementConsulting = 'management_consulting',
+  MarketingAdvertising = 'marketing_advertising',
+  Military = 'military',
+  NonProfit = 'non_profit',
+  OilEnergy = 'oil_energy',
+  Pharmaceuticals = 'pharmaceuticals',
+  Photography = 'photography',
+  Retail = 'retail',
+  SecurityInvestigations = 'security_investigations',
+  Semiconductors = 'semiconductors',
+  Telecommunications = 'telecommunications',
+  Transportation = 'transportation',
+  Utilities = 'utilities',
+  Wireless = 'wireless'
+}
 
 export type DeploymentRequestConnection = {
   __typename?: 'DeploymentRequestConnection';
@@ -300,6 +371,28 @@ export enum DeploymentRequestHubStatus {
   Queued = 'queued'
 }
 
+export enum DeploymentRequestJobTitle {
+  ApplicationSecuritySpecialist = 'application_security_specialist',
+  CLevel = 'c_level',
+  Ceo = 'ceo',
+  CisoCsoCio = 'ciso_cso_cio',
+  CloudSecuritySpecialist = 'cloud_security_specialist',
+  Consultant = 'consultant',
+  CybersecurityArchitect = 'cybersecurity_architect',
+  CybersecurityEngineer = 'cybersecurity_engineer',
+  CybersecurityTeamLead = 'cybersecurity_team_lead',
+  DfirSpecialist = 'dfir_specialist',
+  DirectorHeadCybersecurity = 'director_head_cybersecurity',
+  GeneralManagerVp = 'general_manager_vp',
+  GrcSpecialist = 'grc_specialist',
+  IamSpecialist = 'iam_specialist',
+  Other = 'other',
+  PenetrationTester = 'penetration_tester',
+  SocAnalyst = 'soc_analyst',
+  ThreatIntelligenceAnalyst = 'threat_intelligence_analyst',
+  VulnerabilityAnalyst = 'vulnerability_analyst'
+}
+
 export enum DeploymentRequestOrdering {
   CancellationDate = 'cancellation_date',
   CancellationReason = 'cancellation_reason',
@@ -327,6 +420,25 @@ export enum DeploymentRequestPlatformState {
   Removed = 'removed',
   Removing = 'removing',
   Unprovisioned = 'unprovisioned'
+}
+
+export enum DeploymentRequestUseCase {
+  AttackSimulation = 'attack_simulation',
+  CentralizingKnowledge = 'centralizing_knowledge',
+  CrisisSimulation = 'crisis_simulation',
+  DetectionEngineering = 'detection_engineering',
+  HostingThreatCommunity = 'hosting_threat_community',
+  IncidentResponse = 'incident_response',
+  SecurityStack = 'security_stack',
+  SharingKnowledge = 'sharing_knowledge',
+  StrategicReporting = 'strategic_reporting',
+  TechnicalReporting = 'technical_reporting',
+  ThreatHunting = 'threat_hunting',
+  ThreatProfilingCti = 'threat_profiling_cti',
+  ThreatProfilingFaml = 'threat_profiling_faml',
+  ThreatProfilingFimi = 'threat_profiling_fimi',
+  ThreatProfilingLeo = 'threat_profiling_leo',
+  VulnerabilityManagement = 'vulnerability_management'
 }
 
 export type Document = {
@@ -559,8 +671,10 @@ export type Mutation = {
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
   changeSelectedOrganization?: Maybe<User>;
   contactUs: Success;
+  createCompetitor: Competitor;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
+  deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteOrganization?: Maybe<Organization>;
   deleteSubscription?: Maybe<ServiceInstance>;
@@ -587,6 +701,7 @@ export type Mutation = {
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
+  updateCompetitor: Competitor;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateDocument: Document;
@@ -690,6 +805,11 @@ export type MutationContactUsArgs = {
 };
 
 
+export type MutationCreateCompetitorArgs = {
+  input: CreateCompetitorInput;
+};
+
+
 export type MutationCreateDeploymentRequestArgs = {
   input?: InputMaybe<CreateDeploymentRequestInput>;
 };
@@ -700,6 +820,11 @@ export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationDeleteCompetitorArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -822,6 +947,11 @@ export type MutationTransferPersonalSpaceArgs = {
 
 export type MutationUnregisterPlatformArgs = {
   input?: InputMaybe<UnregisterPlatformInput>;
+};
+
+
+export type MutationUpdateCompetitorArgs = {
+  input: UpdateCompetitorInput;
 };
 
 
@@ -980,13 +1110,13 @@ export enum PlatformContract {
 
 export type PlatformDeploymentRequest = {
   __typename?: 'PlatformDeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   actual_state?: Maybe<DeploymentRequestPlatformState>;
   end_date?: Maybe<Scalars['Date']['output']>;
   failure_reason?: Maybe<Scalars['String']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
@@ -1001,7 +1131,7 @@ export type PlatformDeploymentRequest = {
   start_date?: Maybe<Scalars['Date']['output']>;
   target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
 
 export type PlatformDeploymentRequestConnection = {
@@ -1051,6 +1181,7 @@ export enum PlatformRegistrationStatus {
 
 export enum PortalCapability {
   Bypass = 'BYPASS',
+  ModifyCompetitors = 'MODIFY_COMPETITORS',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
@@ -1059,6 +1190,7 @@ export enum PortalCapability {
 export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
+  competitors: CompetitorConnection;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -1107,6 +1239,14 @@ export type Query = {
 
 export type QueryCanUnregisterPlatformArgs = {
   input: CanUnregisterPlatformInput;
+};
+
+
+export type QueryCompetitorsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: CompetitorOrdering;
+  orderMode: OrderingMode;
 };
 
 
@@ -1480,6 +1620,7 @@ export enum ServiceDefinitionIdentifier {
   OpenctiCustomDashboards = 'opencti_custom_dashboards',
   OpenctiIntegrations = 'opencti_integrations',
   OpenctiRegistration = 'opencti_registration',
+  PublicRoadmap = 'public_roadmap',
   Vault = 'vault'
 }
 
@@ -1580,7 +1721,6 @@ export enum ServiceRestriction {
 export type Settings = {
   __typename?: 'Settings';
   base_url_front: Scalars['String']['output'];
-  domains_blacklist: Scalars['String']['output'];
   environment: Scalars['String']['output'];
   platform_feature_flags: Array<Scalars['String']['output']>;
   platform_providers: Array<PlatformProvider>;
@@ -1785,6 +1925,13 @@ export type TrialsDeployments = {
 export type UnregisterPlatformInput = {
   identifier: PlatformIdentifier;
   platformId: Scalars['String']['input'];
+};
+
+export type UpdateCompetitorInput = {
+  domain?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  tier?: InputMaybe<CompetitorTier>;
 };
 
 export type UpdateDeploymentQuotaCapacityInput = {
@@ -2050,7 +2197,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2065,7 +2212,13 @@ export type ResolversTypes = ResolversObject<{
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
+  Competitor: ResolverTypeWrapper<Competitor>;
+  CompetitorConnection: ResolverTypeWrapper<CompetitorConnection>;
+  CompetitorEdge: ResolverTypeWrapper<CompetitorEdge>;
+  CompetitorOrdering: CompetitorOrdering;
+  CompetitorTier: CompetitorTier;
   Connector: ResolverTypeWrapper<Connector>;
+  CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
@@ -2075,15 +2228,18 @@ export type ResolversTypes = ResolversObject<{
   DeployedPlatform: ResolverTypeWrapper<DeployedPlatform>;
   DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
+  DeploymentRequestActivitySector: DeploymentRequestActivitySector;
   DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
   DeploymentRequestDeploymentType: DeploymentRequestDeploymentType;
   DeploymentRequestEdge: ResolverTypeWrapper<DeploymentRequestEdge>;
   DeploymentRequestFilter: DeploymentRequestFilter;
   DeploymentRequestFilterKey: DeploymentRequestFilterKey;
   DeploymentRequestHubStatus: DeploymentRequestHubStatus;
+  DeploymentRequestJobTitle: DeploymentRequestJobTitle;
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
+  DeploymentRequestUseCase: DeploymentRequestUseCase;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
@@ -2186,6 +2342,7 @@ export type ResolversTypes = ResolversObject<{
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: ResolverTypeWrapper<TrialsDeployments>;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
@@ -2227,7 +2384,11 @@ export type ResolversParentTypes = ResolversObject<{
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
+  Competitor: Competitor;
+  CompetitorConnection: CompetitorConnection;
+  CompetitorEdge: CompetitorEdge;
   Connector: Connector;
+  CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CsvFeed: CsvFeed;
@@ -2319,6 +2480,7 @@ export type ResolversParentTypes = ResolversObject<{
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: TrialsDeployments;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
@@ -2377,6 +2539,27 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
 export type CapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['PortalCapability'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Competitor'] = ResolversParentTypes['Competitor']> = ResolversObject<{
+  domain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tier?: Resolver<ResolversTypes['CompetitorTier'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CompetitorConnection'] = ResolversParentTypes['CompetitorConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['CompetitorEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CompetitorEdge'] = ResolversParentTypes['CompetitorEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2513,7 +2696,7 @@ export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentT
 }>;
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   cancellation_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   cancellation_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancellation_user_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2521,7 +2704,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization_requester_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2534,7 +2717,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2696,8 +2879,10 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
+  createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
+  deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
@@ -2724,6 +2909,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
+  updateCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationUpdateCompetitorArgs, 'input'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;
@@ -2732,7 +2918,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2810,13 +2996,13 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformDeploymentRequest'] = ResolversParentTypes['PlatformDeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   actual_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   failure_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2831,7 +3017,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2857,6 +3043,7 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
+  competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -3031,7 +3218,6 @@ export type ServiceLinkResolvers<ContextType = PortalContext, ParentType extends
 
 export type SettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
   base_url_front?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  domains_blacklist?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_feature_flags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;
@@ -3320,6 +3506,9 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
+  Competitor?: CompetitorResolvers<ContextType>;
+  CompetitorConnection?: CompetitorConnectionResolvers<ContextType>;
+  CompetitorEdge?: CompetitorEdgeResolvers<ContextType>;
   Connector?: ConnectorResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CustomDashboard?: CustomDashboardResolvers<ContextType>;

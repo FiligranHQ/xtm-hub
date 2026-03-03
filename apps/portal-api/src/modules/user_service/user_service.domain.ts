@@ -59,10 +59,11 @@ export const UserServiceDomain = {
         });
 
         await insertUserIntoOrganization(user, subscription.id);
-        const userServiceAlreadyExist = await doesUserServiceExist(
-          user.id as UserId,
-          subscription.id
-        );
+        const userServiceAlreadyExist =
+          await UserServiceDomain.doesUserServiceExist(
+            user.id as UserId,
+            subscription.id
+          );
 
         if (!userServiceAlreadyExist) {
           const createdUserService =
@@ -549,16 +550,16 @@ export const UserServiceDomain = {
       .where('user_service_id', '=', userServiceId)
       .delete('*');
   },
-};
 
-export const doesUserServiceExist = async (
-  user_id: UserId,
-  subscription_id: SubscriptionId
-) => {
-  const [existingUserService] =
-    await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
-      user_id,
-      subscription_id,
-    });
-  return !!existingUserService;
+  doesUserServiceExist: async (
+    user_id: UserId,
+    subscription_id: SubscriptionId
+  ) => {
+    const [existingUserService] =
+      await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
+        user_id,
+        subscription_id,
+      });
+    return !!existingUserService;
+  },
 };

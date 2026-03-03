@@ -53,6 +53,5 @@
   "system_token_salt": "SYSTEM_TOKEN_SALT",
   "session_store": {
     "type": "SESSION_STORE_TYPE"
-  },
-  "domains_blacklist": "DOMAINS_BLACKLIST"
+  }
 }

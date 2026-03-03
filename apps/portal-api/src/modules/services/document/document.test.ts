@@ -7,7 +7,10 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
-import { IntegrationType } from '../../../__generated__/resolvers-types';
+import {
+  IntegrationType,
+  ServiceDefinitionIdentifier,
+} from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -33,6 +36,7 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './opencti/custom-dashboards/custom-dashboards.model';
 import {
   CsvFeed,
   INTEGRATION_CSV_FEED_METADATA_KEYS,
@@ -95,9 +99,8 @@ describe('Should modify document', () => {
         file_name: 'filename',
         uploader_organization_id:
           'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId,
-        service_instance_id:
-          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-        type: 'vault',
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        type: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
       },
       []
     );
@@ -143,9 +146,8 @@ describe('should check if file already exists', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'filename',
-        service_instance_id:
-          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-        type: 'vault',
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        type: 'opencti_custom_dashboard',
       },
       []
     );
@@ -153,9 +155,9 @@ describe('should check if file already exists', () => {
 
   it.each`
     expected | fileName      | title               | serviceInstanceId
-    ${true}  | ${'filename'} | ${'Already exists'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11302'}
-    ${false} | ${'test'}     | ${'Does not exist'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11302'}
-    ${false} | ${'test'}     | ${'Does not exist'} | ${'c6343882-f609-4a3f-abe0-a34f8cb11301'}
+    ${true}  | ${'filename'} | ${'Already exists'} | ${SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID}
+    ${false} | ${'test'}     | ${'Does not exist'} | ${SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID}
+    ${false} | ${'test'}     | ${'Does not exist'} | ${SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID}
   `(
     'Should return $expected if filename $title',
     async ({ expected, fileName, serviceInstanceId }) => {
@@ -178,9 +180,8 @@ describe('Documents loading', () => {
         description: 'description',
         minio_name: 'minioName',
         file_name: 'filename',
-        service_instance_id:
-          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-        type: 'vault',
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       },
       []
     );
@@ -191,9 +192,8 @@ describe('Documents loading', () => {
         description: 'xdescription',
         minio_name: 'xminioName',
         file_name: 'xfilename',
-        service_instance_id:
-          'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId,
-        type: 'vault',
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        type: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
       },
       []
     );
@@ -209,7 +209,7 @@ describe('Documents loading', () => {
         orderMode: 'asc',
         serviceInstanceId: toGlobalId(
           'ServiceInstance',
-          'c6343882-f609-4a3f-abe0-a34f8cb11302'
+          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
         ),
       },
       contextBypassUser as PortalContext
@@ -229,7 +229,7 @@ describe('Documents loading', () => {
         orderMode: 'desc',
         serviceInstanceId: toGlobalId(
           'ServiceInstance',
-          'c6343882-f609-4a3f-abe0-a34f8cb11302'
+          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
         ),
       },
       contextBypassUser
@@ -250,7 +250,7 @@ describe('Documents loading', () => {
         orderMode: 'asc',
         serviceInstanceId: toGlobalId(
           'ServiceInstance',
-          'c6343882-f609-4a3f-abe0-a34f8cb11302'
+          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
         ),
       },
       contextBypassUser

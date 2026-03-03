@@ -12,6 +12,7 @@ enum PortalCapability {
   READ_TRIALS
   MODIFY_TRIALS
   MODIFY_TRIALS_QUOTA
+  MODIFY_COMPETITORS
 }
 
 enum OrganizationCapability {

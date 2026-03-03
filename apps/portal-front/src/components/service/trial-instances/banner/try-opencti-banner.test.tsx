@@ -4,6 +4,13 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { act } from '@testing-library/react';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 
+vi.mock('next/navigation', (importOriginal) => ({
+  ...importOriginal(),
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
+
 describe('useFreeTrial with Relay Mock', () => {
   it('should return Learn more when the user has no right', async () => {
     const environment = createMockEnvironment();

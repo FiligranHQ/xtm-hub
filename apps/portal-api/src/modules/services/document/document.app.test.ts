@@ -31,6 +31,7 @@ import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
 import { DocumentDomain } from './domain/document.domain';
+import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 import {
   CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
@@ -363,6 +364,112 @@ describe('DocumentApp', () => {
       expect(result!.minio_name).toBeNull();
       expect(result!.mime_type).toBeNull();
     });
+
+    it.each`
+      label          | integrationType              | integrationSubtype
+      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}   | ${null}
+      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed} | ${IntegrationSubType.Native}
+      ${'Stream'}    | ${IntegrationType.Stream}    | ${IntegrationSubType.Native}
+    `(
+      'should preserve the existing feed_url when no document is uploaded for $label',
+      async ({
+        integrationType,
+        integrationSubtype,
+      }: {
+        integrationType: IntegrationType;
+        integrationSubtype: IntegrationSubType | null;
+      }) => {
+        const metadata = [
+          { key: 'integration_type', value: integrationType },
+          ...(integrationSubtype
+            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            : []),
+        ];
+
+        const createdDocument = await DocumentApp.createDocument(
+          documentData,
+          metadata,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          [mockUpload]
+        );
+        expect(createdDocument).toBeDefined();
+
+        const result = await DocumentApp.updateDocument(
+          createdDocument!.id,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata,
+          {
+            input: documentData,
+            document: [],
+            updateDocument: false,
+            images: [],
+          }
+        );
+
+        expect(result).toBeDefined();
+        const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
+          result!.id,
+          'feed_url'
+        );
+        expect(feedUrl).toBe('https://example.com');
+      }
+    );
+
+    it.each`
+      label          | integrationType              | integrationSubtype
+      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}   | ${null}
+      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed} | ${IntegrationSubType.Native}
+      ${'Stream'}    | ${IntegrationType.Stream}    | ${IntegrationSubType.Native}
+    `(
+      'should preserve the existing feed_url when an image file is uploaded instead of a json file for $label',
+      async ({
+        integrationType,
+        integrationSubtype,
+      }: {
+        integrationType: IntegrationType;
+        integrationSubtype: IntegrationSubType | null;
+      }) => {
+        const metadata = [
+          { key: 'integration_type', value: integrationType },
+          ...(integrationSubtype
+            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            : []),
+        ];
+
+        const createdDocument = await DocumentApp.createDocument(
+          documentData,
+          metadata,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          [mockUpload]
+        );
+        expect(createdDocument).toBeDefined();
+
+        vi.spyOn(MinIOClient, 'createFile').mockResolvedValue({
+          minioName: 'imageFile',
+          mimeType: 'image/png',
+          fileName: 'image.png',
+        });
+
+        const result = await DocumentApp.updateDocument(
+          createdDocument!.id,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata,
+          {
+            input: documentData,
+            document: [mockUpload],
+            updateDocument: true,
+            images: [],
+          }
+        );
+
+        expect(result).toBeDefined();
+        const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
+          result!.id,
+          'feed_url'
+        );
+        expect(feedUrl).toBe('https://example.com');
+      }
+    );
   });
 
   describe('loadDocument', () => {

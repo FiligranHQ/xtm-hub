@@ -9,6 +9,7 @@ export const CreateDeploymentRequestMutation = graphql`
       region
       type
       platform_identifier
+      service_instance_id
     }
   }
 `;

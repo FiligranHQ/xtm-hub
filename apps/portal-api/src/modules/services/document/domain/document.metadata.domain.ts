@@ -59,6 +59,21 @@ export const DocumentMetadataDomain = {
       .returning('*');
   },
 
+  loadMetadataValueByKey: async (
+    id: DocumentId,
+    key: string
+  ): Promise<string | null> => {
+    const metadata: DocumentMetadata = await db<DocumentMetadata>(
+      'Document_Metadata'
+    )
+      .where('document_id', id)
+      .where('key', key)
+      .select('value')
+      .first();
+
+    return metadata?.value ?? null;
+  },
+
   loadProductVersion: async (id: DocumentId): Promise<string | null> => {
     const metadata: DocumentMetadata = await db<DocumentMetadata>(
       'Document_Metadata'

@@ -5,6 +5,13 @@ import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 
+vi.mock('next/navigation', (importOriginal) => ({
+  ...importOriginal(),
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
+
 describe('Start trial button in the banner', () => {
   it('should display dropdown menu when no trial', async () => {
     // GIVEN
@@ -58,9 +65,6 @@ describe('Start trial button in the banner', () => {
     const { getByRole } = testRender(<StartTrialBannerButton />, {
       me: {
         email: 'domain@test.com',
-      },
-      settings: {
-        domains_blacklist: 'autre.fr, test.com, coucou.io',
       },
       relayConfig: environment,
     });

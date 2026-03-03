@@ -13,8 +13,10 @@ import {
   FormMessage,
   toast,
 } from '@filigran/ui';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -28,28 +30,31 @@ interface TrialCancelSheetProps {
   isCancellationDefinitive: boolean;
   open: boolean;
   setOpen: (open: boolean) => void;
+  platformIdentifier: PlatformIdentifierEnum;
 }
 
-const OPTIONS = [
-  'Intelligence lacks actionable insight for our specific needs',
-  'Incompatible with our existing security stack',
-  'Configuration is too complex to complete within a reasonable timeframe',
-  'Internal security or legal team required immediate termination',
-  'We lack the internal analysts/expertise to utilise the tool effectively',
+const REASONS = [
+  'value',
+  'compatibility',
+  'complexity',
+  'legal-security',
+  'expertise',
 ];
-const CANCELLATION_REASONS = OPTIONS.map((option) => ({
-  value: option,
-  label: option,
-}));
 
 export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
   deploymentRequestId,
   isCancellationDefinitive,
   open,
   setOpen,
+  platformIdentifier,
 }) => {
   const t = useTranslations();
+  const cancellationReasons = REASONS.map((reason) => ({
+    value: reason,
+    label: t(`Service.Trials.CancellationReason.${reason}`),
+  }));
   const { refetch } = useOrgaFreeTrial();
+  const router = useRouter();
 
   const [cancelDeploymentRequestMutation] =
     useMutation<trialInstancesCancelDeploymentRequestMutation>(
@@ -74,6 +79,8 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
         });
         refetch({}, { fetchPolicy: 'network-only' });
         setOpen(false);
+
+        router.push(`/app/service/${platformIdentifier}-free-trial`);
       },
       onError: (error) => {
         toast({
@@ -115,7 +122,7 @@ export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
                 </FormLabel>
                 <SelectWithEditableField
                   onChange={field.onChange}
-                  options={CANCELLATION_REASONS}
+                  options={cancellationReasons}
                   labels={{
                     placeholder: t(
                       'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonPlaceholder'
