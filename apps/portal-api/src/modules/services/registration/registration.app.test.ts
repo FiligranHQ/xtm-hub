@@ -19,10 +19,13 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
@@ -778,9 +781,9 @@ describe('Registration app', () => {
 
       deploymentRequest =
         (await DeploymentRequestDomain.insertDeploymentRequest({
-          activity_sector: 'cybersecurity',
+          activity_sector: DeploymentRequestActivitySector.ComputerGames,
           id: uuidv4() as DeploymentRequestId,
-          job_title: 'myJob',
+          job_title: DeploymentRequestJobTitle.CLevel,
           organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           platform_identifier: PlatformIdentifier.Opencti,
           platform_token: uuidv4(),
@@ -791,7 +794,7 @@ describe('Registration app', () => {
           actual_state: DeploymentRequestPlatformState.Provisioning,
           ordering: 1,
           type: DeploymentRequestDeploymentType.Trial,
-          use_case: 'use_case',
+          use_case: DeploymentRequestUseCase.ThreatHunting,
           service_instance_id: serviceInstanceId as ServiceInstanceId,
           user_requester_id:
             TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,

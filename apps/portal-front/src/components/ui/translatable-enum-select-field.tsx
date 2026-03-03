@@ -1,0 +1,56 @@
+import {
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@filigran/ui';
+import { useTranslations } from 'next-intl';
+import { ControllerRenderProps } from 'react-hook-form';
+
+interface TranslatableEnumSelectFieldProps {
+  field: ControllerRenderProps;
+  label: string;
+  placeholder: string;
+  values: string[];
+  translationNamespace: string;
+  className?: string;
+}
+
+export const TranslatableEnumSelectField = ({
+  field,
+  label,
+  placeholder,
+  values,
+  translationNamespace,
+  className = 'text-sm text-destructive',
+}: TranslatableEnumSelectFieldProps) => {
+  const t = useTranslations();
+  return (
+    <FormItem>
+      <FormLabel>
+        {label} <span className={className}>*</span>
+      </FormLabel>
+      <Select
+        value={field.value}
+        onValueChange={field.onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {values.map((value) => (
+            <SelectItem
+              key={value}
+              value={value}>
+              {t(`${translationNamespace}.${value}`)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <FormMessage className={className} />
+    </FormItem>
+  );
+};
