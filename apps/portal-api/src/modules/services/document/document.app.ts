@@ -189,11 +189,26 @@ export const DocumentApp = {
         serviceInstanceId
       );
 
-    const completeMetadata =
-      DocumentHelper.buildCompleteMetadataFromDocumentFile({
+    let completeMetadata = DocumentHelper.buildCompleteMetadataFromDocumentFile(
+      {
         files: [documentFile],
         metadata,
-      });
+      }
+    );
+
+    if (!completeMetadata.some(({ key }) => key === 'feed_url')) {
+      const existingFeedUrl =
+        await DocumentMetadataDomain.loadMetadataValueByKey(
+          parentDocumentId,
+          'feed_url'
+        );
+      if (existingFeedUrl) {
+        completeMetadata = [
+          ...completeMetadata,
+          { key: 'feed_url', value: existingFeedUrl },
+        ];
+      }
+    }
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,

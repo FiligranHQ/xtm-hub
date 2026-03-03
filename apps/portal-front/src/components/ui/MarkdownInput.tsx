@@ -1,5 +1,4 @@
 import MDEditor from '@uiw/react-md-editor';
-import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import rehypeSanitize from 'rehype-sanitize';
 
@@ -12,7 +11,6 @@ const MarkdownInput = ({
   onChange: (v: string | undefined) => void;
   placeholder: string;
 }) => {
-  const t = useTranslations();
   const { theme } = useTheme();
 
   return (
@@ -33,7 +31,7 @@ const MarkdownInput = ({
           },
         }}
         textareaProps={{
-          placeholder: t(placeholder),
+          placeholder,
           style: {
             background: 'transparent',
             color: 'hsl(var(--text-foreground))',

@@ -79,6 +79,7 @@ export enum AlreadyExistsErrorCode {
   OrganizationSameDomainExists = 'ORGANIZATION_SAME_DOMAIN_EXISTS',
   DocumentUniqueSlugError = 'DOCUMENT_UNIQUE_SLUG_ERROR',
   FreeTrialAlreadyExists = 'FREE_TRIAL_ALREADY_EXISTS',
+  CompetitorDomainAlreadyExists = 'COMPETITOR_DOMAIN_ALREADY_EXISTS',
 }
 
 export enum NotFoundErrorCode {

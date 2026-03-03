@@ -374,11 +374,11 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="truncate block cursor-help">
-                          {reason}
+                          {t(`Service.Trials.CancellationReason.${reason}`)}
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="bg-gray-50 max-w-md">
-                        {reason}
+                        {t(`Service.Trials.CancellationReason.${reason}`)}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

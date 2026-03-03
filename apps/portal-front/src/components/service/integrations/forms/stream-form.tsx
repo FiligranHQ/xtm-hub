@@ -1,28 +1,10 @@
-import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { useServiceContext } from '@/components/service/components/service-context';
-import { SubTypesPerIntegrationType } from '@/components/service/integrations/integration.utils';
-import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
-import MarkdownInput from '@/components/ui/MarkdownInput';
-import SelectUsersFormField from '@/components/ui/select-users';
+import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
+import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
+import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListCheck } from '@/utils/documents';
-import { formatTitleCase } from '@/utils/format/case';
-import {
-  AutoForm,
-  Button,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  MultiSelectFormField,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SheetFooter,
-} from '@filigran/ui';
+import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
@@ -52,43 +34,61 @@ interface StreamFormProps {
 }
 
 export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
-  const stream = document;
   const t = useTranslations();
   const { me } = useContext(PortalContext);
-  const { handleCloseSheet } = useDialogContext();
-  const { translationKey } = useServiceContext();
+  const { handleCloseSheet, setIsDirty } = useDialogContext();
 
-  const isCreation = !stream;
+  const isCreation = !document;
 
   const values = useMemo(
     () =>
       ({
-        ...stream,
-        images: stream?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
-        use_cases: stream?.use_cases?.map((label) => label.id),
-        uploader_id: stream?.uploader?.id ?? me!.id,
+        ...document,
+        images: (document?.children_documents?.length
+          ? document.children_documents.map((doc) => ({
+              ...doc,
+              name: doc.file_name,
+            }))
+          : undefined) as unknown as FileList,
+        use_cases: document?.use_cases?.map((label) => label.id),
+        uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
             ? me?.selected_organization_id
-            : stream?.uploader_organization?.id) ?? '',
+            : document?.uploader_organization?.id) ?? '',
         integration_type: IntegrationTypeEnum.STREAM,
-        integration_subtype: stream?.integration_subtype ?? '',
+        integration_subtype: document?.integration_subtype ?? '',
       }) as StreamFormValues,
-    [me, stream, isCreation]
+    [me, document, isCreation]
   );
   const formSchema = useMemo(
     () =>
-      stream
+      document
         ? streamFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
             images: z.custom<FileList>(fileListCheck).optional(),
           })
         : streamFormSchema,
-    [stream]
+    [document]
   );
+
+  const {
+    active,
+    slug,
+    name,
+    short_description,
+    description,
+    uploader_organization_id,
+    uploader_id,
+    use_cases,
+    integration_subtype,
+    integration_type,
+  } = useSimpleServiceFormField({
+    documentType: 'Stream',
+    platform: 'OpenCTI',
+    isCreation,
+    document,
+  });
 
   return (
     <>
@@ -111,102 +111,13 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
         values={values}
         formSchema={formSchema}
         fieldConfig={{
-          description: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t(`${translationKey}.Form.DescriptionLabel`)}
-                </FormLabel>
-                <FormControl>
-                  <MarkdownInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder={`${translationKey}.Form.DescriptionPlaceholder`}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            ),
-          },
-          use_cases: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t(`${translationKey}.Form.UseCasesLabel`)}
-                </FormLabel>
-                <FormControl>
-                  <MultiSelectFormField
-                    noResultString={t('Utils.NotFound')}
-                    options={getUseCases()}
-                    keyValue="id"
-                    keyLabel="name"
-                    defaultValue={field.value}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    placeholder={t(
-                      `${translationKey}.Form.UseCasesPlaceholder`
-                    )}
-                    variant="inverted"
-                  />
-                </FormControl>
-              </FormItem>
-            ),
-          },
-          uploader_id: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>{t(`${translationKey}.Form.Author`)}</FormLabel>
-                <FormControl>
-                  <SelectUsersFormField
-                    defaultValue={stream?.uploader?.email ?? me!.email}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            ),
-          },
-          uploader_organization_id: {
-            fieldType: ({ field }) => (
-              <FormItem hidden={isCreation}>
-                <FormLabel>
-                  {t('OrganizationInServiceAction.Organization')}
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={
-                    (isCreation
-                      ? me?.selected_organization_id
-                      : stream?.uploader_organization?.id) ?? ''
-                  }>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'OrganizationInServiceAction.SelectOrganization'
-                        )}
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {me?.organizations.map((node) => {
-                      return (
-                        <SelectItem
-                          key={node?.id}
-                          value={node?.id}>
-                          {node?.name}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            ),
-          },
+          description,
+          use_cases,
+          uploader_id,
+          uploader_organization_id,
           document: isCreation
             ? {
-                label: t(`${translationKey}.Form.StreamFile`),
+                label: t('Service.Form.SelectJSONFile'),
                 fieldType: 'file',
                 inputProps: {
                   allowedTypes: 'application/json',
@@ -215,106 +126,28 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
               }
             : {
                 fieldType: ({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t(`${translationKey}.Form.ExistingStreamFile`, {
-                        file_name: field.value?.[0].name ?? stream?.file_name,
-                      })}
-                    </FormLabel>
-                    <FormControl>
-                      <div>
-                        <FileInputWithPrevent
-                          field={field}
-                          texts={{
-                            selectFile: t(
-                              `${translationKey}.Form.UpdateJSONFile`
-                            ),
-                            dialogTitle: t(
-                              `${translationKey}.Form.UpdateJSONFile`
-                            ),
-                            dialogDescription: t(
-                              `${translationKey}.Form.DescriptionUpdateJSONFile`
-                            ),
-                          }}
-                          allowedTypes="application/json"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <ServiceFormJsonFileField
+                    field={field}
+                    setIsDirty={setIsDirty}
+                    document={document}
+                  />
                 ),
               },
           images: {
-            label: t(`${translationKey}.Form.StreamIllustration`),
+            label: t('Service.Form.Illustration'),
             fieldType: 'file',
             inputProps: {
               accept: 'image/jpeg, image/png',
             },
           },
-          active: {
-            label: t(`${translationKey}.Form.PublishedPlaceholder`),
-          },
-          short_description: {
-            label: t(`${translationKey}.Form.ShortDescriptionLabel`),
-          },
-          slug: {
-            label: t(`${translationKey}.Form.SlugLabel`),
-          },
-          name: {
-            label: t(`${translationKey}.Form.NameLabel`),
-          },
-          integration_type: { fieldType: () => <FormItem hidden={true} /> },
-          integration_subtype: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t(
-                    'Service.OpenctiIntegrations.Form.SelectIntegrationSubType'
-                  )}
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={stream?.integration_subtype}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'Service.OpenctiIntegrations.Form.SelectIntegrationSubType'
-                        )}
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {SubTypesPerIntegrationType.get(
-                      IntegrationTypeEnum.STREAM
-                    )?.map((node) => {
-                      return (
-                        <SelectItem
-                          key={node}
-                          value={node}>
-                          {formatTitleCase(node)}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            ),
-          },
+          active,
+          short_description,
+          slug,
+          name,
+          integration_type,
+          integration_subtype,
         }}>
-        <SheetFooter className="sm:justify-between pt-2">
-          <div className="ml-auto flex gap-s">
-            <Button
-              variant="outline"
-              type="button"
-              onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
-            </Button>
-
-            <Button>{t('Utils.Validate')}</Button>
-          </div>
-        </SheetFooter>
+        <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>
     </>
   );

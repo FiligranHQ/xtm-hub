@@ -9,7 +9,6 @@ export const SettingsContext_fragment = graphql`
     environment
     base_url_front
     platform_feature_flags
-    domains_blacklist
   }
 `;
 
@@ -23,7 +22,6 @@ export const SettingsQuery = graphql`
       }
       base_url_front
       platform_feature_flags
-      domains_blacklist
     }
   }
 `;

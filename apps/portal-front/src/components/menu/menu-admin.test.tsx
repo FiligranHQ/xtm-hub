@@ -36,6 +36,7 @@ describe('render MenuAdmin', () => {
     expect(screen.getByText('Services')).toBeInTheDocument();
     expect(screen.getByText('OpenCTI Trials')).toBeInTheDocument();
     expect(screen.getByText('OpenAEV Trials')).toBeInTheDocument();
+    expect(screen.getByText('Competitors')).toBeInTheDocument();
   });
 
   it('should render admin panel with only Trials dashboard in the menu with READ_TRIALS capabilities', async () => {
@@ -69,5 +70,39 @@ describe('render MenuAdmin', () => {
     expect(screen.queryByText('Services')).not.toBeInTheDocument();
     expect(screen.getByText('OpenCTI Trials')).toBeInTheDocument();
     expect(screen.getByText('OpenAEV Trials')).toBeInTheDocument();
+    expect(screen.queryByText('Competitors')).not.toBeInTheDocument();
+  });
+  it('should render admin panel with only Trials dashboards and competitors in the menu with MANAGE_COMPETITOR capabilities', async () => {
+    const user = userEvent.setup();
+    const { container } = testRender(<MenuAdmin open={true} />, {
+      me: {
+        capabilities: [
+          {
+            name: 'MODIFY_COMPETITORS',
+          },
+        ],
+      },
+    });
+    expect(container).toBeTruthy();
+    expect(screen.getByText('Settings')).toBeInTheDocument();
+
+    const settingsButton = screen.getByRole('button', { name: /settings/i });
+
+    // Click it
+    await user.click(settingsButton);
+
+    // Check if it's expanded
+    await waitFor(() => {
+      expect(settingsButton).toHaveAttribute('aria-expanded', 'true');
+      expect(settingsButton).toHaveAttribute('data-state', 'open');
+    });
+    expect(screen.queryByText('Parameters')).not.toBeInTheDocument();
+    expect(screen.queryByText('Security')).not.toBeInTheDocument();
+    expect(screen.queryByText('Use Cases')).not.toBeInTheDocument();
+    expect(screen.queryByText('Organizations')).not.toBeInTheDocument();
+    expect(screen.queryByText('Services')).not.toBeInTheDocument();
+    expect(screen.queryByText('OpenCTI Trials')).not.toBeInTheDocument();
+    expect(screen.queryByText('OpenAEV Trials')).not.toBeInTheDocument();
+    expect(screen.getByText('Competitors')).toBeInTheDocument();
   });
 });
