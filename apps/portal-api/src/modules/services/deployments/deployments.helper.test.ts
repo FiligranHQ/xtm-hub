@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
@@ -460,14 +461,14 @@ describe('hasDeploymentTelemetryDataChanged', () => {
       failure_reason: null,
       ordering: 0,
       actual_state: DeploymentRequestPlatformState.Provisioning,
-      activity_sector: 'cybersecurity',
+      activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
     });
     const current = {
       ...previous,
       failure_reason: 'some failure',
       ordering: 5,
       actual_state: DeploymentRequestPlatformState.Active,
-      activity_sector: 'finance',
+      activity_sector: DeploymentRequestActivitySector.FinancialServices,
     };
 
     expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);

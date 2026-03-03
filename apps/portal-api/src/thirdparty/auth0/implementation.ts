@@ -2,6 +2,7 @@ import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
 import { buildUserMetadataUpdate } from './auth0.util';
 import {
+  auth0Client,
   Auth0Client,
   Auth0UpdateUser,
   Auth0UpdateUserRBACInstance,
@@ -84,6 +85,14 @@ export const auth0ClientImplementation: Auth0Client = {
     });
   },
   deleteAudienceAPI: async (platform_id: string): Promise<void> => {
+    const allApis = await managementClient.resourceServers.getAll({
+      include_totals: true,
+      per_page: 100,
+    });
+    const apiToDelete = allApis.data.resource_servers.find((resourceServer) =>
+      resourceServer.name.includes(platform_id)
+    );
+    await auth0Client.deleteAudienceAPI(apiToDelete.name);
     await managementClient.resourceServers.delete({
       id: platform_id,
     });

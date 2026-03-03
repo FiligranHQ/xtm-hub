@@ -1,7 +1,10 @@
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
+  DeploymentRequestUseCase,
 } from '../../__generated__/resolvers-types';
 import {
   TELEMETRY_SOURCE,
@@ -101,15 +104,15 @@ export interface CreateOrganizationEvent extends BaseTelemetryEvent {
 }
 
 export interface CreateDeploymentEvent extends BaseTelemetryEvent {
-  activity_sector: string;
+  activity_sector: DeploymentRequestActivitySector;
   deployment_id: string;
   deployment_type: DeploymentRequestDeploymentType;
   email: string;
   event_type: TelemetryEventType.CREATE_DEPLOYMENT;
-  job_title: string;
+  job_title: DeploymentRequestJobTitle;
   region: DeploymentRequestPlatformRegion;
   status: DeploymentRequestHubStatus;
-  use_case: string;
+  use_case: DeploymentRequestUseCase;
   target_product: TelemetryTargetProduct;
 }
 
