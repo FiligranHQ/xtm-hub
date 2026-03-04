@@ -50,7 +50,7 @@ const ShareableResourceCard = ({
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover h-[348px]">
       <Link
-        className="flex flex-col h-full"
+        className="flex flex-col flex-1 min-h-0 overflow-hidden"
         onClick={handleClick}
         href={detailUrl}>
         <ShareableResourceCardHeader
