@@ -159,20 +159,23 @@ export const UserServiceDomain = {
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       serviceInstance.id
     );
-    await sendMail({
-      to: user.email,
-      template: ServiceIdentifierToMailTemplate.get(
-        serviceDefinition.identifier
-      ),
-      params: {
-        name: user.email,
-        serviceLink: buildServiceLink({
-          serviceDefinitionIdentifier: serviceDefinition.identifier,
-          serviceInstanceId: serviceInstance.id,
-        }),
-        serviceName: serviceInstance.name,
-      },
-    });
+    const mailTemplate = ServiceIdentifierToMailTemplate.get(
+      serviceDefinition.identifier
+    );
+    if (mailTemplate) {
+      await sendMail({
+        to: user.email,
+        template: mailTemplate,
+        params: {
+          name: user.email,
+          serviceLink: buildServiceLink({
+            serviceDefinitionIdentifier: serviceDefinition.identifier,
+            serviceInstanceId: serviceInstance.id,
+          }),
+          serviceName: serviceInstance.name,
+        },
+      });
+    }
     return addedUserService;
   },
 

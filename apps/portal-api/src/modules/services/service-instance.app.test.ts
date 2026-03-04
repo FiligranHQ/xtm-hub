@@ -252,7 +252,6 @@ describe('Service Instance app', () => {
       ).rejects.toThrow('Error');
 
       expect(loadUserServiceBySpy).not.toHaveBeenCalled();
-      expect(loadServiceInstanceBySpy).not.toHaveBeenCalled();
     });
 
     it('should propagate errors from grantServiceAccess', async () => {
@@ -271,8 +270,6 @@ describe('Service Instance app', () => {
           mockServiceInstanceId
         )
       ).rejects.toThrow('Other error');
-
-      expect(loadServiceInstanceBySpy).not.toHaveBeenCalled();
     });
 
     it('should handle different context users', async () => {

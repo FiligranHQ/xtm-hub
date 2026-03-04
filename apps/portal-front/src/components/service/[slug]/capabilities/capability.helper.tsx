@@ -8,6 +8,7 @@ export enum GenericCapabilityName {
 export enum ServiceCapabilityName {
   Upload = 'UPLOAD',
   Delete = 'DELETE',
+  Upsert = 'UPSERT',
 }
 
 export function hasGenericServiceCapa(
