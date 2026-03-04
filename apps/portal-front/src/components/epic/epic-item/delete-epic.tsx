@@ -30,7 +30,7 @@ export const DeleteEpic: FunctionComponent<DeleteEpicProps> = ({
       onCompleted: () => {
         toast({
           title: t('Utils.Success'),
-          description: t('OrganizationActions.OrganizationDeleted'),
+          description: t('Epic.EpicActions.EpicDeleted'),
         });
       },
       onError: (error) => {
@@ -46,11 +46,11 @@ export const DeleteEpic: FunctionComponent<DeleteEpicProps> = ({
     <AlertDialogComponent
       actionButtonText={t('Utils.Delete')}
       variantName={'destructive'}
-      AlertTitle={t('OrganizationForm.DeleteOrganization')}
+      AlertTitle={t('Epic.EpicActions.DeleteEpic')}
       isOpen={open}
       onOpenChange={setOpen}
       onClickContinue={() => onDeletedEpic(epic.id)}>
-      {'Sure'}
+      {t('Epic.EpicActions.SureDeleteEpic')}
     </AlertDialogComponent>
   );
 };

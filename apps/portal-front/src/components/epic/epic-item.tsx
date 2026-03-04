@@ -5,6 +5,7 @@ import { useEpicListContext } from '@/components/epic/epic-page';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
 import { MoreVertIcon } from '@filigran/icon';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface EpicListProps {
@@ -21,6 +22,7 @@ export const EpicItem = ({
   userCanDelete,
 }: EpicListProps) => {
   const { connectionID } = useEpicListContext();
+  const t = useTranslations();
 
   const [deleteEpic, setDeleteEpic] = useState<epic_fragment$data | undefined>(
     undefined
@@ -50,12 +52,12 @@ export const EpicItem = ({
               }>
               {userCanUpdate && (
                 <IconActionsItem onClick={() => {}}>
-                  {'Utils.Update'}
+                  {t('Utils.Update')}
                 </IconActionsItem>
               )}
               {userCanDelete && (
                 <IconActionsItem onClick={() => setDeleteEpic(epic)}>
-                  {'Utils.Delete'}
+                  {t('Utils.Delete')}
                 </IconActionsItem>
               )}
             </IconActions>

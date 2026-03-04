@@ -118,6 +118,32 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
+  "Epic": {
+    "XTMRoadmap": "Roadmap XTM",
+    "Timeline": {
+      "NOW": "Maintenant",
+      "NEXT": "Après",
+      "UNDER_CONSIDERATION": "En considération"
+    },
+    "Form": {
+      "Epic": "Epic",
+      "Title": "Titre",
+      "ShortDesc": "Description courte",
+      "Description": "Description",
+      "FiligranProduct": "Produit",
+      "FiligranProductPlaceholder": "OpenCTI",
+      "Timeline": "Ligne de temps",
+      "IsActive": "Actif",
+      "Integration": "Est une intégration"
+    },
+    "EpicActions": {
+      "CreateEpic": "Créer un nouvel épic",
+      "UpdateEpic": "Mettre à jour un épic",
+      "DeleteEpic": "Supprimer un épic",
+      "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer cet épic ?",
+      "EpicDeleted": "L'épic a été supprimé"
+    }
+  },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
     "Login": {

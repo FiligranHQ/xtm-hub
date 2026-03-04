@@ -97,6 +97,32 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"
   },
+  "Epic": {
+    "XTMRoadmap": "XTM Roadmap",
+    "Timeline": {
+      "NOW": "Now",
+      "NEXT": "Next",
+      "UNDER_CONSIDERATION": "Under consideration"
+    },
+    "Form": {
+      "Epic": "Epic",
+      "Title": "Title",
+      "ShortDesc": "Short description",
+      "Description": "Description",
+      "FiligranProduct": "Product",
+      "FiligranProductPlaceholder": "OpenCTI",
+      "Timeline": "Timeline",
+      "IsActive": "Active",
+      "Integration": "Is an integration"
+    },
+    "EpicActions": {
+      "CreateEpic": "Create a new epic",
+      "UpdateEpic": "Update an epic",
+      "DeleteEpic": "Delete an epic",
+      "SureDeleteEpic": "Are you sure you want to delete this epic?",
+      "EpicDeleted": "The epic was deleted"
+    }
+  },
   "Error": {
     "AnErrorOccured": "An error occurred",
     "Login": {

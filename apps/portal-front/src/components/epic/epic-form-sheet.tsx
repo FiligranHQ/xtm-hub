@@ -38,7 +38,9 @@ export const EpicFormSheet = ({
           </Button>
         )
       }
-      title={t(epic ? 'EpicActions.UpdateEpic' : 'EpicActions.CreateEpic')}>
+      title={t(
+        epic ? 'Epic.EpicActions.UpdateEpic' : 'Epic.EpicActions.CreateEpic'
+      )}>
       <EpicForm
         epic={epic}
         onClose={() => setOpenSheet(false)}

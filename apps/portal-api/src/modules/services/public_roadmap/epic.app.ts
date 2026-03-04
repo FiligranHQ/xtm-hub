@@ -8,8 +8,6 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { extractId } from '../../../utils/utils';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { processUploads, Upload } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
@@ -32,16 +30,14 @@ export const EpicApp = {
     );
     const { is_integration, ...restInput } = input;
     let createdDocument;
-    if (uploads) {
+    if (uploads && serviceInstance) {
       const files = await processUploads(
         uploads,
-        extractId<ServiceInstanceId>(serviceInstance.service_instance_id)
+        serviceInstance.service_instance_id
       );
       createdDocument = await DocumentDomain.createDocument(
         {
-          service_instance_id: extractId<ServiceInstanceId>(
-            serviceInstance.service_instance_id
-          ),
+          service_instance_id: serviceInstance.service_instance_id,
           description: 'Epic illustration',
           file_name: files[0].fileName,
           minio_name: files[0].minioName,

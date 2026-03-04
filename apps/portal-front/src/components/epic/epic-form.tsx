@@ -1,29 +1,57 @@
 'use client';
 
+import { FiligranProductMapping } from '@/components/epic/epic-item/filigran-product-mapping';
 import { useEpicListContext } from '@/components/epic/epic-page';
 import { CreateEpicMutation } from '@/components/epic/epic.graphql';
+import { ServiceFormDescriptionField } from '@/components/service/form/description-field';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { AutoForm, Button, useToast } from '@filigran/ui';
+import {
+  AutoForm,
+  Button,
+  FileInput,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  useToast,
+} from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 export const FILIGRAN_PRODUCTS_VALUES = Object.values(FiligranProductEnum);
 export const TIMELINE_VALUES = Object.values(TimelineEnum);
-export const epicFormSchema = z.object({
-  epic: z.string().min(1, 'Required'),
-  title: z.string().min(2, 'EpicForm.Error.Title'),
-  short_description: z.string().min(1, 'Required').max(250),
-  description: z.string().min(1, 'Required'),
-  product: z.enum(FILIGRAN_PRODUCTS_VALUES),
-  timeline: z.enum(TIMELINE_VALUES),
-  is_active: z.boolean().optional(),
-  is_integration: z.boolean().optional(),
-  illustration_document: z.custom<FileList>().optional(),
-});
+export const epicFormSchema = z
+  .object({
+    epic: z.string().min(1, 'Required'),
+    title: z.string().min(2, 'EpicForm.Error.Title'),
+    short_description: z.string().min(1, 'Required').max(250),
+    description: z.string().min(1, 'Required'),
+    product: z.enum(FILIGRAN_PRODUCTS_VALUES),
+    timeline: z.enum(TIMELINE_VALUES),
+    is_active: z.boolean().optional(),
+    is_integration: z.boolean().optional(),
+    illustration_document: z.custom<FileList>().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.is_integration && !data.illustration_document) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['illustration_document'],
+        message: 'Required when integration',
+      });
+    }
+  });
 
 const EpicForm = ({
   epic,
@@ -36,6 +64,9 @@ const EpicForm = ({
   const [commitEpicMutation] = useMutation(CreateEpicMutation);
   const { toast } = useToast();
   const { connectionID } = useEpicListContext();
+  const [isIntegration, setIsIntegration] = useState(
+    epic?.epic_type === EpicTypeEnum.INTEGRATION
+  );
 
   const onSubmit = (values: z.infer<typeof epicFormSchema>) => {
     const document = !values.illustration_document
@@ -74,6 +105,9 @@ const EpicForm = ({
   return (
     <AutoForm
       onSubmit={onSubmit}
+      onValuesChange={(values) => {
+        setIsIntegration(values.is_integration ?? false);
+      }}
       formSchema={epicFormSchema}
       values={{
         epic: epic?.epic ?? '',
@@ -87,16 +121,118 @@ const EpicForm = ({
         illustration_document: undefined,
       }}
       fieldConfig={{
+        short_description: {
+          label: t('Epic.Form.ShortDesc'),
+        },
+        description: {
+          fieldType: ({
+            field,
+          }: {
+            field: ControllerRenderProps<FieldValues, string>;
+          }) => (
+            <ServiceFormDescriptionField
+              field={field}
+              documentType={'Epic'}
+            />
+          ),
+        },
+        product: {
+          fieldType: ({
+            field,
+          }: {
+            field: ControllerRenderProps<FieldValues, string>;
+          }) => (
+            <FormItem>
+              <FormLabel>{t('Epic.Form.FiligranProduct')}</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={epic?.product}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={t('Epic.Form.FiligranProductPlaceholder')}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.values(FiligranProductEnum).map((product) => {
+                    return (
+                      <SelectItem
+                        key={product}
+                        value={product}>
+                        {FiligranProductMapping[product].name}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          ),
+        },
+        timeline: {
+          fieldType: ({
+            field,
+          }: {
+            field: ControllerRenderProps<FieldValues, string>;
+          }) => (
+            <FormItem>
+              <FormLabel>{t('Epic.Form.Timeline')}</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={epic?.timeline}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('Epic.Timeline.NOW')} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.values(TimelineEnum).map((timeline) => {
+                    return (
+                      <SelectItem
+                        key={timeline}
+                        value={timeline}>
+                        {t(`Epic.Timeline.${timeline.toUpperCase()}`)}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          ),
+        },
         illustration_document: {
-          label: t('Service.Form.Illustration'),
-          fieldType: 'file',
-          inputProps: {
-            accept: 'image/jpeg, image/png',
+          fieldType: ({ field }) => {
+            if (!isIntegration) return null;
+            return (
+              <FormItem>
+                <FormLabel>{t('Service.Form.Illustration')}</FormLabel>
+                <FormControl>
+                  <FileInput
+                    {...field}
+                    texts={{
+                      selectFile: t('Service.Vault.FileForm.SelectDocument'),
+                      noFile: t('Service.Vault.FileForm.NoDocument'),
+                      dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                    }}
+                    allowedTypes={'image/jpeg, image/gif, image/png, image/svg'}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
           },
+        },
+        is_active: {
+          label: t('Epic.Form.IsActive'),
+        },
+        is_integration: {
+          label: t('Epic.Form.Integration'),
         },
       }}>
       <div className="flex justify-end">
-        <Button>{t('Utils.Update')}</Button>
+        <Button>{epic ? t('Utils.Update') : t('Utils.Create')}</Button>
       </div>
     </AutoForm>
   );

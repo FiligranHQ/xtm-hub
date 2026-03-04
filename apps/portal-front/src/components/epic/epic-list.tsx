@@ -45,7 +45,7 @@ export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
   return (
     <>
       <div className="flex flex-row">
-        <h1>{t('Epics.XTMRoadmap')}</h1>
+        <h1>{t('Epic.XTMRoadmap')}</h1>
         {userCanUpdate && (
           <EpicFormSheet
             open={openSheet}
