@@ -58,7 +58,8 @@ type AvailableFields =
   | 'subscription_link'
   | 'verified'
   | 'manager_supported'
-  | 'playbook_supported';
+  | 'playbook_supported'
+  | 'first_image';
 
 interface Props {
   documentType: DocumentType;
@@ -181,6 +182,9 @@ export const useServiceFormFields = ({
             }) => (
               <ServiceFormMultipleImagesField
                 field={field}
+                disableFirstImageEdition={disabledFields.includes(
+                  'first_image'
+                )}
                 document={document}
                 images={images}
                 setImages={setImages}

@@ -34,6 +34,7 @@ import {
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './opencti/custom-dashboards/custom-dashboards.model';
 import {
+  INTEGRATION_CONNECTOR_METADATA,
   INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_METADATA_KEYS,
   INTEGRATION_STREAM_METADATA,
@@ -118,6 +119,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
       [IntegrationType.Stream]: INTEGRATION_STREAM_METADATA,
       [IntegrationType.ThirdPartyIntegration]:
         INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
+      [IntegrationType.Connector]: INTEGRATION_CONNECTOR_METADATA,
     };
     if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);

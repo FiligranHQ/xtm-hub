@@ -9,6 +9,7 @@ import {
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
+import { ConnectorForm } from '@/components/service/integrations/forms/connector-form';
 import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
 import { StreamForm } from '@/components/service/integrations/forms/stream-form';
 import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
@@ -200,6 +201,7 @@ export function useDocumentContext({
           [IntegrationTypeEnum.STREAM]: StreamForm,
           [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
             ThirdPartyIntegrationForm,
+          [IntegrationTypeEnum.CONNECTOR]: ConnectorForm,
         };
 
         return integrationMapping[integrationType] ?? CsvFeedForm;
@@ -222,6 +224,7 @@ export function useDocumentContext({
             [IntegrationTypeEnum.STREAM]: 'Service.Stream',
             [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
               'Service.ThirdPartyIntegration',
+            [IntegrationTypeEnum.CONNECTOR]: 'Service.Connector',
           };
 
         return integrationMapping[integrationType] ?? '';

@@ -8,6 +8,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { ServiceManageSheet } from '@/components/service/components/service-manage-sheet';
 import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/shareable-resource-connector-private-details';
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
@@ -73,12 +74,15 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
                 {t('Utils.Verified')}
               </div>
             )}
-            <div className="ml-auto flex">
+            <div className="ml-auto flex gap-s">
               <ShareLinkButton
                 documentId={documentData.id}
                 url={shareUrl}
               />
-
+              <ServiceManageSheet
+                document={documentData}
+                variant={'button'}
+              />
               {canClickOnDeployButton ? (
                 <OneClickDeploy
                   documentData={documentData}

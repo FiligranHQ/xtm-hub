@@ -28,6 +28,7 @@ import { buildCreateEvent } from '../../telemetry/telemetry.helper';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   ALL_METADATA_KEYS,
+  BOOLEAN_METADATA,
   DOCUMENT_TYPE,
   DocumentHelper,
   loadDocumentWithCountersById,
@@ -262,7 +263,9 @@ export const DocumentApp = {
         );
 
         for (const meta of completeMetadata) {
-          updatedDocument[meta.key] = meta.value;
+          updatedDocument[meta.key] = BOOLEAN_METADATA.includes(meta.key)
+            ? meta.value === 'true'
+            : meta.value;
         }
       }
 

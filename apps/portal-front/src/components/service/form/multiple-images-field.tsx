@@ -28,6 +28,7 @@ interface Props {
   imagesToDelete: string[];
   setImagesToDelete: (ids: string[]) => void;
   setIsDirty: (isDirty: boolean) => void;
+  disableFirstImageEdition?: boolean;
 }
 
 export const ServiceFormMultipleImagesField = ({
@@ -38,6 +39,7 @@ export const ServiceFormMultipleImagesField = ({
   imagesToDelete,
   setImagesToDelete,
   setIsDirty,
+  disableFirstImageEdition,
 }: Props) => {
   const t = useTranslations();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -95,7 +97,7 @@ export const ServiceFormMultipleImagesField = ({
           className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl"
           data-testid="images-grid">
           <TooltipProvider delayDuration={1}>
-            {images.map((doc) => (
+            {images.map((doc, index) => (
               <div
                 key={doc!.id}
                 style={{
@@ -143,6 +145,7 @@ export const ServiceFormMultipleImagesField = ({
                         (doc as NewFile)?.name}
                     </div>
                     <Button
+                      disabled={index === 0 && disableFirstImageEdition}
                       variant="outline-destructive"
                       size="icon"
                       type="button"
