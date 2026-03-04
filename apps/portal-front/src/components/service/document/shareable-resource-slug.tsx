@@ -29,6 +29,7 @@ import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
@@ -74,6 +75,17 @@ const ShareableResourceSlug: React.FunctionComponent<
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData]);
   const mainChild = documentData.children_documents?.[0];
+
+  const carouselImages = useMemo(() => {
+    const isFirstImageALogo =
+      documentData.integration_type ===
+      IntegrationTypeEnum.THIRD_PARTY_INTEGRATION;
+    if (isFirstImageALogo) {
+      return documentData.children_documents?.slice(1) || [];
+    }
+
+    return documentData.children_documents;
+  }, [documentData.children_documents, documentData.integration_type]);
 
   return (
     <>
@@ -150,7 +162,7 @@ const ShareableResourceSlug: React.FunctionComponent<
       </div>
       <ShareableResourceCarousel
         serviceInstance={serviceInstance}
-        images={documentData.children_documents}
+        images={carouselImages}
       />
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
