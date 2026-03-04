@@ -1,4 +1,5 @@
 import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/shareable-resource-connector-details';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -6,19 +7,26 @@ import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
-import React from 'react';
 import { MarkdownAsync } from 'react-markdown';
 
-interface ShareableResourceConnectorSlugPublicProps {
+interface Props {
   documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  serviceInstance:
+    | seoServiceInstanceFragment$data
+    | serviceInstance_fragment$data;
   pageUrl: string;
   logo: string;
 }
 
-const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
-  ShareableResourceConnectorSlugPublicProps
-> = ({ documentData, logo, pageUrl }) => {
+const ShareableResourceConnectorSlugPublic = ({
+  documentData,
+  logo,
+  pageUrl,
+  serviceInstance,
+}: Props) => {
   return (
     <>
       <div className="flex gap-s pb-l flex-col md:flex-row">
@@ -63,6 +71,11 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
           </div>
         </div>
       </div>
+
+      <ShareableResourceCarousel
+        serviceInstance={serviceInstance}
+        images={documentData.children_documents?.slice(1)}
+      />
 
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <div className="flex-[3_3_0%]">

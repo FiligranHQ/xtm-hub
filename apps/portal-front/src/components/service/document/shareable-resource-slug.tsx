@@ -150,7 +150,7 @@ const ShareableResourceSlug: React.FunctionComponent<
       </div>
       <ShareableResourceCarousel
         serviceInstance={serviceInstance}
-        documentData={documentData}
+        images={documentData.children_documents}
       />
       {children}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">

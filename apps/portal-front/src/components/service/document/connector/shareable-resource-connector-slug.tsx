@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 
 import {
   BreadcrumbNav,
@@ -12,6 +11,7 @@ import { ServiceManageSheet } from '@/components/service/components/service-mana
 import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/shareable-resource-connector-private-details';
 import OneClickDeploy from '@/components/service/document/one-click-deploy/one-click-deploy';
 import ShareableResourceDescription from '@/components/service/document/shareable-resource-description';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
@@ -21,21 +21,27 @@ import { InfoIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 import Link from 'next/link';
 
 // Component interface
-interface ShareableResourceConnectorSlugProps {
+interface Props {
   documentData: documentItem_fragment$data;
+  serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   shareUrl: string;
   logo?: string;
 }
 
 // Component
-const ShareableResourceConnectorSlug: React.FunctionComponent<
-  ShareableResourceConnectorSlugProps
-> = ({ documentData, breadcrumbValue, shareUrl, logo }) => {
+const ShareableResourceConnectorSlug = ({
+  documentData,
+  breadcrumbValue,
+  shareUrl,
+  logo,
+  serviceInstance,
+}: Props) => {
   const t = useTranslations();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const canClickOnDeployButton = documentData.manager_supported;
@@ -109,6 +115,11 @@ const ShareableResourceConnectorSlug: React.FunctionComponent<
           </div>
         </div>
       </div>
+      <ShareableResourceCarousel
+        serviceInstance={serviceInstance}
+        images={documentData.children_documents?.slice(1)}
+        className="mt-4"
+      />
       {documentData.verified && (
         <div className="border border-solid border-blue rounded flex items-center gap-xs p-s text-sm mt-4">
           <InfoIcon className="shrink-0 h-4 w-4 mr-xs text-blue" />

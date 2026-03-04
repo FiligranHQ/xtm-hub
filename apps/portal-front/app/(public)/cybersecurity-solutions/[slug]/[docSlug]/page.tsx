@@ -236,6 +236,7 @@ const Page = async ({
             logo={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
             documentData={document}
             pageUrl={pageUrl}
+            serviceInstance={serviceInstance}
           />
         </>
       );
@@ -292,7 +293,7 @@ const Page = async ({
         {mainChild && (
           <ShareableResourceCarousel
             serviceInstance={serviceInstance}
-            documentData={document}
+            images={document.children_documents}
           />
         )}
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
