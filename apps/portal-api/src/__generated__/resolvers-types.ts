@@ -567,9 +567,9 @@ export enum EpicType {
 }
 
 export enum FiligranProduct {
-  OpenAev = 'OpenAEV',
-  OpenCti = 'OpenCTI',
-  XtmHub = 'XTMHub'
+  Openaev = 'openaev',
+  Opencti = 'opencti',
+  Xtmhub = 'xtmhub'
 }
 
 export type Filter = {

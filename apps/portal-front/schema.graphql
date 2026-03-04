@@ -918,9 +918,9 @@ type ServiceLink implements Node {
 }
 
 enum FiligranProduct {
-  OpenCTI
-  OpenAEV
-  XTMHub
+  opencti
+  openaev
+  xtmhub
 }
 
 enum Timeline {
