@@ -82,5 +82,5 @@ type Mutation {
     @auth
     @service_capa(requires: [UPSERT])
   updateEpic(id: ID!, input: UpdateEpicInput!): Epic! @auth
-  deleteEpic(id: ID!): Epic! @auth
+  deleteEpic(id: ID!): Epic! @auth @service_capa(requires: [DELETE])
 }

@@ -46,7 +46,7 @@ const resolvers: Resolvers = {
     },
     deleteEpic: async (_, { id }) => {
       try {
-        const deletedEpic = await EpicApp.deleteEpic(extractId<EpicId>(id));
+        const deletedEpic = await EpicApp.deleteEpic(id as EpicId);
         return mapToGraphQLEpic(deletedEpic);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicDeleteError);

@@ -10,6 +10,7 @@ import { requestContext } from '../../../context/request.context';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { extractId } from '../../../utils/utils';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { processUploads, Upload } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { loadSubscribedServiceInstancesByIdentifier } from '../service-instance.domain';
@@ -74,8 +75,15 @@ export const EpicApp = {
     return EpicDomain.updateEpic(id, epicData);
   },
   deleteEpic: async (id: EpicId) => {
-    const [epics] = await EpicDomain.loadEpicsBy({ id: id });
+    const [epic] = await EpicDomain.loadEpicsBy({ id: id });
     await EpicDomain.deleteEpicBy({ id });
-    return epics;
+    if (epic.document_id) {
+      const [document] = await DocumentDomain.loadDocumentBy({
+        id: epic.document_id,
+      });
+      await MinIOClient.deleteFile(document.minio_name);
+      await DocumentDomain.deleteDocuments([epic.document_id]);
+    }
+    return epic;
   },
 };

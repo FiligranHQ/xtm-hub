@@ -1,18 +1,25 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../knexfile';
-import { SERVICES } from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   EpicOrdering,
+  EpicType,
   FiligranProduct,
   OrderingMode,
+  ServiceDefinitionIdentifier,
   Timeline,
 } from '../../../__generated__/resolvers-types';
-import Document from '../../../model/kanel/public/Document';
+import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { MinIOClient } from '../../../thirdparty/minio/client';
+import { DocumentApp } from '../document/document.app';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { DocumentDomain } from '../document/domain/document.domain';
 import * as ServiceInstanceDomain from '../service-instance.domain';
 import { EpicApp } from './epic.app';
+import { EpicDomain } from './epic.domain';
 
 describe('EpicApp', () => {
   const minioFileMock = {
@@ -42,7 +49,7 @@ describe('EpicApp', () => {
         short_description: 'Short desc',
         description: 'Long description for the epic',
         is_active: true,
-        product: FiligranProduct.OpenCti,
+        product: FiligranProduct.Opencti,
         timeline: Timeline.Now,
       };
 
@@ -52,7 +59,7 @@ describe('EpicApp', () => {
       expect(createdEpic.id).toBeDefined();
       expect(createdEpic.epic).toBe('EPI-001');
       expect(createdEpic.title).toBe('Test Epic');
-      expect(createdEpic.product).toBe('OpenCTI');
+      expect(createdEpic.product).toBe('opencti');
       expect(createdEpic.is_active).toBe(true);
 
       // Verify in DB
@@ -68,10 +75,7 @@ describe('EpicApp', () => {
         'loadSubscribedServiceInstancesByIdentifier'
       ).mockResolvedValue([
         {
-          service_instance_id: toGlobalId(
-            'ServiceInstance',
-            SERVICES.INSTANCES.INTEGRATIONS.ID
-          ),
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
           organization_id: 'test-org-id',
           is_personal_space: false,
           configurations: [],
@@ -84,7 +88,7 @@ describe('EpicApp', () => {
         short_description: 'Short desc',
         description: 'Long description for the epic',
         is_active: true,
-        product: FiligranProduct.OpenCti,
+        product: FiligranProduct.Opencti,
         timeline: Timeline.Now,
       };
 
@@ -125,7 +129,7 @@ describe('EpicApp', () => {
         title: 'Original Title',
         short_description: 'Original short',
         description: 'Original long',
-        product: FiligranProduct.OpenAev,
+        product: FiligranProduct.Openaev,
         timeline: Timeline.Next,
       });
 
@@ -165,7 +169,7 @@ describe('EpicApp', () => {
         title: 'Epic to Delete',
         short_description: 'Short',
         description: 'Long',
-        product: FiligranProduct.OpenCti,
+        product: FiligranProduct.Opencti,
         timeline: Timeline.Next,
       });
 
@@ -178,6 +182,51 @@ describe('EpicApp', () => {
       expect(deletedEpic?.id).toBe(createdEpic.id);
       expect(deletedEpic?.epic).toBe('EPI-005');
     });
+    it('should delete, when integration, the document and the minioFile as well', async () => {
+      const mockDeleteFileInMinio = vi
+        .spyOn(MinIOClient, 'deleteFile')
+        .mockResolvedValueOnce('mocked response');
+
+      const document = await DocumentApp.createDocumentWithChildrenAndMetadata(
+        {
+          id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
+          uploader_id: toGlobalId(
+            'User',
+            TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+          ),
+          description: 'description',
+          minio_name: 'minioName',
+          file_name: 'filename',
+          uploader_organization_id:
+            'ba091095-418f-4b4f-b150-6c9295e232c4' as OrganizationId,
+          service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+          type: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        },
+        []
+      );
+      const createdEpic = await EpicDomain.createEpic({
+        epic: 'EPI-005-bis',
+        title: 'Epic to Delete',
+        short_description: 'Short',
+        description: 'Long',
+        product: FiligranProduct.Opencti,
+        timeline: Timeline.Next,
+        epic_type: EpicType.Integration,
+        document_id: document.id,
+      });
+
+      // Delete the epic
+      const deletedEpic = await EpicApp.deleteEpic(createdEpic?.id as EpicId);
+
+      expect(deletedEpic).toBeDefined();
+      expect(deletedEpic?.id).toBe(createdEpic?.id);
+      expect(deletedEpic?.epic).toBe('EPI-005-bis');
+      expect(mockDeleteFileInMinio).toHaveBeenCalledTimes(1);
+      const documentFromDB = await DocumentDomain.loadDocumentBy({
+        file_name: 'filename',
+      });
+      expect(documentFromDB).toStrictEqual([]);
+    });
   });
 
   describe('loadEpics', () => {
@@ -188,7 +237,7 @@ describe('EpicApp', () => {
         title: 'Epic 1',
         short_description: 'Short 1',
         description: 'Long 1',
-        product: FiligranProduct.XtmHub,
+        product: FiligranProduct.Xtmhub,
         timeline: Timeline.Now,
         is_active: true,
       });
@@ -198,7 +247,7 @@ describe('EpicApp', () => {
         title: 'Epic 2',
         short_description: 'Short 2',
         description: 'Long 2',
-        product: FiligranProduct.XtmHub,
+        product: FiligranProduct.Xtmhub,
         timeline: Timeline.Now,
         is_active: true,
       });

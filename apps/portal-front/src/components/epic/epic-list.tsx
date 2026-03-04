@@ -23,17 +23,23 @@ export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
     ServiceCapabilityName.Upsert,
     serviceInstance
   );
+  const userCanDelete = useServiceCapability(
+    ServiceCapabilityName.Delete,
+    serviceInstance
+  );
 
   const epicItems = useMemo(
     () =>
       epics.map((epic) => (
         <EpicItem
+          userCanUpdate={userCanUpdate}
+          userCanDelete={userCanDelete}
           key={epic.id}
           epic={epic}
           serviceInstanceId={serviceInstance.id}
         />
       )),
-    [epics, serviceInstance.id]
+    [epics, serviceInstance.id, userCanUpdate, userCanDelete]
   );
 
   return (
