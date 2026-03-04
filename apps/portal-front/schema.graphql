@@ -286,14 +286,87 @@ enum DeploymentRequestPlatformState {
   removed
 }
 
+enum DeploymentRequestUseCase {
+  threat_profiling_cti
+  threat_profiling_fimi
+  threat_profiling_faml
+  threat_profiling_leo
+  threat_hunting
+  technical_reporting
+  strategic_reporting
+  incident_response
+  security_stack
+  detection_engineering
+  attack_simulation
+  crisis_simulation
+  vulnerability_management
+  centralizing_knowledge
+  sharing_knowledge
+  hosting_threat_community
+}
+
+enum DeploymentRequestActivitySector {
+  computer_network_security
+  computer_games
+  computer_software
+  defense_space
+  entertainment
+  financial_services
+  government_administration
+  government_relations
+  higher_education
+  hospital_health_care
+  hospitality
+  information_technology
+  insurance
+  legal_services
+  luxury_goods_jewelry
+  management_consulting
+  marketing_advertising
+  military
+  non_profit
+  oil_energy
+  pharmaceuticals
+  photography
+  retail
+  security_investigations
+  semiconductors
+  telecommunications
+  transportation
+  utilities
+  wireless
+}
+
+enum DeploymentRequestJobTitle {
+  ceo
+  ciso_cso_cio
+  c_level
+  general_manager_vp
+  director_head_cybersecurity
+  cybersecurity_team_lead
+  application_security_specialist
+  cloud_security_specialist
+  cybersecurity_architect
+  cybersecurity_engineer
+  dfir_specialist
+  grc_specialist
+  iam_specialist
+  penetration_tester
+  soc_analyst
+  threat_intelligence_analyst
+  vulnerability_analyst
+  consultant
+  other
+}
+
 type DeploymentRequest implements Node {
   id: ID!
   platform_identifier: PlatformIdentifier!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
-  job_title: String
-  activity_sector: String
-  use_case: String
+  job_title: DeploymentRequestJobTitle
+  activity_sector: DeploymentRequestActivitySector
+  use_case: DeploymentRequestUseCase
   start_date: Date
   end_date: Date
   hub_status: DeploymentRequestHubStatus!
@@ -323,9 +396,9 @@ type PlatformDeploymentRequest {
   ordering: Int!
   start_date: Date
   end_date: Date
-  job_title: String
-  activity_sector: String
-  use_case: String
+  job_title: DeploymentRequestJobTitle
+  activity_sector: DeploymentRequestActivitySector
+  use_case: DeploymentRequestUseCase
   organization_name: String!
   organization_domains: [String!]
   requester_email: String!
@@ -340,9 +413,9 @@ input CreateDeploymentRequestInput {
   platform_identifier: PlatformIdentifier!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
-  job_title: String
-  activity_sector: String
-  use_case: String
+  job_title: DeploymentRequestJobTitle
+  activity_sector: DeploymentRequestActivitySector
+  use_case: DeploymentRequestUseCase
 }
 
 input UpdateDeploymentRequestInput {

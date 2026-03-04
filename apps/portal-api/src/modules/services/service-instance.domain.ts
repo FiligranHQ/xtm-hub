@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, paginate } from '../../../knexfile';
 import {
@@ -43,7 +42,6 @@ export const ServiceInstanceDomain = {
     serviceDefinitionIdentifier: ServiceDefinitionIdentifier,
     tags: ServiceInstanceTag[]
   ): Promise<SeoServiceInstance[]> => {
-    const formattedTags = tags.map((tag) => `'${tag}'`).join(',');
     return db<ServiceInstance>('ServiceInstance')
       .leftJoin(
         'ServiceDefinition',
@@ -65,7 +63,8 @@ export const ServiceInstanceDomain = {
       )
       .whereNull('Subscription.id')
       .andWhereRaw(
-        `"ServiceInstance"."tags"::text[] @> array[${formattedTags}]`
+        `"ServiceInstance"."tags"::text[] @> ARRAY[${tags.map(() => '?').join(', ')}]::text[]`,
+        tags
       )
       .andWhere(
         'ServiceDefinition.identifier',
@@ -147,17 +146,10 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
       ),
     ]);
 
-  return subServiceInstance.map((sub) => {
-    return {
-      ...sub,
-      organization_id: toGlobalId('Organization', sub.organization_id),
-      service_instance_id: toGlobalId(
-        'ServiceInstance',
-        sub.service_instance_id
-      ),
-      configurations: sub.configurations.filter((config) => !!config),
-    };
-  });
+  return subServiceInstance.map((sub) => ({
+    ...sub,
+    configurations: sub.configurations.filter((config) => !!config),
+  }));
 };
 
 export const loadPublicServiceInstances = (
@@ -311,7 +303,7 @@ export const loadServiceInstanceById = async (
     )
     .leftJoin('User_Service', function () {
       this.on('Subscription.id', 'User_Service.subscription_id').andOn(
-        dbRaw(`"User_Service"."user_id" = '${userId}'`)
+        dbRaw('"User_Service"."user_id" = ?', [userId])
       );
     })
 
@@ -489,9 +481,9 @@ export const loadServiceWithSubscriptions = async (
       )
     )
     .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
-    .orderByRaw(
-      `CASE WHEN org.id = '${user.selected_organization_id}' THEN 0 ELSE 1 END, "Subscription".id`
-    );
+    .orderByRaw('CASE WHEN org.id = ? THEN 0 ELSE 1 END, "Subscription".id', [
+      user.selected_organization_id,
+    ]);
 
   const [serviceInstance] = await db<ServiceInstance>('ServiceInstance')
     .where('ServiceInstance.id', '=', serviceInstanceId)
@@ -601,7 +593,7 @@ export const loadLinks = (id) => {
 
 export const loadServiceDefinitionByServiceInstance = async (
   service_instance_id: string
-): Promise<ServiceDefinition> => {
+): Promise<ServiceDefinition | undefined> => {
   return db<ServiceDefinition>('ServiceInstance')
     .where('ServiceInstance.id', '=', service_instance_id)
     .leftJoin(
@@ -751,12 +743,11 @@ export const updateServiceInstance = async (
   id: ServiceInstanceId,
   data: ServiceInstanceMutator
 ) => {
-  const query = db<ServiceInstance>('ServiceInstance')
+  const [result] = await db<ServiceInstance>('ServiceInstance')
     .where({ id })
     .update(data)
     .returning('*');
 
-  const [result] = await query;
   return result;
 };
 

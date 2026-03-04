@@ -501,7 +501,7 @@ describe('UserServiceDomain', () => {
       createdSubscriptionIds.push(subId2);
       await createSubscription({
         id: subId2,
-        service_instance_id: SERVICES.INSTANCES.MALWARE.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
         organization_id: SECOND_ORG_ID,
         start_date: new Date(Date.now() - DAY),
         end_date: new Date(Date.now() + DAY * 365),
@@ -701,7 +701,7 @@ describe('UserServiceDomain', () => {
       createdSubscriptionIds.push(adminSubId);
       await createSubscription({
         id: adminSubId,
-        service_instance_id: SERVICES.INSTANCES.MALWARE.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
         organization_id: SECOND_ORG_ID,
         start_date: new Date(Date.now() - DAY),
         end_date: new Date(Date.now() + DAY * 365),
@@ -861,7 +861,7 @@ describe('UserServiceDomain', () => {
 
     it('should not delete rows belonging to a different subscription for the same user', async () => {
       const secondSubId = await createTestSubscription({
-        service_instance_id: SERVICES.INSTANCES.MALWARE.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
         start_date: new Date(),
         end_date: undefined,
       });

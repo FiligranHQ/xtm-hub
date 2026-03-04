@@ -27,9 +27,9 @@ test.describe('Organization switcher', async () => {
       user_requester_id: ADMIN_USER.ID,
       organization_requester_id: PLATFORM_ORGANIZATION_UUID,
       type: 'trial',
-      request_date: new Date('01/01/2026'),
-      start_date: new Date('01/01/2026'),
-      end_date: new Date('02/02/2026'),
+      request_date: new Date(),
+      start_date: new Date(),
+      end_date: new Date(new Date().getDate() + 1), // Tomorrow
       platform_identifier: 'opencti',
       hub_status: 'active',
       target_state: 'active',
@@ -46,7 +46,7 @@ test.describe('Organization switcher', async () => {
     await loginPage.navigateTo();
     await test.step("Should see his organization's items", async () => {
       await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
-        4
+        2
       );
       await expect(
         page.getByText('Open CTI Instance - Private platform')
@@ -62,7 +62,7 @@ test.describe('Organization switcher', async () => {
       await page.getByText('Personal space').click();
       // Then he should not see his subscriptions, registrations and trials
       await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
-        5
+        3
       );
       await expect(
         page.getByText('Open CTI Instance - Private platform')
@@ -78,7 +78,7 @@ test.describe('Organization switcher', async () => {
       await page.getByText('Filigran', { exact: true }).click();
       // Then he should see again its subscriptions, registrations and trials
       await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
-        4
+        2
       );
       await expect(
         page.getByText('Open CTI Instance - Private platform')

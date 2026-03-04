@@ -195,30 +195,6 @@ export async function seed(knex) {
   await knex('ServiceInstance')
     .insert([
       {
-        id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
-        name: 'CyberWeather',
-        description:
-          'This is a short description to describe the CyberWeather app, how to use it, etc.',
-        creation_status: 'READY',
-        public: true,
-        join_type: 'JOIN_AUTO',
-        tags: '{others}',
-        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-        ordering: 10,
-      },
-      {
-        id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
-        name: 'Malware analysis',
-        description:
-          'This is a short description to describe the Malware analysis app, how to use it, etc.',
-        creation_status: 'READY',
-        public: true,
-        join_type: 'JOIN_AUTO',
-        tags: '{others}',
-        service_definition_id: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-        ordering: 11,
-      },
-      {
         id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         name: 'Vault',
         description: 'short description for Vault',
@@ -279,18 +255,6 @@ export async function seed(knex) {
 
   await knex('Service_Link')
     .insert([
-      {
-        id: 'f4f539f8-1d16-479d-9e72-185c9e02c6af',
-        service_instance_id: 'c6343882-f609-4a3f-abe0-a34f8cb11302',
-        url: 'https://weather.dev.scredplatform.io/',
-        name: 'CyberWeatherApp',
-      },
-      {
-        id: 'b3c1664d-2337-46f5-a3ce-c3b72460e71a',
-        service_instance_id: '234a5d21-8a1f-4d3f-8f57-7fd21c321bd4',
-        url: '/service/malware-analysis',
-        name: 'MalwareAnalysis',
-      },
       {
         id: '2baba29b-62f5-4d50-8d68-eb8a25887d9c',
         service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
