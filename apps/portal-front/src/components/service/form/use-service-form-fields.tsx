@@ -18,7 +18,8 @@ type DocumentType =
   | 'Stream'
   | 'Third Party Integration'
   | 'Custom Dashboard'
-  | 'Scenario';
+  | 'Scenario'
+  | 'Connector';
 
 const integrationTypeMappedByDocumentType: Record<
   DocumentType,
@@ -30,9 +31,34 @@ const integrationTypeMappedByDocumentType: Record<
   'TAXII Feed': IntegrationTypeEnum.TAXII_FEED,
   Stream: IntegrationTypeEnum.STREAM,
   'Third Party Integration': IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
+  Connector: IntegrationTypeEnum.CONNECTOR,
 };
 
 type Platform = 'OpenCTI' | 'OpenAEV';
+
+type AvailableFields =
+  | 'description'
+  | 'uploader_id'
+  | 'uploader_organization_id'
+  | 'use_cases'
+  | 'integration_subtype'
+  | 'images'
+  | 'integration_type'
+  | 'active'
+  | 'short_description'
+  | 'slug'
+  | 'name'
+  | 'vendor_url'
+  | 'github_url'
+  | 'datasheet_url'
+  | 'demo_url'
+  | 'product_version'
+  | 'container_image'
+  | 'source_code'
+  | 'subscription_link'
+  | 'verified'
+  | 'manager_supported'
+  | 'playbook_supported';
 
 interface Props {
   documentType: DocumentType;
@@ -44,6 +70,7 @@ interface Props {
   imagesToDelete: string[];
   setImagesToDelete: (ids: string[]) => void;
   setIsDirty: (isDirty: boolean) => void;
+  disabledFields?: AvailableFields[];
 }
 
 export const useServiceFormFields = ({
@@ -56,6 +83,7 @@ export const useServiceFormFields = ({
   imagesToDelete,
   setImagesToDelete,
   setIsDirty,
+  disabledFields = [],
 }: Props) => {
   const integrationType = integrationTypeMappedByDocumentType[documentType];
   const t = useTranslations();
@@ -70,6 +98,7 @@ export const useServiceFormFields = ({
           <ServiceFormDescriptionField
             field={field}
             documentType={documentType}
+            disabled={disabledFields.includes('description')}
           />
         ),
       },
@@ -82,6 +111,7 @@ export const useServiceFormFields = ({
           <ServiceFormUploaderIdField
             field={field}
             document={document}
+            disabled={disabledFields.includes('uploader_id')}
           />
         ),
       },
@@ -95,11 +125,21 @@ export const useServiceFormFields = ({
             field={field}
             isCreation={isCreation}
             document={document}
+            disabled={disabledFields.includes('uploader_organization_id')}
           />
         ),
       },
       use_cases: {
-        fieldType: ServiceFormUseCasesField,
+        fieldType: ({
+          field,
+        }: {
+          field: ControllerRenderProps<FieldValues, string>;
+        }) => (
+          <ServiceFormUseCasesField
+            field={field}
+            disabled={disabledFields.includes('use_cases')}
+          />
+        ),
       },
       ...(integrationType
         ? {
@@ -113,6 +153,7 @@ export const useServiceFormFields = ({
                   field={field}
                   integrationType={integrationType}
                   document={document}
+                  disabled={disabledFields.includes('integration_subtype')}
                 />
               ),
             },
@@ -154,53 +195,100 @@ export const useServiceFormFields = ({
         label: t('Service.Form.PublishedPlaceholder', {
           documentType,
         }),
+        inputProps: {
+          disabled: disabledFields.includes('active'),
+        },
       },
       short_description: {
         label: t('Service.Form.ShortDescriptionLabel'),
         inputProps: {
           placeholder: t('Service.Form.ShortDescriptionPlaceholder'),
+          disabled: disabledFields.includes('short_description'),
         },
       },
       slug: {
         label: t('Service.Form.SlugLabel'),
         inputProps: {
           placeholder: t('Service.Form.SlugPlaceholder'),
+          disabled: disabledFields.includes('slug'),
         },
       },
       name: {
         label: t(`Service.Form.NameLabel`),
         inputProps: {
           placeholder: t('Service.Form.NamePlaceholder', { documentType }),
+          disabled: disabledFields.includes('name'),
         },
       },
       vendor_url: {
         label: t('Service.Form.VendorUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
+          disabled: disabledFields.includes('vendor_url'),
         },
       },
       github_url: {
         label: t('Service.Form.GithubUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
+          disabled: disabledFields.includes('github_url'),
         },
       },
       datasheet_url: {
         label: t('Service.Form.DatasheetUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
+          disabled: disabledFields.includes('datasheet_url'),
         },
       },
       demo_url: {
         label: t('Service.Form.DemoUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
+          disabled: disabledFields.includes('demo_url'),
         },
       },
       product_version: {
         label: t('Service.Form.ProductVersionLabel', { platform }),
         inputProps: {
           placeholder: t('Service.Form.ProductVersionPlaceholder'),
+          disabled: disabledFields.includes('product_version'),
+        },
+      },
+      container_image: {
+        label: t('Service.Form.ContainerImageLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('container_image'),
+        },
+      },
+      source_code: {
+        label: t('Service.Form.SourceCodeLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('source_code'),
+        },
+      },
+      subscription_link: {
+        label: t('Service.Form.SubscriptionLinkLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('subscription_link'),
+        },
+      },
+      verified: {
+        label: t('Service.Form.VerifiedLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('verified'),
+        },
+      },
+      manager_supported: {
+        label: t('Service.Form.ManagerSupportedLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('manager_supported'),
+        },
+      },
+      playbook_supported: {
+        label: t('Service.Form.PlaybookSupportedLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('playbook_supported'),
         },
       },
     }),
@@ -216,6 +304,7 @@ export const useServiceFormFields = ({
       imagesToDelete,
       setImagesToDelete,
       setIsDirty,
+      disabledFields,
     ]
   );
 };

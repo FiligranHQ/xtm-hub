@@ -615,8 +615,9 @@
     "CreationStatus": "Statut de la création",
     "Form": {
       "Author": "Auteur",
-      "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
+      "ContainerImageLabel": "Image du conteneur",
       "DatasheetUrlLabel": "Lien vers la fiche technique (url)",
+      "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
       "DemoUrlLabel": "Lien vers la démo (url)",
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le {documentType}.",
@@ -625,9 +626,11 @@
       "GithubUrlLabel": "URL Github",
       "Illustration": "Illustration",
       "ImageLabel": "Images",
+      "ManagerSupportedLabel": "Gestionnaire pris en charge",
       "NameLabel": "Nom",
       "NamePlaceholder": "nom {documentType}",
       "NoImage": "Pas d'image sélectionnée",
+      "PlaybookSupportedLabel": "Playbook pris en charge",
       "ProductVersionLabel": "version {platform}",
       "ProductVersionPlaceholder": "1.0.0",
       "PublishedPlaceholder": "Le {documentType} est-il publié ?",
@@ -639,12 +642,15 @@
       "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
       "SlugLabel": "Slug",
       "SlugPlaceholder": "slug",
+      "SourceCodeLabel": "Code source",
+      "SubscriptionLinkLabel": "Lien d'abonnement (url)",
       "UpdateJSONFile": "Mise à jour du fichier JSON",
       "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
       "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Cas d'utilisation",
       "UseCasesPlaceholder": "Ajouter des cas d'utilisation",
-      "VendorUrlLabel": "URL du fournisseur"
+      "VendorUrlLabel": "URL du fournisseur",
+      "VerifiedLabel": "Vérifié"
     },
     "OpenctiIntegrations": {
       "Actions": {
@@ -718,10 +724,17 @@
     },
     "Connector": {
       "Actions": {
-        "Deleted": "Le connecteur {name} a été supprimé avec succès"
+        "Added": "Le connecteur {name} a été ajouté avec succès",
+        "Deleted": "Le connecteur {name} a été supprimé avec succès",
+        "Share": "Partager le connecteur",
+        "Updated": "Le connecteur {name} a été modifié avec succès"
       },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau connecteur",
       "DeleteService": "Supprimer le connecteur {name}",
-      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le connecteur {name} ?"
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le connecteur {name} ?",
+      "UpdateService": "Mettre à jour le connecteur {name}"
     },
     "Stream": {
       "Actions": {

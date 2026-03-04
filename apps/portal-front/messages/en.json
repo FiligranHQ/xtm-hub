@@ -594,19 +594,22 @@
     "CreationStatus": "Creation status",
     "Form": {
       "Author": "Author",
-      "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
+      "ContainerImageLabel": "Container image",
       "DatasheetUrlLabel": "Datasheet link (url)",
+      "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
       "DemoUrlLabel": "Demo link (url)",
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "This is a paragraph to describe the {documentType}.",
       "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
       "ExistingJSONFile": "Existing JSON file: {file_name}",
-      "GithubUrlLabel": "Github URL",
+      "GithubUrlLabel": "Github link (url)",
       "Illustration": "Illustration",
       "ImageLabel": "Images",
+      "ManagerSupportedLabel": "Manager supported",
       "NameLabel": "Name",
       "NamePlaceholder": "{documentType} name",
       "NoImage": "No image selected",
+      "PlaybookSupportedLabel": "Playbook supported",
       "ProductVersionLabel": "{platform} version",
       "ProductVersionPlaceholder": "1.0.0",
       "PublishedPlaceholder": "Is the {documentType} published?",
@@ -618,12 +621,15 @@
       "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
       "SlugLabel": "Slug",
       "SlugPlaceholder": "slug",
+      "SourceCodeLabel": "Source code",
+      "SubscriptionLinkLabel": "Subscription link (url)",
       "UpdateJSONFile": "Update JSON file",
       "UploadImage": "Upload new image(s)",
       "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Use cases",
       "UseCasesPlaceholder": "Add use cases",
-      "VendorUrlLabel": "Vendor URL"
+      "VendorUrlLabel": "Vendor link (url)",
+      "VerifiedLabel": "Verified"
     },
     "OpenctiIntegrations": {
       "Actions": {
@@ -697,10 +703,17 @@
     },
     "Connector": {
       "Actions": {
-        "Deleted": "The Connector {name} has been deleted successfully"
+        "Added": "The Connector {name} has been added successfully",
+        "Deleted": "The Connector {name} has been deleted successfully",
+        "Share": "Share Connector",
+        "Updated": "The Connector {name} has been modified successfully"
       },
+      "Active": "Published",
+      "AddService": "Add new Connector",
       "DeleteService": "Delete the Connector {name}",
-      "SureDeleteService": "Are you sure you want to delete the Connector {name}?"
+      "NonActive": "Draft",
+      "SureDeleteService": "Are you sure you want to delete the Connector {name}?",
+      "UpdateService": "Update the Connector {name}"
     },
     "Stream": {
       "Actions": {
