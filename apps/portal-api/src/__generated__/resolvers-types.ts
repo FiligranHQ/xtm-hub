@@ -176,11 +176,11 @@ export type CreateDocumentInput = {
 };
 
 export type CreateEpicInput = {
+  description: Scalars['String']['input'];
   epic: Scalars['String']['input'];
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_active?: InputMaybe<Scalars['Boolean']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
-  long_description: Scalars['String']['input'];
   product: FiligranProduct;
   short_description: Scalars['String']['input'];
   timeline: Timeline;
@@ -455,13 +455,13 @@ export type EditUserCapabilitiesInput = {
 export type Epic = Node & {
   __typename?: 'Epic';
   created_at: Scalars['Date']['output'];
+  description: Scalars['String']['output'];
   document?: Maybe<Document>;
   document_id?: Maybe<Scalars['ID']['output']>;
   epic: Scalars['String']['output'];
   epic_type: EpicType;
   id: Scalars['ID']['output'];
   is_active: Scalars['Boolean']['output'];
-  long_description: Scalars['String']['output'];
   product: FiligranProduct;
   short_description: Scalars['String']['output'];
   timeline: Timeline;
@@ -489,8 +489,8 @@ export enum EpicOrdering {
 }
 
 export enum EpicType {
-  Integration = 'INTEGRATION',
-  Other = 'OTHER'
+  Integration = 'integration',
+  Other = 'other'
 }
 
 export enum FiligranProduct {
@@ -1728,7 +1728,6 @@ export type ServiceLink = Node & {
 
 export enum ServiceRestriction {
   AccessUser = 'ACCESS_USER',
-  Add = 'ADD',
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
   Upload = 'UPLOAD',
@@ -1929,9 +1928,9 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
 };
 
 export enum Timeline {
-  Next = 'Next',
-  Now = 'Now',
-  UnderConsideration = 'Under_Consideration'
+  Next = 'next',
+  Now = 'now',
+  UnderConsideration = 'under_consideration'
 }
 
 export type TrialDeploymentsInput = {
@@ -1985,11 +1984,11 @@ export type UpdateDocumentInput = {
 };
 
 export type UpdateEpicInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
   epic?: InputMaybe<Scalars['String']['input']>;
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_active?: InputMaybe<Scalars['Boolean']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
-  long_description?: InputMaybe<Scalars['String']['input']>;
   product?: InputMaybe<FiligranProduct>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   timeline?: InputMaybe<Timeline>;
@@ -2820,13 +2819,13 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
 
 export type EpicResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Epic'] = ResolversParentTypes['Epic']> = ResolversObject<{
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
   document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   epic?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   is_active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  long_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
   short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timeline?: Resolver<ResolversTypes['Timeline'], ParentType, ContextType>;

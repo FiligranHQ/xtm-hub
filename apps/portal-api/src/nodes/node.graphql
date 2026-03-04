@@ -31,7 +31,6 @@ enum ServiceRestriction {
   MANAGE_ACCESS
   UPLOAD
   DELETE
-  ADD
   UPSERT
 }
 

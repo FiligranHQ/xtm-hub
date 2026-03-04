@@ -20,7 +20,7 @@ export default interface Epic {
 
   short_description: string;
 
-  long_description: string;
+  description: string;
 
   product: string;
 
@@ -53,14 +53,14 @@ export interface EpicInitializer {
 
   short_description: string;
 
-  long_description: string;
+  description: string;
 
   product: string;
 
   /** Default value: 'Now'::text */
   timeline?: string | null;
 
-  /** Default value: 'OTHER'::text */
+  /** Default value: 'other'::text */
   epic_type?: string | null;
 
   document_id?: DocumentId | null;
@@ -87,7 +87,7 @@ export interface EpicMutator {
 
   short_description?: string;
 
-  long_description?: string;
+  description?: string;
 
   product?: string;
 

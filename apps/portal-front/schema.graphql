@@ -851,14 +851,14 @@ enum FiligranProduct {
 }
 
 enum Timeline {
-  Now
-  Next
-  Under_Consideration
+  now
+  next
+  under_consideration
 }
 
 enum EpicType {
-  OTHER
-  INTEGRATION
+  other
+  integration
 }
 
 type Epic implements Node {
@@ -866,7 +866,7 @@ type Epic implements Node {
   epic: String!
   title: String!
   short_description: String!
-  long_description: String!
+  description: String!
   is_active: Boolean!
   product: FiligranProduct!
   timeline: Timeline!
@@ -883,7 +883,7 @@ input CreateEpicInput {
   epic: String!
   title: String!
   short_description: String!
-  long_description: String!
+  description: String!
   is_active: Boolean
   product: FiligranProduct!
   timeline: Timeline!
@@ -895,7 +895,7 @@ input UpdateEpicInput {
   epic: String
   title: String
   short_description: String
-  long_description: String
+  description: String
   is_active: Boolean
   product: FiligranProduct
   timeline: Timeline
@@ -1473,7 +1473,6 @@ enum ServiceRestriction {
   MANAGE_ACCESS
   UPLOAD
   DELETE
-  ADD
   UPSERT
 }
 

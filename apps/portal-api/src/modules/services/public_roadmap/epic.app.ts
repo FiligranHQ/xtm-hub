@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CreateEpicInput,
   EpicConnection,
+  EpicType,
   QueryEpicsArgs,
   UpdateEpicInput,
 } from '../../../__generated__/resolvers-types';
@@ -57,7 +58,7 @@ export const EpicApp = {
       id: uuidv4() as EpicId,
       uploader_id: user.id,
       created_at: new Date(),
-      epic_type: is_integration ? 'INTEGRATION' : 'OTHER',
+      epic_type: is_integration ? EpicType.Integration : EpicType.Other,
       document_id: createdDocument?.id,
     };
     return EpicDomain.createEpic(epicData);

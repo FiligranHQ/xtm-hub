@@ -10,12 +10,12 @@ export async function up(knex) {
     table.boolean('is_active').defaultTo(false);
     table.uuid('uploader_id');
     table.string('short_description').notNullable();
-    table.string('long_description').notNullable();
+    table.string('description').notNullable();
     table.string('product').notNullable();
     table
-      .enum('timeline', ['Now', 'Next', 'Under consideration'])
+      .enum('timeline', ['now', 'next', 'under_consideration'])
       .defaultTo('Now');
-    table.enum('epic_type', ['INTEGRATION', 'OTHER']).defaultTo('OTHER');
+    table.enum('epic_type', ['integration', 'other']).defaultTo('other');
     table.uuid('document_id').references('id').inTable('Document');
     table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
     table.timestamp('updated_at').nullable();

@@ -4,7 +4,7 @@ export const epicFragment = graphql`
   fragment epic_fragment on Epic {
     id
     short_description
-    long_description
+    description
     epic
     title
     timeline

@@ -40,7 +40,7 @@ describe('EpicApp', () => {
         epic: 'EPI-001',
         title: 'Test Epic',
         short_description: 'Short desc',
-        long_description: 'Long description for the epic',
+        description: 'Long description for the epic',
         is_active: true,
         product: FiligranProduct.OpenCti,
         timeline: Timeline.Now,
@@ -82,7 +82,7 @@ describe('EpicApp', () => {
         epic: 'EPI-002',
         title: 'Epic with Image',
         short_description: 'Short desc',
-        long_description: 'Long description for the epic',
+        description: 'Long description for the epic',
         is_active: true,
         product: FiligranProduct.OpenCti,
         timeline: Timeline.Now,
@@ -124,7 +124,7 @@ describe('EpicApp', () => {
         epic: 'EPI-003',
         title: 'Original Title',
         short_description: 'Original short',
-        long_description: 'Original long',
+        description: 'Original long',
         product: FiligranProduct.OpenAev,
         timeline: Timeline.Next,
       });
@@ -147,7 +147,7 @@ describe('EpicApp', () => {
       expect(updatedEpic?.is_active).toBe(true);
       // Original values should be preserved
       expect(updatedEpic?.epic).toBe('EPI-003');
-      expect(updatedEpic?.long_description).toBe('Original long');
+      expect(updatedEpic?.description).toBe('Original long');
 
       // Verify in DB
       const dbEpic = await db<Epic>('Epic')
@@ -164,7 +164,7 @@ describe('EpicApp', () => {
         epic: 'EPI-005',
         title: 'Epic to Delete',
         short_description: 'Short',
-        long_description: 'Long',
+        description: 'Long',
         product: FiligranProduct.OpenCti,
         timeline: Timeline.Next,
       });
@@ -187,7 +187,7 @@ describe('EpicApp', () => {
         epic: 'EPI-006',
         title: 'Epic 1',
         short_description: 'Short 1',
-        long_description: 'Long 1',
+        description: 'Long 1',
         product: FiligranProduct.XtmHub,
         timeline: Timeline.Now,
         is_active: true,
@@ -197,7 +197,7 @@ describe('EpicApp', () => {
         epic: 'EPI-007',
         title: 'Epic 2',
         short_description: 'Short 2',
-        long_description: 'Long 2',
+        description: 'Long 2',
         product: FiligranProduct.XtmHub,
         timeline: Timeline.Now,
         is_active: true,
