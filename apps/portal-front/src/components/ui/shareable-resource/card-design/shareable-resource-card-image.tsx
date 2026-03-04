@@ -13,7 +13,7 @@ export const ShareableResourceCardImage: FunctionComponent<
 > = ({ document, serviceInstanceId }) => {
   return (
     <>
-      <div className=" items-center self-stretch flex">
+      <div className="items-start self-stretch flex">
         {!!document?.children_documents?.length ? (
           <Image
             src={`/document/images/${serviceInstanceId}/${document.children_documents?.[0]?.id}`}
