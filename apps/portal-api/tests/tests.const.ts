@@ -94,6 +94,9 @@ export const SERVICES = {
       ID: 'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4' as ServiceInstanceId,
       SLUG: 'opencti-custom-dashboards',
     },
+    EPIC: {
+      ID: '3260f536-49b8-4c6f-8e87-61c8be1ae103' as ServiceInstanceId,
+    },
   },
 };
 

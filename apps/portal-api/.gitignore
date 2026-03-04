@@ -23,5 +23,8 @@ __pycache__
 /config/filigran.json
 /config/thales.json
 
+# Pgboss
+/src/model/kanel/pgboss
+
 *~
 /.cache/

@@ -64,6 +64,7 @@ type Query {
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
+  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!): EpicConnection
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
@@ -111,6 +112,9 @@ type Mutation {
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
+  createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
+  updateEpic(id: ID!, input: UpdateEpicInput!): Epic!
+  deleteEpic(id: ID!): Epic!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
@@ -913,6 +917,80 @@ type ServiceLink implements Node {
   name: String
 }
 
+enum FiligranProduct {
+  OpenCTI
+  OpenAEV
+  XTMHub
+}
+
+enum Timeline {
+  now
+  next
+  under_consideration
+}
+
+enum EpicType {
+  other
+  integration
+}
+
+type Epic implements Node {
+  id: ID!
+  epic: String!
+  title: String!
+  short_description: String!
+  description: String!
+  is_active: Boolean!
+  product: FiligranProduct!
+  timeline: Timeline!
+  epic_type: EpicType!
+  document: Document
+  document_id: ID
+  uploader_id: String!
+  updater_id: String
+  created_at: Date!
+  updated_at: Date
+}
+
+input CreateEpicInput {
+  epic: String!
+  title: String!
+  short_description: String!
+  description: String!
+  is_active: Boolean
+  product: FiligranProduct!
+  timeline: Timeline!
+  is_integration: Boolean
+  illustration_document: Upload
+}
+
+input UpdateEpicInput {
+  epic: String
+  title: String
+  short_description: String
+  description: String
+  is_active: Boolean
+  product: FiligranProduct
+  timeline: Timeline
+  is_integration: Boolean
+  illustration_document: Upload
+}
+
+type EpicEdge {
+  cursor: String!
+  node: Epic!
+}
+
+type EpicConnection {
+  totalCount: Int!
+  edges: [EpicEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum EpicOrdering {
+  epic
+}
+
 input OpenCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
@@ -1468,6 +1546,7 @@ enum ServiceRestriction {
   MANAGE_ACCESS
   UPLOAD
   DELETE
+  UPSERT
 }
 
 interface Node {
