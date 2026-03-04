@@ -16,7 +16,7 @@ interface ShareableResourceCardHeaderProps {
 export const ShareableResourceCardHeader: FunctionComponent<
   ShareableResourceCardHeaderProps
 > = ({ document, serviceInstanceId, shouldDisplayBothIcons }) => {
-  const documentNameSize = document.name?.length;
+  const documentNameSize = document.name?.length ?? 0;
 
   return (
     <div className="flex items-stretch gap-m p-m relative">
