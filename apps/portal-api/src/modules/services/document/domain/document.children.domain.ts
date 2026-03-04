@@ -110,23 +110,26 @@ export const DocumentChildrenDomain = {
     return images;
   },
 
-  upsertImages: async <T extends DocumentModel>(
+  upsertExternalImage: async <T extends DocumentModel>(
     doc: T,
-    upload: Upload[] | Upload
+    externalImageUpload: Upload
   ) => {
-    const files = await processUploads(upload, doc.service_instance_id);
+    const [logoFile] = await processUploads(
+      externalImageUpload,
+      doc.service_instance_id
+    );
 
     const deletedDocuments = await withTransaction(async () => {
-      const deletedDocuments =
-        await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
+      const deletedChildrenDocuments =
+        await DocumentChildrenDomain.deleteExternalImages(doc.id);
 
       await DocumentChildrenDomain.createImageDocuments(
         doc.id,
         doc.service_instance_id,
-        files
+        [logoFile]
       );
 
-      return deletedDocuments;
+      return deletedChildrenDocuments;
     });
     // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
     if (deletedDocuments.length > 0) {
@@ -138,9 +141,9 @@ export const DocumentChildrenDomain = {
     }
   },
 
-  deleteChildImagesByParent: async (
+  deleteExternalImages: async (
     parentDocumentId: DocumentId
-  ): Promise<Pick<Document, 'id' | 'minio_name'>[]> => {
+  ): Promise<{ id: string; minio_name: string }[]> => {
     return db('Document')
       .delete()
       .whereIn('id', function () {
@@ -148,7 +151,8 @@ export const DocumentChildrenDomain = {
           .from('Document_Children')
           .where('parent_document_id', parentDocumentId);
       })
-      .andWhere('type', 'image')
+      .andWhere('Document.type', '=', 'image')
+      .andWhere('Document.source_type', '=', 'external')
       .returning(['id', 'minio_name']);
   },
 };

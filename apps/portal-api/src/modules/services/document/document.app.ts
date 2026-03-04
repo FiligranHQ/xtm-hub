@@ -321,10 +321,10 @@ export const DocumentApp = {
     });
   },
 
-  upsertDocument: async <T extends DocumentModel>(
+  upsertDocumentWithExternalImage: async <T extends DocumentModel>(
     type: string,
     input: Partial<T>,
-    uploads: Upload[] | Upload,
+    externalImageUpload: Upload,
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
     return withTransaction(async () => {
@@ -336,7 +336,11 @@ export const DocumentApp = {
         metadataKeys
       );
 
-      await DocumentChildrenDomain.upsertImages(doc, uploads);
+      await DocumentChildrenDomain.upsertExternalImage(
+        doc,
+        externalImageUpload
+      );
+
       return doc;
     });
   },

@@ -260,7 +260,7 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'integration_type', value: IntegrationType.Connector }]
+          [{ key: 'integration_type', value: IntegrationType.JsonFeed }]
         )
       ).toThrowError(ErrorCode.IntegrationTypeNotManageable);
     });
