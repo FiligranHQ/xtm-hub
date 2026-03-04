@@ -22,8 +22,8 @@ const csvFeedFormSchema = z.object({
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
-  datasheet_url: z.url().nullish(),
-  demo_url: z.url().nullish(),
+  datasheet_url: z.url().or(z.literal('')).nullish(),
+  demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck),
 });

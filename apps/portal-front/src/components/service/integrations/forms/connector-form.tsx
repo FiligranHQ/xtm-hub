@@ -29,8 +29,8 @@ const connectorSchema = z.object({
   verified: z.boolean().optional(),
   manager_supported: z.boolean().optional(),
   playbook_supported: z.boolean().optional(),
-  datasheet_url: z.url().nullish(),
-  demo_url: z.url().nullish(),
+  datasheet_url: z.url().or(z.literal('')).nullish(),
+  demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
   images: z.custom<FileList>(fileListCheck),
 });

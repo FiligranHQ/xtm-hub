@@ -29,8 +29,8 @@ const thirdPartyIntegrationFormSchema = z.object({
     })
     .nullish(),
   active: z.boolean().optional(),
-  datasheet_url: z.url().nullish(),
-  demo_url: z.url().nullish(),
+  datasheet_url: z.url().or(z.literal('')).nullish(),
+  demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
   images: z.custom<FileList>(fileListCheck),
 });

@@ -23,8 +23,8 @@ const taxiiFeedFormSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
-  datasheet_url: z.url().nullish(),
-  demo_url: z.url().nullish(),
+  datasheet_url: z.url().or(z.literal('')).nullish(),
+  demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
   images: z.custom<FileList>(fileListCheck),
 });
