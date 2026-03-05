@@ -141,7 +141,8 @@ describe('ServiceGroupApp', () => {
         id: uuidv4() as DeploymentRequestId,
         service_instance_id: serviceInstanceId2,
         platform_id: uuidv4(),
-        user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
         organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         type: DeploymentRequestDeploymentType.Trial,
         platform_identifier: PlatformIdentifier.Opencti,
@@ -151,7 +152,7 @@ describe('ServiceGroupApp', () => {
       const bypassPayload = [
         {
           id: adminGroupIdServiceInstance2,
-          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID],
+          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
         },
         {
           id: analystGroupIdServiceInstance2,
