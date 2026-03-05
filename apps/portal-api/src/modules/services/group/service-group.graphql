@@ -15,10 +15,16 @@ input UpdateServiceGroupsInput {
 
 type Query {
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(
+      portalCapa: [BYPASS, READ_TRIALS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
 }
 
 type Mutation {
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
+    @auth(
+      portalCapa: [BYPASS, MODIFY_TRIALS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
 }
