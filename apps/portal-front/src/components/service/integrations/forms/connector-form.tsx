@@ -52,7 +52,8 @@ export const ConnectorForm = ({
   const [images, setImages] = useState<
     Array<ServiceFormMultipleImagesFieldImages>
   >(
-    document?.children_documents as unknown as ServiceFormMultipleImagesFieldImages[]
+    (document?.children_documents ??
+      []) as unknown as ServiceFormMultipleImagesFieldImages[]
   );
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
