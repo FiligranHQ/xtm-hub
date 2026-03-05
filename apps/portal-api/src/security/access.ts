@@ -21,7 +21,6 @@ import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
 import { userOrganizationSecurityLayer } from './layer/user-organization';
-import { userServiceSecurityLayer } from './layer/user-service';
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (
@@ -113,7 +112,6 @@ export const applyDbSecurityLayer = async (
   // Define table-specific security handlers
   const tableSecurityMap: Partial<Record<DatabaseType, SecuryQueryHandlers>> = {
     User_Organization: userOrganizationSecurityLayer,
-    User_Service: userServiceSecurityLayer,
   };
 
   if (tableSecurityMap[table]) {
