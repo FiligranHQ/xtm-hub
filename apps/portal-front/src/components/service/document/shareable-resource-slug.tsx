@@ -30,6 +30,7 @@ import { ShareableResourceType } from '@/utils/shareable-resources/shareable-res
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 
 // Component interface
 interface ShareableResourceSlugProps {
@@ -78,7 +79,10 @@ const ShareableResourceSlug: React.FunctionComponent<
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        {mainChild?.id && documentData.type !== ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD ? (
+        {mainChild?.id &&
+        (documentData.integration_type === IntegrationTypeEnum.CONNECTOR ||
+          documentData.integration_type ===
+            IntegrationTypeEnum.THIRD_PARTY_INTEGRATION) ? (
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
               src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}

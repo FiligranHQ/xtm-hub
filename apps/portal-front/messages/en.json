@@ -601,7 +601,7 @@
       "ExistingJSONFile": "Existing JSON file: {file_name}",
       "GithubUrlLabel": "Github URL",
       "Illustration": "Illustration",
-      "IllustrationDisclaimer": "By default, the Filigran logo will be displayed on the card, but you can replace it with another logo if you wish",
+      "IllustrationDisclaimer": "By default Filigran's logo will be displayed on cards, your illustrations will be added on detail page carousel",
       "ImageLabel": "Images",
       "NameLabel": "Name",
       "NamePlaceholder": "{documentType} name",
