@@ -23,7 +23,6 @@ import { isUserAllowed } from './auth.helper';
 import { userSecurityLayer } from './layer/user';
 import { userOrganizationSecurityLayer } from './layer/user-organization';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
-import { userOrganizationPendingSecurityLayer } from './layer/user-organization-pending';
 import { userServiceSecurityLayer } from './layer/user-service';
 
 export type SecuryQueryHandlers = {
@@ -117,7 +116,6 @@ export const applyDbSecurityLayer = async (
   const tableSecurityMap: Partial<Record<DatabaseType, SecuryQueryHandlers>> = {
     User: userSecurityLayer,
     User_Organization: userOrganizationSecurityLayer,
-    User_Organization_Pending: userOrganizationPendingSecurityLayer,
     UserOrganization_Capability: userOrganizationCapabilitySecurityLayer,
     User_Service: userServiceSecurityLayer,
   };

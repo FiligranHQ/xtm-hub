@@ -13,7 +13,7 @@ import { GenericServiceCapabilityName } from '../modules/user_service/service-ca
 import { UserServiceDomain } from '../modules/user_service/user_service.domain';
 import { ErrorCode } from '../utils/error/error.code';
 import { BadRequestError, ForbiddenAccess } from '../utils/error/error.util';
-import { isUserGranted } from './access';
+import { isUserAdminPlatform, isUserGranted } from './access';
 import { isUserAllowedOnOrganization } from './auth.helper';
 
 export const securityGuard = {
@@ -86,6 +86,8 @@ export const securityGuard = {
     organizationId?: OrganizationId
   ) => {
     const { user } = requestContext.require();
+
+    if (isUserAdminPlatform(user)) return;
 
     const targetOrgId = organizationId || user.selected_organization_id;
 
