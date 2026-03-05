@@ -15,6 +15,8 @@ import User, { UserId, UserMutator } from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
+import { isUserAdminPlatform } from '../../security/access';
+import { checkUserCapabilities } from '../../security/utils/user';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../utils/app-logger.util';
@@ -327,12 +329,18 @@ export const updateUser = async (
   if (isEmpty(input)) {
     return;
   }
+  const { user } = requestContext.require();
+  if (!isUserAdminPlatform(user)) {
+    await checkUserCapabilities([
+      OrganizationCapability.AdministrateOrganization,
+      OrganizationCapability.ManageAccess,
+    ]);
+  }
 
   const [updatedUser] = await db<User>('User')
     .where({ id })
     .update(input)
-    .returning('*')
-    .secureQuery();
+    .returning('*');
 
   return updatedUser;
 };

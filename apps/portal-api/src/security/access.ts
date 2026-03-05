@@ -20,7 +20,6 @@ import { requestContext } from '../context/request.context';
 import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
-import { userSecurityLayer } from './layer/user';
 import { userOrganizationSecurityLayer } from './layer/user-organization';
 import { userOrganizationCapabilitySecurityLayer } from './layer/user-organization-capability';
 import { userServiceSecurityLayer } from './layer/user-service';
@@ -114,7 +113,6 @@ export const applyDbSecurityLayer = async (
 
   // Define table-specific security handlers
   const tableSecurityMap: Partial<Record<DatabaseType, SecuryQueryHandlers>> = {
-    User: userSecurityLayer,
     User_Organization: userOrganizationSecurityLayer,
     UserOrganization_Capability: userOrganizationCapabilitySecurityLayer,
     User_Service: userServiceSecurityLayer,

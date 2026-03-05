@@ -130,6 +130,7 @@ export const contextBypassUser: PortalContext = {
       },
     ],
     capabilities: [CAPABILITY_BYPASS],
+    roles_portal: [],
   },
 } as PortalContext;
 
@@ -164,6 +165,7 @@ export const contextAdminSecondOrga: PortalContext = {
       },
     ],
     capabilities: [],
+    roles_portal: [],
     organization_capabilities: [
       {
         id: 12,
@@ -211,6 +213,7 @@ export const contextSimpleUserSecondOrga: PortalContext = {
       },
     ],
     capabilities: [],
+    roles_portal: [],
   },
 } as PortalContext;
 
