@@ -63,7 +63,7 @@ const EpicForm = ({
   const t = useTranslations();
   const [commitEpicMutation] = useMutation(CreateEpicMutation);
   const { toast } = useToast();
-  const { connectionID } = useEpicListContext();
+  const { connectionID, filterByProduct } = useEpicListContext();
   const [isIntegration, setIsIntegration] = useState(
     epic?.epic_type === EpicTypeEnum.INTEGRATION
   );
@@ -87,6 +87,7 @@ const EpicForm = ({
       uploadables,
       onCompleted: () => {
         onClose();
+        filterByProduct(inputValues.product);
         toast({
           title: t('Utils.Success'),
           description: t('Utils.Success'),

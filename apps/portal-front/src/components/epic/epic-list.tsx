@@ -1,7 +1,11 @@
 'use client';
+import { EpicFilter, FilterType } from '@/components/epic/epic-filter';
 import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
 import { EpicItem } from '@/components/epic/epic-item';
-import { useDraftAndTimelineEpics } from '@/components/epic/epic-list-utils';
+import {
+  useCountEpicsByProduct,
+  useDraftAndTimelineEpics,
+} from '@/components/epic/epic-list-utils';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { Separator } from '@filigran/ui/clients';
@@ -14,12 +18,18 @@ import { useState } from 'react';
 interface EpicListProps {
   epics: epic_fragment$data[];
   serviceInstance: serviceInstance_fragment$data;
+  selectedProduct: FilterType;
+  onFilterChange: (filter: FilterType) => void;
 }
 
-export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
+export const EpicList = ({
+  epics,
+  serviceInstance,
+  selectedProduct,
+  onFilterChange,
+}: EpicListProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
-
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upsert,
     serviceInstance
@@ -28,9 +38,14 @@ export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
     ServiceCapabilityName.Delete,
     serviceInstance
   );
+  const filteredEpics =
+    selectedProduct === 'all'
+      ? epics
+      : epics.filter((epic) => epic.product === selectedProduct);
 
   const { draft, now, next, under_consideration } =
-    useDraftAndTimelineEpics(epics);
+    useDraftAndTimelineEpics(filteredEpics);
+  const { xtmhub, opencti, openaev } = useCountEpicsByProduct(epics);
 
   const sections = [
     { title: 'draft', epics: draft },
@@ -52,7 +67,7 @@ export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
 
   return (
     <>
-      <div className="flex flex-row">
+      <div className="flex flex-row items-center gap-4">
         <h1>{t('Epic.XTMRoadmap')}</h1>
         {userCanUpdate && (
           <EpicFormSheet
@@ -60,6 +75,13 @@ export const EpicList = ({ epics, serviceInstance }: EpicListProps) => {
             setOpen={setOpenSheet}
           />
         )}
+        <EpicFilter
+          selectedFilter={selectedProduct}
+          onSelectedFilterChange={onFilterChange}
+          xtmhubCount={xtmhub.length}
+          openctiCount={opencti.length}
+          openaevCount={openaev.length}
+        />
       </div>
       {sections.map((timeline) => {
         if (timeline.title === 'draft' && !(userCanUpdate || userCanDelete)) {
