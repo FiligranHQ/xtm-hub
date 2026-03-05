@@ -7,6 +7,7 @@ import {
 import { ServiceFormUploaderIdField } from '@/components/service/form/uploader-id-field';
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/uploader-organization-id-field';
 import { ServiceFormUseCasesField } from '@/components/service/form/use-cases-field';
+import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { LogoFiligranIcon } from '@filigran/icon';
 import {
   FileInput,
@@ -18,7 +19,7 @@ import {
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 type DocumentType =
@@ -72,32 +73,32 @@ type AvailableFields =
 interface Props {
   documentType: DocumentType;
   platform: Platform;
-  isCreation: boolean;
   document?: documentItem_fragment$data;
-  images: Array<ServiceFormMultipleImagesFieldImages>;
-  setImages: (images: Array<ServiceFormMultipleImagesFieldImages>) => void;
-  imagesToDelete: string[];
-  setImagesToDelete: (ids: string[]) => void;
-  setIsDirty: (isDirty: boolean) => void;
   disabledFields?: AvailableFields[];
 }
 
 export const useServiceFormFields = ({
   documentType,
   platform,
-  isCreation,
   document,
-  images,
-  setImages,
-  imagesToDelete,
-  setImagesToDelete,
-  setIsDirty,
   disabledFields = [],
 }: Props) => {
+  const isCreation = !document;
+  const [images, setImages] = useState<
+    Array<ServiceFormMultipleImagesFieldImages>
+  >(
+    (document?.children_documents ??
+      []) as unknown as ServiceFormMultipleImagesFieldImages[]
+  );
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const { setIsDirty } = useDialogContext();
   const integrationType = integrationTypeMappedByDocumentType[documentType];
   const t = useTranslations();
+
   return useMemo(
     () => ({
+      images,
+      imagesToDelete,
       description: {
         fieldType: ({
           field,
@@ -168,7 +169,7 @@ export const useServiceFormFields = ({
             },
           }
         : {}),
-      images: !document
+      imagesField: !document
         ? {
             fieldType: ({
               field,

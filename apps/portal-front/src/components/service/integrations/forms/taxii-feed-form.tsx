@@ -1,6 +1,5 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
-import { ServiceFormMultipleImagesFieldImages } from '@/components/service/form/multiple-images-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
@@ -9,7 +8,7 @@ import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
 
@@ -45,13 +44,6 @@ export const TaxiiFeedForm = ({
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const isCreation = !document;
-
-  const [images, setImages] = useState<
-    Array<ServiceFormMultipleImagesFieldImages>
-  >(
-    document?.children_documents as unknown as ServiceFormMultipleImagesFieldImages[]
-  );
-  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   const onSubmit = (values: TaxiiFeedFormValues) => {
     if (isCreation) {
@@ -114,17 +106,13 @@ export const TaxiiFeedForm = ({
     integration_subtype,
     datasheet_url,
     demo_url,
-    images: imagesField,
+    imagesField,
+    images,
+    imagesToDelete,
   } = useServiceFormFields({
     documentType: 'TAXII Feed',
     platform: 'OpenCTI',
-    isCreation,
     document,
-    images,
-    setImages,
-    imagesToDelete,
-    setImagesToDelete,
-    setIsDirty,
   });
 
   return (

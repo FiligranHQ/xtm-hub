@@ -1,5 +1,4 @@
 import { PortalContext } from '@/components/me/app-portal-context';
-import { ServiceFormMultipleImagesFieldImages } from '@/components/service/form/multiple-images-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
@@ -7,7 +6,7 @@ import { fileListCheck } from '@/utils/documents';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import { z } from 'zod';
 
 const connectorSchema = z.object({
@@ -47,15 +46,7 @@ export const ConnectorForm = ({
   document,
 }: ConnectorFormProps) => {
   const { me } = useContext(PortalContext);
-  const { handleCloseSheet, setIsDirty } = useDialogContext();
-
-  const [images, setImages] = useState<
-    Array<ServiceFormMultipleImagesFieldImages>
-  >(
-    (document?.children_documents ??
-      []) as unknown as ServiceFormMultipleImagesFieldImages[]
-  );
-  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const { handleCloseSheet } = useDialogContext();
 
   const onSubmit = (values: ConnectorFormValues) => {
     const finalImages = images.filter(
@@ -112,17 +103,13 @@ export const ConnectorForm = ({
     manager_supported,
     subscription_link,
     playbook_supported,
-    images: imagesField,
+    imagesField,
+    images,
+    imagesToDelete,
   } = useServiceFormFields({
     documentType: 'Connector',
     platform: 'OpenCTI',
-    isCreation: false,
     document,
-    images,
-    setImages,
-    imagesToDelete,
-    setImagesToDelete,
-    setIsDirty,
     disabledFields: [
       'name',
       'slug',
