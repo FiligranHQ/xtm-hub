@@ -1,9 +1,10 @@
 import { PortalContext } from '@/components/me/app-portal-context';
+import { ServiceFormMultipleImagesFieldImages } from '@/components/service/form/multiple-images-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
+import { fileListCheck } from '@/utils/documents';
 import {
   AutoForm,
   FormControl,
@@ -53,8 +54,10 @@ export const OpenaevScenarioForm = ({
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
-  const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
-    openAEVScenario?.children_documents as unknown as ExistingFile[]
+  const [images, setImages] = useState<
+    Array<ServiceFormMultipleImagesFieldImages>
+  >(
+    openAEVScenario?.children_documents as unknown as ServiceFormMultipleImagesFieldImages[]
   );
   const onSubmit = (values: OpenAEVScenarioFormValues) => {
     if (isCreation) {

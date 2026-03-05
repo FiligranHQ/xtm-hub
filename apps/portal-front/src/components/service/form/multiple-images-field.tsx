@@ -16,19 +16,23 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentSourceTypeEnum } from '@generated/models/DocumentSourceType.enum';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useRef } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
+export type ServiceFormMultipleImagesFieldImages = (ExistingFile | NewFile) & {
+  source_type: DocumentSourceTypeEnum;
+};
+
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;
   document: documentItem_fragment$data;
-  images: Array<ExistingFile | NewFile>;
-  setImages: (images: Array<ExistingFile | NewFile>) => void;
+  images: Array<ServiceFormMultipleImagesFieldImages>;
+  setImages: (images: Array<ServiceFormMultipleImagesFieldImages>) => void;
   imagesToDelete: string[];
   setImagesToDelete: (ids: string[]) => void;
   setIsDirty: (isDirty: boolean) => void;
-  disableFirstImageEdition?: boolean;
 }
 
 export const ServiceFormMultipleImagesField = ({
@@ -39,7 +43,6 @@ export const ServiceFormMultipleImagesField = ({
   imagesToDelete,
   setImagesToDelete,
   setIsDirty,
-  disableFirstImageEdition,
 }: Props) => {
   const t = useTranslations();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -68,9 +71,12 @@ export const ServiceFormMultipleImagesField = ({
               const localImages = [...images];
               if (e.target?.files) {
                 for (const image of Array.from(e.target.files)) {
-                  const extendedImage = image as NewFile;
+                  const extendedImage = image as NewFile & {
+                    source_type: DocumentSourceTypeEnum;
+                  };
                   extendedImage.preview = await fileToBase64(image as File);
                   extendedImage.id = new Date().getTime().toString();
+                  extendedImage.source_type = DocumentSourceTypeEnum.INTERNAL;
                   localImages.push(extendedImage);
                 }
               }
@@ -97,7 +103,7 @@ export const ServiceFormMultipleImagesField = ({
           className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl"
           data-testid="images-grid">
           <TooltipProvider delayDuration={1}>
-            {images.map((doc, index) => (
+            {images.map((doc) => (
               <div
                 key={doc!.id}
                 style={{
@@ -145,7 +151,9 @@ export const ServiceFormMultipleImagesField = ({
                         (doc as NewFile)?.name}
                     </div>
                     <Button
-                      disabled={index === 0 && disableFirstImageEdition}
+                      disabled={
+                        doc.source_type === DocumentSourceTypeEnum.EXTERNAL
+                      }
                       variant="outline-destructive"
                       size="icon"
                       type="button"

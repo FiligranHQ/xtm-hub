@@ -1,10 +1,12 @@
 import { ServiceFormDescriptionField } from '@/components/service/form/description-field';
 import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/integration-subtype-field';
-import { ServiceFormMultipleImagesField } from '@/components/service/form/multiple-images-field';
+import {
+  ServiceFormMultipleImagesField,
+  ServiceFormMultipleImagesFieldImages,
+} from '@/components/service/form/multiple-images-field';
 import { ServiceFormUploaderIdField } from '@/components/service/form/uploader-id-field';
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/uploader-organization-id-field';
 import { ServiceFormUseCasesField } from '@/components/service/form/use-cases-field';
-import { ExistingFile, NewFile } from '@/utils/documents';
 import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -58,16 +60,15 @@ type AvailableFields =
   | 'subscription_link'
   | 'verified'
   | 'manager_supported'
-  | 'playbook_supported'
-  | 'first_image';
+  | 'playbook_supported';
 
 interface Props {
   documentType: DocumentType;
   platform: Platform;
   isCreation: boolean;
   document?: documentItem_fragment$data;
-  images: Array<ExistingFile | NewFile>;
-  setImages: (images: Array<ExistingFile | NewFile>) => void;
+  images: Array<ServiceFormMultipleImagesFieldImages>;
+  setImages: (images: Array<ServiceFormMultipleImagesFieldImages>) => void;
   imagesToDelete: string[];
   setImagesToDelete: (ids: string[]) => void;
   setIsDirty: (isDirty: boolean) => void;
@@ -182,9 +183,6 @@ export const useServiceFormFields = ({
             }) => (
               <ServiceFormMultipleImagesField
                 field={field}
-                disableFirstImageEdition={disabledFields.includes(
-                  'first_image'
-                )}
                 document={document}
                 images={images}
                 setImages={setImages}

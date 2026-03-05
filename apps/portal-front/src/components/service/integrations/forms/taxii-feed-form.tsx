@@ -1,9 +1,10 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
+import { ServiceFormMultipleImagesFieldImages } from '@/components/service/form/multiple-images-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
+import { fileListCheck } from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -45,8 +46,10 @@ export const TaxiiFeedForm = ({
 
   const isCreation = !document;
 
-  const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
-    document?.children_documents as unknown as ExistingFile[]
+  const [images, setImages] = useState<
+    Array<ServiceFormMultipleImagesFieldImages>
+  >(
+    document?.children_documents as unknown as ServiceFormMultipleImagesFieldImages[]
   );
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
