@@ -51,6 +51,7 @@ declare module 'knex' {
 
 type BaseDatabaseType =
   | 'User'
+  | 'Epic'
   | 'Organization'
   | 'ServiceInstance'
   | 'ServiceDefinition'

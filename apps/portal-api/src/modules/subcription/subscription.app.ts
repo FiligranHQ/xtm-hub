@@ -130,7 +130,7 @@ export const subscriptionApp = {
     startDate: Date;
     endDate: Date;
     capabilityIds: ServiceCapabilityId[];
-  }): Promise<void> => {
+  }): Promise<Subscription> => {
     await assertOrganizationIsNotAlreadySubscribed({
       serviceInstanceId,
       organizationId,
@@ -148,6 +148,7 @@ export const subscriptionApp = {
 
     const createdSubscription = await createSubscription(subscriptionData);
     await addCapabilitiesToSubscription(createdSubscription.id, capabilityIds);
+    return createdSubscription;
   },
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {

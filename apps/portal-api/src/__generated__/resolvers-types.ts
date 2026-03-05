@@ -175,6 +175,18 @@ export type CreateDocumentInput = {
   use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type CreateEpicInput = {
+  description: Scalars['String']['input'];
+  epic: Scalars['String']['input'];
+  illustration_document?: InputMaybe<Scalars['Upload']['input']>;
+  is_active?: InputMaybe<Scalars['Boolean']['input']>;
+  is_integration?: InputMaybe<Scalars['Boolean']['input']>;
+  product: FiligranProduct;
+  short_description: Scalars['String']['input'];
+  timeline: Timeline;
+  title: Scalars['String']['input'];
+};
+
 export type CsvFeed = Document & Integration & Node & {
   __typename?: 'CsvFeed';
   active: Scalars['Boolean']['output'];
@@ -513,6 +525,53 @@ export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type Epic = Node & {
+  __typename?: 'Epic';
+  created_at: Scalars['Date']['output'];
+  description: Scalars['String']['output'];
+  document?: Maybe<Document>;
+  document_id?: Maybe<Scalars['ID']['output']>;
+  epic: Scalars['String']['output'];
+  epic_type: EpicType;
+  id: Scalars['ID']['output'];
+  is_active: Scalars['Boolean']['output'];
+  product: FiligranProduct;
+  short_description: Scalars['String']['output'];
+  timeline: Timeline;
+  title: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader_id: Scalars['String']['output'];
+};
+
+export type EpicConnection = {
+  __typename?: 'EpicConnection';
+  edges: Array<EpicEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type EpicEdge = {
+  __typename?: 'EpicEdge';
+  cursor: Scalars['String']['output'];
+  node: Epic;
+};
+
+export enum EpicOrdering {
+  Epic = 'epic'
+}
+
+export enum EpicType {
+  Integration = 'integration',
+  Other = 'other'
+}
+
+export enum FiligranProduct {
+  OpenAev = 'OpenAEV',
+  OpenCti = 'OpenCTI',
+  XtmHub = 'XTMHub'
+}
+
 export type Filter = {
   key?: InputMaybe<FilterKey>;
   value: Array<Scalars['String']['input']>;
@@ -674,8 +733,10 @@ export type Mutation = {
   createCompetitor: Competitor;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
+  createEpic: Epic;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
+  deleteEpic: Epic;
   deleteOrganization?: Maybe<Organization>;
   deleteSubscription?: Maybe<ServiceInstance>;
   deleteUseCase: UseCase;
@@ -705,6 +766,7 @@ export type Mutation = {
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateDocument: Document;
+  updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
 };
@@ -823,6 +885,12 @@ export type MutationCreateDocumentArgs = {
 };
 
 
+export type MutationCreateEpicArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: CreateEpicInput;
+};
+
+
 export type MutationDeleteCompetitorArgs = {
   id: Scalars['ID']['input'];
 };
@@ -832,6 +900,11 @@ export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationDeleteEpicArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -973,6 +1046,12 @@ export type MutationUpdateDocumentArgs = {
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
+};
+
+
+export type MutationUpdateEpicArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateEpicInput;
 };
 
 
@@ -1197,6 +1276,7 @@ export type Query = {
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
+  epics?: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me?: Maybe<User>;
   node?: Maybe<Node>;
@@ -1293,6 +1373,14 @@ export type QueryDocumentsArgs = {
   parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryEpicsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: EpicOrdering;
+  orderMode: OrderingMode;
 };
 
 
@@ -1715,7 +1803,8 @@ export enum ServiceRestriction {
   AccessUser = 'ACCESS_USER',
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
-  Upload = 'UPLOAD'
+  Upload = 'UPLOAD',
+  Upsert = 'UPSERT'
 }
 
 export type Settings = {
@@ -1911,6 +2000,12 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   vendor_url: Scalars['String']['output'];
 };
 
+export enum Timeline {
+  Next = 'next',
+  Now = 'now',
+  UnderConsideration = 'under_consideration'
+}
+
 export type TrialDeploymentsInput = {
   platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
 };
@@ -1959,6 +2054,18 @@ export type UpdateDocumentInput = {
   uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
   use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type UpdateEpicInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  epic?: InputMaybe<Scalars['String']['input']>;
+  illustration_document?: InputMaybe<Scalars['Upload']['input']>;
+  is_active?: InputMaybe<Scalars['Boolean']['input']>;
+  is_integration?: InputMaybe<Scalars['Boolean']['input']>;
+  product?: InputMaybe<FiligranProduct>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
+  timeline?: InputMaybe<Timeline>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdatePlatformServiceMetadataInput = {
@@ -2197,7 +2304,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2221,6 +2328,7 @@ export type ResolversTypes = ResolversObject<{
   CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
+  CreateEpicInput: CreateEpicInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
@@ -2249,6 +2357,12 @@ export type ResolversTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  Epic: ResolverTypeWrapper<Omit<Epic, 'document'> & { document?: Maybe<ResolversTypes['Document']> }>;
+  EpicConnection: ResolverTypeWrapper<Omit<EpicConnection, 'edges'> & { edges: Array<ResolversTypes['EpicEdge']> }>;
+  EpicEdge: ResolverTypeWrapper<Omit<EpicEdge, 'node'> & { node: ResolversTypes['Epic'] }>;
+  EpicOrdering: EpicOrdering;
+  EpicType: EpicType;
+  FiligranProduct: FiligranProduct;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -2339,6 +2453,7 @@ export type ResolversTypes = ResolversObject<{
   TaxiiFeed: ResolverTypeWrapper<TaxiiFeed>;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   ThirdPartyIntegration: ResolverTypeWrapper<ThirdPartyIntegration>;
+  Timeline: Timeline;
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: ResolverTypeWrapper<TrialsDeployments>;
   UnregisterPlatformInput: UnregisterPlatformInput;
@@ -2346,6 +2461,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
+  UpdateEpicInput: UpdateEpicInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
@@ -2391,6 +2507,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
+  CreateEpicInput: CreateEpicInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
   Date: Scalars['Date']['output'];
@@ -2409,6 +2526,9 @@ export type ResolversParentTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  Epic: Omit<Epic, 'document'> & { document?: Maybe<ResolversParentTypes['Document']> };
+  EpicConnection: Omit<EpicConnection, 'edges'> & { edges: Array<ResolversParentTypes['EpicEdge']> };
+  EpicEdge: Omit<EpicEdge, 'node'> & { node: ResolversParentTypes['Epic'] };
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -2484,6 +2604,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
+  UpdateEpicInput: UpdateEpicInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
@@ -2772,6 +2893,38 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type EpicResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Epic'] = ResolversParentTypes['Epic']> = ResolversObject<{
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
+  document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  epic?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  is_active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
+  short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  timeline?: Resolver<ResolversTypes['Timeline'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EpicConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EpicConnection'] = ResolversParentTypes['EpicConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['EpicEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EpicEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EpicEdge'] = ResolversParentTypes['EpicEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Epic'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type GenericServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['GenericServiceCapability'] = ResolversParentTypes['GenericServiceCapability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2882,8 +3035,10 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
+  createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
+  deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
@@ -2913,12 +3068,13 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;
+  updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -3050,6 +3206,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
@@ -3522,6 +3679,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  Epic?: EpicResolvers<ContextType>;
+  EpicConnection?: EpicConnectionResolvers<ContextType>;
+  EpicEdge?: EpicEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   IntegrationHack?: IntegrationHackResolvers<ContextType>;

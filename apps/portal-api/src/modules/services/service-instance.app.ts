@@ -19,6 +19,7 @@ import { securityGuard } from '../../security/guard';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
+import { subscriptionApp } from '../subcription/subscription.app';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
@@ -44,10 +45,21 @@ export const ServiceInstanceApp = {
     user: UserLoadUserBy,
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    const subscription = await loadSubscriptionBy({
+    const service = await loadServiceInstanceBy('id', serviceInstanceId);
+    let subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
       organization_id: user.selected_organization_id,
     });
+
+    if (!subscription && service.join_type == 'JOIN_AUTO') {
+      subscription = await subscriptionApp.subscribeOrganizationToService({
+        organizationId: user.selected_organization_id,
+        serviceInstanceId: serviceInstanceId,
+        startDate: new Date(),
+        endDate: null,
+        capabilityIds: [],
+      });
+    }
     const userService = await UserServiceDomain.loadUserServiceBy({
       subscription_id: subscription.id,
       user_id: user.id,
@@ -66,7 +78,7 @@ export const ServiceInstanceApp = {
         });
       }
     }
-    return loadServiceInstanceBy('id', serviceInstanceId);
+    return service;
   },
 
   addServicePicture: async (
