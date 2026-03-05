@@ -4,7 +4,15 @@ import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListCheck } from '@/utils/documents';
-import { AutoForm } from '@filigran/ui';
+import { LogoFiligranIcon } from '@filigran/icon';
+import {
+  AutoForm,
+  FileInput,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
@@ -133,13 +141,42 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
                   />
                 ),
               },
-          images: {
-            label: t('Service.Form.Illustration'),
-            fieldType: 'file',
-            inputProps: {
-              accept: 'image/jpeg, image/png',
-            },
-          },
+          images: isCreation
+            ? {
+                fieldType: ({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
+                    <FormControl>
+                      <div>
+                        <div className="w-24 p-m border border-light">
+                          <LogoFiligranIcon className="size-18" />
+                        </div>
+                        <FileInput
+                          {...field}
+                          allowedTypes="image/jpeg, image/png"
+                          multiple
+                          texts={{
+                            selectFile: t('Service.Form.SelectImage'),
+                            noFile: t('Service.Form.NoImage'),
+                            dropFiles: t(
+                              'Service.Vault.FileForm.DropDocuments'
+                            ),
+                          }}
+                        />
+                      </div>
+                    </FormControl>
+                    <p>{t('Service.Form.IllustrationDisclaimer')}</p>
+                    <FormMessage />
+                  </FormItem>
+                ),
+              }
+            : {
+                label: t('Service.Form.Illustration'),
+                fieldType: 'file',
+                inputProps: {
+                  accept: 'image/jpeg, image/png',
+                },
+              },
           active,
           short_description,
           slug,

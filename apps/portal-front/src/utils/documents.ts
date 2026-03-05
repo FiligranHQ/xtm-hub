@@ -15,6 +15,9 @@ export const docIsExistingFile = (value: unknown): value is ExistingFile => {
 export const fileListCheck = (file: unknown) =>
   file && (file as FileList).length > 0;
 
+export const optionalFileListCheck = (file: unknown) =>
+  !file || (file as FileList).length === 0 || (file as FileList).length > 0;
+
 export const isFile = (file: unknown): file is File => file instanceof File;
 
 export type FormImagesValues = Array<File | ExistingFile>;
