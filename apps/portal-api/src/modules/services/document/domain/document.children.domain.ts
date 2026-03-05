@@ -73,7 +73,8 @@ export const DocumentChildrenDomain = {
   createImageDocuments: async (
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
-    files: MinioFile[]
+    files: MinioFile[],
+    sourceType: 'external' | 'internal' = 'internal'
   ) => {
     await Promise.all(
       files.map((file) =>
@@ -85,6 +86,7 @@ export const DocumentChildrenDomain = {
             minio_name: file.minioName,
             mime_type: file.mimeType,
             service_instance_id: serviceInstanceId,
+            source_type: sourceType,
           },
           []
         )
@@ -123,11 +125,14 @@ export const DocumentChildrenDomain = {
       const deletedChildrenDocuments =
         await DocumentChildrenDomain.deleteExternalImages(doc.id);
 
-      await DocumentChildrenDomain.createImageDocuments(
-        doc.id,
-        doc.service_instance_id,
-        [logoFile]
-      );
+      if (logoFile) {
+        await DocumentChildrenDomain.createImageDocuments(
+          doc.id,
+          doc.service_instance_id,
+          [logoFile],
+          'external'
+        );
+      }
 
       return deletedChildrenDocuments;
     });

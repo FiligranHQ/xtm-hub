@@ -30,12 +30,20 @@ import { ServiceDefinitionDomain } from '../definition/service-definition.domain
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
+import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
-import { DocumentMetadataDomain } from './domain/document.metadata.domain';
+import {
+  DocumentMetadataDomain,
+  DocumentMetadataKeys,
+} from './domain/document.metadata.domain';
 import {
   CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './opencti/custom-dashboards/custom-dashboards.model';
+import {
+  Connector,
+  ThirdPartyIntegration,
+} from './opencti/integrations/integrations.model';
 
 describe('DocumentApp', () => {
   const minioFileMock = {
@@ -470,6 +478,59 @@ describe('DocumentApp', () => {
         expect(feedUrl).toBe('https://example.com');
       }
     );
+
+    it('should convert boolean metadata keys to booleans on update', async () => {
+      // Create a Connector document with required metadata
+      const connectorMetadata = [
+        { key: 'integration_type', value: IntegrationType.Connector },
+        { key: 'integration_subtype', value: 'native' },
+        { key: 'product_version', value: '1.0.0' },
+        { key: 'verified', value: 'false' },
+        { key: 'manager_supported', value: 'false' },
+        { key: 'playbook_supported', value: 'false' },
+        { key: 'container_image', value: 'container_image_value' },
+        { key: 'source_code', value: 'source_code_value' },
+        { key: 'subscription_link', value: 'subscription_link_value' },
+      ];
+      const createdDocument = await DocumentApp.createDocument(
+        documentData,
+        connectorMetadata,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
+        []
+      );
+      expect(createdDocument).toBeDefined();
+
+      // Update with boolean metadata as strings
+      const updatedMetadata = [
+        { key: 'integration_type', value: IntegrationType.Connector },
+        { key: 'integration_subtype', value: 'native' },
+        { key: 'product_version', value: '2.0.0' },
+        { key: 'verified', value: 'true' },
+        { key: 'manager_supported', value: 'true' },
+        { key: 'playbook_supported', value: 'false' },
+        { key: 'container_image', value: 'container_image_value' },
+        { key: 'source_code', value: 'source_code_value' },
+        { key: 'subscription_link', value: 'subscription_link_value' },
+      ];
+      const result = await DocumentApp.updateDocument(
+        createdDocument!.id,
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
+        updatedMetadata,
+        {
+          input: documentData,
+          document: [],
+          updateDocument: true,
+          images: [],
+        }
+      );
+      expect(result).toBeDefined();
+
+      const updatedConnector = result as Connector;
+      expect(updatedConnector.verified).toBe(true);
+      expect(updatedConnector.manager_supported).toBe(true);
+      expect(updatedConnector.playbook_supported).toBe(false);
+      expect(updatedConnector.product_version).toBe('2.0.0');
+    });
   });
 
   describe('loadDocument', () => {
@@ -640,6 +701,75 @@ describe('DocumentApp', () => {
         { page: 1, pageSize: 10, serviceInstanceId: 'valid-id' },
         ['product_version']
       );
+    });
+  });
+
+  describe('upsertDocumentWithExternalImage', () => {
+    const metadataKeys = [
+      { key: 'integration_type', value: IntegrationType.ThirdPartyIntegration },
+      { key: 'integration_subtype', value: IntegrationSubType.Orchestration },
+      { key: 'vendor_url', value: 'https://example.com' },
+    ] as unknown as DocumentMetadataKeys<ThirdPartyIntegration>;
+
+    it('should create a new document with an external image', async () => {
+      const input = {
+        ...documentData,
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      };
+      const doc = await DocumentApp.upsertDocumentWithExternalImage(
+        'integration',
+        input,
+        mockFileUpload,
+        metadataKeys
+      );
+      expect(doc).toBeDefined();
+      expect(doc.id).toBeDefined();
+      expect(doc.type).toBe('integration');
+      expect(doc.file_name).toBeNull();
+      const children = await DocumentChildrenDomain.loadChildrenDocuments(
+        doc.id
+      );
+      expect(children.length).toBe(1);
+      expect(children[0]!.source_type).toBe('external');
+      expect(children[0]!.minio_name).toBe(minioFileMock.minioName);
+    });
+
+    it('should update an existing document and replace external image', async () => {
+      // First create
+      const input = {
+        ...documentData,
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        slug: 'unique-slug',
+      };
+      const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
+        'integration',
+        input,
+        mockFileUpload,
+        metadataKeys
+      );
+      // Update with new image
+      const newFileUpload = { ...mockFileUpload, filename: 'new-image.png' };
+
+      vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
+        {
+          ...minioFileMock,
+          fileName: 'new-image.png',
+        },
+      ]);
+
+      const doc2 = await DocumentApp.upsertDocumentWithExternalImage(
+        'integration',
+        input,
+        newFileUpload,
+        metadataKeys
+      );
+      expect(doc2.id).toBe(doc1.id);
+      const children = await DocumentChildrenDomain.loadChildrenDocuments(
+        doc2.id
+      );
+      expect(children.length).toBe(1);
+      expect(children[0]!.source_type).toBe('external');
+      expect(children[0]!.file_name).toBe('new-image.png');
     });
   });
 });
