@@ -171,7 +171,7 @@ export const useServiceFormFields = ({
               texts: {
                 selectFile: t('Service.Form.SelectImage'),
                 noFile: t('Service.Form.NoImage'),
-                dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                dropFiles: t('Service.Form.DropDocuments'),
               },
             },
           }

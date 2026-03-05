@@ -875,7 +875,7 @@
         "GithubURL": "URL Github",
         "VendorURL": "URL du fournisseur",
         "FeedURL": "URL du flux",
-        "DatasheetURL": "Fiche technique URL",
+        "DatasheetURL": "URL de la fiche technique",
         "DemoURL": "URL de la démo"
       },
       "Download": "Télécharger",

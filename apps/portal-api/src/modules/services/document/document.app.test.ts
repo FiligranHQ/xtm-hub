@@ -43,6 +43,7 @@ import {
 } from './opencti/custom-dashboards/custom-dashboards.model';
 import {
   Connector,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from './opencti/integrations/integrations.model';
 
@@ -718,14 +719,14 @@ describe('DocumentApp', () => {
         uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       };
       const doc = await DocumentApp.upsertDocumentWithExternalImage(
-        'integration',
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         input,
         mockFileUpload,
         metadataKeys
       );
       expect(doc).toBeDefined();
       expect(doc.id).toBeDefined();
-      expect(doc.type).toBe('integration');
+      expect(doc.type).toBe(OPENCTI_INTEGRATION_DOCUMENT_TYPE);
       expect(doc.file_name).toBeNull();
       const children = await DocumentChildrenDomain.loadChildrenDocuments(
         doc.id

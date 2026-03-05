@@ -86,7 +86,7 @@ export const ServiceFormMultipleImagesField = ({
             texts={{
               selectFile: t('Service.Form.UploadImage'),
               noFile: t('Service.Form.NoImage'),
-              dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+              dropFiles: t('Service.Form.DropDocuments'),
             }}
             allowedTypes={'image/jpeg, image/png'}
             ref={(e: HTMLInputElement) => {

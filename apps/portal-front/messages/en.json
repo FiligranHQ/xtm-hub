@@ -601,6 +601,7 @@
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "This is a paragraph to describe the {documentType}.",
       "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
+      "DropDocuments": "Drop documents here",
       "ExistingJSONFile": "Existing JSON file: {file_name}",
       "GithubUrlLabel": "Github link (url)",
       "Illustration": "Illustration",
