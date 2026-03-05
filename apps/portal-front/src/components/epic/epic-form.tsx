@@ -39,7 +39,7 @@ export const epicFormSchema = z
     description: z.string().min(1, 'Required'),
     product: z.enum(FILIGRAN_PRODUCTS_VALUES),
     timeline: z.enum(TIMELINE_VALUES),
-    is_active: z.boolean().optional(),
+    active: z.boolean().optional(),
     is_integration: z.boolean().optional(),
     illustration_document: z.custom<FileList>().optional(),
   })
@@ -116,7 +116,7 @@ const EpicForm = ({
         description: epic?.description ?? '',
         product: epic?.product as FiligranProductEnum,
         timeline: epic?.timeline as TimelineEnum,
-        is_active: epic?.is_active ?? false,
+        active: epic?.active ?? false,
         is_integration: epic?.epic_type === EpicTypeEnum.INTEGRATION,
         illustration_document: undefined,
       }}
@@ -224,7 +224,7 @@ const EpicForm = ({
             );
           },
         },
-        is_active: {
+        active: {
           label: t('Epic.Form.IsActive'),
         },
         is_integration: {

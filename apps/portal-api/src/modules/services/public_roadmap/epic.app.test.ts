@@ -48,7 +48,7 @@ describe('EpicApp', () => {
         title: 'Test Epic',
         short_description: 'Short desc',
         description: 'Long description for the epic',
-        is_active: true,
+        active: true,
         product: FiligranProduct.Opencti,
         timeline: Timeline.Now,
       };
@@ -60,7 +60,7 @@ describe('EpicApp', () => {
       expect(createdEpic.epic).toBe('EPI-001');
       expect(createdEpic.title).toBe('Test Epic');
       expect(createdEpic.product).toBe('opencti');
-      expect(createdEpic.is_active).toBe(true);
+      expect(createdEpic.active).toBe(true);
 
       // Verify in DB
       const dbEpic = await db<Epic>('Epic').where('id', createdEpic.id).first();
@@ -87,7 +87,7 @@ describe('EpicApp', () => {
         title: 'Epic with Image',
         short_description: 'Short desc',
         description: 'Long description for the epic',
-        is_active: true,
+        active: true,
         product: FiligranProduct.Opencti,
         timeline: Timeline.Now,
       };
@@ -137,7 +137,7 @@ describe('EpicApp', () => {
       const updateInput = {
         title: 'Updated Title',
         short_description: 'Updated short description',
-        is_active: true,
+        active: true,
       };
 
       const updatedEpic = await EpicApp.updateEpic(
@@ -148,7 +148,7 @@ describe('EpicApp', () => {
       expect(updatedEpic).toBeDefined();
       expect(updatedEpic?.title).toBe('Updated Title');
       expect(updatedEpic?.short_description).toBe('Updated short description');
-      expect(updatedEpic?.is_active).toBe(true);
+      expect(updatedEpic?.active).toBe(true);
       // Original values should be preserved
       expect(updatedEpic?.epic).toBe('EPI-003');
       expect(updatedEpic?.description).toBe('Original long');
@@ -158,7 +158,7 @@ describe('EpicApp', () => {
         .where('title', 'Updated Title')
         .first();
       expect(dbEpic?.title).toBe('Updated Title');
-      expect(dbEpic?.is_active).toBe(true);
+      expect(dbEpic?.active).toBe(true);
     });
   });
 
@@ -239,7 +239,7 @@ describe('EpicApp', () => {
         description: 'Long 1',
         product: FiligranProduct.Xtmhub,
         timeline: Timeline.Now,
-        is_active: true,
+        active: true,
       });
 
       await EpicApp.createEpic({
@@ -249,7 +249,7 @@ describe('EpicApp', () => {
         description: 'Long 2',
         product: FiligranProduct.Xtmhub,
         timeline: Timeline.Now,
-        is_active: true,
+        active: true,
       });
 
       const epicsConnection = await EpicApp.loadEpics({

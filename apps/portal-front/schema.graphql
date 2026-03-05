@@ -940,7 +940,7 @@ type Epic implements Node {
   title: String!
   short_description: String!
   description: String!
-  is_active: Boolean!
+  active: Boolean!
   product: FiligranProduct!
   timeline: Timeline!
   epic_type: EpicType!
@@ -957,7 +957,7 @@ input CreateEpicInput {
   title: String!
   short_description: String!
   description: String!
-  is_active: Boolean
+  active: Boolean
   product: FiligranProduct!
   timeline: Timeline!
   is_integration: Boolean
@@ -969,7 +969,7 @@ input UpdateEpicInput {
   title: String
   short_description: String
   description: String
-  is_active: Boolean
+  active: Boolean
   product: FiligranProduct
   timeline: Timeline
   is_integration: Boolean

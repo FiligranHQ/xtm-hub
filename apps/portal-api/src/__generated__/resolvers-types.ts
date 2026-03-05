@@ -176,10 +176,10 @@ export type CreateDocumentInput = {
 };
 
 export type CreateEpicInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
   description: Scalars['String']['input'];
   epic: Scalars['String']['input'];
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
-  is_active?: InputMaybe<Scalars['Boolean']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product: FiligranProduct;
   short_description: Scalars['String']['input'];
@@ -527,6 +527,7 @@ export type EditUserCapabilitiesInput = {
 
 export type Epic = Node & {
   __typename?: 'Epic';
+  active: Scalars['Boolean']['output'];
   created_at: Scalars['Date']['output'];
   description: Scalars['String']['output'];
   document?: Maybe<Document>;
@@ -534,7 +535,6 @@ export type Epic = Node & {
   epic: Scalars['String']['output'];
   epic_type: EpicType;
   id: Scalars['ID']['output'];
-  is_active: Scalars['Boolean']['output'];
   product: FiligranProduct;
   short_description: Scalars['String']['output'];
   timeline: Timeline;
@@ -2057,10 +2057,10 @@ export type UpdateDocumentInput = {
 };
 
 export type UpdateEpicInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   epic?: InputMaybe<Scalars['String']['input']>;
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
-  is_active?: InputMaybe<Scalars['Boolean']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product?: InputMaybe<FiligranProduct>;
   short_description?: InputMaybe<Scalars['String']['input']>;
@@ -2894,6 +2894,7 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
 }>;
 
 export type EpicResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Epic'] = ResolversParentTypes['Epic']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
@@ -2901,7 +2902,6 @@ export type EpicResolvers<ContextType = PortalContext, ParentType extends Resolv
   epic?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  is_active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
   short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timeline?: Resolver<ResolversTypes['Timeline'], ParentType, ContextType>;

@@ -121,6 +121,7 @@
   "Epic": {
     "XTMRoadmap": "Roadmap XTM",
     "Timeline": {
+      "DRAFT": "Brouillons",
       "NOW": "Maintenant",
       "NEXT": "Après",
       "UNDER_CONSIDERATION": "En considération"

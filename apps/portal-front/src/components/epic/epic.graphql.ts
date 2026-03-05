@@ -9,7 +9,7 @@ export const epicFragment = graphql`
     title
     timeline
     product
-    is_active
+    active
     epic_type
     document {
       id

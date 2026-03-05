@@ -100,6 +100,7 @@
   "Epic": {
     "XTMRoadmap": "XTM Roadmap",
     "Timeline": {
+      "DRAFT": "Draft",
       "NOW": "Now",
       "NEXT": "Next",
       "UNDER_CONSIDERATION": "Under consideration"

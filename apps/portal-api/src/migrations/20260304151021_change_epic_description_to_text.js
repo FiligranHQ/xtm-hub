@@ -5,6 +5,7 @@
 export async function up(knex) {
   return knex.schema.alterTable('Epic', function (table) {
     table.text('description').alter();
+    table.renameColumn('is_active', 'active');
   });
 }
 
@@ -15,5 +16,6 @@ export async function up(knex) {
 export async function down(knex) {
   return knex.schema.alterTable('Epic', function (table) {
     table.string('description').alter();
+    table.renameColumn('active', 'is_active');
   });
 }
