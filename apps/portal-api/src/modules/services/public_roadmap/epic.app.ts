@@ -8,11 +8,39 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
+import User from '../../../model/kanel/public/User';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { processUploads, Upload } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { loadSubscribedServiceInstancesByIdentifier } from '../service-instance.domain';
 import { EpicDomain } from './epic.domain';
+
+const addImage = async (user: User, uploads: Upload[]) => {
+  const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
+    user.id,
+    'public_roadmap'
+  );
+  if (uploads && serviceInstance) {
+    const files = await processUploads(
+      uploads,
+      serviceInstance.service_instance_id
+    );
+    return DocumentDomain.createDocument(
+      {
+        service_instance_id: serviceInstance.service_instance_id,
+        description: 'Epic illustration',
+        file_name: files[0].fileName,
+        minio_name: files[0].minioName,
+        active: true,
+        mime_type: files[0].mimeType,
+        type: 'image',
+        source_type: 'internal',
+      },
+      []
+    );
+  }
+  return undefined;
+};
 
 export const EpicApp = {
   loadEpics: async (opts: Partial<QueryEpicsArgs>): Promise<EpicConnection> => {
@@ -24,31 +52,8 @@ export const EpicApp = {
   ): Promise<Epic> => {
     const { user } = requestContext.require();
 
-    const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
-      user.id,
-      'public_roadmap'
-    );
     const { is_integration, ...restInput } = input;
-    let createdDocument;
-    if (uploads && serviceInstance) {
-      const files = await processUploads(
-        uploads,
-        serviceInstance.service_instance_id
-      );
-      createdDocument = await DocumentDomain.createDocument(
-        {
-          service_instance_id: serviceInstance.service_instance_id,
-          description: 'Epic illustration',
-          file_name: files[0].fileName,
-          minio_name: files[0].minioName,
-          active: true,
-          mime_type: files[0].mimeType,
-          type: 'image',
-          source_type: 'internal',
-        },
-        []
-      );
-    }
+    const createdDocument = await addImage(user, uploads);
 
     const epicData: Partial<Epic> = {
       ...restInput,
@@ -60,16 +65,23 @@ export const EpicApp = {
     };
     return EpicDomain.createEpic(epicData);
   },
-  updateEpic: async (id: EpicId, input: UpdateEpicInput) => {
+  updateEpic: async (id: EpicId, input: UpdateEpicInput, uploads: Upload[]) => {
     const { user } = requestContext.require();
+
+    const { is_integration, ...restInput } = input;
+
+    const createdDocument = await addImage(user, uploads);
+
     const epicData: Partial<Epic> = {
-      ...input,
-      id: uuidv4() as EpicId,
+      ...restInput,
       updater_id: user.id,
       updated_at: new Date(),
+      epic_type: is_integration ? EpicType.Integration : EpicType.Other,
+      ...(createdDocument && { document_id: createdDocument.id }),
     };
     return EpicDomain.updateEpic(id, epicData);
   },
+
   deleteEpic: async (id: EpicId) => {
     const [epic] = await EpicDomain.loadEpicsBy({ id: id });
     await EpicDomain.deleteEpicBy({ id });

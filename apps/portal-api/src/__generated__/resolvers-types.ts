@@ -1050,6 +1050,7 @@ export type MutationUpdateDocumentArgs = {
 
 
 export type MutationUpdateEpicArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   id: Scalars['ID']['input'];
   input: UpdateEpicInput;
 };

@@ -119,6 +119,28 @@ describe('EpicApp', () => {
       expect(dbDocument?.active).toBe(true);
       expect(dbDocument?.source_type).toBe('internal');
     });
+
+    it('should create an integration epic when is_integration is true', async () => {
+      const input = {
+        epic: 'EPI-008',
+        title: 'Integration Epic',
+        short_description: 'Short desc',
+        description: 'Long description for the integration epic',
+        active: true,
+        product: FiligranProduct.Opencti,
+        timeline: Timeline.Now,
+        is_integration: true,
+      };
+
+      const createdEpic = await EpicApp.createEpic(input);
+
+      expect(createdEpic).toBeDefined();
+      expect(createdEpic.epic_type).toBe(EpicType.Integration);
+
+      // Verify in DB
+      const dbEpic = await db<Epic>('Epic').where('id', createdEpic.id).first();
+      expect(dbEpic?.epic_type).toBe('integration');
+    });
   });
 
   describe('updateEpic', () => {
@@ -159,6 +181,60 @@ describe('EpicApp', () => {
         .first();
       expect(dbEpic?.title).toBe('Updated Title');
       expect(dbEpic?.active).toBe(true);
+    });
+    it('should update the specified epic with uploads and create a document', async () => {
+      vi.spyOn(
+        ServiceInstanceDomain,
+        'loadSubscribedServiceInstancesByIdentifier'
+      ).mockResolvedValue([
+        {
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          organization_id: 'test-org-id',
+          is_personal_space: false,
+          configurations: [],
+        },
+      ] as never);
+
+      const createdEpic = await EpicApp.createEpic({
+        epic: 'EPI-003-upload',
+        title: 'Original Title',
+        short_description: 'Original short',
+        description: 'Original long',
+        product: FiligranProduct.Openaev,
+        timeline: Timeline.Next,
+      });
+
+      expect(createdEpic.document_id).toBeNull();
+
+      const updateInput = {
+        title: 'Updated Title with Image',
+        short_description: 'Updated short description',
+        active: true,
+      };
+
+      const uploads = [
+        {
+          file: {} as never,
+          promise: Promise.resolve({} as never),
+        },
+      ];
+
+      const updatedEpic = await EpicApp.updateEpic(
+        createdEpic.id as EpicId,
+        updateInput,
+        uploads
+      );
+
+      expect(updatedEpic).toBeDefined();
+      expect(updatedEpic?.title).toBe('Updated Title with Image');
+      expect(updatedEpic?.document_id).toBeDefined();
+
+      const dbDocument = await db<Document>('Document')
+        .where('id', updatedEpic.document_id)
+        .first();
+
+      expect(dbDocument).toBeDefined();
+      expect(dbDocument?.file_name).toBe('epic-image.png');
     });
   });
 
@@ -281,6 +357,40 @@ describe('EpicApp', () => {
       expect(epicsConnection).toBeDefined();
       expect(epicsConnection.edges.length).toStrictEqual(0);
       expect(epicsConnection.pageInfo).toBeDefined();
+    });
+
+    it('should return epics ordered in descending order when orderMode is Desc', async () => {
+      // Create multiple epics
+      await EpicApp.createEpic({
+        epic: 'EPI-010',
+        title: 'Epic A',
+        short_description: 'Short A',
+        description: 'Long A',
+        product: FiligranProduct.Xtmhub,
+        timeline: Timeline.Now,
+        active: true,
+      });
+
+      await EpicApp.createEpic({
+        epic: 'EPI-011',
+        title: 'Epic B',
+        short_description: 'Short B',
+        description: 'Long B',
+        product: FiligranProduct.Xtmhub,
+        timeline: Timeline.Now,
+        active: true,
+      });
+
+      const epicsConnection = await EpicApp.loadEpics({
+        first: 10,
+        orderBy: EpicOrdering.Epic,
+        orderMode: OrderingMode.Desc,
+      });
+
+      expect(epicsConnection).toBeDefined();
+      expect(epicsConnection.edges.length).toStrictEqual(2);
+      expect(epicsConnection.edges[0].node.epic).toBe('EPI-011');
+      expect(epicsConnection.edges[1].node.epic).toBe('EPI-010');
     });
   });
 });

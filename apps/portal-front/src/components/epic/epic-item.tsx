@@ -1,4 +1,5 @@
 'use client';
+import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
 import { DeleteEpic } from '@/components/epic/epic-item/delete-epic';
 import { EpicItemHeader } from '@/components/epic/epic-item/epic-item-header';
 import { useEpicListContext } from '@/components/epic/epic-page';
@@ -27,6 +28,9 @@ export const EpicItem = ({
   const [deleteEpic, setDeleteEpic] = useState<epic_fragment$data | undefined>(
     undefined
   );
+  const [updateEpic, setUpdateEpic] = useState<epic_fragment$data | undefined>(
+    undefined
+  );
   return (
     <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[348px]">
       <div className="relative flex items-center justify-center w-full h-1/2 rounded bg-gradient-to-r from-darkblue to-blue-500">
@@ -51,7 +55,7 @@ export const EpicItem = ({
                 </>
               }>
               {userCanUpdate && (
-                <IconActionsItem onClick={() => {}}>
+                <IconActionsItem onClick={() => setUpdateEpic(epic)}>
                   {t('Utils.Update')}
                 </IconActionsItem>
               )}
@@ -71,6 +75,13 @@ export const EpicItem = ({
           epic={deleteEpic}
           open={!!deleteEpic}
           setOpen={(open) => setDeleteEpic(open ? deleteEpic : undefined)}
+        />
+      )}
+      {updateEpic && (
+        <EpicFormSheet
+          epic={updateEpic}
+          open={!!updateEpic}
+          setOpen={(open) => setUpdateEpic(open ? updateEpic : undefined)}
         />
       )}
     </li>

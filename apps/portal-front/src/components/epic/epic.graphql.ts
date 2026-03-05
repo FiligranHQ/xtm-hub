@@ -62,8 +62,12 @@ export const CreateEpicMutation = graphql`
 `;
 
 export const UpdateEpicMutation = graphql`
-  mutation epicUpdateMutation($id: ID!, $input: UpdateEpicInput!) {
-    updateEpic(id: $id, input: $input) {
+  mutation epicUpdateMutation(
+    $id: ID!
+    $input: UpdateEpicInput!
+    $document: [Upload!]
+  ) {
+    updateEpic(id: $id, input: $input, document: $document) {
       ...epic_fragment
     }
   }

@@ -113,7 +113,7 @@ type Mutation {
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
-  updateEpic(id: ID!, input: UpdateEpicInput!): Epic!
+  updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
   deleteEpic(id: ID!): Epic!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!

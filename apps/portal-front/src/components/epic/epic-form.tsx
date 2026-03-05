@@ -2,7 +2,10 @@
 
 import { FiligranProductMapping } from '@/components/epic/epic-item/filigran-product-mapping';
 import { useEpicListContext } from '@/components/epic/epic-page';
-import { CreateEpicMutation } from '@/components/epic/epic.graphql';
+import {
+  CreateEpicMutation,
+  UpdateEpicMutation,
+} from '@/components/epic/epic.graphql';
 import { ServiceFormDescriptionField } from '@/components/service/form/description-field';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import {
@@ -28,6 +31,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import { useMutation } from 'react-relay';
+import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
 export const FILIGRAN_PRODUCTS_VALUES = Object.values(FiligranProductEnum);
 export const TIMELINE_VALUES = Object.values(TimelineEnum);
@@ -62,22 +66,19 @@ const EpicForm = ({
 }) => {
   const t = useTranslations();
   const [commitEpicMutation] = useMutation(CreateEpicMutation);
+  const [updateEpicMutation] = useMutation(UpdateEpicMutation);
   const { toast } = useToast();
   const { connectionID, filterByProduct } = useEpicListContext();
   const [isIntegration, setIsIntegration] = useState(
     epic?.epic_type === EpicTypeEnum.INTEGRATION
   );
+  const isCreation = !epic;
 
-  const onSubmit = (values: z.infer<typeof epicFormSchema>) => {
-    const document = !values.illustration_document
-      ? undefined
-      : Array.from(values.illustration_document);
-    const uploadables = !document
-      ? undefined
-      : fileListToUploadableMap(document);
-
-    const { illustration_document: _illustration, ...inputValues } = values;
-
+  const createEpic = (
+    inputValues: z.infer<typeof epicFormSchema>,
+    uploadables: UploadableMap | undefined,
+    document: File[] | undefined
+  ) => {
     commitEpicMutation({
       variables: {
         input: { ...inputValues },
@@ -101,6 +102,51 @@ const EpicForm = ({
         });
       },
     });
+  };
+  const updateEpic = (
+    inputValues: z.infer<typeof epicFormSchema>,
+    uploadables: UploadableMap | undefined,
+    document: File[] | undefined
+  ) => {
+    updateEpicMutation({
+      variables: {
+        id: epic!.id,
+        input: { ...inputValues },
+        document,
+      },
+      uploadables,
+      onCompleted: () => {
+        onClose();
+        toast({
+          title: t('Utils.Success'),
+          description: t('Utils.Success'),
+        });
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+    });
+  };
+
+  const onSubmit = (values: z.infer<typeof epicFormSchema>) => {
+    const document = !values.illustration_document
+      ? undefined
+      : Array.from(values.illustration_document);
+    const uploadables = !document
+      ? undefined
+      : fileListToUploadableMap(document);
+
+    const { illustration_document: _illustration, ...inputValues } = values;
+
+    if (isCreation) {
+      createEpic(inputValues, uploadables, document);
+    } else {
+      updateEpic(inputValues, uploadables, document);
+    }
   };
 
   return (
