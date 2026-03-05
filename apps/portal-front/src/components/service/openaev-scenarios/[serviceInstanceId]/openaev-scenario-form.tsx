@@ -7,6 +7,7 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
 import {
   AutoForm,
+  FileInput,
   FormControl,
   FormItem,
   FormLabel,
@@ -17,6 +18,7 @@ import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
+import { LogoFiligranIcon } from '@filigran/icon';
 
 const openAEVScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),
@@ -31,7 +33,7 @@ const openAEVScenarioFormSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 export type OpenAEVScenarioFormValues = z.infer<
   typeof openAEVScenarioFormSchema
@@ -188,17 +190,30 @@ export const OpenaevScenarioForm = ({
             },
         images: isCreation
           ? {
-              label: t('Service.Form.ImageLabel'),
-              fieldType: 'file',
-              inputProps: {
-                allowedTypes: 'image/jpeg, image/png',
-                multiple: 'multiple',
-                texts: {
-                  selectFile: t('Service.Form.SelectImage'),
-                  noFile: t('Service.Form.NoImage'),
-                  dropFiles: t('Service.Vault.FileForm.DropDocuments'),
-                },
-              },
+              fieldType: ({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
+                  <FormControl>
+                    <div>
+                      <div className="w-24 p-m border border-light">
+                        <LogoFiligranIcon className="size-18" />
+                      </div>
+                      <FileInput
+                        {...field}
+                        allowedTypes="image/jpeg, image/png"
+                        multiple
+                        texts={{
+                          selectFile: t('Service.Form.SelectImage'),
+                          noFile: t('Service.Form.NoImage'),
+                          dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                        }}
+                      />
+                    </div>
+                  </FormControl>
+                  <p>{t('Service.Form.IllustrationDisclaimer')}</p>
+                  <FormMessage />
+                </FormItem>
+              ),
             }
           : {
               fieldType: ({ field }) => (

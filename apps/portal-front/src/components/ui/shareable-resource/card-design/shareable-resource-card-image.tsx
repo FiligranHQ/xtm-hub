@@ -1,3 +1,5 @@
+import { PLATFORM_ORGANIZATION_UUID } from '@/utils/constant';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
@@ -13,8 +15,10 @@ export const ShareableResourceCardImage: FunctionComponent<
 > = ({ document, serviceInstanceId }) => {
   return (
     <>
-      <div className="items-start self-stretch flex">
-        {!!document?.children_documents?.length ? (
+      <div className=" items-center self-stretch flex">
+        {document?.uploader_organization?.id !== PLATFORM_ORGANIZATION_UUID &&
+        document?.children_documents?.length &&
+        document.type !== ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD ? (
           <Image
             src={`/document/images/${serviceInstanceId}/${document.children_documents?.[0]?.id}`}
             alt={`${document.name} logo`}
