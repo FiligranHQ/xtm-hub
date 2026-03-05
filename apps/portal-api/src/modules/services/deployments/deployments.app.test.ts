@@ -1210,7 +1210,7 @@ describe('Deployment app', () => {
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      await expect(call).rejects.toThrow('USER_IS_NOT_IN_ORGANIZATION');
+      await expect(call).rejects.toThrow(ErrorCode.UserNotInOrganization);
     });
   });
   describe('reorderDeploymentRequestInQueue', () => {
