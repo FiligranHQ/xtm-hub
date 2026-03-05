@@ -1,6 +1,11 @@
 import { fileToBase64 } from '@/lib/utils';
 import { docIsExistingFile, ExistingFile, NewFile } from '@/utils/documents';
-import { AddIcon, DeleteIcon, ReplayIcon } from '@filigran/icon';
+import {
+  AddIcon,
+  DeleteIcon,
+  LogoFiligranIcon,
+  ReplayIcon,
+} from '@filigran/icon';
 import {
   FileInput,
   FormControl,
@@ -178,6 +183,12 @@ export const ServiceFormMultipleImagesField = ({
           </TooltipProvider>
         </div>
       )}
+      <div>
+        <p className="mb-xs">{t('Service.Form.IllustrationDisclaimer')}</p>
+        <div className="w-24 p-m border border-light">
+          <LogoFiligranIcon className="size-18" />
+        </div>
+      </div>
     </>
   );
 };

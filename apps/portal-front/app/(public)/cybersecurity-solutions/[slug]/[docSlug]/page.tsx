@@ -11,11 +11,13 @@ import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
+  hasResourceLogo,
   isConnectorResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
+import { LogoFiligranIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -252,7 +254,7 @@ const Page = async ({
         />
         <BreadcrumbNav value={breadcrumbValue} />
         <div className="flex gap-s pb-l flex-col md:flex-row">
-          {mainChild?.id && (
+          {mainChild?.id && hasResourceLogo(document) ? (
             <div className="w-24 flex-shrink-0 rounded overflow-hidden">
               <Image
                 src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
@@ -262,6 +264,10 @@ const Page = async ({
                 loading="lazy"
                 className="w-full h-full object-contain rounded"
               />
+            </div>
+          ) : (
+            <div className="w-24 p-m border border-light flex-shrink-0">
+              <LogoFiligranIcon className="size-18" />
             </div>
           )}
           <div className="flex flex-col w-full justify-center">

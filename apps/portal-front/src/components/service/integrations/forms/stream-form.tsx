@@ -4,7 +4,7 @@ import { ServiceFormMultipleImagesFieldImages } from '@/components/service/form/
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck } from '@/utils/documents';
+import { fileListCheck, optionalFileListCheck } from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -27,7 +27,7 @@ const streamFormSchema = z.object({
   datasheet_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(optionalFileListCheck),
 });
 export type StreamFormValues = z.infer<typeof streamFormSchema>;
 
@@ -92,7 +92,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
       document
         ? streamFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            images: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(optionalFileListCheck).optional(),
           })
         : streamFormSchema,
     [document]

@@ -2027,6 +2027,7 @@ export enum Timeline {
 }
 
 export type TrialDeploymentsInput = {
+  organizationId: Scalars['ID']['input'];
   platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
 };
 

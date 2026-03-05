@@ -7,7 +7,14 @@ import {
 import { ServiceFormUploaderIdField } from '@/components/service/form/uploader-id-field';
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/uploader-organization-id-field';
 import { ServiceFormUseCasesField } from '@/components/service/form/use-cases-field';
-import { FormItem } from '@filigran/ui';
+import { LogoFiligranIcon } from '@filigran/icon';
+import {
+  FileInput,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
@@ -163,17 +170,34 @@ export const useServiceFormFields = ({
         : {}),
       images: !document
         ? {
-            label: t('Service.Form.ImageLabel'),
-            fieldType: 'file',
-            inputProps: {
-              allowedTypes: 'image/jpeg, image/png',
-              multiple: 'multiple',
-              texts: {
-                selectFile: t('Service.Form.SelectImage'),
-                noFile: t('Service.Form.NoImage'),
-                dropFiles: t('Service.Form.DropDocuments'),
-              },
-            },
+            fieldType: ({
+              field,
+            }: {
+              field: ControllerRenderProps<FieldValues, string>;
+            }) => (
+              <FormItem>
+                <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
+                <FormControl>
+                  <div>
+                    <FileInput
+                      {...field}
+                      allowedTypes="image/jpeg, image/png"
+                      multiple
+                      texts={{
+                        selectFile: t('Service.Form.SelectImage'),
+                        noFile: t('Service.Form.NoImage'),
+                        dropFiles: t('Service.Form.DropDocuments'),
+                      }}
+                    />
+                  </div>
+                </FormControl>
+                <div className="w-24 p-m border border-light">
+                  <LogoFiligranIcon className="size-18" />
+                </div>
+                <p>{t('Service.Form.IllustrationDisclaimer')}</p>
+                <FormMessage />
+              </FormItem>
+            ),
           }
         : {
             fieldType: ({

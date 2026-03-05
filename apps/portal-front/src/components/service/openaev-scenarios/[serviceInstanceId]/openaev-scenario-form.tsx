@@ -4,7 +4,7 @@ import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck } from '@/utils/documents';
+import { fileListCheck, optionalFileListCheck } from '@/utils/documents';
 import {
   AutoForm,
   FormControl,
@@ -31,7 +31,7 @@ const openAEVScenarioFormSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(optionalFileListCheck),
 });
 export type OpenAEVScenarioFormValues = z.infer<
   typeof openAEVScenarioFormSchema
@@ -97,7 +97,7 @@ export const OpenaevScenarioForm = ({
       openAEVScenario
         ? openAEVScenarioFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            images: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(optionalFileListCheck).optional(),
           })
         : openAEVScenarioFormSchema,
     [openAEVScenario]

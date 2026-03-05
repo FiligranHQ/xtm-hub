@@ -1,4 +1,5 @@
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 
 export enum ShareableResourceType {
@@ -23,6 +24,19 @@ export const isConnectorResource = (
   resource: documentItem_fragment$data | publicDocumentItemFragment$data
 ): boolean => {
   return resource.__typename === 'Connector';
+};
+
+export const hasResourceLogo = (
+  resource: documentItem_fragment$data | publicDocumentItemFragment$data
+): boolean => {
+  if (!resource.integration_type) {
+    return true;
+  }
+
+  return [
+    IntegrationTypeEnum.CONNECTOR,
+    IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
+  ].includes(resource.integration_type as IntegrationTypeEnum);
 };
 
 export type ServiceInfo = { link: string; description: string };
