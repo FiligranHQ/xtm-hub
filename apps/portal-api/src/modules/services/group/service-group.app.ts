@@ -7,6 +7,7 @@ import ServiceGroup, {
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
+import { userHasBypassCapability } from '../../../security/auth.helper';
 import { auth0Client } from '../../../thirdparty/auth0/client';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { organizationDomain } from '../../organizations/organizations.domain';
@@ -50,7 +51,10 @@ export const ServiceGroupApp = {
       await organizationDomain.loadOrganizationSubscribedToServiceInstance(
         serviceInstanceIds[0]
       );
-    if (serviceGroupsOrganization.id !== user.selected_organization_id) {
+    if (
+      !userHasBypassCapability(user) &&
+      serviceGroupsOrganization.id !== user.selected_organization_id
+    ) {
       throw new Error(ErrorCode.OrganizationDoesNotMatchSelectedOrganization);
     }
 

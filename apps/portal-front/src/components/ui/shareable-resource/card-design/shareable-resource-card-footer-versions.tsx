@@ -25,13 +25,13 @@ export const ShareableResourceCardFooterVersion: FunctionComponent<
 
   return (
     <>
-      <div className="flex gap-l">
+      <div className="flex gap-l min-w-0 overflow-hidden">
         {documentMetadata && (
           <Badge
-            className="mr-auto"
+            className="min-w-0 max-w-full"
             variant="outline"
             color={documentMetadata.color}>
-            {documentMetadata.label}
+            <span className="truncate">{documentMetadata.label}</span>
           </Badge>
         )}
         {publicPath ||
