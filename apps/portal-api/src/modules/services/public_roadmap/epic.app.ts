@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   CreateEpicInput,
+  DocumentSourceType,
   EpicConnection,
   EpicType,
   QueryEpicsArgs,
@@ -47,7 +48,7 @@ export const EpicApp = {
           active: true,
           mime_type: files[0].mimeType,
           type: 'image',
-          source_type: 'internal',
+          source_type: DocumentSourceType.Internal,
         },
         []
       );

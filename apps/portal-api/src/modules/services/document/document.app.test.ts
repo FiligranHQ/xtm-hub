@@ -11,6 +11,7 @@ import {
 } from 'vitest';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
   QueryPublicDocumentsArgs,
@@ -730,7 +731,7 @@ describe('DocumentApp', () => {
         doc.id
       );
       expect(children.length).toBe(1);
-      expect(children[0]!.source_type).toBe('external');
+      expect(children[0]!.source_type).toBe(DocumentSourceType.External);
       expect(children[0]!.minio_name).toBe(minioFileMock.minioName);
     });
 
@@ -768,7 +769,7 @@ describe('DocumentApp', () => {
         doc2.id
       );
       expect(children.length).toBe(1);
-      expect(children[0]!.source_type).toBe('external');
+      expect(children[0]!.source_type).toBe(DocumentSourceType.External);
       expect(children[0]!.file_name).toBe('new-image.png');
     });
   });

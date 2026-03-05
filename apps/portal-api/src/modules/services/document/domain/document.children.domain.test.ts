@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import { SERVICES } from '../../../../../tests/tests.const';
+import { DocumentSourceType } from '../../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
@@ -14,7 +15,7 @@ import { DocumentChildrenDomain } from './document.children.domain';
 async function insertDocument({
   id,
   type = 'image',
-  source_type = 'external',
+  source_type = DocumentSourceType.External,
   minio_name = 'minio-file',
   mime_type = 'image/png',
   service_instance_id = null,
@@ -55,14 +56,14 @@ describe('DocumentChildrenDomain', () => {
     childId2 = await insertDocument({ minio_name: 'minio-file-2' });
     unrelatedChildId = await insertDocument({
       type: 'image',
-      source_type: 'internal',
+      source_type: DocumentSourceType.Internal,
       minio_name: 'not-external',
     });
     // Insert parent document (not deleted by the tested method)
     await insertDocument({
       id: parentId,
       type: 'folder',
-      source_type: 'internal',
+      source_type: DocumentSourceType.Internal,
       minio_name: 'parent-folder',
       service_instance_id: serviceInstanceId,
     });
@@ -108,7 +109,7 @@ describe('DocumentChildrenDomain', () => {
       // Remove external type from children
       await db<Document>('Document')
         .whereIn('id', [childId1, childId2])
-        .update({ source_type: 'internal' });
+        .update({ source_type: DocumentSourceType.Internal });
       const deleted =
         await DocumentChildrenDomain.deleteExternalImages(parentId);
       expect(deleted).toEqual([]);
@@ -124,7 +125,7 @@ describe('DocumentChildrenDomain', () => {
       });
       const otherChildId = await insertDocument({
         minio_name: 'other-minio',
-        source_type: 'external',
+        source_type: DocumentSourceType.External,
       });
       await db<DocumentChildren>('Document_Children').insert({
         parent_document_id: otherParentId,
@@ -146,14 +147,14 @@ describe('DocumentChildrenDomain', () => {
       // Insert old external image child
       oldExternalId = await insertDocument({
         type: 'image',
-        source_type: 'external',
+        source_type: DocumentSourceType.External,
         minio_name: 'old-external',
         service_instance_id: serviceInstanceId,
       });
       // Insert old internal image child
       oldInternalId = await insertDocument({
         type: 'image',
-        source_type: 'internal',
+        source_type: DocumentSourceType.Internal,
         minio_name: 'old-internal',
         service_instance_id: serviceInstanceId,
       });
@@ -197,13 +198,13 @@ describe('DocumentChildrenDomain', () => {
         .select('Document.*');
 
       const externalImages = children.filter(
-        (c) => c.source_type === 'external'
+        (c) => c.source_type === DocumentSourceType.External
       );
       expect(externalImages.length).toBe(1);
       expect(externalImages[0]!.minio_name).toBe('new-minio');
       // Internal image child should remain
       const internalImages = children.filter(
-        (c) => c.source_type === 'internal'
+        (c) => c.source_type === DocumentSourceType.Internal
       );
       expect(internalImages.length).toBe(1);
       expect(internalImages[0]!.id).toBe(oldInternalId);
@@ -220,7 +221,7 @@ describe('DocumentChildrenDomain', () => {
       // Remove all external images
       await db<Document>('Document')
         .where('id', oldExternalId)
-        .update({ source_type: 'internal' });
+        .update({ source_type: DocumentSourceType.Internal });
       const parentDoc = await db<Document>('Document')
         .where('id', parentId)
         .first();
@@ -283,7 +284,7 @@ describe('DocumentChildrenDomain', () => {
       await db<Document>('Document').delete();
       parentId = await insertDocument({
         type: 'folder',
-        source_type: 'internal',
+        source_type: DocumentSourceType.Internal,
       });
       serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS.ID;
     });
@@ -298,7 +299,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         serviceInstanceId,
         [file],
-        'external'
+        DocumentSourceType.External
       );
       const children = await db<Document>('Document')
         .leftJoin(
@@ -312,7 +313,7 @@ describe('DocumentChildrenDomain', () => {
       expect(children[0].file_name).toBe('img1.png');
       expect(children[0].minio_name).toBe('minio-img1');
       expect(children[0].mime_type).toBe('image/png');
-      expect(children[0].source_type).toBe('external');
+      expect(children[0].source_type).toBe(DocumentSourceType.External);
       expect(children[0].service_instance_id).toBe(serviceInstanceId);
     });
 
@@ -333,7 +334,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         serviceInstanceId,
         files,
-        'internal'
+        DocumentSourceType.Internal
       );
       const children = await db<Document>('Document')
         .leftJoin(
@@ -347,7 +348,9 @@ describe('DocumentChildrenDomain', () => {
       const fileNames = children.map((c: Document) => c.file_name);
       expect(fileNames).toContain('img1.png');
       expect(fileNames).toContain('img2.jpg');
-      children.forEach((c: Document) => expect(c.source_type).toBe('internal'));
+      children.forEach((c: Document) =>
+        expect(c.source_type).toBe(DocumentSourceType.Internal)
+      );
     });
 
     it('should do nothing if files array is empty', async () => {
@@ -355,7 +358,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         serviceInstanceId,
         [],
-        'external'
+        DocumentSourceType.External
       );
       const children = await db<Document>('Document')
         .leftJoin(
@@ -388,7 +391,7 @@ describe('DocumentChildrenDomain', () => {
         .where('Document_Children.parent_document_id', parentId)
         .select('Document.*');
       expect(children.length).toBe(1);
-      expect(children[0].source_type).toBe('internal');
+      expect(children[0].source_type).toBe(DocumentSourceType.Internal);
     });
   });
 });

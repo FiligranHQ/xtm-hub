@@ -111,6 +111,7 @@ export const documentItem = graphql`
       description
       download_number
       active
+      source_type
     }
     slug
     service_instance {

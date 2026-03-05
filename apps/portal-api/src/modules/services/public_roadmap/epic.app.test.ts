@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../knexfile';
 import { SERVICES } from '../../../../tests/tests.const';
 import {
+  DocumentSourceType,
   EpicOrdering,
   FiligranProduct,
   OrderingMode,
@@ -113,7 +114,7 @@ describe('EpicApp', () => {
       expect(dbDocument?.type).toBe('image');
       expect(dbDocument?.description).toBe('Epic illustration');
       expect(dbDocument?.active).toBe(true);
-      expect(dbDocument?.source_type).toBe('internal');
+      expect(dbDocument?.source_type).toBe(DocumentSourceType.Internal);
     });
   });
 

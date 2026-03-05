@@ -516,6 +516,11 @@ input TrialDeploymentsInput {
   platformIdentifiers: [PlatformIdentifier!]
 }
 
+enum DocumentSourceType {
+  external
+  internal
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -524,6 +529,7 @@ type ShareableResource {
   description: String
   download_number: Int
   active: Boolean!
+  source_type: DocumentSourceType!
 }
 
 enum DocumentOrdering {

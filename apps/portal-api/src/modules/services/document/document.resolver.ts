@@ -2,6 +2,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
   IntegrationType,
   Resolvers,
+  ShareableResource,
   SubscriptionModel,
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
@@ -159,8 +160,10 @@ const resolvers: Resolvers = {
       return 'DefaultDocument';
     },
 
-    children_documents: ({ id }, _) =>
-      DocumentChildrenDomain.loadChildrenDocuments(id),
+    children_documents: async ({ id }, _) =>
+      (await DocumentChildrenDomain.loadChildrenDocuments(
+        id
+      )) as ShareableResource[],
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
     uploader_organization: ({ id }, _) =>
       DocumentDomain.loadUploaderOrganization(id),

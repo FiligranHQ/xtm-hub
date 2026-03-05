@@ -272,7 +272,7 @@ export const uploadNewFile = async (
   const { user } = requestContext.require();
   const { minioName } = await MinIOClient.sendFile(
     document.file,
-    document.file.name,
+    document.file.filename,
     user.id,
     serviceInstanceId
   );
@@ -281,7 +281,7 @@ export const uploadNewFile = async (
     uploader_id: user.id,
     name: serviceInstanceId,
     minio_name: minioName,
-    file_name: document.file.name,
+    file_name: document.file.filename,
     service_instance_id: serviceInstanceId,
     created_at: new Date(),
     mime_type: document.file.mimetype,

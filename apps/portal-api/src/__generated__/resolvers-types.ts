@@ -508,6 +508,11 @@ export enum DocumentOrdering {
   UpdatedAt = 'updated_at'
 }
 
+export enum DocumentSourceType {
+  External = 'external',
+  Internal = 'internal'
+}
+
 export type EditMeUserInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
@@ -1832,6 +1837,7 @@ export type ShareableResource = {
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  source_type: DocumentSourceType;
 };
 
 export type Stream = Document & Integration & Node & {
@@ -2367,6 +2373,7 @@ export type ResolversTypes = ResolversObject<{
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
   DocumentMetadata: DocumentMetadata;
   DocumentOrdering: DocumentOrdering;
+  DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUseCaseInput: EditUseCaseInput;
@@ -3411,6 +3418,7 @@ export type ShareableResourceResolvers<ContextType = PortalContext, ParentType e
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  source_type?: Resolver<ResolversTypes['DocumentSourceType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

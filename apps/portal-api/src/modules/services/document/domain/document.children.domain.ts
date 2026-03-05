@@ -1,5 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../../knexfile';
+import { DocumentSourceType } from '../../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../../context/database.context';
 import {
   DocumentId,
@@ -74,7 +75,7 @@ export const DocumentChildrenDomain = {
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
     files: MinioFile[],
-    sourceType: 'external' | 'internal' = 'internal'
+    sourceType: DocumentSourceType = DocumentSourceType.Internal
   ) => {
     await Promise.all(
       files.map((file) =>
@@ -130,7 +131,7 @@ export const DocumentChildrenDomain = {
           doc.id,
           doc.service_instance_id,
           [logoFile],
-          'external'
+          DocumentSourceType.External
         );
       }
 
@@ -157,7 +158,7 @@ export const DocumentChildrenDomain = {
           .where('parent_document_id', parentDocumentId);
       })
       .andWhere('Document.type', '=', 'image')
-      .andWhere('Document.source_type', '=', 'external')
+      .andWhere('Document.source_type', '=', DocumentSourceType.External)
       .returning(['id', 'minio_name']);
   },
 };
