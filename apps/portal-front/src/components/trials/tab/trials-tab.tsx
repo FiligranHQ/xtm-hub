@@ -128,6 +128,9 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
 
   const [reorderTrigger, setReorderTrigger] = useState(0);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const isSearching = searchTerm.trim().length > 0;
+
   const [commitReorderRequestInQueue] =
     useMutation<trialsReorderRequestInQueueMutation>(
       TrialsReorderRequestInQueueMutation
@@ -203,7 +206,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
 
   const columns: ColumnDef<trials_fragment$data>[] = useMemo(
     () => [
-      ...(type === TrialsTabType.Waiting
+      ...(type === TrialsTabType.Waiting || isSearching
         ? [
             {
               accessorKey: 'ordering',
@@ -225,7 +228,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
         enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Organization'),
       },
-      ...(type === TrialsTabType.Waiting
+      ...(type === TrialsTabType.Waiting || isSearching
         ? [
             {
               accessorKey: 'request_date',
@@ -243,7 +246,9 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
               },
             },
           ]
-        : [
+        : []),
+      ...(type !== TrialsTabType.Waiting || isSearching
+        ? [
             {
               accessorKey: 'start_date',
               id: 'start_date',
@@ -274,8 +279,9 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
                 );
               },
             },
-          ]),
-      ...(type === TrialsTabType.Running
+          ]
+        : []),
+      ...(type === TrialsTabType.Running || isSearching
         ? [
             {
               accessorKey: 'remainingDays',
@@ -341,7 +347,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           );
         },
       },
-      ...(type === TrialsTabType.Cancelled
+      ...(type === TrialsTabType.Cancelled || isSearching
         ? [
             {
               header: t('TrialsDashboard.Columns.CancellationDate'),
@@ -388,7 +394,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           ]
         : []),
     ],
-    [type, t, isReorderTrialsAllowed]
+    [type, t, isReorderTrialsAllowed, isSearching]
   );
 
   const actionColumns: ColumnDef<trials_fragment$data>[] =
@@ -543,7 +549,14 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
       orderBy: defaultOrder,
       filters: [
         { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
-        { key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses },
+        ...(isSearching
+          ? []
+          : [
+              {
+                key: DeploymentRequestFilterKeyEnum.HUB_STATUS,
+                value: statuses,
+              },
+            ]),
         {
           key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
           value: [platformIdentifier],
@@ -589,13 +602,37 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           orderBy,
           orderMode,
           searchTerm: undefined,
+          filters: [
+            { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
+            ...(isSearching
+              ? []
+              : [
+                  {
+                    key: DeploymentRequestFilterKeyEnum.HUB_STATUS,
+                    value: statuses,
+                  },
+                ]),
+            {
+              key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
+              value: [platformIdentifier],
+            },
+          ],
           ...transformSortingValueToParams(sorting),
           ...args,
         },
-        { fetchPolicy: 'store-and-network' }
+        { fetchPolicy: 'store-and-network' } // ← manquait
       );
     },
-    [orderBy, orderMode, pagination.pageIndex, pagination.pageSize, refetch]
+    [
+      orderBy,
+      orderMode,
+      pagination.pageIndex,
+      pagination.pageSize,
+      refetch,
+      isSearching,
+      statuses,
+      platformIdentifier,
+    ] // ← manquait
   );
 
   useEffect(() => {
@@ -632,6 +669,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   };
 
   const handleInputChange = (inputValue: string) => {
+    setSearchTerm(inputValue);
     handleRefetchData({ searchTerm: inputValue });
   };
 
@@ -663,6 +701,12 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
                 <DataTableHeadBarOptions />
               </div>
             </div>
+            {isSearching && (
+              <div className="border border-solid border-blue rounded text-blue flex items-center gap-xs p-s text-sm mt-4">
+                <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
+                {t('TrialsDashboard.GlobalSearchWarning')}
+              </div>
+            )}
             <div className="border border-solid border-orange rounded text-orange flex items-center gap-xs p-s text-sm mt-4">
               <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
               {t('TrialsDashboard.WarningCancellation')}
