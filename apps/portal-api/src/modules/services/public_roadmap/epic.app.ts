@@ -4,6 +4,7 @@ import {
   EpicConnection,
   EpicType,
   QueryEpicsArgs,
+  ServiceDefinitionIdentifier,
   UpdateEpicInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -21,7 +22,7 @@ const addImage = async (user: User, uploads: Upload[]) => {
   }
   const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
     user.id,
-    'public_roadmap'
+    ServiceDefinitionIdentifier.PublicRoadmap
   );
   if (serviceInstance) {
     const files = await processUploads(
