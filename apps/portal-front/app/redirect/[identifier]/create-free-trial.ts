@@ -47,6 +47,7 @@ export const redirectToCreateFreeTrial = async (
         CreateFreeTrialAvailableTrials,
         {
           input: {
+            organizationId: user.selected_organization_id,
             platformIdentifiers: [platformIdentifier],
           },
         }

@@ -1046,7 +1046,12 @@ describe('Deployment app', () => {
   });
   describe('loadTrialDeployments', () => {
     it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({});
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
+      });
 
       expect(trialDeployments).toEqual({
         availableTrials: expect.arrayContaining([
@@ -1060,6 +1065,10 @@ describe('Deployment app', () => {
     });
     it('should return only requested platform identifier specified as available when no DeploymentRequest exist', async () => {
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1078,6 +1087,10 @@ describe('Deployment app', () => {
       });
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1095,6 +1108,10 @@ describe('Deployment app', () => {
       });
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1109,6 +1126,10 @@ describe('Deployment app', () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1131,6 +1152,10 @@ describe('Deployment app', () => {
 
       requestContext.set(requestContextAdminSecondOrga);
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1149,7 +1174,7 @@ describe('Deployment app', () => {
         user: {
           ...contextSimpleUserSecondOrga.user,
           selected_organization_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
               .PERSONAL_SPACE_ID,
         },
       };
@@ -1158,7 +1183,12 @@ describe('Deployment app', () => {
         user: contextUserWithPersonalOrga.user,
         portalContext: contextUserWithPersonalOrga,
       });
+
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1167,6 +1197,20 @@ describe('Deployment app', () => {
         deployed: [],
         isBlacklisted: false,
       });
+    });
+    it('should throw if user does not belong in the organization', async () => {
+      await insertDeploymentRequest({});
+
+      requestContext.set(requestContextAdminSecondOrga);
+      const call = DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.UserNotInOrganization);
     });
   });
   describe('reorderDeploymentRequestInQueue', () => {

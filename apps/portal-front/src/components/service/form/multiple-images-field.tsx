@@ -89,6 +89,7 @@ export const ServiceFormMultipleImagesField = ({
           />
         </FormControl>
         <FormMessage />
+        <p>{t('Service.Form.IllustrationDisclaimer')}</p>
       </FormItem>
       {images?.length > 0 && (
         <div

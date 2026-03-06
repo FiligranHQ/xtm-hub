@@ -622,6 +622,7 @@
       "ExistingJSONFile": "Fichier JSON existant : {file_name}",
       "GithubUrlLabel": "URL Github",
       "Illustration": "Illustration",
+      "IllustrationDisclaimer": "Par défaut, le logo Filigran sera affiché sur la carte, vos illustrations seront ajoutées dans le carousel de la page détail.",
       "ImageLabel": "Images",
       "NameLabel": "Nom",
       "NamePlaceholder": "nom {documentType}",
@@ -941,6 +942,7 @@
         }
       },
       "StartTrial": "Commencez votre essai gratuit",
+      "StartTrialWithName": "Commencez votre essai gratuit de {platformName}",
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
       "ReachOutToSales": "Contactez nous",

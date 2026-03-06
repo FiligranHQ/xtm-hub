@@ -1,3 +1,4 @@
+import { PortalContext } from '@/components/me/app-portal-context';
 import {
   TrialsForOrga,
   TrialsForOrgaFragment,
@@ -5,13 +6,17 @@ import {
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesTrialsForOrgaFragment$key } from '@generated/trialInstancesTrialsForOrgaFragment.graphql';
 import { trialInstancesTrialsForOrgaQuery } from '@generated/trialInstancesTrialsForOrgaQuery.graphql';
+import { useContext } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 
 export const useOrgaFreeTrial = () => {
+  const { me } = useContext(PortalContext);
+
   const queryData = useLazyLoadQuery<trialInstancesTrialsForOrgaQuery>(
     TrialsForOrga,
     {
       input: {
+        organizationId: me?.selected_organization_id || '',
         platformIdentifiers: [
           PlatformIdentifierEnum.OPENCTI,
           PlatformIdentifierEnum.OPENAEV,

@@ -7,6 +7,7 @@ import { requestContext } from '../context/request.context';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../model/user';
+import { loadUserOrganization } from '../modules/common/user-organization.domain';
 import { loadSubscriptionBy } from '../modules/subcription/subscription.domain';
 import { GenericServiceCapabilityName } from '../modules/user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../modules/user_service/user_service.domain';
@@ -16,6 +17,20 @@ import { isUserGranted } from './access';
 import { isUserAllowedOnOrganization } from './auth.helper';
 
 export const securityGuard = {
+  assertUserIsInOrganization: async (
+    user: UserLoadUserBy,
+    organizationId: OrganizationId
+  ) => {
+    const [userOrganization] = await loadUserOrganization({
+      user_id: user.id,
+      organization_id: organizationId,
+    });
+
+    if (!userOrganization) {
+      throw new Error(ErrorCode.UserIsNotInOrganization);
+    }
+  },
+
   assertUserIsAllowedOnOrganization: async (
     user: UserLoadUserBy,
     {

@@ -1,40 +1,28 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
 import {
   IntegrationType,
-  RegisteredPlatform,
   Resolvers,
-  SeoServiceInstance,
-  ServiceInstance,
-  ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
-import { withTransaction } from '../../context/database.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { dispatch, listen } from '../../pub';
+import { listen } from '../../pub';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
-import { uploadNewFile } from './document/document.helper';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './document/openaev/scenarios/scenarios.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './document/opencti/custom-dashboards/custom-dashboards.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './document/opencti/integrations/integrations.model';
-import { PlatformConfiguration } from './registration/registration.domain';
-import { serviceInstanceApp } from './service-instance.app';
+import { ServiceInstanceApp } from './service-instance.app';
 import {
   getUserJoined,
   loadIsSubscribed,
   loadLinks,
-  loadPlatformConfigurationByServiceInstanceId,
   loadPublicServiceInstances,
-  loadSeoServiceInstanceBySlug,
-  loadSeoServiceInstances,
   loadServiceDefinitionByServiceInstance,
   loadServiceInstances,
   loadServiceInstanceSubscriptions,
   loadServiceWithSubscriptions,
-  loadSubscribedServiceInstancesByIdentifier,
 } from './service-instance.domain';
 
 const resolvers: Resolvers = {
@@ -103,28 +91,13 @@ const resolvers: Resolvers = {
       );
     },
     serviceInstanceLinksByTags: async (_, { tags }) => {
-      const services =
-        await serviceInstanceApp.loadLinkServiceInstancesByTags(tags);
-      return services.map((service: SeoServiceInstance) => ({
-        ...service,
-        ...(service.illustration_document_id && {
-          illustration_document_id: toGlobalId(
-            'Document',
-            service.illustration_document_id
-          ),
-        }),
-        ...(service.logo_document_id && {
-          logo_document_id: toGlobalId('Document', service.logo_document_id),
-        }),
-      }));
+      return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
-      const serviceInstance = await serviceInstanceApp.loadServiceInstance(
+      return ServiceInstanceApp.loadServiceInstance(
         context.user,
         extractId<ServiceInstanceId>(service_instance_id)
       );
-
-      return serviceInstance;
     },
     serviceInstanceByIdWithSubscriptions: async (
       _,
@@ -140,125 +113,47 @@ const resolvers: Resolvers = {
       { identifier },
       context
     ) => {
-      return loadSubscribedServiceInstancesByIdentifier(
+      return ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier(
         context.user.id,
         identifier
       );
     },
-    seoServiceInstances: async (_, _opt) => {
-      const services = await loadSeoServiceInstances();
-      return services.map((service: SeoServiceInstance) => ({
-        ...service,
-        ...(service.illustration_document_id && {
-          illustration_document_id: toGlobalId(
-            'Document',
-            service.illustration_document_id
-          ),
-        }),
-        ...(service.logo_document_id && {
-          logo_document_id: toGlobalId('Document', service.logo_document_id),
-        }),
-      }));
+    seoServiceInstances: async () => {
+      return ServiceInstanceApp.loadSeoServiceInstances();
     },
     seoServiceInstance: async (_, { slug }) => {
-      const serviceInstance = await loadSeoServiceInstanceBySlug(slug);
-      if (!serviceInstance) {
-        throw NotFoundError(ErrorCode.ServiceNotFound, {
-          slug,
-        });
+      try {
+        return await ServiceInstanceApp.loadSeoServiceInstance(slug);
+      } catch (error) {
+        if (error.message === ErrorCode.ServiceNotFound) {
+          throw NotFoundError(ErrorCode.ServiceNotFound, { slug });
+        }
+
+        throw mapToGraphQLError(error);
       }
-      const result: SeoServiceInstance = {
-        ...serviceInstance,
-        ...(serviceInstance.illustration_document_id && {
-          illustration_document_id: toGlobalId(
-            'Document',
-            serviceInstance.illustration_document_id
-          ),
-        }),
-        ...(serviceInstance.logo_document_id && {
-          logo_document_id: toGlobalId(
-            'Document',
-            serviceInstance.logo_document_id
-          ),
-        }),
-        tags: serviceInstance.tags as ServiceInstanceTag[],
-      };
-      return result;
     },
   },
   Mutation: {
-    addServicePicture: async (_, payload) => {
+    addServicePicture: async (_, input) => {
       try {
-        const extractedServiceInstanceId = extractId<ServiceInstanceId>(
-          payload.serviceInstanceId
+        return await ServiceInstanceApp.addServicePicture(
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.document,
+          input.isLogo
         );
-        const updatedServiceInstance = await withTransaction(async () => {
-          const document = await uploadNewFile(
-            payload.document,
-            extractedServiceInstanceId
-          );
-          const update = payload.isLogo
-            ? {
-                logo_document_id: document.id,
-              }
-            : {
-                illustration_document_id: document.id,
-              };
-          const [updatedServiceInstance] = await db<ServiceInstance>(
-            'ServiceInstance'
-          )
-            .where({
-              id: extractedServiceInstanceId,
-            })
-            .update(update)
-            .returning('*');
-          return updatedServiceInstance;
-        });
-        await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
-        return updatedServiceInstance;
       } catch (error) {
         throw mapToGraphQLError(error);
       }
     },
-    updatePlatformServiceMetadata: async (_, { input, document }) => {
+    updatePlatformServiceMetadata: async (_, { input, document }, context) => {
       try {
-        const updatedServiceInstance =
-          await serviceInstanceApp.updatePlatformServiceMetadata(
-            input,
-            document
-          );
-
-        await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
-
-        // Get platform configuration to return RegisteredPlatform
-        const config = await loadPlatformConfigurationByServiceInstanceId(
-          updatedServiceInstance.id
+        return await ServiceInstanceApp.updatePlatformServiceMetadata(
+          context.user,
+          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input,
+          document
         );
-
-        if (!config) {
-          throw NotFoundError(ErrorCode.ServiceConfigurationNotFound);
-        }
-
-        const platformConfig = config.config as PlatformConfiguration;
-        return {
-          __typename: 'RegisteredPlatform',
-          id: updatedServiceInstance.id,
-          platform_id: platformConfig.platform_id,
-          title: platformConfig.platform_title,
-          url: platformConfig.platform_url,
-          contract: platformConfig.platform_contract,
-          version: platformConfig.platform_version,
-          identifier: updatedServiceInstance.identifier,
-          illustration_document_id:
-            updatedServiceInstance.illustration_document_id
-              ? toGlobalId(
-                  'Document',
-                  updatedServiceInstance.illustration_document_id
-                )
-              : null,
-        } as RegisteredPlatform;
       } catch (error) {
-        console.error(error);
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.UpdatePlatformServiceMetadataError

@@ -8903,8 +8903,8 @@ __metadata:
     nodemailer: "npm:7.0.11"
     openid-client: "npm:5.7.1"
     passport: "npm:0.7.0"
-    pg: "npm:8.18.0"
-    pg-boss: "npm:12.13.0"
+    pg: "npm:8.19.0"
+    pg-boss: "npm:12.14.0"
     prettier: "npm:3.8.1"
     prettier-plugin-organize-imports: "npm:4.3.0"
     prom-client: "npm:15.1.3"
@@ -8960,7 +8960,7 @@ __metadata:
     next: "npm:16.1.6"
     next-intl: "npm:4.8.3"
     next-themes: "npm:0.4.6"
-    postcss: "npm:8.5.6"
+    postcss: "npm:8.5.8"
     prettier: "npm:3.8.1"
     prettier-plugin-organize-imports: "npm:4.3.0"
     prettier-plugin-tailwindcss: "npm:0.7.2"
@@ -8996,7 +8996,7 @@ __metadata:
     graphql-tag: "npm:2.12.6"
     knex: "npm:3.1.0"
     monocart-reporter: "npm:2.10.0"
-    pg: "npm:8.18.0"
+    pg: "npm:8.19.0"
     playwright-ctrf-json-reporter: "npm:0.0.27"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
@@ -17192,16 +17192,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-boss@npm:12.13.0":
-  version: 12.13.0
-  resolution: "pg-boss@npm:12.13.0"
+"pg-boss@npm:12.14.0":
+  version: 12.14.0
+  resolution: "pg-boss@npm:12.14.0"
   dependencies:
     cron-parser: "npm:^5.5.0"
-    pg: "npm:^8.18.0"
+    pg: "npm:^8.19.0"
     serialize-error: "npm:^13.0.1"
   bin:
     pg-boss: dist/cli.js
-  checksum: 10/07d072992ebb2f604ff438d387f5571cde8163eadab7c20fd3e012b8dd5d95a532201187764928a27c183ca8570c658bdee60f8d73ef53dfafa0e7ead75c53a0
+  checksum: 10/1639883b7db39e7a66b5eb7710d9d183c1dcee8dd62055fac67d5762cbf38dacaaa17790a99eba2993f57a9c5d80aa0ccf4e176164e4df26f97889c646cea757
   languageName: node
   linkType: hard
 
@@ -17265,6 +17265,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-pool@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "pg-pool@npm:3.12.0"
+  peerDependencies:
+    pg: ">=8.0"
+  checksum: 10/81a4220b89ba28034c51db0a7e231a8c1555ddb3cf8bacde0acd092fb26473763a335629ffcf5153059dd8f406d39610e384fd9176d34359a3d1498b4c5b95cd
+  languageName: node
+  linkType: hard
+
 "pg-protocol@npm:^1.10.3":
   version: 1.10.3
   resolution: "pg-protocol@npm:1.10.3"
@@ -17276,6 +17285,13 @@ __metadata:
   version: 1.11.0
   resolution: "pg-protocol@npm:1.11.0"
   checksum: 10/a70b1b4a3fc5b1be80dfdd65c829a149b8bd9df7488f9c47e0b51c9413aec5eb6da0a9ae9812891d74cd9f2ee90c0e391984a41b64603e7375fcbb9e07070b08
+  languageName: node
+  linkType: hard
+
+"pg-protocol@npm:^1.12.0":
+  version: 1.12.0
+  resolution: "pg-protocol@npm:1.12.0"
+  checksum: 10/0f5d8a5dbef39ef4d06686910ad61599b8d26c4505e76af2f6da3a1a1028c312f61678fae5e5012d477fe318b5ebc8507a828c087973b22e5fd4ec1e7394101a
   languageName: node
   linkType: hard
 
@@ -17321,14 +17337,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:8.18.0, pg@npm:^8.18.0":
-  version: 8.18.0
-  resolution: "pg@npm:8.18.0"
+"pg@npm:8.19.0, pg@npm:^8.19.0":
+  version: 8.19.0
+  resolution: "pg@npm:8.19.0"
   dependencies:
     pg-cloudflare: "npm:^1.3.0"
     pg-connection-string: "npm:^2.11.0"
-    pg-pool: "npm:^3.11.0"
-    pg-protocol: "npm:^1.11.0"
+    pg-pool: "npm:^3.12.0"
+    pg-protocol: "npm:^1.12.0"
     pg-types: "npm:2.2.0"
     pgpass: "npm:1.0.5"
   peerDependencies:
@@ -17339,7 +17355,7 @@ __metadata:
   peerDependenciesMeta:
     pg-native:
       optional: true
-  checksum: 10/91c622f179f60df08ab7aa9b05a890567ea47f2d7984377b64e88e1eba1c42787324b7fc5ff00e109a757f3329dc4b57c73502603ae2765d1827b2082abbdcfa
+  checksum: 10/0d552512b6c65c20b4054a203632f8ad51f6c5e60b8aaf65f5dc9f07a698da1e8974ca3918964999ea783c370bda9d230e662d2bab333b3968a28086923934e0
   languageName: node
   linkType: hard
 
@@ -17556,7 +17572,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.5.6, postcss@npm:^8.4.47, postcss@npm:^8.5.6":
+"postcss@npm:8.5.8":
+  version: 8.5.8
+  resolution: "postcss@npm:8.5.8"
+  dependencies:
+    nanoid: "npm:^3.3.11"
+    picocolors: "npm:^1.1.1"
+    source-map-js: "npm:^1.2.1"
+  checksum: 10/cbacbfd7f767e2c820d4bf09a3a744834dd7d14f69ff08d1f57b1a7defce9ae5efcf31981890d9697a972a64e9965de677932ef28e4c8ba23a87aad45b82c459
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.47, postcss@npm:^8.5.6":
   version: 8.5.6
   resolution: "postcss@npm:8.5.6"
   dependencies:

@@ -5,7 +5,7 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { DownloadIcon } from '@filigran/icon';
+import { DownloadIcon, LogoFiligranIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
@@ -30,6 +30,7 @@ import { ShareableResourceType } from '@/utils/shareable-resources/shareable-res
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 
 // Component interface
 interface ShareableResourceSlugProps {
@@ -78,7 +79,10 @@ const ShareableResourceSlug: React.FunctionComponent<
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        {mainChild?.id && (
+        {mainChild?.id &&
+        (documentData.integration_type === IntegrationTypeEnum.CONNECTOR ||
+          documentData.integration_type ===
+            IntegrationTypeEnum.THIRD_PARTY_INTEGRATION) ? (
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
               src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
@@ -88,6 +92,10 @@ const ShareableResourceSlug: React.FunctionComponent<
               loading="lazy"
               className="w-full h-full object-contain rounded"
             />
+          </div>
+        ) : (
+          <div className="w-24 p-m border border-light flex-shrink-0">
+            <LogoFiligranIcon className="size-18" />
           </div>
         )}
         <div className="flex flex-col justify-center w-full">
