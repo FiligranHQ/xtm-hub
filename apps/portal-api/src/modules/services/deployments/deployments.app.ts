@@ -426,7 +426,10 @@ export const DeploymentsApp = {
         newStatus === DeploymentRequestHubStatus.Expired &&
         newStatus !== deploymentRequest.hub_status
       ) {
-        await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+        await auth0Client.deleteAudienceAPI(
+          deploymentRequest.organization_requester_id,
+          deploymentRequest.platform_id
+        );
       }
     } catch (error) {
       logApp.error('Unable to delete audience', {
@@ -667,7 +670,10 @@ export const DeploymentsApp = {
     }
 
     try {
-      await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+      await auth0Client.deleteAudienceAPI(
+        deploymentRequest.organization_requester_id,
+        deploymentRequest.platform_id
+      );
     } catch (error) {
       logApp.error('Unable to delete audience', {
         error,
