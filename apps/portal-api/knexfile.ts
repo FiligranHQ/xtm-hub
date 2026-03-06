@@ -17,7 +17,6 @@ import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
 import { normalizeDocumentName } from './src/modules/services/document/document.helper';
 import { INTEGRATION_METADATA_KEYS } from './src/modules/services/document/opencti/integrations/integrations.model';
-import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 import { compareVersions, isValidVersion } from './src/utils/versioning';
@@ -41,8 +40,6 @@ declare module 'knex' {
   namespace Knex {
     interface QueryBuilder {
       asConnection<T>(): Promise<T>;
-
-      secureQuery(opt?: SecuryQueryOpts): Knex.QueryBuilder;
 
       tap(fn: (qb: this) => this): this;
     }
@@ -106,9 +103,6 @@ interface Pagination {
 
 const knex = pkg;
 
-pkg.QueryBuilder.extend('secureQuery', function (opts: SecuryQueryOpts) {
-  return applyDbSecurityLayer(this, opts);
-});
 pkg.QueryBuilder.extend('tap', function (fn) {
   return fn(this) || this;
 });
@@ -569,15 +563,13 @@ export const paginate = async <T, U>(
     .clearSelect()
     .clearGroup()
     .countDistinct(`${type}.id as totalCount`)
-    .first()
-    .secureQuery({ ...opts });
+    .first();
 
   queryContext
     .orderBy([{ column: orderBy, order: orderMode, nulls: 'last' }])
     .offset(currentOffset)
     .limit(first)
-    .select(`${type}.*`)
-    .secureQuery({ ...opts });
+    .select(`${type}.*`);
 
   const [query, { totalCount }] = await Promise.all([
     queryContext,

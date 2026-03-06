@@ -16,11 +16,8 @@ import {
   userSSESecurity,
 } from './user-security-access';
 
-import { requestContext } from '../context/request.context';
-import { logApp } from '../utils/app-logger.util';
 import { ErrorCode } from '../utils/error/error.code';
 import { isUserAllowed } from './auth.helper';
-import { userOrganizationSecurityLayer } from './layer/user-organization';
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (
@@ -93,48 +90,4 @@ export const isNodeAccessible = async (
     throw new Error(`Security behavior must be defined for type ${type}`);
   }
   return selectedFunction({ user, data, type, topic });
-};
-
-export const applyDbSecurityLayer = async (
-  qb: KnexQueryBuilder,
-  opts: SecuryQueryOpts
-) => {
-  const table = qb._queryContext.__typename;
-  const context = requestContext.require();
-  let method = qb.toSQL().method;
-
-  // First check if we have a valid table type
-  if (!table) {
-    logApp.error(`No table specified in query: ${qb}`);
-    return qb;
-  }
-
-  // Define table-specific security handlers
-  const tableSecurityMap: Partial<Record<DatabaseType, SecuryQueryHandlers>> = {
-    User_Organization: userOrganizationSecurityLayer,
-  };
-
-  if (tableSecurityMap[table]) {
-    if (method === 'first') {
-      method = 'select';
-    }
-    if (method && tableSecurityMap[table][method]) {
-      // DEPRECATION WARNING: Security handler exists and needs to be updated
-      logApp.warn(
-        `DEPRECATION: Security handler exists for ${table}.${method} - please migrate to new security system`
-      );
-
-      // We could perform the verification earlier, but I want to be able to check everything in development.
-      // By default, we're in ADMIN_PLTFM in dev, so this helps ensure the security is properly implemented.
-      if (isUserAdminPlatform(context.user) || opts?.unsecured) {
-        return qb;
-      }
-      // Check the promise and then if it not throwing error we return qb.
-      // QB in promise execute automatically the query but we don't always want to execute the query at this moment
-      await tableSecurityMap[table][method](qb, opts);
-      return qb;
-    }
-  }
-
-  return qb;
 };
