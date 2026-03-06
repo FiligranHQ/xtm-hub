@@ -3548,10 +3548,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/icon@npm:0.22.3":
-  version: 0.22.3
-  resolution: "@filigran/icon@npm:0.22.3"
-  checksum: 10/4c78c223e58dee19a962d8a814ee18c3a3ae04886c8eaa551a987a5655ad0f67c5308b235c5713d9b39afa5e4e121a194fed94e3338fcffee09832096eea97ca
+"@filigran/icon@npm:0.22.4":
+  version: 0.22.4
+  resolution: "@filigran/icon@npm:0.22.4"
+  checksum: 10/9f4c153bad09630b6dc0633a0a30e74416271f012eaed48235a95e4b5d75f30db144b6f33e6dae97ea432863eceb574ce15316f6e51637bd14845c62daa6f0fe
   languageName: node
   linkType: hard
 
@@ -8922,7 +8922,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
   dependencies:
-    "@filigran/icon": "npm:0.22.3"
+    "@filigran/icon": "npm:0.22.4"
     "@filigran/ui": "npm:0.44.7"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"

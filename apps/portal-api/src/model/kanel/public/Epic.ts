@@ -14,13 +14,13 @@ export default interface Epic {
 
   title: string;
 
-  is_active: boolean | null;
+  active: boolean | null;
 
   uploader_id: string | null;
 
   short_description: string;
 
-  description: string;
+  description: string | null;
 
   product: string;
 
@@ -47,13 +47,13 @@ export interface EpicInitializer {
   title: string;
 
   /** Default value: false */
-  is_active?: boolean | null;
+  active?: boolean | null;
 
   uploader_id?: string | null;
 
   short_description: string;
 
-  description: string;
+  description?: string | null;
 
   product: string;
 
@@ -81,13 +81,13 @@ export interface EpicMutator {
 
   title?: string;
 
-  is_active?: boolean | null;
+  active?: boolean | null;
 
   uploader_id?: string | null;
 
   short_description?: string;
 
-  description?: string;
+  description?: string | null;
 
   product?: string;
 
