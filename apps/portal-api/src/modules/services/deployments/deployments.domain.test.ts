@@ -79,9 +79,36 @@ describe('DeploymentRequestDomain', () => {
             searchTerm: 'admin',
           }
         );
-
       expect(deploymentRequests.totalCount).toBe('1');
       expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment?.id);
+    });
+    it('should not return deployment request with wrong hub_status even if searchTerm matches', async () => {
+      const activeDeployment = await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Active,
+      });
+
+      await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Expired,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchTerm: 'admin',
+            filters: [
+              {
+                key: DeploymentRequestFilterKey.HubStatus,
+                value: [DeploymentRequestHubStatus.Active],
+              },
+            ],
+          }
+        );
+
+      expect(result.totalCount).toBe('1');
+      expect(result.edges[0]?.node?.id).toBe(activeDeployment.id);
     });
     it('should return ordered deployment requests', async () => {
       const deployment1 = await insertDeploymentRequest({ ordering: 1 });
