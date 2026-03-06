@@ -4,8 +4,21 @@ import { ServiceFormMultipleImagesField } from '@/components/service/form/multip
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
-import { AutoForm } from '@filigran/ui';
+import {
+  ExistingFile,
+  fileListCheck,
+  NewFile,
+  optionalFileListCheck,
+} from '@/utils/documents';
+import { LogoFiligranIcon } from '@filigran/icon';
+import {
+  AutoForm,
+  FileInput,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
@@ -25,7 +38,7 @@ const customDashboardSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(optionalFileListCheck).optional(),
 });
 
 export type CustomDashboardFormValues = z.infer<typeof customDashboardSchema>;
@@ -89,7 +102,7 @@ export const CustomDashboardForm = ({
       document
         ? customDashboardSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            images: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(optionalFileListCheck).optional(),
           })
         : customDashboardSchema,
     [document]
@@ -156,17 +169,30 @@ export const CustomDashboardForm = ({
             },
         images: isCreation
           ? {
-              label: t('Service.Form.ImageLabel'),
-              fieldType: 'file',
-              inputProps: {
-                allowedTypes: 'image/jpeg, image/png',
-                multiple: 'multiple',
-                texts: {
-                  selectFile: t('Service.Form.SelectImage'),
-                  noFile: t('Service.Form.NoImage'),
-                  dropFiles: t('Service.Vault.FileForm.DropDocuments'),
-                },
-              },
+              fieldType: ({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
+                  <FormControl>
+                    <div>
+                      <div className="w-24 p-m border border-light">
+                        <LogoFiligranIcon className="size-18" />
+                      </div>
+                      <FileInput
+                        {...field}
+                        allowedTypes="image/jpeg, image/png"
+                        multiple
+                        texts={{
+                          selectFile: t('Service.Form.SelectImage'),
+                          noFile: t('Service.Form.NoImage'),
+                          dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                        }}
+                      />
+                    </div>
+                  </FormControl>
+                  <p>{t('Service.Form.IllustrationDisclaimer')}</p>
+                  <FormMessage />
+                </FormItem>
+              ),
             }
           : {
               fieldType: ({ field }) => (

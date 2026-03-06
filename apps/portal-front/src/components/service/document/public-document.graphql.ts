@@ -28,6 +28,7 @@ export const publicDocumentItem = graphql`
     active
     type
     uploader_organization {
+      id
       personal_space
       name
     }
