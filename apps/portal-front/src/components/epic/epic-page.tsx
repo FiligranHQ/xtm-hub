@@ -24,7 +24,7 @@ const EpicListContext = createContext<
   EpicListConnectionContextType | undefined
 >(undefined);
 
-interface EpicListProps {
+interface EpicPageProps {
   epics: epic_fragment$data[];
   serviceInstance: serviceInstance_fragment$data;
   connectionID: string;
@@ -34,7 +34,7 @@ export const EpicPage = ({
   epics,
   serviceInstance,
   connectionID,
-}: EpicListProps) => {
+}: EpicPageProps) => {
   const [selectedProduct, setSelectedProduct] = useState<EpicFilterType>('all');
 
   const filterByProduct = (product: FiligranProductEnum) => {
