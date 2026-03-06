@@ -921,6 +921,7 @@
         }
       },
       "StartTrial": "Start your free trial",
+      "StartTrialWithName": "Start your free {platformName} trial",
       "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
       "ReachOutToSales": "Reach out to Sales",
