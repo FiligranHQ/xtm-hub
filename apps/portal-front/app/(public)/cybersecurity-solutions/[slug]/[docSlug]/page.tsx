@@ -19,6 +19,7 @@ import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-reso
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -244,6 +245,13 @@ const Page = async ({
       );
     }
 
+    const isFirstImageALogo =
+      document.integration_type === IntegrationTypeEnum.THIRD_PARTY_INTEGRATION;
+
+    const carouselImages = isFirstImageALogo
+      ? (document.children_documents?.slice(1) ?? [])
+      : document.children_documents;
+
     return (
       <>
         <script
@@ -299,7 +307,7 @@ const Page = async ({
         {mainChild && (
           <ShareableResourceCarousel
             serviceInstance={serviceInstance}
-            images={document.children_documents}
+            images={carouselImages}
           />
         )}
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
