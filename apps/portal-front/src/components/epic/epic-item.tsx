@@ -32,20 +32,22 @@ export const EpicItem = ({
     undefined
   );
   return (
-    <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[348px]">
-      <div className="relative flex items-center justify-center w-full h-1/2 rounded bg-gradient-to-r from-darkblue to-blue-500">
+    <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[364px]">
+      <div className="relative flex items-center justify-center w-full h-2/5 rounded bg-gradient-to-r from-darkblue to-blue-500">
         <EpicItemHeader
           epic={epic}
           serviceInstanceId={serviceInstanceId}
         />
         <span className="txt-title">{epic.epic}</span>
       </div>
-      <div className="bg-page-background text-ellipsis overflow-hidden p-l group-hover:bg-hover w-full h-1/2">
-        <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 p-m pr-xxl">
+      <div className="flex flex-col bg-page-background text-ellipsis overflow-hidden p-m group-hover:bg-hover w-full flex-1">
+        <h2 className="text-base md:text-lg font-semibold leading-tight min-w-0 p-m pr-xxl overflow-hidden">
           {epic.title}
         </h2>
-        <p className="p-m text-gray-300 text-sm">{epic.short_description}</p>
-        <div className="flex items-center justify-end">
+        <p className="p-m text-gray-300 text-sm overflow-hidden">
+          {epic.short_description}
+        </p>
+        <div className="flex items-center justify-end mt-auto">
           {(userCanDelete || userCanUpdate) && (
             <IconActions
               icon={

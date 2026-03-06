@@ -141,8 +141,8 @@
     "EpicActions": {
       "CreateEpic": "Créer un nouvel épic",
       "UpdateEpic": "Mettre à jour un épic",
-      "DeleteEpic": "Supprimer un épic",
-      "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer cet épic ?",
+      "DeleteEpic": "Supprimer l'épic {epicName}",
+      "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer l'épic {epicName} ?",
       "EpicDeleted": "L'épic a été supprimé"
     }
   },
