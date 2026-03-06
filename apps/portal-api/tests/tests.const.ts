@@ -52,6 +52,8 @@ export const TEST_ORGANIZATIONS = {
         EMAIL: 'user@second-orga.com',
         FIRST_NAME: 'Justin',
         LAST_NAME: 'Time',
+        PERSONAL_SPACE_ID:
+          '154006e2-f24b-42da-b39c-e0fb17bead00' as OrganizationId,
       },
     },
     DOMAINS: {
