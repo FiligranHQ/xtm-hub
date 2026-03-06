@@ -43,16 +43,18 @@ import { DeploymentRequestDomain } from './deployments.domain';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import portalConfig from '../../../config';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import {
   SYSTEM_USER_UUID,
   XTM_HUB_DEV_TEAM_EMAIL,
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../../portal.const';
+import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
 import { auth0Client } from '../../../thirdparty/auth0/client';
 import { formatName } from '../../../utils/format';
-import { ucfirst } from '../../../utils/utils';
+import { extractId, ucfirst } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
@@ -426,7 +428,10 @@ export const DeploymentsApp = {
         newStatus === DeploymentRequestHubStatus.Expired &&
         newStatus !== deploymentRequest.hub_status
       ) {
-        await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+        await auth0Client.deleteAudienceAPI(
+          deploymentRequest.organization_requester_id,
+          deploymentRequest.platform_id
+        );
       }
     } catch (error) {
       logApp.error('Unable to delete audience', {
@@ -667,7 +672,10 @@ export const DeploymentsApp = {
     }
 
     try {
-      await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+      await auth0Client.deleteAudienceAPI(
+        deploymentRequest.organization_requester_id,
+        deploymentRequest.platform_id
+      );
     } catch (error) {
       logApp.error('Unable to delete audience', {
         error,
@@ -776,8 +784,12 @@ export const DeploymentsApp = {
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
     const { user } = requestContext.require();
+    const organizationId = extractId<OrganizationId>(input.organizationId);
+
+    await securityGuard.assertUserIsInOrganization(user, organizationId);
+
     const organization = await loadOrganizationBy({
-      id: user.selected_organization_id,
+      id: organizationId,
     });
     if (organization.personal_space) {
       return {
