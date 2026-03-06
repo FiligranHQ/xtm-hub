@@ -30,7 +30,7 @@ export const hasResourceLogo = (
   resource: documentItem_fragment$data | publicDocumentItemFragment$data
 ): boolean => {
   if (!resource.integration_type) {
-    return true;
+    return false;
   }
 
   return [
