@@ -1,4 +1,5 @@
 'use client';
+import { EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicList } from '@/components/epic/epic-list';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
@@ -34,9 +35,7 @@ export const EpicPage = ({
   serviceInstance,
   connectionID,
 }: EpicListProps) => {
-  const [selectedProduct, setSelectedProduct] = useState<
-    FiligranProductEnum | 'all'
-  >('all');
+  const [selectedProduct, setSelectedProduct] = useState<EpicFilterType>('all');
 
   const filterByProduct = (product: FiligranProductEnum) => {
     setSelectedProduct(product);

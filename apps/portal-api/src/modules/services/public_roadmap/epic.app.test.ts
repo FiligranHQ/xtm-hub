@@ -220,7 +220,7 @@ describe('EpicApp', () => {
       ];
 
       const updatedEpic = await EpicApp.updateEpic(
-        createdEpic.id as EpicId,
+        createdEpic.id,
         updateInput,
         uploads
       );

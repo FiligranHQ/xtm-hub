@@ -1,13 +1,7 @@
 'use client';
 
 import { FiligranProductMapping } from '@/components/epic/epic-item/filigran-product-mapping';
-import { useEpicListContext } from '@/components/epic/epic-page';
-import {
-  CreateEpicMutation,
-  UpdateEpicMutation,
-} from '@/components/epic/epic.graphql';
 import { ServiceFormDescriptionField } from '@/components/service/form/description-field';
-import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import {
   AutoForm,
   Button,
@@ -21,7 +15,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  useToast,
 } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
@@ -30,128 +23,37 @@ import { TimelineEnum } from '@generated/models/Timeline.enum';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import { useMutation } from 'react-relay';
-import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
 export const FILIGRAN_PRODUCTS_VALUES = Object.values(FiligranProductEnum);
 export const TIMELINE_VALUES = Object.values(TimelineEnum);
-export const epicFormSchema = z
-  .object({
-    epic: z.string().min(1, 'Required'),
-    title: z.string().min(2, 'EpicForm.Error.Title'),
-    short_description: z.string().min(1, 'Required').max(250),
-    description: z.string().min(1, 'Required'),
-    product: z.enum(FILIGRAN_PRODUCTS_VALUES),
-    timeline: z.enum(TIMELINE_VALUES),
-    active: z.boolean().optional(),
-    is_integration: z.boolean().optional(),
-    illustration_document: z.custom<FileList>().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.is_integration && !data.illustration_document) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['illustration_document'],
-        message: 'Required when integration',
-      });
-    }
-  });
+export const epicFormSchema = z.object({
+  epic: z.string().min(1, 'Required'),
+  title: z.string().min(2, 'EpicForm.Error.Title'),
+  short_description: z.string().min(1, 'Required').max(250),
+  description: z.string().min(1, 'Required'),
+  product: z.enum(FILIGRAN_PRODUCTS_VALUES),
+  timeline: z.enum(TIMELINE_VALUES),
+  active: z.boolean().optional(),
+  is_integration: z.boolean().optional(),
+  illustration_document: z.custom<FileList>().optional(),
+});
 
 const EpicForm = ({
   epic,
-  onClose,
+  handleSubmit,
 }: {
   epic?: epic_fragment$data;
-  onClose: () => void;
+  handleSubmit: (values: z.infer<typeof epicFormSchema>) => void;
 }) => {
   const t = useTranslations();
-  const [commitEpicMutation] = useMutation(CreateEpicMutation);
-  const [updateEpicMutation] = useMutation(UpdateEpicMutation);
-  const { toast } = useToast();
-  const { connectionID, filterByProduct } = useEpicListContext();
+
   const [isIntegration, setIsIntegration] = useState(
     epic?.epic_type === EpicTypeEnum.INTEGRATION
   );
-  const isCreation = !epic;
-
-  const createEpic = (
-    inputValues: z.infer<typeof epicFormSchema>,
-    uploadables: UploadableMap | undefined,
-    document: File[] | undefined
-  ) => {
-    commitEpicMutation({
-      variables: {
-        input: { ...inputValues },
-        connections: [connectionID],
-        document,
-      },
-      uploadables,
-      onCompleted: () => {
-        onClose();
-        filterByProduct(inputValues.product);
-        toast({
-          title: t('Utils.Success'),
-          description: t('Utils.Success'),
-        });
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
-  };
-  const updateEpic = (
-    inputValues: z.infer<typeof epicFormSchema>,
-    uploadables: UploadableMap | undefined,
-    document: File[] | undefined
-  ) => {
-    updateEpicMutation({
-      variables: {
-        id: epic!.id,
-        input: { ...inputValues },
-        document,
-      },
-      uploadables,
-      onCompleted: () => {
-        onClose();
-        toast({
-          title: t('Utils.Success'),
-          description: t('Utils.Success'),
-        });
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-    });
-  };
-
-  const onSubmit = (values: z.infer<typeof epicFormSchema>) => {
-    const document = !values.illustration_document
-      ? undefined
-      : Array.from(values.illustration_document);
-    const uploadables = !document
-      ? undefined
-      : fileListToUploadableMap(document);
-
-    const { illustration_document: _illustration, ...inputValues } = values;
-
-    if (isCreation) {
-      createEpic(inputValues, uploadables, document);
-    } else {
-      updateEpic(inputValues, uploadables, document);
-    }
-  };
 
   return (
     <AutoForm
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       onValuesChange={(values) => {
         setIsIntegration(values.is_integration ?? false);
       }}
@@ -230,7 +132,7 @@ const EpicForm = ({
                 defaultValue={epic?.timeline}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={t('Epic.Timeline.NOW')} />
+                    <SelectValue placeholder={t('Epic.Timeline.now')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -239,7 +141,7 @@ const EpicForm = ({
                       <SelectItem
                         key={timeline}
                         value={timeline}>
-                        {t(`Epic.Timeline.${timeline.toUpperCase()}`)}
+                        {t(`Epic.Timeline.${timeline.toLowerCase()}`)}
                       </SelectItem>
                     );
                   })}

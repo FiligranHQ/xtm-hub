@@ -120,11 +120,12 @@
   },
   "Epic": {
     "XTMRoadmap": "Roadmap XTM",
+    "AllProducts": "Tous les produits",
     "Timeline": {
-      "DRAFT": "Brouillons",
-      "NOW": "Maintenant",
-      "NEXT": "Après",
-      "UNDER_CONSIDERATION": "En considération"
+      "draft": "Brouillons",
+      "now": "Maintenant",
+      "next": "Après",
+      "under_consideration": "En considération"
     },
     "Form": {
       "Epic": "Epic",
@@ -465,7 +466,8 @@
   },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
-    "opencti": "OpenCTI"
+    "opencti": "OpenCTI",
+    "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {

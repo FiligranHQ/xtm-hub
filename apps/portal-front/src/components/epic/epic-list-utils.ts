@@ -25,10 +25,9 @@ export function useDraftAndTimelineEpics(epics: epic_fragment$data[]) {
     }, initial);
   }, [epics]);
 }
-type Products = FiligranProductEnum;
 export function useCountEpicsByProduct(epics: epic_fragment$data[]) {
   return useMemo(() => {
-    const initial: Record<Products, epic_fragment$data[]> = {
+    const initial: Record<FiligranProductEnum, epic_fragment$data[]> = {
       [FiligranProductEnum.XTMHUB]: [],
       [FiligranProductEnum.OPENCTI]: [],
       [FiligranProductEnum.OPENAEV]: [],

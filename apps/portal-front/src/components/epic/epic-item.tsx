@@ -51,7 +51,7 @@ export const EpicItem = ({
               icon={
                 <>
                   <MoreVertIcon className="h-4 w-4 text-primary" />
-                  <span className="sr-only">{'Utils.OpenMenu'}</span>
+                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
               }>
               {userCanUpdate && (

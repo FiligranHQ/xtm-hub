@@ -17,26 +17,14 @@ export const FiligranProductMapping: Record<
 > = {
   [FiligranProductEnum.OPENCTI]: {
     name: 'OpenCTI',
-    logo: (
-      <>
-        <OpenCtiIconIcon className="w-6 h-6" />
-      </>
-    ),
+    logo: <OpenCtiIconIcon className="w-6 h-6" />,
   },
   [FiligranProductEnum.OPENAEV]: {
     name: 'OpenAEV',
-    logo: (
-      <>
-        <OpenAevIconIcon className="w-6 h-6" />
-      </>
-    ),
+    logo: <OpenAevIconIcon className="w-6 h-6" />,
   },
   [FiligranProductEnum.XTMHUB]: {
     name: 'XTM Hub',
-    logo: (
-      <>
-        <LogoFiligranIcon className="w-6 h-6" />
-      </>
-    ),
+    logo: <LogoFiligranIcon className="w-6 h-6" />,
   },
 };

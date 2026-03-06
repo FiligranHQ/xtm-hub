@@ -99,11 +99,12 @@
   },
   "Epic": {
     "XTMRoadmap": "XTM Roadmap",
+    "AllProducts": "All products",
     "Timeline": {
-      "DRAFT": "Draft",
-      "NOW": "Now",
-      "NEXT": "Next",
-      "UNDER_CONSIDERATION": "Under consideration"
+      "draft": "Draft",
+      "now": "Now",
+      "next": "Next",
+      "under_consideration": "Under consideration"
     },
     "Form": {
       "Epic": "Epic",
@@ -444,7 +445,8 @@
   },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
-    "opencti": "OpenCTI"
+    "opencti": "OpenCTI",
+    "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {

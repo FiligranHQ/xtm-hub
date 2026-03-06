@@ -16,11 +16,14 @@ import { loadSubscribedServiceInstancesByIdentifier } from '../service-instance.
 import { EpicDomain } from './epic.domain';
 
 const addImage = async (user: User, uploads: Upload[]) => {
+  if (!uploads || uploads.length === 0) {
+    return undefined;
+  }
   const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
     user.id,
     'public_roadmap'
   );
-  if (uploads && serviceInstance) {
+  if (serviceInstance) {
     const files = await processUploads(
       uploads,
       serviceInstance.service_instance_id
@@ -72,6 +75,10 @@ export const EpicApp = {
 
     const createdDocument = await addImage(user, uploads);
 
+    let oldEpic;
+    if (createdDocument?.id) {
+      oldEpic = await EpicDomain.loadEpicsBy({ id });
+    }
     const epicData: Partial<Epic> = {
       ...restInput,
       updater_id: user.id,
@@ -79,7 +86,20 @@ export const EpicApp = {
       epic_type: is_integration ? EpicType.Integration : EpicType.Other,
       ...(createdDocument && { document_id: createdDocument.id }),
     };
-    return EpicDomain.updateEpic(id, epicData);
+    const updatedEpic = await EpicDomain.updateEpic(id, epicData);
+    if (
+      oldEpic &&
+      oldEpic.document_id &&
+      createdDocument?.id !== oldEpic.document_id
+    ) {
+      // Remove old document from MinIO and DB
+      const [document] = await DocumentDomain.loadDocumentBy({
+        'Document.id': oldEpic.document_id,
+      });
+      await MinIOClient.deleteFile(document.minio_name);
+      await DocumentDomain.deleteDocuments([oldEpic.document_id]);
+    }
+    return updatedEpic;
   },
 
   deleteEpic: async (id: EpicId) => {

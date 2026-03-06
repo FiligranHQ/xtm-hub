@@ -2,12 +2,13 @@
 import { FiligranProductMapping } from '@/components/epic/epic-item/filigran-product-mapping';
 import { Button } from '@filigran/ui/servers';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { useTranslations } from 'next-intl';
 
-export type FilterType = 'all' | FiligranProductEnum;
+export type EpicFilterType = 'all' | FiligranProductEnum;
 
 interface EpicFilterProps {
-  selectedFilter: FilterType;
-  onSelectedFilterChange: (filter: FilterType) => void;
+  selectedFilter: EpicFilterType;
+  onSelectedFilterChange: (filter: EpicFilterType) => void;
   xtmhubCount: number;
   openctiCount: number;
   openaevCount: number;
@@ -20,6 +21,8 @@ export const EpicFilter = ({
   openctiCount,
   openaevCount,
 }: EpicFilterProps) => {
+  const t = useTranslations();
+
   const totalCount = xtmhubCount + openctiCount + openaevCount;
 
   return (
@@ -27,7 +30,7 @@ export const EpicFilter = ({
       <Button
         variant={selectedFilter === 'all' ? 'default' : 'ghost'}
         onClick={() => onSelectedFilterChange('all')}>
-        All products ({totalCount})
+        {t('Epic.AllProducts')} ({totalCount})
       </Button>
       <Button
         variant={
