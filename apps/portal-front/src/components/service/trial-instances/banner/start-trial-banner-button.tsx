@@ -150,7 +150,9 @@ export const StartTrialBannerButton = () => {
   };
   return (
     <SheetWithPreventingDialog
-      title={t('Service.Trials.StartTrial')}
+      title={t('Service.Trials.StartTrialWithName', {
+        platformName: PlatformMetadataMapping[platformIdentifier].name,
+      })}
       setOpen={setOpenSheet}
       open={openSheet}
       trigger={

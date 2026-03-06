@@ -942,6 +942,7 @@
         }
       },
       "StartTrial": "Commencez votre essai gratuit",
+      "StartTrialWithName": "Commencez votre essai gratuit de {platformName}",
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
       "ReachOutToSales": "Contactez nous",
