@@ -36,6 +36,7 @@ import {
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  loadServiceInstanceSubscription,
   loadServiceWithSubscriptions,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
@@ -658,6 +659,47 @@ describe('Service instance domain', () => {
       );
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('loadServiceInstanceSubscription', () => {
+    beforeEach(async () => {
+      await db<Subscription>('Subscription').del();
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+    });
+
+    it('should return subscription when service instance and organization are found', async () => {
+      const subscription = await loadServiceInstanceSubscription(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(subscription).toBeDefined();
+    });
+
+    it('should return undefined when service instance is not found', async () => {
+      const subscription = await loadServiceInstanceSubscription(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.VAULT.ID
+      );
+
+      expect(subscription).toBeUndefined();
+    });
+
+    it('should return undefined when organization is not found', async () => {
+      const subscription = await loadServiceInstanceSubscription(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(subscription).toBeUndefined();
     });
   });
 });
