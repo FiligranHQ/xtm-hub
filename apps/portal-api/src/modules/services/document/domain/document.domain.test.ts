@@ -27,6 +27,7 @@ import Document from '../../../../model/kanel/public/Document';
 import { ADMIN_UUID } from '../../../../portal.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
+import { CustomDashboard } from '../opencti/custom-dashboards/custom-dashboards.model';
 import { DocumentDomain } from './document.domain';
 import { DocumentMetadataKeys } from './document.metadata.domain';
 
@@ -591,6 +592,44 @@ describe('Document domain', () => {
 
     it('should throw if required fields are missing', async () => {
       await expect(DocumentDomain.createDocument({}, [])).rejects.toThrow();
+    });
+  });
+
+  describe('loadDocumentWithMetadataById', () => {
+    it('should load a document with metadata keys', async () => {
+      const [inserted] = await db('Document')
+        .insert({
+          name: 'DocMeta2',
+          type: 'meta-type',
+          slug: 'doc-meta2',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          active: true,
+        })
+        .returning('*');
+
+      await db('Document_Metadata').insert({
+        document_id: inserted.id,
+        key: 'product_version',
+        value: '1.2.3',
+      });
+      const loaded = await DocumentDomain.loadDocumentWithMetadataById(
+        inserted.id,
+        ['product_version']
+      );
+      expect(loaded).toBeDefined();
+      expect(loaded.id).toBe(inserted.id);
+      expect(loaded.name).toBe('DocMeta2');
+      expect((loaded as unknown as CustomDashboard).product_version).toBe(
+        '1.2.3'
+      );
+    });
+
+    it('should return undefined if document does not exist', async () => {
+      const loaded = await DocumentDomain.loadDocumentWithMetadataById(
+        '00000000-0000-0000-0000-000000000000'
+      );
+      expect(loaded).toBeUndefined();
     });
   });
 });
