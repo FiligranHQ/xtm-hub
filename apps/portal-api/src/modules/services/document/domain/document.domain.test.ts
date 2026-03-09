@@ -22,7 +22,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../opencti/integrations/integrations.model';
 
-import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import Document from '../../../../model/kanel/public/Document';
 import { ADMIN_UUID } from '../../../../portal.const';
 import { DocumentApp } from '../document.app';
@@ -687,6 +687,160 @@ describe('Document domain', () => {
       );
 
       expect(uploader).toBeUndefined();
+    });
+  });
+
+  describe('loadSeoDocumentsByServiceSlug', () => {
+    const TEST_SERVICE_SLUG = 'opencti-integrations';
+    const TEST_METADATA_KEY = 'seo_meta';
+    const TEST_METADATA_VALUE = 'meta_value';
+
+    let parentDoc: Document;
+    let childDoc: Document;
+    let inactiveDoc: Document;
+    let otherServiceDoc: Document;
+
+    beforeEach(async () => {
+      await db('Document_Children').delete();
+      await db('Document_Metadata').delete();
+      await db('Document').delete();
+
+      [parentDoc] = await db('Document')
+        .insert({
+          name: 'Parent SEO Doc',
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          slug: 'parent-seo',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          active: true,
+          created_at: new Date('2023-01-01T10:00:00Z'),
+          updated_at: new Date('2023-01-02T10:00:00Z'),
+        })
+        .returning('*');
+
+      [childDoc] = await db('Document')
+        .insert({
+          name: 'Child SEO Doc',
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          slug: 'child-seo',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          active: true,
+          created_at: new Date('2023-01-01T11:00:00Z'),
+          updated_at: new Date('2023-01-02T11:00:00Z'),
+        })
+        .returning('*');
+      await db('Document_Children').insert({
+        parent_document_id: parentDoc.id,
+        child_document_id: childDoc.id,
+      });
+
+      [inactiveDoc] = await db('Document')
+        .insert({
+          name: 'Inactive SEO Doc',
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          slug: 'inactive-seo',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          active: false,
+          created_at: new Date('2023-01-01T12:00:00Z'),
+          updated_at: new Date('2023-01-02T12:00:00Z'),
+        })
+        .returning('*');
+
+      [otherServiceDoc] = await db('Document')
+        .insert({
+          name: 'Other Service Doc',
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          slug: 'other-service-doc',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+          active: true,
+          created_at: new Date('2023-01-01T13:00:00Z'),
+          updated_at: new Date('2023-01-02T13:00:00Z'),
+        })
+        .returning('*');
+
+      await db('Document_Metadata').insert({
+        document_id: parentDoc.id,
+        key: TEST_METADATA_KEY,
+        value: TEST_METADATA_VALUE,
+      });
+    });
+
+    it('should return only active parent documents for the given service slug and type', async () => {
+      const docs = await DocumentDomain.loadSeoDocumentsByServiceSlug(
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        TEST_SERVICE_SLUG
+      );
+
+      expect(docs.length).toBe(1);
+      expect(docs[0].id).toBe(parentDoc.id);
+      expect(docs[0].active).toBe(true);
+      expect(docs[0].type).toBe(OPENCTI_INTEGRATION_DOCUMENT_TYPE);
+      expect(docs[0].service_instance_id).toBe(
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+    });
+
+    it('should not return child, inactive, or other-service documents', async () => {
+      const docs = await DocumentDomain.loadSeoDocumentsByServiceSlug(
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        TEST_SERVICE_SLUG
+      );
+      const ids = docs.map((d: Document) => d.id);
+      expect(ids).not.toContain(childDoc.id);
+      expect(ids).not.toContain(inactiveDoc.id);
+      expect(ids).not.toContain(otherServiceDoc.id);
+    });
+
+    it('should order results by updated_at and created_at descending when orderResults is true', async () => {
+      // Insert a second parent doc with later updated_at
+      const [secondParent] = await db('Document')
+        .insert({
+          name: 'Second Parent',
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          slug: 'second-parent',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          active: true,
+          created_at: new Date('2023-01-01T14:00:00Z'),
+          updated_at: new Date('2023-01-03T10:00:00Z'),
+        })
+        .returning('*');
+      const docs = await DocumentDomain.loadSeoDocumentsByServiceSlug(
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        TEST_SERVICE_SLUG,
+        [],
+        true
+      );
+      expect(docs.length).toBe(2);
+      expect(docs[0].id).toBe(secondParent.id);
+      expect(docs[1].id).toBe(parentDoc.id);
+    });
+
+    it('should include metadata if requested', async () => {
+      const docs = await DocumentDomain.loadSeoDocumentsByServiceSlug(
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        TEST_SERVICE_SLUG,
+        [TEST_METADATA_KEY]
+      );
+      expect(docs.length).toBe(1);
+      expect(docs[0][TEST_METADATA_KEY]).toBe(TEST_METADATA_VALUE);
+    });
+
+    it('should return empty array if no documents match', async () => {
+      const docs = await DocumentDomain.loadSeoDocumentsByServiceSlug(
+        'nonexistent-type',
+        'nonexistent-slug'
+      );
+      expect(Array.isArray(docs)).toBe(true);
+      expect(docs.length).toBe(0);
     });
   });
 });
