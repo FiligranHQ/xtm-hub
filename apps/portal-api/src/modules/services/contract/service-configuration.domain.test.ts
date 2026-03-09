@@ -1,10 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it } from 'vitest';
-import { contextBypassUser } from '../../../../tests/tests.const';
-import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { db } from '../../../../knexfile';
+import { contextBypassUser, SERVICES } from '../../../../tests/tests.const';
+import {
+  ServiceConfigurationStatus,
+  ServiceDefinitionIdentifier,
+} from '../../../__generated__/resolvers-types';
+import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import { ServiceContractDomain } from './service-configuration.domain';
+
 describe('Service Contract Domain', () => {
   describe('isServiceConfigurationValid', () => {
     const context = contextBypassUser;
@@ -56,6 +62,66 @@ describe('Service Contract Domain', () => {
       );
 
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('loadConfigurationByPlatformAndToken', () => {
+    let platformId: string;
+    let token: string;
+
+    beforeEach(async () => {
+      token = uuidv4();
+      platformId = uuidv4();
+
+      await db<ServiceConfiguration>('Service_Configuration').del();
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
+    });
+
+    it('should return configuration when platform and token is found in its config', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId,
+          token,
+        });
+
+      expect(configuration).toBeDefined();
+    });
+
+    it('should return undefined when platform is found but token does not match', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId,
+          token: uuidv4(),
+        });
+
+      expect(configuration).toBeUndefined();
+    });
+
+    it('should return undefined when token is found but platform does not match', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId: uuidv4(),
+          token,
+        });
+
+      expect(configuration).toBeUndefined();
+    });
+
+    it('should return undefined when token and platform does not exist', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId: uuidv4(),
+          token: uuidv4(),
+        });
+
+      expect(configuration).toBeUndefined();
     });
   });
 });
