@@ -14,7 +14,10 @@ import {
   isConnectorResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { getServiceInfo } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import {
+  getServiceInfo,
+  isResourceDownloadable,
+} from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { Button } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -275,11 +278,13 @@ const Page = async ({
                     tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
                   />
                 }
-                <Button
-                  asChild
-                  className="whitespace-nowrap">
-                  <Link href={serviceInformation?.link ?? ''}>Download</Link>
-                </Button>
+                {isResourceDownloadable(document) && (
+                  <Button
+                    asChild
+                    className="whitespace-nowrap">
+                    <Link href={serviceInformation?.link ?? ''}>Download</Link>
+                  </Button>
+                )}
               </div>
             </div>
             <div>
