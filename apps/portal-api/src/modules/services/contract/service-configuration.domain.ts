@@ -56,7 +56,7 @@ export const ServiceContractDomain = {
   loadConfigurationByPlatform: async (
     platformId: string,
     status?: ServiceConfigurationStatus
-  ): Promise<ServiceConfiguration | null> => {
+  ): Promise<ServiceConfiguration | undefined> => {
     const qb = db('Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platformId)
       .first()
@@ -66,7 +66,7 @@ export const ServiceContractDomain = {
       qb.where({ status });
     }
 
-    return (await qb) ?? null;
+    return qb;
   },
 
   updateConfiguration: async (
