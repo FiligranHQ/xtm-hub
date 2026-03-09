@@ -28,6 +28,7 @@ import { ADMIN_UUID } from '../../../../portal.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
+import { DocumentMetadataKeys } from './document.metadata.domain';
 
 describe('Document domain', () => {
   const minioFileMock = {
@@ -514,6 +515,82 @@ describe('Document domain', () => {
 
         expect(allContractsConnection.edges.length).toBe(2);
       });
+    });
+  });
+
+  describe('createDocument', () => {
+    it('should create a document with minimal required fields', async () => {
+      const docData = {
+        name: 'Minimal Document',
+        type: 'test-type',
+        slug: 'minimal-doc',
+      };
+      const metadataKeys: DocumentMetadataKeys<Document> = [];
+      const document = await DocumentDomain.createDocument(
+        docData,
+        metadataKeys
+      );
+      expect(document).toBeDefined();
+      if (!document) throw new Error('Document not created');
+      expect(document.name).toBe(docData.name);
+      expect(document.type).toBe(docData.type);
+      expect(document.slug).toBe(docData.slug);
+      expect(document.uploader_id).toBe(ADMIN_UUID);
+      expect(document.uploader_organization_id).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+      expect(document.active).toBe(true);
+      // Check DB row exists
+      const dbDocument = await db('Document').where('id', document.id).first();
+
+      expect(dbDocument).toBeDefined();
+      expect(dbDocument.name).toBe(docData.name);
+      expect(dbDocument.type).toBe(docData.type);
+      expect(dbDocument.slug).toBe(docData.slug);
+      expect(dbDocument.uploader_id).toBe(ADMIN_UUID);
+      expect(dbDocument.uploader_organization_id).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+      expect(dbDocument.active).toBe(true);
+    });
+
+    it('should create a document with explicit uploader_id', async () => {
+      const otherUserId = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
+      const docData = {
+        name: 'Uploader Doc',
+        type: 'test-type',
+        slug: 'uploader-doc',
+        uploader_id: toGlobalId('Document', otherUserId),
+      };
+      const metadataKeys: DocumentMetadataKeys<Document> = [];
+      const document = await DocumentDomain.createDocument(
+        docData,
+        metadataKeys
+      );
+      expect(document).toBeDefined();
+      if (!document) throw new Error('Document not created');
+      expect(document.uploader_id).toBe(otherUserId);
+    });
+
+    it('should create an inactive document', async () => {
+      const docData = {
+        name: 'Inactive Doc',
+        type: 'test-type',
+        slug: 'inactive-doc',
+        active: false,
+      };
+      const metadataKeys: DocumentMetadataKeys<Document> = [];
+      const document = await DocumentDomain.createDocument(
+        docData,
+        metadataKeys
+      );
+      expect(document).toBeDefined();
+      if (!document) throw new Error('Document not created');
+      expect(document.active).toBe(false);
+    });
+
+    it('should throw if required fields are missing', async () => {
+      await expect(DocumentDomain.createDocument({}, [])).rejects.toThrow();
     });
   });
 });
