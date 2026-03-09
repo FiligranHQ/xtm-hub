@@ -23,6 +23,8 @@ import {
 } from '../opencti/integrations/integrations.model';
 
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
+import Document from '../../../../model/kanel/public/Document';
+import { ADMIN_UUID } from '../../../../portal.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
@@ -33,18 +35,75 @@ describe('Document domain', () => {
     mimeType: 'mimeType',
     fileName: 'filename',
   };
-  beforeEach(() => {
+
+  beforeEach(async () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
+
+    await db<Document>('Document').delete();
   });
-  describe(`loadParentDocumentsByServiceInstance`, () => {
-    beforeEach(async () => {
-      await db<Document>('Document')
-        .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
-        .delete();
+
+  describe('deactivateDocuments', () => {
+    it('should do nothing when the document ids is an empty array', async () => {
+      const createdDocument = await DocumentApp.createDocument(
+        {
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          name: 'myCsvFeed',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
+      );
+
+      await DocumentDomain.deactivateDocuments([]);
+
+      const documents = await db<Document[]>('Document')
+        .where('id', '=', createdDocument!.id)
+        .select('*');
+
+      expect(documents.length).toBe(1);
+      expect(documents[0]!.active).toBe(true);
     });
 
+    it('should deactivate document and set remover id', async () => {
+      const createdDocument = await DocumentApp.createDocument(
+        {
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          name: 'myCsvFeed',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [
+          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          { key: 'feed_url', value: 'https://example.com' },
+        ],
+        INTEGRATION_SERVICE_INSTANCE_ID,
+        []
+      );
+
+      await DocumentDomain.deactivateDocuments([createdDocument.id]);
+
+      const documents = await db<Document[]>('Document')
+        .where('id', '=', createdDocument!.id)
+        .select('*');
+
+      expect(documents.length).toBe(1);
+      expect(documents[0]!.active).toBe(false);
+      expect(documents[0]!.remover_id).toBe(ADMIN_UUID);
+    });
+  });
+
+  describe(`loadParentDocumentsByServiceInstance`, () => {
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       await DocumentApp.createDocument(
         {
