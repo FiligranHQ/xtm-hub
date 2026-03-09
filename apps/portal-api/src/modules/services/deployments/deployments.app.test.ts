@@ -11,6 +11,7 @@ import {
 import {
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
+  requestContextAdminUser,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
@@ -64,6 +65,7 @@ import { CompetitorTier } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
+import Organization from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { CompetitorDomain } from '../competitor/competitor.domain';
 import { ServiceContractDomain } from '../contract/service-configuration.domain';
@@ -192,6 +194,51 @@ describe('Deployment app', () => {
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
+    });
+    it('should throw when deployment is requested on a personal space', async () => {
+      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: true,
+      });
+      const personalSpaceOrganization = await db<Organization>('Organization')
+        .select('*')
+        .where('name', '=', TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL)
+        .first();
+
+      expect(personalSpaceOrganization).toBeDefined();
+      requestContext.set({
+        ...requestContextAdminUser,
+        user: {
+          ...requestContextAdminUser.user,
+          selected_organization_id: personalSpaceOrganization!.id,
+        },
+      });
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.CantRequestFreeTrialInPersonalSpace
+      );
+    });
+
+    it('should throw when service definition is not found', async () => {
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: 'unknown' as PlatformIdentifier,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
   });
   describe('domains blacklist', () => {
@@ -1210,7 +1257,7 @@ describe('Deployment app', () => {
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.UserNotInOrganization);
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
   });
   describe('reorderDeploymentRequestInQueue', () => {
