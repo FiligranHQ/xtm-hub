@@ -45,6 +45,10 @@ import {
 } from './service-instance.domain';
 
 describe('Service instance domain', () => {
+  beforeEach(async () => {
+    await db<Subscription>('Subscription').del();
+  });
+
   describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
     it('should return service instances linked to service definition and with tags', async () => {
       const serviceInstances =
@@ -620,10 +624,6 @@ describe('Service instance domain', () => {
   });
 
   describe('getUserJoined', () => {
-    beforeEach(async () => {
-      await db<Subscription>('Subscription').del();
-    });
-
     it('should return true when user subscribed to the service with the organization', async () => {
       const [subscription] = await db<Subscription>('Subscription')
         .insert({
@@ -665,7 +665,6 @@ describe('Service instance domain', () => {
 
   describe('loadServiceInstanceSubscription', () => {
     beforeEach(async () => {
-      await db<Subscription>('Subscription').del();
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
