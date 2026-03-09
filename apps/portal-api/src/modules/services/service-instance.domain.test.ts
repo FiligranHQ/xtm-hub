@@ -444,7 +444,7 @@ describe('Service instance domain', () => {
       filigranSubscriptionId = uuidv4() as SubscriptionId;
       secondOrgaSubscriptionId = uuidv4() as SubscriptionId;
 
-      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID;
+      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_INTEGRATIONS.ID;
 
       await db('ServiceInstance').insert({
         id: testServiceInstanceId,
@@ -503,6 +503,25 @@ describe('Service instance domain', () => {
 
       expect(userServiceInDb).toBeDefined();
       expect(userServiceInDb?.subscription_id).toBe(secondOrgaSubscriptionId);
+    });
+
+    it('should send an email when there is a mail template associated to the service', async () => {
+      const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
+      await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        secondOrgaSubscriptionId
+      );
+
+      expect(sendMailSpy).toHaveBeenCalledWith({
+        params: {
+          name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
+          serviceLink: expect.any(String),
+          serviceName: 'Test Service for Grant Access',
+        },
+        template: 'opencti_integrations',
+        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
+      });
     });
 
     it('should not link user_service to a different organization subscription', async () => {

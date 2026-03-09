@@ -65,6 +65,9 @@ export const TEST_ORGANIZATIONS = {
 
 export const SERVICES = {
   DEFINITIONS: {
+    OPENCTI_INTEGRATIONS: {
+      ID: '42007953-4dbc-480a-8693-8c05f1123460' as ServiceDefinitionId,
+    },
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
