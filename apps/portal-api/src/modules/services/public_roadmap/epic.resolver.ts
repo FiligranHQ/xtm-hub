@@ -3,7 +3,6 @@ import { DocumentId } from '../../../model/kanel/public/Document';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { extractId } from '../../../utils/utils';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { EpicApp } from './epic.app';
 import { mapToGraphQLEpic } from './epic.helper';
@@ -33,11 +32,12 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicCreateError);
       }
     },
-    updateEpic: async (_, { id, input }) => {
+    updateEpic: async (_, { id, input, document }) => {
       try {
         const updatedEpic = await EpicApp.updateEpic(
-          extractId<EpicId>(id),
-          input
+          id as EpicId,
+          input,
+          document
         );
         return mapToGraphQLEpic(updatedEpic);
       } catch (error) {
@@ -46,7 +46,7 @@ const resolvers: Resolvers = {
     },
     deleteEpic: async (_, { id }) => {
       try {
-        const deletedEpic = await EpicApp.deleteEpic(extractId<EpicId>(id));
+        const deletedEpic = await EpicApp.deleteEpic(id as EpicId);
         return mapToGraphQLEpic(deletedEpic);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicDeleteError);
