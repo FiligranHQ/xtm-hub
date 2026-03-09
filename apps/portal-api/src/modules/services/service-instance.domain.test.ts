@@ -37,6 +37,7 @@ import {
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
   loadServiceInstanceSubscription,
+  loadServiceInstanceSubscriptions,
   loadServiceWithSubscriptions,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
@@ -700,6 +701,51 @@ describe('Service instance domain', () => {
       );
 
       expect(subscription).toBeUndefined();
+    });
+  });
+
+  describe('loadServiceInstanceSubscriptions', () => {
+    it('should return a list of subscriptions linked to service instance', async () => {
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      const result = await loadServiceInstanceSubscriptions(
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(result.length).toBe(2);
+    });
+
+    it('should return an empty array when service instance is not found', async () => {
+      const result = await loadServiceInstanceSubscriptions(
+        uuidv4() as ServiceInstanceId
+      );
+
+      expect(result.length).toBe(0);
     });
   });
 });
