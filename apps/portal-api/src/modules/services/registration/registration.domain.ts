@@ -25,7 +25,7 @@ import {
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
 } from '../../subcription/subscription.domain';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import { FullyQualifiedDeploymentRequest } from '../deployments/deployments.domain';
 
 import { serviceInstanceDomain } from '../instances/domain';
@@ -88,7 +88,7 @@ export const registrationDomain = {
     });
 
     if (configuration) {
-      await serviceContractDomain.createConfiguration(
+      await ServiceContractDomain.createConfiguration(
         serviceInstanceId,
         configuration
       );
@@ -134,7 +134,7 @@ export const registrationDomain = {
       });
     }
 
-    await serviceContractDomain.updateConfiguration(serviceInstanceId, {
+    await ServiceContractDomain.updateConfiguration(serviceInstanceId, {
       config: configuration,
       status: ServiceConfigurationStatus.Active,
     });

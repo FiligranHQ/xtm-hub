@@ -58,7 +58,7 @@ import {
 } from '../../telemetry/telemetry.helper';
 import { loadUser } from '../../users/users.domain';
 import { CompetitorApp } from '../competitor/competitor.app';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
@@ -387,7 +387,7 @@ export const DeploymentsApp = {
         });
 
         const serviceConfiguration =
-          await serviceContractDomain.loadConfigurationByPlatform(
+          await ServiceContractDomain.loadConfigurationByPlatform(
             deploymentRequest.platform_id
           );
 

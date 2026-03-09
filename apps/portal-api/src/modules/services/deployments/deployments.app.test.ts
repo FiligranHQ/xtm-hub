@@ -66,7 +66,7 @@ import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { PortalContext } from '../../../model/portal-context';
 import { CompetitorDomain } from '../competitor/competitor.domain';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -1008,7 +1008,7 @@ describe('Deployment app', () => {
 
       it('should send a mail in case deployment request is in active (only first time)', async () => {
         vi.spyOn(
-          serviceContractDomain,
+          ServiceContractDomain,
           'loadConfigurationByPlatform'
         ).mockResolvedValue({
           service_instance_id: uuidv4() as ServiceInstanceId,

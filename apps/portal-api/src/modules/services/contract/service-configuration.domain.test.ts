@@ -4,13 +4,12 @@ import { contextBypassUser } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
-import { serviceContractDomain } from './service-configuration.domain';
-
+import { ServiceContractDomain } from './service-configuration.domain';
 describe('Service Contract Domain', () => {
   describe('isServiceConfigurationValid', () => {
     const context = contextBypassUser;
     it('should throw an error when service contract is not found', async () => {
-      const call = serviceContractDomain.isServiceConfigurationValid(
+      const call = ServiceContractDomain.isServiceConfigurationValid(
         uuidv4() as ServiceDefinitionId,
         {}
       );
@@ -35,8 +34,8 @@ describe('Service Contract Domain', () => {
         platform_contract: 'EE',
       };
 
-      const result = await serviceContractDomain.isServiceConfigurationValid(
-        serviceDefinition.id,
+      const result = await ServiceContractDomain.isServiceConfigurationValid(
+        serviceDefinition!.id,
         configuration
       );
 
@@ -51,8 +50,8 @@ describe('Service Contract Domain', () => {
 
       expect(serviceDefinition).toBeDefined();
 
-      const result = await serviceContractDomain.isServiceConfigurationValid(
-        serviceDefinition.id,
+      const result = await ServiceContractDomain.isServiceConfigurationValid(
+        serviceDefinition!.id,
         {}
       );
 

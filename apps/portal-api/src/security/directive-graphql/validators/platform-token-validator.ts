@@ -12,7 +12,7 @@ import {
   loadOrganizationBy,
   organizationDomain,
 } from '../../../modules/organizations/organizations.domain';
-import { serviceContractDomain } from '../../../modules/services/contract/service-configuration.domain';
+import { ServiceContractDomain } from '../../../modules/services/contract/service-configuration.domain';
 import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
 import { logApp } from '../../../utils/app-logger.util';
@@ -50,7 +50,7 @@ export const validateActivePlatformToken = async (
   if (!validateExistsToken(req)) return false;
 
   const serviceConfiguration: ServiceConfiguration | null =
-    await serviceContractDomain.loadConfigurationByPlatformAndToken({
+    await ServiceContractDomain.loadConfigurationByPlatformAndToken({
       platformId: extractPlatformId(req),
       token: extractPlatformToken(req),
     });
@@ -96,7 +96,7 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
   }
 
   const serviceConfiguration =
-    await serviceContractDomain.loadConfigurationByPlatformAndToken({
+    await ServiceContractDomain.loadConfigurationByPlatformAndToken({
       platformId: extractPlatformId(req),
       token: extractPlatformToken(req),
     });

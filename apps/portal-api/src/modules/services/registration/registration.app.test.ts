@@ -63,7 +63,7 @@ import {
   TelemetryTargetProduct,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import * as serviceInstanceDomain from '../service-instance.domain';
 import {
@@ -465,7 +465,7 @@ describe('Registration app', () => {
       });
 
       const serviceConfiguration =
-        await serviceContractDomain.loadConfigurationByPlatform(platformId);
+        await ServiceContractDomain.loadConfigurationByPlatform(platformId);
 
       expect(serviceConfiguration).toBeDefined();
       expect(serviceConfiguration?.status).toBe(
@@ -500,7 +500,7 @@ describe('Registration app', () => {
         'isUserAllowedOnOrganization'
       );
       loadConfigurationByPlatformSpy = vi.spyOn(
-        serviceContractDomain,
+        ServiceContractDomain,
         'loadConfigurationByPlatform'
       );
       loadSubscriptionBySpy = vi.spyOn(
@@ -802,7 +802,7 @@ describe('Registration app', () => {
     });
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await serviceContractDomain.deleteConfigurationBy({});
+      await ServiceContractDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
@@ -858,7 +858,7 @@ describe('Registration app', () => {
         deploymentRequest.service_instance_id
       );
       const configuration =
-        await serviceContractDomain.loadConfigurationByPlatform(
+        await ServiceContractDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       expect(serviceInstance.creation_status).toBe(
@@ -897,11 +897,11 @@ describe('Registration app', () => {
       );
 
       const oldConfiguration =
-        await serviceContractDomain.loadConfigurationByPlatform(
+        await ServiceContractDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       const newConfiguration =
-        await serviceContractDomain.loadConfigurationByPlatform(
+        await ServiceContractDomain.loadConfigurationByPlatform(
           newPlatformConfiguration.id
         );
       expect(oldConfiguration).toBeNull();

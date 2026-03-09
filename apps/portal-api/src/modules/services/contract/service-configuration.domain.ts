@@ -18,7 +18,7 @@ const loadServiceContractBy = async (
   return db('Service_Contract').where(field).select('*').first();
 };
 
-export const serviceContractDomain = {
+export const ServiceContractDomain = {
   isServiceConfigurationValid: async (
     serviceDefinitionId: ServiceDefinitionId,
     config: Record<string, unknown>
