@@ -23,11 +23,15 @@ import ServiceInstance, {
 import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
-import UserService from '../../model/kanel/public/UserService';
+import UserService, {
+  UserServiceId,
+} from '../../model/kanel/public/UserService';
+import { ADMIN_UUID } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { PlatformConfiguration } from './registration/registration.domain';
 import {
+  getUserJoined,
   grantServiceAccess,
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
@@ -492,13 +496,13 @@ describe('Service instance domain', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].user_id).toBe(
+      expect(result[0]!.user_id).toBe(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
       );
-      expect(result[0].subscription_id).toBe(secondOrgaSubscriptionId);
+      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
 
       const userServiceInDb = await db<UserService>('User_Service')
-        .where('id', '=', result[0].id)
+        .where('id', '=', result[0]!.id)
         .first();
 
       expect(userServiceInDb).toBeDefined();
@@ -531,10 +535,12 @@ describe('Service instance domain', () => {
         secondOrgaSubscriptionId
       );
 
-      expect(result[0].subscription_id).toBe(secondOrgaSubscriptionId);
-      expect(result[0].subscription_id).not.toBe(filigranSubscriptionId);
+      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
+      expect(result[0]!.subscription_id).not.toBe(filigranSubscriptionId);
 
-      const userServicesInDb = await db<UserService>('User_Service')
+      const userServicesInDb: UserService[] = await db<UserService[]>(
+        'User_Service'
+      )
         .where(
           'user_id',
           '=',
@@ -543,7 +549,7 @@ describe('Service instance domain', () => {
         .select('*');
 
       expect(userServicesInDb).toHaveLength(1);
-      expect(userServicesInDb[0].subscription_id).toBe(
+      expect(userServicesInDb[0]!.subscription_id).toBe(
         secondOrgaSubscriptionId
       );
     });
@@ -608,6 +614,50 @@ describe('Service instance domain', () => {
       const orgNames = result.subscriptions.map((sub) => sub.organization.name);
       expect(orgNames).toContain('SECOND ORGA');
       expect(orgNames).toContain('Filigran');
+    });
+  });
+
+  describe('getUserJoined', () => {
+    beforeEach(async () => {
+      await db<Subscription>('Subscription').del();
+    });
+
+    it('should return true when user subscribed to the service with the organization', async () => {
+      const [subscription] = await db<Subscription>('Subscription')
+        .insert({
+          id: uuidv4() as SubscriptionId,
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          start_date: new Date(),
+          status: 'ACCEPTED',
+          joining: 'AUTO_JOIN',
+        })
+        .returning('*');
+
+      expect(subscription).toBeDefined();
+
+      await db<UserService>('User_Service').insert({
+        id: uuidv4() as UserServiceId,
+        user_id: ADMIN_UUID,
+        subscription_id: subscription!.id,
+      });
+      const result = await getUserJoined(
+        ADMIN_UUID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when user did not subscribe to the service with the organization', async () => {
+      const result = await getUserJoined(
+        ADMIN_UUID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(result).toBe(false);
     });
   });
 });
