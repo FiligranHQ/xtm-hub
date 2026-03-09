@@ -632,4 +632,61 @@ describe('Document domain', () => {
       expect(loaded).toBeUndefined();
     });
   });
+
+  describe('loadUploader', () => {
+    it('should return the user who uploaded document', async () => {
+      const [inserted] = await db('Document')
+        .insert({
+          name: 'DocMeta2',
+          type: 'meta-type',
+          slug: 'doc-meta2',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          active: true,
+        })
+        .returning('*');
+
+      const uploader = await DocumentDomain.loadUploader(inserted.id);
+
+      expect(uploader).toBeDefined();
+      expect(uploader!.id).toBe(ADMIN_UUID);
+    });
+
+    it('should return undefined when document does not exist', async () => {
+      const uploader = await DocumentDomain.loadUploader(
+        '00000000-0000-0000-0000-000000000000'
+      );
+
+      expect(uploader).toBeUndefined();
+    });
+  });
+
+  describe('loadUploaderOrganization', () => {
+    it('should return the organization which uploaded document', async () => {
+      const [inserted] = await db('Document')
+        .insert({
+          name: 'DocMeta2',
+          type: 'meta-type',
+          slug: 'doc-meta2',
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          active: true,
+        })
+        .returning('*');
+
+      const uploaderOrganization =
+        await DocumentDomain.loadUploaderOrganization(inserted.id);
+
+      expect(uploaderOrganization).toBeDefined();
+      expect(uploaderOrganization!.id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
+    });
+
+    it('should return undefined when document does not exist', async () => {
+      const uploader = await DocumentDomain.loadUploaderOrganization(
+        '00000000-0000-0000-0000-000000000000'
+      );
+
+      expect(uploader).toBeUndefined();
+    });
+  });
 });
