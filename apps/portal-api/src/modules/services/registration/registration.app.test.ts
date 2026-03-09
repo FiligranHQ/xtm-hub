@@ -904,7 +904,7 @@ describe('Registration app', () => {
         await ServiceContractDomain.loadConfigurationByPlatform(
           newPlatformConfiguration.id
         );
-      expect(oldConfiguration).toBeNull();
+      expect(oldConfiguration).toBeUndefined();
       expect(newConfiguration).toMatchObject({
         config: {
           platform_contract: newPlatformConfiguration.contract,
