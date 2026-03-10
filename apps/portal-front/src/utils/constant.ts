@@ -6,5 +6,4 @@ export const PLATFORM_ORGANIZATION_UUID =
 export enum FeatureFlag {
   // dummy feature flag used for testing purposes
   DUMMY = 'DUMMY',
-  OPENAEVTRIALS = 'OPENAEV_TRIALS', // Remove component TryOpenCTIBanner and key Trials.Explore in translation files
 }

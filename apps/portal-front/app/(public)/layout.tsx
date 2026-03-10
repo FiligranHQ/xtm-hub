@@ -1,7 +1,5 @@
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/public-try-filigran-products-banner';
-import { FeatureFlag } from '@/utils/constant';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
-import { isFeatureEnabled } from '@/utils/settings.service';
 import { Button } from '@filigran/ui/servers';
 import '@filigran/ui/theme.css';
 import { Metadata } from 'next';
@@ -19,14 +17,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isOpenAEVTrialsEnabled = await isFeatureEnabled(
-    FeatureFlag.OPENAEVTRIALS
-  );
   return (
     <div className="md:flex md:flex-col md:h-screen">
-      <PublicTryFiligranProductsBanner
-        isOpenAEVTrialEnabled={isOpenAEVTrialsEnabled}
-      />
+      <PublicTryFiligranProductsBanner />
       <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
         <Link href="/">
           <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />

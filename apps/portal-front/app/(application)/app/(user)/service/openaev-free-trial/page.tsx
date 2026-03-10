@@ -6,13 +6,10 @@ import { StartTrialButton } from '@/components/service/trial-instances/start-tri
 import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { FeatureFlag } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
-import { isFeatureEnabled } from '@/utils/settings.service';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
-import { notFound } from 'next/navigation';
 import React from 'react';
 import PersonalSpaceInfo from '../opencti-free-trial/personal-space-info';
 
@@ -21,14 +18,6 @@ interface Props {
 }
 
 const Page: React.FC<Props> = async ({ searchParams }) => {
-  const isOpenAEVTrialsEnabled = await isFeatureEnabled(
-    FeatureFlag.OPENAEVTRIALS
-  );
-
-  if (!isOpenAEVTrialsEnabled) {
-    notFound();
-  }
-
   const openTrialFormSearchParams = (await searchParams).openForm;
   const openTrialForm =
     !!openTrialFormSearchParams && !Array.isArray(openTrialFormSearchParams);
