@@ -38,17 +38,13 @@ const OwnedServices = ({
     ),
   ].sort((a, b) => a!.ordering - b!.ordering);
 
-  const freeTrialsSkeletonDataCards = availableTrials
-    .filter(
-      (platformIdentifier) =>
-        platformIdentifier !== PlatformIdentifierEnum.OPENAEV
-    )
-    .map((platformIdentifier) =>
+  const freeTrialsSkeletonDataCards = availableTrials.map(
+    (platformIdentifier) =>
       freeTrialSkeletonToServiceInstanceCardData(
         platformIdentifier as PlatformIdentifierEnum,
         t
       )
-    );
+  );
 
   if (sortedServices.length > 0) {
     return (
