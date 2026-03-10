@@ -82,6 +82,39 @@ export type Capability = Node & {
   name: PortalCapability;
 };
 
+export type Competitor = Node & {
+  __typename?: 'Competitor';
+  domain: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  tier: CompetitorTier;
+};
+
+export type CompetitorConnection = {
+  __typename?: 'CompetitorConnection';
+  edges: Array<CompetitorEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type CompetitorEdge = {
+  __typename?: 'CompetitorEdge';
+  cursor: Scalars['String']['output'];
+  node: Competitor;
+};
+
+export enum CompetitorOrdering {
+  Domain = 'domain',
+  Name = 'name',
+  Tier = 'tier'
+}
+
+export enum CompetitorTier {
+  Tier1 = 'tier1',
+  Tier2 = 'tier2',
+  Tier3 = 'tier3'
+}
+
 export type Connector = Document & Integration & Node & {
   __typename?: 'Connector';
   active: Scalars['Boolean']['output'];
@@ -117,13 +150,19 @@ export type Connector = Document & Integration & Node & {
   verified: Scalars['Boolean']['output'];
 };
 
+export type CreateCompetitorInput = {
+  domain: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tier: CompetitorTier;
+};
+
 export type CreateDeploymentRequestInput = {
-  activity_sector?: InputMaybe<Scalars['String']['input']>;
-  job_title?: InputMaybe<Scalars['String']['input']>;
+  activity_sector?: InputMaybe<DeploymentRequestActivitySector>;
+  job_title?: InputMaybe<DeploymentRequestJobTitle>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
   type: DeploymentRequestDeploymentType;
-  use_case?: InputMaybe<Scalars['String']['input']>;
+  use_case?: InputMaybe<DeploymentRequestUseCase>;
 };
 
 export type CreateDocumentInput = {
@@ -134,6 +173,18 @@ export type CreateDocumentInput = {
   slug: Scalars['String']['input'];
   uploader_id: Scalars['String']['input'];
   use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type CreateEpicInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description: Scalars['String']['input'];
+  epic: Scalars['String']['input'];
+  illustration_document?: InputMaybe<Scalars['Upload']['input']>;
+  is_integration?: InputMaybe<Scalars['Boolean']['input']>;
+  product: FiligranProduct;
+  short_description: Scalars['String']['input'];
+  timeline: Timeline;
+  title: Scalars['String']['input'];
 };
 
 export type CsvFeed = Document & Integration & Node & {
@@ -235,7 +286,7 @@ export type DeploymentAvailability = {
 
 export type DeploymentRequest = Node & {
   __typename?: 'DeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   cancellation_date?: Maybe<Scalars['Date']['output']>;
   cancellation_reason?: Maybe<Scalars['String']['output']>;
   cancellation_user_email?: Maybe<Scalars['String']['output']>;
@@ -243,19 +294,53 @@ export type DeploymentRequest = Node & {
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_name?: Maybe<Scalars['String']['output']>;
+  organization_requester_id: Scalars['ID']['output'];
   platform_id?: Maybe<Scalars['String']['output']>;
   platform_identifier: PlatformIdentifier;
   platform_url?: Maybe<Scalars['String']['output']>;
   region: DeploymentRequestPlatformRegion;
   request_date: Scalars['Date']['output'];
   requester_email?: Maybe<Scalars['String']['output']>;
+  service_instance_id: Scalars['ID']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
+
+export enum DeploymentRequestActivitySector {
+  ComputerGames = 'computer_games',
+  ComputerNetworkSecurity = 'computer_network_security',
+  ComputerSoftware = 'computer_software',
+  DefenseSpace = 'defense_space',
+  Entertainment = 'entertainment',
+  FinancialServices = 'financial_services',
+  GovernmentAdministration = 'government_administration',
+  GovernmentRelations = 'government_relations',
+  HigherEducation = 'higher_education',
+  HospitalHealthCare = 'hospital_health_care',
+  Hospitality = 'hospitality',
+  InformationTechnology = 'information_technology',
+  Insurance = 'insurance',
+  LegalServices = 'legal_services',
+  LuxuryGoodsJewelry = 'luxury_goods_jewelry',
+  ManagementConsulting = 'management_consulting',
+  MarketingAdvertising = 'marketing_advertising',
+  Military = 'military',
+  NonProfit = 'non_profit',
+  OilEnergy = 'oil_energy',
+  Pharmaceuticals = 'pharmaceuticals',
+  Photography = 'photography',
+  Retail = 'retail',
+  SecurityInvestigations = 'security_investigations',
+  Semiconductors = 'semiconductors',
+  Telecommunications = 'telecommunications',
+  Transportation = 'transportation',
+  Utilities = 'utilities',
+  Wireless = 'wireless'
+}
 
 export type DeploymentRequestConnection = {
   __typename?: 'DeploymentRequestConnection';
@@ -298,6 +383,28 @@ export enum DeploymentRequestHubStatus {
   Queued = 'queued'
 }
 
+export enum DeploymentRequestJobTitle {
+  ApplicationSecuritySpecialist = 'application_security_specialist',
+  CLevel = 'c_level',
+  Ceo = 'ceo',
+  CisoCsoCio = 'ciso_cso_cio',
+  CloudSecuritySpecialist = 'cloud_security_specialist',
+  Consultant = 'consultant',
+  CybersecurityArchitect = 'cybersecurity_architect',
+  CybersecurityEngineer = 'cybersecurity_engineer',
+  CybersecurityTeamLead = 'cybersecurity_team_lead',
+  DfirSpecialist = 'dfir_specialist',
+  DirectorHeadCybersecurity = 'director_head_cybersecurity',
+  GeneralManagerVp = 'general_manager_vp',
+  GrcSpecialist = 'grc_specialist',
+  IamSpecialist = 'iam_specialist',
+  Other = 'other',
+  PenetrationTester = 'penetration_tester',
+  SocAnalyst = 'soc_analyst',
+  ThreatIntelligenceAnalyst = 'threat_intelligence_analyst',
+  VulnerabilityAnalyst = 'vulnerability_analyst'
+}
+
 export enum DeploymentRequestOrdering {
   CancellationDate = 'cancellation_date',
   CancellationReason = 'cancellation_reason',
@@ -325,6 +432,25 @@ export enum DeploymentRequestPlatformState {
   Removed = 'removed',
   Removing = 'removing',
   Unprovisioned = 'unprovisioned'
+}
+
+export enum DeploymentRequestUseCase {
+  AttackSimulation = 'attack_simulation',
+  CentralizingKnowledge = 'centralizing_knowledge',
+  CrisisSimulation = 'crisis_simulation',
+  DetectionEngineering = 'detection_engineering',
+  HostingThreatCommunity = 'hosting_threat_community',
+  IncidentResponse = 'incident_response',
+  SecurityStack = 'security_stack',
+  SharingKnowledge = 'sharing_knowledge',
+  StrategicReporting = 'strategic_reporting',
+  TechnicalReporting = 'technical_reporting',
+  ThreatHunting = 'threat_hunting',
+  ThreatProfilingCti = 'threat_profiling_cti',
+  ThreatProfilingFaml = 'threat_profiling_faml',
+  ThreatProfilingFimi = 'threat_profiling_fimi',
+  ThreatProfilingLeo = 'threat_profiling_leo',
+  VulnerabilityManagement = 'vulnerability_management'
 }
 
 export type Document = {
@@ -398,6 +524,53 @@ export type EditUseCaseInput = {
 export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
+
+export type Epic = Node & {
+  __typename?: 'Epic';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['Date']['output'];
+  description: Scalars['String']['output'];
+  document?: Maybe<Document>;
+  document_id?: Maybe<Scalars['ID']['output']>;
+  epic: Scalars['String']['output'];
+  epic_type: EpicType;
+  id: Scalars['ID']['output'];
+  product: FiligranProduct;
+  short_description: Scalars['String']['output'];
+  timeline: Timeline;
+  title: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader_id: Scalars['String']['output'];
+};
+
+export type EpicConnection = {
+  __typename?: 'EpicConnection';
+  edges: Array<EpicEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type EpicEdge = {
+  __typename?: 'EpicEdge';
+  cursor: Scalars['String']['output'];
+  node: Epic;
+};
+
+export enum EpicOrdering {
+  Epic = 'epic'
+}
+
+export enum EpicType {
+  Integration = 'integration',
+  Other = 'other'
+}
+
+export enum FiligranProduct {
+  Openaev = 'openaev',
+  Opencti = 'opencti',
+  Xtmhub = 'xtmhub'
+}
 
 export type Filter = {
   key?: InputMaybe<FilterKey>;
@@ -557,9 +730,13 @@ export type Mutation = {
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
   changeSelectedOrganization?: Maybe<User>;
   contactUs: Success;
+  createCompetitor: Competitor;
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
+  createEpic: Epic;
+  deleteCompetitor: Competitor;
   deleteDocument: Document;
+  deleteEpic: Epic;
   deleteOrganization?: Maybe<Organization>;
   deleteSubscription?: Maybe<ServiceInstance>;
   deleteUseCase: UseCase;
@@ -585,9 +762,11 @@ export type Mutation = {
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
+  updateCompetitor: Competitor;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
   updateDocument: Document;
+  updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
 };
@@ -688,6 +867,11 @@ export type MutationContactUsArgs = {
 };
 
 
+export type MutationCreateCompetitorArgs = {
+  input: CreateCompetitorInput;
+};
+
+
 export type MutationCreateDeploymentRequestArgs = {
   input?: InputMaybe<CreateDeploymentRequestInput>;
 };
@@ -701,10 +885,26 @@ export type MutationCreateDocumentArgs = {
 };
 
 
+export type MutationCreateEpicArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: CreateEpicInput;
+};
+
+
+export type MutationDeleteCompetitorArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
   service_instance_id?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationDeleteEpicArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -823,6 +1023,11 @@ export type MutationUnregisterPlatformArgs = {
 };
 
 
+export type MutationUpdateCompetitorArgs = {
+  input: UpdateCompetitorInput;
+};
+
+
 export type MutationUpdateDeploymentQuotaCapacityArgs = {
   input: UpdateDeploymentQuotaCapacityInput;
 };
@@ -841,6 +1046,13 @@ export type MutationUpdateDocumentArgs = {
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
   updateDocument: Scalars['Boolean']['input'];
+};
+
+
+export type MutationUpdateEpicArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  id: Scalars['ID']['input'];
+  input: UpdateEpicInput;
 };
 
 
@@ -890,19 +1102,6 @@ export type OpenAevScenario = Document & Node & {
   uploader?: Maybe<User>;
   uploader_organization?: Maybe<Organization>;
   use_cases?: Maybe<Array<UseCase>>;
-};
-
-export type OpenAevScenarioConnection = {
-  __typename?: 'OpenAEVScenarioConnection';
-  edges: Array<OpenAevScenarioEdge>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type OpenAevScenarioEdge = {
-  __typename?: 'OpenAEVScenarioEdge';
-  cursor: Scalars['String']['output'];
-  node: OpenAevScenario;
 };
 
 export type OpenCtiPlatformRegistrationStatusInput = {
@@ -991,13 +1190,13 @@ export enum PlatformContract {
 
 export type PlatformDeploymentRequest = {
   __typename?: 'PlatformDeploymentRequest';
-  activity_sector?: Maybe<Scalars['String']['output']>;
+  activity_sector?: Maybe<DeploymentRequestActivitySector>;
   actual_state?: Maybe<DeploymentRequestPlatformState>;
   end_date?: Maybe<Scalars['Date']['output']>;
   failure_reason?: Maybe<Scalars['String']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
-  job_title?: Maybe<Scalars['String']['output']>;
+  job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
@@ -1012,7 +1211,7 @@ export type PlatformDeploymentRequest = {
   start_date?: Maybe<Scalars['Date']['output']>;
   target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
-  use_case?: Maybe<Scalars['String']['output']>;
+  use_case?: Maybe<DeploymentRequestUseCase>;
 };
 
 export type PlatformDeploymentRequestConnection = {
@@ -1062,43 +1261,40 @@ export enum PlatformRegistrationStatus {
 
 export enum PortalCapability {
   Bypass = 'BYPASS',
+  ModifyCompetitors = 'MODIFY_COMPETITORS',
   ModifyTrials = 'MODIFY_TRIALS',
+  ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
 }
 
 export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
-  customDashboard?: Maybe<CustomDashboard>;
+  competitors: CompetitorConnection;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
   documents: DocumentConnection;
-  integration?: Maybe<Integration>;
+  epics?: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me?: Maybe<User>;
   node?: Maybe<Node>;
-  openAEVScenario?: Maybe<OpenAevScenario>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
   organization?: Maybe<Organization>;
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization?: Maybe<Organization>;
+  publicDocumentBySlug?: Maybe<Document>;
   publicDocuments: DocumentConnection;
-  publicIntegrationBySlug?: Maybe<Integration>;
-  publicIntegrationsByServiceSlug?: Maybe<Array<Maybe<Integration>>>;
+  publicDocumentsByServiceSlug: Array<Document>;
   publicServiceInstances: ServiceConnection;
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   rolePortal?: Maybe<RolePortal>;
   rolesPortal: Array<RolePortal>;
-  seoCustomDashboardBySlug?: Maybe<CustomDashboard>;
-  seoCustomDashboardsByServiceSlug?: Maybe<Array<Maybe<CustomDashboard>>>;
-  seoOpenAEVScenarioBySlug?: Maybe<OpenAevScenario>;
-  seoOpenAEVScenariosByServiceSlug?: Maybe<Array<Maybe<OpenAevScenario>>>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
@@ -1127,9 +1323,11 @@ export type QueryCanUnregisterPlatformArgs = {
 };
 
 
-export type QueryCustomDashboardArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
+export type QueryCompetitorsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: CompetitorOrdering;
+  orderMode: OrderingMode;
 };
 
 
@@ -1179,9 +1377,11 @@ export type QueryDocumentsArgs = {
 };
 
 
-export type QueryIntegrationArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
+export type QueryEpicsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: EpicOrdering;
+  orderMode: OrderingMode;
 };
 
 
@@ -1192,12 +1392,6 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryNodeArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QueryOpenAevScenarioArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1235,6 +1429,12 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 };
 
 
+export type QueryPublicDocumentBySlugArgs = {
+  serviceInstanceId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
 export type QueryPublicDocumentsArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -1247,13 +1447,8 @@ export type QueryPublicDocumentsArgs = {
 };
 
 
-export type QueryPublicIntegrationBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryPublicIntegrationsByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
+export type QueryPublicDocumentsByServiceSlugArgs = {
+  serviceInstanceSlug: Scalars['String']['input'];
 };
 
 
@@ -1277,26 +1472,6 @@ export type QueryRegisteredPlatformsArgs = {
 
 export type QueryRolePortalArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QuerySeoCustomDashboardBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoCustomDashboardsByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoOpenAevScenarioBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySeoOpenAevScenariosByServiceSlugArgs = {
-  serviceSlug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1534,6 +1709,7 @@ export enum ServiceDefinitionIdentifier {
   OpenctiCustomDashboards = 'opencti_custom_dashboards',
   OpenctiIntegrations = 'opencti_integrations',
   OpenctiRegistration = 'opencti_registration',
+  PublicRoadmap = 'public_roadmap',
   Vault = 'vault'
 }
 
@@ -1628,13 +1804,13 @@ export enum ServiceRestriction {
   AccessUser = 'ACCESS_USER',
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
-  Upload = 'UPLOAD'
+  Upload = 'UPLOAD',
+  Upsert = 'UPSERT'
 }
 
 export type Settings = {
   __typename?: 'Settings';
   base_url_front: Scalars['String']['output'];
-  domains_blacklist: Scalars['String']['output'];
   environment: Scalars['String']['output'];
   platform_feature_flags: Array<Scalars['String']['output']>;
   platform_providers: Array<PlatformProvider>;
@@ -1825,7 +2001,14 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   vendor_url: Scalars['String']['output'];
 };
 
+export enum Timeline {
+  Next = 'next',
+  Now = 'now',
+  UnderConsideration = 'under_consideration'
+}
+
 export type TrialDeploymentsInput = {
+  organizationId: Scalars['ID']['input'];
   platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
 };
 
@@ -1839,6 +2022,13 @@ export type TrialsDeployments = {
 export type UnregisterPlatformInput = {
   identifier: PlatformIdentifier;
   platformId: Scalars['String']['input'];
+};
+
+export type UpdateCompetitorInput = {
+  domain?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  tier?: InputMaybe<CompetitorTier>;
 };
 
 export type UpdateDeploymentQuotaCapacityInput = {
@@ -1866,6 +2056,18 @@ export type UpdateDocumentInput = {
   uploader_id?: InputMaybe<Scalars['String']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
   use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type UpdateEpicInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  epic?: InputMaybe<Scalars['String']['input']>;
+  illustration_document?: InputMaybe<Scalars['Upload']['input']>;
+  is_integration?: InputMaybe<Scalars['Boolean']['input']>;
+  product?: InputMaybe<FiligranProduct>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
+  timeline?: InputMaybe<Timeline>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdatePlatformServiceMetadataInput = {
@@ -2104,7 +2306,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2119,9 +2321,16 @@ export type ResolversTypes = ResolversObject<{
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
+  Competitor: ResolverTypeWrapper<Competitor>;
+  CompetitorConnection: ResolverTypeWrapper<CompetitorConnection>;
+  CompetitorEdge: ResolverTypeWrapper<CompetitorEdge>;
+  CompetitorOrdering: CompetitorOrdering;
+  CompetitorTier: CompetitorTier;
   Connector: ResolverTypeWrapper<Connector>;
+  CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
+  CreateEpicInput: CreateEpicInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
@@ -2129,15 +2338,18 @@ export type ResolversTypes = ResolversObject<{
   DeployedPlatform: ResolverTypeWrapper<DeployedPlatform>;
   DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
+  DeploymentRequestActivitySector: DeploymentRequestActivitySector;
   DeploymentRequestConnection: ResolverTypeWrapper<DeploymentRequestConnection>;
   DeploymentRequestDeploymentType: DeploymentRequestDeploymentType;
   DeploymentRequestEdge: ResolverTypeWrapper<DeploymentRequestEdge>;
   DeploymentRequestFilter: DeploymentRequestFilter;
   DeploymentRequestFilterKey: DeploymentRequestFilterKey;
   DeploymentRequestHubStatus: DeploymentRequestHubStatus;
+  DeploymentRequestJobTitle: DeploymentRequestJobTitle;
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
+  DeploymentRequestUseCase: DeploymentRequestUseCase;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
@@ -2147,6 +2359,12 @@ export type ResolversTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  Epic: ResolverTypeWrapper<Omit<Epic, 'document'> & { document?: Maybe<ResolversTypes['Document']> }>;
+  EpicConnection: ResolverTypeWrapper<Omit<EpicConnection, 'edges'> & { edges: Array<ResolversTypes['EpicEdge']> }>;
+  EpicEdge: ResolverTypeWrapper<Omit<EpicEdge, 'node'> & { node: ResolversTypes['Epic'] }>;
+  EpicOrdering: EpicOrdering;
+  EpicType: EpicType;
+  FiligranProduct: FiligranProduct;
   Filter: Filter;
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
@@ -2168,8 +2386,6 @@ export type ResolversTypes = ResolversObject<{
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
-  OpenAEVScenarioConnection: ResolverTypeWrapper<OpenAevScenarioConnection>;
-  OpenAEVScenarioEdge: ResolverTypeWrapper<OpenAevScenarioEdge>;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: ResolverTypeWrapper<OpenCtiPlatformRegistrationStatusResponse>;
   OrderingMode: OrderingMode;
@@ -2239,12 +2455,15 @@ export type ResolversTypes = ResolversObject<{
   TaxiiFeed: ResolverTypeWrapper<TaxiiFeed>;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
   ThirdPartyIntegration: ResolverTypeWrapper<ThirdPartyIntegration>;
+  Timeline: Timeline;
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: ResolverTypeWrapper<TrialsDeployments>;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
+  UpdateEpicInput: UpdateEpicInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
@@ -2283,9 +2502,14 @@ export type ResolversParentTypes = ResolversObject<{
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
+  Competitor: Competitor;
+  CompetitorConnection: CompetitorConnection;
+  CompetitorEdge: CompetitorEdge;
   Connector: Connector;
+  CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
+  CreateEpicInput: CreateEpicInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
   Date: Scalars['Date']['output'];
@@ -2304,6 +2528,9 @@ export type ResolversParentTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  Epic: Omit<Epic, 'document'> & { document?: Maybe<ResolversParentTypes['Document']> };
+  EpicConnection: Omit<EpicConnection, 'edges'> & { edges: Array<ResolversParentTypes['EpicEdge']> };
+  EpicEdge: Omit<EpicEdge, 'node'> & { node: ResolversParentTypes['Epic'] };
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -2321,8 +2548,6 @@ export type ResolversParentTypes = ResolversObject<{
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: OpenAevScenario;
-  OpenAEVScenarioConnection: OpenAevScenarioConnection;
-  OpenAEVScenarioEdge: OpenAevScenarioEdge;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: OpenCtiPlatformRegistrationStatusResponse;
   Organization: Organization;
@@ -2377,9 +2602,11 @@ export type ResolversParentTypes = ResolversObject<{
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: TrialsDeployments;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
   UpdateDocumentInput: UpdateDocumentInput;
+  UpdateEpicInput: UpdateEpicInput;
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
@@ -2435,6 +2662,27 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
 export type CapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['PortalCapability'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Competitor'] = ResolversParentTypes['Competitor']> = ResolversObject<{
+  domain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tier?: Resolver<ResolversTypes['CompetitorTier'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CompetitorConnection'] = ResolversParentTypes['CompetitorConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['CompetitorEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetitorEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CompetitorEdge'] = ResolversParentTypes['CompetitorEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2571,7 +2819,7 @@ export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentT
 }>;
 
 export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentRequest'] = ResolversParentTypes['DeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   cancellation_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   cancellation_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancellation_user_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2579,18 +2827,20 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organization_requester_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   platform_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;
   request_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   requester_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2642,6 +2892,38 @@ export type DocumentConnectionResolvers<ContextType = PortalContext, ParentType 
 export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DocumentEdge'] = ResolversParentTypes['DocumentEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Document'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EpicResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Epic'] = ResolversParentTypes['Epic']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
+  document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  epic?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
+  short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  timeline?: Resolver<ResolversTypes['Timeline'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EpicConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EpicConnection'] = ResolversParentTypes['EpicConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['EpicEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EpicEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EpicEdge'] = ResolversParentTypes['EpicEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Epic'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2752,9 +3034,13 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
+  createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
+  createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
+  deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
+  deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
@@ -2780,15 +3066,17 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
+  updateCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationUpdateCompetitorArgs, 'input'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
   updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;
+  updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -2815,19 +3103,6 @@ export type OpenAevScenarioResolvers<ContextType = PortalContext, ParentType ext
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type OpenAevScenarioConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenAEVScenarioConnection'] = ResolversParentTypes['OpenAEVScenarioConnection']> = ResolversObject<{
-  edges?: Resolver<Array<ResolversTypes['OpenAEVScenarioEdge']>, ParentType, ContextType>;
-  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
-  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type OpenAevScenarioEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenAEVScenarioEdge'] = ResolversParentTypes['OpenAEVScenarioEdge']> = ResolversObject<{
-  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  node?: Resolver<ResolversTypes['OpenAEVScenario'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2879,13 +3154,13 @@ export type PageInfoResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PlatformDeploymentRequest'] = ResolversParentTypes['PlatformDeploymentRequest']> = ResolversObject<{
-  activity_sector?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  activity_sector?: Resolver<Maybe<ResolversTypes['DeploymentRequestActivitySector']>, ParentType, ContextType>;
   actual_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   failure_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  job_title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2900,7 +3175,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
-  use_case?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2926,35 +3201,30 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
-  customDashboard?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QueryCustomDashboardArgs>>;
+  competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  integration?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryIntegrationArgs>>;
+  epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  openAEVScenario?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QueryOpenAevScenarioArgs>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<ResolversTypes['OrganizationConnection'], ParentType, ContextType, RequireFields<QueryOrganizationsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   pendingUsers?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryPendingUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   platformAssociatedOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryPlatformAssociatedOrganizationArgs, 'platformId'>>;
+  publicDocumentBySlug?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentBySlugArgs, 'serviceInstanceId' | 'slug'>>;
   publicDocuments?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryPublicDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId' | 'slug'>>;
-  publicIntegrationBySlug?: Resolver<Maybe<ResolversTypes['Integration']>, ParentType, ContextType, Partial<QueryPublicIntegrationBySlugArgs>>;
-  publicIntegrationsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['Integration']>>>, ParentType, ContextType, Partial<QueryPublicIntegrationsByServiceSlugArgs>>;
+  publicDocumentsByServiceSlug?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentsByServiceSlugArgs, 'serviceInstanceSlug'>>;
   publicServiceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryPublicServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
   rolePortal?: Resolver<Maybe<ResolversTypes['RolePortal']>, ParentType, ContextType, RequireFields<QueryRolePortalArgs, 'id'>>;
   rolesPortal?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
-  seoCustomDashboardBySlug?: Resolver<Maybe<ResolversTypes['CustomDashboard']>, ParentType, ContextType, Partial<QuerySeoCustomDashboardBySlugArgs>>;
-  seoCustomDashboardsByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['CustomDashboard']>>>, ParentType, ContextType, Partial<QuerySeoCustomDashboardsByServiceSlugArgs>>;
-  seoOpenAEVScenarioBySlug?: Resolver<Maybe<ResolversTypes['OpenAEVScenario']>, ParentType, ContextType, Partial<QuerySeoOpenAevScenarioBySlugArgs>>;
-  seoOpenAEVScenariosByServiceSlug?: Resolver<Maybe<Array<Maybe<ResolversTypes['OpenAEVScenario']>>>, ParentType, ContextType, Partial<QuerySeoOpenAevScenariosByServiceSlugArgs>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
@@ -3107,7 +3377,6 @@ export type ServiceLinkResolvers<ContextType = PortalContext, ParentType extends
 
 export type SettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
   base_url_front?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  domains_blacklist?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_feature_flags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;
@@ -3396,6 +3665,9 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
+  Competitor?: CompetitorResolvers<ContextType>;
+  CompetitorConnection?: CompetitorConnectionResolvers<ContextType>;
+  CompetitorEdge?: CompetitorEdgeResolvers<ContextType>;
   Connector?: ConnectorResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
@@ -3409,6 +3681,9 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  Epic?: EpicResolvers<ContextType>;
+  EpicConnection?: EpicConnectionResolvers<ContextType>;
+  EpicEdge?: EpicEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   IntegrationHack?: IntegrationHackResolvers<ContextType>;
@@ -3420,8 +3695,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
-  OpenAEVScenarioConnection?: OpenAevScenarioConnectionResolvers<ContextType>;
-  OpenAEVScenarioEdge?: OpenAevScenarioEdgeResolvers<ContextType>;
   OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;

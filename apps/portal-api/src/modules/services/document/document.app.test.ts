@@ -1,4 +1,5 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
+import { v4 as uuidv4 } from 'uuid';
 import {
   afterAll,
   afterEach,
@@ -25,11 +26,16 @@ import {
   TelemetryEventService,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
 import { DocumentDomain } from './domain/document.domain';
+import { DocumentMetadataDomain } from './domain/document.metadata.domain';
+import {
+  CUSTOM_DASHBOARD_METADATA_KEYS,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+} from './opencti/custom-dashboards/custom-dashboards.model';
 
 describe('DocumentApp', () => {
   const minioFileMock = {
@@ -70,6 +76,7 @@ describe('DocumentApp', () => {
 
   afterEach(async () => {
     await deleteDocuments();
+    vi.restoreAllMocks();
   });
 
   afterAll(async () => {
@@ -357,12 +364,241 @@ describe('DocumentApp', () => {
       expect(result!.minio_name).toBeNull();
       expect(result!.mime_type).toBeNull();
     });
+
+    it.each`
+      label          | integrationType              | integrationSubtype
+      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}   | ${null}
+      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed} | ${IntegrationSubType.Native}
+      ${'Stream'}    | ${IntegrationType.Stream}    | ${IntegrationSubType.Native}
+    `(
+      'should preserve the existing feed_url when no document is uploaded for $label',
+      async ({
+        integrationType,
+        integrationSubtype,
+      }: {
+        integrationType: IntegrationType;
+        integrationSubtype: IntegrationSubType | null;
+      }) => {
+        const metadata = [
+          { key: 'integration_type', value: integrationType },
+          ...(integrationSubtype
+            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            : []),
+        ];
+
+        const createdDocument = await DocumentApp.createDocument(
+          documentData,
+          metadata,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          [mockUpload]
+        );
+        expect(createdDocument).toBeDefined();
+
+        const result = await DocumentApp.updateDocument(
+          createdDocument!.id,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata,
+          {
+            input: documentData,
+            document: [],
+            updateDocument: false,
+            images: [],
+          }
+        );
+
+        expect(result).toBeDefined();
+        const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
+          result!.id,
+          'feed_url'
+        );
+        expect(feedUrl).toBe('https://example.com');
+      }
+    );
+
+    it.each`
+      label          | integrationType              | integrationSubtype
+      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}   | ${null}
+      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed} | ${IntegrationSubType.Native}
+      ${'Stream'}    | ${IntegrationType.Stream}    | ${IntegrationSubType.Native}
+    `(
+      'should preserve the existing feed_url when an image file is uploaded instead of a json file for $label',
+      async ({
+        integrationType,
+        integrationSubtype,
+      }: {
+        integrationType: IntegrationType;
+        integrationSubtype: IntegrationSubType | null;
+      }) => {
+        const metadata = [
+          { key: 'integration_type', value: integrationType },
+          ...(integrationSubtype
+            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            : []),
+        ];
+
+        const createdDocument = await DocumentApp.createDocument(
+          documentData,
+          metadata,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          [mockUpload]
+        );
+        expect(createdDocument).toBeDefined();
+
+        vi.spyOn(MinIOClient, 'createFile').mockResolvedValue({
+          minioName: 'imageFile',
+          mimeType: 'image/png',
+          fileName: 'image.png',
+        });
+
+        const result = await DocumentApp.updateDocument(
+          createdDocument!.id,
+          SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata,
+          {
+            input: documentData,
+            document: [mockUpload],
+            updateDocument: true,
+            images: [],
+          }
+        );
+
+        expect(result).toBeDefined();
+        const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
+          result!.id,
+          'feed_url'
+        );
+        expect(feedUrl).toBe('https://example.com');
+      }
+    );
+  });
+
+  describe('loadDocument', () => {
+    it('should return the document with elastic search counters', async () => {
+      const document = await DocumentApp.createDocument(
+        {
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          name: 'myCustomDashboard',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [{ key: 'product_version', value: '1.2.3' }],
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        []
+      );
+      expect(document).toBeDefined();
+
+      const documentId = document!.id;
+
+      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+        async (eventType: TelemetryEventType, calledDocumentId: string) => {
+          if (
+            calledDocumentId === documentId &&
+            eventType === TelemetryEventType.DOWNLOAD
+          )
+            return 5;
+          if (
+            calledDocumentId === documentId &&
+            eventType === TelemetryEventType.SHARE
+          )
+            return 12;
+          return 0; // default
+        }
+      );
+
+      const documentLoaded = await DocumentApp.loadDocument(documentId);
+
+      expect(documentLoaded.download_number).toBe(5);
+      expect(documentLoaded.share_number).toBe(12);
+    });
+  });
+
+  describe('loadPublicDocumentBySlug', () => {
+    it('should throw when service definition is not found', async () => {
+      const call = DocumentApp.loadPublicDocumentBySlug(
+        uuidv4() as ServiceInstanceId,
+        'slug'
+      );
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should return the document with elastic search counters', async () => {
+      const document = await DocumentApp.createDocument(
+        {
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          name: 'myCustomDashboard',
+          description: 'description',
+          short_description: 'short_description',
+          slug: 'slug',
+          active: true,
+        },
+        [{ key: 'product_version', value: '1.2.3' }],
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        []
+      );
+      expect(document).toBeDefined();
+
+      const documentId = document!.id;
+
+      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+        async (eventType: TelemetryEventType, calledDocumentId: string) => {
+          if (
+            calledDocumentId === documentId &&
+            eventType === TelemetryEventType.DOWNLOAD
+          )
+            return 5;
+          if (
+            calledDocumentId === documentId &&
+            eventType === TelemetryEventType.SHARE
+          )
+            return 12;
+          return 0; // default
+        }
+      );
+
+      const documentLoaded = await DocumentApp.loadPublicDocumentBySlug(
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        document!.slug!
+      );
+
+      expect(documentLoaded.download_number).toBe(5);
+      expect(documentLoaded.share_number).toBe(12);
+    });
+  });
+
+  describe('loadPublicDocumentsByServiceSlug', () => {
+    it('should throw when service definition is not found', async () => {
+      const call = DocumentApp.loadPublicDocumentsByServiceSlug('unknown-slug');
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should return the documents', async () => {
+      const loadSeoDocumentsByServiceSlugSpy = vi
+        .spyOn(DocumentDomain, 'loadSeoDocumentsByServiceSlug')
+        .mockResolvedValue([{}]);
+
+      const loadedDocuments =
+        await DocumentApp.loadPublicDocumentsByServiceSlug(
+          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG
+        );
+
+      expect(loadSeoDocumentsByServiceSlugSpy).toHaveBeenCalledWith(
+        OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG,
+        CUSTOM_DASHBOARD_METADATA_KEYS
+      );
+      expect(loadedDocuments).toBeDefined();
+      expect(loadedDocuments.length).toBe(1);
+    });
   });
 
   describe('loadPublicDocuments', () => {
     it('should throw if service definition is not found', async () => {
       vi.spyOn(
-        serviceDefinitionDomain,
+        ServiceDefinitionDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(undefined);
       const input = { serviceInstanceId: 'invalid-id', slug: 'test-slug' };
@@ -377,12 +613,16 @@ describe('DocumentApp', () => {
         identifier: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
       };
       vi.spyOn(
-        serviceDefinitionDomain,
+        ServiceDefinitionDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(mockServiceDefinition as ServiceDefinition);
       const loadPaginatedSeoDocumentsSpy = vi
         .spyOn(DocumentDomain, 'loadPaginatedSeoDocumentsByServiceSlug')
-        .mockResolvedValue([]);
+        .mockResolvedValue({
+          edges: [],
+          pageInfo: { hasNextPage: false, hasPreviousPage: false },
+          totalCount: 0,
+        });
       const input = {
         serviceInstanceId: 'valid-id',
         slug: 'test-slug',

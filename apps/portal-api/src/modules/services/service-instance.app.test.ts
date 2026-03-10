@@ -3,24 +3,40 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { contextBypassUser } from '../../../tests/tests.const';
+import { db } from '../../../knexfile';
+import {
+  contextBypassUser,
+  contextSimpleUserSecondOrga,
+  SERVICES,
+} from '../../../tests/tests.const';
 import {
   PlatformContract,
+  ServiceConfigurationStatus,
+  ServiceDefinitionIdentifier,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { DocumentId } from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
-import * as securityGuard from '../../security/guard';
+import * as pub from '../../pub';
+import * as securityGuardModule from '../../security/guard';
+import { ErrorCode } from '../../utils/error/error.code';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import * as documentHelper from './document/document.helper';
 import { PlatformConfiguration } from './registration/registration.domain';
-import { serviceInstanceApp } from './service-instance.app';
+import {
+  ServiceInstanceApp,
+  withServiceInstanceGlobalIDs,
+} from './service-instance.app';
 import * as serviceInstanceDomain from './service-instance.domain';
 
 describe('Service Instance app', () => {
@@ -84,7 +100,7 @@ describe('Service Instance app', () => {
       loadUserServiceBySpy.mockResolvedValueOnce([mockUserService]);
       loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
 
-      const result = await serviceInstanceApp.loadServiceInstance(
+      const result = await ServiceInstanceApp.loadServiceInstance(
         contextBypassUser.user,
         mockServiceInstanceId
       );
@@ -115,7 +131,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
-      const result = await serviceInstanceApp.loadServiceInstance(
+      const result = await ServiceInstanceApp.loadServiceInstance(
         contextBypassUser.user,
         mockServiceInstanceId
       );
@@ -167,7 +183,7 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
-      await serviceInstanceApp.loadServiceInstance(
+      await ServiceInstanceApp.loadServiceInstance(
         contextBypassUser.user,
         mockServiceInstanceId
       );
@@ -193,7 +209,7 @@ describe('Service Instance app', () => {
       loadUserServiceBySpy.mockResolvedValue([]);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
-      const result = await serviceInstanceApp.loadServiceInstance(
+      const result = await ServiceInstanceApp.loadServiceInstance(
         contextBypassUser.user,
         mockServiceInstanceId
       );
@@ -215,7 +231,7 @@ describe('Service Instance app', () => {
       loadUserServiceBySpy.mockResolvedValue(multipleUserServices);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
-      const result = await serviceInstanceApp.loadServiceInstance(
+      const result = await ServiceInstanceApp.loadServiceInstance(
         contextBypassUser.user,
         mockServiceInstanceId
       );
@@ -229,14 +245,13 @@ describe('Service Instance app', () => {
       loadSubscriptionBySpy.mockRejectedValue(error);
 
       await expect(
-        serviceInstanceApp.loadServiceInstance(
+        ServiceInstanceApp.loadServiceInstance(
           contextBypassUser.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Error');
 
       expect(loadUserServiceBySpy).not.toHaveBeenCalled();
-      expect(loadServiceInstanceBySpy).not.toHaveBeenCalled();
     });
 
     it('should propagate errors from grantServiceAccess', async () => {
@@ -250,13 +265,11 @@ describe('Service Instance app', () => {
       grantServiceAccessSpy.mockRejectedValue(error);
 
       await expect(
-        serviceInstanceApp.loadServiceInstance(
+        ServiceInstanceApp.loadServiceInstance(
           contextBypassUser.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Other error');
-
-      expect(loadServiceInstanceBySpy).not.toHaveBeenCalled();
     });
 
     it('should handle different context users', async () => {
@@ -273,7 +286,7 @@ describe('Service Instance app', () => {
       loadUserServiceBySpy.mockResolvedValue([]);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
-      await serviceInstanceApp.loadServiceInstance(
+      await ServiceInstanceApp.loadServiceInstance(
         differentContext.user,
         mockServiceInstanceId
       );
@@ -283,375 +296,323 @@ describe('Service Instance app', () => {
         user_id: differentUserId,
       });
     });
+  });
 
-    describe('updatePlatformServiceMetadata', () => {
-      let loadPlatformServiceInstanceSpy: MockInstance;
-      let loadServiceDefinitionByServiceInstanceSpy: MockInstance;
-      let assertUserCanModifyPlatformServiceSpy: MockInstance;
-      let uploadNewFileSpy: MockInstance;
-      let updateServiceInstanceSpy: MockInstance;
-      let loadPlatformConfigurationByServiceInstanceIdSpy: MockInstance;
-      let updatePlatformConfigurationByServiceInstanceIdSpy: MockInstance;
+  describe('updatePlatformServiceMetadata', () => {
+    let dispatchSpy: MockInstance;
+    let uploadNewFileSpy: MockInstance;
 
-      const mockServiceInstanceId = uuidv4() as ServiceInstanceId;
-      const mockDocumentId = uuidv4();
-      const globalServiceInstanceId = toGlobalId(
-        'ServiceInstance',
-        mockServiceInstanceId
+    const mockPlatformConfig: PlatformConfiguration = {
+      registerer_id: contextBypassUser.user.id,
+      platform_id: 'test-platform',
+      platform_title: 'Test Platform',
+      platform_url: 'https://test.com',
+      platform_contract: PlatformContract.Ee,
+      platform_version: '1.0.0',
+      token: 'test-token',
+    };
+
+    const mockFileUpload: FileUpload = {
+      filename: 'illustration.png',
+      mimetype: 'image/png',
+      encoding: '7bit',
+      createReadStream: vi.fn(),
+    };
+
+    const mockUpload = {
+      file: mockFileUpload,
+      promise: Promise.resolve(mockFileUpload),
+    };
+
+    const createPlatformServiceData = async () => {
+      const serviceDefId = uuidv4() as ServiceDefinitionId;
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const subscriptionId = uuidv4() as SubscriptionId;
+      await db('ServiceDefinition').insert({
+        id: serviceDefId,
+        name: 'OpenCTI',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+      });
+      await serviceInstanceDomain.insertServiceInstance({
+        id: serviceInstanceId,
+        name: 'Test Platform',
+        service_definition_id: serviceDefId,
+      });
+      await db('Subscription').insert({
+        id: subscriptionId,
+        organization_id: contextBypassUser.user.selected_organization_id,
+        service_instance_id: serviceInstanceId,
+      });
+      await db('Service_Configuration').insert({
+        service_instance_id: serviceInstanceId,
+        config: mockPlatformConfig,
+      });
+      return { serviceDefId, serviceInstanceId, subscriptionId };
+    };
+
+    beforeEach(() => {
+      dispatchSpy = vi.spyOn(pub, 'dispatch').mockResolvedValue(undefined);
+      uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should update name, sync config title, dispatch, and return RegisteredPlatform', async () => {
+      const { serviceInstanceId } = await createPlatformServiceData();
+      const input: UpdatePlatformServiceMetadataInput = {
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        name: 'Updated Platform Name',
+      };
+
+      const result = await ServiceInstanceApp.updatePlatformServiceMetadata(
+        contextBypassUser.user,
+        serviceInstanceId,
+        input,
+        null
       );
 
-      const mockServiceInstance = {
-        id: mockServiceInstanceId,
-        name: 'Test Service',
-        description: 'Test Description',
-        service_definition_id: uuidv4(),
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
+      expect(result.id).toBe(serviceInstanceId);
+      expect(result.title).toBe('Updated Platform Name');
+      expect(result.platform_id).toBe(mockPlatformConfig.platform_id);
+      expect(result.url).toBe(mockPlatformConfig.platform_url);
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        'ServiceInstance',
+        'edit',
+        expect.objectContaining({
+          id: serviceInstanceId,
+          name: 'Updated Platform Name',
+        })
+      );
+    });
 
-      const mockServiceDefinition = {
-        id: uuidv4(),
-        identifier: 'test-service',
-        name: 'Test Service Definition',
-        platform_type: 'CONNECTOR',
-      };
-
-      const mockDocument = {
-        id: mockDocumentId,
-        name: 'test-image.png',
+    it('should upload illustration and include global document ID in response', async () => {
+      const { serviceInstanceId } = await createPlatformServiceData();
+      const illustrationId = uuidv4();
+      uploadNewFileSpy.mockResolvedValue({
+        id: illustrationId,
+        name: 'illustration.png',
         mime_type: 'image/png',
-        size: 12345,
-      };
-
-      const mockFileUpload: FileUpload = {
-        filename: 'test-image.png',
-        mimetype: 'image/png',
-        encoding: '7bit',
-        createReadStream: vi.fn(),
-      };
-
-      const mockUpload = {
-        file: mockFileUpload,
-        promise: Promise.resolve(mockFileUpload),
-      };
-
-      const mockInput: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: globalServiceInstanceId,
-        name: 'Updated Service Name',
-      };
-
-      const mockPlatformConfig: PlatformConfiguration = {
-        registerer_id: contextBypassUser.user.id,
-        platform_id: 'test-platform',
-        platform_title: 'Test Platform',
-        platform_url: 'https://test.com',
-        platform_contract: PlatformContract.Ee,
-        platform_version: '1.0.0',
-        token: 'test-token',
-      };
-
-      const mockServiceConfiguration = {
-        id: uuidv4(),
-        service_instance_id: mockServiceInstanceId,
-        config: mockPlatformConfig,
-      };
-
-      beforeEach(() => {
-        loadPlatformServiceInstanceSpy = vi.spyOn(
-          serviceInstanceDomain,
-          'loadPlatformServiceInstance'
-        );
-        loadServiceDefinitionByServiceInstanceSpy = vi.spyOn(
-          serviceInstanceDomain,
-          'loadServiceDefinitionByServiceInstance'
-        );
-        assertUserCanModifyPlatformServiceSpy = vi.spyOn(
-          securityGuard.securityGuard,
-          'assertUserCanModifyPlatformService'
-        );
-        uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
-        updateServiceInstanceSpy = vi.spyOn(
-          serviceInstanceDomain,
-          'updateServiceInstance'
-        );
-        loadPlatformConfigurationByServiceInstanceIdSpy = vi.spyOn(
-          serviceInstanceDomain,
-          'loadPlatformConfigurationByServiceInstanceId'
-        );
-        updatePlatformConfigurationByServiceInstanceIdSpy = vi.spyOn(
-          serviceInstanceDomain,
-          'updatePlatformConfigurationByServiceInstanceId'
-        );
       });
+      const input: UpdatePlatformServiceMetadataInput = {
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        name: 'Updated Platform Name',
+      };
 
-      afterEach(() => {
-        vi.restoreAllMocks();
-      });
+      const result = await ServiceInstanceApp.updatePlatformServiceMetadata(
+        contextBypassUser.user,
+        serviceInstanceId,
+        input,
+        mockUpload
+      );
 
-      it('should update platform service metadata with name only', async () => {
-        const updatedServiceInstance = {
-          ...mockServiceInstance,
-          name: mockInput.name,
-        };
+      expect(uploadNewFileSpy).toHaveBeenCalledWith(
+        mockUpload,
+        serviceInstanceId
+      );
+      expect(result.illustration_document_id).toBe(
+        toGlobalId('Document', illustrationId)
+      );
+    });
 
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
-          mockServiceDefinition
-        );
-        assertUserCanModifyPlatformServiceSpy.mockResolvedValue(undefined);
-        updateServiceInstanceSpy.mockResolvedValue(updatedServiceInstance);
-        loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
-          mockServiceConfiguration
-        );
-        updatePlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
-          mockServiceConfiguration
-        );
+    it('should not update service instance or config when no fields to update', async () => {
+      const { serviceInstanceId } = await createPlatformServiceData();
+      const input: UpdatePlatformServiceMetadataInput = {
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+      };
 
-        const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          mockInput,
-          null
-        );
+      await ServiceInstanceApp.updatePlatformServiceMetadata(
+        contextBypassUser.user,
+        serviceInstanceId,
+        input,
+        null
+      );
 
-        expect(loadPlatformServiceInstanceSpy).toHaveBeenCalledWith(
-          contextBypassUser.user.selected_organization_id,
-          mockServiceInstanceId
+      const unchangedInstance =
+        await serviceInstanceDomain.loadServiceInstanceBy(
+          'id',
+          serviceInstanceId
         );
-        expect(loadServiceDefinitionByServiceInstanceSpy).toHaveBeenCalledWith(
-          mockServiceInstanceId
-        );
-        expect(assertUserCanModifyPlatformServiceSpy).toHaveBeenCalledWith(
+      expect(unchangedInstance.name).toBe('Test Platform');
+    });
+
+    it('should return null illustration_document_id when service instance has none', async () => {
+      const { serviceInstanceId } = await createPlatformServiceData();
+      const input: UpdatePlatformServiceMetadataInput = {
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        name: 'Updated Name',
+      };
+
+      const result = await ServiceInstanceApp.updatePlatformServiceMetadata(
+        contextBypassUser.user,
+        serviceInstanceId,
+        input,
+        null
+      );
+
+      expect(result.illustration_document_id).toBeNull();
+    });
+
+    it('should throw SERVICE_INSTANCE_NOT_FOUND when service instance does not exist', async () => {
+      const nonExistentId = uuidv4() as ServiceInstanceId;
+
+      await expect(
+        ServiceInstanceApp.updatePlatformServiceMetadata(
           contextBypassUser.user,
-          mockServiceDefinition
-        );
-        expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          mockServiceInstanceId,
-          { name: mockInput.name }
-        );
-        expect(
-          updatePlatformConfigurationByServiceInstanceIdSpy
-        ).toHaveBeenCalledWith(mockServiceInstanceId, {
-          ...mockPlatformConfig,
-          platform_title: mockInput.name,
-        });
-        expect(result).toEqual({
-          ...updatedServiceInstance,
-          identifier: mockServiceDefinition.identifier,
-        });
-      });
-
-      it('should update platform service metadata with name and upload', async () => {
-        const updatedServiceInstance = {
-          ...mockServiceInstance,
-          name: mockInput.name,
-          illustration_document_id: mockDocumentId,
-        };
-
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
-          mockServiceDefinition
-        );
-        assertUserCanModifyPlatformServiceSpy.mockResolvedValue(undefined);
-        uploadNewFileSpy.mockResolvedValue(mockDocument);
-        updateServiceInstanceSpy.mockResolvedValue(updatedServiceInstance);
-        loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
-          mockServiceConfiguration
-        );
-        updatePlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
-          mockServiceConfiguration
-        );
-
-        const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          mockInput,
-          mockUpload
-        );
-
-        expect(uploadNewFileSpy).toHaveBeenCalledWith(
-          mockUpload,
-          mockServiceInstance.id
-        );
-        expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          mockServiceInstanceId,
+          nonExistentId,
           {
-            name: mockInput.name,
-            illustration_document_id: mockDocumentId,
-          }
-        );
-        expect(result).toEqual({
-          ...updatedServiceInstance,
-          identifier: mockServiceDefinition.identifier,
-        });
+            serviceInstanceId: toGlobalId('ServiceInstance', nonExistentId),
+            name: 'Name',
+          },
+          null
+        )
+      ).rejects.toThrow(ErrorCode.ServiceInstanceNotFound);
+    });
+
+    it('should throw SERVICE_DEFINITION_NOT_FOUND when service definition does not exist', async () => {
+      // Cannot reproduce with real DB: loadPlatformServiceInstance filters by
+      // ServiceDefinition.identifier, so a result is only returned when a
+      // matching ServiceDefinition exists in the join.
+      const mockId = uuidv4() as ServiceInstanceId;
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadPlatformServiceInstance'
+      ).mockResolvedValue({ id: mockId, name: 'Mock Platform' });
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(undefined);
+
+      await expect(
+        ServiceInstanceApp.updatePlatformServiceMetadata(
+          contextBypassUser.user,
+          mockId,
+          {
+            serviceInstanceId: toGlobalId('ServiceInstance', mockId),
+            name: 'Name',
+          },
+          null
+        )
+      ).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should throw when user cannot modify platform service', async () => {
+      const mockId = uuidv4() as ServiceInstanceId;
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadPlatformServiceInstance'
+      ).mockResolvedValue({ id: mockId, name: 'Mock Platform' });
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue({
+        id: uuidv4(),
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        name: 'Mock Platform',
       });
 
-      it('should update only upload without name', async () => {
-        const inputWithoutName = {
-          serviceInstanceId: globalServiceInstanceId,
-        };
-        const updatedServiceInstance = {
-          ...mockServiceInstance,
-          illustration_document_id: mockDocumentId,
-        };
+      await expect(
+        ServiceInstanceApp.updatePlatformServiceMetadata(
+          contextSimpleUserSecondOrga.user,
+          mockId,
+          {
+            serviceInstanceId: toGlobalId('ServiceInstance', mockId),
+            name: 'Name',
+          },
+          null
+        )
+      ).rejects.toThrow(ErrorCode.MissingCapabilityOnOrganization);
+    });
 
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
-          mockServiceDefinition
-        );
-        assertUserCanModifyPlatformServiceSpy.mockResolvedValue(undefined);
-        uploadNewFileSpy.mockResolvedValue(mockDocument);
-        updateServiceInstanceSpy.mockResolvedValue(updatedServiceInstance);
-        loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
-          mockServiceConfiguration
-        );
+    it('should throw when upload fails and not update service instance', async () => {
+      const { serviceInstanceId } = await createPlatformServiceData();
+      uploadNewFileSpy.mockRejectedValue(new Error('Upload failed'));
+      const input: UpdatePlatformServiceMetadataInput = {
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        name: 'Updated Name',
+      };
 
-        const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          inputWithoutName,
+      await expect(
+        ServiceInstanceApp.updatePlatformServiceMetadata(
+          contextBypassUser.user,
+          serviceInstanceId,
+          input,
           mockUpload
-        );
+        )
+      ).rejects.toThrow('Upload failed');
 
-        expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          mockServiceInstanceId,
-          { illustration_document_id: mockDocumentId }
-        );
-        expect(
-          updatePlatformConfigurationByServiceInstanceIdSpy
-        ).not.toHaveBeenCalled();
-        expect(result).toEqual({
-          ...updatedServiceInstance,
-          identifier: mockServiceDefinition.identifier,
-        });
+      expect(dispatchSpy).not.toHaveBeenCalled();
+    });
+
+    it('should throw SERVICE_CONFIGURATION_NOT_FOUND when config is missing after update', async () => {
+      // Cannot reproduce with real DB: simulates a race condition where the
+      // configuration is deleted between the update transaction and the
+      // response-building query.
+      const mockId = uuidv4() as ServiceInstanceId;
+      const mockServiceConfiguration = {
+        service_instance_id: mockId,
+        config: mockPlatformConfig,
+        status: ServiceConfigurationStatus.Active,
+      };
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadPlatformServiceInstance'
+      ).mockResolvedValue({
+        id: mockId,
+        name: 'Mock Platform',
+        illustration_document_id: null,
       });
-
-      it('should throw error when service instance not found', async () => {
-        loadPlatformServiceInstanceSpy.mockResolvedValue(null);
-
-        await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
-        ).rejects.toThrow();
-
-        expect(
-          loadServiceDefinitionByServiceInstanceSpy
-        ).not.toHaveBeenCalled();
-        expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue({
+        id: uuidv4(),
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        name: 'Mock Platform',
       });
+      vi.spyOn(
+        securityGuardModule.securityGuard,
+        'assertUserCanModifyPlatformService'
+      ).mockResolvedValue(undefined);
+      vi.spyOn(
+        serviceInstanceDomain,
+        'updateServiceInstance'
+      ).mockResolvedValue({
+        id: mockId,
+        name: 'Mock Platform',
+      } as ServiceInstance);
+      const configSpy = vi.spyOn(
+        serviceInstanceDomain,
+        'loadPlatformConfigurationByServiceInstanceId'
+      );
 
-      it('should throw error when service definition not found', async () => {
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(null);
+      configSpy
+        .mockResolvedValueOnce(mockServiceConfiguration)
+        .mockResolvedValueOnce(null);
+      vi.spyOn(
+        serviceInstanceDomain,
+        'updatePlatformConfigurationByServiceInstanceId'
+      ).mockResolvedValue(mockServiceConfiguration);
 
-        await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
-        ).rejects.toThrow();
-
-        expect(assertUserCanModifyPlatformServiceSpy).not.toHaveBeenCalled();
-        expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
-      });
-
-      it('should throw error when user cannot modify platform service', async () => {
-        const securityError = new Error('Insufficient permissions');
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
-          mockServiceDefinition
-        );
-        assertUserCanModifyPlatformServiceSpy.mockRejectedValue(securityError);
-
-        await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(mockInput, null)
-        ).rejects.toThrow('Insufficient permissions');
-
-        expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
-      });
-
-      it('should handle upload error and rollback transaction', async () => {
-        const uploadError = new Error('Upload failed');
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
-          mockServiceDefinition
-        );
-        assertUserCanModifyPlatformServiceSpy.mockResolvedValue(undefined);
-        uploadNewFileSpy.mockRejectedValue(uploadError);
-
-        await expect(
-          serviceInstanceApp.updatePlatformServiceMetadata(
-            mockInput,
-            mockUpload
-          )
-        ).rejects.toThrow('Upload failed');
-
-        expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
-      });
-
-      it('should handle case when no configuration exists for platform title update', async () => {
-        const updatedServiceInstance = {
-          ...mockServiceInstance,
-          name: mockInput.name,
-        };
-
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
-          mockServiceDefinition
-        );
-        assertUserCanModifyPlatformServiceSpy.mockResolvedValue(undefined);
-        updateServiceInstanceSpy.mockResolvedValue(updatedServiceInstance);
-        loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(null);
-
-        const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          mockInput,
+      await expect(
+        ServiceInstanceApp.updatePlatformServiceMetadata(
+          contextBypassUser.user,
+          mockId,
+          {
+            serviceInstanceId: toGlobalId('ServiceInstance', mockId),
+            name: 'Updated',
+          },
           null
-        );
-
-        expect(
-          updatePlatformConfigurationByServiceInstanceIdSpy
-        ).not.toHaveBeenCalled();
-        expect(result).toEqual({
-          ...updatedServiceInstance,
-          identifier: mockServiceDefinition.identifier,
-        });
-      });
-
-      it('should handle null upload without updating illustration', async () => {
-        const updatedServiceInstance = {
-          ...mockServiceInstance,
-          name: mockInput.name,
-        };
-
-        loadPlatformServiceInstanceSpy.mockResolvedValue(mockServiceInstance);
-        loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue(
-          mockServiceDefinition
-        );
-        assertUserCanModifyPlatformServiceSpy.mockResolvedValue(undefined);
-        updateServiceInstanceSpy.mockResolvedValue(updatedServiceInstance);
-        loadPlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
-          mockServiceConfiguration
-        );
-        updatePlatformConfigurationByServiceInstanceIdSpy.mockResolvedValue(
-          mockServiceConfiguration
-        );
-
-        const result = await serviceInstanceApp.updatePlatformServiceMetadata(
-          mockInput,
-          null
-        );
-
-        // uploadNewFile should not be called with null upload
-        expect(uploadNewFileSpy).not.toHaveBeenCalled();
-
-        // Only name should be updated, no illustration_document_id
-        expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
-          mockServiceInstanceId,
-          { name: mockInput.name }
-        );
-
-        expect(result).toEqual({
-          ...updatedServiceInstance,
-          identifier: mockServiceDefinition.identifier,
-        });
-      });
+        )
+      ).rejects.toThrow(ErrorCode.ServiceConfigurationNotFound);
     });
   });
 
   describe('loadLinkServiceInstancesByTags', () => {
     it('should load service instances links with tags', async () => {
       const serviceInstances =
-        await serviceInstanceApp.loadLinkServiceInstancesByTags([
+        await ServiceInstanceApp.loadLinkServiceInstancesByTags([
           ServiceInstanceTag.OpenCti,
           ServiceInstanceTag.Trial,
         ]);
@@ -668,6 +629,308 @@ describe('Service Instance app', () => {
       expect(
         serviceInstances.find(({ name }) => name === 'OpenCTI Demo')
       ).toBeDefined();
+    });
+  });
+
+  describe('loadSeoServiceInstance', () => {
+    it('should return the service instance with global document IDs', async () => {
+      const slug = 'test-seo-slug-with-docs';
+      const logoId = uuidv4() as DocumentId;
+      const illustrationId = uuidv4();
+
+      // logo_document_id has a FK to Document, so insert the document first
+      await db('Document').insert({ id: logoId, type: 'logo' });
+      await serviceInstanceDomain.insertServiceInstance({
+        id: uuidv4() as ServiceInstanceId,
+        name: 'Test SEO Service',
+        slug,
+        logo_document_id: logoId,
+        illustration_document_id: illustrationId,
+        tags: [ServiceInstanceTag.OpenCti],
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+      });
+
+      const result = await ServiceInstanceApp.loadSeoServiceInstance(slug);
+
+      expect(result.name).toBe('Test SEO Service');
+      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
+      expect(result.illustration_document_id).toBe(
+        toGlobalId('Document', illustrationId)
+      );
+      expect(result.tags).toEqual([ServiceInstanceTag.OpenCti]);
+    });
+
+    it('should throw NotFoundError when the slug does not match any service', async () => {
+      await expect(
+        ServiceInstanceApp.loadSeoServiceInstance('non-existent-slug')
+      ).rejects.toThrow(ErrorCode.ServiceNotFound);
+    });
+
+    it('should handle null document IDs without converting them', async () => {
+      const slug = 'test-seo-slug-no-docs';
+      await serviceInstanceDomain.insertServiceInstance({
+        id: uuidv4() as ServiceInstanceId,
+        name: 'Test SEO Service No Docs',
+        slug,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+      });
+
+      const result = await ServiceInstanceApp.loadSeoServiceInstance(slug);
+
+      expect(result.logo_document_id).toBeNull();
+      expect(result.illustration_document_id).toBeNull();
+    });
+  });
+
+  describe('loadSeoServiceInstances', () => {
+    it('should return public service instances with document IDs converted to global IDs', async () => {
+      const logoId = uuidv4() as DocumentId;
+      const illustrationId = uuidv4();
+      const instanceId = uuidv4() as ServiceInstanceId;
+
+      // logo_document_id has a FK to Document, so insert the document first
+      await db('Document').insert({ id: logoId, type: 'logo' });
+      await serviceInstanceDomain.insertServiceInstance({
+        id: instanceId,
+        name: 'Test Public SEO Service',
+        public: true,
+        logo_document_id: logoId,
+        illustration_document_id: illustrationId,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+      });
+
+      const results = await ServiceInstanceApp.loadSeoServiceInstances();
+      const result = results.find(({ id }) => id === instanceId);
+
+      expect(result).toBeDefined();
+      expect(result!.logo_document_id).toBe(toGlobalId('Document', logoId));
+      expect(result!.illustration_document_id).toBe(
+        toGlobalId('Document', illustrationId)
+      );
+    });
+
+    it('should not include non-public service instances', async () => {
+      const instanceId = uuidv4() as ServiceInstanceId;
+      await serviceInstanceDomain.insertServiceInstance({
+        id: instanceId,
+        name: 'Non-Public Service',
+        public: false,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+      });
+
+      const results = await ServiceInstanceApp.loadSeoServiceInstances();
+
+      expect(results.find(({ id }) => id === instanceId)).toBeUndefined();
+    });
+
+    it('should return instances ordered by ordering field ascending', async () => {
+      const firstId = uuidv4() as ServiceInstanceId;
+      const secondId = uuidv4() as ServiceInstanceId;
+
+      // Insert in reverse order to confirm sorting is applied
+      await serviceInstanceDomain.insertServiceInstance({
+        id: secondId,
+        name: 'SEO Ordering B',
+        public: true,
+        ordering: 200,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+      });
+      await serviceInstanceDomain.insertServiceInstance({
+        id: firstId,
+        name: 'SEO Ordering A',
+        public: true,
+        ordering: 100,
+        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+      });
+
+      const results = await ServiceInstanceApp.loadSeoServiceInstances();
+      const firstIndex = results.findIndex(({ id }) => id === firstId);
+      const secondIndex = results.findIndex(({ id }) => id === secondId);
+
+      expect(firstIndex).toBeGreaterThanOrEqual(0);
+      expect(secondIndex).toBeGreaterThanOrEqual(0);
+      expect(firstIndex).toBeLessThan(secondIndex);
+    });
+  });
+
+  describe('addServicePicture', () => {
+    let uploadNewFileSpy: MockInstance;
+    let updateServiceInstanceSpy: MockInstance;
+    let dispatchSpy: MockInstance;
+
+    const mockServiceInstanceId = uuidv4() as ServiceInstanceId;
+    const mockDocumentId = uuidv4();
+
+    const mockFileUpload: FileUpload = {
+      filename: 'logo.png',
+      mimetype: 'image/png',
+      encoding: '7bit',
+      createReadStream: vi.fn(),
+    };
+
+    const mockUpload = {
+      file: mockFileUpload,
+      promise: Promise.resolve(mockFileUpload),
+    };
+
+    const mockUploadedDocument = {
+      id: mockDocumentId,
+      name: 'logo.png',
+      mime_type: 'image/png',
+    };
+
+    const mockUpdatedServiceInstance = {
+      id: mockServiceInstanceId,
+      name: 'Updated Service',
+      logo_document_id: mockDocumentId,
+    };
+
+    beforeEach(() => {
+      uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
+      updateServiceInstanceSpy = vi.spyOn(
+        serviceInstanceDomain,
+        'updateServiceInstance'
+      );
+      dispatchSpy = vi.spyOn(pub, 'dispatch');
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should upload a logo, update the service instance, and dispatch an edit event', async () => {
+      uploadNewFileSpy.mockResolvedValue(mockUploadedDocument);
+      updateServiceInstanceSpy.mockResolvedValue(mockUpdatedServiceInstance);
+      dispatchSpy.mockResolvedValue(undefined);
+
+      const result = await ServiceInstanceApp.addServicePicture(
+        mockServiceInstanceId,
+        mockUpload,
+        true
+      );
+
+      expect(uploadNewFileSpy).toHaveBeenCalledWith(
+        mockUpload,
+        mockServiceInstanceId
+      );
+      expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
+        mockServiceInstanceId,
+        { logo_document_id: mockDocumentId }
+      );
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        'ServiceInstance',
+        'edit',
+        mockUpdatedServiceInstance
+      );
+      expect(result).toEqual(mockUpdatedServiceInstance);
+    });
+
+    it('should update illustration_document_id when isLogo is false', async () => {
+      uploadNewFileSpy.mockResolvedValue(mockUploadedDocument);
+      updateServiceInstanceSpy.mockResolvedValue(mockUpdatedServiceInstance);
+      dispatchSpy.mockResolvedValue(undefined);
+
+      await ServiceInstanceApp.addServicePicture(
+        mockServiceInstanceId,
+        mockUpload,
+        false
+      );
+
+      expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
+        mockServiceInstanceId,
+        { illustration_document_id: mockDocumentId }
+      );
+    });
+
+    it('should throw a mapped GraphQL error when upload fails', async () => {
+      uploadNewFileSpy.mockRejectedValue(new Error('Upload failed'));
+
+      await expect(
+        ServiceInstanceApp.addServicePicture(
+          mockServiceInstanceId,
+          mockUpload,
+          true
+        )
+      ).rejects.toThrow();
+
+      expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
+      expect(dispatchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('withServiceInstanceGlobalIDs', () => {
+    it('should convert both logo and illustration document IDs to global IDs', () => {
+      const logoId = uuidv4();
+      const illustrationId = uuidv4();
+      const service = {
+        logo_document_id: logoId,
+        illustration_document_id: illustrationId,
+      };
+
+      const result = withServiceInstanceGlobalIDs(service);
+
+      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
+      expect(result.illustration_document_id).toBe(
+        toGlobalId('Document', illustrationId)
+      );
+    });
+
+    it('should convert only logo_document_id when illustration_document_id is null', () => {
+      const logoId = uuidv4();
+      const service = {
+        logo_document_id: logoId,
+        illustration_document_id: null,
+      };
+
+      const result = withServiceInstanceGlobalIDs(service);
+
+      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
+      expect(result.illustration_document_id).toBeNull();
+    });
+
+    it('should convert only illustration_document_id when logo_document_id is null', () => {
+      const illustrationId = uuidv4();
+      const service = {
+        logo_document_id: null,
+        illustration_document_id: illustrationId,
+      };
+
+      const result = withServiceInstanceGlobalIDs(service);
+
+      expect(result.logo_document_id).toBeNull();
+      expect(result.illustration_document_id).toBe(
+        toGlobalId('Document', illustrationId)
+      );
+    });
+
+    it('should return unchanged object when both IDs are null', () => {
+      const service = {
+        logo_document_id: null,
+        illustration_document_id: null,
+      };
+
+      const result = withServiceInstanceGlobalIDs(service);
+
+      expect(result.logo_document_id).toBeNull();
+      expect(result.illustration_document_id).toBeNull();
+    });
+
+    it('should preserve additional properties on the input object', () => {
+      const logoId = uuidv4();
+      const service = {
+        id: uuidv4(),
+        name: 'Test Service',
+        slug: 'test-service',
+        logo_document_id: logoId,
+        illustration_document_id: null,
+      };
+
+      const result = withServiceInstanceGlobalIDs(service);
+
+      expect(result.id).toBe(service.id);
+      expect(result.name).toBe(service.name);
+      expect(result.slug).toBe(service.slug);
+      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
     });
   });
 });

@@ -18,7 +18,7 @@ import { dbMigration } from '../knexfile';
 import { initAuthPlatform } from './auth/auth-platform';
 import portalConfig from './config';
 import { requestContext } from './context/request.context';
-import { initCronJobs } from './crons';
+import { initCronJobs, stopCronJobs } from './crons';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
@@ -35,9 +35,14 @@ import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { seedDevelopmentConnectors } from './server/initialize.helper';
 import { getSessionStoreInstance } from './session-store-manager';
+import { initShutdown, registerShutdownHook } from './shutdown';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
+import { PgBossApp } from './thirdparty/pgboss/pgboss';
 import { logApp } from './utils/app-logger.util';
-import { startSessionCleanup } from './utils/session-cleanup';
+import {
+  startSessionCleanup,
+  stopSessionCleanup,
+} from './utils/session-cleanup';
 import { extractId } from './utils/utils';
 const { json } = pkg;
 // region GraphQL server initialization
@@ -297,6 +302,8 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   await minioInit();
   logApp.debug('[MinIO] Bucket ready');
 
+  await PgBossApp.start();
+
   startSessionCleanup();
 
   await new Promise<void>((resolve) =>
@@ -304,6 +311,17 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   );
 
   initCronJobs();
+
+  // Centralized graceful shutdown — registers SIGTERM, SIGINT,
+  // uncaughtException and unhandledRejection handlers.
+  // The HTTP server hook is registered inside initShutdown.
+  initShutdown(httpServer);
+  registerShutdownHook('pg-boss', async () => PgBossApp.stop());
+  registerShutdownHook('session-cleanup', async () => stopSessionCleanup());
+  registerShutdownHook('cron-jobs', async () => stopCronJobs());
+  registerShutdownHook('apollo-server', async () => {
+    await server.stop();
+  });
 }
 
 logApp.info(

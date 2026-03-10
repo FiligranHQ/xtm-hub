@@ -91,6 +91,7 @@ export const registeredPlatformByServiceInstanceId = graphql`
 export const registeredPlatformByServiceInstanceIdFragment = graphql`
   fragment registeredPlatformByServiceInstanceId_fragment on RegisteredPlatform {
     id
+    platform_id
     title
     contract
     url
@@ -110,6 +111,7 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
       hub_status
       region
       counts_in_orga_quota
+      platform_identifier
     }
   }
 `;

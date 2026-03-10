@@ -59,10 +59,11 @@ export const UserServiceDomain = {
         });
 
         await insertUserIntoOrganization(user, subscription.id);
-        const userServiceAlreadyExist = await doesUserServiceExist(
-          user.id as UserId,
-          subscription.id
-        );
+        const userServiceAlreadyExist =
+          await UserServiceDomain.doesUserServiceExist(
+            user.id as UserId,
+            subscription.id
+          );
 
         if (!userServiceAlreadyExist) {
           const createdUserService =
@@ -158,20 +159,23 @@ export const UserServiceDomain = {
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       serviceInstance.id
     );
-    await sendMail({
-      to: user.email,
-      template: ServiceIdentifierToMailTemplate.get(
-        serviceDefinition.identifier
-      ),
-      params: {
-        name: user.email,
-        serviceLink: buildServiceLink({
-          serviceDefinitionIdentifier: serviceDefinition.identifier,
-          serviceInstanceId: serviceInstance.id,
-        }),
-        serviceName: serviceInstance.name,
-      },
-    });
+    const mailTemplate = ServiceIdentifierToMailTemplate.get(
+      serviceDefinition.identifier
+    );
+    if (mailTemplate) {
+      await sendMail({
+        to: user.email,
+        template: mailTemplate,
+        params: {
+          name: user.email,
+          serviceLink: buildServiceLink({
+            serviceDefinitionIdentifier: serviceDefinition.identifier,
+            serviceInstanceId: serviceInstance.id,
+          }),
+          serviceName: serviceInstance.name,
+        },
+      });
+    }
     return addedUserService;
   },
 
@@ -549,16 +553,16 @@ export const UserServiceDomain = {
       .where('user_service_id', '=', userServiceId)
       .delete('*');
   },
-};
 
-export const doesUserServiceExist = async (
-  user_id: UserId,
-  subscription_id: SubscriptionId
-) => {
-  const [existingUserService] =
-    await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
-      user_id,
-      subscription_id,
-    });
-  return !!existingUserService;
+  doesUserServiceExist: async (
+    user_id: UserId,
+    subscription_id: SubscriptionId
+  ) => {
+    const [existingUserService] =
+      await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
+        user_id,
+        subscription_id,
+      });
+    return !!existingUserService;
+  },
 };

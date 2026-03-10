@@ -5,7 +5,7 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/breadcrumb-nav';
-import { DownloadIcon } from '@filigran/icon';
+import { DownloadIcon, LogoFiligranIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
@@ -26,17 +26,16 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import {
-  isIntegrationItem,
-  ShareableResource,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
 // Component interface
 interface ShareableResourceSlugProps {
-  documentData: ShareableResource;
+  documentData: documentItem_fragment$data;
   serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   children?: ReactNode;
@@ -66,7 +65,7 @@ const ShareableResourceSlug: React.FunctionComponent<
   const shouldShowOneClickDeployComponent = useMemo(() => {
     if (!documentData.active) return false;
 
-    if (isIntegrationItem(documentData)) {
+    if (documentData.integration_type) {
       return documentData.integration_type in OPENCTI_INTEGRATION_URL_CONFIGS;
     }
 
@@ -81,7 +80,10 @@ const ShareableResourceSlug: React.FunctionComponent<
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        {mainChild?.id && (
+        {mainChild?.id &&
+        (documentData.integration_type === IntegrationTypeEnum.CONNECTOR ||
+          documentData.integration_type ===
+            IntegrationTypeEnum.THIRD_PARTY_INTEGRATION) ? (
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
               src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
@@ -91,6 +93,10 @@ const ShareableResourceSlug: React.FunctionComponent<
               loading="lazy"
               className="w-full h-full object-contain rounded"
             />
+          </div>
+        ) : (
+          <div className="w-24 p-m border border-light flex-shrink-0">
+            <LogoFiligranIcon className="size-18" />
           </div>
         )}
         <div className="flex flex-col justify-center w-full">
@@ -103,39 +109,43 @@ const ShareableResourceSlug: React.FunctionComponent<
               />
               {shouldShowOneClickDeployComponent ? (
                 <>
-                  <TooltipProvider>
-                    <Tooltip
-                      delayDuration={50}
-                      disableHoverableContent={true}>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            incrementDownloadNumber();
-                            window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                          }}
-                          className="z-[2] text-primary">
-                          <DownloadIcon className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{t('Service.ShareableResources.Download')}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  {isResourceDownloadable(documentData) && (
+                    <TooltipProvider>
+                      <Tooltip
+                        delayDuration={50}
+                        disableHoverableContent={true}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              incrementDownloadNumber();
+                              window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                            }}
+                            className="z-[2] text-primary">
+                            <DownloadIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('Service.ShareableResources.Download')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                   {updateActions}
                 </>
               ) : (
                 <>
                   {updateActions}
-                  <Button
-                    onClick={() => {
-                      incrementDownloadNumber();
-                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                    }}>
-                    {t('Utils.Download')}
-                  </Button>
+                  {isResourceDownloadable(documentData) && (
+                    <Button
+                      onClick={() => {
+                        incrementDownloadNumber();
+                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                      }}>
+                      {t('Utils.Download')}
+                    </Button>
+                  )}
                 </>
               )}
               {shouldShowOneClickDeployComponent && (
@@ -159,7 +169,7 @@ const ShareableResourceSlug: React.FunctionComponent<
         {documentData && (
           <ShareableResourceDetails
             documentData={documentData}
-            downloadNumber={documentDownloadNumber ?? 0}
+            downloadNumber={documentDownloadNumber}
           />
         )}
       </div>

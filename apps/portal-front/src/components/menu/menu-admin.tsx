@@ -136,6 +136,11 @@ const adminLinksData = (t: UseTranslationsProps) => [
     label: t('MenuLinks.OpenAEVTrials'),
     restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
+  {
+    href: `/${APP_PATH}/admin/competitors`,
+    label: t('MenuLinks.Competitors'),
+    restriction: [PortalCapabilityEnum.MODIFY_COMPETITORS],
+  },
 ];
 
 const AdminLinks = ({ className }: { className?: string }) => {

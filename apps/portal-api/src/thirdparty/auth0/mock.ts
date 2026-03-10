@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import {
   Auth0Client,
   Auth0UpdateUser,
@@ -17,6 +18,13 @@ export const auth0ClientMock: Auth0Client = {
 
   createAudienceAPI(
     organization_name: string,
+    platform_id: string
+  ): Promise<void> {
+    return Promise.resolve();
+  },
+
+  deleteAudienceAPI(
+    organization_id: OrganizationId,
     platform_id: string
   ): Promise<void> {
     return Promise.resolve();

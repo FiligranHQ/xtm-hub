@@ -27,6 +27,11 @@ export const publicDocumentItem = graphql`
     }
     active
     type
+    uploader_organization {
+      id
+      personal_space
+      name
+    }
 
     ... on Integration {
       integration_type
@@ -113,5 +118,21 @@ export const PublicDocumentListQuery = graphql`
     $serviceInstanceId: ID!
   ) {
     ...publicDocumentList
+  }
+`;
+
+export const PublicDocumentsByServiceSlugQuery = graphql`
+  query publicDocumentsByServiceSlugQuery($serviceInstanceSlug: String!) {
+    publicDocumentsByServiceSlug(serviceInstanceSlug: $serviceInstanceSlug) {
+      ...publicDocumentItemFragment
+    }
+  }
+`;
+
+export const PublicDocumentBySlugQuery = graphql`
+  query publicDocumentBySlugQuery($serviceInstanceId: ID!, $slug: String!) {
+    publicDocumentBySlug(serviceInstanceId: $serviceInstanceId, slug: $slug) {
+      ...publicDocumentItemFragment
+    }
   }
 `;

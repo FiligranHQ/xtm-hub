@@ -45,11 +45,13 @@
     }
   },
   "base_url_front": "BASE_URL_FRONT",
+  "telemetry_use_queue_processing": "TELEMETRY_USE_QUEUE_PROCESSING",
+  "telemetry_queued_event_types": "TELEMETRY_QUEUED_EVENT_TYPES",
+  "hubspot_use_queue_processing": "HUBSPOT_USE_QUEUE_PROCESSING",
   "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL",
   "system_token_hash": "SYSTEM_TOKEN_HASH",
   "system_token_salt": "SYSTEM_TOKEN_SALT",
   "session_store": {
     "type": "SESSION_STORE_TYPE"
-  },
-  "domains_blacklist": "DOMAINS_BLACKLIST"
+  }
 }

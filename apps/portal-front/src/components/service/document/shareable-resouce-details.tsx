@@ -11,19 +11,21 @@ import { ShareableResourceDetailItem } from '@/components/service/document/ui/sh
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
+import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
 import {
-  isIntegrationItem,
-  ShareableResource,
-} from '@/utils/shareable-resources/shareable-resources.types';
-import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+  docHasMetadata,
+  isResourceDownloadable,
+} from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
 
 // Component interface
 interface ShareableResourceDetailsProps {
-  documentData: ShareableResource;
-  downloadNumber?: number;
+  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  downloadNumber?: number | null;
 }
 
 const CSV_FEED_DOCUMENTATION =
@@ -52,7 +54,7 @@ const ShareableResourceDetails: React.FunctionComponent<
     return getIntegrationSubTypeMetadata(documentData.integration_subtype);
   }, [isIntegration, documentData]);
   const documentationUrl =
-    isIntegrationItem(documentData) &&
+    documentData.integration_type &&
     DOCUMENTATION_URLS[documentData.integration_type];
 
   return (
@@ -107,7 +109,7 @@ const ShareableResourceDetails: React.FunctionComponent<
           )}
         </>
       )}
-      {docHasMetadata(documentData, 'feed_url') && (
+      {docHasMetadata(documentData, 'feed_url') && documentData.feed_url && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.FeedURL')}>
           <ShareableResourceDetailsLink url={documentData.feed_url} />
@@ -122,18 +124,20 @@ const ShareableResourceDetails: React.FunctionComponent<
           )}
         </span>
       </ShareableResourceDetailItem>
-      {docHasMetadata(documentData, 'vendor_url') && (
-        <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.VendorURL')}>
-          <ShareableResourceDetailsLink url={documentData.vendor_url} />
-        </ShareableResourceDetailItem>
-      )}
-      {docHasMetadata(documentData, 'github_url') && (
-        <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.GithubURL')}>
-          <ShareableResourceDetailsLink url={documentData.github_url} />
-        </ShareableResourceDetailItem>
-      )}
+      {docHasMetadata(documentData, 'vendor_url') &&
+        documentData.vendor_url && (
+          <ShareableResourceDetailItem
+            label={t('Service.ShareableResources.Details.VendorURL')}>
+            <ShareableResourceDetailsLink url={documentData.vendor_url} />
+          </ShareableResourceDetailItem>
+        )}
+      {docHasMetadata(documentData, 'github_url') &&
+        documentData.github_url && (
+          <ShareableResourceDetailItem
+            label={t('Service.ShareableResources.Details.GithubURL')}>
+            <ShareableResourceDetailsLink url={documentData.github_url} />
+          </ShareableResourceDetailItem>
+        )}
       {docHasMetadata(documentData, 'product_version') && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.ProductVersion')}>
@@ -146,13 +150,15 @@ const ShareableResourceDetails: React.FunctionComponent<
           <ShareableResourceDetailsLink url={documentationUrl} />
         </ShareableResourceDetailItem>
       )}
-      <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.Downloads')}>
-        <span>{roundToNearest(downloadNumber)}</span>
-      </ShareableResourceDetailItem>
+      {isResourceDownloadable(documentData) && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.Downloads')}>
+          <span>{roundToNearest(downloadNumber)}</span>
+        </ShareableResourceDetailItem>
+      )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Shares')}>
-        <span>{roundToNearest(documentData.share_number ?? 0)}</span>
+        <span>{roundToNearest(documentData.share_number)}</span>
       </ShareableResourceDetailItem>
     </ShareableResourceBasicInformation>
   );

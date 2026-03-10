@@ -1,3 +1,4 @@
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { logApp } from '../../utils/app-logger.util';
 import { auth0ClientImplementation } from './implementation';
 import { auth0ClientMock } from './mock';
@@ -21,6 +22,10 @@ export interface Auth0Client {
   resetPassword(email: string): Promise<void>;
   createAudienceAPI(
     organization_name: string,
+    platform_id: string
+  ): Promise<void>;
+  deleteAudienceAPI(
+    organization_id: OrganizationId,
     platform_id: string
   ): Promise<void>;
   updateUserRBACInstance(

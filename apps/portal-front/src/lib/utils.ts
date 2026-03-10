@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const roundToNearest = (num: number | undefined) => {
+export const roundToNearest = (num: number | undefined | null) => {
   if (num === 0 || !num) {
     return 0;
   }

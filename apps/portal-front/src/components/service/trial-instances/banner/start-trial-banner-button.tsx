@@ -41,13 +41,14 @@ import {
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PlatformIdentifier } from '@generated/oneClickDeployMutation.graphql';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 
 // Component
 export const StartTrialBannerButton = () => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
-
+  const router = useRouter();
   const { availableTrials, isBlacklisted, refetch } = useOrgaFreeTrial();
 
   const [openSheet, setOpenSheet] = useState(false);
@@ -102,11 +103,19 @@ export const StartTrialBannerButton = () => {
         refetch({}, { fetchPolicy: 'network-only' });
       },
 
-      onCompleted: () => {
+      onCompleted: (response) => {
         toast({
           title: t('Utils.Success'),
           description: t('Service.Trials.Form.FormRequested'),
         });
+
+        const serviceInstanceId =
+          response?.createDeploymentRequest?.service_instance_id;
+        if (serviceInstanceId) {
+          router.push(
+            `/app/service/${platformIdentifier}_registration/${serviceInstanceId}`
+          );
+        }
       },
       onError: (error) => {
         toast({
@@ -141,7 +150,9 @@ export const StartTrialBannerButton = () => {
   };
   return (
     <SheetWithPreventingDialog
-      title={t('Service.Trials.StartTrial')}
+      title={t('Service.Trials.StartTrialWithName', {
+        platformName: PlatformMetadataMapping[platformIdentifier].name,
+      })}
       setOpen={setOpenSheet}
       open={openSheet}
       trigger={

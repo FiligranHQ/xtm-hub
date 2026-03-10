@@ -1,13 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import {
+  requestContextAdminSecondOrga,
+  SERVICES,
+  TEST_ORGANIZATIONS,
+} from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestPlatformRegion,
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../../model/kanel/public/DeploymentRequest';
@@ -26,6 +31,7 @@ describe('ServiceGroupApp', () => {
   const adminGroupId = uuidv4() as ServiceGroupId;
   const analystGroupId = uuidv4() as ServiceGroupId;
   const adminGroupIdServiceInstance2 = uuidv4() as ServiceGroupId;
+  const analystGroupIdServiceInstance2 = uuidv4() as ServiceGroupId;
 
   const serviceInstanceId1 = uuidv4() as ServiceInstanceId;
   const serviceInstanceId2 = uuidv4() as ServiceInstanceId;
@@ -70,6 +76,11 @@ describe('ServiceGroupApp', () => {
         name: 'Admin',
         service_instance_id: serviceInstanceId2,
       },
+      {
+        id: analystGroupIdServiceInstance2,
+        name: 'Analyst',
+        service_instance_id: serviceInstanceId2,
+      },
     ]);
   });
 
@@ -109,9 +120,10 @@ describe('ServiceGroupApp', () => {
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
         service_instance_id: serviceInstanceId1,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
+      requestContext.set(requestContextAdminSecondOrga);
       const call = ServiceGroupApp.updateGroups(payload);
 
       await expect(call).rejects.toThrow(
@@ -119,12 +131,41 @@ describe('ServiceGroupApp', () => {
       );
     });
 
-    it('should update groups with new user list and remove old ones', async () => {
+    it('should allow bypass user to update groups in another organization', async () => {
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
-        service_instance_id: serviceInstanceId1,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: serviceInstanceId2,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
+      await db<DeploymentRequest>('DeploymentRequest').insert({
+        id: uuidv4() as DeploymentRequestId,
+        service_instance_id: serviceInstanceId2,
+        platform_id: uuidv4(),
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        type: DeploymentRequestDeploymentType.Trial,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+      });
+
+      const bypassPayload = [
+        {
+          id: adminGroupIdServiceInstance2,
+          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
+        },
+        {
+          id: analystGroupIdServiceInstance2,
+          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        },
+      ];
+
+      const result = await ServiceGroupApp.updateGroups(bypassPayload);
+
+      expect(result.success).toBeTruthy();
+    });
+
+    it('should update groups with new user list and remove old ones', async () => {
       await db<ServiceGroupUser>('ServiceGroup_User').insert({
         group_id: analystGroupId,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,

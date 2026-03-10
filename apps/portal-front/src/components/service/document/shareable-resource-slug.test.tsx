@@ -66,8 +66,10 @@ vi.mock('@filigran/ui/servers', () => ({
   ),
 }));
 
+
 vi.mock('@filigran/icon', () => ({
   DownloadIcon: () => <span>DownloadIcon</span>,
+  LogoFiligranIcon: () => <span>LogoFiligranIcon</span>,
 }));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

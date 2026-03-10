@@ -38,7 +38,7 @@ export const ROLE_USER: RolePortal = {
 };
 
 export const XTM_HUB_SUPPORT_EMAIL = 'xtm-hub-support@filigran.io';
-export const XTM_HUB_DEV_TEAM_EMAIL = '3d8cbece.filigran.io@fr.teams.ms';
+export const XTM_HUB_DEV_TEAM_EMAIL = '333b4e48.filigran.io@fr.teams.ms';
 
 export const SYSTEM_USER_CONTEXT: PortalContext = {
   user: {

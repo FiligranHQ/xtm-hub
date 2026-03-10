@@ -102,7 +102,7 @@ export const subscriptionApp = {
     //   filledSubscription.id
     // );
 
-    sendSubscriptionTelemetryEvent({
+    await sendSubscriptionTelemetryEvent({
       selectedOrganization,
       serviceDefinitionIdentifier:
         serviceDefinition.identifier as ServiceDefinitionIdentifier,
@@ -130,7 +130,7 @@ export const subscriptionApp = {
     startDate: Date;
     endDate: Date;
     capabilityIds: ServiceCapabilityId[];
-  }): Promise<void> => {
+  }): Promise<Subscription> => {
     await assertOrganizationIsNotAlreadySubscribed({
       serviceInstanceId,
       organizationId,
@@ -148,6 +148,7 @@ export const subscriptionApp = {
 
     const createdSubscription = await createSubscription(subscriptionData);
     await addCapabilitiesToSubscription(createdSubscription.id, capabilityIds);
+    return createdSubscription;
   },
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
@@ -221,7 +222,7 @@ const createSubscriptionWithAdminAccess = async ({
   };
 };
 
-const sendSubscriptionTelemetryEvent = ({
+const sendSubscriptionTelemetryEvent = async ({
   selectedOrganization,
   serviceDefinitionIdentifier,
 }: {
@@ -236,7 +237,7 @@ const sendSubscriptionTelemetryEvent = ({
         user.id,
         serviceDefinitionIdentifier
       );
-      telemetryApp.sendTelemetryEvent(subscribeEvent);
+      await telemetryApp.sendTelemetryEvent(subscribeEvent);
     }
   } catch (error) {
     logApp.error('Unable to send telemetry event for subscription', {

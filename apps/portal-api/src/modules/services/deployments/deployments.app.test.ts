@@ -1,4 +1,3 @@
-import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
 import {
   afterAll,
@@ -15,11 +14,14 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -58,10 +60,12 @@ import {
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../knexfile';
+import { CompetitorTier } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { PortalContext } from '../../../model/portal-context';
+import { CompetitorDomain } from '../competitor/competitor.domain';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
@@ -98,9 +102,10 @@ describe('Deployment app', () => {
         isPlaceAvailable: true,
       });
       const deployment = await DeploymentsApp.createDeploymentRequest({
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -111,9 +116,10 @@ describe('Deployment app', () => {
           id: deployment.id as DeploymentRequestId,
         });
       expect(dbDeploymentRequest).toMatchObject({
-        activity_sector: 'cybersecurity',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CLevel,
         organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
@@ -125,7 +131,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
       });
 
       expect(dbDeploymentRequest).toBeDefined();
@@ -145,9 +151,10 @@ describe('Deployment app', () => {
         isPlaceAvailable: false,
       });
       const deployment = await DeploymentsApp.createDeploymentRequest({
-        activity_sector: 'cybersecurity',
-        job_title: 'myJob',
-        use_case: 'use_case',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -158,9 +165,10 @@ describe('Deployment app', () => {
           id: deployment.id as DeploymentRequestId,
         });
       expect(dbDeploymentRequest).toMatchObject({
-        activity_sector: 'cybersecurity',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CLevel,
         organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
@@ -172,7 +180,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Unprovisioned,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
       });
 
       if (!dbDeploymentRequest) return;
@@ -185,95 +193,66 @@ describe('Deployment app', () => {
         ServiceInstanceCreationStatus.Pending
       );
     });
+  });
+  describe('domains blacklist', () => {
+    afterEach(async () => {
+      await db('Competitor').delete();
+    });
 
-    describe('domains blacklist', () => {
-      const originalConfigGet = config.get;
-
-      afterEach(() => {
-        vi.mocked(config.get).mockImplementation(originalConfigGet);
+    it('should throw error when organization domain is blacklisted', async () => {
+      await CompetitorDomain.insertCompetitor({
+        name: 'Filigran',
+        tier: CompetitorTier.Tier1,
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      it('should throw error when organization domain is blacklisted', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
-          }
-          return originalConfigGet.call(config, key);
-        });
-
-        const call = DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
       });
 
-      it('should allow deployment when organization domain is not blacklisted', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return 'blocked.com,forbidden.net';
-          }
-          return originalConfigGet.call(config, key);
-        });
+      await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+    });
 
-        const deployment = await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        expect(deployment).toBeDefined();
-        expect(deployment.id).toBeDefined();
+    it('should allow deployment when organization domain is not blacklisted', async () => {
+      await CompetitorDomain.insertCompetitor({
+        name: 'Blocked',
+        tier: CompetitorTier.Tier1,
+        domain: 'blocked.com',
       });
 
-      it('should allow deployment when blacklist is empty', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return '';
-          }
-          return originalConfigGet.call(config, key);
-        });
-
-        const deployment = await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        expect(deployment).toBeDefined();
-        expect(deployment.id).toBeDefined();
+      const deployment = await DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
       });
 
-      it('should handle blacklist with spaces correctly', async () => {
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
-          if (key === 'domains_blacklist') {
-            return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST} , blocked.net , test.org`;
-          }
-          return originalConfigGet.call(config, key);
-        });
+      expect(deployment).toBeDefined();
+      expect(deployment.id).toBeDefined();
+    });
 
-        const call = DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
-
-        await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
+    it('should allow deployment when no competitors exist', async () => {
+      const deployment = await DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
       });
+
+      expect(deployment).toBeDefined();
+      expect(deployment.id).toBeDefined();
     });
 
     describe('telemetry', () => {
@@ -289,9 +268,10 @@ describe('Deployment app', () => {
           vi.setSystemTime(date);
 
           const deployment = await DeploymentsApp.createDeploymentRequest({
-            activity_sector: 'cybersecurity',
-            job_title: 'myJob',
-            use_case: 'use_case',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
+            job_title: DeploymentRequestJobTitle.CLevel,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: product,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -305,14 +285,15 @@ describe('Deployment app', () => {
             organization_type: TelemetryOrganizationType.PROFESSIONAL,
             source: TELEMETRY_SOURCE,
             email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            job_title: 'myJob',
+            job_title: DeploymentRequestJobTitle.CLevel,
             user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             deployment_id: deployment.id,
             region: DeploymentRequestPlatformRegion.UsEast,
-            use_case: 'use_case',
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             deployment_type: DeploymentRequestDeploymentType.Trial,
             status: DeploymentRequestHubStatus.Pending,
-            activity_sector: 'cybersecurity',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
             target_product: targetProduct,
           });
         }
@@ -324,9 +305,10 @@ describe('Deployment app', () => {
         telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
 
         const deployment = await DeploymentsApp.createDeploymentRequest({
-          activity_sector: 'cybersecurity',
-          job_title: 'myJob',
-          use_case: 'use_case',
+          activity_sector:
+            DeploymentRequestActivitySector.ComputerNetworkSecurity,
+          job_title: DeploymentRequestJobTitle.CLevel,
+          use_case: DeploymentRequestUseCase.ThreatHunting,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
@@ -340,9 +322,10 @@ describe('Deployment app', () => {
       describe('development environment', () => {
         it('should send a mail if status is pending to dev team', async () => {
           await DeploymentsApp.createDeploymentRequest({
-            activity_sector: 'cybersecurity',
-            job_title: 'myJob',
-            use_case: 'use_case',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
+            job_title: DeploymentRequestJobTitle.CLevel,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -363,12 +346,13 @@ describe('Deployment app', () => {
             to: XTM_HUB_DEV_TEAM_EMAIL,
             template: 'admin_saas_instance_requested',
             params: {
-              activitySector: 'cybersecurity',
+              activitySector:
+                DeploymentRequestActivitySector.ComputerNetworkSecurity,
               deploymentType: 'Trial',
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: DeploymentRequestPlatformRegion.UsEast,
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -380,9 +364,10 @@ describe('Deployment app', () => {
             isPlaceAvailable: false,
           });
           await DeploymentsApp.createDeploymentRequest({
-            activity_sector: 'cybersecurity',
-            job_title: 'myJob',
-            use_case: 'use_case',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
+            job_title: DeploymentRequestJobTitle.CLevel,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -403,12 +388,13 @@ describe('Deployment app', () => {
             to: XTM_HUB_DEV_TEAM_EMAIL,
             template: 'admin_saas_instance_requested',
             params: {
-              activitySector: 'cybersecurity',
+              activitySector:
+                DeploymentRequestActivitySector.ComputerNetworkSecurity,
               deploymentType: 'Trial',
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: 'us_east',
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -430,9 +416,10 @@ describe('Deployment app', () => {
 
         it('should send a mail if status is pending to dev team', async () => {
           await DeploymentsApp.createDeploymentRequest({
-            activity_sector: 'cybersecurity',
-            job_title: 'myJob',
-            use_case: 'use_case',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
+            job_title: DeploymentRequestJobTitle.CLevel,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -453,12 +440,13 @@ describe('Deployment app', () => {
             to: XTM_HUB_SUPPORT_EMAIL,
             template: 'admin_saas_instance_requested',
             params: {
-              activitySector: 'cybersecurity',
+              activitySector:
+                DeploymentRequestActivitySector.ComputerNetworkSecurity,
               deploymentType: 'Trial',
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: DeploymentRequestPlatformRegion.UsEast,
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -470,9 +458,10 @@ describe('Deployment app', () => {
             isPlaceAvailable: false,
           });
           await DeploymentsApp.createDeploymentRequest({
-            activity_sector: 'cybersecurity',
-            job_title: 'myJob',
-            use_case: 'use_case',
+            activity_sector:
+              DeploymentRequestActivitySector.ComputerNetworkSecurity,
+            job_title: DeploymentRequestJobTitle.CLevel,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -493,12 +482,13 @@ describe('Deployment app', () => {
             to: XTM_HUB_SUPPORT_EMAIL,
             template: 'admin_saas_instance_requested',
             params: {
-              activitySector: 'cybersecurity',
+              activitySector:
+                DeploymentRequestActivitySector.ComputerNetworkSecurity,
               deploymentType: 'Trial',
               organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: 'us_east',
-              useCase: 'use_case',
+              useCase: DeploymentRequestUseCase.ThreatHunting,
               userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
@@ -739,9 +729,10 @@ describe('Deployment app', () => {
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
       expect(dbDeploymentRequest).toMatchObject({
-        activity_sector: 'cybersecurity',
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
-        job_title: 'myJob',
+        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
         organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
@@ -753,7 +744,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
-        use_case: 'use_case',
+        use_case: DeploymentRequestUseCase.ThreatHunting,
         user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
@@ -1055,7 +1046,12 @@ describe('Deployment app', () => {
   });
   describe('loadTrialDeployments', () => {
     it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({});
+      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
+      });
 
       expect(trialDeployments).toEqual({
         availableTrials: expect.arrayContaining([
@@ -1069,6 +1065,10 @@ describe('Deployment app', () => {
     });
     it('should return only requested platform identifier specified as available when no DeploymentRequest exist', async () => {
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1080,15 +1080,17 @@ describe('Deployment app', () => {
     });
 
     it('should return blacklisted = true if orga is blacklisted', async () => {
-      const originalConfigGet = config.get;
-      vi.spyOn(config, 'get').mockImplementation((key: string) => {
-        if (key === 'domains_blacklist') {
-          return `${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST},blocked.net`;
-        }
-        return originalConfigGet.call(config, key);
+      await CompetitorDomain.insertCompetitor({
+        name: 'Filigran',
+        tier: CompetitorTier.Tier1,
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1097,7 +1099,8 @@ describe('Deployment app', () => {
         deployed: [],
         isBlacklisted: true,
       });
-      vi.mocked(config.get).mockImplementation(originalConfigGet);
+
+      await db('Competitor').delete();
     });
     it('should return trial as available if the created one does not count in quota', async () => {
       await insertDeploymentRequest({
@@ -1105,6 +1108,10 @@ describe('Deployment app', () => {
       });
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1119,6 +1126,10 @@ describe('Deployment app', () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1141,6 +1152,10 @@ describe('Deployment app', () => {
 
       requestContext.set(requestContextAdminSecondOrga);
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1159,7 +1174,7 @@ describe('Deployment app', () => {
         user: {
           ...contextSimpleUserSecondOrga.user,
           selected_organization_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
               .PERSONAL_SPACE_ID,
         },
       };
@@ -1168,7 +1183,12 @@ describe('Deployment app', () => {
         user: contextUserWithPersonalOrga.user,
         portalContext: contextUserWithPersonalOrga,
       });
+
       const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID
+        ),
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1177,6 +1197,20 @@ describe('Deployment app', () => {
         deployed: [],
         isBlacklisted: false,
       });
+    });
+    it('should throw if user does not belong in the organization', async () => {
+      await insertDeploymentRequest({});
+
+      requestContext.set(requestContextAdminSecondOrga);
+      const call = DeploymentsApp.loadTrialDeployments({
+        organizationId: toGlobalId(
+          'OrganizationId',
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        ),
+        platformIdentifiers: [PlatformIdentifier.Opencti],
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.UserNotInOrganization);
     });
   });
   describe('reorderDeploymentRequestInQueue', () => {
@@ -2138,7 +2172,8 @@ describe('Deployment app', () => {
 
         const queuedDeploymentRequest = await insertDeploymentRequest({
           hub_status: DeploymentRequestHubStatus.Queued,
-          activity_sector: 'cybersecurity',
+          activity_sector:
+            DeploymentRequestActivitySector.ComputerNetworkSecurity,
           region: DeploymentRequestPlatformRegion.UsEast,
           platform_id: uuidv4(),
         });

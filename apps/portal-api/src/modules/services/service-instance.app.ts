@@ -1,4 +1,4 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   RegisteredPlatform,
   SeoServiceInstance,
@@ -8,15 +8,18 @@ import {
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
-import { requestContext } from '../../context/request.context';
 import {
   ServiceInstanceId,
   ServiceInstanceMutator,
 } from '../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
+import { dispatch } from '../../pub';
 import { securityGuard } from '../../security/guard';
+import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
+import { subscriptionApp } from '../subcription/subscription.app';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
@@ -27,49 +30,82 @@ import {
   grantServiceAccess,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  loadSeoServiceInstanceBySlug,
+  loadSeoServiceInstances,
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
+  loadSubscribedServiceInstancesByIdentifier,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
 } from './service-instance.domain';
 
-export const serviceInstanceApp = {
+export const ServiceInstanceApp = {
   loadServiceInstance: async (
     user: UserLoadUserBy,
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    const subscription = await loadSubscriptionBy({
+    const service = await loadServiceInstanceBy('id', serviceInstanceId);
+    let subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
       organization_id: user.selected_organization_id,
     });
+
+    if (!subscription && service.join_type == 'JOIN_AUTO') {
+      subscription = await subscriptionApp.subscribeOrganizationToService({
+        organizationId: user.selected_organization_id,
+        serviceInstanceId: serviceInstanceId,
+        startDate: new Date(),
+        endDate: null,
+        capabilityIds: [],
+      });
+    }
     const userService = await UserServiceDomain.loadUserServiceBy({
       subscription_id: subscription.id,
       user_id: user.id,
     });
     if (userService.length === 0) {
-      console.warn('USER_MUST_JOIN_SERVICE_BEFORE_ACCESSING_IT');
       if (subscription.joining === 'AUTO_JOIN') {
         await grantServiceAccess(
           [GenericServiceCapabilityIds.AccessId],
           [user.id],
           subscription.id
         );
+      } else {
+        logApp.warn('USER_MUST_JOIN_SERVICE_BEFORE_ACCESSING_IT', {
+          userId: user.id,
+          serviceInstanceId,
+        });
       }
     }
-    return loadServiceInstanceBy('id', serviceInstanceId);
+    return service;
+  },
+
+  addServicePicture: async (
+    serviceInstanceId: ServiceInstanceId,
+    document: Upload,
+    isLogo: boolean
+  ): Promise<ServiceInstance> => {
+    const updatedServiceInstance = await withTransaction(async () => {
+      const uploadedDocument = await uploadNewFile(document, serviceInstanceId);
+      const update = isLogo
+        ? { logo_document_id: uploadedDocument.id }
+        : { illustration_document_id: uploadedDocument.id };
+      return updateServiceInstance(serviceInstanceId, update);
+    });
+    await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+    return updatedServiceInstance as unknown as ServiceInstance;
   },
 
   updatePlatformServiceMetadata: async (
+    user: UserLoadUserBy,
+    serviceInstanceId: ServiceInstanceId,
     input: UpdatePlatformServiceMetadataInput,
     upload: Upload | null
   ): Promise<RegisteredPlatform> => {
-    const { id } = fromGlobalId(input.serviceInstanceId);
-    const { user } = requestContext.require();
-
     const serviceInstance = await loadPlatformServiceInstance(
       user.selected_organization_id,
-      id
+      serviceInstanceId
     );
 
     if (!serviceInstance) {
@@ -107,17 +143,13 @@ export const serviceInstanceApp = {
 
     const updatedServiceInstance = await withTransaction(async () => {
       // Update ServiceInstance if there are fields to update
-      let updatedServiceInstance = serviceInstance;
+      let result = serviceInstance;
       if (Object.keys(updateData).length > 0) {
-        updatedServiceInstance = await updateServiceInstance(
-          serviceInstance.id,
-          updateData
-        );
+        result = await updateServiceInstance(serviceInstance.id, updateData);
       }
 
       // For registered platforms, also update the configuration JSON for platform_title
       if (input.name) {
-        // Get current configuration
         const currentConfig =
           await loadPlatformConfigurationByServiceInstanceId(
             serviceInstance.id
@@ -133,12 +165,52 @@ export const serviceInstanceApp = {
           );
         }
       }
-      return updatedServiceInstance;
+      return result;
     });
 
+    await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+
+    // Build RegisteredPlatform response
+    const config = await loadPlatformConfigurationByServiceInstanceId(
+      updatedServiceInstance.id
+    );
+
+    if (!config) {
+      throw NotFoundError(ErrorCode.ServiceConfigurationNotFound);
+    }
+
+    const platformConfig = config.config as PlatformConfiguration;
     return {
-      ...updatedServiceInstance,
+      __typename: 'RegisteredPlatform',
+      id: updatedServiceInstance.id,
+      platform_id: platformConfig.platform_id,
+      title: platformConfig.platform_title,
+      url: platformConfig.platform_url,
+      contract: platformConfig.platform_contract,
+      version: platformConfig.platform_version,
       identifier: serviceDefinition.identifier,
+      illustration_document_id: updatedServiceInstance.illustration_document_id
+        ? toGlobalId(
+            'Document',
+            updatedServiceInstance.illustration_document_id
+          )
+        : null,
+    } as RegisteredPlatform;
+  },
+
+  loadSeoServiceInstances: async (): Promise<SeoServiceInstance[]> => {
+    const services = await loadSeoServiceInstances();
+    return services.map(withServiceInstanceGlobalIDs);
+  },
+
+  loadSeoServiceInstance: async (slug: string): Promise<SeoServiceInstance> => {
+    const serviceInstance = await loadSeoServiceInstanceBySlug(slug);
+    if (!serviceInstance) {
+      throw Error(ErrorCode.ServiceNotFound);
+    }
+    return {
+      ...withServiceInstanceGlobalIDs(serviceInstance),
+      tags: serviceInstance.tags as ServiceInstanceTag[],
     };
   },
 
@@ -152,8 +224,49 @@ export const serviceInstanceApp = {
       );
 
     return serviceInstances.map((serviceInstance) => ({
-      ...serviceInstance,
-      __typename: 'SeoServiceInstance',
+      ...withServiceInstanceGlobalIDs(serviceInstance),
+    }));
+  },
+
+  loadSubscribedServiceInstancesByIdentifier: async (
+    userId: UserId,
+    identifier: string
+  ) => {
+    const results = await loadSubscribedServiceInstancesByIdentifier(
+      userId,
+      identifier
+    );
+    return results.map((sub) => ({
+      ...sub,
+      organization_id: toGlobalId('Organization', sub.organization_id),
+      service_instance_id: toGlobalId(
+        'ServiceInstance',
+        sub.service_instance_id
+      ),
     }));
   },
 };
+
+/**
+ * Transforms raw document IDs into GraphQL global IDs for a service instance.
+ * Used for types (like SeoServiceInstance) that bypass the ServiceInstance field resolvers.
+ */
+export const withServiceInstanceGlobalIDs = <
+  T extends Pick<
+    ServiceInstance,
+    'logo_document_id' | 'illustration_document_id'
+  >,
+>(
+  service: T
+): T => ({
+  ...service,
+  ...(service.illustration_document_id && {
+    illustration_document_id: toGlobalId(
+      'Document',
+      service.illustration_document_id
+    ),
+  }),
+  ...(service.logo_document_id && {
+    logo_document_id: toGlobalId('Document', service.logo_document_id),
+  }),
+});

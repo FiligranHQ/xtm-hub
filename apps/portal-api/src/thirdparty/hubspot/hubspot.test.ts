@@ -1,4 +1,5 @@
 import { MockInstance } from '@vitest/spy';
+import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
@@ -12,30 +13,37 @@ import { UserLoadUserBy } from '../../model/user';
 import { insertDeploymentRequest } from '../../modules/services/deployments/deployments.test.utils';
 import { logApp } from '../../utils/app-logger.util';
 import * as utils from '../../utils/utils';
-import { hubspotReachOutSalesHook } from './hubspot';
+import { HUBSPOT_TYPE_TO_QUEUE } from '../pgboss/hubspot.jobs';
+import { PgBossProducer } from '../pgboss/producer';
+import { hubspotHook, hubspotReachOutSalesHook } from './hubspot';
 
 describe('Hubspot', () => {
+  const originalConfigGet = config.get;
   let fetchSpy: MockInstance;
   let logSpy: MockInstance;
-
-  beforeEach(() => {
-    fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue({} as Response);
-    logSpy = vi.spyOn(logApp, 'error');
-    vi.spyOn(utils, 'isValidUrl').mockReturnValue(true);
-  });
 
   afterEach(async () => {
     await db<DeploymentRequest>('DeploymentRequest').del();
     vi.restoreAllMocks();
   });
 
-  describe('reachOutSales', () => {
+  describe('reachOutSales (direct sending)', () => {
+    beforeEach(() => {
+      fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue({} as Response);
+      logSpy = vi.spyOn(logApp, 'error');
+      vi.spyOn(utils, 'isValidUrl').mockReturnValue(true);
+      vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        if (key === 'hubspot_use_queue_processing') return false;
+        return originalConfigGet.call(config, key);
+      });
+    });
+
     it('should log error when request is retrieved from platform id but is not found', async () => {
       const platformId = uuidv4();
       await hubspotReachOutSalesHook({ platformId });
 
       expect(logSpy).toHaveBeenCalledWith(
-        'An error occurred while sending the Hubspot reachOutSales hook',
+        'Failed to send Hubspot reachOutSales hook',
         {
           error: new Error(
             `No deployment request found for platform id: ${platformId}`
@@ -52,7 +60,7 @@ describe('Hubspot', () => {
       });
       await hubspotReachOutSalesHook({ platformId });
       expect(logSpy).toHaveBeenCalledWith(
-        'An error occurred while sending the Hubspot reachOutSales hook',
+        'Failed to send Hubspot reachOutSales hook',
         {
           error: new Error(
             `Deployment request ${deploymentRequest.id} is not a trial deployment request`
@@ -71,7 +79,7 @@ describe('Hubspot', () => {
       await hubspotReachOutSalesHook({ platformId });
 
       expect(logSpy).toHaveBeenCalledWith(
-        'An error occurred while sending the Hubspot reachOutSales hook',
+        'Failed to send Hubspot reachOutSales hook',
         {
           error: new Error(
             `Deployment request ${deploymentRequest.id}, organization ${deploymentRequest.organization_requester_id} does not match user ${contextAdminSecondOrga.user.id} organizations`
@@ -85,7 +93,7 @@ describe('Hubspot', () => {
       await hubspotReachOutSalesHook({ platformToken });
 
       expect(logSpy).toHaveBeenCalledWith(
-        'An error occurred while sending the Hubspot reachOutSales hook',
+        'Failed to send Hubspot reachOutSales hook',
         {
           error: new Error(
             `No deployment request found for platform token: ${platformToken}`
@@ -101,7 +109,7 @@ describe('Hubspot', () => {
       await hubspotReachOutSalesHook({});
 
       expect(logSpy).toHaveBeenCalledWith(
-        'An error occurred while sending the Hubspot reachOutSales hook',
+        'Failed to send Hubspot reachOutSales hook',
         {
           error: new Error(
             'Either userId, platformToken or platformId must be provided'
@@ -127,10 +135,8 @@ describe('Hubspot', () => {
             firstname: 'Al',
             lastname: 'Beback',
             company: 'Filigran',
-            job_title: 'myJob',
             message:
-              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
-            use_case: 'use_case',
+              'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
         })
       );
@@ -152,10 +158,8 @@ describe('Hubspot', () => {
             firstname: 'Al',
             lastname: 'Beback',
             company: 'Filigran',
-            job_title: 'myJob',
             message:
-              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
-            use_case: 'use_case',
+              'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
         })
       );
@@ -172,9 +176,7 @@ describe('Hubspot', () => {
             firstname: 'Al',
             lastname: 'Beback',
             company: 'Filigran',
-            job_title: '',
             message: 'opencti: Please contact me about the OpenCTI free trial',
-            use_case: '',
           }),
         })
       );
@@ -192,12 +194,69 @@ describe('Hubspot', () => {
             firstname: 'Al',
             lastname: 'Beback',
             company: 'Filigran',
-            job_title: 'myJob',
             message:
-              'opencti: Message sent for free trial: pending trial.\nUse Case: use_case\n\nPlease contact me about the OpenCTI free trial',
-            use_case: 'use_case',
+              'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
         })
+      );
+    });
+  });
+
+  describe('hubspotHook (queue processing)', () => {
+    let pgBossSendSpy: MockInstance;
+
+    beforeEach(() => {
+      logSpy = vi.spyOn(logApp, 'error');
+      pgBossSendSpy = vi
+        .spyOn(PgBossProducer, 'send')
+        .mockResolvedValue('job-id');
+      vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        if (key === 'hubspot_use_queue_processing') return true;
+        return originalConfigGet.call(config, key);
+      });
+    });
+
+    it('should enqueue job via PgBossProducer when queue processing is enabled', async () => {
+      const payload = {
+        email: 'test@example.com' as string | null,
+        first_login: true,
+        last_login: null as Date | null,
+        is_admin: false,
+      };
+      await hubspotHook('login', async () => payload);
+
+      expect(pgBossSendSpy).toHaveBeenCalledWith(HUBSPOT_TYPE_TO_QUEUE.login, {
+        type: 'login',
+        payload,
+      });
+    });
+
+    it('should log an error when buildPayload throws', async () => {
+      const buildError = new Error('payload build failed');
+      await hubspotHook('login', async () => {
+        throw buildError;
+      });
+
+      expect(logSpy).toHaveBeenCalledWith('Failed to send Hubspot login hook', {
+        error: buildError,
+      });
+      expect(pgBossSendSpy).not.toHaveBeenCalled();
+    });
+
+    it('should log enqueue error when PgBossProducer.send fails', async () => {
+      const sendError = new Error('PgBoss connection lost');
+      pgBossSendSpy.mockRejectedValue(sendError);
+
+      await hubspotHook('login', async () => ({
+        email: 'test@example.com',
+        first_login: false,
+        last_login: new Date('2026-01-01'),
+        is_admin: true,
+      }));
+
+      expect(logSpy).toHaveBeenCalledWith(
+        'Failed to enqueue Hubspot login job',
+        { error: sendError }
       );
     });
   });

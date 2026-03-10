@@ -1,3 +1,6 @@
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { hasProperty } from '../../hasProperty';
 import { serviceConfigMap } from '../shareable-resources.consts';
 import { ServiceInfo, ServiceSlug } from '../shareable-resources.types';
@@ -21,6 +24,14 @@ export function getServiceInfo(
 export const docHasMetadata = <T, K extends string>(
   documentData: T,
   metadataKey: K
-): documentData is T & Record<K, string> =>
-  hasProperty<T, K, string>(documentData, metadataKey) &&
+): documentData is T & Record<K, unknown> =>
+  hasProperty<T, K, unknown>(documentData, metadataKey) &&
   !!documentData[metadataKey];
+
+export const isResourceDownloadable = (
+  document: documentItem_fragment$data | publicDocumentItemFragment$data
+): boolean => {
+  return (
+    document.integration_type !== IntegrationTypeEnum.THIRD_PARTY_INTEGRATION
+  );
+};

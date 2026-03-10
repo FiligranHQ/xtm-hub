@@ -16,7 +16,7 @@ import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
 import { normalizeDocumentName } from './src/modules/services/document/document.helper';
-import { INTEGRATION_METADATA_KEYS } from './src/modules/services/integrations/integrations.model';
+import { INTEGRATION_METADATA_KEYS } from './src/modules/services/document/opencti/integrations/integrations.model';
 import { applyDbSecurityLayer } from './src/security/access';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
@@ -51,6 +51,7 @@ declare module 'knex' {
 
 type BaseDatabaseType =
   | 'User'
+  | 'Epic'
   | 'Organization'
   | 'ServiceInstance'
   | 'ServiceDefinition'
@@ -83,7 +84,8 @@ type BaseDatabaseType =
   | 'DeploymentRequestQuota'
   | 'ServiceGroup'
   | 'ServiceGroup_User'
-  | 'SSOGroup_RolePortal';
+  | 'SSOGroup_RolePortal'
+  | 'Competitor';
 
 export type DatabaseType =
   | BaseDatabaseType

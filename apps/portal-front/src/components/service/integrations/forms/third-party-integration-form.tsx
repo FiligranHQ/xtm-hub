@@ -1,32 +1,10 @@
-import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { PortalContext } from '@/components/me/app-portal-context';
-import { useServiceContext } from '@/components/service/components/service-context';
-import {
-  getIntegrationSubTypeMetadata,
-  SubTypesPerIntegrationType,
-} from '@/components/service/integrations/integration.utils';
-import MarkdownInput from '@/components/ui/MarkdownInput';
-import SelectUsersFormField from '@/components/ui/select-users';
+import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
+import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { fileListCheck } from '@/utils/documents';
-import { formatTitleCase } from '@/utils/format/case';
-import { SubscribableResource } from '@/utils/shareable-resources/shareable-resources.types';
-import {
-  AutoForm,
-  Button,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  MultiSelectFormField,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SheetFooter,
-} from '@filigran/ui';
-import { integrationsItem_fragment$data } from '@generated/integrationsItem_fragment.graphql';
+import { AutoForm, FormItem } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
@@ -62,50 +40,45 @@ export type ThirdPartyIntegrationFormValues = z.infer<
 
 interface ThirdPartyIntegrationFormProps {
   handleSubmit?: (values: ThirdPartyIntegrationFormValues) => void;
-  document: SubscribableResource | undefined;
+  document: documentItem_fragment$data | undefined;
 }
 
 export const ThirdPartyIntegrationForm = ({
   handleSubmit,
   document,
 }: ThirdPartyIntegrationFormProps) => {
-  const thirdPartyIntegration = document;
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   const { handleCloseSheet } = useDialogContext();
-  const { translationKey } = useServiceContext();
 
-  const isCreation = !thirdPartyIntegration;
-  const thirdPartyIntegrationItem =
-    thirdPartyIntegration as integrationsItem_fragment$data;
+  const isCreation = !document;
 
   const values = useMemo(
     () =>
       ({
-        ...thirdPartyIntegration,
-        images: thirdPartyIntegration?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
-        use_cases: thirdPartyIntegration?.use_cases?.map(
-          (useCase) => useCase.id
-        ),
-        uploader_id: thirdPartyIntegration?.uploader?.id ?? me!.id,
+        ...document,
+        images: (document?.children_documents?.length
+          ? document.children_documents.map((doc) => ({
+              ...doc,
+              name: doc.file_name,
+            }))
+          : undefined) as unknown as FileList,
+        use_cases: document?.use_cases?.map((useCase) => useCase.id),
+        uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
             ? me?.selected_organization_id
-            : thirdPartyIntegration?.uploader_organization?.id) ?? '',
+            : document?.uploader_organization?.id) ?? '',
         integration_type: IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
-        integration_subtype:
-          thirdPartyIntegrationItem?.integration_subtype ?? '',
-        github_url: thirdPartyIntegrationItem?.github_url,
-        product_version: thirdPartyIntegrationItem?.product_version,
-        vendor_url: thirdPartyIntegrationItem?.vendor_url,
+        integration_subtype: document?.integration_subtype ?? '',
+        github_url: document?.github_url,
+        product_version: document?.product_version,
+        vendor_url: document?.vendor_url,
       }) as ThirdPartyIntegrationFormValues,
-    [me, thirdPartyIntegration, isCreation, thirdPartyIntegrationItem]
+    [me, document, isCreation]
   );
   const formSchema = useMemo(() => {
-    const extendedSchema = thirdPartyIntegration
+    const extendedSchema = document
       ? thirdPartyIntegrationFormSchema.extend({
           document: z.custom<FileList>(fileListCheck).optional(),
           images: z.custom<FileList>(fileListCheck).optional(),
@@ -129,7 +102,28 @@ export const ThirdPartyIntegrationForm = ({
         });
       }
     });
-  }, [thirdPartyIntegration]);
+  }, [document]);
+
+  const {
+    active,
+    short_description,
+    slug,
+    name,
+    product_version,
+    vendor_url,
+    github_url,
+    description,
+    use_cases,
+    uploader_id,
+    uploader_organization_id,
+    integration_type,
+    integration_subtype,
+  } = useSimpleServiceFormField({
+    documentType: 'Third Party Integration',
+    platform: 'OpenCTI',
+    isCreation,
+    document,
+  });
 
   return (
     <>
@@ -158,188 +152,29 @@ export const ThirdPartyIntegrationForm = ({
         values={values}
         formSchema={formSchema}
         fieldConfig={{
-          description: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t(`${translationKey}.Form.DescriptionLabel`)}
-                </FormLabel>
-                <FormControl>
-                  <MarkdownInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder={`${translationKey}.Form.DescriptionPlaceholder`}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            ),
-          },
-          use_cases: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t(`${translationKey}.Form.UseCasesLabel`)}
-                </FormLabel>
-                <FormControl>
-                  <MultiSelectFormField
-                    noResultString={t('Utils.NotFound')}
-                    options={getUseCases()}
-                    keyValue="id"
-                    keyLabel="name"
-                    defaultValue={field.value}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    placeholder={t(
-                      `${translationKey}.Form.UseCasesPlaceholder`
-                    )}
-                    variant="inverted"
-                  />
-                </FormControl>
-              </FormItem>
-            ),
-          },
-          uploader_id: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>{t(`${translationKey}.Form.Author`)}</FormLabel>
-                <FormControl>
-                  <SelectUsersFormField
-                    defaultValue={
-                      thirdPartyIntegration?.uploader?.email ?? me!.email
-                    }
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            ),
-          },
-          uploader_organization_id: {
-            fieldType: ({ field }) => (
-              <FormItem hidden={isCreation}>
-                <FormLabel>
-                  {t('OrganizationInServiceAction.Organization')}
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={
-                    (isCreation
-                      ? me?.selected_organization_id
-                      : thirdPartyIntegration?.uploader_organization?.id) ?? ''
-                  }>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'OrganizationInServiceAction.SelectOrganization'
-                        )}
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {me?.organizations.map((node) => {
-                      return (
-                        <SelectItem
-                          key={node?.id}
-                          value={node?.id}>
-                          {node?.name}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            ),
-          },
+          description,
+          use_cases,
+          uploader_id,
+          uploader_organization_id,
           document: { fieldType: () => <FormItem hidden={true} /> },
           images: {
-            label: t(
-              `${translationKey}.Form.ThirdPartyIntegrationIllustration`
-            ),
+            label: t('Service.Form.Illustration'),
             fieldType: 'file',
             inputProps: {
               accept: 'image/jpeg, image/png',
             },
           },
-          active: {
-            label: t(`${translationKey}.Form.PublishedPlaceholder`),
-          },
-          short_description: {
-            label: t(`${translationKey}.Form.ShortDescriptionLabel`),
-          },
-          slug: {
-            label: t(`${translationKey}.Form.SlugLabel`),
-          },
-          name: {
-            label: t(`${translationKey}.Form.NameLabel`),
-          },
-          integration_type: { fieldType: () => <FormItem hidden={true} /> },
-          integration_subtype: {
-            fieldType: ({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t(
-                    'Service.OpenctiIntegrations.Form.SelectIntegrationSubType'
-                  )}
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={
-                    (thirdPartyIntegration as integrationsItem_fragment$data)
-                      ?.integration_subtype
-                  }>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'Service.OpenctiIntegrations.Form.SelectIntegrationSubType'
-                        )}
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {SubTypesPerIntegrationType.get(
-                      IntegrationTypeEnum.THIRD_PARTY_INTEGRATION
-                    )?.map((integrationSubType) => {
-                      return (
-                        <SelectItem
-                          key={integrationSubType}
-                          value={integrationSubType}>
-                          {getIntegrationSubTypeMetadata(integrationSubType)
-                            ?.label ?? formatTitleCase(integrationSubType)}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            ),
-          },
-          vendor_url: {
-            label: t(`${translationKey}.Form.VendorUrlLabel`),
-          },
-          github_url: {
-            label: t(`${translationKey}.Form.GithubUrlLabel`),
-          },
-          product_version: {
-            label: t(`${translationKey}.Form.ProductVersionLabel`),
-          },
+          active,
+          short_description,
+          slug,
+          name,
+          integration_type,
+          integration_subtype,
+          vendor_url,
+          github_url,
+          product_version,
         }}>
-        <SheetFooter className="sm:justify-between pt-2">
-          <div className="ml-auto flex gap-s">
-            <Button
-              variant="outline"
-              type="button"
-              onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
-            </Button>
-
-            <Button>{t('Utils.Validate')}</Button>
-          </div>
-        </SheetFooter>
+        <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>
     </>
   );

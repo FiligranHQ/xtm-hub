@@ -1,5 +1,8 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { loadOrganizationBy } from '../../modules/organizations/organizations.domain';
+import { logApp } from '../../utils/app-logger.util';
 import { buildUserMetadataUpdate } from './auth0.util';
 import {
   Auth0Client,
@@ -81,6 +84,18 @@ export const auth0ClientImplementation: Auth0Client = {
       name: `${organization_name}_${platform_id}`,
       identifier: platform_id,
       signing_alg: 'RS256',
+    });
+  },
+  deleteAudienceAPI: async (
+    organization_id: OrganizationId,
+    platform_id: string
+  ): Promise<void> => {
+    const organization = await loadOrganizationBy({ id: organization_id });
+    logApp.info(
+      `Delete API Audience for organization ${organization.name} with platform_id ${platform_id}`
+    );
+    await managementClient.resourceServers.delete({
+      id: `${organization.name}_${platform_id}`,
     });
   },
 };

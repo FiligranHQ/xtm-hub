@@ -1,10 +1,13 @@
 import { Knex } from 'knex';
 import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
@@ -53,6 +56,10 @@ export const DeploymentRequestDomain = {
       hub_status: result.hub_status as DeploymentRequestHubStatus,
       target_state: result.target_state as DeploymentRequestPlatformState,
       actual_state: result.actual_state as DeploymentRequestPlatformState,
+      use_case: result.use_case as DeploymentRequestUseCase,
+      activity_sector:
+        result.activity_sector as DeploymentRequestActivitySector,
+      job_title: result.job_title as DeploymentRequestJobTitle,
     };
   },
 

@@ -3,12 +3,15 @@ import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
   DeploymentRequest,
+  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
+  DeploymentRequestJobTitle,
   DeploymentRequestOrdering,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestUseCase,
   OrderingMode,
   PlatformDeploymentRequest,
   PlatformDeploymentRequestConnection,
@@ -34,34 +37,37 @@ import {
 } from '../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { updateSubscriptionBy } from '../../subcription/subscription.domain';
-import { serviceDefinitionDomain } from '../definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { DeploymentRequestDomain } from './deployments.domain';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import portalConfig from '../../../config';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import {
   SYSTEM_USER_UUID,
   XTM_HUB_DEV_TEAM_EMAIL,
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../../portal.const';
+import { securityGuard } from '../../../security/guard';
 import { sendMail } from '../../../server/mail-service';
+import { auth0Client } from '../../../thirdparty/auth0/client';
 import { formatName } from '../../../utils/format';
-import { ucfirst } from '../../../utils/utils';
+import { extractId, ucfirst } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../../telemetry/telemetry.helper';
 import { loadUser } from '../../users/users.domain';
+import { CompetitorApp } from '../competitor/competitor.app';
 import { serviceContractDomain } from '../contract/service-configuration.domain';
 import { updateServiceInstance } from '../service-instance.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
   hasDeploymentTelemetryDataChanged,
-  isOrganizationBlacklisted,
   isPlatformStateTransitionValid,
 } from './deployments.helper';
 import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
@@ -80,7 +86,7 @@ export const DeploymentsApp = {
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
     }
 
-    if (isOrganizationBlacklisted(chosenOrganization)) {
+    if (await CompetitorApp.isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
         `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
       );
@@ -93,7 +99,7 @@ export const DeploymentsApp = {
     );
 
     const serviceDefinition =
-      await serviceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
+      await ServiceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
         input.platform_identifier
       );
     if (!serviceDefinition) {
@@ -164,16 +170,19 @@ export const DeploymentsApp = {
               createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
             status:
               createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-            activity_sector: createdDeploymentRequest.activity_sector,
-            job_title: createdDeploymentRequest.job_title,
-            use_case: createdDeploymentRequest.use_case,
+            activity_sector:
+              createdDeploymentRequest.activity_sector as DeploymentRequestActivitySector,
+            job_title:
+              createdDeploymentRequest.job_title as DeploymentRequestJobTitle,
+            use_case:
+              createdDeploymentRequest.use_case as DeploymentRequestUseCase,
             email: user.email,
             deployment_id: createdDeploymentRequest.id,
             deployment_type:
               createdDeploymentRequest.type as DeploymentRequestDeploymentType,
           }
         );
-        telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+        await telemetryApp.sendTelemetryEvent(createDeploymentEvent);
       } catch (error) {
         logApp.error('Unable to send telemetry event', {
           error,
@@ -414,6 +423,23 @@ export const DeploymentsApp = {
       });
     }
 
+    try {
+      if (
+        newStatus === DeploymentRequestHubStatus.Expired &&
+        newStatus !== deploymentRequest.hub_status
+      ) {
+        await auth0Client.deleteAudienceAPI(
+          deploymentRequest.organization_requester_id,
+          deploymentRequest.platform_id
+        );
+      }
+    } catch (error) {
+      logApp.error('Unable to delete audience', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+
     return updatedDeploymentRequest;
   },
 
@@ -645,6 +671,18 @@ export const DeploymentsApp = {
       });
     }
 
+    try {
+      await auth0Client.deleteAudienceAPI(
+        deploymentRequest.organization_requester_id,
+        deploymentRequest.platform_id
+      );
+    } catch (error) {
+      logApp.error('Unable to delete audience', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+
     return updatedDeploymentRequest;
   },
 
@@ -746,8 +784,12 @@ export const DeploymentsApp = {
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
     const { user } = requestContext.require();
+    const organizationId = extractId<OrganizationId>(input.organizationId);
+
+    await securityGuard.assertUserIsInOrganization(user, organizationId);
+
     const organization = await loadOrganizationBy({
-      id: user.selected_organization_id,
+      id: organizationId,
     });
     if (organization.personal_space) {
       return {
@@ -785,7 +827,8 @@ export const DeploymentsApp = {
             deployment.platform_identifier as PlatformIdentifier,
         };
       }),
-      isBlacklisted: isOrganizationBlacklisted(organization),
+      isBlacklisted:
+        await CompetitorApp.isOrganizationBlacklisted(organization),
     };
   },
 };
@@ -827,7 +870,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
       }
     );
 
-    void telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    await telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
   } catch (error) {
     logApp.error(
       `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,

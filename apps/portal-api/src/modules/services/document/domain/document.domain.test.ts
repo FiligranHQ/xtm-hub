@@ -20,7 +20,7 @@ import {
   INTEGRATION_METADATA_KEYS,
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../../integrations/integrations.model';
+} from '../opencti/integrations/integrations.model';
 
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import { DocumentApp } from '../document.app';
