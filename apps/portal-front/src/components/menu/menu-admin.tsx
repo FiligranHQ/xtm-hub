@@ -19,7 +19,7 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useMemo } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 
 export interface MenuAdminProps {
@@ -140,9 +140,10 @@ const adminLinksData = (t: UseTranslationsProps) => [
 
 const AdminLinks = ({ className }: { className?: string }) => {
   const t = useTranslations();
+  const links = useMemo(() => adminLinksData(t), [t]);
   return (
     <>
-      {adminLinksData(t).map(({ href, label, restriction = [] }) => (
+      {links.map(({ href, label, restriction = [] }) => (
         <GuardCapacityComponent
           key={href}
           portalCapabilityRestriction={[...restriction]}>
