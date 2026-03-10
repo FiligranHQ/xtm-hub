@@ -1,8 +1,6 @@
 'use client';
 
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
   publicServiceInstanceToInstanceCardData,
@@ -30,7 +28,6 @@ const OwnedServices = ({
 }: OwnedServicesProps) => {
   const t = useTranslations();
   const { availableTrials } = useOrgaFreeTrial();
-  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
 
   // Merge and sort by ordering property
   const sortedServices = [
@@ -44,7 +41,6 @@ const OwnedServices = ({
   const freeTrialsSkeletonDataCards = availableTrials
     .filter(
       (platformIdentifier) =>
-        isOpenAEVTrialsEnabled ||
         platformIdentifier !== PlatformIdentifierEnum.OPENAEV
     )
     .map((platformIdentifier) =>

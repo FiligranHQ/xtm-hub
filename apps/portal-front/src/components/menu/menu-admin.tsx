@@ -1,8 +1,6 @@
 import GuardCapacityComponent from '@/components/admin-guard';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
-import { FeatureFlag } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
 import { SettingsIcon } from '@filigran/icon';
 import {
@@ -21,7 +19,7 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useMemo } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 
 export interface MenuAdminProps {
@@ -106,10 +104,7 @@ const ClosedMenuAdmin = () => {
   );
 };
 
-const adminLinksData = (
-  t: UseTranslationsProps,
-  isOpenAEVTrialsEnabled: boolean
-) => [
+const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/parameters`,
     label: t('MenuLinks.Parameters'),
@@ -136,15 +131,11 @@ const adminLinksData = (
     label: t('MenuLinks.OpenCTITrials'),
     restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
-  ...(isOpenAEVTrialsEnabled
-    ? [
-        {
-          href: `/${APP_PATH}/admin/openaev-trials`,
-          label: t('MenuLinks.OpenAEVTrials'),
-          restriction: [PortalCapabilityEnum.READ_TRIALS],
-        },
-      ]
-    : []),
+  {
+    href: `/${APP_PATH}/admin/openaev-trials`,
+    label: t('MenuLinks.OpenAEVTrials'),
+    restriction: [PortalCapabilityEnum.READ_TRIALS],
+  },
   {
     href: `/${APP_PATH}/admin/competitors`,
     label: t('MenuLinks.Competitors'),
@@ -154,24 +145,22 @@ const adminLinksData = (
 
 const AdminLinks = ({ className }: { className?: string }) => {
   const t = useTranslations();
-  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
+  const links = useMemo(() => adminLinksData(t), [t]);
   return (
     <>
-      {adminLinksData(t, isOpenAEVTrialsEnabled).map(
-        ({ href, label, restriction = [] }) => (
-          <GuardCapacityComponent
-            key={href}
-            portalCapabilityRestriction={[...restriction]}>
-            <li>
-              <AdminButton
-                className={className}
-                href={href}
-                label={label}
-              />
-            </li>
-          </GuardCapacityComponent>
-        )
-      )}
+      {links.map(({ href, label, restriction = [] }) => (
+        <GuardCapacityComponent
+          key={href}
+          portalCapabilityRestriction={[...restriction]}>
+          <li>
+            <AdminButton
+              className={className}
+              href={href}
+              label={label}
+            />
+          </li>
+        </GuardCapacityComponent>
+      ))}
     </>
   );
 };
