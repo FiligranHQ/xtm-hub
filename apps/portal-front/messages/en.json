@@ -388,7 +388,6 @@
       }
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
-    "GlobalSearchWarning": "Searching across all statuses. Results may include trials from other tabs.",
     "Registered": "Registered",
     "NotRegistered": "Not Registered"
   },
