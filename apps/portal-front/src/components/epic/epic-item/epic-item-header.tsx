@@ -7,12 +7,12 @@ import { FunctionComponent } from 'react';
 interface EpicItemHeaderProps {
   epic: epic_fragment$data;
   serviceInstanceId: string;
-  shouldShiftIntegrationPart?: boolean;
+  shiftEpicType?: boolean;
 }
 export const EpicItemHeader: FunctionComponent<EpicItemHeaderProps> = ({
   epic,
   serviceInstanceId,
-  shouldShiftIntegrationPart = false,
+  shiftEpicType = false,
 }) => {
   return (
     <>
@@ -24,7 +24,7 @@ export const EpicItemHeader: FunctionComponent<EpicItemHeaderProps> = ({
         </div>
         {epic.document && epic.epic_type === EpicTypeEnum.INTEGRATION && (
           <div
-            className={`flex items-center mr-s gap-xs ${shouldShiftIntegrationPart ? 'pr-xxl' : ''}`}>
+            className={`flex items-center mr-s gap-xs ${shiftEpicType ? 'pr-xxl' : ''}`}>
             <Image
               src={`/document/images/${serviceInstanceId}/${epic.document?.id}`}
               alt={`${epic.document?.id} logo`}

@@ -17,7 +17,7 @@ export const EpicItemDetailed = ({
         <EpicItemHeader
           epic={epic}
           serviceInstanceId={serviceInstanceId}
-          shouldShiftIntegrationPart={true}
+          shiftEpicType={true}
         />
         <span className="txt-title">{epic.epic}</span>
       </div>
