@@ -1,66 +1,32 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { defaultGetPropertyMetadata } = require('kanel');
 
+const DEFAULT_IMPORT_PATH = '../../../__generated__/resolvers-types';
+
 /**
- * Maps "TableName.columnName" to the TypeScript enum type that should replace `string`.
- * The importPath is used as-is in the generated import statement (isAbsolute: true),
- * so it must be relative to the generated file location (src/model/kanel/public/).
+ * Maps table names to their column → TypeScript enum type overrides.
+ * Each value is either a plain string (uses DEFAULT_IMPORT_PATH) or
+ * an object { tsType, importPath } for a custom import path.
+ * Nullability is handled automatically by Kanel from the DB schema.
  */
 const COLUMN_ENUM_MAP = {
-  'Competitor.tier': {
-    tsType: 'CompetitorTier',
-    importPath: '../../../__generated__/resolvers-types',
+  Competitor: {
+    tier: 'CompetitorTier',
   },
-  'DeploymentRequest.platform_identifier': {
-    tsType: 'PlatformIdentifier',
-    importPath: '../../../__generated__/resolvers-types',
+  DeploymentRequest: {
+    platform_identifier: 'PlatformIdentifier',
+    region: 'DeploymentRequestPlatformRegion',
+    type: 'DeploymentRequestDeploymentType',
+    hub_status: 'DeploymentRequestHubStatus',
+    target_state: 'DeploymentRequestPlatformState',
+    actual_state: 'DeploymentRequestPlatformState',
+    use_case: 'DeploymentRequestUseCase',
+    activity_sector: 'DeploymentRequestActivitySector',
+    job_title: 'DeploymentRequestJobTitle',
   },
-  'DeploymentRequest.region': {
-    tsType: 'DeploymentRequestPlatformRegion',
-    importPath: '../../../__generated__/resolvers-types',
-  },
-  'DeploymentRequest.type': {
-    tsType: 'DeploymentRequestDeploymentType',
-    importPath: '../../../__generated__/resolvers-types',
-  },
-  'DeploymentRequest.hub_status': {
-    tsType: 'DeploymentRequestHubStatus',
-    importPath: '../../../__generated__/resolvers-types',
-  },
-  'DeploymentRequest.target_state': {
-    tsType: 'DeploymentRequestPlatformState',
-    importPath: '../../../__generated__/resolvers-types',
-    nullable: true,
-  },
-  'DeploymentRequest.actual_state': {
-    tsType: 'DeploymentRequestPlatformState',
-    importPath: '../../../__generated__/resolvers-types',
-    nullable: true,
-  },
-  'DeploymentRequest.use_case': {
-    tsType: 'DeploymentRequestUseCase',
-    importPath: '../../../__generated__/resolvers-types',
-    nullable: true,
-  },
-  'DeploymentRequest.activity_sector': {
-    tsType: 'DeploymentRequestActivitySector',
-    importPath: '../../../__generated__/resolvers-types',
-    nullable: true,
-  },
-  'DeploymentRequest.job_title': {
-    tsType: 'DeploymentRequestJobTitle',
-    importPath: '../../../__generated__/resolvers-types',
-    nullable: true,
-  },
-  'DeploymentRequestQuota.platform_identifier': {
-    tsType: 'PlatformIdentifier',
-    importPath: '../../../__generated__/resolvers-types',
-    nullable: true,
-  },
-  'DeploymentRequestQuota.region': {
-    tsType: 'DeploymentRequestPlatformRegion',
-    importPath: '../../../__generated__/resolvers-types',
-    nullable: true,
+  DeploymentRequestQuota: {
+    platform_identifier: 'PlatformIdentifier',
+    region: 'DeploymentRequestPlatformRegion',
   },
 };
 
@@ -84,16 +50,18 @@ module.exports = {
   },
 
   getPropertyMetadata(property, details, generateFor, config) {
-    const mapping = COLUMN_ENUM_MAP[`${details.name}.${property.name}`];
-    if (mapping) {
+    const columnEntry = COLUMN_ENUM_MAP[details.name]?.[property.name];
+    if (columnEntry) {
+      const tsType = typeof columnEntry === 'string' ? columnEntry : columnEntry.tsType;
+      const importPath = typeof columnEntry === 'string' ? DEFAULT_IMPORT_PATH : columnEntry.importPath;
       return {
         name: property.name,
         typeOverride: {
-          name: mapping.tsType,
+          name: tsType,
           typeImports: [{
-            name: mapping.tsType,
+            name: tsType,
             isDefault: false,
-            path: mapping.importPath,
+            path: importPath,
             isAbsolute: true,
             importAsType: true,
           }],
