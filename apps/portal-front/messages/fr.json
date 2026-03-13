@@ -409,6 +409,7 @@
       }
     },
     "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai",
+    "GlobalSearchWarning": "Recherche sur tous les statuts. Les résultats peuvent inclure des essais d'autres onglets.",
     "Registered": "Enregistré",
     "NotRegistered": "Non enregistré"
   },
