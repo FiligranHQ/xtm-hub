@@ -206,13 +206,18 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
 
   const columns: ColumnDef<trials_fragment$data>[] = useMemo(
     () => [
-      ...(type === TrialsTabType.Waiting || isSearching
+      ...(type === TrialsTabType.Waiting
         ? [
             {
               accessorKey: 'ordering',
               id: 'ordering',
               enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.Priority'),
+              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                return (
+                  <span className="truncate">{row.original.ordering}</span>
+                );
+              },
             },
           ]
         : []),
@@ -228,7 +233,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
         enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Organization'),
       },
-      ...(type === TrialsTabType.Waiting || isSearching
+      ...(type === TrialsTabType.Waiting
         ? [
             {
               accessorKey: 'request_date',
@@ -247,7 +252,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
             },
           ]
         : []),
-      ...(type !== TrialsTabType.Waiting || isSearching
+      ...(type !== TrialsTabType.Waiting /*|| isSearching*/
         ? [
             {
               accessorKey: 'start_date',
@@ -255,6 +260,14 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
               enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.StartDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                if (
+                  isSearching &&
+                  !statuses.includes(
+                    row.original.hub_status as DeploymentRequestHubStatusEnum
+                  )
+                ) {
+                  return <span className="truncate text-gray-400">N/A</span>;
+                }
                 return (
                   <span className="truncate">
                     {row.original.start_date
@@ -270,6 +283,14 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
               enableSorting: !isReorderTrialsAllowed,
               header: t('TrialsDashboard.Columns.EndDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                if (
+                  isSearching &&
+                  !statuses.includes(
+                    row.original.hub_status as DeploymentRequestHubStatusEnum
+                  )
+                ) {
+                  return <span className="truncate text-gray-400">N/A</span>;
+                }
                 return (
                   <span className="truncate">
                     {row.original.end_date
@@ -281,7 +302,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
             },
           ]
         : []),
-      ...(type === TrialsTabType.Running || isSearching
+      ...(type === TrialsTabType.Running /*|| isSearching*/
         ? [
             {
               accessorKey: 'remainingDays',
@@ -289,6 +310,14 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
               header: t('TrialsDashboard.Columns.RemainingDays'),
               enableSorting: false,
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                if (
+                  isSearching &&
+                  !statuses.includes(
+                    row.original.hub_status as DeploymentRequestHubStatusEnum
+                  )
+                ) {
+                  return <span className="truncate text-gray-400">N/A</span>;
+                }
                 if (!row.original?.end_date) return <>-</>;
                 const target = new Date(row.original.end_date);
                 const diffInDays = daysUntil(target);
@@ -308,6 +337,17 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
         id: 'region',
         enableSorting: !isReorderTrialsAllowed,
         header: t('TrialsDashboard.Columns.Region'),
+        cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+          if (
+            isSearching &&
+            !statuses.includes(
+              row.original.hub_status as DeploymentRequestHubStatusEnum
+            )
+          ) {
+            return <span className="truncate text-gray-400">N/A</span>;
+          }
+          return <span className="truncate">{row.original.region || '-'}</span>;
+        },
       },
       {
         accessorKey: 'platform_id',
@@ -347,13 +387,19 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           );
         },
       },
-      ...(type === TrialsTabType.Cancelled || isSearching
+      ...(type === TrialsTabType.Cancelled /*|| isSearching*/
         ? [
             {
               header: t('TrialsDashboard.Columns.CancellationDate'),
               accessorKey: 'cancellation_date',
               id: 'cancellation_date',
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                if (
+                  row.original.hub_status !==
+                  DeploymentRequestHubStatusEnum.CANCELLED
+                ) {
+                  return <span className="truncate text-gray-400">N/A</span>;
+                }
                 return (
                   <span className="truncate">
                     {row.original.cancellation_date
@@ -367,12 +413,31 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
               header: t('TrialsDashboard.Columns.CancellationOwner'),
               accessorKey: 'cancellation_user_email',
               id: 'cancellation_user_email',
+              cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                if (
+                  row.original.hub_status !==
+                  DeploymentRequestHubStatusEnum.CANCELLED
+                ) {
+                  return <span className="truncate text-gray-400">N/A</span>;
+                }
+                return (
+                  <span className="truncate">
+                    {row.original.cancellation_user_email || '-'}
+                  </span>
+                );
+              },
             },
             {
               header: t('TrialsDashboard.Columns.CancellationReason'),
               accessorKey: 'cancellation_reason',
               id: 'cancellation_reason',
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
+                if (
+                  row.original.hub_status !==
+                  DeploymentRequestHubStatusEnum.CANCELLED
+                ) {
+                  return <span className="truncate text-gray-400">N/A</span>;
+                }
                 const reason = row.original.cancellation_reason;
                 if (!reason) return <span>-</span>;
                 return (
@@ -394,7 +459,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           ]
         : []),
     ],
-    [type, t, isReorderTrialsAllowed, isSearching]
+    [type, t, isReorderTrialsAllowed, isSearching, statuses]
   );
 
   const actionColumns: ColumnDef<trials_fragment$data>[] =
@@ -620,7 +685,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
           ...transformSortingValueToParams(sorting),
           ...args,
         },
-        { fetchPolicy: 'store-and-network' } // ← manquait
+        { fetchPolicy: 'store-and-network' }
       );
     },
     [
@@ -632,7 +697,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
       isSearching,
       statuses,
       platformIdentifier,
-    ] // ← manquait
+    ]
   );
 
   useEffect(() => {
@@ -669,8 +734,29 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
   };
 
   const handleInputChange = (inputValue: string) => {
+    const isCurrentlySearching = inputValue.trim().length > 0;
     setSearchTerm(inputValue);
-    handleRefetchData({ searchTerm: inputValue });
+    refetch(
+      {
+        count: pagination.pageSize,
+        cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+        orderBy,
+        orderMode,
+        searchTerm: inputValue,
+        filters: [
+          { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
+          ...(isCurrentlySearching
+              ? []
+              : [{ key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses }]
+          ),
+          {
+            key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
+            value: [platformIdentifier],
+          },
+        ],
+      },
+      { fetchPolicy: 'store-and-network' }
+    );
   };
 
   const debounceHandleInput = useDebounceCallback(
