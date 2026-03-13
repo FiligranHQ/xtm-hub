@@ -4,9 +4,7 @@
 import type { UserId } from './User';
 
 /** Identifier type for public.User_TransferRequest */
-export type UserTransferRequestId = string & {
-  __brand: 'public.User_TransferRequest';
-};
+export type UserTransferRequestId = string & { __brand: 'public.User_TransferRequest' };
 
 /** Represents the table public.User_TransferRequest */
 export default interface UserTransferRequest {
