@@ -5,7 +5,6 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { EpicApp } from './epic.app';
-import { mapToGraphQLEpic } from './epic.helper';
 
 const resolvers: Resolvers = {
   Epic: {
@@ -26,28 +25,21 @@ const resolvers: Resolvers = {
   Mutation: {
     createEpic: async (_, { input, document }) => {
       try {
-        const createdEpic = await EpicApp.createEpic(input, document);
-        return mapToGraphQLEpic(createdEpic);
+        return await EpicApp.createEpic(input, document);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicCreateError);
       }
     },
     updateEpic: async (_, { id, input, document }) => {
       try {
-        const updatedEpic = await EpicApp.updateEpic(
-          id as EpicId,
-          input,
-          document
-        );
-        return mapToGraphQLEpic(updatedEpic);
+        return await EpicApp.updateEpic(id as EpicId, input, document);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicUpdateError);
       }
     },
     deleteEpic: async (_, { id }) => {
       try {
-        const deletedEpic = await EpicApp.deleteEpic(id as EpicId);
-        return mapToGraphQLEpic(deletedEpic);
+        return await EpicApp.deleteEpic(id as EpicId);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicDeleteError);
       }

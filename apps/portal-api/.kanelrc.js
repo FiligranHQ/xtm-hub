@@ -28,6 +28,11 @@ const COLUMN_ENUM_MAP = {
     platform_identifier: 'PlatformIdentifier',
     region: 'DeploymentRequestPlatformRegion',
   },
+  Epic:{
+    product: 'FiligranProduct',
+    timeline: 'Timeline',
+    epic_type: 'EpicType'
+  },
   ServiceDefinition: {
     identifier: 'ServiceDefinitionIdentifier',
   },
