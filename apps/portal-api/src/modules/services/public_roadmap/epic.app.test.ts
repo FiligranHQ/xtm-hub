@@ -53,7 +53,7 @@ describe('EpicApp', () => {
         timeline: Timeline.Now,
       };
 
-      const createdEpic = await EpicApp.createEpic(input);
+      const createdEpic = await EpicApp.createEpic(input, []);
 
       expect(createdEpic).toBeDefined();
       expect(createdEpic.id).toBeDefined();
@@ -132,7 +132,7 @@ describe('EpicApp', () => {
         is_integration: true,
       };
 
-      const createdEpic = await EpicApp.createEpic(input);
+      const createdEpic = await EpicApp.createEpic(input, []);
 
       expect(createdEpic).toBeDefined();
       expect(createdEpic.epic_type).toBe(EpicType.Integration);
@@ -146,14 +146,17 @@ describe('EpicApp', () => {
   describe('updateEpic', () => {
     it('should update the specified epic with the provided data and return the updated epic', async () => {
       // Create an epic first
-      const createdEpic = await EpicApp.createEpic({
-        epic: 'EPI-003',
-        title: 'Original Title',
-        short_description: 'Original short',
-        description: 'Original long',
-        product: FiligranProduct.Openaev,
-        timeline: Timeline.Next,
-      });
+      const createdEpic = await EpicApp.createEpic(
+        {
+          epic: 'EPI-003',
+          title: 'Original Title',
+          short_description: 'Original short',
+          description: 'Original long',
+          product: FiligranProduct.Openaev,
+          timeline: Timeline.Next,
+        },
+        []
+      );
 
       // Update it
       const updateInput = {
@@ -164,7 +167,8 @@ describe('EpicApp', () => {
 
       const updatedEpic = await EpicApp.updateEpic(
         createdEpic.id as EpicId,
-        updateInput
+        updateInput,
+        []
       );
 
       expect(updatedEpic).toBeDefined();
@@ -195,14 +199,17 @@ describe('EpicApp', () => {
         },
       ] as never);
 
-      const createdEpic = await EpicApp.createEpic({
-        epic: 'EPI-003-upload',
-        title: 'Original Title',
-        short_description: 'Original short',
-        description: 'Original long',
-        product: FiligranProduct.Openaev,
-        timeline: Timeline.Next,
-      });
+      const createdEpic = await EpicApp.createEpic(
+        {
+          epic: 'EPI-003-upload',
+          title: 'Original Title',
+          short_description: 'Original short',
+          description: 'Original long',
+          product: FiligranProduct.Openaev,
+          timeline: Timeline.Next,
+        },
+        []
+      );
 
       expect(createdEpic.document_id).toBeNull();
 
@@ -230,7 +237,7 @@ describe('EpicApp', () => {
       expect(updatedEpic?.document_id).toBeDefined();
 
       const dbDocument = await db<Document>('Document')
-        .where('id', updatedEpic.document_id)
+        .where('id', updatedEpic?.document_id)
         .first();
 
       expect(dbDocument).toBeDefined();
@@ -240,14 +247,17 @@ describe('EpicApp', () => {
 
   describe('deleteEpic', () => {
     it('should delete the specified epic and return the deleted epic', async () => {
-      const createdEpic = await EpicApp.createEpic({
-        epic: 'EPI-005',
-        title: 'Epic to Delete',
-        short_description: 'Short',
-        description: 'Long',
-        product: FiligranProduct.Opencti,
-        timeline: Timeline.Next,
-      });
+      const createdEpic = await EpicApp.createEpic(
+        {
+          epic: 'EPI-005',
+          title: 'Epic to Delete',
+          short_description: 'Short',
+          description: 'Long',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Next,
+        },
+        []
+      );
 
       expect(createdEpic.id).toBeDefined();
 
@@ -261,7 +271,7 @@ describe('EpicApp', () => {
     it('should delete, when integration, the document and the minioFile as well', async () => {
       const mockDeleteFileInMinio = vi
         .spyOn(MinIOClient, 'deleteFile')
-        .mockResolvedValueOnce('mocked response');
+        .mockResolvedValueOnce();
 
       const document = await DocumentApp.createDocumentWithChildrenAndMetadata(
         {
@@ -308,25 +318,31 @@ describe('EpicApp', () => {
   describe('loadEpics', () => {
     it('should return epics with pagination information using first and orderBy parameters', async () => {
       // Create multiple epics
-      await EpicApp.createEpic({
-        epic: 'EPI-006',
-        title: 'Epic 1',
-        short_description: 'Short 1',
-        description: 'Long 1',
-        product: FiligranProduct.Xtmhub,
-        timeline: Timeline.Now,
-        active: true,
-      });
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-006',
+          title: 'Epic 1',
+          short_description: 'Short 1',
+          description: 'Long 1',
+          product: FiligranProduct.Xtmhub,
+          timeline: Timeline.Now,
+          active: true,
+        },
+        []
+      );
 
-      await EpicApp.createEpic({
-        epic: 'EPI-007',
-        title: 'Epic 2',
-        short_description: 'Short 2',
-        description: 'Long 2',
-        product: FiligranProduct.Xtmhub,
-        timeline: Timeline.Now,
-        active: true,
-      });
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-007',
+          title: 'Epic 2',
+          short_description: 'Short 2',
+          description: 'Long 2',
+          product: FiligranProduct.Xtmhub,
+          timeline: Timeline.Now,
+          active: true,
+        },
+        []
+      );
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
@@ -361,25 +377,31 @@ describe('EpicApp', () => {
 
     it('should return epics ordered in descending order when orderMode is Desc', async () => {
       // Create multiple epics
-      await EpicApp.createEpic({
-        epic: 'EPI-010',
-        title: 'Epic A',
-        short_description: 'Short A',
-        description: 'Long A',
-        product: FiligranProduct.Xtmhub,
-        timeline: Timeline.Now,
-        active: true,
-      });
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-010',
+          title: 'Epic A',
+          short_description: 'Short A',
+          description: 'Long A',
+          product: FiligranProduct.Xtmhub,
+          timeline: Timeline.Now,
+          active: true,
+        },
+        []
+      );
 
-      await EpicApp.createEpic({
-        epic: 'EPI-011',
-        title: 'Epic B',
-        short_description: 'Short B',
-        description: 'Long B',
-        product: FiligranProduct.Xtmhub,
-        timeline: Timeline.Now,
-        active: true,
-      });
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-011',
+          title: 'Epic B',
+          short_description: 'Short B',
+          description: 'Long B',
+          product: FiligranProduct.Xtmhub,
+          timeline: Timeline.Now,
+          active: true,
+        },
+        []
+      );
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
@@ -389,8 +411,8 @@ describe('EpicApp', () => {
 
       expect(epicsConnection).toBeDefined();
       expect(epicsConnection.edges.length).toStrictEqual(2);
-      expect(epicsConnection.edges[0].node.epic).toBe('EPI-011');
-      expect(epicsConnection.edges[1].node.epic).toBe('EPI-010');
+      expect(epicsConnection.edges[0]?.node.epic).toBe('EPI-011');
+      expect(epicsConnection.edges[1]?.node.epic).toBe('EPI-010');
     });
   });
 });

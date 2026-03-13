@@ -25,7 +25,10 @@ export function useDraftAndTimelineEpics(epics: epic_fragment$data[]) {
     }, initial);
   }, [epics]);
 }
-export function useCountEpicsByProduct(epics: epic_fragment$data[]) {
+export function useCountEpicsByProduct(
+  epics: epic_fragment$data[],
+  userCanUpdate: boolean
+) {
   return useMemo(() => {
     const initial: Record<FiligranProductEnum, epic_fragment$data[]> = {
       [FiligranProductEnum.XTMHUB]: [],
@@ -34,8 +37,11 @@ export function useCountEpicsByProduct(epics: epic_fragment$data[]) {
     };
 
     if (!epics) return initial;
-
-    return epics.reduce((acc, item: epic_fragment$data) => {
+    let filteredEpics = epics;
+    if (!userCanUpdate) {
+      filteredEpics = epics.filter((epic) => epic.active);
+    }
+    return filteredEpics.reduce((acc, item: epic_fragment$data) => {
       if (item.product === FiligranProductEnum.XTMHUB)
         acc[FiligranProductEnum.XTMHUB].push(item);
       else if (item.product === FiligranProductEnum.OPENCTI)
@@ -45,5 +51,5 @@ export function useCountEpicsByProduct(epics: epic_fragment$data[]) {
 
       return acc;
     }, initial);
-  }, [epics]);
+  }, [epics, userCanUpdate]);
 }

@@ -1,3 +1,4 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
@@ -15,6 +16,11 @@ const resolvers: Resolvers = {
         id: document_id as DocumentId,
       });
       return document[0] ?? null;
+    },
+    document_id: ({ document_id }) => {
+      if (document_id) {
+        return toGlobalId('Document', document_id);
+      }
     },
   },
   Query: {
