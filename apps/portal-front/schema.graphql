@@ -921,6 +921,8 @@ type ServiceLink implements Node {
 enum FiligranProduct {
   opencti
   openaev
+  opengrc
+  xtmone
   xtmhub
 }
 
