@@ -11,6 +11,7 @@ import {
   DeploymentRequestPlatformRegion,
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequest, {
@@ -44,7 +45,7 @@ describe('ServiceGroupApp', () => {
         description: '',
         creation_status: ServiceInstanceCreationStatus.Ready,
         public: false,
-        join_type: 'JOIN_AUTO',
+        join_type: ServiceInstanceJoinType.JoinAuto,
         tags: [],
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },
@@ -54,7 +55,7 @@ describe('ServiceGroupApp', () => {
         description: '',
         creation_status: ServiceInstanceCreationStatus.Ready,
         public: false,
-        join_type: 'JOIN_AUTO',
+        join_type: ServiceInstanceJoinType.JoinAuto,
         tags: [],
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },

@@ -59,7 +59,7 @@ describe('EpicApp', () => {
       expect(createdEpic.id).toBeDefined();
       expect(createdEpic.epic).toBe('EPI-001');
       expect(createdEpic.title).toBe('Test Epic');
-      expect(createdEpic.product).toBe('opencti');
+      expect(createdEpic.product).toBe(FiligranProduct.Opencti);
       expect(createdEpic.active).toBe(true);
 
       // Verify in DB
@@ -139,7 +139,7 @@ describe('EpicApp', () => {
 
       // Verify in DB
       const dbEpic = await db<Epic>('Epic').where('id', createdEpic.id).first();
-      expect(dbEpic?.epic_type).toBe('integration');
+      expect(dbEpic?.epic_type).toBe(EpicType.Integration);
     });
   });
 
