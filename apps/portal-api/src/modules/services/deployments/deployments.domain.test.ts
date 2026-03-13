@@ -110,6 +110,34 @@ describe('DeploymentRequestDomain', () => {
       expect(result.totalCount).toBe('1');
       expect(result.edges[0]?.node?.id).toBe(activeDeployment.id);
     });
+    it('should not return deployment request with wrong platform_identifier even if searchTerm matches', async () => {
+      const openctiDeployment = await insertDeploymentRequest({
+        platform_identifier: PlatformIdentifier.Opencti,
+      });
+
+      await insertDeploymentRequest({
+        platform_identifier: PlatformIdentifier.Openaev,
+      });
+
+      const result =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchTerm: 'admin',
+            filters: [
+              {
+                key: DeploymentRequestFilterKey.PlatformIdentifier,
+                value: [PlatformIdentifier.Opencti],
+              },
+            ],
+          }
+        );
+
+      expect(result.totalCount).toBe('1');
+      expect(result.edges[0]?.node?.id).toBe(openctiDeployment.id);
+    });
     it('should return ordered deployment requests', async () => {
       const deployment1 = await insertDeploymentRequest({ ordering: 1 });
       const deployment2 = await insertDeploymentRequest({ ordering: 2 });
