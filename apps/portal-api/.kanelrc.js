@@ -30,6 +30,11 @@ const COLUMN_ENUM_MAP = {
   },
   ServiceDefinition: {
     identifier: 'ServiceDefinitionIdentifier',
+  },
+  ServiceInstance:{
+    creation_status: 'ServiceInstanceCreationStatus',
+    join_type: 'ServiceInstanceJoinType',
+    tags: 'ServiceInstanceTag',
   }
 };
 

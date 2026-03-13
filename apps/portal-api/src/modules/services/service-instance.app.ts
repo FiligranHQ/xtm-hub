@@ -4,6 +4,7 @@ import {
   SeoServiceInstance,
   ServiceDefinitionIdentifier,
   ServiceInstance,
+  ServiceInstanceJoinType,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
@@ -51,7 +52,10 @@ export const ServiceInstanceApp = {
       organization_id: user.selected_organization_id,
     });
 
-    if (!subscription && service.join_type == 'JOIN_AUTO') {
+    if (
+      !subscription &&
+      service.join_type == ServiceInstanceJoinType.JoinAuto
+    ) {
       subscription = await subscriptionApp.subscribeOrganizationToService({
         organizationId: user.selected_organization_id,
         serviceInstanceId: serviceInstanceId,
@@ -210,7 +214,6 @@ export const ServiceInstanceApp = {
     }
     return {
       ...withServiceInstanceGlobalIDs(serviceInstance),
-      tags: serviceInstance.tags as ServiceInstanceTag[],
     };
   },
 
