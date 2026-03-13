@@ -104,8 +104,7 @@ export const subscriptionApp = {
 
     await sendSubscriptionTelemetryEvent({
       selectedOrganization,
-      serviceDefinitionIdentifier:
-        serviceDefinition.identifier as ServiceDefinitionIdentifier,
+      serviceDefinitionIdentifier: serviceDefinition.identifier,
     });
 
     return {

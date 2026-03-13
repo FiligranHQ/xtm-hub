@@ -28,6 +28,9 @@ const COLUMN_ENUM_MAP = {
     platform_identifier: 'PlatformIdentifier',
     region: 'DeploymentRequestPlatformRegion',
   },
+  ServiceDefinition: {
+    identifier: 'ServiceDefinitionIdentifier',
+  }
 };
 
 /** @type {import('kanel').Config} */
