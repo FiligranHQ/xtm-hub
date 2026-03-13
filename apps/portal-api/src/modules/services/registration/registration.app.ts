@@ -8,7 +8,6 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
-  PlatformIdentifier,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
@@ -471,7 +470,7 @@ export const registrationApp = {
         const registerEvent = buildRegisterEvent(
           selectedOrga,
           deploymentRequest.user_requester_id,
-          deploymentRequest.platform_identifier as PlatformIdentifier,
+          deploymentRequest.platform_identifier,
           platform.id,
           platform.contract,
           platform.version,
@@ -535,7 +534,7 @@ const assertValidDeploymentRequest = (
       DeploymentRequestHubStatus.Active,
       DeploymentRequestHubStatus.Pending,
       DeploymentRequestHubStatus.Provisioning,
-    ].includes(deploymentRequest.hub_status as DeploymentRequestHubStatus)
+    ].includes(deploymentRequest.hub_status)
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
   }

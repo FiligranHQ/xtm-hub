@@ -4,6 +4,7 @@
 import type { UserId } from './User';
 import type { OrganizationId } from './Organization';
 import type { ServiceInstanceId } from './ServiceInstance';
+import type { DeploymentRequestDeploymentType, PlatformIdentifier, DeploymentRequestPlatformRegion, DeploymentRequestActivitySector, DeploymentRequestJobTitle, DeploymentRequestUseCase, DeploymentRequestHubStatus, DeploymentRequestPlatformState } from '../../../__generated__/resolvers-types';
 
 /** Identifier type for public.DeploymentRequest */
 export type DeploymentRequestId = string & { __brand: 'public.DeploymentRequest' };
@@ -18,7 +19,7 @@ export default interface DeploymentRequest {
 
   service_instance_id: ServiceInstanceId;
 
-  type: string;
+  type: DeploymentRequestDeploymentType;
 
   request_date: Date;
 
@@ -26,11 +27,11 @@ export default interface DeploymentRequest {
 
   end_date: Date | null;
 
-  platform_identifier: string;
+  platform_identifier: PlatformIdentifier;
 
-  region: string;
+  region: DeploymentRequestPlatformRegion;
 
-  activity_sector: string | null;
+  activity_sector: DeploymentRequestActivitySector | null;
 
   platform_token: string | null;
 
@@ -38,15 +39,15 @@ export default interface DeploymentRequest {
 
   failure_reason: string | null;
 
-  job_title: string | null;
+  job_title: DeploymentRequestJobTitle | null;
 
-  use_case: string | null;
+  use_case: DeploymentRequestUseCase | null;
 
-  hub_status: string;
+  hub_status: DeploymentRequestHubStatus;
 
-  target_state: string | null;
+  target_state: DeploymentRequestPlatformState | null;
 
-  actual_state: string | null;
+  actual_state: DeploymentRequestPlatformState | null;
 
   ordering: number;
 
@@ -69,7 +70,7 @@ export interface DeploymentRequestInitializer {
 
   service_instance_id: ServiceInstanceId;
 
-  type: string;
+  type: DeploymentRequestDeploymentType;
 
   /** Default value: CURRENT_TIMESTAMP */
   request_date?: Date;
@@ -78,11 +79,11 @@ export interface DeploymentRequestInitializer {
 
   end_date?: Date | null;
 
-  platform_identifier: string;
+  platform_identifier: PlatformIdentifier;
 
-  region: string;
+  region: DeploymentRequestPlatformRegion;
 
-  activity_sector?: string | null;
+  activity_sector?: DeploymentRequestActivitySector | null;
 
   platform_token?: string | null;
 
@@ -90,16 +91,15 @@ export interface DeploymentRequestInitializer {
 
   failure_reason?: string | null;
 
-  job_title?: string | null;
+  job_title?: DeploymentRequestJobTitle | null;
 
-  use_case?: string | null;
+  use_case?: DeploymentRequestUseCase | null;
 
-  /** Default value: 'pending'::character varying */
-  hub_status?: string;
+  hub_status?: DeploymentRequestHubStatus;
 
-  target_state?: string | null;
+  target_state?: DeploymentRequestPlatformState | null;
 
-  actual_state?: string | null;
+  actual_state?: DeploymentRequestPlatformState | null;
 
   /** Default value: 0 */
   ordering?: number;
@@ -124,7 +124,7 @@ export interface DeploymentRequestMutator {
 
   service_instance_id?: ServiceInstanceId;
 
-  type?: string;
+  type?: DeploymentRequestDeploymentType;
 
   request_date?: Date;
 
@@ -132,11 +132,11 @@ export interface DeploymentRequestMutator {
 
   end_date?: Date | null;
 
-  platform_identifier?: string;
+  platform_identifier?: PlatformIdentifier;
 
-  region?: string;
+  region?: DeploymentRequestPlatformRegion;
 
-  activity_sector?: string | null;
+  activity_sector?: DeploymentRequestActivitySector | null;
 
   platform_token?: string | null;
 
@@ -144,15 +144,15 @@ export interface DeploymentRequestMutator {
 
   failure_reason?: string | null;
 
-  job_title?: string | null;
+  job_title?: DeploymentRequestJobTitle | null;
 
-  use_case?: string | null;
+  use_case?: DeploymentRequestUseCase | null;
 
-  hub_status?: string;
+  hub_status?: DeploymentRequestHubStatus;
 
-  target_state?: string | null;
+  target_state?: DeploymentRequestPlatformState | null;
 
-  actual_state?: string | null;
+  actual_state?: DeploymentRequestPlatformState | null;
 
   ordering?: number;
 

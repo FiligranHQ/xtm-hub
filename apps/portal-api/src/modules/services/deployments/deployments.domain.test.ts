@@ -631,9 +631,8 @@ describe('DeploymentRequestDomain', () => {
         target_state: DeploymentRequestPlatformState.Unprovisioned,
       });
       deploymentRequestId1 = deploymentRequest1!.id;
-      platformIdentifier = deploymentRequest1!
-        .platform_identifier as PlatformIdentifier;
-      region = deploymentRequest1!.region as DeploymentRequestPlatformRegion;
+      platformIdentifier = deploymentRequest1!.platform_identifier;
+      region = deploymentRequest1!.region;
 
       const deploymentRequest2 = await insertDeploymentRequest({
         ordering: 4,
@@ -779,8 +778,8 @@ describe('DeploymentRequestDomain', () => {
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
-          deploymentRequest1!.platform_identifier as PlatformIdentifier,
-          deploymentRequest1!.region as DeploymentRequestPlatformRegion
+          deploymentRequest1!.platform_identifier,
+          deploymentRequest1!.region
         );
 
       expect(updatedDeploymentRequest).toBeDefined();
@@ -834,7 +833,7 @@ describe('DeploymentRequestDomain', () => {
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
           PlatformIdentifier.Opencti,
-          deploymentRequest1!.region as DeploymentRequestPlatformRegion
+          deploymentRequest1!.region
         );
       expect(updatedDeploymentRequest).toBeDefined();
       await assertDeploymentRequestProperties(deploymentRequest1!.id, {
@@ -861,7 +860,7 @@ describe('DeploymentRequestDomain', () => {
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
-          deploymentRequest1!.platform_identifier as PlatformIdentifier,
+          deploymentRequest1!.platform_identifier,
           DeploymentRequestPlatformRegion.UsEast
         );
       expect(updatedDeploymentRequest).toBeDefined();

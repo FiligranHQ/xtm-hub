@@ -11,6 +11,57 @@ const COLUMN_ENUM_MAP = {
     tsType: 'CompetitorTier',
     importPath: '../../../__generated__/resolvers-types',
   },
+  'DeploymentRequest.platform_identifier': {
+    tsType: 'PlatformIdentifier',
+    importPath: '../../../__generated__/resolvers-types',
+  },
+  'DeploymentRequest.region': {
+    tsType: 'DeploymentRequestPlatformRegion',
+    importPath: '../../../__generated__/resolvers-types',
+  },
+  'DeploymentRequest.type': {
+    tsType: 'DeploymentRequestDeploymentType',
+    importPath: '../../../__generated__/resolvers-types',
+  },
+  'DeploymentRequest.hub_status': {
+    tsType: 'DeploymentRequestHubStatus',
+    importPath: '../../../__generated__/resolvers-types',
+  },
+  'DeploymentRequest.target_state': {
+    tsType: 'DeploymentRequestPlatformState',
+    importPath: '../../../__generated__/resolvers-types',
+    nullable: true,
+  },
+  'DeploymentRequest.actual_state': {
+    tsType: 'DeploymentRequestPlatformState',
+    importPath: '../../../__generated__/resolvers-types',
+    nullable: true,
+  },
+  'DeploymentRequest.use_case': {
+    tsType: 'DeploymentRequestUseCase',
+    importPath: '../../../__generated__/resolvers-types',
+    nullable: true,
+  },
+  'DeploymentRequest.activity_sector': {
+    tsType: 'DeploymentRequestActivitySector',
+    importPath: '../../../__generated__/resolvers-types',
+    nullable: true,
+  },
+  'DeploymentRequest.job_title': {
+    tsType: 'DeploymentRequestJobTitle',
+    importPath: '../../../__generated__/resolvers-types',
+    nullable: true,
+  },
+  'DeploymentRequestQuota.platform_identifier': {
+    tsType: 'PlatformIdentifier',
+    importPath: '../../../__generated__/resolvers-types',
+    nullable: true,
+  },
+  'DeploymentRequestQuota.region': {
+    tsType: 'DeploymentRequestPlatformRegion',
+    importPath: '../../../__generated__/resolvers-types',
+    nullable: true,
+  },
 };
 
 /** @type {import('kanel').Config} */
