@@ -423,23 +423,6 @@ export const DeploymentsApp = {
       });
     }
 
-    try {
-      if (
-        newStatus === DeploymentRequestHubStatus.Expired &&
-        newStatus !== deploymentRequest.hub_status
-      ) {
-        await auth0Client.deleteAudienceAPI(
-          deploymentRequest.organization_requester_id,
-          deploymentRequest.platform_id
-        );
-      }
-    } catch (error) {
-      logApp.error('Unable to delete audience', {
-        error,
-        deploymentRequestId: deploymentRequest.id,
-      });
-    }
-
     return updatedDeploymentRequest;
   },
 
@@ -738,6 +721,18 @@ export const DeploymentsApp = {
           });
         } catch (error) {
           logApp.error('Unable to send mail for trial expiration', {
+            error,
+            deploymentRequestId: trial.id,
+          });
+        }
+
+        try {
+          await auth0Client.deleteAudienceAPI(
+            trial.organization_requester_id,
+            trial.platform_id
+          );
+        } catch (error) {
+          logApp.error('Unable to delete audience', {
             error,
             deploymentRequestId: trial.id,
           });
