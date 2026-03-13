@@ -2,7 +2,6 @@
 import { ServiceGroupsByServiceInstanceId } from '@/components/service/service-group.graphql';
 import { TrialsManageUsersForm } from '@/components/service/trial-instances/manage-users/trials-manage-users-form';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { Button } from '@filigran/ui';
 import { serviceGroupsByServiceInstanceIdQuery } from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
 import { useTranslations } from 'next-intl';
@@ -28,21 +27,20 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({
       ServiceGroupsByServiceInstanceId
     );
 
-  useMountingLoader(loadQuery, {
-    serviceInstanceId: serviceInstanceId,
-  });
-
   const loadServiceGroups = useCallback(() => {
-    if (!serviceInstanceId || !loadQuery) {
-      return;
-    }
-    loadQuery(
-      {
-        serviceInstanceId,
-      },
-      { fetchPolicy: 'store-and-network' }
-    );
+    if (!serviceInstanceId || !loadQuery) return;
+    loadQuery({ serviceInstanceId }, { fetchPolicy: 'store-and-network' });
   }, [loadQuery, serviceInstanceId]);
+
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      setOpenSheet(open);
+      if (open) {
+        loadServiceGroups();
+      }
+    },
+    [loadServiceGroups]
+  );
 
   const onCompleted = () => {
     setOpenSheet(false);
@@ -52,7 +50,7 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({
   return (
     <SheetWithPreventingDialog
       title={t('Service.Trials.ManageUsers.Title')}
-      setOpen={setOpenSheet}
+      setOpen={handleOpenChange}
       open={openSheet}
       trigger={
         trigger ?? (
