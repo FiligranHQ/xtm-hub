@@ -1,5 +1,5 @@
 export const semanticVersionRegex = /^[0-9]+\.[0-9]+\.[0-9]+$/;
-const validLtsVersionRegex = /^[0-9]+\.[0-9]+\.[0-9]+-lts(\.[0-9]+)?$/;
+const validLtsVersionRegex = /^[0-9]+\.[0-9]+\.[0-9]+-lts(\.[0-9]+|[0-9]+)?$/;
 
 const isSemanticVersion = (version: string): boolean => {
   return semanticVersionRegex.test(version);
