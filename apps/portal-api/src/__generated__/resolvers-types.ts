@@ -57,6 +57,11 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
+export type AutoRegisterPlatformInput = {
+  existing_users_count?: InputMaybe<Scalars['Int']['input']>;
+  platform: PlatformInput;
+};
+
 export type BulkPendingUserFromOrganizationInput = {
   excludedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   filters?: InputMaybe<Array<Filter>>;
@@ -835,7 +840,8 @@ export type MutationAdminEditUserArgs = {
 
 
 export type MutationAutoRegisterPlatformArgs = {
-  platform: PlatformInput;
+  input?: InputMaybe<AutoRegisterPlatformInput>;
+  platform?: InputMaybe<PlatformInput>;
 };
 
 
@@ -2316,6 +2322,7 @@ export type ResolversTypes = ResolversObject<{
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
+  AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
@@ -2497,6 +2504,7 @@ export type ResolversParentTypes = ResolversObject<{
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
+  AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: Scalars['Boolean']['output'];
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
@@ -3028,7 +3036,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationAdminCancelDeploymentRequestArgs>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
-  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
+  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationAutoRegisterPlatformArgs>>;
   bulkAcceptPendingUserInOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkAcceptPendingUserInOrganizationArgs>>;
   bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkRemovePendingUserFromOrganizationArgs>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;

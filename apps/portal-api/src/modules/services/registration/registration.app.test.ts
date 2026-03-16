@@ -806,10 +806,9 @@ describe('Registration app', () => {
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
-      const call = registrationApp.autoRegisterPlatform(
-        uuidv4(),
-        platformConfiguration
-      );
+      const call = registrationApp.autoRegisterPlatform(uuidv4(), {
+        platform: platformConfiguration,
+      });
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
       );
@@ -822,10 +821,7 @@ describe('Registration app', () => {
 
       const call = registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        {
-          ...platformConfiguration,
-          id: uuidv4(),
-        }
+        { platform: { ...platformConfiguration, id: uuidv4() } }
       );
       await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidPlatformId);
     });
@@ -841,7 +837,7 @@ describe('Registration app', () => {
 
       const call = registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        platformConfiguration
+        { platform: platformConfiguration }
       );
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.NotAllowedByDeploymentStatus
@@ -850,7 +846,7 @@ describe('Registration app', () => {
     it('should register the provided platform', async () => {
       await registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        platformConfiguration
+        { platform: platformConfiguration }
       );
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -888,12 +884,12 @@ describe('Registration app', () => {
       };
       await registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        platformConfiguration
+        { platform: platformConfiguration }
       );
 
       await registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        newPlatformConfiguration
+        { platform: newPlatformConfiguration }
       );
 
       const oldConfiguration =
@@ -932,7 +928,7 @@ describe('Registration app', () => {
 
         await registrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
-          platformConfiguration
+          { platform: platformConfiguration }
         );
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
