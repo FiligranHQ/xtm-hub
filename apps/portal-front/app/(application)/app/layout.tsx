@@ -57,13 +57,13 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     <RelayProvider>
       <div className="flex min-h-screen">
         <PageLoader>
-          <div className="flex flex-col w-full h-screen">
+          <div className="flex flex-col w-full h-screen min-h-0">
             <TestEnvBanner />
             <AdminBanner />
             <TryFiligranProductsBanner />
-            <div className="flex flex-row flex-grow">
+            <div className="flex flex-row flex-grow min-h-0">
               <Menu />
-              <div className="flex flex-col w-full h-full overflow-auto">
+              <div className="flex flex-col w-full h-full min-h-0">
                 <HeaderComponent />
                 <ContentLayout>{children}</ContentLayout>
               </div>

@@ -31,8 +31,6 @@ import {
 } from 'react-relay';
 
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
@@ -127,26 +125,17 @@ export const StartTrialButton: React.FC<Props> = ({
     });
   };
 
-  const isOpenAEVTrialsFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.OPENAEVTRIALS
-  );
   return (
     <SheetWithPreventingDialog
       title={t('Service.Trials.StartTrial')}
       setOpen={setOpenSheet}
       open={openSheet}
       trigger={
-        availableTrials.length > 0 &&
-        (isOpenAEVTrialsFeatureEnabled ? (
+        availableTrials.length > 0 && (
           <GradientButton className="flex items-center">
             {t('Service.Trials.StartTrial')}
           </GradientButton>
-        ) : (
-          <Button className="bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
-            {t('Service.Trials.StartTrial')}
-            <ArrowRightAltIcon className="ml-s size-4" />
-          </Button>
-        ))
+        )
       }>
       <TryFiligranProductForm
         handleSubmit={handleSubmit}

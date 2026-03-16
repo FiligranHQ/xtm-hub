@@ -59,7 +59,7 @@ export const securityGuard = {
 
   assertUserCanModifyPlatformService: async (
     user: UserLoadUserBy,
-    serviceDefinition: { identifier: string }
+    serviceDefinition: { identifier: ServiceDefinitionIdentifier }
   ) => {
     // Verify it's an OpenCTI or OpenAEV platform
     const allowedIdentifiers = [
@@ -67,11 +67,7 @@ export const securityGuard = {
       ServiceDefinitionIdentifier.OpenaevRegistration,
     ];
 
-    if (
-      !allowedIdentifiers.includes(
-        serviceDefinition.identifier as ServiceDefinitionIdentifier
-      )
-    ) {
+    if (!allowedIdentifiers.includes(serviceDefinition.identifier)) {
       throw ForbiddenAccess(ErrorCode.PlatformTypeNotSupported);
     }
 

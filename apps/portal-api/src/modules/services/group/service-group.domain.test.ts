@@ -2,7 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
-import { ServiceInstanceCreationStatus } from '../../../__generated__/resolvers-types';
+import {
+  ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
+} from '../../../__generated__/resolvers-types';
 import ServiceGroup, {
   ServiceGroupId,
 } from '../../../model/kanel/public/ServiceGroup';
@@ -26,7 +29,7 @@ describe('ServiceGroupDomain', () => {
         description: '',
         creation_status: ServiceInstanceCreationStatus.Ready,
         public: false,
-        join_type: 'JOIN_AUTO',
+        join_type: ServiceInstanceJoinType.JoinAuto,
         tags: [],
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },
@@ -36,7 +39,7 @@ describe('ServiceGroupDomain', () => {
         description: '',
         creation_status: ServiceInstanceCreationStatus.Ready,
         public: false,
-        join_type: 'JOIN_AUTO',
+        join_type: ServiceInstanceJoinType.JoinAuto,
         tags: [],
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       },

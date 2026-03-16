@@ -3,6 +3,7 @@ import { db } from '../../../../knexfile';
 import {
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import {
@@ -24,7 +25,7 @@ export const serviceInstanceDomain = {
         description: '',
         creation_status,
         public: false,
-        join_type: 'JOIN_AUTO',
+        join_type: ServiceInstanceJoinType.JoinAuto,
         tags: [
           serviceInstanceTagMappedByPlatformIdentifier[platformIdentifier],
         ],

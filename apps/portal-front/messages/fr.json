@@ -118,6 +118,34 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
+  "Epic": {
+    "XTMRoadmap": "Roadmap XTM",
+    "AllProducts": "Tous les produits",
+    "Timeline": {
+      "draft": "Brouillons",
+      "now": "Maintenant",
+      "next": "Après",
+      "under_consideration": "En considération"
+    },
+    "Form": {
+      "Epic": "Epic",
+      "Title": "Titre",
+      "ShortDesc": "Description courte",
+      "Description": "Description",
+      "FiligranProduct": "Produit",
+      "FiligranProductPlaceholder": "OpenCTI",
+      "Timeline": "Ligne de temps",
+      "IsActive": "Actif",
+      "Integration": "Est une intégration"
+    },
+    "EpicActions": {
+      "CreateEpic": "Créer un nouvel épic",
+      "UpdateEpic": "Mettre à jour un épic",
+      "DeleteEpic": "Supprimer l'épic {epicName}",
+      "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer l'épic {epicName} ?",
+      "EpicDeleted": "L'épic a été supprimé"
+    }
+  },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
     "Login": {
@@ -152,6 +180,9 @@
       "DOCUMENT_NOT_FOUND": "La ressource n'a pas été trouvée.",
       "DOCUMENT_UNIQUE_SLUG_ERROR": "Le nom de la ressource est déjà utilisé.",
       "DOCUMENT_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de la ressource.",
+      "EPIC_CREATE_ERROR": "Une erreur s'est produite lors de l'ajout de l'épic.",
+      "EPIC_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de l'épic.",
+      "DELETE_EPIC_ERROR": "Une erreur s'est produite lors de la suppression de l'épic.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
       "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
@@ -435,7 +466,8 @@
   },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
-    "opencti": "OpenCTI"
+    "opencti": "OpenCTI",
+    "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {
@@ -873,7 +905,6 @@
     "SureWantSubscriptionDirect": "Commencez avec notre service gratuit {serviceName} et explorez les ressources créées par l'équipe Filigran.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
-      "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
       "ExploreBold": "Free Trial!",
       "ExplorePlatform": "Explore {platformName} platform with 30 days",
       "ExploreProducts": "Explore OpenCTI or OpenAEV platform with 30 days",
