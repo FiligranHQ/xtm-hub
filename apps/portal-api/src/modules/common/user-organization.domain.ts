@@ -1,5 +1,8 @@
 import { db } from '../../../knexfile';
-import { OrganizationCapabilitiesInput } from '../../__generated__/resolvers-types';
+import {
+  OrganizationCapabilitiesInput,
+  OrganizationCapability,
+} from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import Organization, {
   OrganizationId,
@@ -9,6 +12,7 @@ import UserOrganization, {
   UserOrganizationInitializer,
   UserOrganizationMutator,
 } from '../../model/kanel/public/UserOrganization';
+import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { extractId, isEmpty } from '../../utils/utils';
 import {
@@ -64,6 +68,14 @@ export const updateUserOrgCapabilities = async ({
   organization_id: OrganizationId;
   orgCapabilities?: string[];
 }) => {
+  await securityGuard.assertUserCapabilities(
+    [
+      OrganizationCapability.AdministrateOrganization,
+      OrganizationCapability.ManageAccess,
+    ],
+    organization_id
+  );
+
   const [userOrganization] = await loadUserOrganization({
     user_id,
     organization_id,
@@ -91,6 +103,14 @@ export const createUserOrgCapabilities = async ({
     organization_id: organization.id,
   });
   const { user: contextUser } = requestContext.require();
+  await securityGuard.assertUserCapabilities(
+    [
+      OrganizationCapability.AdministrateOrganization,
+      OrganizationCapability.ManageAccess,
+    ],
+    organization.id
+  );
+
   await updateUserOrganizationCapability({
     user_organization_id: userOrganization.id,
     capabilities_name: orgCapabilities,

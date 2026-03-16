@@ -1,10 +1,16 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import {
+  TEST_ORGANIZATIONS,
+  requestContextAdminSecondOrga,
+  requestContextSimpleUserSecondOrga,
+} from '../../../../tests/tests.const';
 import { FilterKey } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import User from '../../../model/kanel/public/User';
 import UserOrganizationPending from '../../../model/kanel/public/UserOrganizationPending';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
 import { insertUser, linkUsersToOrganization } from '../users.test.utils';
@@ -285,6 +291,63 @@ describe('UserOrganizationPendingDomain', () => {
 
       expect(secondOrgaPendingUsers).toHaveLength(0);
       expect(filigranPendingUsers).toHaveLength(1);
+    });
+  });
+  describe('removeUserFromOrganizationPending', () => {
+    let createdUser: User;
+    beforeEach(async () => {
+      const secondOrga = await loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      createdUser = await createNewUserWithPendingOrga(
+        {
+          email: 'testRemovePending@second-orga.com',
+          first_name: 'test',
+          last_name: 'remove',
+          picture: null,
+        },
+        secondOrga
+      );
+    });
+
+    afterEach(async () => {
+      await db<UserOrganizationPending>('User_Organization_Pending').del();
+      await removeUser({ email: createdUser.email });
+    });
+
+    it('should remove the pending user when user has the required capability', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      await UserOrganizationPendingDomain.removeUserFromOrganizationPending(
+        createdUser.id,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
+
+      const remaining =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+        });
+      expect(remaining).toHaveLength(0);
+    });
+
+    it('should throw when user does not have the required capability', async () => {
+      requestContext.set(requestContextSimpleUserSecondOrga);
+
+      const call =
+        UserOrganizationPendingDomain.removeUserFromOrganizationPending(
+          createdUser.id,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+        );
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.MissingCapabilityOnOrganization
+      );
+
+      const remaining =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+        });
+      expect(remaining).toHaveLength(1);
     });
   });
 });
