@@ -477,7 +477,8 @@ export const registrationApp = {
           input.platform.id,
           input.platform.contract,
           input.platform.version,
-          input.platform.url
+          input.platform.url,
+          input.existing_users_count ?? undefined
         );
         await telemetryApp.sendTelemetryEvent(registerEvent);
       } catch (error) {

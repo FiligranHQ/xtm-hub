@@ -946,6 +946,37 @@ describe('Registration app', () => {
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         });
       });
+
+      it('should include existing_users_count in register event when provided', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const telemetrySpy = vi
+          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        await registrationApp.autoRegisterPlatform(
+          deploymentRequest.platform_token as string,
+          { platform: platformConfiguration, existing_users_count: 42 }
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.REGISTER,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          platform_contract: PlatformContract.Trial,
+          platform_id: platformConfiguration.id,
+          platform_version: platformConfiguration.version,
+          platform_url: platformConfiguration.url,
+          source: TELEMETRY_SOURCE,
+          target_product: 'open-cti',
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          existing_users_count: 42,
+        });
+      });
     });
   });
 
