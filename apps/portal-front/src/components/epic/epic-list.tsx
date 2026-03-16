@@ -75,19 +75,21 @@ export const EpicList = ({
     <>
       <div className="flex flex-row items-center gap-4">
         <h1>{t('Epic.XTMRoadmap')}</h1>
-        {userCanUpdate && (
-          <EpicFormSheet
-            open={openSheet}
-            setOpen={setOpenSheet}
+        <div className="flex flex-row ml-auto items-center">
+          <EpicFilter
+            selectedFilter={selectedProduct}
+            onSelectedFilterChange={onFilterChange}
+            xtmhubCount={xtmhub.length}
+            openctiCount={opencti.length}
+            openaevCount={openaev.length}
           />
-        )}
-        <EpicFilter
-          selectedFilter={selectedProduct}
-          onSelectedFilterChange={onFilterChange}
-          xtmhubCount={xtmhub.length}
-          openctiCount={opencti.length}
-          openaevCount={openaev.length}
-        />
+          {userCanUpdate && (
+            <EpicFormSheet
+              open={openSheet}
+              setOpen={setOpenSheet}
+            />
+          )}
+        </div>
       </div>
       {sections.map((timeline) => {
         if (

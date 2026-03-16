@@ -26,7 +26,7 @@ export const EpicFilter = ({
   const totalCount = xtmhubCount + openctiCount + openaevCount;
 
   return (
-    <div className="flex flex-row gap-xs bg-blue-900 p-xs rounded-lg w-fit text-primary font-bold">
+    <div className="flex flex-row gap-xs bg-page-background p-xs rounded-lg w-fit text-primary font-bold">
       <Button
         variant={selectedFilter === 'all' ? 'default' : 'ghost'}
         onClick={() => onSelectedFilterChange('all')}>

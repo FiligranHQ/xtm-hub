@@ -32,7 +32,7 @@ export const EpicItem = ({
       <Dialog
         open={isOpen}
         onOpenChange={setIsOpen}>
-        <DialogContent className="p-0 w-full max-w-xl">
+        <DialogContent className="p-0 w-full max-w-5xl">
           <EpicItemDetailed
             epic={epic}
             serviceInstanceId={serviceInstanceId}

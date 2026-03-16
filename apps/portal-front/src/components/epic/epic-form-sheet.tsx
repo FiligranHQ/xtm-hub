@@ -119,9 +119,7 @@ export const EpicFormSheet = ({
       setOpen={setOpenSheet}
       trigger={
         triggerElement || (
-          <Button className="ml-auto">
-            {t(epic ? 'Utils.Update' : 'Utils.Create')}
-          </Button>
+          <Button>{t(epic ? 'Utils.Update' : 'Utils.Create')}</Button>
         )
       }
       title={t(

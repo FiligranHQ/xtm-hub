@@ -21,9 +21,11 @@ export const EpicItemDetailed = ({
         />
         <span className="txt-title">{epic.epic}</span>
       </div>
-      <div className="p-l !bg-page-background markdown-content">
+      <div className="p-l bg-page-background markdown-content">
         <h2>{epic.title}</h2>
-        <Markdown>{epic.description}</Markdown>
+        <div className="max-h-96 overflow-y-auto">
+          <Markdown>{epic.description}</Markdown>
+        </div>
       </div>
     </>
   );
