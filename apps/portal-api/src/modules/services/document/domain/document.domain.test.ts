@@ -561,7 +561,7 @@ describe('Document domain', () => {
         name: 'Uploader Doc',
         type: 'test-type',
         slug: 'uploader-doc',
-        uploader_id: toGlobalId('Document', otherUserId),
+        uploader_id: toGlobalId('User', otherUserId),
       };
       const metadataKeys: DocumentMetadataKeys<Document> = [];
       const document = await DocumentDomain.createDocument(

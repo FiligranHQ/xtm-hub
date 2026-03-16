@@ -5,7 +5,6 @@ import {
   ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import {
@@ -49,7 +48,7 @@ export const validateActivePlatformToken = async (
 ): Promise<boolean> => {
   if (!validateExistsToken(req)) return false;
 
-  const serviceConfiguration: ServiceConfiguration | null =
+  const serviceConfiguration =
     await ServiceContractDomain.loadConfigurationByPlatformAndToken({
       platformId: extractPlatformId(req),
       token: extractPlatformToken(req),
