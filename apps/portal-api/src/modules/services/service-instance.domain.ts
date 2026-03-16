@@ -603,8 +603,7 @@ export const loadServiceDefinitionByServiceInstance = async (
       'ServiceInstance.service_definition_id'
     )
     .select('service_def.*')
-    .first()
-    .secureQuery();
+    .first();
 };
 
 export const loadSeoServiceInstances = async (): Promise<
@@ -643,8 +642,7 @@ export const loadSeoServiceInstances = async (): Promise<
     )
     .where('ServiceInstance.public', '=', true)
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
-    .orderBy('ServiceInstance.ordering', 'asc')
-    .secureQuery();
+    .orderBy('ServiceInstance.ordering', 'asc');
 };
 
 export const loadSeoServiceInstanceBySlug = async (
@@ -687,8 +685,7 @@ export const loadSeoServiceInstanceBySlug = async (
     )
     .where('ServiceInstance.slug', '=', slug)
     .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
-    .first()
-    .secureQuery();
+    .first();
 };
 
 export const getServiceInstance = async (id: ServiceInstanceId) => {

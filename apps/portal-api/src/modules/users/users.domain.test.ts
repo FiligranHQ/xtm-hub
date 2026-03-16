@@ -1,14 +1,26 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserSecondOrga,
+  requestContextAdminSecondOrga,
+  requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
+import {
+  OrderingMode,
+  UserOrdering,
+} from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
+import { ROLE_ADMIN } from '../../portal.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
-import { loadUserBy, updateUser, updateUserAtLogin } from './users.domain';
+import {
+  loadUserBy,
+  loadUserConnection,
+  updateUser,
+  updateUserAtLogin,
+} from './users.domain';
 
 //Issue with test
 describe('Users domain', () => {
@@ -59,5 +71,48 @@ describe('Users domain', () => {
   });
   afterEach(async () => {
     vi.useRealTimers();
+  });
+
+  describe('loadUserConnection', () => {
+    const opts = {
+      first: 50,
+      orderMode: OrderingMode.Asc,
+      orderBy: UserOrdering.Email,
+      filters: [],
+    };
+
+    it('should only return users from the selected organization for non-platform-admin users', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const result = await loadUserConnection(opts);
+
+      const returnedIds = result.edges.map((e) => e.node!.id);
+      expect(returnedIds).toContain(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
+      );
+      expect(returnedIds).toContain(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
+      );
+      expect(returnedIds).not.toContain(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+      );
+    });
+
+    it('should return users from all organizations for admin users', async () => {
+      requestContext.set({
+        ...requestContextAdminUser,
+        user: { ...requestContextAdminUser.user, roles_portal: [ROLE_ADMIN] },
+      });
+
+      const result = await loadUserConnection(opts);
+
+      const returnedIds = result.edges.map((e) => e.node!.id);
+      expect(returnedIds).toContain(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
+      );
+      expect(returnedIds).toContain(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+      );
+    });
   });
 });

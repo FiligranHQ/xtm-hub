@@ -7,6 +7,7 @@ import {
 } from '../../../../knexfile';
 import {
   Filter,
+  OrganizationCapability,
   QueryUsersArgs,
   UserConnection,
   User as UserGenerated,
@@ -21,6 +22,7 @@ import UserOrganizationPending, {
   UserOrganizationPendingInitializer,
   UserOrganizationPendingMutator,
 } from '../../../model/kanel/public/UserOrganizationPending';
+import { securityGuard } from '../../../security/guard';
 
 interface OrganizationCleanup {
   organizationId: number;
@@ -87,10 +89,17 @@ export const UserOrganizationPendingDomain = {
     user_id: UserId,
     organization_id: OrganizationId
   ) => {
+    await securityGuard.assertUserCapabilities(
+      [
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManageAccess,
+      ],
+      organization_id
+    );
+
     return db<UserOrganizationPending>('User_Organization_Pending')
       .where({ user_id, organization_id })
-      .delete('*')
-      .secureQuery();
+      .delete('*');
   },
 
   bulkRemoveUserFromOrganizationPending: async (
