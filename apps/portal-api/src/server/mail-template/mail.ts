@@ -103,7 +103,8 @@ export type MailTemplates = {
   free_trial_expired: FreeTrialGenericModel;
   organization_pending_user_digest: OrganizationPendingUserDigestModel;
   admin_saas_instance_requested: AdminSaasInstanceRequestedModel;
-  public_roadmap_monthly_reminder: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  public_roadmap_monthly_reminder: {};
 };
 
 export const templateSubjects: {
