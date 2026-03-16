@@ -6,6 +6,7 @@ import {
   UserServiceConnection,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
 import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import DBSubscriptionModel, {
   SubscriptionId,
@@ -21,6 +22,7 @@ import {
   UserServiceCapabilityInitializer,
 } from '../../model/kanel/public/UserServiceCapability';
 import { UserLoadUserBy } from '../../model/user';
+import { isUserAdminPlatform } from '../../security/access';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
@@ -515,6 +517,7 @@ export const UserServiceDomain = {
     opts: QueryOpts,
     subscriptionId: SubscriptionId
   ) => {
+    const { user } = requestContext.require();
     const userServiceQuery = db<UserService>('User_Service')
       .where('subscription_id', '=', subscriptionId)
       .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
@@ -528,6 +531,11 @@ export const UserServiceDomain = {
           })
         ),
       ]);
+
+    if (!isUserAdminPlatform(user)) {
+      userServiceQuery.tap(restrictSubscriptionToUserOrganization);
+    }
+
     return paginate<UserService, UserServiceConnection>(
       'User_Service',
       opts,

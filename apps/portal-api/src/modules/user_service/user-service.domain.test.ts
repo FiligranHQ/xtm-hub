@@ -1,7 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
+import {
+  SERVICES,
+  TEST_ORGANIZATIONS,
+  requestContextAdminSecondOrga,
+  requestContextAdminUser,
+} from '../../../tests/tests.const';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
@@ -913,6 +919,82 @@ describe('UserServiceDomain', () => {
       expect(
         Object.prototype.hasOwnProperty.call(result, 'service_personal_data')
       ).toBe(true);
+    });
+  });
+
+  describe('loadUserServiceBySubscription', () => {
+    const defaultOpts = {
+      first: 50,
+      orderBy: 'User_Service.id',
+      orderMode: 'asc',
+    };
+
+    const secondOrgaSub = useSubscription();
+    let filigranSubId: SubscriptionId;
+
+    beforeEach(async () => {
+      filigranSubId = await createTestSubscription({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        start_date: new Date(),
+        end_date: undefined,
+      });
+      await insertUserService(SIMPLE.ID, secondOrgaSub.id);
+      await insertUserService(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        filigranSubId
+      );
+    });
+
+    afterEach(async () => {
+      await cleanupUserServices(filigranSubId);
+      await db('Subscription').where('id', filigranSubId).delete();
+    });
+
+    it('should return only users from the selected organization', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const result = await UserServiceDomain.loadUserServiceBySubscription(
+        defaultOpts,
+        secondOrgaSub.id
+      );
+
+      const returnedUserIds = result.edges.map((e) => e.node!.user_id);
+      expect(returnedUserIds).toContain(SIMPLE.ID);
+      expect(returnedUserIds).not.toContain(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+      );
+    });
+
+    it('should not return users from the selected organization subscription when querying from another organization', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const result = await UserServiceDomain.loadUserServiceBySubscription(
+        defaultOpts,
+        filigranSubId
+      );
+
+      expect(result.edges).toHaveLength(0);
+    });
+
+    it('should return users from any organization for filigran admin', async () => {
+      requestContext.set({
+        ...requestContextAdminUser,
+        user: {
+          ...requestContextAdminUser.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        },
+      });
+
+      const result = await UserServiceDomain.loadUserServiceBySubscription(
+        defaultOpts,
+        filigranSubId
+      );
+
+      const returnedUserIds = result.edges.map((e) => e.node!.user_id);
+      expect(returnedUserIds).toContain(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+      );
     });
   });
 });
