@@ -10,6 +10,7 @@ import {
   DeploymentRequestUseCase,
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
@@ -31,7 +32,7 @@ export async function insertDeploymentRequest(
     description: '',
     creation_status: ServiceInstanceCreationStatus.Pending,
     public: false,
-    join_type: 'JOIN_AUTO',
+    join_type: ServiceInstanceJoinType.JoinAuto,
     tags: [
       serviceInstanceTagMappedByPlatformIdentifier[PlatformIdentifier.Opencti],
     ],

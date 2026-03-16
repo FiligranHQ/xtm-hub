@@ -1,6 +1,7 @@
 import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
+  ServiceInstanceTag,
 } from '../../../__generated__/resolvers-types';
 
 export const serviceDefinitionIdentifierMappedByPlatformIdentifier: Record<
@@ -28,8 +29,8 @@ export const serviceInstanceNameMappedByPlatformIdentifier: Record<
 
 export const serviceInstanceTagMappedByPlatformIdentifier: Record<
   PlatformIdentifier,
-  string
+  ServiceInstanceTag
 > = {
-  [PlatformIdentifier.Opencti]: 'openCTI',
-  [PlatformIdentifier.Openaev]: 'openAEV',
+  [PlatformIdentifier.Opencti]: ServiceInstanceTag.OpenCti,
+  [PlatformIdentifier.Openaev]: ServiceInstanceTag.OpenAev,
 };

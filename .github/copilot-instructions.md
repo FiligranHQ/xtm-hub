@@ -276,10 +276,9 @@ Dockerfile                      # E2E test Docker image
 ### Database Access Pattern
 
 The `db()` function from `knexfile.ts` is the primary database accessor. It:
-- Accepts a `PortalContext` and `DatabaseType` (table name)
-- Applies security layers via `.secureQuery()`
+- Accepts a `DatabaseType` (table name)
 - Supports pagination via `paginate()`
-- Uses `requestContext` (AsyncLocalStorage) for implicit transaction support
+- Uses `databaseContext` (AsyncLocalStorage) for implicit transaction support
 
 ## Authentication & Security
 

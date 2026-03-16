@@ -2088,9 +2088,9 @@ describe('Deployment app', () => {
           });
 
           await DeploymentsApp.releaseDeploymentRequestPlace(
-            deploymentRequest!.hub_status as DeploymentRequestHubStatus,
-            deploymentRequest!.platform_identifier as PlatformIdentifier,
-            deploymentRequest!.region as DeploymentRequestPlatformRegion
+            deploymentRequest!.hub_status,
+            deploymentRequest!.platform_identifier,
+            deploymentRequest!.region
           );
 
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -2111,9 +2111,9 @@ describe('Deployment app', () => {
         .mockResolvedValue(queuedDeploymentRequest);
 
       await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequestToRelease!.hub_status as DeploymentRequestHubStatus,
-        deploymentRequestToRelease!.platform_identifier as PlatformIdentifier,
-        deploymentRequestToRelease!.region as DeploymentRequestPlatformRegion
+        deploymentRequestToRelease!.hub_status,
+        deploymentRequestToRelease!.platform_identifier,
+        deploymentRequestToRelease!.region
       );
 
       expect(setFirstQueuedRequestAsPendingSpy).toHaveBeenCalledWith(
@@ -2134,9 +2134,9 @@ describe('Deployment app', () => {
       });
 
       await DeploymentsApp.releaseDeploymentRequestPlace(
-        deploymentRequest!.hub_status as DeploymentRequestHubStatus,
-        deploymentRequest!.platform_identifier as PlatformIdentifier,
-        deploymentRequest!.region as DeploymentRequestPlatformRegion
+        deploymentRequest!.hub_status,
+        deploymentRequest!.platform_identifier,
+        deploymentRequest!.region
       );
 
       expect(freePlaceSpy).toHaveBeenCalledWith(
@@ -2157,9 +2157,9 @@ describe('Deployment app', () => {
         });
 
         await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest!.hub_status as DeploymentRequestHubStatus,
-          deploymentRequest!.platform_identifier as PlatformIdentifier,
-          deploymentRequest!.region as DeploymentRequestPlatformRegion
+          deploymentRequest!.hub_status,
+          deploymentRequest!.platform_identifier,
+          deploymentRequest!.region
         );
 
         expect(telemetrySpy).not.toHaveBeenCalled();
@@ -2190,9 +2190,9 @@ describe('Deployment app', () => {
         });
 
         await DeploymentsApp.releaseDeploymentRequestPlace(
-          deploymentRequest!.hub_status as DeploymentRequestHubStatus,
-          deploymentRequest!.platform_identifier as PlatformIdentifier,
-          deploymentRequest!.region as DeploymentRequestPlatformRegion
+          deploymentRequest!.hub_status,
+          deploymentRequest!.platform_identifier,
+          deploymentRequest!.region
         );
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({

@@ -9,5 +9,6 @@ Migrations must be defined as pure JS for this reason.
 - Generate the Ts files with `yarn generate-pg-to-ts` or `npx kanel` (remove the `type: module` from
   portal-api/package.json before launching the commands since it is not compatible)
 - Please think about update your graphQL, your models etc.
+- If a column is an enum type, update `.kanelrc.js` with the new enum type and regenerate the Ts files.
 
 NB : If you create a new table, add the databaseType in the knexfile.ts
