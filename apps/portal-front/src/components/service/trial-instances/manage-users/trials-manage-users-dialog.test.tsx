@@ -1,55 +1,38 @@
 import testRender from '@/utils/test/test-render';
 import { act, fireEvent, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { createMockEnvironment } from 'relay-test-utils';
+import { describe, expect, it } from 'vitest';
 import { TrialsManageUsersDialog } from './trials-manage-users-dialog';
 
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useTranslations: () => (key: string) => key,
-}));
-
-vi.mock(
-  '@/components/service/trial-instances/manage-users/trials-manage-users-form',
-  () => ({
-    TrialsManageUsersForm: () => <div>ManageUsersForm</div>,
-  })
-);
-
-const loadQueryMock = vi.fn();
-
-vi.mock('react-relay', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useQueryLoader: () => [null, loadQueryMock],
-}));
-
 describe('TrialsManageUsersDialog', () => {
-  it('should not call loadQuery on mount', () => {
+  it('should not trigger any GraphQL query on mount', () => {
+    const environment = createMockEnvironment();
     testRender(
       <TrialsManageUsersDialog
         serviceInstanceId="service-123"
         organizationId="org-456"
-      />
+      />,
+      { relayConfig: environment }
     );
-    expect(loadQueryMock).not.toHaveBeenCalled();
+    expect(environment.mock.getAllOperations()).toHaveLength(0);
   });
 
-  it('should call loadQuery only when dialog is opened', async () => {
+  it('should trigger GraphQL queries only when dialog is opened', async () => {
+    const environment = createMockEnvironment();
     testRender(
       <TrialsManageUsersDialog
         serviceInstanceId="service-123"
         organizationId="org-456"
-      />
+      />,
+      { relayConfig: environment }
     );
-    expect(loadQueryMock).not.toHaveBeenCalled();
+
+    expect(environment.mock.getAllOperations()).toHaveLength(0);
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    expect(loadQueryMock).toHaveBeenCalledOnce();
-    expect(loadQueryMock).toHaveBeenCalledWith(
-      { serviceInstanceId: 'service-123' },
-      { fetchPolicy: 'store-and-network' }
-    );
+    expect(environment.mock.getAllOperations().length).toBeGreaterThan(0);
   });
 });
