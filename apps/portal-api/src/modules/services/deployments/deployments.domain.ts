@@ -82,8 +82,12 @@ export const DeploymentRequestDomain = {
     }
 
     if (opts.searchTerm) {
-      query.orWhereILike(`User.email`, `%${opts.searchTerm}%`);
-      query.orWhereILike(`Organization.name`, `%${opts.searchTerm}%`);
+      query.where((qb) => {
+        qb.whereILike(`User.email`, `%${opts.searchTerm}%`).orWhereILike(
+          `Organization.name`,
+          `%${opts.searchTerm}%`
+        );
+      });
     }
 
     return paginate<DeploymentRequest, T>(
