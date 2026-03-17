@@ -38,7 +38,7 @@ interface Props {
   onCancel: () => void;
   onCompleted: () => void;
   organizationId?: string;
-  serviceInstanceId?: string;
+  serviceInstanceId: string;
 }
 
 export const TrialsManageUsersForm: React.FC<Props> = ({
@@ -58,8 +58,7 @@ export const TrialsManageUsersForm: React.FC<Props> = ({
 
   const data = useLazyLoadQuery<serviceGroupsByServiceInstanceIdQuery>(
     ServiceGroupsByServiceInstanceIdQueryGraphql,
-    { serviceInstanceId: serviceInstanceId ?? '' },
-    { fetchPolicy: 'store-and-network' }
+    { serviceInstanceId: serviceInstanceId }
   );
 
   const [commitUpdateServiceGroups] = useMutation(

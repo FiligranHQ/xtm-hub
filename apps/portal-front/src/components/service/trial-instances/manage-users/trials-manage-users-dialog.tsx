@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 interface Props {
-  serviceInstanceId?: string;
+  serviceInstanceId: string;
   organizationId?: string;
   trigger?: React.ReactNode;
 }
@@ -31,8 +31,9 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({
           </Button>
         )
       }>
-      {openSheet && (
+      {serviceInstanceId && (
         <TrialsManageUsersForm
+          key={serviceInstanceId}
           onCancel={() => setOpenSheet(false)}
           onCompleted={() => setOpenSheet(false)}
           organizationId={organizationId}
