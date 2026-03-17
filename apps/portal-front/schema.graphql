@@ -116,7 +116,7 @@ type Mutation {
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
-  autoRegisterPlatform(platform: PlatformInput!): Success!
+  autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
@@ -1034,6 +1034,11 @@ input RegisteredPlatformsInput {
 
 input RegisteredPlatformInput {
   service_instance_id: ID!
+}
+
+input AutoRegisterPlatformInput {
+  platform: PlatformInput!
+  existing_users_count: Int
 }
 
 enum ServiceInstanceOrdering {
