@@ -38,6 +38,7 @@ export enum BadRequestErrorCode {
   DeploymentRequestHubStatusNotQueued = 'DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED',
   DocumentMissingMetadata = 'DOCUMENT_MISSING_METADATA',
   IntegrationTypeNotRecognized = 'INTEGRATION_TYPE_NOT_RECOGNIZED',
+  MissingAutoRegisterPlatformArgument = 'MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT',
 }
 
 export enum UnknownErrorCode {

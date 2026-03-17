@@ -103,6 +103,8 @@ export type MailTemplates = {
   free_trial_expired: FreeTrialGenericModel;
   organization_pending_user_digest: OrganizationPendingUserDigestModel;
   admin_saas_instance_requested: AdminSaasInstanceRequestedModel;
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  public_roadmap_monthly_reminder: {};
 };
 
 export const templateSubjects: {
@@ -154,4 +156,6 @@ export const templateSubjects: {
   admin_saas_instance_requested: (params: AdminSaasInstanceRequestedModel) => {
     return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Has Been Launched on XTM Hub by ${params.organizationName}`;
   },
+  public_roadmap_monthly_reminder: () =>
+    'XTM Hub - Public Roadmap monthly reminder',
 };

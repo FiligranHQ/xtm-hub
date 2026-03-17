@@ -25,25 +25,28 @@ export function useDraftAndTimelineEpics(epics: epic_fragment$data[]) {
     }, initial);
   }, [epics]);
 }
-export function useCountEpicsByProduct(epics: epic_fragment$data[]) {
+export function useCountEpicsByProduct(
+  epics: epic_fragment$data[],
+  userCanUpdate: boolean
+): Record<FiligranProductEnum, number> {
   return useMemo(() => {
-    const initial: Record<FiligranProductEnum, epic_fragment$data[]> = {
-      [FiligranProductEnum.XTMHUB]: [],
-      [FiligranProductEnum.OPENCTI]: [],
-      [FiligranProductEnum.OPENAEV]: [],
-    };
+    const initial = Object.values(FiligranProductEnum).reduce(
+      (acc, product) => {
+        acc[product] = 0;
+        return acc;
+      },
+      {} as Record<FiligranProductEnum, number>
+    );
 
     if (!epics) return initial;
 
-    return epics.reduce((acc, item: epic_fragment$data) => {
-      if (item.product === FiligranProductEnum.XTMHUB)
-        acc[FiligranProductEnum.XTMHUB].push(item);
-      else if (item.product === FiligranProductEnum.OPENCTI)
-        acc[FiligranProductEnum.OPENCTI].push(item);
-      else if (item.product === FiligranProductEnum.OPENAEV)
-        acc[FiligranProductEnum.OPENAEV].push(item);
+    const filteredEpics = userCanUpdate
+      ? epics
+      : epics.filter((epic) => epic.active);
 
+    return filteredEpics.reduce((acc, item) => {
+      acc[item.product] += 1;
       return acc;
     }, initial);
-  }, [epics]);
+  }, [epics, userCanUpdate]);
 }

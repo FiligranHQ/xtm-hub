@@ -1,7 +1,7 @@
 'use client';
 import { EpicFilter, EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
-import { EpicItem } from '@/components/epic/epic-item';
+import { EpicItem } from '@/components/epic/epic-item/epic-item';
 import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
@@ -11,13 +11,16 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 
 interface EpicListProps {
   epics: epic_fragment$data[];
-  serviceInstance: serviceInstance_fragment$data;
+  serviceInstance:
+    | serviceInstance_fragment$data
+    | seoServiceInstanceFragment$data;
   selectedProduct: EpicFilterType;
   onFilterChange: (filter: EpicFilterType) => void;
 }
@@ -32,11 +35,11 @@ export const EpicList = ({
   const [openSheet, setOpenSheet] = useState(false);
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upsert,
-    serviceInstance
+    serviceInstance as serviceInstance_fragment$data
   );
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
-    serviceInstance
+    serviceInstance as serviceInstance_fragment$data
   );
   const filteredEpics =
     selectedProduct === 'all'
@@ -45,7 +48,7 @@ export const EpicList = ({
 
   const { draft, now, next, under_consideration } =
     useDraftAndTimelineEpics(filteredEpics);
-  const { xtmhub, opencti, openaev } = useCountEpicsByProduct(epics);
+  const countsByProduct = useCountEpicsByProduct(epics, userCanUpdate);
 
   const sections = useMemo(
     () => [
@@ -75,19 +78,19 @@ export const EpicList = ({
     <>
       <div className="flex flex-row items-center gap-4">
         <h1>{t('Epic.XTMRoadmap')}</h1>
-        {userCanUpdate && (
-          <EpicFormSheet
-            open={openSheet}
-            setOpen={setOpenSheet}
+        <div className="flex flex-row ml-auto items-center">
+          <EpicFilter
+            selectedFilter={selectedProduct}
+            onSelectedFilterChange={onFilterChange}
+            countsByProduct={countsByProduct}
           />
-        )}
-        <EpicFilter
-          selectedFilter={selectedProduct}
-          onSelectedFilterChange={onFilterChange}
-          xtmhubCount={xtmhub.length}
-          openctiCount={opencti.length}
-          openaevCount={openaev.length}
-        />
+          {userCanUpdate && (
+            <EpicFormSheet
+              open={openSheet}
+              setOpen={setOpenSheet}
+            />
+          )}
+        </div>
       </div>
       {sections.map((timeline) => {
         if (
@@ -98,11 +101,9 @@ export const EpicList = ({
         }
         return (
           <div key={timeline.title}>
-            <div
-              key={timeline.title}
-              className="relative flex items-center justify-center">
-              <Separator className="my-l absolute" />
-              <span className="relative bg-background p-s text-muted-foreground">
+            <div className="relative my-xl">
+              <Separator />
+              <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-s text-muted-foreground">
                 {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
               </span>
             </div>
