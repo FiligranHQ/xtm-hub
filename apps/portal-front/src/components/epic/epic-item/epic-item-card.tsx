@@ -1,8 +1,8 @@
 import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
 import { DeleteEpic } from '@/components/epic/epic-item/delete-epic';
 import { EpicItemHeader } from '@/components/epic/epic-item/epic-item-header';
-import { useEpicListContext } from '@/components/epic/epic-page';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
+import { useEpicListContext } from '@/hooks/useEpicListContext';
 import { MoreVertIcon } from '@filigran/icon';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useTranslations } from 'next-intl';

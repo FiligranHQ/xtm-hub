@@ -11,13 +11,10 @@ export const epicFragment = graphql`
     product
     active
     epic_type
-    document {
-      id
-      minio_name
-      service_instance_id
-    }
+    document_id
   }
 `;
+
 export const epicsListFragment = graphql`
   fragment epicsList_epics on Query
   @refetchable(queryName: "EpicPaginationQuery") {
@@ -37,6 +34,7 @@ export const epicsListFragment = graphql`
     }
   }
 `;
+
 export const EpicListQuery = graphql`
   query epicsQuery(
     $count: Int!

@@ -11,13 +11,16 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 
 interface EpicListProps {
   epics: epic_fragment$data[];
-  serviceInstance: serviceInstance_fragment$data;
+  serviceInstance:
+    | serviceInstance_fragment$data
+    | seoServiceInstanceFragment$data;
   selectedProduct: EpicFilterType;
   onFilterChange: (filter: EpicFilterType) => void;
 }
@@ -32,11 +35,11 @@ export const EpicList = ({
   const [openSheet, setOpenSheet] = useState(false);
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upsert,
-    serviceInstance
+    serviceInstance as serviceInstance_fragment$data
   );
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,
-    serviceInstance
+    serviceInstance as serviceInstance_fragment$data
   );
   const filteredEpics =
     selectedProduct === 'all'
@@ -45,7 +48,10 @@ export const EpicList = ({
 
   const { draft, now, next, under_consideration } =
     useDraftAndTimelineEpics(filteredEpics);
-  const { xtmhub, opencti, openaev } = useCountEpicsByProduct(epics);
+  const { xtmhub, opencti, openaev } = useCountEpicsByProduct(
+    epics,
+    userCanUpdate
+  );
 
   const sections = useMemo(
     () => [

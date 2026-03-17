@@ -1,28 +1,11 @@
 'use client';
 import { EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicList } from '@/components/epic/epic-list';
+import { EpicListContext } from '@/hooks/useEpicListContext';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { createContext, useContext, useState } from 'react';
-interface EpicListConnectionContextType {
-  connectionID: string;
-  filterByProduct: (product: FiligranProductEnum) => void;
-}
-
-// Custom hook to use the ConnectionContext
-export const useEpicListContext = (): EpicListConnectionContextType => {
-  const context = useContext(EpicListContext);
-  if (!context) {
-    throw new Error(
-      'useEpicListContext must be used within a ConnectionProvider'
-    );
-  }
-  return context;
-};
-const EpicListContext = createContext<
-  EpicListConnectionContextType | undefined
->(undefined);
+import { useState } from 'react';
 
 interface EpicPageProps {
   epics: epic_fragment$data[];
