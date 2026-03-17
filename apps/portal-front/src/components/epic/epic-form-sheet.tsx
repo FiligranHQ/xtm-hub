@@ -1,11 +1,11 @@
 'use client';
 import EpicForm, { epicFormSchema } from '@/components/epic/epic-form';
-import { useEpicListContext } from '@/components/epic/epic-page';
 import {
   CreateEpicMutation,
   UpdateEpicMutation,
 } from '@/components/epic/epic.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { useEpicListContext } from '@/hooks/useEpicListContext';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { Button, useToast } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
@@ -119,9 +119,7 @@ export const EpicFormSheet = ({
       setOpen={setOpenSheet}
       trigger={
         triggerElement || (
-          <Button className="ml-auto">
-            {t(epic ? 'Utils.Update' : 'Utils.Create')}
-          </Button>
+          <Button>{t(epic ? 'Utils.Update' : 'Utils.Create')}</Button>
         )
       }
       title={t(
