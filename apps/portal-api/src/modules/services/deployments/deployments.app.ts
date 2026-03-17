@@ -186,7 +186,7 @@ export const DeploymentsApp = {
             ? 'free_trial_requested'
             : 'free_trial_queued';
 
-        sendMail({
+        await sendMail({
           to: user.email,
           template: mailTemplate,
           params: {
@@ -206,7 +206,7 @@ export const DeploymentsApp = {
           ? XTM_HUB_SUPPORT_EMAIL
           : XTM_HUB_DEV_TEAM_EMAIL;
       try {
-        sendMail({
+        await sendMail({
           to: instanceRequestedEmail,
           template: 'admin_saas_instance_requested',
           params: {
@@ -361,7 +361,7 @@ export const DeploymentsApp = {
           id: deploymentRequest.user_requester_id,
         });
 
-        sendMail({
+        await sendMail({
           to: user.email,
           template: 'free_trial_provisioning',
           params: {
@@ -395,7 +395,7 @@ export const DeploymentsApp = {
           JSON.stringify(serviceConfiguration.config)
         );
 
-        void sendMail({
+        await sendMail({
           to: user.email,
           template: 'free_trial_registered',
           params: {
@@ -628,7 +628,7 @@ export const DeploymentsApp = {
       const [requester] = await loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
-      sendMail({
+      await sendMail({
         to: requester.email,
         template: 'free_trial_cancelled',
         params: {
@@ -699,7 +699,7 @@ export const DeploymentsApp = {
           const [requester] = await loadUser({
             id: trial.user_requester_id,
           });
-          sendMail({
+          await sendMail({
             to: requester.email,
             template: 'free_trial_expired',
             params: {

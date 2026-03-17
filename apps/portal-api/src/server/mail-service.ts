@@ -5,6 +5,8 @@ import Handlebars from 'handlebars';
 import nodemailer from 'nodemailer';
 import * as path from 'path';
 import { PlatformIdentifier } from '../__generated__/resolvers-types';
+import { MAIL_QUEUES, type MailJobData } from '../thirdparty/pgboss/mail.jobs';
+import { PgBossProducer } from '../thirdparty/pgboss/producer';
 import { logApp } from '../utils/app-logger.util';
 import {
   MailTemplates,
@@ -26,6 +28,9 @@ interface SendMailParams<T extends keyof MailTemplates> {
   template: T;
   params: MailTemplates[T];
 }
+
+const useQueueProcessing = (): boolean =>
+  config.get<boolean>('mail_use_queue_processing');
 
 export const buildServiceLink = ({
   serviceDefinitionIdentifier,
@@ -74,32 +79,48 @@ export async function renderEmail<T extends keyof MailTemplates>(
   return compiledTemplate(renderParams);
 }
 
-export const sendMail = async <T extends keyof MailTemplates>({
+export const sendMailDirect = async <T extends keyof MailTemplates>({
   to,
   template,
   params,
-}: SendMailParams<T>) => {
+}: SendMailParams<T>): Promise<void> => {
   const from = config.get<string>('smtp_options.from');
   const subject = templateSubjects[template](params);
   const html = await renderEmail(template, params);
 
   if (!(process.env.VITEST_MODE || process.env.NODE_ENV === 'test')) {
-    transporter?.sendMail(
-      {
-        from,
-        to,
-        subject,
-        html,
-      },
-      (error, info) => {
-        if (error) {
-          logApp.error('Email error: ' + error);
-        } else {
-          logApp.info('Email sent: ' + info.response);
-        }
-      }
-    );
+    try {
+      const info = await transporter.sendMail({ from, to, subject, html });
+      logApp.info('Email sent: ' + info.response);
+    } catch (error) {
+      logApp.error('Email error: ' + error);
+      throw error;
+    }
   }
+};
+
+export const sendMail = async <T extends keyof MailTemplates>({
+  to,
+  template,
+  params,
+}: SendMailParams<T>) => {
+  if (useQueueProcessing()) {
+    try {
+      const jobData: MailJobData = {
+        to,
+        template,
+        params: params as Record<string, unknown>,
+      };
+      await PgBossProducer.send(MAIL_QUEUES.SEND, jobData);
+    } catch (error) {
+      logApp.error('Failed to enqueue mail job', { error });
+    }
+    return;
+  }
+
+  sendMailDirect({ to, template, params }).catch((error) => {
+    logApp.error('Failed to send mail directly', { error });
+  });
 };
 
 /**
