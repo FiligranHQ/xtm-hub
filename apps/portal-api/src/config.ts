@@ -35,6 +35,7 @@ interface PortalConfig {
   };
   enabled_emails: {
     pending_user_digest: boolean;
+    public_roadmap_monthly_reminder: boolean;
   };
   elasticsearch: {
     protocol: string;
@@ -82,6 +83,9 @@ const portalConfig: PortalConfig = {
   enabled_emails: {
     pending_user_digest:
       config.get<boolean>('enabled_emails.pending_user_digest') ?? false,
+    public_roadmap_monthly_reminder:
+      config.get<boolean>('enabled_emails.public_roadmap_monthly_reminder') ??
+      false,
   },
   elasticsearch: {
     protocol: config.get<string | null>('elasticsearch.protocol') ?? 'https',

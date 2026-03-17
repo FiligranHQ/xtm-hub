@@ -39,14 +39,14 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
       href: `/${APP_PATH}`,
     },
     {
-      label: 'MenuLinks.XTMRoadmap',
+      label: t('Epic.XTMRoadmap'),
       original: true,
     },
   ];
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.XTMRoadmap')}</h1>
+      <h1 className="sr-only">{t('Epic.XTMRoadmap')}</h1>
       <EpicPage
         connectionID={connectionID}
         serviceInstance={serviceInstance}

@@ -80,6 +80,7 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   platform_contract: string;
   platform_version: string;
   platform_url: string;
+  existing_users_count?: number;
 }
 
 export interface OneClickDeployEvent extends BaseTelemetryEvent {
