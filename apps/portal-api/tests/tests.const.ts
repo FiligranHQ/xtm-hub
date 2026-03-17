@@ -80,7 +80,7 @@ export const SERVICES = {
       ID: 'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceInstanceId,
     },
     INTEGRATIONS: {
-      NAME: 'csv feeds',
+      NAME: 'integrations',
       ID: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc' as ServiceInstanceId,
       CAPABILITIES: {
         UPLOAD: {

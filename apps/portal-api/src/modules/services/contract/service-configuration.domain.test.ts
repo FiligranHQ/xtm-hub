@@ -92,6 +92,14 @@ describe('Service Contract Domain', () => {
         });
 
       expect(configuration).toBeDefined();
+      expect(configuration).toMatchObject({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
     });
 
     it('should return undefined when platform is found but token does not match', async () => {
@@ -126,9 +134,11 @@ describe('Service Contract Domain', () => {
   });
 
   describe('loadConfigurationByPlatform', () => {
+    let token: string;
     let platformId: string;
 
     beforeEach(async () => {
+      token = uuidv4();
       platformId = uuidv4();
 
       await db<ServiceConfiguration>('Service_Configuration').del();
@@ -136,7 +146,7 @@ describe('Service Contract Domain', () => {
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
         config: {
-          token: uuidv4(),
+          token,
           platform_id: platformId,
         },
       });
@@ -147,6 +157,14 @@ describe('Service Contract Domain', () => {
         await ServiceContractDomain.loadConfigurationByPlatform(platformId);
 
       expect(configuration).toBeDefined();
+      expect(configuration).toMatchObject({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
     });
 
     it('should return configuration when platform is found and active, and filter is active', async () => {
@@ -157,6 +175,14 @@ describe('Service Contract Domain', () => {
         );
 
       expect(configuration).toBeDefined();
+      expect(configuration).toMatchObject({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
     });
 
     it('should return undefined when configuration is active and inactive filter is used', async () => {

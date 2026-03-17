@@ -23,13 +23,43 @@ import {
 } from '../opencti/integrations/integrations.model';
 
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
-import Document from '../../../../model/kanel/public/Document';
+import Document, { DocumentId } from '../../../../model/kanel/public/Document';
 import { ADMIN_UUID } from '../../../../portal.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
-import { CustomDashboard } from '../opencti/custom-dashboards/custom-dashboards.model';
 import { DocumentDomain } from './document.domain';
-import { DocumentMetadataKeys } from './document.metadata.domain';
+
+const testCreateDocument = async () => {
+  const document = await DocumentApp.createDocument(
+    {
+      uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      name: 'myCsvFeed',
+      description: 'description',
+      short_description: 'short_description',
+      slug: 'slug',
+      active: true,
+    },
+    [
+      { key: 'integration_type', value: IntegrationType.CsvFeed },
+      { key: 'feed_url', value: 'https://example.com' },
+    ],
+    INTEGRATION_SERVICE_INSTANCE_ID,
+    []
+  );
+
+  expect(document).toBeDefined();
+
+  return document!;
+};
+
+const testLoadDocument = async (
+  documentId: DocumentId
+): Promise<Document | undefined> => {
+  return db<Document>('Document')
+    .where('id', '=', documentId)
+    .select('*')
+    .first();
+};
 
 describe('Document domain', () => {
   const minioFileMock = {
@@ -47,83 +77,37 @@ describe('Document domain', () => {
   });
 
   describe('deactivateDocuments', () => {
-    it('should do nothing when the document ids is an empty array', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        {
-          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          name: 'myCsvFeed',
-          description: 'description',
-          short_description: 'short_description',
-          slug: 'slug',
-          active: true,
-        },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
-        ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
+    let createdDocument: Document;
+    beforeEach(async () => {
+      createdDocument = await testCreateDocument();
+    });
 
+    it('should do nothing when the document ids is an empty array', async () => {
       await DocumentDomain.deactivateDocuments([]);
 
-      const documents = await db<Document[]>('Document')
-        .where('id', '=', createdDocument!.id)
-        .select('*');
+      const document = await testLoadDocument(createdDocument.id);
 
-      expect(documents.length).toBe(1);
-      expect(documents[0]!.active).toBe(true);
+      expect(document).toBeDefined();
+      expect(document!.active).toBe(true);
     });
 
     it('should deactivate document and set remover id', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        {
-          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          name: 'myCsvFeed',
-          description: 'description',
-          short_description: 'short_description',
-          slug: 'slug',
-          active: true,
-        },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
-        ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
-
       await DocumentDomain.deactivateDocuments([createdDocument.id]);
 
-      const documents = await db<Document[]>('Document')
-        .where('id', '=', createdDocument!.id)
-        .select('*');
+      const document = await testLoadDocument(createdDocument.id);
 
-      expect(documents.length).toBe(1);
-      expect(documents[0]!.active).toBe(false);
-      expect(documents[0]!.remover_id).toBe(ADMIN_UUID);
+      expect(document).toBeDefined();
+      expect(document!.active).toBe(false);
+      expect(document!.remover_id).toBe(ADMIN_UUID);
     });
   });
 
   describe(`loadParentDocumentsByServiceInstance`, () => {
+    let csvFeed: Document;
+    beforeEach(async () => {
+      csvFeed = await testCreateDocument();
+    });
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
-      await DocumentApp.createDocument(
-        {
-          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          name: 'myCsvFeed',
-          description: 'description',
-          short_description: 'short_description',
-          slug: 'slug',
-          active: true,
-        },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
-        ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
-
       await upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
@@ -162,24 +146,6 @@ describe('Document domain', () => {
     });
 
     it('should filter an integration feed with a metadata type', async () => {
-      // Create data
-      const csvFeed = await DocumentApp.createDocument(
-        {
-          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          name: 'myCsvFeed',
-          description: 'description',
-          short_description: 'short_description',
-          slug: 'slug',
-          active: true,
-        },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
-        ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
-
       const [connector] = await upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
@@ -284,24 +250,6 @@ describe('Document domain', () => {
 
     describe('multiple filters', () => {
       it('should handle type and version', async () => {
-        // Create data
-        await DocumentApp.createDocument(
-          {
-            uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-            name: 'myCsvFeed',
-            description: 'description',
-            short_description: 'short_description',
-            slug: 'slug',
-            active: true,
-          },
-          [
-            { key: 'integration_type', value: IntegrationType.CsvFeed },
-            { key: 'feed_url', value: 'https://example.com' },
-          ],
-          INTEGRATION_SERVICE_INSTANCE_ID,
-          []
-        );
-
         const connectors = await upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
@@ -349,24 +297,6 @@ describe('Document domain', () => {
       });
 
       it('should handle type and subtype', async () => {
-        // Create data
-        await DocumentApp.createDocument(
-          {
-            uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-            name: 'myCsvFeed',
-            description: 'description',
-            short_description: 'short_description',
-            slug: 'slug',
-            active: true,
-          },
-          [
-            { key: 'integration_type', value: IntegrationType.CsvFeed },
-            { key: 'feed_url', value: 'https://example.com' },
-          ],
-          INTEGRATION_SERVICE_INSTANCE_ID,
-          []
-        );
-
         const connectors = await upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
@@ -473,7 +403,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(secondContractConnection.edges.length).toBe(1);
+        expect(secondContractConnection.edges.length).toBe(2);
         expect(secondContractConnection.edges[0]?.node.id).toBe(
           connectors[0]?.id
         );
@@ -514,7 +444,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(allContractsConnection.edges.length).toBe(2);
+        expect(allContractsConnection.edges.length).toBe(3);
       });
     });
   });
@@ -526,33 +456,28 @@ describe('Document domain', () => {
         type: 'test-type',
         slug: 'minimal-doc',
       };
-      const metadataKeys: DocumentMetadataKeys<Document> = [];
-      const document = await DocumentDomain.createDocument(
-        docData,
-        metadataKeys
-      );
+      const document = await DocumentDomain.createDocument(docData, []);
       expect(document).toBeDefined();
-      if (!document) throw new Error('Document not created');
-      expect(document.name).toBe(docData.name);
-      expect(document.type).toBe(docData.type);
-      expect(document.slug).toBe(docData.slug);
-      expect(document.uploader_id).toBe(ADMIN_UUID);
-      expect(document.uploader_organization_id).toBe(
-        TEST_ORGANIZATIONS.FILIGRAN.ID
-      );
-      expect(document.active).toBe(true);
-      // Check DB row exists
-      const dbDocument = await db('Document').where('id', document.id).first();
+      expect(document).toMatchObject({
+        name: docData.name,
+        type: docData.type,
+        slug: docData.slug,
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        active: true,
+      });
 
+      // Check DB row exists
+      const dbDocument = await db('Document').where('id', document!.id).first();
       expect(dbDocument).toBeDefined();
-      expect(dbDocument.name).toBe(docData.name);
-      expect(dbDocument.type).toBe(docData.type);
-      expect(dbDocument.slug).toBe(docData.slug);
-      expect(dbDocument.uploader_id).toBe(ADMIN_UUID);
-      expect(dbDocument.uploader_organization_id).toBe(
-        TEST_ORGANIZATIONS.FILIGRAN.ID
-      );
-      expect(dbDocument.active).toBe(true);
+      expect(dbDocument).toMatchObject({
+        name: docData.name,
+        type: docData.type,
+        slug: docData.slug,
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        active: true,
+      });
     });
 
     it('should create a document with explicit uploader_id', async () => {
@@ -563,14 +488,10 @@ describe('Document domain', () => {
         slug: 'uploader-doc',
         uploader_id: toGlobalId('User', otherUserId),
       };
-      const metadataKeys: DocumentMetadataKeys<Document> = [];
-      const document = await DocumentDomain.createDocument(
-        docData,
-        metadataKeys
-      );
+      const document = await DocumentDomain.createDocument(docData, []);
       expect(document).toBeDefined();
-      if (!document) throw new Error('Document not created');
-      expect(document.uploader_id).toBe(otherUserId);
+
+      expect(document!.uploader_id).toBe(otherUserId);
     });
 
     it('should create an inactive document', async () => {
@@ -580,14 +501,9 @@ describe('Document domain', () => {
         slug: 'inactive-doc',
         active: false,
       };
-      const metadataKeys: DocumentMetadataKeys<Document> = [];
-      const document = await DocumentDomain.createDocument(
-        docData,
-        metadataKeys
-      );
+      const document = await DocumentDomain.createDocument(docData, []);
       expect(document).toBeDefined();
-      if (!document) throw new Error('Document not created');
-      expect(document.active).toBe(false);
+      expect(document!.active).toBe(false);
     });
 
     it('should throw if required fields are missing', async () => {
@@ -618,11 +534,11 @@ describe('Document domain', () => {
         ['product_version']
       );
       expect(loaded).toBeDefined();
-      expect(loaded.id).toBe(inserted.id);
-      expect(loaded.name).toBe('DocMeta2');
-      expect((loaded as unknown as CustomDashboard).product_version).toBe(
-        '1.2.3'
-      );
+      expect(loaded).toMatchObject({
+        id: inserted.id,
+        name: 'DocMeta2',
+        product_version: '1.2.3',
+      });
     });
 
     it('should return undefined if document does not exist', async () => {
@@ -663,16 +579,7 @@ describe('Document domain', () => {
 
   describe('loadUploaderOrganization', () => {
     it('should return the organization which uploaded document', async () => {
-      const [inserted] = await db('Document')
-        .insert({
-          name: 'DocMeta2',
-          type: 'meta-type',
-          slug: 'doc-meta2',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          active: true,
-        })
-        .returning('*');
+      const inserted = await testCreateDocument();
 
       const uploaderOrganization =
         await DocumentDomain.loadUploaderOrganization(inserted.id);
@@ -779,12 +686,12 @@ describe('Document domain', () => {
       );
 
       expect(docs.length).toBe(1);
-      expect(docs[0].id).toBe(parentDoc.id);
-      expect(docs[0].active).toBe(true);
-      expect(docs[0].type).toBe(OPENCTI_INTEGRATION_DOCUMENT_TYPE);
-      expect(docs[0].service_instance_id).toBe(
-        SERVICES.INSTANCES.INTEGRATIONS.ID
-      );
+      expect(docs[0]).toMatchObject({
+        id: parentDoc.id,
+        active: true,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
     });
 
     it('should not return child, inactive, or other-service documents', async () => {

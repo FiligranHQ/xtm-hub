@@ -45,7 +45,7 @@ import {
 } from './service-instance.domain';
 
 describe('Service instance domain', () => {
-  beforeEach(async () => {
+  afterEach(async () => {
     await db<Subscription>('Subscription').del();
   });
 

@@ -15,24 +15,20 @@ import * as capabilityHelper from '../../user_service/user-service-capability/us
 import * as serviceInstanceDomain from '../service-instance.domain';
 import { isUserRestrictedToActiveDocument } from './document.security';
 
-const mockUser = (
-  _granted = false,
-  userId = uuidv4(),
-  organizationId = uuidv4()
-): UserLoadUserBy => {
-  return {
-    id: userId as UserId,
-    selected_organization_id: organizationId as OrganizationId,
-    capabilities: [],
-    roles_portal: [],
-    organizations: [],
-    selected_org_capabilities: [],
-    created_at: new Date(),
-    updated_at: new Date(),
-    last_login_at: null,
-    organization_id: organizationId,
-  } as unknown as UserLoadUserBy;
-};
+const organizationId = uuidv4() as OrganizationId;
+
+const mockUser = {
+  id: uuidv4() as UserId,
+  selected_organization_id: organizationId as OrganizationId,
+  capabilities: [],
+  roles_portal: [],
+  organizations: [],
+  selected_org_capabilities: [],
+  created_at: new Date(),
+  updated_at: new Date(),
+  last_login_at: null,
+  organization_id: organizationId,
+} as unknown as UserLoadUserBy;
 
 const mockServiceInstanceId = uuidv4() as ServiceInstanceId;
 
@@ -48,97 +44,85 @@ const mockServiceDefinition = (identifier: ServiceDefinitionIdentifier) => ({
   service_capability: [],
 });
 
-describe('isUserRestrictedToActiveDocument', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
+describe('Document security', () => {
+  describe('isUserRestrictedToActiveDocument', () => {
+    beforeEach(() => {
+      vi.restoreAllMocks();
+      vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
+      vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([]);
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(
+        mockServiceDefinition(
+          ServiceDefinitionIdentifier.OpenctiCustomDashboards
+        )
+      );
+    });
 
-  it('should return false when user is granted', async () => {
-    vi.spyOn(access, 'isUserGranted').mockReturnValue(true);
-    const result = await isUserRestrictedToActiveDocument(
-      mockUser(),
-      mockServiceInstanceId
-    );
-    expect(result).toBe(false);
-  });
+    it('should return false when user is granted', async () => {
+      vi.spyOn(access, 'isUserGranted').mockReturnValue(true);
+      const result = await isUserRestrictedToActiveDocument(
+        mockUser,
+        mockServiceInstanceId
+      );
+      expect(result).toBe(false);
+    });
 
-  it('should return true when user lacks Upload capability and service definition is restricted', async () => {
-    vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
-    vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([]);
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadServiceDefinitionByServiceInstance'
-    ).mockResolvedValue(
-      mockServiceDefinition(ServiceDefinitionIdentifier.OpenctiCustomDashboards)
-    );
-    const result = await isUserRestrictedToActiveDocument(
-      mockUser(),
-      mockServiceInstanceId
-    );
-    expect(result).toBe(true);
-  });
+    it('should return true when user lacks Upload capability and service definition is restricted', async () => {
+      const result = await isUserRestrictedToActiveDocument(
+        mockUser,
+        mockServiceInstanceId
+      );
+      expect(result).toBe(true);
+    });
 
-  it('should return false when user lacks Upload capability but service definition is not restricted', async () => {
-    vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
-    vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([]);
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadServiceDefinitionByServiceInstance'
-    ).mockResolvedValue(
-      mockServiceDefinition(ServiceDefinitionIdentifier.Link)
-    );
-    const result = await isUserRestrictedToActiveDocument(
-      mockUser(),
-      mockServiceInstanceId
-    );
-    expect(result).toBe(false);
-  });
+    it('should return false when user lacks Upload capability but service definition is not restricted', async () => {
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(
+        mockServiceDefinition(ServiceDefinitionIdentifier.Link)
+      );
+      const result = await isUserRestrictedToActiveDocument(
+        mockUser,
+        mockServiceInstanceId
+      );
+      expect(result).toBe(false);
+    });
 
-  it('should return false when user has Upload capability and service definition is restricted', async () => {
-    vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
-    vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([
-      ServiceRestriction.Upload,
-    ]);
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadServiceDefinitionByServiceInstance'
-    ).mockResolvedValue(
-      mockServiceDefinition(ServiceDefinitionIdentifier.OpenctiCustomDashboards)
-    );
-    const result = await isUserRestrictedToActiveDocument(
-      mockUser(),
-      mockServiceInstanceId
-    );
-    expect(result).toBe(false);
-  });
+    it('should return false when user has Upload capability and service definition is restricted', async () => {
+      vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([
+        ServiceRestriction.Upload,
+      ]);
+      const result = await isUserRestrictedToActiveDocument(
+        mockUser,
+        mockServiceInstanceId
+      );
+      expect(result).toBe(false);
+    });
 
-  it('should return true when capabilities are undefined', async () => {
-    vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
-    vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue(undefined);
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadServiceDefinitionByServiceInstance'
-    ).mockResolvedValue(
-      mockServiceDefinition(ServiceDefinitionIdentifier.OpenctiCustomDashboards)
-    );
-    const result = await isUserRestrictedToActiveDocument(
-      mockUser(),
-      mockServiceInstanceId
-    );
-    expect(result).toBe(true);
-  });
+    it('should return true when capabilities are undefined', async () => {
+      vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue(
+        undefined
+      );
+      const result = await isUserRestrictedToActiveDocument(
+        mockUser,
+        mockServiceInstanceId
+      );
+      expect(result).toBe(true);
+    });
 
-  it('should throw when service definition is not found', async () => {
-    vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
-    vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([]);
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadServiceDefinitionByServiceInstance'
-    ).mockResolvedValue(undefined);
-    const call = isUserRestrictedToActiveDocument(
-      mockUser(),
-      mockServiceInstanceId
-    );
-    await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    it('should throw when service definition is not found', async () => {
+      vi.spyOn(
+        serviceInstanceDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(undefined);
+      const call = isUserRestrictedToActiveDocument(
+        mockUser,
+        mockServiceInstanceId
+      );
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
   });
 });
