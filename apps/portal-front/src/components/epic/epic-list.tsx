@@ -1,7 +1,7 @@
 'use client';
 import { EpicFilter, EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
-import { EpicItem } from '@/components/epic/epic-item';
+import { EpicItem } from '@/components/epic/epic-item/epic-item';
 import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
@@ -75,19 +75,21 @@ export const EpicList = ({
     <>
       <div className="flex flex-row items-center gap-4">
         <h1>{t('Epic.XTMRoadmap')}</h1>
-        {userCanUpdate && (
-          <EpicFormSheet
-            open={openSheet}
-            setOpen={setOpenSheet}
+        <div className="flex flex-row ml-auto items-center">
+          <EpicFilter
+            selectedFilter={selectedProduct}
+            onSelectedFilterChange={onFilterChange}
+            xtmhubCount={xtmhub.length}
+            openctiCount={opencti.length}
+            openaevCount={openaev.length}
           />
-        )}
-        <EpicFilter
-          selectedFilter={selectedProduct}
-          onSelectedFilterChange={onFilterChange}
-          xtmhubCount={xtmhub.length}
-          openctiCount={opencti.length}
-          openaevCount={openaev.length}
-        />
+          {userCanUpdate && (
+            <EpicFormSheet
+              open={openSheet}
+              setOpen={setOpenSheet}
+            />
+          )}
+        </div>
       </div>
       {sections.map((timeline) => {
         if (
@@ -98,11 +100,9 @@ export const EpicList = ({
         }
         return (
           <div key={timeline.title}>
-            <div
-              key={timeline.title}
-              className="relative flex items-center justify-center">
-              <Separator className="my-l absolute" />
-              <span className="relative bg-background p-s text-muted-foreground">
+            <div className="relative my-xl">
+              <Separator />
+              <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-s text-muted-foreground">
                 {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
               </span>
             </div>
