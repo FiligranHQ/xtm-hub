@@ -12,7 +12,7 @@ import { PublicEpicListPageLoader } from './public-epic-list-page-loader';
 const Page = async () => {
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
-    { slug: 'public-roadmap' },
+    { slug: 'xtm-suite-roadmap' },
     { cache: undefined, next: { revalidate: 3600 } }
   );
   const serviceInstance = serviceResponse.data
@@ -55,7 +55,7 @@ const Page = async () => {
       href: `/`,
     },
     {
-      label: 'Public Roadmap',
+      label: 'XTM Suite Roadmap',
       original: true,
     },
   ];

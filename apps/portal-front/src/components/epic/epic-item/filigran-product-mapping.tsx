@@ -1,5 +1,7 @@
 import {
+  EditIcon,
   LogoFiligranIcon,
+  LogoXtmOneIcon,
   OpenAevIconIcon,
   OpenCtiIconIcon,
 } from '@filigran/icon';
@@ -23,8 +25,16 @@ export const FiligranProductMapping: Record<
     name: 'OpenAEV',
     logo: <OpenAevIconIcon className="w-6 h-6" />,
   },
+  [FiligranProductEnum.OPENGRC]: {
+    name: 'OpenGRC',
+    logo: <EditIcon className="w-6 h-6" />,
+  },
   [FiligranProductEnum.XTMHUB]: {
     name: 'XTM Hub',
     logo: <LogoFiligranIcon className="w-6 h-6" />,
+  },
+  [FiligranProductEnum.XTMONE]: {
+    name: 'XTM One',
+    logo: <LogoXtmOneIcon className="w-6 h-6" />,
   },
 };

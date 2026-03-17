@@ -22,7 +22,7 @@ const addImage = async (user: User, uploads: Upload[]) => {
   }
   const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
     user.id,
-    ServiceDefinitionIdentifier.PublicRoadmap
+    ServiceDefinitionIdentifier.XtmSuiteRoadmap
   );
   if (serviceInstance) {
     const files = await processUploads(

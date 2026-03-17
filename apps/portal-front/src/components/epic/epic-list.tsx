@@ -48,10 +48,7 @@ export const EpicList = ({
 
   const { draft, now, next, under_consideration } =
     useDraftAndTimelineEpics(filteredEpics);
-  const { xtmhub, opencti, openaev } = useCountEpicsByProduct(
-    epics,
-    userCanUpdate
-  );
+  const countsByProduct = useCountEpicsByProduct(epics, userCanUpdate);
 
   const sections = useMemo(
     () => [
@@ -85,9 +82,7 @@ export const EpicList = ({
           <EpicFilter
             selectedFilter={selectedProduct}
             onSelectedFilterChange={onFilterChange}
-            xtmhubCount={xtmhub.length}
-            openctiCount={opencti.length}
-            openaevCount={openaev.length}
+            countsByProduct={countsByProduct}
           />
           {userCanUpdate && (
             <EpicFormSheet
