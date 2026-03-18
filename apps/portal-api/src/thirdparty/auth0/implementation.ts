@@ -95,7 +95,7 @@ export const auth0ClientImplementation: Auth0Client = {
       `Delete API Audience for organization ${organization.name} with platform_id ${platform_id}`
     );
     await managementClient.resourceServers.delete({
-      id: `${organization.name}_${platform_id}`,
+      id: platform_id,
     });
   },
 };
