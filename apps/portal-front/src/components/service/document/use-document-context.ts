@@ -17,7 +17,10 @@ import { ThirdPartyIntegrationForm } from '@/components/service/integrations/for
 import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
-import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
+import {
+  fileListToUploadableMap,
+  splitFileListToUploadableMap,
+} from '@/relay/environment/fetchFormData';
 import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
@@ -75,11 +78,15 @@ export function useDocumentContext({
       },
       ['uploader_organization_id']
     );
-    const metadata = omit(values, [...documentBaseKeys, 'document', 'images']);
-    const documents = [
-      ...Array.from(values?.document ?? []),
-      ...Array.from(values?.images ?? []),
-    ];
+    const metadata = omit(values, [
+      ...documentBaseKeys,
+      'document',
+      'logo',
+      'images',
+    ]);
+    const document = Array.from(values?.document ?? []).slice(0, 1);
+    const logo = Array.from(values?.logo ?? []).slice(0, 1);
+    const images = Array.from(values?.images ?? []);
 
     createMutation({
       variables: {
@@ -95,9 +102,11 @@ export function useDocumentContext({
           .filter(({ value }) => Boolean(value)),
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
-        document: documents,
+        document: document.map(() => ({})),
+        logo: logo.map(() => ({})),
+        images: images.map(() => ({})),
       },
-      uploadables: fileListToUploadableMap(documents),
+      uploadables: splitFileListToUploadableMap({ document, logo, images }),
 
       onCompleted: (response) => {
         if (!response.createDocument) {

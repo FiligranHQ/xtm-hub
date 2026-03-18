@@ -3,9 +3,14 @@ import { ServiceFormJsonFileField } from '@/components/service/form/json-file-fi
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck, optionalFileListCheck } from '@/utils/documents';
+import {
+  fileListCheck,
+  optionalFileListCheck,
+  transformToFileList,
+} from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
@@ -26,6 +31,7 @@ const taxiiFeedFormSchema = z.object({
   datasheet_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
   images: z.custom<FileList>(optionalFileListCheck),
 });
 export type TaxiiFeedFormValues = z.infer<typeof taxiiFeedFormSchema>;
@@ -47,7 +53,7 @@ export const TaxiiFeedForm = ({
 
   const onSubmit = (values: TaxiiFeedFormValues) => {
     if (isCreation) {
-      handleSubmit(values);
+      handleSubmit({ ...values, images: images as unknown as FileList });
     } else {
       const finalImages = images.filter(
         (img) => !imagesToDelete.includes(img.id)
@@ -65,12 +71,8 @@ export const TaxiiFeedForm = ({
     () =>
       ({
         ...document,
-        images: (document?.children_documents?.length
-          ? document.children_documents.map((doc) => ({
-              ...doc,
-              name: doc.file_name,
-            }))
-          : undefined) as unknown as FileList,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -109,6 +111,7 @@ export const TaxiiFeedForm = ({
     imagesField,
     images,
     imagesToDelete,
+    logo,
   } = useServiceFormFields({
     documentType: 'TAXII Feed',
     platform: 'OpenCTI',
@@ -157,6 +160,7 @@ export const TaxiiFeedForm = ({
                   />
                 ),
               },
+          logo,
           images: imagesField,
           active,
           short_description,

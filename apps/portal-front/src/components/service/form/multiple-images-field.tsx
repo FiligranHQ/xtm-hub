@@ -1,11 +1,6 @@
 import { fileToBase64 } from '@/lib/utils';
 import { docIsExistingFile, ExistingFile, NewFile } from '@/utils/documents';
-import {
-  AddIcon,
-  DeleteIcon,
-  LogoFiligranIcon,
-  ReplayIcon,
-} from '@filigran/icon';
+import { AddIcon, DeleteIcon, ReplayIcon } from '@filigran/icon';
 import {
   FileInput,
   FormControl,
@@ -32,7 +27,7 @@ export type ServiceFormMultipleImagesFieldImages = (ExistingFile | NewFile) & {
 
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;
-  document: documentItem_fragment$data;
+  document?: documentItem_fragment$data;
   images: Array<ServiceFormMultipleImagesFieldImages>;
   setImages: (images: Array<ServiceFormMultipleImagesFieldImages>) => void;
   imagesToDelete: string[];
@@ -183,12 +178,6 @@ export const ServiceFormMultipleImagesField = ({
           </TooltipProvider>
         </div>
       )}
-      <div>
-        <p className="mb-xs">{t('Service.Form.IllustrationDisclaimer')}</p>
-        <div className="w-24 p-m border border-light">
-          <LogoFiligranIcon className="size-18" />
-        </div>
-      </div>
     </>
   );
 };

@@ -3,16 +3,20 @@ import { graphql } from 'react-relay';
 export const DocumentCreateMutation = graphql`
   mutation documentCreateMutation(
     $input: CreateDocumentInput!
-    $document: [Upload!]!
     $metadata: [DocumentMetadata!]!
     $serviceInstanceId: String!
     $connections: [ID!]!
+    $document: Upload
+    $logo: Upload
+    $images: [Upload!]
   ) {
     createDocument(
       input: $input
-      document: $document
       metadata: $metadata
       serviceInstanceId: $serviceInstanceId
+      document: $document
+      logo: $logo
+      images: $images
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       name
@@ -112,6 +116,7 @@ export const documentItem = graphql`
       download_number
       active
       source_type
+      image_type
     }
     slug
     service_instance {

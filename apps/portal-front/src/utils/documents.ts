@@ -1,3 +1,6 @@
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
+
 export interface ExistingFile {
   file_name: string;
   id: string;
@@ -36,3 +39,12 @@ export const splitExistingAndNewImages = (
     },
     [[] as string[], [] as File[]]
   );
+
+export const transformToFileList = (
+  filteredImageType: DocumentImageTypeEnum,
+  document?: documentItem_fragment$data
+): FileList => {
+  return (document?.children_documents ?? []).filter(
+    (doc) => doc.image_type === filteredImageType
+  ) as unknown as FileList;
+};

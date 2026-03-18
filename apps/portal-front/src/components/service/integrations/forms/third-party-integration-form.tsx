@@ -2,9 +2,14 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck } from '@/utils/documents';
+import {
+  fileListCheck,
+  optionalFileListCheck,
+  transformToFileList,
+} from '@/utils/documents';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
@@ -32,6 +37,7 @@ const thirdPartyIntegrationFormSchema = z.object({
   datasheet_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
   images: z.custom<FileList>(fileListCheck),
 });
 
@@ -55,7 +61,7 @@ export const ThirdPartyIntegrationForm = ({
 
   const onSubmit = (values: ThirdPartyIntegrationFormValues) => {
     if (isCreation) {
-      handleSubmit(values);
+      handleSubmit({ ...values, images: images as unknown as FileList });
     } else {
       const finalImages = images.filter(
         (img) => !imagesToDelete.includes(img.id)
@@ -73,12 +79,8 @@ export const ThirdPartyIntegrationForm = ({
     () =>
       ({
         ...document,
-        images: (document?.children_documents?.length
-          ? document.children_documents.map((doc) => ({
-              ...doc,
-              name: doc.file_name,
-            }))
-          : undefined) as unknown as FileList,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -139,6 +141,7 @@ export const ThirdPartyIntegrationForm = ({
     imagesField,
     images,
     imagesToDelete,
+    logo,
   } = useServiceFormFields({
     documentType: 'Third Party Integration',
     platform: 'OpenCTI',
@@ -177,6 +180,7 @@ export const ThirdPartyIntegrationForm = ({
           uploader_id,
           uploader_organization_id,
           document: { fieldType: () => <FormItem hidden={true} /> },
+          logo,
           images: imagesField,
           active,
           short_description,

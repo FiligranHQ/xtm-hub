@@ -1,0 +1,221 @@
+import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
+import { RequestParameters, UploadableMap } from 'relay-runtime';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import {
+  fetchFormData,
+  fileListToUploadableMap,
+  splitFileListToUploadableMap,
+} from './fetchFormData';
+
+const FILE_PREFIX_SEPARATOR = 'prefix-';
+
+describe('fetchFormData', () => {
+  describe('fetchFormData', () => {
+    const originalFetch = globalThis.fetch;
+    const request = { text: 'query {}' } as RequestParameters;
+
+    afterEach(() => {
+      globalThis.fetch = originalFetch;
+    });
+
+    it('should return JSON when no errors', async () => {
+      const mockJson = { data: { foo: 'bar' } };
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue(mockJson),
+      });
+      const result = await fetchFormData('/api', request, {}, {});
+      expect(result).toEqual(mockJson);
+      expect(globalThis.fetch).toHaveBeenCalled();
+    });
+
+    it('should throw UNAUTHENTICATED error', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({
+          errors: [
+            { extensions: { code: 'UNAUTHENTICATED' }, message: 'Auth failed' },
+          ],
+        }),
+      });
+      await expect(fetchFormData('/api', request, {}, {})).rejects.toThrow(
+        'UNAUTHENTICATED'
+      );
+    });
+
+    it('should throw first error message for other errors', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({
+          errors: [{ extensions: { code: 'OTHER' }, message: 'Some error' }],
+        }),
+      });
+      await expect(fetchFormData('/api', request, {}, {})).rejects.toThrow(
+        'Some error'
+      );
+    });
+
+    it('should set cookie header if portalCookie is provided', async () => {
+      const mockJson = { data: { foo: 'bar' } };
+      let headers: Record<string, unknown> = {};
+      globalThis.fetch = vi.fn().mockImplementation((_, opts) => {
+        headers = opts.headers;
+        return Promise.resolve({
+          json: () => Promise.resolve(mockJson),
+        });
+      });
+      const portalCookie = { name: 'session', value: 'abc' } as RequestCookie;
+      await fetchFormData('/api', request, {}, {}, portalCookie);
+      expect(headers.cookie).toBe('session=abc');
+    });
+
+    describe('file mapping', () => {
+      let originalFormData: typeof globalThis.FormData;
+      let formDataEntries: Record<string, unknown>;
+
+      const fileA = { name: 'a.txt' };
+      const fileB = { name: 'b.txt' };
+      const fileC = { name: 'c.txt' };
+      const fileD = { name: 'd.txt' };
+
+      beforeEach(() => {
+        originalFormData = globalThis.FormData;
+        formDataEntries = {};
+
+        globalThis.FormData = class {
+          private _data: Record<string, unknown> = {};
+          append(key: string, value: unknown) {
+            this._data[key] = value;
+            formDataEntries[key] = value;
+          }
+          // Needed for fetchFormData usage
+          [Symbol.iterator]() {
+            return Object.entries(this._data)[Symbol.iterator]();
+          }
+        } as unknown as typeof globalThis.FormData;
+
+        globalThis.fetch = vi.fn().mockResolvedValue({
+          json: vi.fn().mockResolvedValue({ data: { ok: true } }),
+        });
+      });
+
+      afterEach(() => {
+        globalThis.FormData = originalFormData;
+      });
+
+      it('should correctly map a single uplodable without prefix', async () => {
+        const uploadables = {
+          'a.txt': fileA,
+        };
+
+        await fetchFormData(
+          '/api',
+          request,
+          {},
+          uploadables as unknown as UploadableMap
+        );
+
+        const mapField = formDataEntries['map'] as string;
+        const parsedMap = JSON.parse(mapField);
+        expect(parsedMap).toEqual({
+          0: ['variables.document'],
+        });
+
+        expect(formDataEntries['0']).toBe(fileA);
+      });
+
+      it('should correctly map uploadables in FormData without prefix', async () => {
+        const uploadables = {
+          'a.txt': fileA,
+          'b.txt': fileB,
+        };
+
+        await fetchFormData(
+          '/api',
+          request,
+          {},
+          uploadables as unknown as UploadableMap
+        );
+
+        const mapField = formDataEntries['map'] as string;
+        const parsedMap = JSON.parse(mapField);
+        expect(parsedMap).toEqual({
+          0: ['variables.document.0'],
+          1: ['variables.document.1'],
+        });
+
+        expect(formDataEntries['0']).toBe(fileA);
+        expect(formDataEntries['1']).toBe(fileB);
+      });
+
+      it('should correctly map uploadables in FormData with their prefix', async () => {
+        const uploadables = {
+          'documentprefix-a.txt': fileA,
+          'logoprefix-b.txt': fileB,
+          'imageprefix-c.txt': fileC,
+          'imageprefix-d.txt': fileD,
+        };
+
+        await fetchFormData(
+          '/api',
+          request,
+          {},
+          uploadables as unknown as UploadableMap
+        );
+
+        const mapField = formDataEntries['map'] as string;
+        const parsedMap = JSON.parse(mapField);
+        expect(parsedMap).toEqual({
+          0: ['variables.document.0'],
+          1: ['variables.logo.0'],
+          2: ['variables.image.0'],
+          3: ['variables.image.1'],
+        });
+
+        expect(formDataEntries['0']).toBe(fileA);
+        expect(formDataEntries['1']).toBe(fileB);
+        expect(formDataEntries['2']).toBe(fileC);
+        expect(formDataEntries['3']).toBe(fileD);
+      });
+    });
+  });
+
+  describe('splitFileListToUploadableMap', () => {
+    it('should map files to keys with prefix separator', () => {
+      const fileA = { name: 'a.txt' };
+      const fileB = { name: 'b.txt' };
+      const files = {
+        document: [fileA],
+        logo: [fileB],
+      } as unknown as Parameters<typeof splitFileListToUploadableMap>[0];
+      const result = splitFileListToUploadableMap(files);
+      expect(result).toEqual({
+        [`document${FILE_PREFIX_SEPARATOR}a.txt`]: fileA,
+        [`logo${FILE_PREFIX_SEPARATOR}b.txt`]: fileB,
+      });
+    });
+  });
+
+  describe('fileListToUploadableMap', () => {
+    it('should map a single file by name', () => {
+      const file = { name: 'single.txt' };
+      const result = fileListToUploadableMap([file] as File[]);
+      expect(result).toEqual({ 'single.txt': file });
+    });
+
+    it('should map multiple files by name', () => {
+      const fileA = { name: 'a.txt' };
+      const fileB = { name: 'b.txt' };
+      const result = fileListToUploadableMap([fileA, fileB] as File[]);
+      expect(result).toEqual({ 'a.txt': fileA, 'b.txt': fileB });
+    });
+
+    it('should skip null values', () => {
+      const fileA = { name: 'a.txt' };
+      const result = fileListToUploadableMap([fileA, null] as File[]);
+      expect(result).toEqual({ 'a.txt': fileA });
+    });
+
+    it('should return empty object for empty array', () => {
+      const result = fileListToUploadableMap([] as File[]);
+      expect(result).toEqual({});
+    });
+  });
+});

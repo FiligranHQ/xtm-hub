@@ -628,6 +628,7 @@
     "Form": {
       "Author": "Author",
       "ContainerImageLabel": "Container image",
+      "CurrentLogo": "Current logo",
       "DatasheetUrlLabel": "Datasheet link (url)",
       "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
       "DemoUrlLabel": "Demo link (url)",
@@ -640,6 +641,7 @@
       "Illustration": "Illustration",
       "IllustrationDisclaimer": "By default Filigran's logo will be displayed on cards, your illustrations will be added on detail page carousel",
       "ImageLabel": "Images",
+      "LogoLabel": "Logo",
       "ManagerSupportedLabel": "Manager supported",
       "NameLabel": "Name",
       "NamePlaceholder": "{documentType} name",
@@ -660,6 +662,7 @@
       "SubscriptionLinkLabel": "Subscription link (url)",
       "UpdateJSONFile": "Update JSON file",
       "UploadImage": "Upload new image(s)",
+      "UploadLogo": "Upload new logo",
       "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Use cases",
       "UseCasesPlaceholder": "Add use cases",
