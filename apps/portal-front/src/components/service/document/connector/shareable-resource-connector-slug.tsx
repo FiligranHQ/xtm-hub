@@ -21,6 +21,7 @@ import { InfoIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,7 +32,6 @@ interface Props {
   serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   shareUrl: string;
-  logo?: string;
 }
 
 // Component
@@ -39,9 +39,11 @@ const ShareableResourceConnectorSlug = ({
   documentData,
   breadcrumbValue,
   shareUrl,
-  logo,
   serviceInstance,
 }: Props) => {
+  const logo = documentData.children_documents?.find(
+    (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
+  );
   const t = useTranslations();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const canClickOnDeployButton = documentData.manager_supported;
@@ -49,6 +51,11 @@ const ShareableResourceConnectorSlug = ({
   const manifest_url = documentData.source_code
     ? `${documentData.source_code}/__metadata__/connector_manifest.json`
     : '';
+
+  const carouselImages = documentData.children_documents?.filter(
+    (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
+  );
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -56,7 +63,7 @@ const ShareableResourceConnectorSlug = ({
         {!!logo && (
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
-              src={logo}
+              src={`/document/images/${serviceInstance.id}/${logo.id}`}
               width={96}
               height={96}
               loading="lazy"
@@ -117,7 +124,7 @@ const ShareableResourceConnectorSlug = ({
       </div>
       <ShareableResourceCarousel
         serviceInstance={serviceInstance}
-        images={documentData.children_documents?.slice(1)}
+        images={carouselImages}
         className="mt-4"
       />
       {documentData.verified && (

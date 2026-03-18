@@ -11,7 +11,6 @@ import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
-  hasResourceLogo,
   isConnectorResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
@@ -22,7 +21,7 @@ import {
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -207,6 +206,9 @@ const Page = async ({
       },
     };
     const mainChild = document.children_documents?.[0];
+    const logo = document.children_documents?.find(
+      (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
+    );
     if (document.children_documents!.length > 0) {
       jsonLd.image = document.children_documents!.map(
         (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
@@ -239,7 +241,6 @@ const Page = async ({
           />
           <BreadcrumbNav value={breadcrumbValue} />
           <ShareableResourceConnectorSlugPublic
-            logo={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
             documentData={document}
             pageUrl={pageUrl}
             serviceInstance={serviceInstance}
@@ -248,12 +249,9 @@ const Page = async ({
       );
     }
 
-    const isFirstImageALogo =
-      document.integration_type === IntegrationTypeEnum.THIRD_PARTY_INTEGRATION;
-
-    const carouselImages = isFirstImageALogo
-      ? (document.children_documents?.slice(1) ?? [])
-      : document.children_documents;
+    const carouselImages = document.children_documents?.filter(
+      (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
+    );
 
     return (
       <>
@@ -265,10 +263,10 @@ const Page = async ({
         />
         <BreadcrumbNav value={breadcrumbValue} />
         <div className="flex gap-s pb-l flex-col md:flex-row">
-          {mainChild?.id && hasResourceLogo(document) ? (
+          {logo ? (
             <div className="w-24 flex-shrink-0 rounded overflow-hidden">
               <Image
-                src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
+                src={`/document/images/${serviceInstance.id}/${logo.id}`}
                 alt={`${document.name} logo`}
                 width={96}
                 height={96}

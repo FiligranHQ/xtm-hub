@@ -6,6 +6,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -18,28 +19,35 @@ interface Props {
     | seoServiceInstanceFragment$data
     | serviceInstance_fragment$data;
   pageUrl: string;
-  logo: string;
 }
 
 const ShareableResourceConnectorSlugPublic = ({
   documentData,
-  logo,
   pageUrl,
   serviceInstance,
 }: Props) => {
+  const logo = documentData.children_documents?.find(
+    (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
+  );
+  const carouselImages = documentData.children_documents?.filter(
+    (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
+  );
+
   return (
     <>
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        <div className="w-24 flex-shrink-0 rounded overflow-hidden">
-          <Image
-            src={logo}
-            alt={`${documentData.name} logo`}
-            width={96}
-            height={96}
-            loading="lazy"
-            className="w-full h-full object-contain rounded"
-          />
-        </div>
+        {!!logo && (
+          <div className="w-24 flex-shrink-0 rounded overflow-hidden">
+            <Image
+              src={`/document/images/${serviceInstance.id}/${logo.id}`}
+              alt={`${documentData.name} logo`}
+              width={96}
+              height={96}
+              loading="lazy"
+              className="w-full h-full object-contain rounded"
+            />
+          </div>
+        )}
         <div className="flex flex-col flex-1 justify-center">
           <div className="flex items-center gap-s flex-wrap">
             <h1 className="whitespace-nowrap">{documentData.name}</h1>
@@ -74,7 +82,7 @@ const ShareableResourceConnectorSlugPublic = ({
 
       <ShareableResourceCarousel
         serviceInstance={serviceInstance}
-        images={documentData.children_documents?.slice(1)}
+        images={carouselImages}
       />
 
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">

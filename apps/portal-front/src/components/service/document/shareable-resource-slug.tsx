@@ -30,7 +30,7 @@ import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
@@ -75,30 +75,27 @@ const ShareableResourceSlug: React.FunctionComponent<
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData]);
-  const mainChild = documentData.children_documents?.[0];
 
   const carouselImages = useMemo(() => {
-    const isFirstImageALogo =
-      documentData.integration_type ===
-      IntegrationTypeEnum.THIRD_PARTY_INTEGRATION;
-    if (isFirstImageALogo) {
-      return documentData.children_documents?.slice(1) || [];
-    }
+    return (documentData.children_documents ?? []).filter(
+      (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
+    );
+  }, [documentData.children_documents]);
 
-    return documentData.children_documents;
-  }, [documentData.children_documents, documentData.integration_type]);
+  const logo = useMemo(() => {
+    return documentData.children_documents?.find(
+      (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
+    );
+  }, [documentData.children_documents]);
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        {mainChild?.id &&
-        (documentData.integration_type === IntegrationTypeEnum.CONNECTOR ||
-          documentData.integration_type ===
-            IntegrationTypeEnum.THIRD_PARTY_INTEGRATION) ? (
+        {logo ? (
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
-              src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
+              src={`/document/images/${serviceInstance.id}/${logo.id}`}
               alt={`${documentData.name} logo`}
               width={96}
               height={96}
