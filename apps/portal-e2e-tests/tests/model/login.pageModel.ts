@@ -28,6 +28,9 @@ export default class LoginPage {
   async navigateTo() {
     await this.page.goto('/login');
   }
+  async navigateToPublicPages() {
+    await this.page.goto('/cybersecurity-solutions');
+  }
 
   async navigateToAndLogin(userEmail = 'admin@filigran.io') {
     await this.navigateTo();
