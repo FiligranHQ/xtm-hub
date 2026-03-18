@@ -7,10 +7,12 @@ import { FunctionComponent } from 'react';
 interface EpicItemHeaderProps {
   epic: epic_fragment$data;
   serviceInstanceId: string;
+  shiftEpicType?: boolean;
 }
 export const EpicItemHeader: FunctionComponent<EpicItemHeaderProps> = ({
   epic,
   serviceInstanceId,
+  shiftEpicType = false,
 }) => {
   return (
     <>
@@ -20,11 +22,12 @@ export const EpicItemHeader: FunctionComponent<EpicItemHeaderProps> = ({
 
           <p className="bold">{FiligranProductMapping[epic.product].name}</p>
         </div>
-        {epic.document && epic.epic_type === EpicTypeEnum.INTEGRATION && (
-          <div className="flex items-center mr-s gap-xs">
+        {epic.document_id && epic.epic_type === EpicTypeEnum.INTEGRATION && (
+          <div
+            className={`flex items-center mr-s gap-xs ${shiftEpicType ? 'pr-xxl' : ''}`}>
             <Image
-              src={`/document/images/${serviceInstanceId}/${epic.document?.id}`}
-              alt={`${epic.document?.id} logo`}
+              src={`/document/images/${serviceInstanceId}/${epic.document_id}`}
+              alt={`${epic.epic} logo`}
               width={32}
               height={32}
               loading="lazy"

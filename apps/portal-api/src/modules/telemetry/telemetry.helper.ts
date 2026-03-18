@@ -210,6 +210,7 @@ export function buildRegisterEvent(
   platform_contract: PlatformContract,
   platform_version: string,
   platform_url: string,
+  existingUsersCount?: number,
   timestamp?: Date
 ): RegisterPlatformEvent {
   const baseEvent = buildBaseEvent(organization, user_id, timestamp);
@@ -223,6 +224,9 @@ export function buildRegisterEvent(
     platform_contract,
     platform_version,
     platform_url,
+    ...(existingUsersCount !== undefined && {
+      existing_users_count: existingUsersCount,
+    }),
   };
 }
 

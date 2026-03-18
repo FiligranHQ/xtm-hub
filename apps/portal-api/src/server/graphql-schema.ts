@@ -14,9 +14,9 @@ import openAEVScenariosResolver from '../modules/services/document/openaev/scena
 import customDashboardsResolver from '../modules/services/document/opencti/custom-dashboards/custom-dashboards.resolver';
 import integrationsResolver from '../modules/services/document/opencti/integrations/integrations.resolver';
 import serviceGroupResolver from '../modules/services/group/service-group.resolver';
-import publicRoadmapResolver from '../modules/services/public_roadmap/epic.resolver';
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
+import xtmSuiteRoadmapResolver from '../modules/services/xtm-suite-roadmap/epic.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
 import useCaseResolver from '../modules/settings/useCase/use-case.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
@@ -58,7 +58,7 @@ const resolvers = mergeResolvers([
   integrationsResolver,
   serviceGroupResolver,
   competitorResolver,
-  publicRoadmapResolver,
+  xtmSuiteRoadmapResolver,
 ]);
 
 const createSchema = () => {
