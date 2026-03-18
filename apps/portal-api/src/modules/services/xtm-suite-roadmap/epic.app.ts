@@ -7,10 +7,13 @@ import {
   ServiceDefinitionIdentifier,
   UpdateEpicInput,
 } from '../../../__generated__/resolvers-types';
+import portalConfig from '../../../config';
 import { requestContext } from '../../../context/request.context';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
 import User from '../../../model/kanel/public/User';
+import { sendMail } from '../../../server/mail-service';
 import { MinIOClient } from '../../../thirdparty/minio/client';
+import { logApp } from '../../../utils/app-logger.util';
 import { processUploads, Upload } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { loadSubscribedServiceInstancesByIdentifier } from '../service-instance.domain';
@@ -22,7 +25,7 @@ const addImage = async (user: User, uploads: Upload[]) => {
   }
   const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
     user.id,
-    ServiceDefinitionIdentifier.PublicRoadmap
+    ServiceDefinitionIdentifier.XtmSuiteRoadmap
   );
   if (serviceInstance) {
     const files = await processUploads(
@@ -114,5 +117,18 @@ export const EpicApp = {
       await DocumentDomain.deleteDocuments([epic.document_id]);
     }
     return epic;
+  },
+
+  sendPublicRoadmapMonthlyReminder: async (): Promise<void> => {
+    if (!portalConfig.enabled_emails.public_roadmap_monthly_reminder) {
+      logApp.info(
+        'Public roadmap monthly reminder email is disabled, skipping'
+      );
+      return;
+    }
+    await sendMail({
+      to: 'product.managers@filigran.io',
+      template: 'public_roadmap_monthly_reminder',
+    });
   },
 };

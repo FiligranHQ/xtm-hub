@@ -107,6 +107,11 @@ input RegisteredPlatformInput {
   service_instance_id: ID!
 }
 
+input AutoRegisterPlatformInput {
+  platform: PlatformInput!
+  existing_users_count: Int
+}
+
 type Query {
   isPlatformRegistered(
     input: IsPlatformRegisteredInput!
@@ -128,5 +133,9 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatus(
     input: RefreshPlatformRegistrationConnectivityStatusInput!
   ): RefreshPlatformRegistrationConnectivityStatusResponse!
-  autoRegisterPlatform(platform: PlatformInput!): Success! @platform_token
+  # Warning ! Used by OpenCTI and OpenAEV (trials)
+  autoRegisterPlatform(
+    platform: PlatformInput @deprecated(reason: "Use input instead")
+    input: AutoRegisterPlatformInput
+  ): Success! @platform_token
 }

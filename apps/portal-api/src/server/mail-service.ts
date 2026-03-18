@@ -26,7 +26,7 @@ const templateCache = new Map<string, HandlebarsTemplateDelegate>();
 interface SendMailParams<T extends keyof MailTemplates> {
   to: string | string[];
   template: T;
-  params: MailTemplates[T];
+  params?: MailTemplates[T];
 }
 
 const useQueueProcessing = (): boolean =>
@@ -63,18 +63,20 @@ export async function renderEmail<T extends keyof MailTemplates>(
     contactEmail: 'xtm-hub-support@filigran.io',
   };
 
-  const renderParams = {
-    ...params,
-    ...baseParams,
-    ...('platformIdentifier' in params
-      ? {
-          platformIdentifier:
-            PlatformIdentifierToString[
-              params.platformIdentifier as PlatformIdentifier
-            ],
-        }
-      : {}),
-  };
+  const renderParams = params
+    ? {
+        ...params,
+        ...baseParams,
+        ...('platformIdentifier' in params
+          ? {
+              platformIdentifier:
+                PlatformIdentifierToString[
+                  params.platformIdentifier as PlatformIdentifier
+                ],
+            }
+          : {}),
+      }
+    : baseParams;
 
   return compiledTemplate(renderParams);
 }
