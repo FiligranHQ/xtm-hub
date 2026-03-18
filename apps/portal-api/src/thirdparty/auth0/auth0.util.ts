@@ -1,4 +1,4 @@
-import { GetUsers200ResponseOneOfInner } from 'auth0';
+import { Management } from 'auth0';
 import { Auth0UpdateUserRBACInstance } from './client';
 
 export const removeEmptyGroups = (
@@ -20,14 +20,15 @@ export const removeEmptyGroups = (
 };
 
 export const buildUserMetadataUpdate = (
-  auth0_user: GetUsers200ResponseOneOfInner,
+  auth0_user: Management.UserResponseSchema,
   userRBACInstance: Auth0UpdateUserRBACInstance
 ) => {
   return {
     user_metadata: {
       ...auth0_user.user_metadata,
       rbac_instance: removeEmptyGroups({
-        ...(auth0_user.user_metadata?.rbac_instance ?? {}),
+        ...((auth0_user.user_metadata
+          ?.rbac_instance as Auth0UpdateUserRBACInstance) ?? {}),
         ...userRBACInstance,
       }),
     },
