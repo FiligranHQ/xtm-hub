@@ -7816,15 +7816,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.10.13":
-  version: 24.10.13
-  resolution: "@types/node@npm:24.10.13"
-  dependencies:
-    undici-types: "npm:~7.16.0"
-  checksum: 10/c779d14cf17758a9d603e0c0978c8045bd070e259617ec16f4ddac419ec11aac0e0cf2bb013dab008fdbd2f46c39f82397884662bbdfabeb19bef0079679ea48
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:24.12.0":
   version: 24.12.0
   resolution: "@types/node@npm:24.12.0"
@@ -8850,7 +8841,7 @@ __metadata:
     express-session: "npm:1.19.0"
     glob: "npm:11.1.0"
     globals: "npm:15.15.0"
-    graphql: "npm:16.13.0"
+    graphql: "npm:16.13.1"
     graphql-relay: "npm:0.10.2"
     graphql-sse: "npm:2.6.0"
     graphql-subscriptions: "npm:2.0.0"
@@ -8913,7 +8904,7 @@ __metadata:
     eslint-config-next: "npm:16.1.6"
     eslint-config-prettier: "npm:10.1.8"
     extract-files: "npm:13.0.0"
-    graphql: "npm:16.13.0"
+    graphql: "npm:16.13.1"
     graphql-sse: "npm:2.6.0"
     husky: "npm:9.1.7"
     i18n-auto-translation: "npm:2.2.3"
@@ -13280,13 +13271,6 @@ __metadata:
   version: 15.3.0
   resolution: "graphql@npm:15.3.0"
   checksum: 10/10057b260dcaa07df00e209d5ee8f7f6037004a1a435a554a737f7f87afb4c63aa8f39e34e2541a38fb269e03a271cf758cf59b5ce93e89b4da3cbb924216ef9
-  languageName: node
-  linkType: hard
-
-"graphql@npm:16.13.0":
-  version: 16.13.0
-  resolution: "graphql@npm:16.13.0"
-  checksum: 10/c04bd2f168635a7f960bce0447264be84ff633ee0f9f0044b57a9f8a9766f1496860c7f9f89e492f73b46ff0b6f709caef2d7688220d70a9f445b180e605b846
   languageName: node
   linkType: hard
 
@@ -21506,7 +21490,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "xtm-hub@workspace:."
   dependencies:
-    "@types/node": "npm:24.10.13"
+    "@types/node": "npm:24.12.0"
     eslint: "npm:^9.30.1"
     eslint-config-next: "npm:^15.3.5"
     eslint-config-prettier: "npm:^10.1.5"
