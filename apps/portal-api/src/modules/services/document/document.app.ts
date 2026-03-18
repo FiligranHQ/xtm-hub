@@ -181,15 +181,23 @@ export const DocumentApp = {
     return createdDocument;
   },
 
-  updateDocument: async (
-    parentDocumentId: DocumentId,
-    serviceInstanceId: ServiceInstanceId,
-    metadata: DocumentMetadataResolverType[],
-    mutationArgs: Pick<
-      MutationUpdateDocumentArgsResolverType,
-      'document' | 'updateDocument' | 'images' | 'input'
-    >
-  ) => {
+  updateDocument: async ({
+    parentDocumentId,
+    serviceInstanceId,
+    metadata,
+    document,
+    updateDocument,
+    images,
+    input,
+  }: {
+    parentDocumentId: DocumentId;
+    serviceInstanceId: ServiceInstanceId;
+    metadata: DocumentMetadataResolverType[];
+    document: Upload[];
+    updateDocument: boolean;
+    images: string[];
+    input: MutationUpdateDocumentArgsResolverType['input'];
+  }) => {
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
@@ -197,13 +205,6 @@ export const DocumentApp = {
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
-
-    const {
-      document,
-      updateDocument: isUpdateDoc,
-      images = [],
-      input,
-    } = mutationArgs;
 
     const documentType =
       DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
@@ -216,7 +217,7 @@ export const DocumentApp = {
     const { documentFile, newImages, existingImageIds } =
       await processDocumentUpdateUploads(
         document,
-        isUpdateDoc && shouldHandleFirstFile,
+        updateDocument && shouldHandleFirstFile,
         images,
         serviceInstanceId
       );

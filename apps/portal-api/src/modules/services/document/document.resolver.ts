@@ -62,12 +62,17 @@ const resolvers: Resolvers = {
     },
     updateDocument: async (_, input) => {
       try {
-        return await DocumentApp.updateDocument(
-          extractId<DocumentId>(input.documentId),
-          extractId<ServiceInstanceId>(input.serviceInstanceId),
-          input.metadata,
-          input
-        );
+        return await DocumentApp.updateDocument({
+          parentDocumentId: extractId<DocumentId>(input.documentId),
+          serviceInstanceId: extractId<ServiceInstanceId>(
+            input.serviceInstanceId
+          ),
+          metadata: input.metadata,
+          document: input.document,
+          updateDocument: input.updateDocument,
+          images: input.images,
+          input: input.input,
+        });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {

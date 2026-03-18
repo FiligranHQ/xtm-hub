@@ -263,17 +263,16 @@ describe('DocumentApp', () => {
 
       expect(createdDocument).toBeDefined();
 
-      const call = DocumentApp.updateDocument(
-        createdDocument!.id,
-        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
-        [],
-        {
-          document: [],
-          input: documentData,
-          updateDocument: true,
-          images: [],
-        }
-      );
+      const call = DocumentApp.updateDocument({
+        parentDocumentId: createdDocument!.id,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
+          .ID as ServiceInstanceId,
+        metadata: [],
+        document: [],
+        input: documentData,
+        updateDocument: true,
+        images: [],
+      });
 
       await expect(call).rejects.toThrow(ErrorCode.DocumentMissingMetadata);
     });
@@ -301,10 +300,10 @@ describe('DocumentApp', () => {
 
       expect(createdDocument).toBeDefined();
 
-      const result = await DocumentApp.updateDocument(
-        createdDocument!.id,
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        [
+      const result = await DocumentApp.updateDocument({
+        parentDocumentId: createdDocument!.id,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.ThirdPartyIntegration,
@@ -318,13 +317,11 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        {
-          input: documentData,
-          document: [],
-          updateDocument: true,
-          images: [],
-        }
-      );
+        input: documentData,
+        document: [],
+        updateDocument: true,
+        images: [],
+      });
 
       expect(result).toBeDefined();
     });
@@ -344,22 +341,20 @@ describe('DocumentApp', () => {
 
       expect(createdDocument).toBeDefined();
 
-      const result = await DocumentApp.updateDocument(
-        createdDocument!.id,
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        [
+      const result = await DocumentApp.updateDocument({
+        parentDocumentId: createdDocument!.id,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.CsvFeed,
           },
         ],
-        {
-          input: documentData,
-          document: [mockUpload],
-          updateDocument: true,
-          images: [],
-        }
-      );
+        document: [mockUpload],
+        updateDocument: true,
+        images: [],
+        input: documentData,
+      });
 
       expect(result).toBeDefined();
       expect(result!.file_name).toBe(minioFileMock.fileName);
@@ -390,10 +385,10 @@ describe('DocumentApp', () => {
 
       expect(createdDocument).toBeDefined();
 
-      const result = await DocumentApp.updateDocument(
-        createdDocument!.id,
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        [
+      const result = await DocumentApp.updateDocument({
+        parentDocumentId: createdDocument!.id,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.ThirdPartyIntegration,
@@ -407,13 +402,11 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        {
-          input: documentData,
-          document: [mockUpload],
-          updateDocument: true,
-          images: [],
-        }
-      );
+        document: [mockUpload],
+        updateDocument: true,
+        images: [],
+        input: documentData,
+      });
 
       expect(result).toBeDefined();
       expect(result!.file_name).toBeNull();
@@ -450,17 +443,15 @@ describe('DocumentApp', () => {
         });
         expect(createdDocument).toBeDefined();
 
-        const result = await DocumentApp.updateDocument(
-          createdDocument!.id,
-          SERVICES.INSTANCES.INTEGRATIONS.ID,
+        const result = await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
           metadata,
-          {
-            input: documentData,
-            document: [],
-            updateDocument: false,
-            images: [],
-          }
-        );
+          input: documentData,
+          document: [],
+          updateDocument: false,
+          images: [],
+        });
 
         expect(result).toBeDefined();
         const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
@@ -507,17 +498,15 @@ describe('DocumentApp', () => {
           fileName: 'image.png',
         });
 
-        const result = await DocumentApp.updateDocument(
-          createdDocument!.id,
-          SERVICES.INSTANCES.INTEGRATIONS.ID,
+        const result = await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
           metadata,
-          {
-            input: documentData,
-            document: [mockUpload],
-            updateDocument: true,
-            images: [],
-          }
-        );
+          input: documentData,
+          document: [mockUpload],
+          updateDocument: true,
+          images: [],
+        });
 
         expect(result).toBeDefined();
         const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
@@ -561,17 +550,15 @@ describe('DocumentApp', () => {
         { key: 'source_code', value: 'source_code_value' },
         { key: 'subscription_link', value: 'subscription_link_value' },
       ];
-      const result = await DocumentApp.updateDocument(
-        createdDocument!.id,
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        updatedMetadata,
-        {
-          input: documentData,
-          document: [],
-          updateDocument: true,
-          images: [],
-        }
-      );
+      const result = await DocumentApp.updateDocument({
+        parentDocumentId: createdDocument!.id,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        metadata: updatedMetadata,
+        input: documentData,
+        document: [],
+        updateDocument: true,
+        images: [],
+      });
       expect(result).toBeDefined();
 
       const updatedConnector = result as Connector;
