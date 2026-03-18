@@ -24,9 +24,12 @@ export const waitForUploads = async (uploads: Upload[] | Upload) => {
 };
 
 export const processUploads = async (
-  uploads: Upload[] | Upload,
+  uploads: Upload[] | Upload | undefined,
   serviceInstanceId: ServiceInstanceId
 ) => {
+  if (uploads === undefined) {
+    return [];
+  }
   if (!Array.isArray(uploads)) {
     uploads = [uploads];
   }

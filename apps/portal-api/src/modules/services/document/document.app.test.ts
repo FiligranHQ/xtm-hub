@@ -11,6 +11,7 @@ import {
 } from 'vitest';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DocumentImageType,
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
@@ -31,6 +32,7 @@ import { ServiceDefinitionDomain } from '../definition/service-definition.domain
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
+import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from './document.model';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import {
@@ -95,20 +97,20 @@ describe('DocumentApp', () => {
 
   describe('createDocument', () => {
     it('should throw when metadata is missing', async () => {
-      const call = DocumentApp.createDocument(
-        documentData,
-        [],
-        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
-        []
-      );
+      const call = DocumentApp.createDocument({
+        input: documentData,
+        metadata: [],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
+          .ID as ServiceInstanceId,
+      });
 
       await expect(call).rejects.toThrow(ErrorCode.DocumentMissingMetadata);
     });
 
     it('should not throw when metadata is missing but optional', async () => {
-      const result = await DocumentApp.createDocument(
-        documentData,
-        [
+      const result = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.ThirdPartyIntegration,
@@ -122,25 +124,25 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        []
-      );
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+      });
 
       expect(result).toBeDefined();
     });
 
-    it('should use first file for document when document is not a third party integration', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        documentData,
-        [
+    it('should use document when file is provided', async () => {
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.CsvFeed,
           },
         ],
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        [mockUpload]
-      );
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+      });
 
       expect(createdDocument).toBeDefined();
       expect(createdDocument!.file_name).toBe(minioFileMock.fileName);
@@ -148,10 +150,10 @@ describe('DocumentApp', () => {
       expect(createdDocument!.mime_type).toBe(minioFileMock.mimeType);
     });
 
-    it('should not use first file for document when document is a third party integration', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        documentData,
-        [
+    it('should not use document file when document is a third party integration', async () => {
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.ThirdPartyIntegration,
@@ -165,14 +167,56 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        [mockUpload]
-      );
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+      });
 
       expect(createdDocument).toBeDefined();
       expect(createdDocument!.file_name).toBeNull();
       expect(createdDocument!.minio_name).toBeNull();
       expect(createdDocument!.mime_type).toBeNull();
+    });
+
+    it('should create children image and logo documents', async () => {
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [
+          {
+            key: 'integration_type',
+            value: IntegrationType.ThirdPartyIntegration,
+          },
+          {
+            key: 'integration_subtype',
+            value: IntegrationSubType.Orchestration,
+          },
+          {
+            key: 'vendor_url',
+            value: 'https://example.com',
+          },
+        ],
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+        images: [mockUpload],
+        logo: mockUpload,
+      });
+
+      expect(createdDocument).toBeDefined();
+
+      const children: DocumentImage[] =
+        (await DocumentChildrenDomain.loadChildrenDocuments(
+          createdDocument!.id,
+          DOCUMENT_IMAGE_METADATA_KEYS
+        )) as unknown as DocumentImage[];
+
+      expect(children.length).toBe(2);
+      const image = children.find(
+        (child) => child.image_type === DocumentImageType.Image
+      );
+      expect(image).toBeDefined();
+      const logo = children.find(
+        (child) => child.image_type === DocumentImageType.Logo
+      );
+      expect(logo).toBeDefined();
     });
 
     it('should send a create telemetry event when creating a document', async () => {
@@ -183,12 +227,13 @@ describe('DocumentApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await DocumentApp.createDocument(
-        documentData,
-        [{ key: 'product_version', value: '1.2.3' }],
-        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
-        []
-      );
+      await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
+          .ID as ServiceInstanceId,
+        document: mockUpload,
+      });
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.CREATE,
@@ -208,12 +253,13 @@ describe('DocumentApp', () => {
 
   describe('updateDocument', () => {
     it('should throw when metadata is missing', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        documentData,
-        [{ key: 'product_version', value: '1.2.3' }],
-        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID as ServiceInstanceId,
-        []
-      );
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
+          .ID as ServiceInstanceId,
+        document: mockUpload,
+      });
 
       expect(createdDocument).toBeDefined();
 
@@ -233,9 +279,9 @@ describe('DocumentApp', () => {
     });
 
     it('should not throw when metadata is missing but optional', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        documentData,
-        [
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.ThirdPartyIntegration,
@@ -249,9 +295,9 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        []
-      );
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+      });
 
       expect(createdDocument).toBeDefined();
 
@@ -284,17 +330,17 @@ describe('DocumentApp', () => {
     });
 
     it('should use first file for document when document is not a third party integration', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        documentData,
-        [
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.CsvFeed,
           },
         ],
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        [mockUpload]
-      );
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+      });
 
       expect(createdDocument).toBeDefined();
 
@@ -322,9 +368,9 @@ describe('DocumentApp', () => {
     });
 
     it('should not use first file for document when document is a third party integration', async () => {
-      const createdDocument = await DocumentApp.createDocument(
-        documentData,
-        [
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: [
           {
             key: 'integration_type',
             value: IntegrationType.ThirdPartyIntegration,
@@ -338,9 +384,9 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        []
-      );
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+      });
 
       expect(createdDocument).toBeDefined();
 
@@ -396,12 +442,12 @@ describe('DocumentApp', () => {
             : []),
         ];
 
-        const createdDocument = await DocumentApp.createDocument(
-          documentData,
+        const createdDocument = await DocumentApp.createDocument({
+          input: documentData,
           metadata,
-          SERVICES.INSTANCES.INTEGRATIONS.ID,
-          [mockUpload]
-        );
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          document: mockUpload,
+        });
         expect(createdDocument).toBeDefined();
 
         const result = await DocumentApp.updateDocument(
@@ -446,12 +492,13 @@ describe('DocumentApp', () => {
             : []),
         ];
 
-        const createdDocument = await DocumentApp.createDocument(
-          documentData,
+        const createdDocument = await DocumentApp.createDocument({
+          input: documentData,
           metadata,
-          SERVICES.INSTANCES.INTEGRATIONS.ID,
-          [mockUpload]
-        );
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          document: mockUpload,
+          images: [mockUpload],
+        });
         expect(createdDocument).toBeDefined();
 
         vi.spyOn(MinIOClient, 'createFile').mockResolvedValue({
@@ -494,12 +541,12 @@ describe('DocumentApp', () => {
         { key: 'source_code', value: 'source_code_value' },
         { key: 'subscription_link', value: 'subscription_link_value' },
       ];
-      const createdDocument = await DocumentApp.createDocument(
-        documentData,
-        connectorMetadata,
-        SERVICES.INSTANCES.INTEGRATIONS.ID,
-        []
-      );
+      const createdDocument = await DocumentApp.createDocument({
+        input: documentData,
+        metadata: connectorMetadata,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        document: mockUpload,
+      });
       expect(createdDocument).toBeDefined();
 
       // Update with boolean metadata as strings
@@ -537,8 +584,8 @@ describe('DocumentApp', () => {
 
   describe('loadDocument', () => {
     it('should return the document with elastic search counters', async () => {
-      const document = await DocumentApp.createDocument(
-        {
+      const document = await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCustomDashboard',
           description: 'description',
@@ -546,10 +593,10 @@ describe('DocumentApp', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'product_version', value: '1.2.3' }],
-        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        []
-      );
+        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        document: mockUpload,
+      });
       expect(document).toBeDefined();
 
       const documentId = document!.id;
@@ -588,8 +635,8 @@ describe('DocumentApp', () => {
     });
 
     it('should return the document with elastic search counters', async () => {
-      const document = await DocumentApp.createDocument(
-        {
+      const document = await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCustomDashboard',
           description: 'description',
@@ -597,10 +644,10 @@ describe('DocumentApp', () => {
           slug: 'slug',
           active: true,
         },
-        [{ key: 'product_version', value: '1.2.3' }],
-        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        []
-      );
+        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        document: mockUpload,
+      });
       expect(document).toBeDefined();
 
       const documentId = document!.id;
@@ -721,7 +768,7 @@ describe('DocumentApp', () => {
       const doc = await DocumentApp.upsertDocumentWithExternalImage(
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         input,
-        mockFileUpload,
+        mockUpload,
         metadataKeys
       );
       expect(doc).toBeDefined();
@@ -746,11 +793,14 @@ describe('DocumentApp', () => {
       const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
         'integration',
         input,
-        mockFileUpload,
+        mockUpload,
         metadataKeys
       );
       // Update with new image
-      const newFileUpload = { ...mockFileUpload, filename: 'new-image.png' };
+      const newFileUpload = {
+        ...mockUpload,
+        file: { ...mockFileUpload, filename: 'new-image.png' },
+      };
 
       vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
         {

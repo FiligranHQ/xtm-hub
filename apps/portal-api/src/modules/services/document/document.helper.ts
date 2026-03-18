@@ -134,10 +134,10 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
 
 export const DocumentHelper = {
   buildCompleteMetadataFromDocumentFile: ({
-    files,
+    documentFile,
     metadata,
   }: {
-    files: MinioFile[];
+    documentFile?: MinioFile;
     metadata: DocumentMetadataResolverType[];
   }): DocumentMetadataResolverType[] => {
     const integrationType = metadata.find(
@@ -154,7 +154,7 @@ export const DocumentHelper = {
       return metadata;
     }
 
-    const jsonFileContent = files[0]?.jsonContent;
+    const jsonFileContent = documentFile?.jsonContent;
     if (!jsonFileContent) {
       return metadata;
     }
@@ -216,6 +216,29 @@ export const DocumentHelper = {
         `Document is missing metadata keys: ${missingMetadataKeys.map(({ key }) => key).join(', ')}`
       );
       throw new Error(ErrorCode.DocumentMissingMetadata);
+    }
+  },
+  assertDocumentFileIsNotMissing: ({
+    hasDocument,
+    documentType,
+    documentMetadata,
+  }: {
+    hasDocument: boolean;
+    documentType: DOCUMENT_TYPE;
+    documentMetadata: DocumentMetadataResolverType[];
+  }) => {
+    const integrationType = documentMetadata.find(
+      (meta) => meta.key === 'integration_type'
+    )?.value as unknown as IntegrationType | undefined;
+    const isDocumentFileOptional =
+      documentType === OPENCTI_INTEGRATION_DOCUMENT_TYPE &&
+      [
+        IntegrationType.Connector,
+        IntegrationType.ThirdPartyIntegration,
+      ].includes(integrationType);
+
+    if (!isDocumentFileOptional && !hasDocument) {
+      throw new Error(ErrorCode.DocumentFileMissing);
     }
   },
   deleteFileFromMinIO: async (

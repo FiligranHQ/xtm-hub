@@ -28,6 +28,7 @@ import {
   checkDocumentExists,
   updateDocumentWithCounters,
 } from './document.helper';
+import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
@@ -39,15 +40,17 @@ const resolvers: Resolvers = {
   Mutation: {
     createDocument: async (
       _,
-      { input, document, serviceInstanceId, metadata }
+      { input, document, serviceInstanceId, metadata, logo, images }
     ) => {
       try {
-        return await DocumentApp.createDocument(
+        return await DocumentApp.createDocument({
           input,
           metadata,
-          extractId<ServiceInstanceId>(serviceInstanceId),
-          document
-        );
+          serviceInstanceId: extractId<ServiceInstanceId>(serviceInstanceId),
+          document,
+          logo,
+          images,
+        });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
@@ -162,7 +165,8 @@ const resolvers: Resolvers = {
 
     children_documents: async ({ id }, _) =>
       (await DocumentChildrenDomain.loadChildrenDocuments(
-        id
+        id,
+        DOCUMENT_IMAGE_METADATA_KEYS
       )) as ShareableResource[],
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
     uploader_organization: ({ id }, _) =>

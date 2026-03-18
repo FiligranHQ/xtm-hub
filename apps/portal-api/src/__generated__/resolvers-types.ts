@@ -499,6 +499,11 @@ export type DocumentEdge = {
   node: Document;
 };
 
+export enum DocumentImageType {
+  Image = 'image',
+  Logo = 'logo'
+}
+
 export type DocumentMetadata = {
   key: Scalars['String']['input'];
   value: Scalars['String']['input'];
@@ -899,8 +904,10 @@ export type MutationCreateDeploymentRequestArgs = {
 
 
 export type MutationCreateDocumentArgs = {
-  document: Array<Scalars['Upload']['input']>;
+  document?: InputMaybe<Scalars['Upload']['input']>;
+  images?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateDocumentInput;
+  logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1845,6 +1852,7 @@ export type ShareableResource = {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  image_type?: Maybe<DocumentImageType>;
   name?: Maybe<Scalars['String']['output']>;
   source_type: DocumentSourceType;
 };
@@ -2382,6 +2390,7 @@ export type ResolversTypes = ResolversObject<{
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
+  DocumentImageType: DocumentImageType;
   DocumentMetadata: DocumentMetadata;
   DocumentOrdering: DocumentOrdering;
   DocumentSourceType: DocumentSourceType;
@@ -3075,7 +3084,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
   createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
-  createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
+  createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
@@ -3429,6 +3438,7 @@ export type ShareableResourceResolvers<ContextType = PortalContext, ParentType e
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  image_type?: Resolver<Maybe<ResolversTypes['DocumentImageType']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   source_type?: Resolver<ResolversTypes['DocumentSourceType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

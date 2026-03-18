@@ -1,5 +1,6 @@
 import {
   CreateDocumentInput,
+  DocumentImageType,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
@@ -49,12 +50,21 @@ import {
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integrations.model';
 
 export const DocumentApp = {
-  createDocument: async (
-    input: CreateDocumentInput,
-    metadata: DocumentMetadataResolverType[],
-    serviceInstanceId: ServiceInstanceId,
-    uploads: Upload[]
-  ) => {
+  createDocument: async ({
+    input,
+    metadata,
+    serviceInstanceId,
+    document,
+    logo,
+    images = [],
+  }: {
+    input: CreateDocumentInput;
+    metadata: DocumentMetadataResolverType[];
+    serviceInstanceId: ServiceInstanceId;
+    document?: Upload;
+    logo?: Upload;
+    images?: Upload[];
+  }) => {
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
@@ -63,44 +73,55 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const files = await processUploads(uploads, serviceInstanceId);
-    const completeMetadata =
+    const [documentFile] = await processUploads(document, serviceInstanceId);
+    const imagesFiles = await processUploads(images, serviceInstanceId);
+    const [logoFile] = await processUploads(logo, serviceInstanceId);
+
+    const documentMetadata =
       DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        documentFile,
         metadata,
       });
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
-      completeMetadata
+      documentMetadata
     );
 
     const documentType =
       DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
         serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
       );
-    const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
+
+    DocumentHelper.assertDocumentFileIsNotMissing({
+      hasDocument: !!document,
       documentType,
-      metadata
+      documentMetadata,
+    });
+
+    const integrationType = documentMetadata.find(
+      ({ key }) => key === 'integration_type'
     );
-    let documentData: DocumentData<Document> = {
+    const isDocumentFileSkipped = [
+      IntegrationType.ThirdPartyIntegration,
+      IntegrationType.Connector,
+    ].includes(integrationType?.value as IntegrationType);
+
+    const documentData: DocumentData<Document> = {
       ...input,
       service_instance_id: serviceInstanceId,
       type: documentType,
+      ...(documentFile && !isDocumentFileSkipped
+        ? {
+            file_name: documentFile.fileName,
+            minio_name: documentFile.minioName,
+            mime_type: documentFile.mimeType,
+          }
+        : {}),
     };
 
-    if (shouldHandleFirstFile) {
-      const docFile = files.shift();
-      documentData = {
-        ...documentData,
-        file_name: docFile.fileName,
-        minio_name: docFile.minioName,
-        mime_type: docFile.mimeType,
-      };
-    }
-
     const createdDocument = await withTransaction(async () => {
-      const metadataKeys = completeMetadata.map(
+      const metadataKeys = documentMetadata.map(
         ({ key }) => key
       ) as DocumentMetadataKeys<Document>;
       const document = await DocumentDomain.createDocument(
@@ -108,13 +129,13 @@ export const DocumentApp = {
         metadataKeys
       );
 
-      if (completeMetadata.length) {
+      if (documentMetadata.length) {
         await DocumentMetadataDomain.insertMetadataFromKeyValue(
           document.id,
-          completeMetadata
+          documentMetadata
         );
 
-        for (const meta of completeMetadata) {
+        for (const meta of documentMetadata) {
           document[meta.key] = meta.value;
         }
       }
@@ -122,8 +143,18 @@ export const DocumentApp = {
       await DocumentChildrenDomain.createImageDocuments(
         document.id,
         document.service_instance_id,
-        files
+        imagesFiles,
+        DocumentImageType.Image
       );
+
+      if (logoFile) {
+        await DocumentChildrenDomain.createImageDocuments(
+          document.id,
+          document.service_instance_id,
+          [logoFile],
+          DocumentImageType.Logo
+        );
+      }
 
       if (documentData.use_cases?.length) {
         await objectUseCaseDomain.insertObjectUseCase(
@@ -192,7 +223,7 @@ export const DocumentApp = {
 
     let completeMetadata = DocumentHelper.buildCompleteMetadataFromDocumentFile(
       {
-        files: [documentFile],
+        documentFile,
         metadata,
       }
     );
@@ -281,7 +312,8 @@ export const DocumentApp = {
       await DocumentChildrenDomain.createImageDocuments(
         parentDocumentId,
         serviceInstanceId,
-        newImages
+        newImages,
+        DocumentImageType.Image
       );
 
       return updatedDocument;

@@ -22,6 +22,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../opencti/integrations/integrations.model';
 
+import { FileUpload } from 'graphql-upload/processRequest';
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
@@ -33,6 +34,19 @@ describe('Document domain', () => {
     mimeType: 'mimeType',
     fileName: 'filename',
   };
+
+  const mockFileUpload: FileUpload = {
+    filename: 'test-image.png',
+    mimetype: 'image/png',
+    encoding: '7bit',
+    createReadStream: vi.fn(),
+  };
+
+  const mockUpload = {
+    file: mockFileUpload,
+    promise: Promise.resolve(mockFileUpload),
+  };
+
   beforeEach(() => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
@@ -46,8 +60,8 @@ describe('Document domain', () => {
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
-      await DocumentApp.createDocument(
-        {
+      await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
@@ -55,13 +69,13 @@ describe('Document domain', () => {
           slug: 'slug',
           active: true,
         },
-        [
+        metadata: [
           { key: 'integration_type', value: IntegrationType.CsvFeed },
           { key: 'feed_url', value: 'https://example.com' },
         ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
+        serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+        document: mockUpload,
+      });
 
       await upsertConnectors([
         sampleExtractedManifest[0],
@@ -102,8 +116,8 @@ describe('Document domain', () => {
 
     it('should filter an integration feed with a metadata type', async () => {
       // Create data
-      const csvFeed = await DocumentApp.createDocument(
-        {
+      const csvFeed = await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
@@ -111,13 +125,13 @@ describe('Document domain', () => {
           slug: 'slug',
           active: true,
         },
-        [
+        metadata: [
           { key: 'integration_type', value: IntegrationType.CsvFeed },
           { key: 'feed_url', value: 'https://example.com' },
         ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
+        serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+        document: mockUpload,
+      });
 
       const [connector] = await upsertConnectors([
         sampleExtractedManifest[0],
@@ -224,8 +238,8 @@ describe('Document domain', () => {
     describe('multiple filters', () => {
       it('should handle type and version', async () => {
         // Create data
-        await DocumentApp.createDocument(
-          {
+        await DocumentApp.createDocument({
+          input: {
             uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             name: 'myCsvFeed',
             description: 'description',
@@ -233,13 +247,13 @@ describe('Document domain', () => {
             slug: 'slug',
             active: true,
           },
-          [
+          metadata: [
             { key: 'integration_type', value: IntegrationType.CsvFeed },
             { key: 'feed_url', value: 'https://example.com' },
           ],
-          INTEGRATION_SERVICE_INSTANCE_ID,
-          []
-        );
+          serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+          document: mockUpload,
+        });
 
         const connectors = await upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
@@ -289,8 +303,8 @@ describe('Document domain', () => {
 
       it('should handle type and subtype', async () => {
         // Create data
-        await DocumentApp.createDocument(
-          {
+        await DocumentApp.createDocument({
+          input: {
             uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
             name: 'myCsvFeed',
             description: 'description',
@@ -298,13 +312,13 @@ describe('Document domain', () => {
             slug: 'slug',
             active: true,
           },
-          [
+          metadata: [
             { key: 'integration_type', value: IntegrationType.CsvFeed },
             { key: 'feed_url', value: 'https://example.com' },
           ],
-          INTEGRATION_SERVICE_INSTANCE_ID,
-          []
-        );
+          serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+          document: mockUpload,
+        });
 
         const connectors = await upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]

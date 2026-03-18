@@ -3,6 +3,11 @@ enum DocumentSourceType {
   internal
 }
 
+enum DocumentImageType {
+  logo
+  image
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -12,6 +17,7 @@ type ShareableResource {
   download_number: Int
   active: Boolean!
   source_type: DocumentSourceType!
+  image_type: DocumentImageType
 }
 
 enum DocumentOrdering {
@@ -104,8 +110,10 @@ type Mutation {
   createDocument(
     input: CreateDocumentInput!
     metadata: [DocumentMetadata!]!
-    document: [Upload!]!
     serviceInstanceId: String
+    document: Upload
+    logo: Upload
+    images: [Upload!]
   ): Document! @auth @service_capa(requires: [UPLOAD])
   updateDocument(
     documentId: ID!

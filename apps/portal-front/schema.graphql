@@ -107,7 +107,7 @@ type Mutation {
   cancelDeploymentRequest(deploymentRequestId: ID!, cancellationReason: String): DeploymentRequest
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
-  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, serviceInstanceId: String): Document!
+  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, document: Upload, logo: Upload, images: [Upload!]): Document!
   updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, updateDocument: Boolean!, images: [String!], serviceInstanceId: String): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
@@ -522,6 +522,11 @@ enum DocumentSourceType {
   internal
 }
 
+enum DocumentImageType {
+  logo
+  image
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -531,6 +536,7 @@ type ShareableResource {
   download_number: Int
   active: Boolean!
   source_type: DocumentSourceType!
+  image_type: DocumentImageType
 }
 
 enum DocumentOrdering {
