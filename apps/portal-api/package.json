@@ -68,7 +68,7 @@
     "express-rate-limit": "8.2.2",
     "express-session": "1.19.0",
     "glob": "11.1.0",
-    "graphql": "16.13.0",
+    "graphql": "16.13.1",
     "graphql-relay": "0.10.2",
     "graphql-sse": "2.6.0",
     "graphql-subscriptions": "2.0.0",
