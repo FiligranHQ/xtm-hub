@@ -1,6 +1,8 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PlatformIdentifier } from '../__generated__/resolvers-types';
-import { clearTemplateCache, renderEmail } from './mail-service';
+import * as producer from '../thirdparty/pgboss/producer';
+import config from 'config';
+import { clearTemplateCache, renderEmail, sendMail } from './mail-service';
 
 describe('renderEmail', () => {
   afterEach(() => {
@@ -176,6 +178,48 @@ describe('renderEmail', () => {
       expect(liCount).toBe(50);
       expect(html).toContain('First0');
       expect(html).toContain('First49');
+    });
+  });
+  describe('sendMail', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should enqueue a job via PgBossProducer when queue processing is enabled', async () => {
+      vi.spyOn(config, 'get').mockReturnValue(true);
+
+      const mockSend = vi
+        .spyOn(producer.PgBossProducer, 'send')
+        .mockResolvedValue('fake-job-id');
+
+      await sendMail({
+        to: 'test@example.com',
+        template: 'welcome',
+        params: {},
+      });
+
+      expect(mockSend).toHaveBeenCalledOnce();
+      expect(mockSend).toHaveBeenCalledWith('mail.send', {
+        to: 'test@example.com',
+        template: 'welcome',
+        params: {},
+      });
+    });
+
+    it('should NOT enqueue a job when queue processing is disabled', async () => {
+      vi.spyOn(config, 'get').mockReturnValue(false);
+
+      const mockSend = vi
+        .spyOn(producer.PgBossProducer, 'send')
+        .mockResolvedValue('fake-job-id');
+
+      await sendMail({
+        to: 'test@example.com',
+        template: 'welcome',
+        params: {},
+      });
+
+      expect(mockSend).not.toHaveBeenCalled();
     });
   });
 });
