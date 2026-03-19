@@ -1,16 +1,12 @@
 'use client';
-import { ServiceGroupsByServiceInstanceId } from '@/components/service/service-group.graphql';
 import { TrialsManageUsersForm } from '@/components/service/trial-instances/manage-users/trials-manage-users-form';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { Button } from '@filigran/ui';
-import { serviceGroupsByServiceInstanceIdQuery } from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
 import { useTranslations } from 'next-intl';
-import React, { useCallback, useState } from 'react';
-import { useQueryLoader } from 'react-relay';
+import React, { useState } from 'react';
 
 interface Props {
-  serviceInstanceId?: string;
+  serviceInstanceId: string;
   organizationId?: string;
   trigger?: React.ReactNode;
 }
@@ -22,32 +18,6 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
-
-  const [queryRef, loadQuery] =
-    useQueryLoader<serviceGroupsByServiceInstanceIdQuery>(
-      ServiceGroupsByServiceInstanceId
-    );
-
-  useMountingLoader(loadQuery, {
-    serviceInstanceId: serviceInstanceId,
-  });
-
-  const loadServiceGroups = useCallback(() => {
-    if (!serviceInstanceId || !loadQuery) {
-      return;
-    }
-    loadQuery(
-      {
-        serviceInstanceId,
-      },
-      { fetchPolicy: 'store-and-network' }
-    );
-  }, [loadQuery, serviceInstanceId]);
-
-  const onCompleted = () => {
-    setOpenSheet(false);
-    loadServiceGroups();
-  };
 
   return (
     <SheetWithPreventingDialog
@@ -61,12 +31,13 @@ export const TrialsManageUsersDialog: React.FC<Props> = ({
           </Button>
         )
       }>
-      {queryRef && (
+      {serviceInstanceId && (
         <TrialsManageUsersForm
+          key={serviceInstanceId}
           onCancel={() => setOpenSheet(false)}
-          onCompleted={onCompleted}
+          onCompleted={() => setOpenSheet(false)}
           organizationId={organizationId}
-          queryRef={queryRef}
+          serviceInstanceId={serviceInstanceId}
         />
       )}
     </SheetWithPreventingDialog>

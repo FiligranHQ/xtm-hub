@@ -28,6 +28,7 @@ import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -120,39 +121,43 @@ const ShareableResourceSlug: React.FunctionComponent<
               />
               {shouldShowOneClickDeployComponent ? (
                 <>
-                  <TooltipProvider>
-                    <Tooltip
-                      delayDuration={50}
-                      disableHoverableContent={true}>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            incrementDownloadNumber();
-                            window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                          }}
-                          className="z-[2] text-primary">
-                          <DownloadIcon className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{t('Service.ShareableResources.Download')}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  {isResourceDownloadable(documentData) && (
+                    <TooltipProvider>
+                      <Tooltip
+                        delayDuration={50}
+                        disableHoverableContent={true}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              incrementDownloadNumber();
+                              window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                            }}
+                            className="z-[2] text-primary">
+                            <DownloadIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('Service.ShareableResources.Download')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                   {updateActions}
                 </>
               ) : (
                 <>
                   {updateActions}
-                  <Button
-                    onClick={() => {
-                      incrementDownloadNumber();
-                      window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                    }}>
-                    {t('Utils.Download')}
-                  </Button>
+                  {isResourceDownloadable(documentData) && (
+                    <Button
+                      onClick={() => {
+                        incrementDownloadNumber();
+                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
+                      }}>
+                      {t('Utils.Download')}
+                    </Button>
+                  )}
                 </>
               )}
               {shouldShowOneClickDeployComponent && (

@@ -806,10 +806,9 @@ describe('Registration app', () => {
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
-      const call = registrationApp.autoRegisterPlatform(
-        uuidv4(),
-        platformConfiguration
-      );
+      const call = registrationApp.autoRegisterPlatform(uuidv4(), {
+        platform: platformConfiguration,
+      });
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
       );
@@ -822,10 +821,7 @@ describe('Registration app', () => {
 
       const call = registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        {
-          ...platformConfiguration,
-          id: uuidv4(),
-        }
+        { platform: { ...platformConfiguration, id: uuidv4() } }
       );
       await expect(call).rejects.toThrow(BadRequestErrorCode.InvalidPlatformId);
     });
@@ -841,7 +837,7 @@ describe('Registration app', () => {
 
       const call = registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        platformConfiguration
+        { platform: platformConfiguration }
       );
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.NotAllowedByDeploymentStatus
@@ -850,7 +846,7 @@ describe('Registration app', () => {
     it('should register the provided platform', async () => {
       await registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        platformConfiguration
+        { platform: platformConfiguration }
       );
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -888,12 +884,12 @@ describe('Registration app', () => {
       };
       await registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        platformConfiguration
+        { platform: platformConfiguration }
       );
 
       await registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        newPlatformConfiguration
+        { platform: newPlatformConfiguration }
       );
 
       const oldConfiguration =
@@ -932,7 +928,7 @@ describe('Registration app', () => {
 
         await registrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
-          platformConfiguration
+          { platform: platformConfiguration }
         );
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -948,6 +944,37 @@ describe('Registration app', () => {
           source: TELEMETRY_SOURCE,
           target_product: 'open-cti',
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        });
+      });
+
+      it('should include existing_users_count in register event when provided', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const telemetrySpy = vi
+          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        await registrationApp.autoRegisterPlatform(
+          deploymentRequest.platform_token as string,
+          { platform: platformConfiguration, existing_users_count: 42 }
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.REGISTER,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          platform_contract: PlatformContract.Trial,
+          platform_id: platformConfiguration.id,
+          platform_version: platformConfiguration.version,
+          platform_url: platformConfiguration.url,
+          source: TELEMETRY_SOURCE,
+          target_product: 'open-cti',
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          existing_users_count: 42,
         });
       });
     });

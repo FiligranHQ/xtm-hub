@@ -1,10 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   ServiceDefinitionIdentifier,
-  ServiceInstanceCreationStatus,
   ServiceInstance as ServiceInstanceGraphQl,
-  ServiceInstanceJoinType,
-  ServiceInstanceTag,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
@@ -104,16 +101,14 @@ export const subscriptionApp = {
 
     await sendSubscriptionTelemetryEvent({
       selectedOrganization,
-      serviceDefinitionIdentifier:
-        serviceDefinition.identifier as ServiceDefinitionIdentifier,
+      serviceDefinitionIdentifier: serviceDefinition.identifier,
     });
 
     return {
       ...serviceInstance,
-      tags: serviceInstance.tags as ServiceInstanceTag[],
-      creation_status:
-        serviceInstance.creation_status as ServiceInstanceCreationStatus,
-      join_type: serviceInstance.join_type as ServiceInstanceJoinType,
+      tags: serviceInstance.tags,
+      creation_status: serviceInstance.creation_status,
+      join_type: serviceInstance.join_type,
       capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
     };
   },

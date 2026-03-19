@@ -11,6 +11,8 @@ import {
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
@@ -125,9 +127,9 @@ describe('Service instance domain', () => {
             id: generateId,
             name: 'OpenCTI Platform',
             description: 'short description',
-            creation_status: 'READY',
+            creation_status: ServiceInstanceCreationStatus.Ready,
             public: false,
-            join_type: 'JOIN_AUTO',
+            join_type: ServiceInstanceJoinType.JoinAuto,
             tags: '{others}',
             service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
           },
@@ -163,7 +165,7 @@ describe('Service instance domain', () => {
         name: 'Test OpenCTI Platform',
         description: 'Test platform',
         service_definition_id: serviceDefinitionId,
-        creation_status: 'READY',
+        creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
       await db('Subscription').insert({
@@ -208,7 +210,7 @@ describe('Service instance domain', () => {
         name: 'Test Platform No Sub',
         description: 'Test platform without subscription',
         service_definition_id: serviceDefinitionId,
-        creation_status: 'READY',
+        creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
       const result = await loadPlatformServiceInstance(
@@ -230,7 +232,7 @@ describe('Service instance domain', () => {
         name: 'Original Name',
         description: 'Original Description',
         service_definition_id: serviceDefinitionId,
-        creation_status: 'READY',
+        creation_status: ServiceInstanceCreationStatus.Ready,
       });
     });
 
@@ -290,7 +292,7 @@ describe('Service instance domain', () => {
         name: 'Test Service Config',
         description: 'Test service for configuration',
         service_definition_id: serviceDefinitionId,
-        creation_status: 'READY',
+        creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
       const mockConfig: PlatformConfiguration = {
@@ -348,7 +350,7 @@ describe('Service instance domain', () => {
         name: 'Test Update Config',
         description: 'Test service for configuration update',
         service_definition_id: serviceDefinitionId,
-        creation_status: 'READY',
+        creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
       originalConfig = {
@@ -449,7 +451,7 @@ describe('Service instance domain', () => {
         name: 'Test Service for Grant Access',
         description: 'Test service',
         service_definition_id: serviceDefinitionId,
-        creation_status: 'READY',
+        creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
       await db('Subscription').insert({
@@ -544,7 +546,7 @@ describe('Service instance domain', () => {
         name: 'Test Service With Subscriptions',
         description: 'Test service',
         service_definition_id: serviceDefinitionId,
-        creation_status: 'READY',
+        creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
       await db('Subscription').insert({

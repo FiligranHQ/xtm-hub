@@ -1,6 +1,7 @@
 import type { JobWithMetadata, PgBoss, WorkOptions } from 'pg-boss';
 import { logApp } from '../../utils/app-logger.util';
 import { HUBSPOT_QUEUES } from './hubspot.jobs';
+import { MAIL_QUEUES } from './mail.jobs';
 import { PgBossMetrics } from './pgboss.metrics';
 import { TELEMETRY_QUEUES } from './telemetry.jobs';
 
@@ -11,6 +12,7 @@ import { TELEMETRY_QUEUES } from './telemetry.jobs';
 const DEAD_LETTER_QUEUES = [
   HUBSPOT_QUEUES.DEAD_LETTER,
   TELEMETRY_QUEUES.DEAD_LETTER,
+  MAIL_QUEUES.DEAD_LETTER,
 ] as const;
 
 function handleDeadLetterJobs(jobs: JobWithMetadata<unknown>[]): Promise<void> {

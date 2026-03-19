@@ -22,12 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  PreloadedQuery,
-  readInlineData,
-  useMutation,
-  usePreloadedQuery,
-} from 'react-relay';
+import { readInlineData, useLazyLoadQuery, useMutation } from 'react-relay';
 import { z } from 'zod';
 
 const formSchema = z.object({
@@ -44,13 +39,13 @@ interface Props {
   onCancel: () => void;
   onCompleted: () => void;
   organizationId?: string;
-  queryRef: PreloadedQuery<serviceGroupsByServiceInstanceIdQuery>;
+  serviceInstanceId: string;
 }
 
 export const TrialsManageUsersForm: React.FC<Props> = ({
   onCancel,
   organizationId,
-  queryRef,
+  serviceInstanceId,
   onCompleted,
 }) => {
   const t = useTranslations();
@@ -61,9 +56,10 @@ export const TrialsManageUsersForm: React.FC<Props> = ({
     pageSize,
     filter: { organization: organizationId },
   });
-  const data = usePreloadedQuery<serviceGroupsByServiceInstanceIdQuery>(
+
+  const data = useLazyLoadQuery<serviceGroupsByServiceInstanceIdQuery>(
     ServiceGroupsByServiceInstanceIdQueryGraphql,
-    queryRef
+    { serviceInstanceId: serviceInstanceId }
   );
 
   const [commitUpdateServiceGroups] = useMutation(

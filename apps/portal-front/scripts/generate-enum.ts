@@ -1,38 +1,41 @@
 import fs from 'fs';
+import { Kind, parse } from 'graphql';
 import path from 'path';
 
-const GENERATED_DIR = path.resolve(__dirname, '../__generated__');
+const SCHEMA_PATH = path.resolve(__dirname, '../schema.graphql');
 const OUTPUT_DIR = path.resolve(__dirname, '../__generated__/models');
 
-function extractStringUnionType(
-  source: string,
-  typeName: string
-): string[] | null {
-  const typeRegex = new RegExp(`export type ${typeName}\\s*=\\s*([^;]+);`);
-  const match = source.match(typeRegex);
-  if (!match) {
-    return null;
-  }
+function extractEnumEntries(schemaContent: string): Array<[string, string[]]> {
+  const ast = parse(schemaContent);
+  const orderedEnums = new Map<string, string[]>();
 
-  const typeContent = match[1];
-  if (!typeContent) {
-    return null;
-  }
-  const isStringUnion = /^(\s*['"][^'"]+['"]\s*\|\s*)*['"][^'"]+['"]\s*$/.test(
-    typeContent
-  );
-  if (!isStringUnion) {
-    return null;
-  }
+  ast.definitions.forEach((definition) => {
+    if (definition.kind === Kind.ENUM_TYPE_DEFINITION) {
+      const values = (definition.values ?? []).map(
+        (enumValue) => enumValue.name.value
+      );
+      orderedEnums.set(definition.name.value, values);
+      return;
+    }
 
-  const enumValues = typeContent
-    .split('|')
-    .map((enumValue) => enumValue.trim().replace(/^['"]|['"]$/g, ''))
-    .filter(
-      (enumValue) => enumValue !== '%future added value' && Boolean(enumValue)
-    );
+    if (definition.kind === Kind.ENUM_TYPE_EXTENSION) {
+      const enumName = definition.name.value;
+      const existingValues = orderedEnums.get(enumName) ?? [];
+      const extensionValues = (definition.values ?? []).map(
+        (enumValue) => enumValue.name.value
+      );
 
-  return enumValues;
+      extensionValues.forEach((extensionValue) => {
+        if (!existingValues.includes(extensionValue)) {
+          existingValues.push(extensionValue);
+        }
+      });
+
+      orderedEnums.set(enumName, existingValues);
+    }
+  });
+
+  return Array.from(orderedEnums.entries());
 }
 
 function generateEnum(enumName: string, values: string[]): string {
@@ -46,38 +49,32 @@ function generateEnum(enumName: string, values: string[]): string {
   return `export enum ${enumName} {\n${lines.join('\n')}\n}`;
 }
 
-function processFile(fileName: string): void {
-  const content = fs.readFileSync(fileName, 'utf-8');
-  const typeDeclarations = content.match(/export type (\w+)\s*=\s*([^;]+);/g);
+function writeEnumFiles(enumEntries: Array<[string, string[]]>): void {
+  enumEntries.forEach(([enumName, enumValues]) => {
+    if (enumValues.length === 0) {
+      return;
+    }
 
-  if (typeDeclarations) {
-    typeDeclarations.forEach((typeDeclaration) => {
-      const [, typeName] = typeDeclaration.match(/export type (\w+)/) || [];
-      if (typeName) {
-        const values = extractStringUnionType(content, typeName);
-        if (values) {
-          const enumCode = generateEnum(`${typeName}Enum`, values) + '\n';
-          const outputFileName = path.join(OUTPUT_DIR, `${typeName}.enum.ts`);
-          fs.writeFileSync(outputFileName, enumCode, 'utf-8');
-        }
-      }
-    });
-  }
+    const enumCode = `${generateEnum(`${enumName}Enum`, enumValues)}\n`;
+    const outputFileName = path.join(OUTPUT_DIR, `${enumName}.enum.ts`);
+    fs.writeFileSync(outputFileName, enumCode, 'utf-8');
+  });
 }
 
 function main(): void {
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR);
+  if (!fs.existsSync(SCHEMA_PATH)) {
+    throw new Error(`Schema file not found: ${SCHEMA_PATH}`);
   }
 
-  const files = fs.readdirSync(GENERATED_DIR);
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  }
 
-  files.forEach((file) => {
-    if (path.extname(file) === '.ts') {
-      const filePath = path.join(GENERATED_DIR, file);
-      processFile(filePath);
-    }
-  });
+  const schemaContent = fs.readFileSync(SCHEMA_PATH, 'utf-8');
+  const enumEntries = extractEnumEntries(schemaContent);
+
+  writeEnumFiles(enumEntries);
+
   console.warn('👌 Enum files from GraphQL updated');
 }
 

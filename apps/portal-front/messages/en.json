@@ -97,6 +97,34 @@
   "DisableUserDialog": {
     "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"
   },
+  "Epic": {
+    "XTMRoadmap": "XTM Suite Roadmap",
+    "AllProducts": "All products",
+    "Timeline": {
+      "draft": "Draft",
+      "now": "Now",
+      "next": "Next",
+      "under_consideration": "Under consideration"
+    },
+    "Form": {
+      "Epic": "Epic",
+      "Title": "Title",
+      "ShortDesc": "Short description",
+      "Description": "Description",
+      "FiligranProduct": "Product",
+      "FiligranProductPlaceholder": "OpenCTI",
+      "Timeline": "Timeline",
+      "IsActive": "Active",
+      "Integration": "Is an integration"
+    },
+    "EpicActions": {
+      "CreateEpic": "Create a new epic",
+      "UpdateEpic": "Update an epic",
+      "DeleteEpic": "Delete {epicName} epic",
+      "SureDeleteEpic": "Are you sure you want to delete the {epicName} epic?",
+      "EpicDeleted": "The epic was deleted"
+    }
+  },
   "Error": {
     "AnErrorOccured": "An error occurred",
     "Login": {
@@ -131,6 +159,9 @@
       "DOCUMENT_NOT_FOUND": "The resource was not found.",
       "DOCUMENT_UNIQUE_SLUG_ERROR": "The resource slug is already in use.",
       "DOCUMENT_UPDATE_ERROR": "An error occurred while updating the resource.",
+      "EPIC_CREATE_ERROR": "An error occurred while creating the epic.",
+      "EPIC_UPDATE_ERROR": "An error occurred while updating the epic.",
+      "DELETE_EPIC_ERROR": "An error occurred while deleting the epic.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
@@ -414,7 +445,8 @@
   },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
-    "opencti": "OpenCTI"
+    "opencti": "OpenCTI",
+    "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
     "PlatformsEditionDialog": {
@@ -871,7 +903,6 @@
     "SureWantSubscriptionDirect": "Get started with our free {serviceName} service and explore resources created by the Filigran team.",
     "SureWantSubscriptionUndirect": "You are going to be contacted by our commercial team to subscribe this service. Do you want to continue?",
     "Trials": {
-      "Explore": "Explore the full potential of OpenCTI Enterprise Edition, start your 30 days free trial.",
       "ExploreBold": "Free Trial!",
       "ExplorePlatform": "Explore {platformName} platform with 30 days",
       "ExploreProducts": "Explore OpenCTI or OpenAEV platform with 30 days",
@@ -940,6 +971,7 @@
         }
       },
       "StartTrial": "Start your free trial",
+      "StartTrialWithName": "Start your free {platformName} trial",
       "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
       "ReachOutToSales": "Reach out to Sales",

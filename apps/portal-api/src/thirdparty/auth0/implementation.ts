@@ -1,8 +1,10 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { loadOrganizationBy } from '../../modules/organizations/organizations.domain';
+import { logApp } from '../../utils/app-logger.util';
 import { buildUserMetadataUpdate } from './auth0.util';
 import {
-  auth0Client,
   Auth0Client,
   Auth0UpdateUser,
   Auth0UpdateUserRBACInstance,
@@ -23,27 +25,23 @@ const authenticationClient = new AuthenticationClient(clientConfiguration);
 
 export const auth0ClientImplementation: Auth0Client = {
   updateUser: async (user: Auth0UpdateUser): Promise<void> => {
-    const users_response = await managementClient.usersByEmail.getByEmail({
+    const auth0_users = await managementClient.users.listUsersByEmail({
       email: user.email,
     });
-    const auth0_users = users_response.data;
     if (auth0_users.length === 0) {
       throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
     }
 
     await Promise.all(
       auth0_users.map((auth0_user) =>
-        managementClient.users.update(
-          { id: auth0_user.user_id },
-          {
-            given_name: user.first_name,
-            family_name: user.last_name,
-            user_metadata: {
-              country: user.country,
-            },
-            picture: user.picture,
-          }
-        )
+        managementClient.users.update(auth0_user.user_id, {
+          given_name: user.first_name,
+          family_name: user.last_name,
+          user_metadata: {
+            country: user.country,
+          },
+          picture: user.picture,
+        })
       )
     );
   },
@@ -51,10 +49,9 @@ export const auth0ClientImplementation: Auth0Client = {
     email: string,
     userRBACInstance: Auth0UpdateUserRBACInstance
   ): Promise<void> => {
-    const users_response = await managementClient.usersByEmail.getByEmail({
+    const auth0_users = await managementClient.users.listUsersByEmail({
       email,
     });
-    const auth0_users = users_response.data;
     if (auth0_users.length === 0) {
       throw new Error('AUTH0_USER_NOT_FOUND_ERROR');
     }
@@ -62,7 +59,7 @@ export const auth0ClientImplementation: Auth0Client = {
     await Promise.all(
       auth0_users.map((auth0_user) =>
         managementClient.users.update(
-          { id: auth0_user.user_id },
+          auth0_user.user_id,
           buildUserMetadataUpdate(auth0_user, userRBACInstance)
         )
       )
@@ -84,17 +81,14 @@ export const auth0ClientImplementation: Auth0Client = {
       signing_alg: 'RS256',
     });
   },
-  deleteAudienceAPI: async (platform_id: string): Promise<void> => {
-    const allApis = await managementClient.resourceServers.getAll({
-      include_totals: true,
-      per_page: 100,
-    });
-    const apiToDelete = allApis.data.resource_servers.find((resourceServer) =>
-      resourceServer.name.includes(platform_id)
+  deleteAudienceAPI: async (
+    organization_id: OrganizationId,
+    platform_id: string
+  ): Promise<void> => {
+    const organization = await loadOrganizationBy({ id: organization_id });
+    logApp.info(
+      `Delete API Audience for organization ${organization.name} with platform_id ${platform_id}`
     );
-    await auth0Client.deleteAudienceAPI(apiToDelete.name);
-    await managementClient.resourceServers.delete({
-      id: platform_id,
-    });
+    await managementClient.resourceServers.delete(platform_id);
   },
 };

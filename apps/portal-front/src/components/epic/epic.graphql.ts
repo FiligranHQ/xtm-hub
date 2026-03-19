@@ -9,15 +9,12 @@ export const epicFragment = graphql`
     title
     timeline
     product
-    is_active
+    active
     epic_type
-    document {
-      id
-      minio_name
-      service_instance_id
-    }
+    document_id
   }
 `;
+
 export const epicsListFragment = graphql`
   fragment epicsList_epics on Query
   @refetchable(queryName: "EpicPaginationQuery") {
@@ -37,6 +34,7 @@ export const epicsListFragment = graphql`
     }
   }
 `;
+
 export const EpicListQuery = graphql`
   query epicsQuery(
     $count: Int!
@@ -62,8 +60,12 @@ export const CreateEpicMutation = graphql`
 `;
 
 export const UpdateEpicMutation = graphql`
-  mutation epicUpdateMutation($id: ID!, $input: UpdateEpicInput!) {
-    updateEpic(id: $id, input: $input) {
+  mutation epicUpdateMutation(
+    $id: ID!
+    $input: UpdateEpicInput!
+    $document: [Upload!]
+  ) {
+    updateEpic(id: $id, input: $input, document: $document) {
       ...epic_fragment
     }
   }

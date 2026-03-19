@@ -152,18 +152,20 @@ export const RegistrationDetails: React.FC<Props> = ({
           </Button>
         )}
 
-        {displayAccessPlatformButtonForTrial && isTrial && (
-          <GuardCapacityComponent
-            capacityRestriction={[
-              OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-              OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
-            ]}>
-            <TrialsManageUsersDialog
-              serviceInstanceId={platform.subscription?.service_instance?.id}
-              organizationId={platform.subscription?.organization.id}
-            />
-          </GuardCapacityComponent>
-        )}
+        {displayAccessPlatformButtonForTrial &&
+          isTrial &&
+          serviceInstanceId && (
+            <GuardCapacityComponent
+              capacityRestriction={[
+                OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+                OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+              ]}>
+              <TrialsManageUsersDialog
+                serviceInstanceId={serviceInstanceId}
+                organizationId={platform.subscription?.organization.id}
+              />
+            </GuardCapacityComponent>
+          )}
         {displayUpdatePlatform && (
           <Button
             variant="outline-primary"

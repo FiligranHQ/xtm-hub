@@ -5,12 +5,9 @@ import { useTranslations } from 'next-intl';
 import GuardCapacityComponent from '@/components/admin-guard';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/start-trial-banner-button';
-import { TryOpenCTIBanner } from '@/components/service/trial-instances/banner/try-opencti-banner';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { SettingsContext } from '@/components/settings/env-portal-context';
 import { IconActionContext } from '@/components/ui/icon-actions';
-import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
   Callout,
@@ -38,9 +35,7 @@ export const TryFiligranProductsBanner = () => {
   const { availableTrials } = useOrgaFreeTrial();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const isOpenAEVTrialsEnabled = useIsFeatureEnabled(FeatureFlag.OPENAEVTRIALS);
 
-  if (!isOpenAEVTrialsEnabled) return <TryOpenCTIBanner />;
   if (!settings) return null;
 
   if (availableTrials.length === 0) return null; // Dont display the banner if user already has the 2 products in trial

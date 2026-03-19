@@ -3,15 +3,11 @@ import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
   DeploymentRequest,
-  DeploymentRequestActivitySector,
-  DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
-  DeploymentRequestJobTitle,
   DeploymentRequestOrdering,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
-  DeploymentRequestUseCase,
   OrderingMode,
   PlatformDeploymentRequest,
   PlatformDeploymentRequestConnection,
@@ -166,20 +162,14 @@ export const DeploymentsApp = {
           user.id,
           input.platform_identifier,
           {
-            region:
-              createdDeploymentRequest.region as DeploymentRequestPlatformRegion,
-            status:
-              createdDeploymentRequest.hub_status as DeploymentRequestHubStatus,
-            activity_sector:
-              createdDeploymentRequest.activity_sector as DeploymentRequestActivitySector,
-            job_title:
-              createdDeploymentRequest.job_title as DeploymentRequestJobTitle,
-            use_case:
-              createdDeploymentRequest.use_case as DeploymentRequestUseCase,
+            region: createdDeploymentRequest.region,
+            status: createdDeploymentRequest.hub_status,
+            activity_sector: createdDeploymentRequest.activity_sector,
+            job_title: createdDeploymentRequest.job_title,
+            use_case: createdDeploymentRequest.use_case,
             email: user.email,
             deployment_id: createdDeploymentRequest.id,
-            deployment_type:
-              createdDeploymentRequest.type as DeploymentRequestDeploymentType,
+            deployment_type: createdDeploymentRequest.type,
           }
         );
         await telemetryApp.sendTelemetryEvent(createDeploymentEvent);
@@ -196,7 +186,7 @@ export const DeploymentsApp = {
             ? 'free_trial_requested'
             : 'free_trial_queued';
 
-        sendMail({
+        await sendMail({
           to: user.email,
           template: mailTemplate,
           params: {
@@ -216,7 +206,7 @@ export const DeploymentsApp = {
           ? XTM_HUB_SUPPORT_EMAIL
           : XTM_HUB_DEV_TEAM_EMAIL;
       try {
-        sendMail({
+        await sendMail({
           to: instanceRequestedEmail,
           template: 'admin_saas_instance_requested',
           params: {
@@ -271,7 +261,7 @@ export const DeploymentsApp = {
     if (
       input.actual_state &&
       !isPlatformStateTransitionValid(
-        deploymentRequest.actual_state as DeploymentRequestPlatformState,
+        deploymentRequest.actual_state,
         input.actual_state
       )
     ) {
@@ -311,9 +301,8 @@ export const DeploymentsApp = {
 
     await DeploymentsQuotasDomain.withLockedQuotaTransaction(
       {
-        platformIdentifier:
-          deploymentRequest.platform_identifier as PlatformIdentifier,
-        region: deploymentRequest.region as DeploymentRequestPlatformRegion,
+        platformIdentifier: deploymentRequest.platform_identifier,
+        region: deploymentRequest.region,
       },
       async () => {
         const shouldUpdateSubscriptionDates =
@@ -345,8 +334,8 @@ export const DeploymentsApp = {
 
         if (newStatus === DeploymentRequestHubStatus.Active) {
           await DeploymentRequestDomain.initialiseServiceGroup(
-            input.id as DeploymentRequestId,
-            deploymentRequest.platform_identifier as PlatformIdentifier
+            deploymentRequestId,
+            deploymentRequest.platform_identifier
           );
         }
       }
@@ -372,7 +361,7 @@ export const DeploymentsApp = {
           id: deploymentRequest.user_requester_id,
         });
 
-        sendMail({
+        await sendMail({
           to: user.email,
           template: 'free_trial_provisioning',
           params: {
@@ -406,7 +395,7 @@ export const DeploymentsApp = {
           JSON.stringify(serviceConfiguration.config)
         );
 
-        void sendMail({
+        await sendMail({
           to: user.email,
           template: 'free_trial_registered',
           params: {
@@ -419,20 +408,6 @@ export const DeploymentsApp = {
     } catch (error) {
       logApp.error('Unable to send mail after deployment request is active', {
         error: error,
-        deploymentRequestId: deploymentRequest.id,
-      });
-    }
-
-    try {
-      if (
-        newStatus === DeploymentRequestHubStatus.Expired &&
-        newStatus !== deploymentRequest.hub_status
-      ) {
-        await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
-      }
-    } catch (error) {
-      logApp.error('Unable to delete audience', {
-        error,
         deploymentRequestId: deploymentRequest.id,
       });
     }
@@ -472,10 +447,10 @@ export const DeploymentsApp = {
     });
 
     return quotas.map((quota) => ({
-      region: quota.region as DeploymentRequestPlatformRegion,
+      region: quota.region,
       availableCount: quota.availability,
       capacity: quota.capacity,
-      platform_identifier: quota.platform_identifier as PlatformIdentifier,
+      platform_identifier: quota.platform_identifier,
     }));
   },
 
@@ -653,7 +628,7 @@ export const DeploymentsApp = {
       const [requester] = await loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
-      sendMail({
+      await sendMail({
         to: requester.email,
         template: 'free_trial_cancelled',
         params: {
@@ -669,7 +644,10 @@ export const DeploymentsApp = {
     }
 
     try {
-      await auth0Client.deleteAudienceAPI(deploymentRequest.platform_id);
+      await auth0Client.deleteAudienceAPI(
+        deploymentRequest.organization_requester_id,
+        deploymentRequest.platform_id
+      );
     } catch (error) {
       logApp.error('Unable to delete audience', {
         error,
@@ -685,14 +663,14 @@ export const DeploymentsApp = {
       await DeploymentRequestDomain.loadTrialsToExpire();
 
     for (const trial of expiredTrials) {
-      const previousHubStatus = trial.hub_status as DeploymentRequestHubStatus;
+      const previousHubStatus = trial.hub_status;
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
       try {
         await DeploymentsQuotasDomain.withLockedQuotaTransaction(
           {
-            platformIdentifier: trial.platform_identifier as PlatformIdentifier,
-            region: trial.region as DeploymentRequestPlatformRegion,
+            platformIdentifier: trial.platform_identifier,
+            region: trial.region,
           },
           async () => {
             const updatedDeploymentRequest =
@@ -706,8 +684,8 @@ export const DeploymentsApp = {
 
             await DeploymentsApp.releaseDeploymentRequestPlace(
               previousHubStatus,
-              trial.platform_identifier as PlatformIdentifier,
-              trial.region as DeploymentRequestPlatformRegion
+              trial.platform_identifier,
+              trial.region
             );
 
             await sendUpdateDeploymentTelemetryEvent(
@@ -721,17 +699,28 @@ export const DeploymentsApp = {
           const [requester] = await loadUser({
             id: trial.user_requester_id,
           });
-          sendMail({
+          await sendMail({
             to: requester.email,
             template: 'free_trial_expired',
             params: {
               firstName: formatName(requester.first_name ?? ''),
-              platformIdentifier:
-                trial.platform_identifier as PlatformIdentifier,
+              platformIdentifier: trial.platform_identifier,
             },
           });
         } catch (error) {
           logApp.error('Unable to send mail for trial expiration', {
+            error,
+            deploymentRequestId: trial.id,
+          });
+        }
+
+        try {
+          await auth0Client.deleteAudienceAPI(
+            trial.organization_requester_id,
+            trial.platform_id
+          );
+        } catch (error) {
+          logApp.error('Unable to delete audience', {
             error,
             deploymentRequestId: trial.id,
           });
@@ -817,8 +806,7 @@ export const DeploymentsApp = {
             'ServiceInstance',
             deployment.service_instance_id
           ),
-          platformIdentifier:
-            deployment.platform_identifier as PlatformIdentifier,
+          platformIdentifier: deployment.platform_identifier,
         };
       }),
       isBlacklisted:
@@ -850,12 +838,11 @@ const sendUpdateDeploymentTelemetryEvent = async (
       organization,
       userId,
       {
-        status: deploymentRequest.hub_status as DeploymentRequestHubStatus,
+        status: deploymentRequest.hub_status,
         start_date: deploymentRequest.start_date,
         end_date: deploymentRequest.end_date,
         deployment_id: deploymentRequest.id,
-        deployment_type:
-          deploymentRequest.type as DeploymentRequestDeploymentType,
+        deployment_type: deploymentRequest.type,
         platform_id: deploymentRequest.platform_id,
         ...(deploymentRequest.hub_status ===
           DeploymentRequestHubStatus.Cancelled && {

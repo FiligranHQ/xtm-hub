@@ -1,12 +1,11 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import Epic, { EpicId } from '../../../model/kanel/public/Epic';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { extractId } from '../../../utils/utils';
 import { DocumentDomain } from '../document/domain/document.domain';
 import { EpicApp } from './epic.app';
-import { mapToGraphQLEpic } from './epic.helper';
 
 const resolvers: Resolvers = {
   Epic: {
@@ -18,6 +17,11 @@ const resolvers: Resolvers = {
       });
       return document[0] ?? null;
     },
+    document_id: ({ document_id }) => {
+      if (document_id) {
+        return toGlobalId('Document', document_id);
+      }
+    },
   },
   Query: {
     epics: async (_parent, opts, _context) => {
@@ -27,27 +31,21 @@ const resolvers: Resolvers = {
   Mutation: {
     createEpic: async (_, { input, document }) => {
       try {
-        const createdEpic = await EpicApp.createEpic(input, document);
-        return mapToGraphQLEpic(createdEpic);
+        return await EpicApp.createEpic(input, document);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicCreateError);
       }
     },
-    updateEpic: async (_, { id, input }) => {
+    updateEpic: async (_, { id, input, document }) => {
       try {
-        const updatedEpic = await EpicApp.updateEpic(
-          extractId<EpicId>(id),
-          input
-        );
-        return mapToGraphQLEpic(updatedEpic);
+        return await EpicApp.updateEpic(id as EpicId, input, document);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicUpdateError);
       }
     },
     deleteEpic: async (_, { id }) => {
       try {
-        const deletedEpic = await EpicApp.deleteEpic(extractId<EpicId>(id));
-        return mapToGraphQLEpic(deletedEpic);
+        return await EpicApp.deleteEpic(id as EpicId);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicDeleteError);
       }

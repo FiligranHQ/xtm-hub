@@ -1,6 +1,6 @@
+import { v4 as uuidv4 } from 'uuid';
 import {
   Competitor,
-  CompetitorTier,
   CreateCompetitorInput,
   UpdateCompetitorInput,
 } from '../../../__generated__/resolvers-types';
@@ -22,11 +22,10 @@ const throwIfUniqueViolation = (error: Error) => {
 export const CompetitorApp = {
   async insertCompetitor(data: CreateCompetitorInput): Promise<Competitor> {
     try {
-      const competitor = await CompetitorDomain.insertCompetitor(data);
-      return {
-        ...competitor,
-        tier: competitor.tier as CompetitorTier,
-      };
+      return await CompetitorDomain.insertCompetitor({
+        ...data,
+        id: uuidv4() as CompetitorId,
+      });
     } catch (error) {
       throwIfUniqueViolation(error);
       throw error;
@@ -34,27 +33,17 @@ export const CompetitorApp = {
   },
   async updateCompetitorById(data: UpdateCompetitorInput): Promise<Competitor> {
     try {
-      const competitor = await CompetitorDomain.updateCompetitorBy(
+      return await CompetitorDomain.updateCompetitorBy(
         { id: extractId<CompetitorId>(data.id) },
         { ...omit(data, ['id']) }
       );
-      return {
-        ...competitor,
-        tier: competitor.tier as CompetitorTier,
-      };
     } catch (error) {
       throwIfUniqueViolation(error);
       throw error;
     }
   },
   async deleteCompetitorById(id: CompetitorId): Promise<Competitor> {
-    const competitor = await CompetitorDomain.deleteCompetitorBy({
-      id,
-    });
-    return {
-      ...competitor,
-      tier: competitor.tier as CompetitorTier,
-    };
+    return await CompetitorDomain.deleteCompetitorBy({ id });
   },
   async isOrganizationBlacklisted(
     organization: Organization

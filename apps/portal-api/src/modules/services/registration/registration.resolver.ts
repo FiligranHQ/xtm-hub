@@ -1,9 +1,17 @@
 import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
-import { Resolvers } from '../../../__generated__/resolvers-types';
+import {
+  AutoRegisterPlatformInput,
+  Resolvers,
+} from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../../model/portal-context';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  UnknownErrorCode,
+} from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { BadRequestError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import { loadServiceInstanceSubscription } from '../service-instance.domain';
@@ -118,10 +126,29 @@ const resolvers: Resolvers = {
     },
     refreshPlatformRegistrationConnectivityStatus: async (_, { input }) =>
       registrationApp.refreshPlatformRegistrationConnectivityStatus(input),
-    autoRegisterPlatform: async (_, { platform }, context: PortalContext) => {
-      const token = context.req.header('XTM-Hub-Platform-Token');
-      await registrationApp.autoRegisterPlatform(token, platform);
-      return { success: true };
+    autoRegisterPlatform: async (
+      _,
+      { platform, input },
+      context: PortalContext
+    ) => {
+      // TODO: Simplify code and remove deprecated input and tests once all trials use the new input type.
+      const resolvedInput: AutoRegisterPlatformInput | null =
+        input ?? (platform ? { platform } : null);
+      if (!resolvedInput) {
+        throw BadRequestError(
+          BadRequestErrorCode.MissingAutoRegisterPlatformArgument
+        );
+      }
+      try {
+        const token = context.req.header('XTM-Hub-Platform-Token');
+        await registrationApp.autoRegisterPlatform(token, resolvedInput);
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RegisterPlatformUnknownError
+        );
+      }
     },
   },
 };

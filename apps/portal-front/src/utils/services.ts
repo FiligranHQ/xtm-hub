@@ -28,7 +28,7 @@ export const isExternalService = (
 export const isAutomaticSubscriptionService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum
 ) =>
-  [ServiceDefinitionIdentifierEnum.PUBLIC_ROADMAP].includes(
+  [ServiceDefinitionIdentifierEnum.XTM_SUITE_ROADMAP].includes(
     service_definition_identifier
   );
 

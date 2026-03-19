@@ -6,7 +6,10 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import { ServiceInstanceCreationStatus } from '../../__generated__/resolvers-types';
+import {
+  ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
+} from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
@@ -64,7 +67,7 @@ describe('OrganizationsDomain', () => {
           description: '',
           creation_status: ServiceInstanceCreationStatus.Ready,
           public: false,
-          join_type: 'JOIN_AUTO',
+          join_type: ServiceInstanceJoinType.JoinAuto,
           tags: [],
           service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
         },

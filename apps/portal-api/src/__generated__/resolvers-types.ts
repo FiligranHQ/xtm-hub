@@ -57,6 +57,11 @@ export type AdminEditUserInput = {
   organization_capabilities?: InputMaybe<Array<OrganizationCapabilitiesInput>>;
 };
 
+export type AutoRegisterPlatformInput = {
+  existing_users_count?: InputMaybe<Scalars['Int']['input']>;
+  platform: PlatformInput;
+};
+
 export type BulkPendingUserFromOrganizationInput = {
   excludedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   filters?: InputMaybe<Array<Filter>>;
@@ -178,10 +183,10 @@ export type CreateDocumentInput = {
 };
 
 export type CreateEpicInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
   description: Scalars['String']['input'];
   epic: Scalars['String']['input'];
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
-  is_active?: InputMaybe<Scalars['Boolean']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product: FiligranProduct;
   short_description: Scalars['String']['input'];
@@ -536,6 +541,7 @@ export type EditUserCapabilitiesInput = {
 
 export type Epic = Node & {
   __typename?: 'Epic';
+  active: Scalars['Boolean']['output'];
   created_at: Scalars['Date']['output'];
   description: Scalars['String']['output'];
   document?: Maybe<Document>;
@@ -543,7 +549,6 @@ export type Epic = Node & {
   epic: Scalars['String']['output'];
   epic_type: EpicType;
   id: Scalars['ID']['output'];
-  is_active: Scalars['Boolean']['output'];
   product: FiligranProduct;
   short_description: Scalars['String']['output'];
   timeline: Timeline;
@@ -576,9 +581,11 @@ export enum EpicType {
 }
 
 export enum FiligranProduct {
-  OpenAev = 'OpenAEV',
-  OpenCti = 'OpenCTI',
-  XtmHub = 'XTMHub'
+  Openaev = 'openaev',
+  Opencti = 'opencti',
+  Opengrc = 'opengrc',
+  Xtmhub = 'xtmhub',
+  Xtmone = 'xtmone'
 }
 
 export type Filter = {
@@ -848,7 +855,8 @@ export type MutationAdminEditUserArgs = {
 
 
 export type MutationAutoRegisterPlatformArgs = {
-  platform: PlatformInput;
+  input?: InputMaybe<AutoRegisterPlatformInput>;
+  platform?: InputMaybe<PlatformInput>;
 };
 
 
@@ -1063,6 +1071,7 @@ export type MutationUpdateDocumentArgs = {
 
 
 export type MutationUpdateEpicArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   id: Scalars['ID']['input'];
   input: UpdateEpicInput;
 };
@@ -1721,8 +1730,8 @@ export enum ServiceDefinitionIdentifier {
   OpenctiCustomDashboards = 'opencti_custom_dashboards',
   OpenctiIntegrations = 'opencti_integrations',
   OpenctiRegistration = 'opencti_registration',
-  PublicRoadmap = 'public_roadmap',
-  Vault = 'vault'
+  Vault = 'vault',
+  XtmSuiteRoadmap = 'xtm_suite_roadmap'
 }
 
 export type ServiceGroup = Node & {
@@ -2078,10 +2087,10 @@ export type UpdateDocumentInput = {
 };
 
 export type UpdateEpicInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   epic?: InputMaybe<Scalars['String']['input']>;
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
-  is_active?: InputMaybe<Scalars['Boolean']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product?: InputMaybe<FiligranProduct>;
   short_description?: InputMaybe<Scalars['String']['input']>;
@@ -2335,6 +2344,7 @@ export type ResolversTypes = ResolversObject<{
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
+  AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
@@ -2517,6 +2527,7 @@ export type ResolversParentTypes = ResolversObject<{
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
+  AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: Scalars['Boolean']['output'];
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
@@ -2920,6 +2931,7 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
 }>;
 
 export type EpicResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Epic'] = ResolversParentTypes['Epic']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
@@ -2927,7 +2939,6 @@ export type EpicResolvers<ContextType = PortalContext, ParentType extends Resolv
   epic?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  is_active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
   short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timeline?: Resolver<ResolversTypes['Timeline'], ParentType, ContextType>;
@@ -3056,7 +3067,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationAdminCancelDeploymentRequestArgs>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
-  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationAutoRegisterPlatformArgs, 'platform'>>;
+  autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationAutoRegisterPlatformArgs>>;
   bulkAcceptPendingUserInOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkAcceptPendingUserInOrganizationArgs>>;
   bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkRemovePendingUserFromOrganizationArgs>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;

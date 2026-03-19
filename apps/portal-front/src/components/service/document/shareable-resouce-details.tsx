@@ -13,6 +13,7 @@ import { getIntegrationSubTypeMetadata } from '@/components/service/integrations
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
+import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -157,10 +158,12 @@ const ShareableResourceDetails: React.FunctionComponent<
         translationKey="DemoURL"
         variant="link"
       />
-      <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.Downloads')}>
-        <span>{roundToNearest(downloadNumber)}</span>
-      </ShareableResourceDetailItem>
+      {isResourceDownloadable(documentData) && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.Downloads')}>
+          <span>{roundToNearest(downloadNumber)}</span>
+        </ShareableResourceDetailItem>
+      )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Shares')}>
         <span>{roundToNearest(documentData.share_number)}</span>

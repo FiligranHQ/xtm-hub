@@ -1,13 +1,10 @@
 import { Knex } from 'knex';
 import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
-  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
-  DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
-  DeploymentRequestUseCase,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
 } from '../../../__generated__/resolvers-types';
@@ -39,28 +36,10 @@ export const DeploymentRequestDomain = {
   },
 
   loadDeploymentRequestBy: async (conditions: DeploymentRequestMutator) => {
-    const result = await db<DeploymentRequest>('DeploymentRequest')
+    return db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .select('*')
       .first();
-
-    if (!result) {
-      return null;
-    }
-
-    return {
-      ...result,
-      platform_identifier: result.platform_identifier as PlatformIdentifier,
-      region: result.region as DeploymentRequestPlatformRegion,
-      type: result.type as DeploymentRequestDeploymentType,
-      hub_status: result.hub_status as DeploymentRequestHubStatus,
-      target_state: result.target_state as DeploymentRequestPlatformState,
-      actual_state: result.actual_state as DeploymentRequestPlatformState,
-      use_case: result.use_case as DeploymentRequestUseCase,
-      activity_sector:
-        result.activity_sector as DeploymentRequestActivitySector,
-      job_title: result.job_title as DeploymentRequestJobTitle,
-    };
   },
 
   loadTrialsForOrganization: async (
@@ -103,8 +82,12 @@ export const DeploymentRequestDomain = {
     }
 
     if (opts.searchTerm) {
-      query.orWhereILike(`User.email`, `%${opts.searchTerm}%`);
-      query.orWhereILike(`Organization.name`, `%${opts.searchTerm}%`);
+      query.where((qb) => {
+        qb.whereILike(`User.email`, `%${opts.searchTerm}%`).orWhereILike(
+          `Organization.name`,
+          `%${opts.searchTerm}%`
+        );
+      });
     }
 
     return paginate<DeploymentRequest, T>(

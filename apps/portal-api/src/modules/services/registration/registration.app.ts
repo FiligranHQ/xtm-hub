@@ -1,6 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
+  AutoRegisterPlatformInput,
   CanUnregisterPlatformInput,
   DeploymentRequestHubStatus,
   IsPlatformRegisteredInput,
@@ -8,8 +9,6 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
-  PlatformIdentifier,
-  PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
@@ -434,21 +433,24 @@ export const registrationApp = {
     return { token };
   },
 
-  autoRegisterPlatform: async (token: string, platform: PlatformInput) => {
+  autoRegisterPlatform: async (
+    token: string,
+    input: AutoRegisterPlatformInput
+  ) => {
     const deploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         platform_token: token,
       });
 
-    assertValidDeploymentRequest(deploymentRequest, platform.id);
+    assertValidDeploymentRequest(deploymentRequest, input.platform.id);
 
     const configuration: PlatformConfiguration = {
       registerer_id: deploymentRequest.user_requester_id,
-      platform_id: platform.id,
-      platform_url: platform.url,
-      platform_title: platform.title,
-      platform_contract: platform.contract,
-      platform_version: platform.version,
+      platform_id: input.platform.id,
+      platform_url: input.platform.url,
+      platform_title: input.platform.title,
+      platform_contract: input.platform.contract,
+      platform_version: input.platform.version,
       token: deploymentRequest.platform_token,
     };
 
@@ -471,11 +473,12 @@ export const registrationApp = {
         const registerEvent = buildRegisterEvent(
           selectedOrga,
           deploymentRequest.user_requester_id,
-          deploymentRequest.platform_identifier as PlatformIdentifier,
-          platform.id,
-          platform.contract,
-          platform.version,
-          platform.url
+          deploymentRequest.platform_identifier,
+          input.platform.id,
+          input.platform.contract,
+          input.platform.version,
+          input.platform.url,
+          input.existing_users_count ?? undefined
         );
         await telemetryApp.sendTelemetryEvent(registerEvent);
       } catch (error) {
@@ -535,7 +538,7 @@ const assertValidDeploymentRequest = (
       DeploymentRequestHubStatus.Active,
       DeploymentRequestHubStatus.Pending,
       DeploymentRequestHubStatus.Provisioning,
-    ].includes(deploymentRequest.hub_status as DeploymentRequestHubStatus)
+    ].includes(deploymentRequest.hub_status)
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
   }
