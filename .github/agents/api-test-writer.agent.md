@@ -21,6 +21,7 @@ Do not manipulate directly the DB but use helper function to do that
 Do not test that it's just defined, test the values as well using toMatchObject
 Structure your tests with Given, When and Then comments 
 Avoid mixing expect at the beginning of tests
+Use parametric tests with it.each when tests are the same but with different data sets
 
 As a senior engineer, you are expected to:
 Apply best practices for integration testing, code organization, and maintainability.

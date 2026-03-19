@@ -22,44 +22,12 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../opencti/integrations/integrations.model';
 
+import { TestHelper } from '../../../../../tests/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
-import Document, { DocumentId } from '../../../../model/kanel/public/Document';
+import Document from '../../../../model/kanel/public/Document';
 import { ADMIN_UUID } from '../../../../portal.const';
-import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
-
-const testCreateDocument = async () => {
-  const document = await DocumentApp.createDocument(
-    {
-      uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-      name: 'myCsvFeed',
-      description: 'description',
-      short_description: 'short_description',
-      slug: 'slug',
-      active: true,
-    },
-    [
-      { key: 'integration_type', value: IntegrationType.CsvFeed },
-      { key: 'feed_url', value: 'https://example.com' },
-    ],
-    INTEGRATION_SERVICE_INSTANCE_ID,
-    []
-  );
-
-  expect(document).toBeDefined();
-
-  return document!;
-};
-
-const testLoadDocument = async (
-  documentId: DocumentId
-): Promise<Document | undefined> => {
-  return db<Document>('Document')
-    .where('id', '=', documentId)
-    .select('*')
-    .first();
-};
 
 describe('Document domain', () => {
   const minioFileMock = {
@@ -79,13 +47,13 @@ describe('Document domain', () => {
   describe('deactivateDocuments', () => {
     let createdDocument: Document;
     beforeEach(async () => {
-      createdDocument = await testCreateDocument();
+      createdDocument = await TestHelper.createDocument({});
     });
 
     it('should do nothing when the document ids is an empty array', async () => {
       await DocumentDomain.deactivateDocuments([]);
 
-      const document = await testLoadDocument(createdDocument.id);
+      const document = await TestHelper.loadDocument(createdDocument.id);
 
       expect(document).toBeDefined();
       expect(document!.active).toBe(true);
@@ -94,7 +62,7 @@ describe('Document domain', () => {
     it('should deactivate document and set remover id', async () => {
       await DocumentDomain.deactivateDocuments([createdDocument.id]);
 
-      const document = await testLoadDocument(createdDocument.id);
+      const document = await TestHelper.loadDocument(createdDocument.id);
 
       expect(document).toBeDefined();
       expect(document!.active).toBe(false);
@@ -105,7 +73,7 @@ describe('Document domain', () => {
   describe(`loadParentDocumentsByServiceInstance`, () => {
     let csvFeed: Document;
     beforeEach(async () => {
-      csvFeed = await testCreateDocument();
+      csvFeed = await TestHelper.createDocument({});
     });
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       await upsertConnectors([
@@ -457,7 +425,6 @@ describe('Document domain', () => {
         slug: 'minimal-doc',
       };
       const document = await DocumentDomain.createDocument(docData, []);
-      expect(document).toBeDefined();
       expect(document).toMatchObject({
         name: docData.name,
         type: docData.type,
@@ -467,9 +434,7 @@ describe('Document domain', () => {
         active: true,
       });
 
-      // Check DB row exists
-      const dbDocument = await db('Document').where('id', document!.id).first();
-      expect(dbDocument).toBeDefined();
+      const dbDocument = await TestHelper.loadDocument(document!.id);
       expect(dbDocument).toMatchObject({
         name: docData.name,
         type: docData.type,
@@ -489,8 +454,6 @@ describe('Document domain', () => {
         uploader_id: toGlobalId('User', otherUserId),
       };
       const document = await DocumentDomain.createDocument(docData, []);
-      expect(document).toBeDefined();
-
       expect(document!.uploader_id).toBe(otherUserId);
     });
 
@@ -502,7 +465,6 @@ describe('Document domain', () => {
         active: false,
       };
       const document = await DocumentDomain.createDocument(docData, []);
-      expect(document).toBeDefined();
       expect(document!.active).toBe(false);
     });
 
@@ -579,7 +541,7 @@ describe('Document domain', () => {
 
   describe('loadUploaderOrganization', () => {
     it('should return the organization which uploaded document', async () => {
-      const inserted = await testCreateDocument();
+      const inserted = await TestHelper.createDocument({});
 
       const uploaderOrganization =
         await DocumentDomain.loadUploaderOrganization(inserted.id);

@@ -29,8 +29,6 @@ describe('Service Contract Domain', () => {
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
-      expect(serviceDefinition).toBeDefined();
-
       const configuration = {
         registerer_id: context.user.id,
         platform_id: uuidv4(),
@@ -53,8 +51,6 @@ describe('Service Contract Domain', () => {
         await ServiceDefinitionDomain.loadServiceDefinitionBy({
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
-
-      expect(serviceDefinition).toBeDefined();
 
       const result = await ServiceContractDomain.isServiceConfigurationValid(
         serviceDefinition!.id,
@@ -91,7 +87,6 @@ describe('Service Contract Domain', () => {
           token,
         });
 
-      expect(configuration).toBeDefined();
       expect(configuration).toMatchObject({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
@@ -156,7 +151,6 @@ describe('Service Contract Domain', () => {
       const configuration =
         await ServiceContractDomain.loadConfigurationByPlatform(platformId);
 
-      expect(configuration).toBeDefined();
       expect(configuration).toMatchObject({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
@@ -174,7 +168,6 @@ describe('Service Contract Domain', () => {
           ServiceConfigurationStatus.Active
         );
 
-      expect(configuration).toBeDefined();
       expect(configuration).toMatchObject({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
