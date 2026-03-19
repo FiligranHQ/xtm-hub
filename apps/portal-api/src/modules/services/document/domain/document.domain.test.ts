@@ -22,7 +22,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../opencti/integrations/integrations.model';
 
-import { FileUpload } from 'graphql-upload/processRequest';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';

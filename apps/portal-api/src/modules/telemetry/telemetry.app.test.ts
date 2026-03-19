@@ -20,7 +20,7 @@ import {
 } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { FileUpload } from 'graphql-upload/processRequest';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   IntegrationType,

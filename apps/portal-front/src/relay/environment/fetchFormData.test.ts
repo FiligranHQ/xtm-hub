@@ -100,7 +100,7 @@ describe('fetchFormData', () => {
         globalThis.FormData = originalFormData;
       });
 
-      it('should correctly map a single uplodable without prefix', async () => {
+      it('should correctly map a single uploadable without prefix', async () => {
         const uploadables = {
           'a.txt': fileA,
         };

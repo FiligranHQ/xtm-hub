@@ -1,4 +1,4 @@
-import { FileUpload } from 'graphql-upload/processRequest';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import {
   afterAll,
   afterEach,

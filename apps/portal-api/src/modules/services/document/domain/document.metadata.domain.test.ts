@@ -1,4 +1,4 @@
-import { FileUpload } from 'graphql-upload/processRequest';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
