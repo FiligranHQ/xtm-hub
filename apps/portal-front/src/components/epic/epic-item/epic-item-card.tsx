@@ -7,6 +7,7 @@ import { MoreVertIcon } from '@filigran/icon';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { Badge } from '@filigran/ui';
 
 interface EpicItemCardProps {
   epic: epic_fragment$data;
@@ -57,6 +58,13 @@ export const EpicItemCard = ({
           onClick={(e) => {
             e.stopPropagation();
           }}>
+          {!epic.active && (
+            <Badge
+              variant="warning"
+              className="font-semibold mr-s">
+              {t('Epic.Timeline.draft')}
+            </Badge>
+          )}
           {(userCanDelete || userCanUpdate) && (
             <IconActions
               icon={
