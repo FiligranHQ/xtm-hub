@@ -17,11 +17,12 @@ import { ThirdPartyIntegrationForm } from '@/components/service/integrations/for
 import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import {
-  fileListToUploadableMap,
-  splitFileListToUploadableMap,
-} from '@/relay/environment/fetchFormData';
-import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
+  docIsExistingFile,
+  isFile,
+  splitExistingAndNewImages,
+} from '@/utils/documents';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
@@ -45,7 +46,11 @@ const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'active',
 ];
 
-const documentFileKeys: Array<keyof ServiceFormValues> = ['document', 'images'];
+const documentFileKeys: Array<keyof ServiceFormValues> = [
+  'document',
+  'logo',
+  'images',
+];
 
 interface UseDocumentContextProps {
   serviceInstance: serviceInstance_fragment$data;
@@ -78,12 +83,7 @@ export function useDocumentContext({
       },
       ['uploader_organization_id']
     );
-    const metadata = omit(values, [
-      ...documentBaseKeys,
-      'document',
-      'logo',
-      'images',
-    ]);
+    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
     const document = Array.from(values?.document ?? []).slice(0, 1);
     const logo = Array.from(values?.logo ?? []).slice(0, 1);
     const images = Array.from(values?.images ?? []);
@@ -163,19 +163,18 @@ export function useDocumentContext({
     };
 
     const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
-    // Split images between existing and new ones
-    const images = Array.from(values?.images ?? []) as FormImagesValues;
+    const document = Array.from(values?.document ?? []).slice(0, 1);
+    const images = Array.from(values?.images ?? []);
+    const [existingImageIds, newImages] = splitExistingAndNewImages(images);
+    const logo = Array.from(values?.logo ?? []).slice(0, 1);
 
-    const [existingImages, newImages] = splitExistingAndNewImages(images);
-    const documentsToUpload = [
-      ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
-      ...newImages,
-    ];
     updateMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
-        document: documentsToUpload,
+        document: document.map(() => ({})),
+        images: newImages.map(() => ({})),
+        ...(isFile(logo[0]) ? { logo: logo.map(() => ({})) } : {}),
         documentId: resource.id,
         metadata: Object.keys(metadata)
           .map((key) => ({
@@ -183,10 +182,16 @@ export function useDocumentContext({
             value: metadata[key as keyof typeof metadata],
           }))
           .filter(({ value }) => Boolean(value)),
-        updateDocument: values.document !== undefined,
-        images: existingImages,
+        existingImageIds: [
+          ...existingImageIds,
+          ...(docIsExistingFile(logo[0]) ? [logo[0].id] : []),
+        ],
       },
-      uploadables: fileListToUploadableMap(documentsToUpload),
+      uploadables: splitFileListToUploadableMap({
+        document,
+        images: newImages,
+        ...(isFile(logo[0]) ? { logo } : {}),
+      }),
       onCompleted: () => {
         onSuccess(values.name);
       },

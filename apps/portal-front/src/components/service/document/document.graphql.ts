@@ -30,19 +30,21 @@ export const DocumentUpdateMutation = graphql`
     $documentId: ID!
     $input: UpdateDocumentInput!
     $metadata: [DocumentMetadata!]!
-    $document: [Upload!]!
-    $updateDocument: Boolean!
-    $images: [String!]
+    $document: Upload
+    $existingImageIds: [ID!]
     $serviceInstanceId: String!
+    $logo: Upload
+    $images: [Upload!]
   ) {
     updateDocument(
       documentId: $documentId
       input: $input
       document: $document
-      updateDocument: $updateDocument
       metadata: $metadata
-      images: $images
+      existingImageIds: $existingImageIds
       serviceInstanceId: $serviceInstanceId
+      logo: $logo
+      images: $images
     ) {
       __id
       ...documentItem_fragment

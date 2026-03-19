@@ -218,6 +218,28 @@ export const DocumentHelper = {
       throw new Error(ErrorCode.DocumentMissingMetadata);
     }
   },
+  isDocumentFileRequired: ({
+    documentType,
+    documentMetadata,
+  }: {
+    documentType: DOCUMENT_TYPE;
+    documentMetadata: DocumentMetadataResolverType[];
+  }): boolean => {
+    if (documentType !== OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
+      return true;
+    }
+
+    const integrationType = documentMetadata.find(
+      (meta) => meta.key === 'integration_type'
+    )?.value as unknown as IntegrationType | undefined;
+
+    const isFileProhibited = [
+      IntegrationType.Connector,
+      IntegrationType.ThirdPartyIntegration,
+    ].includes(integrationType);
+
+    return !isFileProhibited;
+  },
   assertDocumentFileIsNotMissing: ({
     hasDocument,
     documentType,
@@ -227,17 +249,12 @@ export const DocumentHelper = {
     documentType: DOCUMENT_TYPE;
     documentMetadata: DocumentMetadataResolverType[];
   }) => {
-    const integrationType = documentMetadata.find(
-      (meta) => meta.key === 'integration_type'
-    )?.value as unknown as IntegrationType | undefined;
-    const isDocumentFileOptional =
-      documentType === OPENCTI_INTEGRATION_DOCUMENT_TYPE &&
-      [
-        IntegrationType.Connector,
-        IntegrationType.ThirdPartyIntegration,
-      ].includes(integrationType);
+    const isDocumentFileRequired = DocumentHelper.isDocumentFileRequired({
+      documentType,
+      documentMetadata,
+    });
 
-    if (!isDocumentFileOptional && !hasDocument) {
+    if (isDocumentFileRequired && !hasDocument) {
       throw new Error(ErrorCode.DocumentFileMissing);
     }
   },

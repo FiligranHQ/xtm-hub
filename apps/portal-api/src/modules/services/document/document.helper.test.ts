@@ -458,4 +458,30 @@ describe('DocumentHelper', () => {
       ).toThrow();
     });
   });
+
+  describe('isDocumentFileRequired', () => {
+    it.each`
+      documentType                         | integrationType                          | expected
+      ${OPENAEV_SCENARIO_DOCUMENT_TYPE}    | ${null}                                  | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${null}                                  | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.CsvFeed}               | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.Stream}                | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.TaxiiFeed}             | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.Connector}             | ${false}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.ThirdPartyIntegration} | ${false}
+    `(
+      'it should return $expected when document is $documentType and integration type is $integrationType',
+      ({ documentType, integrationType, expected }) => {
+        const documentMetadata = integrationType
+          ? [{ key: 'integration_type', value: integrationType }]
+          : [];
+        const result = DocumentHelper.isDocumentFileRequired({
+          documentType,
+          documentMetadata,
+        });
+
+        expect(result).toBe(expected);
+      }
+    );
+  });
 });

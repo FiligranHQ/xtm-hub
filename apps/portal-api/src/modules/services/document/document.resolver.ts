@@ -38,18 +38,13 @@ import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integr
 
 const resolvers: Resolvers = {
   Mutation: {
-    createDocument: async (
-      _,
-      { input, document, serviceInstanceId, metadata, logo, images }
-    ) => {
+    createDocument: async (_, input) => {
       try {
         return await DocumentApp.createDocument({
-          input,
-          metadata,
-          serviceInstanceId: extractId<ServiceInstanceId>(serviceInstanceId),
-          document,
-          logo,
-          images,
+          ...input,
+          serviceInstanceId: extractId<ServiceInstanceId>(
+            input.serviceInstanceId
+          ),
         });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
@@ -63,15 +58,14 @@ const resolvers: Resolvers = {
     updateDocument: async (_, input) => {
       try {
         return await DocumentApp.updateDocument({
+          ...input,
           parentDocumentId: extractId<DocumentId>(input.documentId),
           serviceInstanceId: extractId<ServiceInstanceId>(
             input.serviceInstanceId
           ),
-          metadata: input.metadata,
-          document: input.document,
-          updateDocument: input.updateDocument,
-          images: input.images,
-          input: input.input,
+          existingImageIds: (input.existingImageIds ?? []).map((imageId) =>
+            extractId<DocumentId>(imageId)
+          ),
         });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {

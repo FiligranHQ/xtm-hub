@@ -119,10 +119,11 @@ type Mutation {
     documentId: ID!
     input: UpdateDocumentInput!
     metadata: [DocumentMetadata!]!
-    document: [Upload!]!
-    updateDocument: Boolean!
-    images: [String!]
     serviceInstanceId: String
+    document: Upload
+    logo: Upload
+    images: [Upload!]
+    existingImageIds: [ID!]
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID
