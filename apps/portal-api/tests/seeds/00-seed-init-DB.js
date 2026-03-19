@@ -243,11 +243,12 @@ export async function seed(knex) {
         name: 'Public Roadmap',
         description: 'Explore and follow the Filigran XTM Suite roadmap',
         creation_status: 'READY',
-        public: false,
+        public: true,
         join_type: 'JOIN_AUTO',
         tags: '{others}',
         service_definition_id: 'ecc973c4-575f-4618-b3a4-ebabb9b42a81',
         ordering: 15,
+        slug: 'xtm-suite-roadmap',
       },
     ])
     .onConflict('id')
