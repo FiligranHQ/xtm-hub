@@ -7,6 +7,7 @@ import BadgeOverflowCounter, {
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
@@ -21,7 +22,6 @@ import {
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -206,9 +206,7 @@ const Page = async ({
       },
     };
     const mainChild = document.children_documents?.[0];
-    const logo = document.children_documents?.find(
-      (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
-    );
+    const logo = findDocumentLogo(document);
     if (document.children_documents!.length > 0) {
       jsonLd.image = document.children_documents!.map(
         (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
@@ -249,9 +247,7 @@ const Page = async ({
       );
     }
 
-    const carouselImages = document.children_documents?.filter(
-      (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
-    );
+    const carouselImages = filterDocumentImages(document);
 
     return (
       <>

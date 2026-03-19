@@ -16,12 +16,12 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { getPlatformIdentifier } from '@/utils/platform';
 import { InfoIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -41,9 +41,6 @@ const ShareableResourceConnectorSlug = ({
   shareUrl,
   serviceInstance,
 }: Props) => {
-  const logo = documentData.children_documents?.find(
-    (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
-  );
   const t = useTranslations();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const canClickOnDeployButton = documentData.manager_supported;
@@ -52,9 +49,8 @@ const ShareableResourceConnectorSlug = ({
     ? `${documentData.source_code}/__metadata__/connector_manifest.json`
     : '';
 
-  const carouselImages = documentData.children_documents?.filter(
-    (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
-  );
+  const carouselImages = filterDocumentImages(documentData);
+  const logo = findDocumentLogo(documentData);
 
   return (
     <>

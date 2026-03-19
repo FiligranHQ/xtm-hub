@@ -10,6 +10,11 @@ import {
 const FILE_PREFIX_SEPARATOR = 'prefix-';
 
 describe('fetchFormData', () => {
+  const fileA = { name: 'a.txt' };
+  const fileB = { name: 'b.txt' };
+  const fileC = { name: 'c.txt' };
+  const fileD = { name: 'd.txt' };
+
   describe('fetchFormData', () => {
     const originalFetch = globalThis.fetch;
     const request = { text: 'query {}' } as RequestParameters;
@@ -69,11 +74,6 @@ describe('fetchFormData', () => {
     describe('file mapping', () => {
       let originalFormData: typeof globalThis.FormData;
       let formDataEntries: Record<string, unknown>;
-
-      const fileA = { name: 'a.txt' };
-      const fileB = { name: 'b.txt' };
-      const fileC = { name: 'c.txt' };
-      const fileD = { name: 'd.txt' };
 
       beforeEach(() => {
         originalFormData = globalThis.FormData;
@@ -195,14 +195,11 @@ describe('fetchFormData', () => {
 
   describe('fileListToUploadableMap', () => {
     it('should map a single file by name', () => {
-      const file = { name: 'single.txt' };
-      const result = fileListToUploadableMap([file] as File[]);
-      expect(result).toEqual({ 'single.txt': file });
+      const result = fileListToUploadableMap([fileA] as File[]);
+      expect(result).toEqual({ 'a.txt': fileA });
     });
 
     it('should map multiple files by name', () => {
-      const fileA = { name: 'a.txt' };
-      const fileB = { name: 'b.txt' };
       const result = fileListToUploadableMap([fileA, fileB] as File[]);
       expect(result).toEqual({ 'a.txt': fileA, 'b.txt': fileB });
     });

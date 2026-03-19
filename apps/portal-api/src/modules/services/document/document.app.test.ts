@@ -100,8 +100,7 @@ describe('DocumentApp', () => {
       const call = DocumentApp.createDocument({
         input: documentData,
         metadata: [],
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
-          .ID as ServiceInstanceId,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       });
 
       await expect(call).rejects.toThrow(ErrorCode.DocumentMissingMetadata);
@@ -230,8 +229,7 @@ describe('DocumentApp', () => {
       await DocumentApp.createDocument({
         input: documentData,
         metadata: [{ key: 'product_version', value: '1.2.3' }],
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
-          .ID as ServiceInstanceId,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         document: mockUpload,
       });
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -256,8 +254,7 @@ describe('DocumentApp', () => {
       const createdDocument = await DocumentApp.createDocument({
         input: documentData,
         metadata: [{ key: 'product_version', value: '1.2.3' }],
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
-          .ID as ServiceInstanceId,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         document: mockUpload,
       });
 
@@ -265,8 +262,7 @@ describe('DocumentApp', () => {
 
       const call = DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS
-          .ID as ServiceInstanceId,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         metadata: [],
         input: documentData,
         existingImageIds: [],

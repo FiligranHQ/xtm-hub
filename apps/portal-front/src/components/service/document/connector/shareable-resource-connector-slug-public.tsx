@@ -4,9 +4,9 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -26,12 +26,8 @@ const ShareableResourceConnectorSlugPublic = ({
   pageUrl,
   serviceInstance,
 }: Props) => {
-  const logo = documentData.children_documents?.find(
-    (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
-  );
-  const carouselImages = documentData.children_documents?.filter(
-    (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
-  );
+  const logo = findDocumentLogo(documentData);
+  const carouselImages = filterDocumentImages(documentData);
 
   return (
     <>

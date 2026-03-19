@@ -54,17 +54,18 @@ export const fetchFormData = async (
       const splitted = uploadableKey.split(FILE_PREFIX_SEPARATOR);
       const variableName = splitted.length > 1 ? splitted[0]! : 'document';
 
+      if (uploadableKeys.length === 1) {
+        acc[index] = [`variables.${variableName}`];
+        return acc;
+      }
+
       if (keyMapping[variableName] === undefined) {
         keyMapping[variableName] = 0;
       } else {
         keyMapping[variableName] = keyMapping[variableName] + 1;
       }
 
-      if (uploadableKeys.length === 1) {
-        acc[index] = [`variables.${variableName}`];
-      } else {
-        acc[index] = [`variables.${variableName}.${keyMapping[variableName]}`];
-      }
+      acc[index] = [`variables.${variableName}.${keyMapping[variableName]}`];
 
       return acc;
     },

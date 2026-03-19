@@ -1,6 +1,6 @@
+import { findDocumentLogo } from '@/utils/documents';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import Image from 'next/image';
 import { FunctionComponent } from 'react';
@@ -12,9 +12,7 @@ interface ShareableResourceCardImageProps {
 export const ShareableResourceCardImage: FunctionComponent<
   ShareableResourceCardImageProps
 > = ({ document, serviceInstanceId }) => {
-  const logo = document.children_documents?.find(
-    (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
-  );
+  const logo = findDocumentLogo(document);
 
   return (
     <>

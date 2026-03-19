@@ -15,6 +15,7 @@ export const publicDocumentItem = graphql`
     children_documents {
       id
       image_type
+      source_type
     }
     use_cases {
       id

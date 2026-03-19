@@ -26,11 +26,11 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
@@ -77,16 +77,12 @@ const ShareableResourceSlug: React.FunctionComponent<
   }, [documentData]);
 
   const carouselImages = useMemo(() => {
-    return (documentData.children_documents ?? []).filter(
-      (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
-    );
-  }, [documentData.children_documents]);
+    return filterDocumentImages(documentData);
+  }, [documentData]);
 
   const logo = useMemo(() => {
-    return documentData.children_documents?.find(
-      (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
-    );
-  }, [documentData.children_documents]);
+    return findDocumentLogo(documentData);
+  }, [documentData]);
 
   return (
     <>
