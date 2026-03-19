@@ -114,7 +114,7 @@
       "FiligranProduct": "Product",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Timeline",
-      "IsActive": "Active",
+      "IsActive": "Is this EPIC published? (By default your EPIC is in draft mode)",
       "Integration": "Is an integration"
     },
     "EpicActions": {
