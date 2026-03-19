@@ -61,7 +61,7 @@ export const EpicItemCard = ({
           {!epic.active && (
             <Badge
               variant="warning"
-              className="font-semibold">
+              className="font-semibold mr-s">
               {t('Epic.Timeline.draft')}
             </Badge>
           )}
