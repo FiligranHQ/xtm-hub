@@ -101,10 +101,18 @@ export default class XTMSuiteRoadmapPage {
       await this.page.getByRole('option', { name: timeline }).click();
     }
     if (!draft) {
-      await this.page.getByRole('checkbox', { name: 'Active' }).check();
+      await this.page
+        .getByRole('checkbox', {
+          name: 'Is this EPIC published? (By default your EPIC is in draft mode)',
+        })
+        .check();
     }
     if (draft) {
-      await this.page.getByRole('checkbox', { name: 'Active' }).uncheck();
+      await this.page
+        .getByRole('checkbox', {
+          name: 'Is this EPIC published? (By default your EPIC is in draft mode)',
+        })
+        .uncheck();
     }
     await this.page.getByRole('button', { name: 'Update' }).click();
   }
