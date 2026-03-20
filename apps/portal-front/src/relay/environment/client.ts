@@ -12,7 +12,7 @@ import {
   Store,
 } from 'relay-runtime';
 import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironment';
-import { networkFetch } from './fetchFn';
+import { networkFetch, UnauthenticatedError } from './fetchFn';
 import {
   buildQueryId,
   fieldLogger,
@@ -58,7 +58,13 @@ export function createClientSideRelayEnvironment() {
       return fetchFormData('/graphql-api', request, variables, uploadables);
     }
     // If we don't have hydration responses, execute the request as usual.
-    return networkFetch({ request, variables });
+    return networkFetch({ request, variables }).catch((e: unknown) => {
+      if (e instanceof UnauthenticatedError) {
+        window.location.href = `/login?redirect=${btoa(window.location.pathname)}`;
+        return new Promise<never>(() => {});
+      }
+      throw e;
+    });
   };
 
   // Create a new helper or reuse the existing one, if one has already been created.

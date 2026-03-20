@@ -27,20 +27,25 @@ export function getGraphqlApi(serverSide: boolean, type: 'sse' | 'api') {
   }
 }
 
+export class UnauthenticatedError extends Error {
+  constructor() {
+    super('UNAUTHENTICATED');
+    this.name = 'UnauthenticatedError';
+  }
+}
+
 export async function networkFetch({
   apiUri = '/graphql-api',
   request,
   variables,
   portalCookie,
   cache = portalCookie ? 'no-store' : undefined,
-  redirectOnAuthFailure = true,
   options = {},
 }: {
   apiUri?: string;
   request: RequestParameters;
   variables: Variables;
   portalCookie?: RequestCookie;
-  redirectOnAuthFailure?: boolean;
   cache?: RequestCache;
   options?: RequestInit;
 }): Promise<GraphQLResponse> {
@@ -84,15 +89,11 @@ export async function networkFetch({
   // throw an error to indicate to the developer what went wrong.
   if (Array.isArray(json.errors)) {
     const containsAuthenticationFailure = json.errors.find(
-      (e: { message: string }) => e.message === 'Not authenticated.'
+      (e: { message: string }) =>
+        e.message === 'Not authorized: You are not authenticated'
     );
     if (containsAuthenticationFailure) {
-      // redirect to login page if needed
-      if (redirectOnAuthFailure) {
-        window.location.href = `/?redirect=${btoa(window.location.pathname)}`;
-      } else {
-        throw new Error('UNAUTHENTICATED');
-      }
+      throw new UnauthenticatedError();
     }
     throw new Error(json.errors[0].message);
   }
