@@ -5,7 +5,6 @@ import fs from 'node:fs';
 import ingestManifestResolver from '../modules/ingest-manifest/ingest-manifest.resolver';
 import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organizations/organizations.resolver';
-import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import competitorResolver from '../modules/services/competitor/competitor.resolver';
 import ServiceDefinitionResolver from '../modules/services/definition/service-definition.resolver';
 import deploymentResolver from '../modules/services/deployments/deployments.resolver';
@@ -42,7 +41,6 @@ const resolvers = mergeResolvers([
   organizationsResolver,
   usersResolver,
   settingsResolver,
-  rolePortalResolver,
   vaultResolver,
   subscriptionsResolver,
   userServiceResolver,

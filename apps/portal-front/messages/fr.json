@@ -135,7 +135,7 @@
       "FiligranProduct": "Produit",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Ligne de temps",
-      "IsActive": "Actif",
+      "IsActive": "Cet EPIC est-il publié ? (Par défaut votre EPIC est en mode brouillon)",
       "Integration": "Est une intégration"
     },
     "EpicActions": {
