@@ -38,7 +38,11 @@ export const createSecureFieldResolver = (
 
     // Authentication check
     if (authDirective && !isAuthenticatedFn(user)) {
-      throw ForbiddenAccess('Not authorized: You are not authenticated');
+      throw ForbiddenAccess(
+        'Not authorized: You are not authenticated',
+        undefined,
+        'warn'
+      );
     }
 
     // Authorization check

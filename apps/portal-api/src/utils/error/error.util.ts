@@ -4,6 +4,7 @@ import {
   CustomApolloError,
   ErrorCategory,
   ErrorInformation,
+  ErrorLogLevel,
   ErrorType,
 } from './error.type';
 
@@ -14,7 +15,8 @@ const errorUtil = (
     genre?: ErrorCategory;
     http_status?: number;
   },
-  information?: ErrorInformation
+  information?: ErrorInformation,
+  logLevel: ErrorLogLevel = 'error'
 ): CustomApolloError => {
   const Exception = createError(name, { data, message });
   const errorDetails = {
@@ -24,8 +26,10 @@ const errorUtil = (
       ? { detail: information.detail }
       : {}),
   };
-  logApp.error(name, errorDetails);
-  return new Exception();
+  logApp[logLevel](name, errorDetails);
+  const instance = new Exception() as CustomApolloError;
+  instance._logLevel = logLevel;
+  return instance;
 };
 
 export type ErrorBuilder = (
@@ -35,7 +39,8 @@ export type ErrorBuilder = (
 
 export const ForbiddenAccess = (
   message: string,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
+  logLevel: ErrorLogLevel = 'error'
 ): CustomApolloError => {
   return errorUtil(
     ErrorType.ForbiddenAccess,
@@ -44,7 +49,9 @@ export const ForbiddenAccess = (
       http_status: 403,
       genre: ErrorCategory.Technical,
       ...data,
-    }
+    },
+    undefined,
+    logLevel
   );
 };
 

@@ -1,5 +1,7 @@
 import { ApolloError } from 'apollo-errors';
 
+export type ErrorLogLevel = 'warn' | 'error';
+
 export interface ErrorInformation {
   detail?: Error | string;
   [key: string]: unknown;
@@ -21,6 +23,7 @@ export enum ErrorType {
 }
 
 export type CustomApolloError = ApolloError & {
+  _logLevel?: ErrorLogLevel;
   data: {
     genre?: ErrorCategory;
     http_status?: number;
