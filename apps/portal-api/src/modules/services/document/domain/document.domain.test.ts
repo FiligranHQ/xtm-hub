@@ -47,13 +47,13 @@ describe('Document domain', () => {
   describe('deactivateDocuments', () => {
     let createdDocument: Document;
     beforeEach(async () => {
-      createdDocument = await TestHelper.createDocument({});
+      createdDocument = await TestHelper.document.create({});
     });
 
     it('should do nothing when the document ids is an empty array', async () => {
       await DocumentDomain.deactivateDocuments([]);
 
-      const document = await TestHelper.loadDocument(createdDocument.id);
+      const document = await TestHelper.document.load(createdDocument.id);
 
       expect(document).toBeDefined();
       expect(document!.active).toBe(true);
@@ -62,7 +62,7 @@ describe('Document domain', () => {
     it('should deactivate document and set remover id', async () => {
       await DocumentDomain.deactivateDocuments([createdDocument.id]);
 
-      const document = await TestHelper.loadDocument(createdDocument.id);
+      const document = await TestHelper.document.load(createdDocument.id);
 
       expect(document).toBeDefined();
       expect(document!.active).toBe(false);
@@ -73,7 +73,7 @@ describe('Document domain', () => {
   describe(`loadParentDocumentsByServiceInstance`, () => {
     let csvFeed: Document;
     beforeEach(async () => {
-      csvFeed = await TestHelper.createDocument({});
+      csvFeed = await TestHelper.document.create({});
     });
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       await upsertConnectors([
@@ -418,55 +418,44 @@ describe('Document domain', () => {
   });
 
   describe('createDocument', () => {
-    it('should create a document with minimal required fields', async () => {
-      const docData = {
-        name: 'Minimal Document',
-        type: 'test-type',
-        slug: 'minimal-doc',
-      };
-      const document = await DocumentDomain.createDocument(docData, []);
-      expect(document).toMatchObject({
-        name: docData.name,
-        type: docData.type,
-        slug: docData.slug,
-        uploader_id: ADMIN_UUID,
-        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        active: true,
-      });
+    it.each`
+      typeOfDocument      | overwriteField                                                                       | expected
+      ${'minimal fields'} | ${{}}                                                                                | ${{}}
+      ${'uploader id'}    | ${{ uploader_id: toGlobalId('User', TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID) }} | ${{ uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID }}
+      ${'inactive'}       | ${{ active: false }}                                                                 | ${{ active: false }}
+    `(
+      'it should create a document with $typeOfDocument',
+      async ({ typeOfDocument, overwriteField, expected }) => {
+        // Given
+        const docData = {
+          name: typeOfDocument,
+          slug: typeOfDocument.toLowerCase().replace(/\s/g, '-'),
+          type: 'test-type',
+          ...overwriteField,
+        };
 
-      const dbDocument = await TestHelper.loadDocument(document!.id);
-      expect(dbDocument).toMatchObject({
-        name: docData.name,
-        type: docData.type,
-        slug: docData.slug,
-        uploader_id: ADMIN_UUID,
-        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        active: true,
-      });
-    });
+        // When
+        const document = await DocumentDomain.createDocument(docData, []);
+        const dbDocument = await TestHelper.document.load(document!.id);
 
-    it('should create a document with explicit uploader_id', async () => {
-      const otherUserId = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
-      const docData = {
-        name: 'Uploader Doc',
-        type: 'test-type',
-        slug: 'uploader-doc',
-        uploader_id: toGlobalId('User', otherUserId),
-      };
-      const document = await DocumentDomain.createDocument(docData, []);
-      expect(document!.uploader_id).toBe(otherUserId);
-    });
+        // Then
+        const baseExpected = {
+          name: docData.name,
+          type: docData.type,
+          slug: docData.slug,
+          uploader_id: ADMIN_UUID,
+          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          active: true,
+        };
 
-    it('should create an inactive document', async () => {
-      const docData = {
-        name: 'Inactive Doc',
-        type: 'test-type',
-        slug: 'inactive-doc',
-        active: false,
-      };
-      const document = await DocumentDomain.createDocument(docData, []);
-      expect(document!.active).toBe(false);
-    });
+        const expectedDocument = {
+          ...baseExpected,
+          ...expected,
+        };
+        expect(document).toMatchObject(expectedDocument);
+        expect(dbDocument).toMatchObject(expectedDocument);
+      }
+    );
 
     it('should throw if required fields are missing', async () => {
       await expect(DocumentDomain.createDocument({}, [])).rejects.toThrow();
@@ -541,7 +530,7 @@ describe('Document domain', () => {
 
   describe('loadUploaderOrganization', () => {
     it('should return the organization which uploaded document', async () => {
-      const inserted = await TestHelper.createDocument({});
+      const inserted = await TestHelper.document.create({});
 
       const uploaderOrganization =
         await DocumentDomain.loadUploaderOrganization(inserted.id);

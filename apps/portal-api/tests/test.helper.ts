@@ -13,54 +13,54 @@ import { INTEGRATION_SERVICE_INSTANCE_ID } from '../src/modules/services/documen
 import { TEST_ORGANIZATIONS } from './tests.const';
 
 export const TestHelper = {
-  createDocument: async ({
-    name = 'myCsvFeed',
-    description = 'description',
-    short_description = 'short_description',
-    slug = 'slug',
-    active = true,
-    uploader_id = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-    metadata = [
-      { key: 'integration_type', value: IntegrationType.CsvFeed },
-      { key: 'feed_url', value: 'https://example.com' },
-    ],
-    serviceInstanceId = INTEGRATION_SERVICE_INSTANCE_ID,
-    uploads = [],
-  }: {
-    name?: string;
-    description?: string;
-    short_description?: string;
-    slug?: string;
-    active?: boolean;
-    uploader_id?: UserId;
-    metadata?: DocumentMetadataResolverType[];
-    serviceInstanceId?: ServiceInstanceId;
-    uploads?: Upload[];
-  }): Promise<Document> => {
-    const document = await DocumentApp.createDocument(
-      {
-        name,
-        description,
-        short_description,
-        slug,
-        active,
-        uploader_id,
-      },
-      metadata,
-      serviceInstanceId,
-      uploads
-    );
+  document: {
+    create: async ({
+      name = 'myCsvFeed',
+      description = 'description',
+      short_description = 'short_description',
+      slug = 'slug',
+      active = true,
+      uploader_id = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      metadata = [
+        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        { key: 'feed_url', value: 'https://example.com' },
+      ],
+      serviceInstanceId = INTEGRATION_SERVICE_INSTANCE_ID,
+      uploads = [],
+    }: {
+      name?: string;
+      description?: string;
+      short_description?: string;
+      slug?: string;
+      active?: boolean;
+      uploader_id?: UserId;
+      metadata?: DocumentMetadataResolverType[];
+      serviceInstanceId?: ServiceInstanceId;
+      uploads?: Upload[];
+    }): Promise<Document> => {
+      const document = await DocumentApp.createDocument(
+        {
+          name,
+          description,
+          short_description,
+          slug,
+          active,
+          uploader_id,
+        },
+        metadata,
+        serviceInstanceId,
+        uploads
+      );
 
-    expect(document).toBeDefined();
+      expect(document).toBeDefined();
 
-    return document!;
-  },
-  loadDocument: async (
-    documentId: DocumentId
-  ): Promise<Document | undefined> => {
-    return db<Document>('Document')
-      .where('id', '=', documentId)
-      .select('*')
-      .first();
+      return document!;
+    },
+    load: async (documentId: DocumentId): Promise<Document | undefined> => {
+      return db<Document>('Document')
+        .where('id', '=', documentId)
+        .select('*')
+        .first();
+    },
   },
 };
