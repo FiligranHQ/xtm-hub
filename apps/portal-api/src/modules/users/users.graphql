@@ -91,7 +91,6 @@ input EditUserCapabilitiesInput {
 input EditMeUserInput {
   first_name: String
   last_name: String
-  picture: String
   country: String
 }
 
@@ -147,6 +146,7 @@ type Mutation {
 
   # Profile
   editMeUser(input: EditMeUserInput!): User! @auth
+  uploadUserPicture(document: Upload!): User! @auth
   resetPassword: Success! @auth
   requestTransferPersonalSpace(new_email: String): Success! @auth
   transferPersonalSpace(requestId: ID!): Success! @auth

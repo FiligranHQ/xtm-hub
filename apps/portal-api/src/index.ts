@@ -44,6 +44,7 @@ import {
   stopSessionCleanup,
 } from './utils/session-cleanup';
 import { extractId } from './utils/utils';
+import { userPictureEndpoint } from './server/endpoints/user-picture-endpoint';
 const { json } = pkg;
 // region GraphQL server initialization
 export const PORTAL_COOKIE_NAME = 'cloud-portal';
@@ -273,7 +274,7 @@ await initAuthPlatform(app);
 documentDownloadEndpoint(app);
 documentVisualizeEndpoint(app);
 healthEndpoint(app);
-
+userPictureEndpoint (app);
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema

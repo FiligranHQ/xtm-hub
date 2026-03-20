@@ -4,14 +4,17 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import {
   MeEditUserMutation,
   MeResetPasswordMutation,
+  MeUploadUserPictureMutation,
 } from '@/components/me/me.graphql';
 import {
   ProfileFormEdit,
   ProfileFormEditSchema,
 } from '@/components/profile/form/edit';
+import { ProfileFormPicture } from '@/components/profile/form/picture';
 import { RequestTransferPersonalSpace } from '@/components/profile/form/request-transfer-personal-space';
 import { ProfileFormResetPassword } from '@/components/profile/form/reset-password';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useState } from 'react';
@@ -22,6 +25,7 @@ export const Profile: React.FC = () => {
   const { me } = useContext(PortalContext);
   const [commitResetPasswordMutation] = useMutation(MeResetPasswordMutation);
   const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
+  const [commitUploadPictureMutation] = useMutation(MeUploadUserPictureMutation);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<ProfileFormEditSchema>();
 
@@ -65,6 +69,24 @@ export const Profile: React.FC = () => {
       },
     });
   };
+  const handleUploadPicture = (files: FileList) => {
+    commitUploadPictureMutation({
+      variables: { document: null },
+      uploadables: fileListToUploadableMap(files),
+      onError(error) {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+      onCompleted() {
+        toast({
+          title: t('Utils.Success'),
+        });
+      },
+    });
+  };
 
   const handleResetPassword = () => {
     commitResetPasswordMutation({
@@ -89,6 +111,7 @@ export const Profile: React.FC = () => {
     <>
       <section className="flex flex-col gap-xl w-8/12 m-auto">
         <ProfileFormEdit onSubmit={handleSubmit} />
+        <ProfileFormPicture onSubmit={handleUploadPicture} />
         <ProfileFormResetPassword onSubmit={handleResetPassword} />
         <RequestTransferPersonalSpace />
       </section>

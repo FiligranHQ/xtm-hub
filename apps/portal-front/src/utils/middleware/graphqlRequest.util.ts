@@ -29,6 +29,12 @@ export const manageRequest = async (request: NextRequest) => {
       new URL(SERVER_HTTP_API + pathname + search, request.url)
     );
   }
+  
+  if (pathname.startsWith('/user/picture')) {
+    return NextResponse.rewrite(
+      new URL(SERVER_HTTP_API + pathname + search, request.url)
+    );
+  }
 
   return undefined;
 };

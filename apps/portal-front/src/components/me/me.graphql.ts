@@ -52,16 +52,22 @@ export const MeEditUserMutation = graphql`
     $first_name: String
     $last_name: String
     $country: String
-    $picture: String
   ) {
     editMeUser(
       input: {
         first_name: $first_name
         last_name: $last_name
         country: $country
-        picture: $picture
       }
     ) {
+      ...meContext_fragment
+    }
+  }
+`;
+
+export const MeUploadUserPictureMutation = graphql`
+  mutation meUploadUserPictureMutation($document: Upload!) {
+    uploadUserPicture(document: $document) {
       ...meContext_fragment
     }
   }

@@ -470,6 +470,8 @@
     "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
+    "Edit": "Modifier",
+    "Picture": "Photo de profil",
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
     },

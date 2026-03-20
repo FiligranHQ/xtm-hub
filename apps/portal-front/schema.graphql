@@ -142,6 +142,7 @@ type Mutation {
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   editMeUser(input: EditMeUserInput!): User!
+  uploadUserPicture(document: Upload!): User!
   resetPassword: Success!
   requestTransferPersonalSpace(new_email: String): Success!
   transferPersonalSpace(requestId: ID!): Success!
@@ -1485,7 +1486,6 @@ input EditUserCapabilitiesInput {
 input EditMeUserInput {
   first_name: String
   last_name: String
-  picture: String
   country: String
 }
 

@@ -449,6 +449,8 @@
     "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
+    "Edit": "Edit",
+    "Picture": "Picture",
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
     },

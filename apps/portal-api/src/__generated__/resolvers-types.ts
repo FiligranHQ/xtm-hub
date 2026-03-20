@@ -513,7 +513,6 @@ export type EditMeUserInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
-  picture?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditServiceCapabilityInput = {
@@ -776,6 +775,7 @@ export type Mutation = {
   updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
+  uploadUserPicture: User;
 };
 
 
@@ -1072,6 +1072,11 @@ export type MutationUpdatePlatformServiceMetadataArgs = {
 
 export type MutationUpdateServiceGroupsArgs = {
   input: UpdateServiceGroupsInput;
+};
+
+
+export type MutationUploadUserPictureArgs = {
+  document: Scalars['Upload']['input'];
 };
 
 export type Node = {
@@ -3076,6 +3081,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
+  uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
