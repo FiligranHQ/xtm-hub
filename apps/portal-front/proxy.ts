@@ -14,6 +14,5 @@ export const config = {
     '/document/visualize/:serviceInstanceId/:filename*',
     '/document/deploy/:serviceInstanceId/:filename*',
     '/document/images/:documentId*',
-    '/cybersecurity-solutions/opencti-connectors/:path*',
   ],
 };
