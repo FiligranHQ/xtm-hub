@@ -52,23 +52,34 @@ const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 const app = express();
+const SESSION_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
 const sessionMiddleware = expressSession({
   name: PORTAL_COOKIE_NAME,
   store: getSessionStoreInstance(),
   secret: PORTAL_COOKIE_SECRET,
-  saveUninitialized: true,
+  saveUninitialized: false,
   proxy: true,
-  rolling: true,
+  rolling: false,
   resave: false,
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
     secure: false,
-    // maxAge: 60 * 60 * 1000 // 1 hour
+    maxAge: SESSION_MAX_AGE,
   },
 });
 app.use(express.json());
 app.use(sessionMiddleware);
+// Force maxAge on every request so that sessions created before the maxAge
+// configuration (stored with originalMaxAge: null / expires: null) also
+// receive a proper Expires / Max-Age header instead of being treated as
+// session cookies by the browser.
+app.use((req, _res, next) => {
+  if (req.session?.cookie) {
+    req.session.cookie.maxAge = SESSION_MAX_AGE;
+  }
+  next();
+});
 
 // Prometheus metrics
 const metricsMiddleware = promBundle({
