@@ -30,20 +30,18 @@ export const ReachSalesDialogForm: React.FC<Props> = ({
   isDialogOpen,
   setIsDialogOpen,
   onSubmit,
-  platformIdentifier,
+  platformIdentifier: _platformIdentifier,
 }) => {
   const t = useTranslations();
+
   const form = useForm<z.infer<typeof reachSalesSchema>>({
     resolver: zodResolver(reachSalesSchema),
     defaultValues: {
-      message: t(`Service.Trials.ReachOutToSalesDefaultMessage`, {
-        platform:
-          platformIdentifier === PlatformIdentifierEnum.OPENCTI
-            ? 'OpenCTI'
-            : 'OpenAEV',
-      }),
+      message: '',
     },
   });
+
+  const message = form.watch('message');
 
   const handleSubmit = (values: z.infer<typeof reachSalesSchema>) => {
     onSubmit(values.message);
@@ -55,30 +53,29 @@ export const ReachSalesDialogForm: React.FC<Props> = ({
       AlertTitle={t('Service.Trials.ReachOutToSales')}
       onClickContinue={form.handleSubmit(handleSubmit)}
       onOpenChange={setIsDialogOpen}
-      isOpen={isDialogOpen}>
+      isOpen={isDialogOpen}
+      continueButtonDisabled={!message.trim()}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <FormField
             control={form.control}
             name="message"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>
-                    {t('Service.Trials.ReachOutToSalesMessagePlaceholder')}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t(
-                        'Service.Trials.ReachOutToSalesMessagePlaceholder'
-                      )}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Service.Trials.ReachOutToSalesMessagePlaceholder')}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t(
+                      'Service.Trials.ReachOutToSalesDefaultMessage'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </form>
       </Form>
