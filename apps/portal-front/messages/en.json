@@ -455,6 +455,7 @@
       "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
     },
     "Title": "Profile",
+    "UpdatePicture": "Update picture",
     "UpdateProfile": "Update profile",
     "PersonalSpace": {
       "SuccessTransfer": "Personal space successfully transfered",

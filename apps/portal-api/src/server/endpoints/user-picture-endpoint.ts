@@ -5,9 +5,17 @@ import { db } from '../../../knexfile';
 import User from '../../model/kanel/public/User';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
+import rateLimit from 'express-rate-limit';
+
+const userPictureRateLimiter = rateLimit({
+  windowMs: 180 * 1000, // 3 minutes
+  max: 10, // max 10 request per minute per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 export const userPictureEndpoint = (app: Express) => {
-  app.get('/user/picture/:userId', cors(), async (req, res) => {
+  app.get('/user/picture/:userId', userPictureRateLimiter, cors(), async (req, res) => {
     try {
       const [user] = await db<User>('User')
         .where('id', req.params.userId)

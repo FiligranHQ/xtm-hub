@@ -476,6 +476,7 @@
       "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
     },
     "Title": "Profile",
+    "UpdatePicture": "Mettre à jour la photo de profil",
     "UpdateProfile": "Mise à jour du profil",
     "PersonalSpace": {
       "SuccessTransfer": "Espace personnel transféré avec succès",

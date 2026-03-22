@@ -26,6 +26,7 @@ import {
 } from './user_transferRequest/user_transferRequest.domain';
 import { updateUser } from './users.domain';
 import { usersProfileApp } from './users.profile.app';
+import { Readable } from 'stream';
 
 describe('User profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
@@ -41,7 +42,6 @@ describe('User profile app', () => {
       await updateUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID, {
         first_name: 'firstName',
         last_name: 'lastName',
-        picture: null,
         country: null,
       });
     });
@@ -59,13 +59,10 @@ describe('User profile app', () => {
         contextBypassUser.user,
         {
           last_name: 'anotherLastName',
-          picture: 'https://s.gravatar.com/avatar/aaaa.png',
         }
       );
       expect(userReturned.last_name).toStrictEqual('anotherLastName');
-      expect(userReturned.picture).toStrictEqual(
-        'https://s.gravatar.com/avatar/aaaa.png'
-      );
+     
     });
   });
 
@@ -180,4 +177,97 @@ describe('User profile app', () => {
       ).rejects.toThrow();
     });
   });
+
+  describe('uploadUserPicture', () => {
+    afterEach(async () => {
+      vi.restoreAllMocks();
+      await updateUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID, {
+        picture: null,
+        picture_minio: null,
+      });
+    });
+
+    const createMockUpload = (filename = 'test.png', mimetype = 'image/png') => ({
+      file: {
+        filename,
+        mimetype,
+        encoding: '7bit',
+        createReadStream: () => {
+          return Readable.from(Buffer.from('fake-image-content'));
+        },
+      },
+      promise: Promise.resolve(),
+    });
+
+    it('should upload picture and update user', async () => {
+      const MinIOClientModule = await import('../../thirdparty/minio/client');
+      const insertFileSpy = vi
+        .spyOn(MinIOClientModule.MinIOClient, 'insertFile')
+        .mockResolvedValue('picture/test_123.png');
+
+      const mockUpload = createMockUpload();
+      const result = await usersProfileApp.uploadUserPicture(
+        contextBypassUser.user,
+        mockUpload
+      );
+
+      expect(insertFileSpy).toHaveBeenCalledOnce();
+      expect(result.picture).toContain('/user/picture/');
+      expect(result.picture).toContain(contextBypassUser.user.id);
+    });
+
+    it('should delete previous picture from MinIO when uploading new one', async () => {
+      const MinIOClientModule = await import('../../thirdparty/minio/client');
+      const insertFileSpy = vi
+        .spyOn(MinIOClientModule.MinIOClient, 'insertFile')
+        .mockResolvedValue('picture/test_123.png');
+      const deleteFileSpy = vi
+        .spyOn(MinIOClientModule.MinIOClient, 'deleteFile')
+        .mockResolvedValue(undefined);
+
+      // First upload
+      const mockUpload1 = createMockUpload('first.png');
+      await usersProfileApp.uploadUserPicture(
+        contextBypassUser.user,
+        mockUpload1
+      );
+
+      // Set picture_minio on user to simulate first upload
+      const userWithPicture = {
+        ...contextBypassUser.user,
+        picture_minio: 'picture/first_123.png',
+      };
+
+      // Second upload
+      const mockUpload2 = createMockUpload('second.png');
+      await usersProfileApp.uploadUserPicture(userWithPicture, mockUpload2);
+
+      expect(deleteFileSpy).toHaveBeenCalledWith('picture/first_123.png');
+      expect(insertFileSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should continue upload even if deleting previous picture fails', async () => {
+      const MinIOClientModule = await import('../../thirdparty/minio/client');
+      vi.spyOn(MinIOClientModule.MinIOClient, 'insertFile').mockResolvedValue(
+        'picture/test_123.png'
+      );
+      vi.spyOn(MinIOClientModule.MinIOClient, 'deleteFile').mockRejectedValue(
+        new Error('MinIO delete error')
+      );
+
+      const userWithPicture = {
+        ...contextBypassUser.user,
+        picture_minio: 'picture/old_123.png',
+      };
+
+      const mockUpload = createMockUpload();
+      const result = await usersProfileApp.uploadUserPicture(
+        userWithPicture,
+        mockUpload
+      );
+
+      expect(result.picture).toContain('/user/picture/');
+    });
+  });
+
 });

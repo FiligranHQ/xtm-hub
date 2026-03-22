@@ -76,7 +76,7 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
           <span>{t('ProfilePage.Edit')}</span>
         </Button>
         <Button
-          aria-label={t('Utils.Update')}
+          aria-label={t('ProfilePage.UpdatePicture')}
           onClick={handleSubmit}>
           {t('Utils.Update')}
         </Button>

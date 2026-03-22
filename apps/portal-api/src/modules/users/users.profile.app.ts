@@ -47,9 +47,13 @@ export const usersProfileApp = {
   uploadUserPicture: async (meUser, document: Upload) => {
     await waitForUploads(document);
 
-    if (meUser.picture_minio){ // If the user already has a picture, we delete it before uploading the new one
+    if (meUser.picture_minio) {// If the user already has a picture, we delete it before uploading the new one
+      try {
         await MinIOClient.deleteFile(meUser.picture_minio);
+      } catch (err) {
+        logApp.error('Error deleting previous picture from MinIO', { error: err });
       }
+    }
 
 
     const file = document.file;
