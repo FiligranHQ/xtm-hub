@@ -23,6 +23,40 @@ import { Upload, waitForUploads } from '../services/document/document.uploads.he
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { getDocumentName, normalizeDocumentName } from '../services/document/document.helper';
 
+const deletePreviousPicture = async (pictureMinio: string) => {
+  try {
+    await MinIOClient.deleteFile(pictureMinio);
+  } catch (err) {
+    logApp.error('Error deleting previous picture from MinIO', { error: err });
+  }
+};
+
+const uploadPictureToMinIO = async (userId: string, file: Upload['file']) => {
+  const fileName = normalizeDocumentName(file.filename);
+  const minioName = `picture/${getDocumentName(fileName)}`;
+
+  const stream = file.createReadStream();
+  await MinIOClient.insertFile({
+    Bucket: config.get('minio.bucketName'),
+    Key: minioName,
+    Body: stream,
+    Metadata: {
+      mimetype: file.mimetype,
+      filename: fileName,
+      encoding: file.encoding,
+      Uploadinguserid: userId,
+      ServiceInstanceId: 'picture',
+    },
+  });
+
+  return minioName;
+};
+
+const buildPictureUrl = (userId: string) => {
+  const baseUrlFront: string = config.get('base_url_front');
+  return `${baseUrlFront}/user/picture/${userId}?t=${Date.now()}`;
+};
+
 export const usersProfileApp = {
   editMeUser: async (meUser, input: EditMeUserInput) => {
     const updatedUser = await updateUser(meUser.id, input);
@@ -47,52 +81,17 @@ export const usersProfileApp = {
   uploadUserPicture: async (meUser, document: Upload) => {
     await waitForUploads(document);
 
-    if (meUser.picture_minio) {// If the user already has a picture, we delete it before uploading the new one
-      try {
-        await MinIOClient.deleteFile(meUser.picture_minio);
-      } catch (err) {
-        logApp.error('Error deleting previous picture from MinIO', { error: err });
-      }
+    if (meUser.picture_minio) {
+      await deletePreviousPicture(meUser.picture_minio);
     }
 
+    const minioName = await uploadPictureToMinIO(meUser.id, document.file);
+    const pictureUrl = buildPictureUrl(meUser.id);
 
-    const file = document.file;
-    const fileName = normalizeDocumentName(file.filename);
-    const minioName = `picture/${getDocumentName(fileName)}`;
-
-    const stream = file.createReadStream();
-    await MinIOClient.insertFile({
-      Bucket: config.get('minio.bucketName'),
-      Key: minioName,
-      Body: stream,
-      Metadata: {
-        mimetype: file.mimetype,
-        filename: fileName,
-        encoding: file.encoding,
-        Uploadinguserid: meUser.id,
-        ServiceInstanceId: 'picture',
-      },
-    });
-
-    const baseUrlFront: string = config.get('base_url_front');
-    const pictureUrl = `${baseUrlFront}/user/picture/${meUser.id}?t=${Date.now()}`;
-
-    const updatedUser = await updateUser(meUser.id, {
+    await updateUser(meUser.id, {
       picture: pictureUrl,
       picture_minio: minioName,
     });
-
-    try {
-      await auth0Client.updateUser({
-        picture: pictureUrl,
-        email: updatedUser.email,
-      });
-    } catch (err) {
-      logApp.error(err);
-    }
-
-    const user = await loadUserDetails({ 'User.id': meUser.id });
-    updateUserSession(user);
 
     return updateAndDispatchUser(meUser.id);
   },

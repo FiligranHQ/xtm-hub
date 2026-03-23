@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import {
   contextBypassUser,
+  contextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -181,7 +182,7 @@ describe('User profile app', () => {
   describe('uploadUserPicture', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
-      await updateUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID, {
+      await updateUser(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID, {
         picture: null,
         picture_minio: null,
       });
@@ -199,64 +200,59 @@ describe('User profile app', () => {
       promise: Promise.resolve(),
     });
 
-    it('should upload picture and update user', async () => {
+    const mockMinIOClient = async () => {
       const MinIOClientModule = await import('../../thirdparty/minio/client');
-      const insertFileSpy = vi
-        .spyOn(MinIOClientModule.MinIOClient, 'insertFile')
-        .mockResolvedValue('picture/test_123.png');
+      return {
+        insertFile: vi
+          .spyOn(MinIOClientModule.MinIOClient, 'insertFile')
+          .mockResolvedValue('picture/test_123.png'),
+        deleteFile: vi
+          .spyOn(MinIOClientModule.MinIOClient, 'deleteFile')
+          .mockResolvedValue(undefined),
+      };
+    };
+
+    it('should upload picture and update user', async () => {
+      const { insertFile } = await mockMinIOClient();
 
       const mockUpload = createMockUpload();
       const result = await usersProfileApp.uploadUserPicture(
-        contextBypassUser.user,
+        contextSimpleUserSecondOrga.user,
         mockUpload
       );
 
-      expect(insertFileSpy).toHaveBeenCalledOnce();
+      expect(insertFile).toHaveBeenCalledOnce();
       expect(result.picture).toContain('/user/picture/');
-      expect(result.picture).toContain(contextBypassUser.user.id);
+      expect(result.picture).toContain(contextSimpleUserSecondOrga.user.id);
     });
 
     it('should delete previous picture from MinIO when uploading new one', async () => {
-      const MinIOClientModule = await import('../../thirdparty/minio/client');
-      const insertFileSpy = vi
-        .spyOn(MinIOClientModule.MinIOClient, 'insertFile')
-        .mockResolvedValue('picture/test_123.png');
-      const deleteFileSpy = vi
-        .spyOn(MinIOClientModule.MinIOClient, 'deleteFile')
-        .mockResolvedValue(undefined);
+      const { insertFile, deleteFile } = await mockMinIOClient();
 
-      // First upload
       const mockUpload1 = createMockUpload('first.png');
       await usersProfileApp.uploadUserPicture(
-        contextBypassUser.user,
+        contextSimpleUserSecondOrga.user,
         mockUpload1
       );
 
-      // Set picture_minio on user to simulate first upload
       const userWithPicture = {
-        ...contextBypassUser.user,
+        ...contextSimpleUserSecondOrga.user,
         picture_minio: 'picture/first_123.png',
       };
 
-      // Second upload
       const mockUpload2 = createMockUpload('second.png');
       await usersProfileApp.uploadUserPicture(userWithPicture, mockUpload2);
 
-      expect(deleteFileSpy).toHaveBeenCalledWith('picture/first_123.png');
-      expect(insertFileSpy).toHaveBeenCalledTimes(2);
+      expect(deleteFile).toHaveBeenCalledWith('picture/first_123.png');
+      expect(insertFile).toHaveBeenCalledTimes(2);
     });
 
     it('should continue upload even if deleting previous picture fails', async () => {
-      const MinIOClientModule = await import('../../thirdparty/minio/client');
-      vi.spyOn(MinIOClientModule.MinIOClient, 'insertFile').mockResolvedValue(
-        'picture/test_123.png'
-      );
-      vi.spyOn(MinIOClientModule.MinIOClient, 'deleteFile').mockRejectedValue(
-        new Error('MinIO delete error')
-      );
+      const { deleteFile } = await mockMinIOClient();
+      deleteFile.mockRejectedValue(new Error('MinIO delete error'));
 
       const userWithPicture = {
-        ...contextBypassUser.user,
+        ...contextSimpleUserSecondOrga.user,
         picture_minio: 'picture/old_123.png',
       };
 

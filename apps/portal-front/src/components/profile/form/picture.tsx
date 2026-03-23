@@ -70,7 +70,7 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
         <Button
           variant="ghost-primary"
           size="sm"
-          className="ml-m gap-s"
+          className="ml-s gap-s"
           onClick={() => inputRef.current?.click()}>
           <EditIcon className="h-4 w-4" />
           <span>{t('ProfilePage.Edit')}</span>
