@@ -59,6 +59,11 @@
       ],
       "enabled": false,
       "description": "Ignore all Docker Compose file updates"
+    },
+    {
+      "description": "Update AWS SDK v3 every 2 weeks only",
+      "matchPackagePatterns": ["^@aws-sdk/"],
+      "schedule": ["* * * * 0 */2"]
     }
   ],
   "lockFileMaintenance": {
