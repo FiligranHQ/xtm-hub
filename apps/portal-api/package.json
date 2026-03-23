@@ -89,7 +89,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.3.16",
+    "@electric-sql/pglite": "0.4.1",
     "@eslint/js": "9.39.4",
     "@graphql-codegen/cli": "5.0.7",
     "@graphql-codegen/typescript": "4.1.6",
