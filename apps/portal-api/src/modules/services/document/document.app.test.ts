@@ -9,6 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
+import { db } from '../../../../knexfile';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
@@ -260,6 +261,7 @@ describe('DocumentApp', () => {
   describe('updateDocument', () => {
     let createdDocument: Document | undefined;
     beforeEach(async () => {
+      await db<Document>('Document').del();
       createdDocument = await DocumentApp.createDocument({
         input: documentData,
         metadata: [
@@ -457,6 +459,7 @@ describe('DocumentApp', () => {
         integrationType: IntegrationType;
         integrationSubtype: IntegrationSubType | null;
       }) => {
+        const slug = 'integration-slug';
         const metadata = [
           { key: 'integration_type', value: integrationType },
           ...(integrationSubtype
@@ -465,7 +468,7 @@ describe('DocumentApp', () => {
         ];
 
         const createdDocument = await DocumentApp.createDocument({
-          input: documentData,
+          input: { ...documentData, slug },
           metadata,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
           sourceDocument: mockUpload,
@@ -483,7 +486,7 @@ describe('DocumentApp', () => {
           parentDocumentId: createdDocument!.id,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
           metadata,
-          input: documentData,
+          input: { ...documentData, slug },
           sourceDocument: mockUpload,
           existingImageIds: [],
         });
@@ -510,8 +513,9 @@ describe('DocumentApp', () => {
         { key: 'source_code', value: 'source_code_value' },
         { key: 'subscription_link', value: 'subscription_link_value' },
       ];
+      const slug = 'connector-slug';
       const createdDocument = await DocumentApp.createDocument({
-        input: documentData,
+        input: { ...documentData, slug },
         metadata: connectorMetadata,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         sourceDocument: mockUpload,
@@ -534,16 +538,18 @@ describe('DocumentApp', () => {
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: updatedMetadata,
-        input: documentData,
+        input: { ...documentData, slug },
         existingImageIds: [],
       });
       expect(result).toBeDefined();
 
       const updatedConnector = result as Connector;
-      expect(updatedConnector.verified).toBe(true);
-      expect(updatedConnector.manager_supported).toBe(true);
-      expect(updatedConnector.playbook_supported).toBe(false);
-      expect(updatedConnector.product_version).toBe('2.0.0');
+      expect(updatedConnector).toMatchObject({
+        verified: true,
+        manager_supported: true,
+        playbook_supported: false,
+        product_version: '2.0.0',
+      });
     });
   });
 
