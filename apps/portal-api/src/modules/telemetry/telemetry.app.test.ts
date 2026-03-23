@@ -113,7 +113,7 @@ describe('TelemetryApp', () => {
           { key: 'feed_url', value: 'https://example.com' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(document).toBeDefined();
 
@@ -194,7 +194,7 @@ describe('TelemetryApp', () => {
           { key: 'feed_url', value: 'https://example.com' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(document).toBeDefined();
 
@@ -274,7 +274,7 @@ describe('TelemetryApp', () => {
           { key: 'feed_url', value: 'https://example.com' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(document).toBeDefined();
 

@@ -6,7 +6,7 @@ export const DocumentCreateMutation = graphql`
     $metadata: [DocumentMetadata!]!
     $serviceInstanceId: String!
     $connections: [ID!]!
-    $document: Upload
+    $sourceDocument: Upload
     $logo: Upload
     $images: [Upload!]
   ) {
@@ -14,7 +14,7 @@ export const DocumentCreateMutation = graphql`
       input: $input
       metadata: $metadata
       serviceInstanceId: $serviceInstanceId
-      document: $document
+      sourceDocument: $sourceDocument
       logo: $logo
       images: $images
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
@@ -30,7 +30,7 @@ export const DocumentUpdateMutation = graphql`
     $documentId: ID!
     $input: UpdateDocumentInput!
     $metadata: [DocumentMetadata!]!
-    $document: Upload
+    $sourceDocument: Upload
     $existingImageIds: [ID!]
     $serviceInstanceId: String!
     $logo: Upload
@@ -39,7 +39,7 @@ export const DocumentUpdateMutation = graphql`
     updateDocument(
       documentId: $documentId
       input: $input
-      document: $document
+      sourceDocument: $sourceDocument
       metadata: $metadata
       existingImageIds: $existingImageIds
       serviceInstanceId: $serviceInstanceId

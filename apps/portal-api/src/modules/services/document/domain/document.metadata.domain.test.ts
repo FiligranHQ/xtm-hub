@@ -60,7 +60,7 @@ describe('DocumentMetadataDomain', () => {
           { key: 'feed_url', value: 'https://example.com/feed' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       const value = await DocumentMetadataDomain.loadMetadataValueByKey(
@@ -86,7 +86,7 @@ describe('DocumentMetadataDomain', () => {
           { key: 'feed_url', value: 'https://example.com/feed' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       const value = await DocumentMetadataDomain.loadMetadataValueByKey(
@@ -122,7 +122,7 @@ describe('DocumentMetadataDomain', () => {
           { key: 'integration_subtype', value: 'some_subtype' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
@@ -154,7 +154,7 @@ describe('DocumentMetadataDomain', () => {
           { key: 'feed_url', value: 'https://first.example.com/feed' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       const secondDocument = await DocumentApp.createDocument({
@@ -171,7 +171,7 @@ describe('DocumentMetadataDomain', () => {
           { key: 'feed_url', value: 'https://second.example.com/feed' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       const firstValue = await DocumentMetadataDomain.loadMetadataValueByKey(

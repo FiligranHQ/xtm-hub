@@ -904,12 +904,12 @@ export type MutationCreateDeploymentRequestArgs = {
 
 
 export type MutationCreateDocumentArgs = {
-  document?: InputMaybe<Scalars['Upload']['input']>;
   images?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateDocumentInput;
   logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 
@@ -1067,7 +1067,6 @@ export type MutationUpdateDeploymentRequestArgs = {
 
 
 export type MutationUpdateDocumentArgs = {
-  document?: InputMaybe<Scalars['Upload']['input']>;
   documentId: Scalars['ID']['input'];
   existingImageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   images?: InputMaybe<Array<Scalars['Upload']['input']>>;
@@ -1075,6 +1074,7 @@ export type MutationUpdateDocumentArgs = {
   logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 

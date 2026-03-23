@@ -102,7 +102,7 @@ export function useDocumentContext({
           .filter(({ value }) => Boolean(value)),
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
-        document: document.map(() => ({})),
+        sourceDocument: document.map(() => ({})),
         logo: logo.map(() => ({})),
         images: images.map(() => ({})),
       },
@@ -172,7 +172,7 @@ export function useDocumentContext({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
-        document: document.map(() => ({})),
+        sourceDocument: document.map(() => ({})),
         images: newImages.map(() => ({})),
         ...(isFile(logo[0]) ? { logo: logo.map(() => ({})) } : {}),
         documentId: resource.id,

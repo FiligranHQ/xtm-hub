@@ -87,7 +87,7 @@ describe('DocumentHelper', () => {
           { key: 'feed_url', value: 'https://example.com' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(document).toBeDefined();
 
@@ -121,10 +121,10 @@ describe('DocumentHelper', () => {
       const metadata = [
         { key: 'integration_type', value: IntegrationType.Connector },
       ];
-      const documentFile = undefined;
+      const sourceDocumentFile = undefined;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        documentFile,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -135,10 +135,10 @@ describe('DocumentHelper', () => {
       const metadata = [
         { key: 'integration_type', value: IntegrationType.CsvFeed },
       ];
-      const documentFile = undefined;
+      const sourceDocumentFile = undefined;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        documentFile,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -149,10 +149,10 @@ describe('DocumentHelper', () => {
       const metadata = [
         { key: 'integration_type', value: IntegrationType.CsvFeed },
       ];
-      const documentFile = { jsonContent: {} } as MinioFile;
+      const sourceDocumentFile = { jsonContent: {} } as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        documentFile,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -163,12 +163,12 @@ describe('DocumentHelper', () => {
       const metadata = [
         { key: 'integration_type', value: IntegrationType.CsvFeed },
       ];
-      const documentFile = {
+      const sourceDocumentFile = {
         jsonContent: { configuration: {} },
       } as unknown as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        documentFile,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -179,12 +179,12 @@ describe('DocumentHelper', () => {
       const metadata = [
         { key: 'integration_type', value: IntegrationType.CsvFeed },
       ];
-      const documentFile = {
+      const sourceDocumentFile = {
         jsonContent: { configuration: { uri: 'hello' } },
       } as unknown as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        documentFile,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -195,12 +195,12 @@ describe('DocumentHelper', () => {
       const metadata = [
         { key: 'integration_type', value: IntegrationType.CsvFeed },
       ];
-      const documentFile = {
+      const sourceDocumentFile = {
         jsonContent: { configuration: { uri: 'https://example.com' } },
       } as unknown as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        documentFile,
+        sourceDocumentFile,
         metadata,
       });
 

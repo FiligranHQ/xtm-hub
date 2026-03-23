@@ -106,12 +106,23 @@ input UpdateDocumentInput {
   uploader_id: String
 }
 
+type DocumentEdge {
+  cursor: String!
+  node: Document!
+}
+
+type DocumentConnection {
+  totalCount: Int!
+  edges: [DocumentEdge!]!
+  pageInfo: PageInfo!
+}
+
 type Mutation {
   createDocument(
     input: CreateDocumentInput!
     metadata: [DocumentMetadata!]!
     serviceInstanceId: String
-    document: Upload
+    sourceDocument: Upload
     logo: Upload
     images: [Upload!]
   ): Document! @auth @service_capa(requires: [UPLOAD])
@@ -120,7 +131,7 @@ type Mutation {
     input: UpdateDocumentInput!
     metadata: [DocumentMetadata!]!
     serviceInstanceId: String
-    document: Upload
+    sourceDocument: Upload
     logo: Upload
     images: [Upload!]
     existingImageIds: [ID!]
@@ -131,17 +142,6 @@ type Mutation {
     forceDelete: Boolean
   ): Document! @auth @service_capa(requires: [DELETE])
   incrementShareNumberDocument(documentId: ID): Document!
-}
-
-type DocumentEdge {
-  cursor: String!
-  node: Document!
-}
-
-type DocumentConnection {
-  totalCount: Int!
-  edges: [DocumentEdge!]!
-  pageInfo: PageInfo!
 }
 
 type Query {

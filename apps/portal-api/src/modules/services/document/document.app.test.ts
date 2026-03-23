@@ -124,7 +124,7 @@ describe('DocumentApp', () => {
           },
         ],
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       expect(result).toBeDefined();
@@ -140,7 +140,7 @@ describe('DocumentApp', () => {
           },
         ],
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       expect(createdDocument).toBeDefined();
@@ -167,7 +167,7 @@ describe('DocumentApp', () => {
           },
         ],
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       expect(createdDocument).toBeDefined();
@@ -194,7 +194,7 @@ describe('DocumentApp', () => {
           },
         ],
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
         images: [mockUpload],
         logo: mockUpload,
       });
@@ -230,7 +230,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [{ key: 'product_version', value: '1.2.3' }],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -255,7 +255,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [{ key: 'product_version', value: '1.2.3' }],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       expect(createdDocument).toBeDefined();
@@ -289,7 +289,7 @@ describe('DocumentApp', () => {
           },
         ],
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       expect(createdDocument).toBeDefined();
@@ -328,7 +328,7 @@ describe('DocumentApp', () => {
           },
         ],
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       expect(createdDocument).toBeDefined();
@@ -342,7 +342,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.CsvFeed,
           },
         ],
-        document: mockUpload,
+        sourceDocument: mockUpload,
         existingImageIds: [],
         input: documentData,
       });
@@ -392,7 +392,7 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        document: mockUpload,
+        sourceDocument: mockUpload,
         existingImageIds: [],
         input: documentData,
       });
@@ -442,7 +442,7 @@ describe('DocumentApp', () => {
             value: 'https://example.com',
           },
         ],
-        document: mockUpload,
+        sourceDocument: mockUpload,
         existingImageIds: [],
         input: documentData,
         logo: mockUpload,
@@ -488,7 +488,7 @@ describe('DocumentApp', () => {
           input: documentData,
           metadata,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          document: mockUpload,
+          sourceDocument: mockUpload,
         });
         expect(createdDocument).toBeDefined();
 
@@ -534,7 +534,7 @@ describe('DocumentApp', () => {
           input: documentData,
           metadata,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          document: mockUpload,
+          sourceDocument: mockUpload,
           images: [mockUpload],
         });
         expect(createdDocument).toBeDefined();
@@ -550,7 +550,7 @@ describe('DocumentApp', () => {
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
           metadata,
           input: documentData,
-          document: mockUpload,
+          sourceDocument: mockUpload,
           existingImageIds: [],
         });
 
@@ -580,7 +580,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: connectorMetadata,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(createdDocument).toBeDefined();
 
@@ -626,7 +626,7 @@ describe('DocumentApp', () => {
         },
         metadata: [{ key: 'product_version', value: '1.2.3' }],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(document).toBeDefined();
 
@@ -677,7 +677,7 @@ describe('DocumentApp', () => {
         },
         metadata: [{ key: 'product_version', value: '1.2.3' }],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
       expect(document).toBeDefined();
 

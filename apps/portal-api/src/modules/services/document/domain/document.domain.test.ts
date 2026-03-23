@@ -74,7 +74,7 @@ describe('Document domain', () => {
           { key: 'feed_url', value: 'https://example.com' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       await upsertConnectors([
@@ -130,7 +130,7 @@ describe('Document domain', () => {
           { key: 'feed_url', value: 'https://example.com' },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-        document: mockUpload,
+        sourceDocument: mockUpload,
       });
 
       const [connector] = await upsertConnectors([
@@ -252,7 +252,7 @@ describe('Document domain', () => {
             { key: 'feed_url', value: 'https://example.com' },
           ],
           serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-          document: mockUpload,
+          sourceDocument: mockUpload,
         });
 
         const connectors = await upsertConnectors(
@@ -317,7 +317,7 @@ describe('Document domain', () => {
             { key: 'feed_url', value: 'https://example.com' },
           ],
           serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-          document: mockUpload,
+          sourceDocument: mockUpload,
         });
 
         const connectors = await upsertConnectors(

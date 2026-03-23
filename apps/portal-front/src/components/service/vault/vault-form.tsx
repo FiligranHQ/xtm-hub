@@ -60,7 +60,7 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         metadata: [],
         serviceInstanceId: slug,
         connections: connectionId ? [connectionId] : [],
-        document: [values.document],
+        sourceDocument: [values.document],
       },
       uploadables: fileListToUploadableMap(values.document),
       onCompleted: (response) => {

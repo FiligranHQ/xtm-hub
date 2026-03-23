@@ -48,14 +48,14 @@ export const DocumentApp = {
     input,
     metadata,
     serviceInstanceId,
-    document,
+    sourceDocument,
     logo,
     images = [],
   }: {
     input: CreateDocumentInput;
     metadata: DocumentMetadataResolverType[];
     serviceInstanceId: ServiceInstanceId;
-    document?: Upload;
+    sourceDocument?: Upload;
     logo?: Upload;
     images?: Upload[];
   }) => {
@@ -67,13 +67,16 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const [documentFile] = await processUploads(document, serviceInstanceId);
+    const [sourceDocumentFile] = await processUploads(
+      sourceDocument,
+      serviceInstanceId
+    );
     const imagesFiles = await processUploads(images, serviceInstanceId);
     const [logoFile] = await processUploads(logo, serviceInstanceId);
 
     const documentMetadata =
       DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        documentFile,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -88,7 +91,7 @@ export const DocumentApp = {
       );
 
     DocumentHelper.assertDocumentFileIsNotMissing({
-      hasDocument: !!document,
+      hasDocument: !!sourceDocument,
       documentType,
       documentMetadata,
     });
@@ -102,11 +105,11 @@ export const DocumentApp = {
       ...input,
       service_instance_id: serviceInstanceId,
       type: documentType,
-      ...(documentFile && isDocumentFileRequired
+      ...(sourceDocumentFile && isDocumentFileRequired
         ? {
-            file_name: documentFile.fileName,
-            minio_name: documentFile.minioName,
-            mime_type: documentFile.mimeType,
+            file_name: sourceDocumentFile.fileName,
+            minio_name: sourceDocumentFile.minioName,
+            mime_type: sourceDocumentFile.mimeType,
           }
         : {}),
     };
@@ -176,7 +179,7 @@ export const DocumentApp = {
     parentDocumentId,
     serviceInstanceId,
     metadata,
-    document,
+    sourceDocument,
     existingImageIds,
     input,
     images,
@@ -185,7 +188,7 @@ export const DocumentApp = {
     parentDocumentId: DocumentId;
     serviceInstanceId: ServiceInstanceId;
     metadata: DocumentMetadataResolverType[];
-    document?: Upload;
+    sourceDocument?: Upload;
     existingImageIds: DocumentId[];
     logo?: Upload;
     images?: Upload[];
@@ -203,13 +206,16 @@ export const DocumentApp = {
       DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
         serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
       );
-    const [documentFile] = await processUploads(document, serviceInstanceId);
+    const [sourceDocumentFile] = await processUploads(
+      sourceDocument,
+      serviceInstanceId
+    );
     const imagesFiles = await processUploads(images, serviceInstanceId);
     const [logoFile] = await processUploads(logo, serviceInstanceId);
 
     let documentMetadata = DocumentHelper.buildCompleteMetadataFromDocumentFile(
       {
-        documentFile,
+        sourceDocumentFile,
         metadata,
       }
     );
@@ -249,7 +255,7 @@ export const DocumentApp = {
         documentType,
         documentMetadata,
       })
-        ? documentFile
+        ? sourceDocumentFile
         : undefined;
 
       const updatedDocument = await DocumentDomain.updateDocument({

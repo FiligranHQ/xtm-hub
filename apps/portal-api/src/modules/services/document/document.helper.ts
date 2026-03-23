@@ -134,10 +134,10 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
 
 export const DocumentHelper = {
   buildCompleteMetadataFromDocumentFile: ({
-    documentFile,
+    sourceDocumentFile,
     metadata,
   }: {
-    documentFile?: MinioFile;
+    sourceDocumentFile?: MinioFile;
     metadata: DocumentMetadataResolverType[];
   }): DocumentMetadataResolverType[] => {
     const integrationType = metadata.find(
@@ -154,7 +154,7 @@ export const DocumentHelper = {
       return metadata;
     }
 
-    const jsonFileContent = documentFile?.jsonContent;
+    const jsonFileContent = sourceDocumentFile?.jsonContent;
     if (!jsonFileContent) {
       return metadata;
     }
