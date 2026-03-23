@@ -1,10 +1,9 @@
 import type { JobWithMetadata, PgBoss, WorkOptions } from 'pg-boss';
 import { logApp } from '../../utils/app-logger.util';
 import { HUBSPOT_QUEUES } from './hubspot.jobs';
+import { MAIL_QUEUES } from './mail.jobs';
 import { PgBossMetrics } from './pgboss.metrics';
 import { TELEMETRY_QUEUES } from './telemetry.jobs';
-import { MAIL_QUEUES } from './mail.jobs';
-
 
 /**
  * All dead-letter queue names that should be observed.
