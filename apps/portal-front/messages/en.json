@@ -983,7 +983,7 @@
       "NeedSupport": "Need support",
       "ReachOutToSalesSuccessTitle": "Thank you!",
       "ReachOutToSalesSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
-      "ReachOutToSalesDefaultMessage": "Please contact me about the {platform} free trial",
+      "ReachOutToSalesDefaultMessage": "Type your message to request help",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",

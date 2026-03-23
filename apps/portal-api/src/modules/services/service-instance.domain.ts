@@ -542,17 +542,18 @@ export const grantServiceAccess = async (
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
+  const serviceInstance = await loadServiceInstanceBy(
+    'ServiceInstance.id',
+    subscription.service_instance_id
+  );
+
+  const service_definition = await loadServiceDefinitionByServiceInstance(
+    serviceInstance.id
+  );
+
   for (const userId of usersId) {
     const user = await loadUserBy({ 'User.id': userId } as UserMutator);
 
-    const serviceInstance = await loadServiceInstanceBy(
-      'ServiceInstance.id',
-      subscription.service_instance_id
-    );
-
-    const service_definition = await loadServiceDefinitionByServiceInstance(
-      serviceInstance.id
-    );
     const mailTemplate = ServiceIdentifierToMailTemplate.get(
       service_definition.identifier
     );

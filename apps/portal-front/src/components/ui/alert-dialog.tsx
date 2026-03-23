@@ -24,6 +24,7 @@ interface AlertDialogProps {
   actionButtonText?: string;
   children: ReactNode;
   onClickContinue: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  continueButtonDisabled?: boolean;
   variantName?:
     | 'default'
     | 'destructive'
@@ -70,6 +71,7 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
   children,
   onClickContinue,
   variantName = 'default',
+  continueButtonDisabled = false,
 }) => {
   const t = useTranslations();
 
@@ -94,6 +96,7 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
           )}
           <AlertDialogAction
             onClick={onClickContinue}
+            disabled={continueButtonDisabled}
             className={buttonVariants({ variant: variantName })}>
             {actionButtonText}
           </AlertDialogAction>
