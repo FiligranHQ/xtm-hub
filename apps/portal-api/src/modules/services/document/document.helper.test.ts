@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import {
   afterAll,
   afterEach,
@@ -44,7 +45,7 @@ describe('DocumentHelper', () => {
     await db<Document>('Document').delete();
   });
 
-  describe('CSV Feed', () => {
+  describe('loadDocumentWithCountersById', () => {
     const minioFileMock = {
       minioName: 'minioFile',
       mimeType: 'mimeType',
@@ -60,7 +61,7 @@ describe('DocumentHelper', () => {
       vi.useRealTimers();
     });
 
-    it('cvsFeed should return the document with elastic search counters', async () => {
+    it('should return the document with elastic search counters', async () => {
       const document = await DocumentApp.createDocument(
         {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
@@ -101,6 +102,12 @@ describe('DocumentHelper', () => {
 
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);
+    });
+
+    it('should throw an error document is not found', async () => {
+      const call = loadDocumentWithCountersById(uuidv4());
+
+      await expect(call).rejects.toThrow(ErrorCode.DocumentNotFound);
     });
   });
 
