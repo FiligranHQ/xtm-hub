@@ -999,7 +999,7 @@
       "NeedSupport": "Besoin d'aide",
       "ReachOutToSalesSuccessTitle": "Merci !",
       "ReachOutToSalesSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
-      "ReachOutToSalesDefaultMessage": "Veuillez me contacter au sujet de la version d'essai gratuite d'{platform}",
+      "ReachOutToSalesDefaultMessage": "Tapez votre message pour demander de l'aide",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
