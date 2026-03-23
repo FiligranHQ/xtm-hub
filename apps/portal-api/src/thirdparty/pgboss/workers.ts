@@ -2,10 +2,9 @@ import type { Job, PgBoss } from 'pg-boss';
 import { logApp } from '../../utils/app-logger.util';
 import { DeadLetterWorkers } from './deadletter.workers';
 import { HubspotWorkers } from './hubspot.workers';
+import { MailWorkers } from './mail.workers';
 import { PgBossMetrics } from './pgboss.metrics';
 import { TelemetryWorkers } from './telemetry.workers';
-import { MailWorkers } from './mail.workers';
-
 
 export function createBatchHandler<T extends object>(
   processJob: (job: Job<T>) => Promise<void>
