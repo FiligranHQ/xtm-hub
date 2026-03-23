@@ -84,7 +84,7 @@ export function useDocumentContext({
       ['uploader_organization_id']
     );
     const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
-    const document = Array.from(values?.document ?? []).slice(0, 1);
+    const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
     const logo = Array.from(values?.logo ?? []).slice(0, 1);
     const images = Array.from(values?.images ?? []);
 
@@ -102,11 +102,15 @@ export function useDocumentContext({
           .filter(({ value }) => Boolean(value)),
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
-        sourceDocument: document.map(() => ({})),
+        sourceDocument: sourceDocument.map(() => ({})),
         logo: logo.map(() => ({})),
         images: images.map(() => ({})),
       },
-      uploadables: splitFileListToUploadableMap({ document, logo, images }),
+      uploadables: splitFileListToUploadableMap({
+        sourceDocument,
+        logo,
+        images,
+      }),
 
       onCompleted: (response) => {
         if (!response.createDocument) {
@@ -163,7 +167,7 @@ export function useDocumentContext({
     };
 
     const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
-    const document = Array.from(values?.document ?? []).slice(0, 1);
+    const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
     const images = Array.from(values?.images ?? []);
     const [existingImageIds, newImages] = splitExistingAndNewImages(images);
     const logo = Array.from(values?.logo ?? []).slice(0, 1);
@@ -172,7 +176,7 @@ export function useDocumentContext({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
-        sourceDocument: document.map(() => ({})),
+        sourceDocument: sourceDocument.map(() => ({})),
         images: newImages.map(() => ({})),
         ...(isFile(logo[0]) ? { logo: logo.map(() => ({})) } : {}),
         documentId: resource.id,
@@ -188,7 +192,7 @@ export function useDocumentContext({
         ],
       },
       uploadables: splitFileListToUploadableMap({
-        document,
+        sourceDocument,
         images: newImages,
         ...(isFile(logo[0]) ? { logo } : {}),
       }),
