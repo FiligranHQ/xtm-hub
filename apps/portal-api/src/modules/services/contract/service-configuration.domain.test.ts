@@ -1,16 +1,21 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it } from 'vitest';
-import { contextBypassUser } from '../../../../tests/tests.const';
-import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { db } from '../../../../knexfile';
+import { contextBypassUser, SERVICES } from '../../../../tests/tests.const';
+import {
+  ServiceConfigurationStatus,
+  ServiceDefinitionIdentifier,
+} from '../../../__generated__/resolvers-types';
+import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
-import { serviceContractDomain } from './service-configuration.domain';
+import { ServiceContractDomain } from './service-configuration.domain';
 
 describe('Service Contract Domain', () => {
   describe('isServiceConfigurationValid', () => {
     const context = contextBypassUser;
     it('should throw an error when service contract is not found', async () => {
-      const call = serviceContractDomain.isServiceConfigurationValid(
+      const call = ServiceContractDomain.isServiceConfigurationValid(
         uuidv4() as ServiceDefinitionId,
         {}
       );
@@ -24,8 +29,6 @@ describe('Service Contract Domain', () => {
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
-      expect(serviceDefinition).toBeDefined();
-
       const configuration = {
         registerer_id: context.user.id,
         platform_id: uuidv4(),
@@ -35,8 +38,8 @@ describe('Service Contract Domain', () => {
         platform_contract: 'EE',
       };
 
-      const result = await serviceContractDomain.isServiceConfigurationValid(
-        serviceDefinition.id,
+      const result = await ServiceContractDomain.isServiceConfigurationValid(
+        serviceDefinition!.id,
         configuration
       );
 
@@ -49,14 +52,147 @@ describe('Service Contract Domain', () => {
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
-      expect(serviceDefinition).toBeDefined();
-
-      const result = await serviceContractDomain.isServiceConfigurationValid(
-        serviceDefinition.id,
+      const result = await ServiceContractDomain.isServiceConfigurationValid(
+        serviceDefinition!.id,
         {}
       );
 
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('loadConfigurationByPlatformAndToken', () => {
+    let platformId: string;
+    let token: string;
+
+    beforeEach(async () => {
+      token = uuidv4();
+      platformId = uuidv4();
+
+      await db<ServiceConfiguration>('Service_Configuration').del();
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
+    });
+
+    it('should return configuration when platform and token is found in its config', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId,
+          token,
+        });
+
+      expect(configuration).toMatchObject({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
+    });
+
+    it('should return undefined when platform is found but token does not match', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId,
+          token: uuidv4(),
+        });
+
+      expect(configuration).toBeUndefined();
+    });
+
+    it('should return undefined when token is found but platform does not match', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId: uuidv4(),
+          token,
+        });
+
+      expect(configuration).toBeUndefined();
+    });
+
+    it('should return undefined when token and platform does not exist', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+          platformId: uuidv4(),
+          token: uuidv4(),
+        });
+
+      expect(configuration).toBeUndefined();
+    });
+  });
+
+  describe('loadConfigurationByPlatform', () => {
+    let token: string;
+    let platformId: string;
+
+    beforeEach(async () => {
+      token = uuidv4();
+      platformId = uuidv4();
+
+      await db<ServiceConfiguration>('Service_Configuration').del();
+      await db<ServiceConfiguration>('Service_Configuration').insert({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
+    });
+
+    it('should return configuration when platform is found in its config', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatform(platformId);
+
+      expect(configuration).toMatchObject({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
+    });
+
+    it('should return configuration when platform is found and active, and filter is active', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatform(
+          platformId,
+          ServiceConfigurationStatus.Active
+        );
+
+      expect(configuration).toMatchObject({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: {
+          token,
+          platform_id: platformId,
+        },
+      });
+    });
+
+    it('should return undefined when configuration is active and inactive filter is used', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatform(
+          platformId,
+          ServiceConfigurationStatus.Inactive
+        );
+
+      expect(configuration).toBeUndefined();
+    });
+
+    it('should return undefined when platform is not found', async () => {
+      const configuration =
+        await ServiceContractDomain.loadConfigurationByPlatform(uuidv4());
+
+      expect(configuration).toBeUndefined();
     });
   });
 });
