@@ -194,25 +194,15 @@ describe('fetchFormData', () => {
   });
 
   describe('fileListToUploadableMap', () => {
-    it('should map a single file by name', () => {
-      const result = fileListToUploadableMap([fileA] as File[]);
-      expect(result).toEqual({ 'a.txt': fileA });
-    });
-
-    it('should map multiple files by name', () => {
-      const result = fileListToUploadableMap([fileA, fileB] as File[]);
-      expect(result).toEqual({ 'a.txt': fileA, 'b.txt': fileB });
-    });
-
-    it('should skip null values', () => {
-      const fileA = { name: 'a.txt' };
-      const result = fileListToUploadableMap([fileA, null] as File[]);
-      expect(result).toEqual({ 'a.txt': fileA });
-    });
-
-    it('should return empty object for empty array', () => {
-      const result = fileListToUploadableMap([] as File[]);
-      expect(result).toEqual({});
+    it.each`
+      title                                    | input             | expected
+      ${'map a single file by name'}           | ${[fileA]}        | ${{ 'a.txt': fileA }}
+      ${'map multiple files by name'}          | ${[fileA, fileB]} | ${{ 'a.txt': fileA, 'b.txt': fileB }}
+      ${'skip null values'}                    | ${[fileA, null]}  | ${{ 'a.txt': fileA }}
+      ${'return empty object for empty array'} | ${[]}             | ${{}}
+    `('should $title', ({ input, expected }) => {
+      const result = fileListToUploadableMap(input);
+      expect(result).toEqual(expected);
     });
   });
 });

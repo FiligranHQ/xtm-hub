@@ -412,50 +412,34 @@ describe('DocumentHelper', () => {
   });
 
   describe('assertDocumentFileIsNotMissing', () => {
-    it('should throw when document file is required but missing', () => {
+    it.each`
+      title                                      | hasDocument | integrationType
+      ${'document file is optional and missing'} | ${false}    | ${IntegrationType.Connector}
+      ${'document file is present'}              | ${true}     | ${IntegrationType.CsvFeed}
+    `('should not throw when $title', ({ hasDocument, integrationType }) => {
       expect(() =>
         DocumentHelper.assertDocumentFileIsNotMissing({
-          hasDocument: false,
+          hasDocument,
           documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           documentMetadata: [
-            { key: 'integration_type', value: IntegrationType.CsvFeed },
-          ],
-        })
-      ).toThrow(ErrorCode.DocumentFileMissing);
-    });
-
-    it('should not throw when document file is optional and missing', () => {
-      expect(() =>
-        DocumentHelper.assertDocumentFileIsNotMissing({
-          hasDocument: false,
-          documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          documentMetadata: [
-            { key: 'integration_type', value: IntegrationType.Connector },
+            { key: 'integration_type', value: integrationType },
           ],
         })
       ).not.toThrow();
     });
 
-    it('should not throw when document file is present', () => {
-      expect(() =>
-        DocumentHelper.assertDocumentFileIsNotMissing({
-          hasDocument: true,
-          documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          documentMetadata: [
-            { key: 'integration_type', value: IntegrationType.CsvFeed },
-          ],
-        })
-      ).not.toThrow();
-    });
-
-    it('should throw when integration_type metadata is missing (defaults to required)', () => {
+    it.each`
+      title                                                            | documentMetadata                                                 | expectedError
+      ${'document file is required but missing'}                       | ${[{ key: 'integration_type', value: IntegrationType.CsvFeed }]} | ${ErrorCode.DocumentFileMissing}
+      ${'integration_type metadata is missing (defaults to required)'} | ${[]}                                                            | ${ErrorCode.DocumentFileMissing}
+    `('should throw when $title', ({ documentMetadata, expectedError }) => {
       expect(() =>
         DocumentHelper.assertDocumentFileIsNotMissing({
           hasDocument: false,
           documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          documentMetadata: [],
+          documentMetadata,
         })
-      ).toThrow();
+      ).toThrow(expectedError);
     });
   });
 

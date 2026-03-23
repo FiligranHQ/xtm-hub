@@ -230,13 +230,9 @@ export const useServiceFormFields = ({
               </>
             )}
             <FormMessage />
-            <div>
-              <p className="mb-xs">
-                {t('Service.Form.IllustrationDisclaimer')}
-              </p>
-              <div className="w-24 p-m border border-light">
-                <LogoFiligranIcon className="size-18" />
-              </div>
+            <p className="mb-xs">{t('Service.Form.IllustrationDisclaimer')}</p>
+            <div className="w-24 p-m border border-light">
+              <LogoFiligranIcon className="size-18" />
             </div>
           </FormItem>
         ),

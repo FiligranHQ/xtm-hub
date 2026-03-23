@@ -3,78 +3,42 @@ import { filterDocumentImages, findDocumentLogo } from './documents';
 
 describe('Documents utils', () => {
   describe('filterDocumentImages', () => {
-    it('should return only images with image_type IMAGE', () => {
-      const document = {
-        children_documents: [
-          { id: '1', image_type: 'image' },
-          { id: '2', image_type: 'logo' },
-          { id: '3', image_type: 'image' },
-        ],
-      } as unknown as documentItem_fragment$data;
-      const result = filterDocumentImages(document);
-      expect(result).toEqual([
-        { id: '1', image_type: 'image' },
-        { id: '3', image_type: 'image' },
-      ]);
-    });
-
-    it('should return an empty array if no children_documents', () => {
-      const document = {} as documentItem_fragment$data;
-      const result = filterDocumentImages(document);
-      expect(result).toEqual([]);
-    });
-
-    it('should return an empty array if no images of type IMAGE', () => {
-      const document = {
-        children_documents: [
-          { id: '1', image_type: 'logo' },
-          { id: '2', image_type: 'logo' },
-        ],
-      } as unknown as documentItem_fragment$data;
-      const result = filterDocumentImages(document);
-      expect(result).toEqual([]);
-    });
-
-    it('should handle null children_documents', () => {
-      const document = {
-        children_documents: null,
-      } as documentItem_fragment$data;
-      const result = filterDocumentImages(document);
-      expect(result).toEqual([]);
+    it.each`
+      title                                      | document                                                                                                                         | expected
+      ${'only images'}                           | ${{ children_documents: [{ id: '1', image_type: 'image' }, { id: '2', image_type: 'logo' }, { id: '3', image_type: 'image' }] }} | ${[{ id: '1', image_type: 'image' }, { id: '3', image_type: 'image' }]}
+      ${'empty array if no children'}            | ${{}}                                                                                                                            | ${[]}
+      ${'empty array if no images'}              | ${{ children_documents: [{ id: '1', image_type: 'logo' }, { id: '2', image_type: 'logo' }] }}                                    | ${[]}
+      ${'empty array if null children_document'} | ${{ children_documents: null }}                                                                                                  | ${[]}
+    `('should return $title', ({ document, expected }) => {
+      const result = filterDocumentImages(
+        document as unknown as documentItem_fragment$data
+      );
+      expect(result).toEqual(expected);
     });
   });
 
   describe('findDocumentLogo', () => {
-    it('should return undefined if no child with image_type LOGO', () => {
+    it('should return logo when child has image_type LOGO', () => {
       const document = {
         children_documents: [
-          { id: '1', image_type: 'image' },
+          { id: '1', image_type: 'logo' },
           { id: '2', image_type: 'image' },
         ],
       } as unknown as documentItem_fragment$data;
       const result = findDocumentLogo(document);
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual({ id: '1', image_type: 'logo' });
     });
 
-    it('should return undefined if children_documents is empty', () => {
-      const document = {
-        children_documents: [],
-      } as unknown as documentItem_fragment$data;
-      const result = findDocumentLogo(document);
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined if children_documents is null', () => {
-      const document = {
-        children_documents: null,
-      } as unknown as documentItem_fragment$data;
-      const result = findDocumentLogo(document);
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined if children_documents is missing', () => {
-      const document = {} as documentItem_fragment$data;
-      const result = findDocumentLogo(document);
+    it.each`
+      title                                           | document
+      ${'undefined if no child with image_type LOGO'} | ${{ children_documents: [{ id: '1', image_type: 'image' }, { id: '2', image_type: 'image' }] }}
+      ${'undefined if children_documents is empty'}   | ${{ children_documents: [] }}
+      ${'undefined if children_documents is null'}    | ${{ children_documents: null }}
+      ${'undefined if children_documents is missing'} | ${{}}
+    `('should return $title', ({ document }) => {
+      const result = findDocumentLogo(
+        document as unknown as documentItem_fragment$data
+      );
       expect(result).toBeUndefined();
     });
   });

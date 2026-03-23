@@ -10,19 +10,21 @@ export const up = async (knex) => {
   const newMetadata = [];
 
   for (const image of imageDocuments) {
-    const parent = await knex('Document')
+    const integrationType = await knex('Document')
       .leftJoin(
         'Document_Children',
         'Document_Children.parent_document_id',
         '=',
         'Document.id'
       )
+      .leftJoin(
+        'Document_Metadata',
+        'Document_Metadata.document_id',
+        '=',
+        'Document_Children.parent_document_id'
+      )
       .where('child_document_id', '=', image.id)
-      .first();
-
-    const integrationType = await knex('Document_Metadata')
-      .where('key', '=', 'integration_type')
-      .andWhere('document_id', '=', parent.id)
+      .andWhere('key', '=', 'integration_type')
       .first();
 
     const imageType = integrationType?.value === 'connector' ? 'logo' : 'image';
