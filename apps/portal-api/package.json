@@ -50,8 +50,8 @@
   "dependencies": {
     "@apollo/server": "5.4.0",
     "@as-integrations/express5": "1.1.2",
-    "@aws-sdk/client-s3": "3.1009.0",
-    "@aws-sdk/lib-storage": "3.1009.0",
+    "@aws-sdk/client-s3": "3.1013.0",
+    "@aws-sdk/lib-storage": "3.1013.0",
     "@elastic/elasticsearch": "8.19.1",
     "@graphql-codegen/plugin-helpers": "5.1.1",
     "@graphql-tools/load-files": "7.0.1",
@@ -59,9 +59,9 @@
     "@graphql-tools/schema": "10.0.31",
     "@graphql-tools/utils": "11.0.0",
     "apollo-errors": "1.9.0",
-    "auth0": "5.3.1",
+    "auth0": "5.5.0",
     "body-parser": "2.2.2",
-    "config": "3.3.12",
+    "config": "4.3.0",
     "cors": "2.8.6",
     "express": "5.2.1",
     "express-prom-bundle": "8.0.0",
@@ -89,7 +89,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.3.16",
+    "@electric-sql/pglite": "0.4.1",
     "@eslint/js": "9.39.4",
     "@graphql-codegen/cli": "5.0.7",
     "@graphql-codegen/typescript": "4.1.6",
