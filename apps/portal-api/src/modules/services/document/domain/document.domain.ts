@@ -90,7 +90,7 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
-  loadUploader: async (documentId: string): Promise<User | null> => {
+  loadUploader: async (documentId: string): Promise<User | undefined> => {
     return db<User>('User')
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
       .where('Document.id', '=', documentId)
@@ -100,17 +100,16 @@ export const DocumentDomain = {
 
   loadUploaderOrganization: async (
     documentId: string
-  ): Promise<Organization> => {
-    const [organization] = await db<Organization>('Organization')
+  ): Promise<Organization | undefined> => {
+    return db<Organization>('Organization')
       .leftJoin(
         'Document',
         'Document.uploader_organization_id',
         'Organization.id'
       )
       .where('Document.id', '=', documentId)
-      .select('Organization.*');
-
-    return organization;
+      .select('Organization.*')
+      .first();
   },
 
   loadParentDocumentsByServiceInstance: async (
