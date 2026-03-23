@@ -65,6 +65,9 @@ export const TEST_ORGANIZATIONS = {
 
 export const SERVICES = {
   DEFINITIONS: {
+    OPENCTI_INTEGRATIONS: {
+      ID: '42007953-4dbc-480a-8693-8c05f1123460' as ServiceDefinitionId,
+    },
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
@@ -77,8 +80,8 @@ export const SERVICES = {
       ID: 'e88e8f80-ba9e-480b-ab27-8613a1565eff' as ServiceInstanceId,
     },
     INTEGRATIONS: {
-      NAME: 'csv feeds',
-      ID: 'ad003d3f-c406-4be8-a650-880d72f952e9' as ServiceInstanceId,
+      NAME: 'integrations',
+      ID: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc' as ServiceInstanceId,
       CAPABILITIES: {
         UPLOAD: {
           ID: '26611d56-e443-45fb-9f6c-cc6b9b8a5de9' as ServiceCapabilityId,
