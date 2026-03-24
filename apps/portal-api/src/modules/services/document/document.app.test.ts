@@ -531,7 +531,10 @@ describe('DocumentApp', () => {
         { key: 'verified', value: 'false' },
         { key: 'manager_supported', value: 'false' },
         { key: 'playbook_supported', value: 'false' },
-        { key: 'container_image', value: 'container_image_value' },
+        {
+          key: DocumentMetadataKeyCode.ContainerImage,
+          value: 'container_image_value',
+        },
         { key: 'source_code', value: 'source_code_value' },
         { key: 'subscription_link', value: 'subscription_link_value' },
       ];
@@ -555,7 +558,10 @@ describe('DocumentApp', () => {
         { key: 'verified', value: 'true' },
         { key: 'manager_supported', value: 'true' },
         { key: 'playbook_supported', value: 'false' },
-        { key: 'container_image', value: 'container_image_value' },
+        {
+          key: DocumentMetadataKeyCode.ContainerImage,
+          value: 'container_image_value',
+        },
         { key: 'source_code', value: 'source_code_value' },
         { key: 'subscription_link', value: 'subscription_link_value' },
       ];

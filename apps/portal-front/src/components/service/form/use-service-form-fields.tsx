@@ -276,7 +276,9 @@ export const useServiceFormFields = ({
       container_image: {
         label: t('Service.Form.ContainerImageLabel'),
         inputProps: {
-          disabled: disabledFields.includes('container_image'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.CONTAINER_IMAGE
+          ),
         },
       },
       source_code: {

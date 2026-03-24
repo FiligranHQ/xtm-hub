@@ -81,7 +81,9 @@ describe('Ingest manifest helper', () => {
         expect(typeof firstItem.description).toBe('string');
         expect(firstItem).toHaveProperty('short_description');
         expect(typeof firstItem.short_description).toBe('string');
-        expect(firstItem).toHaveProperty('container_image');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.ContainerImage
+        );
         expect(typeof firstItem.container_image).toBe('string');
         expect(firstItem).toHaveProperty('slug');
         expect(typeof firstItem.slug).toBe('string');

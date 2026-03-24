@@ -510,6 +510,7 @@ export type DocumentMetadata = {
 };
 
 export enum DocumentMetadataKeyCode {
+  ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
   FeedUrl = 'feed_url',
