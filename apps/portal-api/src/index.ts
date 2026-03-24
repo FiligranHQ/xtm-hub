@@ -1,4 +1,5 @@
 import { ApolloServer } from '@apollo/server';
+import { unwrapResolverError } from '@apollo/server/errors';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { expressMiddleware } from '@as-integrations/express5';
@@ -76,7 +77,10 @@ app.use(sessionMiddleware);
 // session cookies by the browser.
 app.use((req, _res, next) => {
   if (req.session?.cookie) {
-    req.session.cookie.maxAge = SESSION_MAX_AGE;
+    const cookie = req.session.cookie;
+    if (cookie.originalMaxAge == null && cookie.expires == null) {
+      cookie.maxAge = SESSION_MAX_AGE;
+    }
   }
   next();
 });
@@ -190,6 +194,19 @@ app.use(function (req, res, next) {
 const server = new ApolloServer<PortalContext>({
   schema,
   csrfPrevention: true,
+  formatError: (formattedError, error) => {
+    // Otherwise Apollo overrides extensions code with INTERNAL_SERVER_ERROR
+    const originalError = unwrapResolverError(error);
+    const code = (originalError as { extensions?: { code?: string } } | null)
+      ?.extensions?.code;
+    if (code) {
+      return {
+        ...formattedError,
+        extensions: { ...formattedError.extensions, code },
+      };
+    }
+    return formattedError;
+  },
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
     ApolloServerPluginLandingPageLocalDefault({

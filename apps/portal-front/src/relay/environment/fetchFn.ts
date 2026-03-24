@@ -89,8 +89,8 @@ export async function networkFetch({
   // throw an error to indicate to the developer what went wrong.
   if (Array.isArray(json.errors)) {
     const containsAuthenticationFailure = json.errors.find(
-      (e: { message: string }) =>
-        e.message === 'Not authorized: You are not authenticated'
+      (e: { extensions?: { code?: string }; message: string }) =>
+        e.extensions?.code === 'UNAUTHENTICATED'
     );
     if (containsAuthenticationFailure) {
       throw new UnauthenticatedError();

@@ -55,6 +55,25 @@ export const ForbiddenAccess = (
   );
 };
 
+export const UnauthenticatedAccess = (
+  message: string,
+  data?: Record<string, unknown>
+): CustomApolloError => {
+  const error = errorUtil(
+    ErrorType.Unauthenticated,
+    message || 'You are not authenticated.',
+    {
+      http_status: 401,
+      genre: ErrorCategory.Technical,
+      ...data,
+    },
+    undefined,
+    'warn'
+  );
+  error.extensions = { code: ErrorType.Unauthenticated };
+  return error;
+};
+
 export const BadRequestError: ErrorBuilder = (
   message: string,
   information?: ErrorInformation,

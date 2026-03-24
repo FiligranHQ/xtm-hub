@@ -1,6 +1,9 @@
 import { PortalContext } from '../../model/portal-context';
 import { getCapabilities } from '../../modules/users/users.domain';
-import { ForbiddenAccess } from '../../utils/error/error.util';
+import {
+  ForbiddenAccess,
+  UnauthenticatedAccess,
+} from '../../utils/error/error.util';
 import { AuthFn, RoleFn, RoleType, ServiceFn } from './directive.model';
 
 /**
@@ -38,11 +41,7 @@ export const createSecureFieldResolver = (
 
     // Authentication check
     if (authDirective && !isAuthenticatedFn(user)) {
-      throw ForbiddenAccess(
-        'Not authorized: You are not authenticated',
-        undefined,
-        'warn'
-      );
+      throw UnauthenticatedAccess('Not authorized: You are not authenticated');
     }
 
     // Authorization check
