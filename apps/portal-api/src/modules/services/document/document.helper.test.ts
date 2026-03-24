@@ -339,7 +339,7 @@ describe('DocumentHelper', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {

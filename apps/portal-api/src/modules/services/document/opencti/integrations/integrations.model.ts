@@ -87,7 +87,7 @@ export const INTEGRATION_CSV_FEED_METADATA_KEYS =
 export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
   { key: DocumentMetadataKeyCode.IntegrationType },
-  { key: 'integration_subtype' },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
@@ -97,7 +97,7 @@ export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
 export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
   { key: DocumentMetadataKeyCode.IntegrationType },
-  { key: 'integration_subtype' },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
@@ -107,7 +107,7 @@ export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
 
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegrationMetadata =
   [
-    { key: 'integration_subtype' },
+    { key: DocumentMetadataKeyCode.IntegrationSubtype },
     { key: 'product_version', optional: true },
     { key: 'vendor_url' },
     { key: 'github_url', optional: true },
@@ -123,7 +123,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: 'verified' },
   { key: 'source_code' },
   { key: 'subscription_link' },
-  { key: 'integration_subtype' },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: 'manager_supported' },
   { key: 'playbook_supported' },

@@ -140,7 +140,10 @@ describe('DocumentMetadataDomain', () => {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com/taxii',
           },
-          { key: 'integration_subtype', value: 'some_subtype' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
+            value: 'some_subtype',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,

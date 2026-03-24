@@ -11,6 +11,7 @@ enum DocumentImageType {
 enum DocumentMetadataKeyCode {
   feed_url
   integration_type
+  integration_subtype
   datasheet_url
   demo_url
 }

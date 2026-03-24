@@ -161,7 +161,9 @@ export const useServiceFormFields = ({
                   field={field}
                   integrationType={integrationType}
                   document={document}
-                  disabled={disabledFields.includes('integration_subtype')}
+                  disabled={disabledFields.includes(
+                    DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE
+                  )}
                 />
               ),
             },

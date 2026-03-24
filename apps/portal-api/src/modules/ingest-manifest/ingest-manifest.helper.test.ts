@@ -87,7 +87,9 @@ describe('Ingest manifest helper', () => {
         expect(typeof firstItem.logo).toBe('string');
         expect(firstItem).toHaveProperty('verified');
         expect(typeof firstItem.verified).toBe('boolean');
-        expect(firstItem).toHaveProperty('integration_subtype');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.IntegrationSubtype
+        );
         expect(typeof firstItem.integration_subtype).toBe('string');
         expect(firstItem).toHaveProperty(
           DocumentMetadataKeyCode.IntegrationType

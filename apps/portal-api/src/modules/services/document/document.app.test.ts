@@ -118,7 +118,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
@@ -168,7 +168,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
@@ -195,7 +195,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
@@ -271,7 +271,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
@@ -304,7 +304,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
@@ -350,7 +350,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
@@ -379,7 +379,7 @@ describe('DocumentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
@@ -428,7 +428,12 @@ describe('DocumentApp', () => {
             value: integrationType,
           },
           ...(integrationSubtype
-            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            ? [
+                {
+                  key: DocumentMetadataKeyCode.IntegrationSubtype,
+                  value: integrationSubtype,
+                },
+              ]
             : []),
         ];
 
@@ -470,7 +475,12 @@ describe('DocumentApp', () => {
             value: integrationType,
           },
           ...(integrationSubtype
-            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            ? [
+                {
+                  key: DocumentMetadataKeyCode.IntegrationSubtype,
+                  value: integrationSubtype,
+                },
+              ]
             : []),
         ];
 
@@ -514,7 +524,7 @@ describe('DocumentApp', () => {
           key: DocumentMetadataKeyCode.IntegrationType,
           value: IntegrationType.Connector,
         },
-        { key: 'integration_subtype', value: 'native' },
+        { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: 'product_version', value: '1.0.0' },
         { key: 'verified', value: 'false' },
         { key: 'manager_supported', value: 'false' },
@@ -538,7 +548,7 @@ describe('DocumentApp', () => {
           key: DocumentMetadataKeyCode.IntegrationType,
           value: IntegrationType.Connector,
         },
-        { key: 'integration_subtype', value: 'native' },
+        { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: 'product_version', value: '2.0.0' },
         { key: 'verified', value: 'true' },
         { key: 'manager_supported', value: 'true' },
@@ -743,7 +753,10 @@ describe('DocumentApp', () => {
         key: DocumentMetadataKeyCode.IntegrationType,
         value: IntegrationType.ThirdPartyIntegration,
       },
-      { key: 'integration_subtype', value: IntegrationSubType.Orchestration },
+      {
+        key: DocumentMetadataKeyCode.IntegrationSubtype,
+        value: IntegrationSubType.Orchestration,
+      },
       { key: 'vendor_url', value: 'https://example.com' },
     ] as unknown as DocumentMetadataKeys<ThirdPartyIntegration>;
 
