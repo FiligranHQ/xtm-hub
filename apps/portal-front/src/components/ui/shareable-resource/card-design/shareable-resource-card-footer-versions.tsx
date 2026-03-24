@@ -38,7 +38,10 @@ export const ShareableResourceCardFooterVersion: FunctionComponent<
           </Badge>
         )}
         {publicPath ||
-        (docHasMetadata(document, 'manager_supported') &&
+        (docHasMetadata(
+          document,
+          DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
+        ) &&
           !document.manager_supported) ? (
           <span className="text-sm">
             {docHasMetadata(

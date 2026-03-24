@@ -529,7 +529,7 @@ describe('DocumentApp', () => {
         { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
         { key: DocumentMetadataKeyCode.Verified, value: 'false' },
-        { key: 'manager_supported', value: 'false' },
+        { key: DocumentMetadataKeyCode.ManagerSupported, value: 'false' },
         { key: 'playbook_supported', value: 'false' },
         {
           key: DocumentMetadataKeyCode.ContainerImage,
@@ -559,7 +559,7 @@ describe('DocumentApp', () => {
         { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: DocumentMetadataKeyCode.ProductVersion, value: '2.0.0' },
         { key: DocumentMetadataKeyCode.Verified, value: 'true' },
-        { key: 'manager_supported', value: 'true' },
+        { key: DocumentMetadataKeyCode.ManagerSupported, value: 'true' },
         { key: 'playbook_supported', value: 'false' },
         {
           key: DocumentMetadataKeyCode.ContainerImage,

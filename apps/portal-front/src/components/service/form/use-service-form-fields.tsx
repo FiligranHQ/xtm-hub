@@ -308,7 +308,9 @@ export const useServiceFormFields = ({
       manager_supported: {
         label: t('Service.Form.ManagerSupportedLabel'),
         inputProps: {
-          disabled: disabledFields.includes('manager_supported'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
+          ),
         },
       },
       playbook_supported: {

@@ -24,7 +24,10 @@ export const ShareableResourceCardIcon: FunctionComponent<
     <>
       {document.active && shouldDisplayBothIcons && (
         <TooltipProvider>
-          {docHasMetadata(document, 'manager_supported') &&
+          {docHasMetadata(
+            document,
+            DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
+          ) &&
             document.manager_supported && (
               <Tooltip>
                 <TooltipTrigger asChild>

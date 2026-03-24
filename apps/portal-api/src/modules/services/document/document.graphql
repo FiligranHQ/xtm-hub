@@ -21,6 +21,7 @@ enum DocumentMetadataKeyCode {
   verified
   source_code
   subscription_link
+  manager_supported
 }
 
 type ShareableResource {

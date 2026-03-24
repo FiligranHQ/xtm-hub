@@ -517,6 +517,7 @@ export enum DocumentMetadataKeyCode {
   GithubUrl = 'github_url',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
+  ManagerSupported = 'manager_supported',
   ProductVersion = 'product_version',
   SourceCode = 'source_code',
   SubscriptionLink = 'subscription_link',

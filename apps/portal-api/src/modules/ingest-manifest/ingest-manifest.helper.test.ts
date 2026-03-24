@@ -103,7 +103,9 @@ describe('Ingest manifest helper', () => {
         expect(typeof firstItem.type).toBe('string');
         expect(firstItem).toHaveProperty('use_cases');
         expect(Array.isArray(firstItem.use_cases)).toBe(true);
-        expect(firstItem).toHaveProperty('manager_supported');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.ManagerSupported
+        );
         expect(typeof firstItem.manager_supported).toBe('boolean');
         expect(firstItem).toHaveProperty('playbook_supported');
         expect(typeof firstItem.playbook_supported).toBe('boolean');
