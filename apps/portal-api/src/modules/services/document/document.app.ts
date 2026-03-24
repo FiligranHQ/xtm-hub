@@ -1,6 +1,7 @@
 import {
   CreateDocumentInput,
   DocumentImageType,
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   QueryDocumentsArgs,
@@ -220,16 +221,20 @@ export const DocumentApp = {
       }
     );
 
-    if (!documentMetadata.some(({ key }) => key === 'feed_url')) {
+    if (
+      !documentMetadata.some(
+        ({ key }) => key === DocumentMetadataKeyCode.FeedUrl
+      )
+    ) {
       const existingFeedUrl =
         await DocumentMetadataDomain.loadMetadataValueByKey(
           parentDocumentId,
-          'feed_url'
+          DocumentMetadataKeyCode.FeedUrl
         );
       if (existingFeedUrl) {
         documentMetadata = [
           ...documentMetadata,
-          { key: 'feed_url', value: existingFeedUrl },
+          { key: DocumentMetadataKeyCode.FeedUrl, value: existingFeedUrl },
         ];
       }
     }

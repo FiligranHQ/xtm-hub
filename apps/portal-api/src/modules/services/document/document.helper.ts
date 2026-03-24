@@ -1,5 +1,6 @@
 import { db } from '../../../../knexfile';
 import {
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   ServiceDefinitionIdentifier,
@@ -164,7 +165,7 @@ export const DocumentHelper = {
       return metadata;
     }
 
-    return [...metadata, { key: 'feed_url', value: uri }];
+    return [...metadata, { key: DocumentMetadataKeyCode.FeedUrl, value: uri }];
   },
 
   retrieveDocumentTypeFromServiceDefinition: (

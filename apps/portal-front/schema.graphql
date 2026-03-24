@@ -525,6 +525,10 @@ enum DocumentImageType {
   image
 }
 
+enum DocumentMetadataKeyCode {
+  feed_url
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!

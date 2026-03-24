@@ -13,6 +13,7 @@ import { db } from '../../../../knexfile';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
+  DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
@@ -439,7 +440,7 @@ describe('DocumentApp', () => {
         expect(result).toBeDefined();
         const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
           result!.id,
-          'feed_url'
+          DocumentMetadataKeyCode.FeedUrl
         );
         expect(feedUrl).toBe('https://example.com');
       }
@@ -494,7 +495,7 @@ describe('DocumentApp', () => {
         expect(result).toBeDefined();
         const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
           result!.id,
-          'feed_url'
+          DocumentMetadataKeyCode.FeedUrl
         );
         expect(feedUrl).toBe('https://example.com');
       }

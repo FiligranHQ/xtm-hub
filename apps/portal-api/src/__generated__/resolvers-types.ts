@@ -509,6 +509,10 @@ export type DocumentMetadata = {
   value: Scalars['String']['input'];
 };
 
+export enum DocumentMetadataKeyCode {
+  FeedUrl = 'feed_url'
+}
+
 export enum DocumentOrdering {
   CreatedAt = 'created_at',
   Description = 'description',
@@ -2386,6 +2390,7 @@ export type ResolversTypes = ResolversObject<{
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
   DocumentImageType: DocumentImageType;
   DocumentMetadata: DocumentMetadata;
+  DocumentMetadataKeyCode: DocumentMetadataKeyCode;
   DocumentOrdering: DocumentOrdering;
   DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;

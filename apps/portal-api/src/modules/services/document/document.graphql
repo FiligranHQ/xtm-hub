@@ -8,6 +8,10 @@ enum DocumentImageType {
   image
 }
 
+enum DocumentMetadataKeyCode {
+  feed_url
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -28,6 +32,7 @@ enum DocumentOrdering {
   download_number
   name
 }
+
 """
 /!\ WARNING Do not use this type.
 It exists only to cover cases where we failed to map to a specific Document.

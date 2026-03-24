@@ -16,6 +16,7 @@ import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resourc
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
@@ -109,7 +110,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       )}
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'feed_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.FEED_URL}
         translationKey="FeedURL"
         variant="link"
       />

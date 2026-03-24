@@ -12,6 +12,7 @@ import {
 import { db } from '../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DocumentMetadataKeyCode,
   IntegrationSubType,
   IntegrationType,
   ServiceDefinitionIdentifier,
@@ -86,7 +87,10 @@ describe('DocumentHelper', () => {
         },
         metadata: [
           { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -214,7 +218,7 @@ describe('DocumentHelper', () => {
 
       expect(result).toEqual([
         ...metadata,
-        { key: 'feed_url', value: 'https://example.com' },
+        { key: DocumentMetadataKeyCode.FeedUrl, value: 'https://example.com' },
       ]);
     });
   });
@@ -258,7 +262,12 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'feed_url', value: 'https://example.com' }]
+          [
+            {
+              key: DocumentMetadataKeyCode.FeedUrl,
+              value: 'https://example.com',
+            },
+          ]
         )
       ).toThrowError(ErrorCode.DocumentMissingMetadata);
     });
@@ -319,7 +328,7 @@ describe('DocumentHelper', () => {
             value: IntegrationType.CsvFeed,
           },
           {
-            key: 'feed_url',
+            key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com',
           },
         ]

@@ -2,6 +2,7 @@ import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { expect, vi } from 'vitest';
 import { db } from '../knexfile';
 import {
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
 } from '../src/__generated__/resolvers-types';
@@ -36,7 +37,7 @@ export const TestHelper = {
       uploader_id = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       metadata = [
         { key: 'integration_type', value: IntegrationType.CsvFeed },
-        { key: 'feed_url', value: 'https://example.com' },
+        { key: DocumentMetadataKeyCode.FeedUrl, value: 'https://example.com' },
       ],
       serviceInstanceId = INTEGRATION_SERVICE_INSTANCE_ID,
       sourceDocument = mockUpload,
