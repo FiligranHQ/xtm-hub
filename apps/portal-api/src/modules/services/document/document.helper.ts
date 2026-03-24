@@ -46,7 +46,7 @@ import {
 } from './opencti/integrations/integrations.model';
 
 export const BOOLEAN_METADATA = [
-  'verified',
+  DocumentMetadataKeyCode.Verified,
   'manager_supported',
   'playbook_supported',
 ];

@@ -528,7 +528,7 @@ describe('DocumentApp', () => {
         },
         { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
-        { key: 'verified', value: 'false' },
+        { key: DocumentMetadataKeyCode.Verified, value: 'false' },
         { key: 'manager_supported', value: 'false' },
         { key: 'playbook_supported', value: 'false' },
         {
@@ -555,7 +555,7 @@ describe('DocumentApp', () => {
         },
         { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: DocumentMetadataKeyCode.ProductVersion, value: '2.0.0' },
-        { key: 'verified', value: 'true' },
+        { key: DocumentMetadataKeyCode.Verified, value: 'true' },
         { key: 'manager_supported', value: 'true' },
         { key: 'playbook_supported', value: 'false' },
         {

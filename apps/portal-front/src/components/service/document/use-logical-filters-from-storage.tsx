@@ -73,7 +73,9 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     params.serviceInstanceSlug,
     params.labels,
     'deployable' in params ? params.deployable : undefined,
-    'verified' in params ? params.verified : undefined,
+    DocumentMetadataKeyCodeEnum.VERIFIED in params
+      ? params.verified
+      : undefined,
     'integrationTypes' in params ? params.integrationTypes : undefined,
     'productVersions' in params ? params.productVersions : undefined,
   ]);

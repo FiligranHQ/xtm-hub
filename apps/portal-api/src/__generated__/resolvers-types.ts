@@ -518,7 +518,8 @@ export enum DocumentMetadataKeyCode {
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   ProductVersion = 'product_version',
-  VendorUrl = 'vendor_url'
+  VendorUrl = 'vendor_url',
+  Verified = 'verified'
 }
 
 export enum DocumentOrdering {

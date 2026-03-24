@@ -296,7 +296,9 @@ export const useServiceFormFields = ({
       verified: {
         label: t('Service.Form.VerifiedLabel'),
         inputProps: {
-          disabled: disabledFields.includes('verified'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.VERIFIED
+          ),
         },
       },
       manager_supported: {

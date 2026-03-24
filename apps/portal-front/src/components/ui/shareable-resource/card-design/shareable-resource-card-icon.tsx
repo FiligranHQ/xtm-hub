@@ -35,16 +35,17 @@ export const ShareableResourceCardIcon: FunctionComponent<
                 </TooltipContent>
               </Tooltip>
             )}
-          {docHasMetadata(document, 'verified') && document.verified && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
-              </TooltipTrigger>
-              <TooltipContent className="bg-gray-50">
-                {t('Utils.Verified')}
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {docHasMetadata(document, DocumentMetadataKeyCodeEnum.VERIFIED) &&
+            document.verified && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
+                </TooltipTrigger>
+                <TooltipContent className="bg-gray-50">
+                  {t('Utils.Verified')}
+                </TooltipContent>
+              </Tooltip>
+            )}
         </TooltipProvider>
       )}
       {document.active && !shouldDisplayBothIcons && (

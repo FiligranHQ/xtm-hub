@@ -120,7 +120,7 @@ export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS =
 export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.ProductVersion },
   { key: DocumentMetadataKeyCode.ContainerImage },
-  { key: 'verified' },
+  { key: DocumentMetadataKeyCode.Verified },
   { key: 'source_code' },
   { key: 'subscription_link' },
   { key: DocumentMetadataKeyCode.IntegrationSubtype },
