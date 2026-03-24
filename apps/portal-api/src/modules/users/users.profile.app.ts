@@ -23,7 +23,7 @@ import { Upload, waitForUploads } from '../services/document/document.uploads.he
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { getDocumentName, normalizeDocumentName } from '../services/document/document.helper';
 
-const deletePreviousPicture = async (pictureMinio: string) => {
+const deletePicture = async (pictureMinio: string) => {
   try {
     await MinIOClient.deleteFile(pictureMinio);
   } catch (err) {
@@ -82,7 +82,7 @@ export const usersProfileApp = {
     await waitForUploads(document);
 
     if (meUser.picture_minio) {
-      await deletePreviousPicture(meUser.picture_minio);
+      await deletePicture(meUser.picture_minio);
     }
 
     const minioName = await uploadPictureToMinIO(meUser.id, document.file);

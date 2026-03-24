@@ -55,16 +55,16 @@ export const Profile: React.FC = () => {
   const editUser = (values: ProfileFormEditSchema) => {
     commitEditMeUserMutation({
       variables: values,
+      onCompleted() {
+        toast({
+          title: t('Utils.Success'),
+        });
+      },
       onError(error) {
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
           description: t(`Error.Server.${error.message}`),
-        });
-      },
-      onCompleted() {
-        toast({
-          title: t('Utils.Success'),
         });
       },
     });

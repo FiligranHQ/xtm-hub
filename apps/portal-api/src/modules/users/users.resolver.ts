@@ -151,7 +151,7 @@ const resolvers: Resolvers = {
       try {
         return await usersProfileApp.uploadUserPicture(context.user,document);
       } catch (error) {
-        throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
+        throw mapToGraphQLError(error, UnknownErrorCode.UploadUserPictureError);
       }
     },
     resetPassword: async (_, __) => {
