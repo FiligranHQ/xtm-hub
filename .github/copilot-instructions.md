@@ -323,13 +323,17 @@ cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
 
 Format: `[package] <type>(<scope>): Message (#issueNumber)`
 
-- **Packages**: `frontend`, `backend`, `doc`
+- **Package**: optional — omit entirely for CI, chores, or cross-cutting changes with no clear owner
+- **Packages**: `frontend`, `backend`, `e2e-tests` — combinable with `/` for cross-package changes
 - **Types**: `feat`, `fix`, `docs`, `refactor`, `chore`, `test`
 - **Scope**: optional component name
 
 Examples:
-- `[frontend] feat(custom dashboards): add card component (#123)`
+- `[frontend] feat(custom-dashboards): add card component (#123)`
 - `[backend] fix(login): handle missing auth token (#456)`
+- `[frontend/backend] refactor(auth): extract shared token logic (#789)`
+- `[e2e-tests] test(login): add SSO flow coverage (#202)`
+- `chore(ci): update docker base image (#101)`
 
 ## Environment Variables
 
