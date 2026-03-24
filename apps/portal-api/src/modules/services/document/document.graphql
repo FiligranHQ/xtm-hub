@@ -16,6 +16,7 @@ enum DocumentMetadataKeyCode {
   demo_url
   product_version
   vendor_url
+  github_url
 }
 
 type ShareableResource {

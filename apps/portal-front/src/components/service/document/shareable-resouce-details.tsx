@@ -131,7 +131,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'github_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.GITHUB_URL}
         translationKey="GithubURL"
         variant="link"
       />

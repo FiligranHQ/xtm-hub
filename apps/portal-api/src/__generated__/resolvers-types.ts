@@ -513,6 +513,7 @@ export enum DocumentMetadataKeyCode {
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
   FeedUrl = 'feed_url',
+  GithubUrl = 'github_url',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   ProductVersion = 'product_version',

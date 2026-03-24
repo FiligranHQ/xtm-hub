@@ -115,7 +115,7 @@ export const ThirdPartyIntegrationForm = ({
 
       if (!data.github_url && data.product_version) {
         ctx.addIssue({
-          path: ['github_url'],
+          path: [DocumentMetadataKeyCodeEnum.GITHUB_URL],
           code: 'custom',
           message: 'Github URL and product version must be filled together',
         });
@@ -173,7 +173,7 @@ export const ThirdPartyIntegrationForm = ({
             );
           }
           if (values.github_url === '') {
-            form.setValue('github_url', undefined);
+            form.setValue(DocumentMetadataKeyCodeEnum.GITHUB_URL, undefined);
           }
         }}
         values={values}

@@ -241,7 +241,9 @@ export const useServiceFormFields = ({
         label: t('Service.Form.GithubUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('github_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.GITHUB_URL
+          ),
         },
       },
       datasheet_url: {
