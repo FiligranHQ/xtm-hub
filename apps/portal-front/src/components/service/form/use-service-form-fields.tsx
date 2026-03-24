@@ -1,5 +1,6 @@
 import { ServiceFormDescriptionField } from '@/components/service/form/description-field';
 import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/integration-subtype-field';
+import { ServiceFormLogoField } from '@/components/service/form/logo-field';
 import {
   ServiceFormMultipleImagesField,
   ServiceFormMultipleImagesFieldImages,
@@ -8,20 +9,11 @@ import { ServiceFormUploaderIdField } from '@/components/service/form/uploader-i
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/uploader-organization-id-field';
 import { ServiceFormUseCasesField } from '@/components/service/form/use-cases-field';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
-import { LogoFiligranIcon } from '@filigran/icon';
-import {
-  FileInput,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@filigran/ui';
+import { filterDocumentImages } from '@/utils/documents';
+import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentSourceTypeEnum } from '@generated/models/DocumentSourceType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
@@ -94,7 +86,6 @@ export const useServiceFormFields = ({
       document
     ) as unknown as ServiceFormMultipleImagesFieldImages[]
   );
-  const existingLogo = findDocumentLogo(document);
 
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
   const { setIsDirty } = useDialogContext();
@@ -198,43 +189,10 @@ export const useServiceFormFields = ({
         }: {
           field: ControllerRenderProps<FieldValues, string>;
         }) => (
-          <FormItem>
-            <FormLabel>{t('Service.Form.LogoLabel')}</FormLabel>
-            <FormControl>
-              <FileInput
-                {...field}
-                disabled={
-                  existingLogo?.source_type === DocumentSourceTypeEnum.EXTERNAL
-                }
-                texts={{
-                  selectFile: t('Service.Form.UploadLogo'),
-                  noFile: t('Service.Vault.FileForm.NoDocument'),
-                  dropFiles: t('Service.Vault.FileForm.DropDocuments'),
-                }}
-                allowedTypes={'image/jpeg, image/gif, image/png, image/svg'}
-              />
-            </FormControl>
-            {existingLogo && document?.service_instance && (
-              <>
-                <p>{t('Service.Form.CurrentLogo')}</p>
-                <div className="w-24 flex-shrink-0 rounded overflow-hidden">
-                  <Image
-                    src={`/document/images/${document?.service_instance?.id}/${existingLogo.id}`}
-                    alt={`${document.name} logo`}
-                    width={96}
-                    height={96}
-                    loading="lazy"
-                    className="w-full h-full object-contain rounded"
-                  />
-                </div>
-              </>
-            )}
-            <FormMessage />
-            <p className="mb-xs">{t('Service.Form.IllustrationDisclaimer')}</p>
-            <div className="w-24 p-m border border-light">
-              <LogoFiligranIcon className="size-18" />
-            </div>
-          </FormItem>
+          <ServiceFormLogoField
+            field={field}
+            document={document}
+          />
         ),
       },
       integration_type: { fieldType: () => <FormItem hidden={true} /> },
@@ -346,7 +304,6 @@ export const useServiceFormFields = ({
       isCreation,
       document,
       integrationType,
-      existingLogo,
       images,
       setImages,
       imagesToDelete,

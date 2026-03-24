@@ -98,6 +98,7 @@ export const ServiceFormMultipleImagesField = ({
         </FormControl>
         <FormMessage />
       </FormItem>
+      <p className="text-xs">{t('Service.Form.ImagesDisclaimer')}</p>
       {images?.length > 0 && (
         <div
           className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl"
