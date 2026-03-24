@@ -1,4 +1,7 @@
-import { Document as DocumentResolverType } from '../../../../../__generated__/resolvers-types';
+import {
+  DocumentMetadataKeyCode,
+  Document as DocumentResolverType,
+} from '../../../../../__generated__/resolvers-types';
 import Document from '../../../../../model/kanel/public/Document';
 import { MetadataArray } from '../../../../../utils/metadata';
 
@@ -13,7 +16,7 @@ export type CustomDashboardMetadataKeys = MetadataArray<
 >;
 
 export const CUSTOM_DASHBOARD_METADATA: CustomDashboardMetadataKeys = [
-  { key: 'product_version' },
+  { key: DocumentMetadataKeyCode.ProductVersion },
 ];
 
 export const CUSTOM_DASHBOARD_METADATA_KEYS = CUSTOM_DASHBOARD_METADATA.map(

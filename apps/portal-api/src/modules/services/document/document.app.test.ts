@@ -238,7 +238,9 @@ describe('DocumentApp', () => {
 
       await DocumentApp.createDocument({
         input: documentData,
-        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.2.3' },
+        ],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
@@ -525,7 +527,7 @@ describe('DocumentApp', () => {
           value: IntegrationType.Connector,
         },
         { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
-        { key: 'product_version', value: '1.0.0' },
+        { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
         { key: 'verified', value: 'false' },
         { key: 'manager_supported', value: 'false' },
         { key: 'playbook_supported', value: 'false' },
@@ -549,7 +551,7 @@ describe('DocumentApp', () => {
           value: IntegrationType.Connector,
         },
         { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
-        { key: 'product_version', value: '2.0.0' },
+        { key: DocumentMetadataKeyCode.ProductVersion, value: '2.0.0' },
         { key: 'verified', value: 'true' },
         { key: 'manager_supported', value: 'true' },
         { key: 'playbook_supported', value: 'false' },
@@ -587,7 +589,9 @@ describe('DocumentApp', () => {
           slug: 'slug',
           active: true,
         },
-        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.2.3' },
+        ],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
@@ -638,7 +642,9 @@ describe('DocumentApp', () => {
           slug: 'slug',
           active: true,
         },
-        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.2.3' },
+        ],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
@@ -742,7 +748,7 @@ describe('DocumentApp', () => {
         'opencti_custom_dashboard',
         'test-slug',
         { page: 1, pageSize: 10, serviceInstanceId: 'valid-id' },
-        ['product_version']
+        [DocumentMetadataKeyCode.ProductVersion]
       );
     });
   });

@@ -41,19 +41,27 @@ export const ShareableResourceCardFooterVersion: FunctionComponent<
         (docHasMetadata(document, 'manager_supported') &&
           !document.manager_supported) ? (
           <span className="text-sm">
-            {docHasMetadata(document, 'product_version') &&
-              document.product_version}
+            {docHasMetadata(
+              document,
+              DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+            ) && document.product_version}
           </span>
         ) : (
           <ShareableResourceCardVersion
             className="text-sm"
             product_version={
-              docHasMetadata(document, 'product_version')
+              docHasMetadata(
+                document,
+                DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+              )
                 ? document.product_version
                 : ''
             }
             requiredProductVersion={
-              docHasMetadata(document, 'product_version')
+              docHasMetadata(
+                document,
+                DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+              )
                 ? document.product_version
                 : ''
             }

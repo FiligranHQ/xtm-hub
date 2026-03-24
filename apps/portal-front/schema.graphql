@@ -531,6 +531,7 @@ enum DocumentMetadataKeyCode {
   integration_subtype
   datasheet_url
   demo_url
+  product_version
 }
 
 type ShareableResource {

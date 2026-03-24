@@ -71,7 +71,9 @@ describe('Ingest manifest helper', () => {
         if (!firstItem) {
           return;
         }
-        expect(firstItem).toHaveProperty('product_version');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.ProductVersion
+        );
         expect(typeof firstItem.product_version).toBe('string');
         expect(firstItem).toHaveProperty('name');
         expect(typeof firstItem.name).toBe('string');

@@ -580,19 +580,20 @@ const upsertDocument = async <T extends DocumentModel>(
         // Delete all existing metadata except 'version'
         await DocumentMetadataDomain.deleteMetadata({
           id: document.id,
-          excludedKeys: ['product_version'],
+          excludedKeys: [DocumentMetadataKeyCode.ProductVersion],
         });
         const existingVersion = await DocumentMetadataDomain.loadProductVersion(
           document.id
         );
         if (existingVersion) {
-          document['product_version'] = existingVersion;
+          document[DocumentMetadataKeyCode.ProductVersion] = existingVersion;
         }
       }
 
       // Insert new metadata (excluding version) if documentWasUpdated
       const metadataKeysWithoutProductVersion = metadataKeys.filter(
-        (key) => key !== 'product_version' || !documentWasUpdated
+        (key) =>
+          key !== DocumentMetadataKeyCode.ProductVersion || !documentWasUpdated
       );
 
       const metadatas = await DocumentMetadataDomain.insertMetadata(

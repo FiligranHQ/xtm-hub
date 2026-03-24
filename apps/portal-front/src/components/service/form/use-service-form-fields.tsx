@@ -264,7 +264,9 @@ export const useServiceFormFields = ({
         label: t('Service.Form.ProductVersionLabel', { platform }),
         inputProps: {
           placeholder: t('Service.Form.ProductVersionPlaceholder'),
-          disabled: disabledFields.includes('product_version'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+          ),
         },
       },
       container_image: {

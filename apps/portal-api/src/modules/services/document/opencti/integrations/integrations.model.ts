@@ -108,7 +108,7 @@ export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegrationMetadata =
   [
     { key: DocumentMetadataKeyCode.IntegrationSubtype },
-    { key: 'product_version', optional: true },
+    { key: DocumentMetadataKeyCode.ProductVersion, optional: true },
     { key: 'vendor_url' },
     { key: 'github_url', optional: true },
     { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
@@ -118,7 +118,7 @@ export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS =
   INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
-  { key: 'product_version' },
+  { key: DocumentMetadataKeyCode.ProductVersion },
   { key: 'container_image' },
   { key: 'verified' },
   { key: 'source_code' },

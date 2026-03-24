@@ -80,7 +80,7 @@ export const DocumentMetadataDomain = {
       'Document_Metadata'
     )
       .where('document_id', id)
-      .where('key', 'product_version')
+      .where('key', DocumentMetadataKeyCode.ProductVersion)
       .select('value')
       .first();
 
