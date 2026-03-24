@@ -4879,12 +4879,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:16.2.0":
-  version: 16.2.0
-  resolution: "@next/eslint-plugin-next@npm:16.2.0"
+"@next/eslint-plugin-next@npm:16.2.1":
+  version: 16.2.1
+  resolution: "@next/eslint-plugin-next@npm:16.2.1"
   dependencies:
     fast-glob: "npm:3.3.1"
-  checksum: 10/091a5504feefe9aa68504e1fab3413a06d4f6fb966a85896fa9bcff14aa0cf5c87344495627e4abf2a26e9b3d09bc04926c27cdc9d75428ed62a4a2d12210d3b
+  checksum: 10/8892f8ea6b2a642d9284f05098827f6c15acf3c7e2ff592430080355f8eb3cec7a70ba7543960819d69eff4eba75430eb6ce2fee4c8918abf0d8a9366fa0a59a
   languageName: node
   linkType: hard
 
@@ -8901,7 +8901,7 @@ __metadata:
     clsx: "npm:2.1.1"
     concurrently: "npm:9.2.1"
     eslint: "npm:9.39.4"
-    eslint-config-next: "npm:16.2.0"
+    eslint-config-next: "npm:16.2.1"
     eslint-config-prettier: "npm:10.1.8"
     extract-files: "npm:13.0.0"
     graphql: "npm:16.13.1"
@@ -8951,7 +8951,7 @@ __metadata:
     knex: "npm:3.1.0"
     monocart-reporter: "npm:2.10.0"
     pg: "npm:8.20.0"
-    playwright-ctrf-json-reporter: "npm:0.0.28"
+    playwright-ctrf-json-reporter: "npm:0.0.29"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     uuid: "npm:11.1.0"
@@ -10830,9 +10830,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ctrf@npm:^0.2.0-next-1":
-  version: 0.2.0-next-1
-  resolution: "ctrf@npm:0.2.0-next-1"
+"ctrf@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "ctrf@npm:0.2.0"
   dependencies:
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
@@ -10840,7 +10840,7 @@ __metadata:
     yargs: "npm:^18.0.0"
   bin:
     ctrf: dist/cli/cli.js
-  checksum: 10/229751752265969d665ed4e44820e571dcdc4eb80b9ea011c8c24bfaa5b8bf9ab02cff9ea76c0c487b83d0ed6b84a3816967ba33cbbffc206cd4f78960bc1943
+  checksum: 10/780cf44a4dfb19a415d4e43390b5cbb820704df56222428666aa18cf3396a545763856ff7b0a82b0ea5772276734887164eef166174eee95d42a14476e3bc322
   languageName: node
   linkType: hard
 
@@ -11910,11 +11910,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:16.2.0":
-  version: 16.2.0
-  resolution: "eslint-config-next@npm:16.2.0"
+"eslint-config-next@npm:16.2.1":
+  version: 16.2.1
+  resolution: "eslint-config-next@npm:16.2.1"
   dependencies:
-    "@next/eslint-plugin-next": "npm:16.2.0"
+    "@next/eslint-plugin-next": "npm:16.2.1"
     eslint-import-resolver-node: "npm:^0.3.6"
     eslint-import-resolver-typescript: "npm:^3.5.2"
     eslint-plugin-import: "npm:^2.32.0"
@@ -11929,7 +11929,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/6924a19c941008d162eadc20bb04aea8ef76893dc9bd6e8d6f50276222ca756e8448907da227b0ddf7045f264b4d9bc4b0db699f81e7830cafa13248212b546a
+  checksum: 10/3622048ff1883f801c14a21205e9f92fd83172362d6d006fc7a32ea178687a9e11aff0db3aa5fbfb86b32541b03ac127f12da8da12e8fff4430f4757e0ceecfd
   languageName: node
   linkType: hard
 
@@ -17554,12 +17554,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-ctrf-json-reporter@npm:0.0.28":
-  version: 0.0.28
-  resolution: "playwright-ctrf-json-reporter@npm:0.0.28"
+"playwright-ctrf-json-reporter@npm:0.0.29":
+  version: 0.0.29
+  resolution: "playwright-ctrf-json-reporter@npm:0.0.29"
   dependencies:
-    ctrf: "npm:^0.2.0-next-1"
-  checksum: 10/a9f674c4a9b7718a396effd6caa985a96a83e260928f633ab31062e1a972ab06f9b5dfa49ba6fa8d4bd98f5239e2579d16395fa7eab6f2bfa2711f41462e36b0
+    ctrf: "npm:^0.2.0"
+  checksum: 10/ee7638b556bca99a2d2123b874192865a35207f5a4603b0c23d7d78ced791e7067abfaf45d12b1124aaec2ad2699c2933b7084314383cb8906e140cea8321dd3
   languageName: node
   linkType: hard
 

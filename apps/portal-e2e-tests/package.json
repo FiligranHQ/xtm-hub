@@ -20,7 +20,7 @@
     "graphql": "16.13.1",
     "graphql-tag": "2.12.6",
     "monocart-reporter": "2.10.0",
-    "playwright-ctrf-json-reporter": "0.0.28",
+    "playwright-ctrf-json-reporter": "0.0.29",
     "prettier": "3.8.1"
   },
   "packageManager": "yarn@4.12.0",
