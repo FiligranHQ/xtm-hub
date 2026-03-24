@@ -232,7 +232,9 @@ export const useServiceFormFields = ({
         label: t('Service.Form.VendorUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('vendor_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.VENDOR_URL
+          ),
         },
       },
       github_url: {

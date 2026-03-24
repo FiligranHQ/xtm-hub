@@ -515,7 +515,8 @@ export enum DocumentMetadataKeyCode {
   FeedUrl = 'feed_url',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
-  ProductVersion = 'product_version'
+  ProductVersion = 'product_version',
+  VendorUrl = 'vendor_url'
 }
 
 export enum DocumentOrdering {

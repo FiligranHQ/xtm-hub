@@ -125,7 +125,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       </ShareableResourceDetailItem>
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'vendor_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.VENDOR_URL}
         translationKey="VendorURL"
         variant="link"
       />

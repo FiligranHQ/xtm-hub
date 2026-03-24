@@ -122,7 +122,7 @@ describe('DocumentApp', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -172,7 +172,7 @@ describe('DocumentApp', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -199,7 +199,7 @@ describe('DocumentApp', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -277,7 +277,7 @@ describe('DocumentApp', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -310,7 +310,7 @@ describe('DocumentApp', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -356,7 +356,7 @@ describe('DocumentApp', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -385,7 +385,7 @@ describe('DocumentApp', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -763,7 +763,7 @@ describe('DocumentApp', () => {
         key: DocumentMetadataKeyCode.IntegrationSubtype,
         value: IntegrationSubType.Orchestration,
       },
-      { key: 'vendor_url', value: 'https://example.com' },
+      { key: DocumentMetadataKeyCode.VendorUrl, value: 'https://example.com' },
     ] as unknown as DocumentMetadataKeys<ThirdPartyIntegration>;
 
     it('should create a new document with an external image', async () => {

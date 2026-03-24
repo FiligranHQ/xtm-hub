@@ -343,7 +343,7 @@ describe('DocumentHelper', () => {
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ]

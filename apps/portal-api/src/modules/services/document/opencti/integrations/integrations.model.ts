@@ -109,7 +109,7 @@ export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegration
   [
     { key: DocumentMetadataKeyCode.IntegrationSubtype },
     { key: DocumentMetadataKeyCode.ProductVersion, optional: true },
-    { key: 'vendor_url' },
+    { key: DocumentMetadataKeyCode.VendorUrl },
     { key: 'github_url', optional: true },
     { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
     { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
