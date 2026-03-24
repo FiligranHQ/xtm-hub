@@ -527,6 +527,7 @@ enum DocumentImageType {
 
 enum DocumentMetadataKeyCode {
   feed_url
+  integration_type
 }
 
 type ShareableResource {

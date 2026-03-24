@@ -59,7 +59,10 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com/feed',
@@ -88,7 +91,10 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com/feed',
@@ -126,7 +132,10 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.TaxiiFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.TaxiiFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com/taxii',
@@ -144,7 +153,7 @@ describe('DocumentMetadataDomain', () => {
       const integrationType =
         await DocumentMetadataDomain.loadMetadataValueByKey(
           document!.id,
-          'integration_type'
+          DocumentMetadataKeyCode.IntegrationType
         );
 
       expect(feedUrl).toBe('https://example.com/taxii');
@@ -162,7 +171,10 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://first.example.com/feed',
@@ -182,7 +194,10 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://second.example.com/feed',

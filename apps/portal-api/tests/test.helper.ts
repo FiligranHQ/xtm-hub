@@ -36,7 +36,10 @@ export const TestHelper = {
       active = true,
       uploader_id = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
         { key: DocumentMetadataKeyCode.FeedUrl, value: 'https://example.com' },
       ],
       serviceInstanceId = INTEGRATION_SERVICE_INSTANCE_ID,

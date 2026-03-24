@@ -77,7 +77,7 @@ export type ConnectorMetadata = MetadataArray<
 
 export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
-  { key: 'integration_type' },
+  { key: DocumentMetadataKeyCode.IntegrationType },
   { key: 'datasheet_url', optional: true },
   { key: 'demo_url', optional: true },
 ];
@@ -86,7 +86,7 @@ export const INTEGRATION_CSV_FEED_METADATA_KEYS =
 
 export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
-  { key: 'integration_type' },
+  { key: DocumentMetadataKeyCode.IntegrationType },
   { key: 'integration_subtype' },
   { key: 'datasheet_url', optional: true },
   { key: 'demo_url', optional: true },
@@ -96,7 +96,7 @@ export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
 
 export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
-  { key: 'integration_type' },
+  { key: DocumentMetadataKeyCode.IntegrationType },
   { key: 'integration_subtype' },
   { key: 'datasheet_url', optional: true },
   { key: 'demo_url', optional: true },
@@ -124,7 +124,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: 'source_code' },
   { key: 'subscription_link' },
   { key: 'integration_subtype' },
-  { key: 'integration_type' },
+  { key: DocumentMetadataKeyCode.IntegrationType },
   { key: 'manager_supported' },
   { key: 'playbook_supported' },
   { key: 'datasheet_url', optional: true },

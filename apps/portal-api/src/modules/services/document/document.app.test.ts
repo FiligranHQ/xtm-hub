@@ -114,7 +114,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
@@ -144,7 +144,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.CsvFeed,
           },
         ],
@@ -164,7 +164,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
@@ -191,7 +191,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
@@ -267,7 +267,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
@@ -300,7 +300,7 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
@@ -325,7 +325,7 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.CsvFeed,
           },
         ],
@@ -346,7 +346,7 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
@@ -375,7 +375,7 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
@@ -423,7 +423,10 @@ describe('DocumentApp', () => {
         integrationSubtype: IntegrationSubType | null;
       }) => {
         const metadata = [
-          { key: 'integration_type', value: integrationType },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: integrationType,
+          },
           ...(integrationSubtype
             ? [{ key: 'integration_subtype', value: integrationSubtype }]
             : []),
@@ -462,7 +465,10 @@ describe('DocumentApp', () => {
       }) => {
         const slug = 'integration-slug';
         const metadata = [
-          { key: 'integration_type', value: integrationType },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: integrationType,
+          },
           ...(integrationSubtype
             ? [{ key: 'integration_subtype', value: integrationSubtype }]
             : []),
@@ -504,7 +510,10 @@ describe('DocumentApp', () => {
     it('should convert boolean metadata keys to booleans on update', async () => {
       // Create a Connector document with required metadata
       const connectorMetadata = [
-        { key: 'integration_type', value: IntegrationType.Connector },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.Connector,
+        },
         { key: 'integration_subtype', value: 'native' },
         { key: 'product_version', value: '1.0.0' },
         { key: 'verified', value: 'false' },
@@ -525,7 +534,10 @@ describe('DocumentApp', () => {
 
       // Update with boolean metadata as strings
       const updatedMetadata = [
-        { key: 'integration_type', value: IntegrationType.Connector },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.Connector,
+        },
         { key: 'integration_subtype', value: 'native' },
         { key: 'product_version', value: '2.0.0' },
         { key: 'verified', value: 'true' },
@@ -727,7 +739,10 @@ describe('DocumentApp', () => {
 
   describe('upsertDocumentWithExternalImage', () => {
     const metadataKeys = [
-      { key: 'integration_type', value: IntegrationType.ThirdPartyIntegration },
+      {
+        key: DocumentMetadataKeyCode.IntegrationType,
+        value: IntegrationType.ThirdPartyIntegration,
+      },
       { key: 'integration_subtype', value: IntegrationSubType.Orchestration },
       { key: 'vendor_url', value: 'https://example.com' },
     ] as unknown as DocumentMetadataKeys<ThirdPartyIntegration>;

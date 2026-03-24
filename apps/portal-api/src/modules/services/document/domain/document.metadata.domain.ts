@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { db, dbRaw } from '../../../../../knexfile';
 import {
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   Document as DocumentResolverType,
   IntegrationType,
@@ -92,7 +93,7 @@ export const DocumentMetadataDomain = {
     const doc = await db('Document_Metadata')
       .select('value')
       .where({
-        key: 'integration_type',
+        key: DocumentMetadataKeyCode.IntegrationType,
         document_id,
       })
       .first();

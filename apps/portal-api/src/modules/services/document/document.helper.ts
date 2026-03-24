@@ -100,7 +100,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
     CUSTOM_DASHBOARD_METADATA,
   [ServiceDefinitionIdentifier.OpenctiIntegrations]: (metadata) => {
     const integrationTypeMetadata = metadata.find(
-      (data) => data.key === 'integration_type'
+      (data) => data.key === DocumentMetadataKeyCode.IntegrationType
     );
     if (!integrationTypeMetadata) {
       throw new Error(ErrorCode.DocumentMissingMetadata);
@@ -142,7 +142,7 @@ export const DocumentHelper = {
     metadata: DocumentMetadataResolverType[];
   }): DocumentMetadataResolverType[] => {
     const integrationType = metadata.find(
-      (meta) => meta.key === 'integration_type'
+      (meta) => meta.key === DocumentMetadataKeyCode.IntegrationType
     );
     const hasFeedDocumentType =
       integrationType &&
@@ -231,7 +231,7 @@ export const DocumentHelper = {
     }
 
     const integrationType = documentMetadata.find(
-      (meta) => meta.key === 'integration_type'
+      (meta) => meta.key === DocumentMetadataKeyCode.IntegrationType
     )?.value as unknown as IntegrationType | undefined;
 
     const isFileProhibited = [

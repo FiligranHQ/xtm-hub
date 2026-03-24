@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
@@ -88,7 +89,9 @@ describe('Ingest manifest helper', () => {
         expect(typeof firstItem.verified).toBe('boolean');
         expect(firstItem).toHaveProperty('integration_subtype');
         expect(typeof firstItem.integration_subtype).toBe('string');
-        expect(firstItem).toHaveProperty('integration_type');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.IntegrationType
+        );
         expect(typeof firstItem.integration_type).toBe('string');
         expect(firstItem).toHaveProperty('type');
         expect(typeof firstItem.type).toBe('string');

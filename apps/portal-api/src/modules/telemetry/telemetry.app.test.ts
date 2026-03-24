@@ -110,7 +110,10 @@ describe('TelemetryApp', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com',
@@ -194,7 +197,10 @@ describe('TelemetryApp', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com',
@@ -277,7 +283,10 @@ describe('TelemetryApp', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
           {
             key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com',

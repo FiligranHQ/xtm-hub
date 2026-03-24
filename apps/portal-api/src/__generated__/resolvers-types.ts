@@ -510,7 +510,8 @@ export type DocumentMetadata = {
 };
 
 export enum DocumentMetadataKeyCode {
-  FeedUrl = 'feed_url'
+  FeedUrl = 'feed_url',
+  IntegrationType = 'integration_type'
 }
 
 export enum DocumentOrdering {
