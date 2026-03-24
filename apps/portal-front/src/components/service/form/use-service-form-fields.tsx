@@ -292,7 +292,9 @@ export const useServiceFormFields = ({
       subscription_link: {
         label: t('Service.Form.SubscriptionLinkLabel'),
         inputProps: {
-          disabled: disabledFields.includes('subscription_link'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.SUBSCRIPTION_LINK
+          ),
         },
       },
       verified: {

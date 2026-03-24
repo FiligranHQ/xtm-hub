@@ -20,6 +20,7 @@ enum DocumentMetadataKeyCode {
   container_image
   verified
   source_code
+  subscription_link
 }
 
 type ShareableResource {

@@ -519,6 +519,7 @@ export enum DocumentMetadataKeyCode {
   IntegrationType = 'integration_type',
   ProductVersion = 'product_version',
   SourceCode = 'source_code',
+  SubscriptionLink = 'subscription_link',
   VendorUrl = 'vendor_url',
   Verified = 'verified'
 }

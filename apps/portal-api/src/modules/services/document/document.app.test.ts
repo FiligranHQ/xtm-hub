@@ -536,7 +536,10 @@ describe('DocumentApp', () => {
           value: 'container_image_value',
         },
         { key: DocumentMetadataKeyCode.SourceCode, value: 'source_code_value' },
-        { key: 'subscription_link', value: 'subscription_link_value' },
+        {
+          key: DocumentMetadataKeyCode.SubscriptionLink,
+          value: 'subscription_link_value',
+        },
       ];
       const slug = 'connector-slug';
       const createdDocument = await DocumentApp.createDocument({
@@ -563,7 +566,10 @@ describe('DocumentApp', () => {
           value: 'container_image_value',
         },
         { key: DocumentMetadataKeyCode.SourceCode, value: 'source_code_value' },
-        { key: 'subscription_link', value: 'subscription_link_value' },
+        {
+          key: DocumentMetadataKeyCode.SubscriptionLink,
+          value: 'subscription_link_value',
+        },
       ];
       const result = await DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
