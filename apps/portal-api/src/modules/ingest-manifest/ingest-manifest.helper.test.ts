@@ -107,7 +107,9 @@ describe('Ingest manifest helper', () => {
           DocumentMetadataKeyCode.ManagerSupported
         );
         expect(typeof firstItem.manager_supported).toBe('boolean');
-        expect(firstItem).toHaveProperty('playbook_supported');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.PlaybookSupported
+        );
         expect(typeof firstItem.playbook_supported).toBe('boolean');
         expect(typeof firstItem.source_code).toBe('string');
 

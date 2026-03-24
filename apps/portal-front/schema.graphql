@@ -539,6 +539,7 @@ enum DocumentMetadataKeyCode {
   source_code
   subscription_link
   manager_supported
+  playbook_supported
 }
 
 type ShareableResource {

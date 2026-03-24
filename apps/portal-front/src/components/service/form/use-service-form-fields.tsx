@@ -316,7 +316,9 @@ export const useServiceFormFields = ({
       playbook_supported: {
         label: t('Service.Form.PlaybookSupportedLabel'),
         inputProps: {
-          disabled: disabledFields.includes('playbook_supported'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.PLAYBOOK_SUPPORTED
+          ),
         },
       },
     }),

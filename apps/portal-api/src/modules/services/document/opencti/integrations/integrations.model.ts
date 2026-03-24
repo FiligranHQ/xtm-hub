@@ -126,7 +126,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.ManagerSupported },
-  { key: 'playbook_supported' },
+  { key: DocumentMetadataKeyCode.PlaybookSupported },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];

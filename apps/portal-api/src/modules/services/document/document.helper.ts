@@ -48,7 +48,7 @@ import {
 export const BOOLEAN_METADATA = [
   DocumentMetadataKeyCode.Verified,
   DocumentMetadataKeyCode.ManagerSupported,
-  'playbook_supported',
+  DocumentMetadataKeyCode.PlaybookSupported,
 ];
 
 export type Document = WithUseCases<DocumentModel>;
