@@ -69,7 +69,7 @@ export const Profile: React.FC = () => {
       },
     });
   };
-  const handleUploadPicture = (files: FileList) => {
+  const handleUploadPicture = (files: (File | null)[]) => {
     commitUploadPictureMutation({
       variables: { document: null },
       uploadables: fileListToUploadableMap(files),

@@ -15,7 +15,7 @@ import { useTranslations } from 'next-intl';
 import React, { useContext, useRef, useState } from 'react';
 
 interface ProfileFormPictureProps {
-  onSubmit: (files: FileList) => void;
+  onSubmit: (files: (File | null)[]) => void;
 }
 
 export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
@@ -30,6 +30,9 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if(preview) { // If there is already a preview, we need to revoke the object URL to avoid memory leaks
+        URL.revokeObjectURL(preview);  
+      }
       setSelectedFile(file);
       setPreview(URL.createObjectURL(file));
     }
@@ -37,9 +40,10 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
 
   const handleSubmit = () => {
     if (selectedFile) {
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(selectedFile);
-      onSubmit(dataTransfer.files);
+      if(preview) { // Revoke the object URL to avoid memory leaks
+        URL.revokeObjectURL(preview);  
+      }
+      onSubmit([selectedFile]);
       setSelectedFile(null);
       setPreview(null);
     }
@@ -59,21 +63,20 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
           onChange={handleFileChange}
         />
         <div
-          className="flex flex-col items-start cursor-pointer"
+          className="size-24 cursor-pointer"
           onClick={() => inputRef.current?.click()}>
-          <div className="size-24">
-            <Avatar src={preview || me?.picture || undefined} />
-          </div>
+          <Avatar src={preview || me?.picture || undefined} />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
           variant="ghost-primary"
+          aria-label={t('Utils.Edit')}
           size="sm"
           className="ml-s gap-s"
           onClick={() => inputRef.current?.click()}>
           <EditIcon className="h-4 w-4" />
-          <span>{t('ProfilePage.Edit')}</span>
+          <span>{t('Utils.Edit')}</span>
         </Button>
         <Button
           aria-label={t('ProfilePage.UpdatePicture')}

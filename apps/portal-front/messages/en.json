@@ -450,7 +450,6 @@
     "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
-    "Edit": "Edit",
     "Picture": "Picture",
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
@@ -1225,6 +1224,7 @@
     "Deleted": "has been deleted",
     "Details": "Details",
     "Download": "Download",
+    "Edit": "Edit",
     "Error": "Error",
     "FailedToCopy": "Failed to copy",
     "Form": {
