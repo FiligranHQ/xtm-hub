@@ -12,6 +12,7 @@ enum DocumentMetadataKeyCode {
   feed_url
   integration_type
   datasheet_url
+  demo_url
 }
 
 type ShareableResource {

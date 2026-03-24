@@ -253,7 +253,9 @@ export const useServiceFormFields = ({
         label: t('Service.Form.DemoUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('demo_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.DEMO_URL
+          ),
         },
       },
       product_version: {
