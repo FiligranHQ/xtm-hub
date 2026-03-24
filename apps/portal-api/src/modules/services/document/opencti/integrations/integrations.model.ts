@@ -121,7 +121,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.ProductVersion },
   { key: DocumentMetadataKeyCode.ContainerImage },
   { key: DocumentMetadataKeyCode.Verified },
-  { key: 'source_code' },
+  { key: DocumentMetadataKeyCode.SourceCode },
   { key: 'subscription_link' },
   { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.IntegrationType },

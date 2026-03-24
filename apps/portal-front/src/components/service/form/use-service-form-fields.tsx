@@ -284,7 +284,9 @@ export const useServiceFormFields = ({
       source_code: {
         label: t('Service.Form.SourceCodeLabel'),
         inputProps: {
-          disabled: disabledFields.includes('source_code'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.SOURCE_CODE
+          ),
         },
       },
       subscription_link: {

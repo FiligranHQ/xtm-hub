@@ -536,6 +536,7 @@ enum DocumentMetadataKeyCode {
   github_url
   container_image
   verified
+  source_code
 }
 
 type ShareableResource {

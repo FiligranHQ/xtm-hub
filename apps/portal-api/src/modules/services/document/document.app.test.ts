@@ -535,7 +535,7 @@ describe('DocumentApp', () => {
           key: DocumentMetadataKeyCode.ContainerImage,
           value: 'container_image_value',
         },
-        { key: 'source_code', value: 'source_code_value' },
+        { key: DocumentMetadataKeyCode.SourceCode, value: 'source_code_value' },
         { key: 'subscription_link', value: 'subscription_link_value' },
       ];
       const slug = 'connector-slug';
@@ -562,7 +562,7 @@ describe('DocumentApp', () => {
           key: DocumentMetadataKeyCode.ContainerImage,
           value: 'container_image_value',
         },
-        { key: 'source_code', value: 'source_code_value' },
+        { key: DocumentMetadataKeyCode.SourceCode, value: 'source_code_value' },
         { key: 'subscription_link', value: 'subscription_link_value' },
       ];
       const result = await DocumentApp.updateDocument({
