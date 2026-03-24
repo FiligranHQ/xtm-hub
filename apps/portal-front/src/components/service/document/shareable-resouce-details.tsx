@@ -149,7 +149,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       )}
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'datasheet_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.DATASHEET_URL}
         translationKey="DatasheetURL"
         variant="link"
       />

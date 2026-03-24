@@ -12,6 +12,7 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { filterDocumentImages } from '@/utils/documents';
 import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -243,7 +244,9 @@ export const useServiceFormFields = ({
         label: t('Service.Form.DatasheetUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('datasheet_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.DATASHEET_URL
+          ),
         },
       },
       demo_url: {

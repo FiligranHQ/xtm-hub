@@ -510,6 +510,7 @@ export type DocumentMetadata = {
 };
 
 export enum DocumentMetadataKeyCode {
+  DatasheetUrl = 'datasheet_url',
   FeedUrl = 'feed_url',
   IntegrationType = 'integration_type'
 }
