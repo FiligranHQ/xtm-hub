@@ -7,8 +7,8 @@ import {
 } from '../../../tests/tests.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
-  TELEMETRY_SOURCE,
   TelemetryEventService,
+  TelemetrySource,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { deleteSubscription } from './subscription.helper';
@@ -56,7 +56,7 @@ describe('Subscription mutation resolver', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: 'Professional',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       });

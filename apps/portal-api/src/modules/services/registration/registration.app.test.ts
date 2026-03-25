@@ -58,8 +58,8 @@ import {
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
-  TELEMETRY_SOURCE,
   TelemetryOrganizationType,
+  TelemetrySource,
   TelemetryTargetProduct,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -346,7 +346,7 @@ describe('Registration app', () => {
         event_type: TelemetryEventType.REGISTER,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         platform_contract: 'EE',
         platform_version: 'X.Y.Z',
@@ -375,7 +375,7 @@ describe('Registration app', () => {
         event_type: TelemetryEventType.REGISTER,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         platform_contract: 'EE',
         platform_version: 'X.Y.Z',
@@ -941,7 +941,7 @@ describe('Registration app', () => {
           platform_id: platformConfiguration.id,
           platform_version: platformConfiguration.version,
           platform_url: platformConfiguration.url,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           target_product: 'open-cti',
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         });
@@ -971,7 +971,7 @@ describe('Registration app', () => {
           platform_id: platformConfiguration.id,
           platform_version: platformConfiguration.version,
           platform_url: platformConfiguration.url,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           target_product: 'open-cti',
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
           existing_users_count: 42,

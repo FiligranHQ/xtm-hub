@@ -161,6 +161,7 @@ export const DeploymentsApp = {
           chosenOrganization,
           user.id,
           input.platform_identifier,
+          input.source,
           {
             region: createdDeploymentRequest.region,
             status: createdDeploymentRequest.hub_status,

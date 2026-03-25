@@ -1,4 +1,8 @@
-export const TELEMETRY_SOURCE = 'xtm-hub' as const;
+export enum TelemetrySource {
+  XTMHUB = 'xtm-hub',
+  DEMO_OPENCTI = 'demo-opencti',
+  DEMO_OPENAEV = 'demo-openaev',
+}
 
 export enum TelemetryEventService {
   CUSTOM_DASHBOARDS_LIBRARY = 'custom-dashboards-library',

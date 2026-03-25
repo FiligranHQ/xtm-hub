@@ -7,10 +7,10 @@ import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { telemetryApp } from './telemetry.app';
 import {
-  TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
   TelemetryOrganizationType,
+  TelemetrySource,
   TelemetryTargetProduct,
 } from './telemetry.const';
 import {
@@ -132,7 +132,7 @@ describe('TelemetryApp', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
@@ -213,7 +213,7 @@ describe('TelemetryApp', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
@@ -292,7 +292,7 @@ describe('TelemetryApp', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: 'Filigran',
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
         service_type: TelemetryEventServiceType.CSV_FEEDS,
@@ -318,7 +318,7 @@ describe('TelemetryApp', () => {
       organization_type: TelemetryOrganizationType.PROFESSIONAL,
       user_id: 'fakeUserId',
       '@timestamp': new Date().toISOString(),
-      source: 'xtm-hub',
+      source: TelemetrySource.XTMHUB,
     };
 
     const subscribeEvent: SubscribeEvent = {
@@ -328,7 +328,7 @@ describe('TelemetryApp', () => {
       organization_type: TelemetryOrganizationType.PROFESSIONAL,
       user_id: 'fakeUserId',
       '@timestamp': new Date().toISOString(),
-      source: 'xtm-hub',
+      source: TelemetrySource.XTMHUB,
       service: TelemetryEventService.INTEGRATIONS_LIBRARY,
     };
 

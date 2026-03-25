@@ -166,6 +166,7 @@ export type CreateDeploymentRequestInput = {
   job_title?: InputMaybe<DeploymentRequestJobTitle>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
+  source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
   use_case?: InputMaybe<DeploymentRequestUseCase>;
 };
@@ -437,6 +438,12 @@ export enum DeploymentRequestPlatformState {
   Removed = 'removed',
   Removing = 'removing',
   Unprovisioned = 'unprovisioned'
+}
+
+export enum DeploymentRequestSource {
+  OpenaevDemo = 'openaev_demo',
+  OpenctiDemo = 'opencti_demo',
+  Xtmhub = 'xtmhub'
 }
 
 export enum DeploymentRequestUseCase {
@@ -2351,6 +2358,7 @@ export type ResolversTypes = ResolversObject<{
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
+  DeploymentRequestSource: DeploymentRequestSource;
   DeploymentRequestUseCase: DeploymentRequestUseCase;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
