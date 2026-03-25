@@ -9,6 +9,7 @@ import {
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
+import { ConnectorForm } from '@/components/service/integrations/forms/connector-form';
 import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
 import { StreamForm } from '@/components/service/integrations/forms/stream-form';
 import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
@@ -16,8 +17,12 @@ import { ThirdPartyIntegrationForm } from '@/components/service/integrations/for
 import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
-import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
-import { FormImagesValues, splitExistingAndNewImages } from '@/utils/documents';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetchFormData';
+import {
+  docIsExistingFile,
+  isFile,
+  splitExistingAndNewImages,
+} from '@/utils/documents';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
@@ -41,7 +46,11 @@ const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'active',
 ];
 
-const documentFileKeys: Array<keyof ServiceFormValues> = ['document', 'images'];
+const documentFileKeys: Array<keyof ServiceFormValues> = [
+  'document',
+  'logo',
+  'images',
+];
 
 interface UseDocumentContextProps {
   serviceInstance: serviceInstance_fragment$data;
@@ -74,11 +83,10 @@ export function useDocumentContext({
       },
       ['uploader_organization_id']
     );
-    const metadata = omit(values, [...documentBaseKeys, 'document', 'images']);
-    const documents = [
-      ...Array.from(values?.document ?? []),
-      ...Array.from(values?.images ?? []),
-    ];
+    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
+    const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
+    const logo = Array.from(values?.logo ?? []).slice(0, 1);
+    const images = Array.from(values?.images ?? []);
 
     createMutation({
       variables: {
@@ -94,9 +102,15 @@ export function useDocumentContext({
           .filter(({ value }) => Boolean(value)),
         serviceInstanceId: serviceInstance.id,
         connections: connectionId ? [connectionId] : [],
-        document: documents,
+        sourceDocument: sourceDocument.map(() => ({})),
+        logo: logo.map(() => ({})),
+        images: images.map(() => ({})),
       },
-      uploadables: fileListToUploadableMap(documents),
+      uploadables: splitFileListToUploadableMap({
+        sourceDocument,
+        logo,
+        images,
+      }),
 
       onCompleted: (response) => {
         if (!response.createDocument) {
@@ -153,19 +167,18 @@ export function useDocumentContext({
     };
 
     const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
-    // Split images between existing and new ones
-    const images = Array.from(values?.images ?? []) as FormImagesValues;
+    const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
+    const images = Array.from(values?.images ?? []);
+    const [existingImageIds, newImages] = splitExistingAndNewImages(images);
+    const logo = Array.from(values?.logo ?? []).slice(0, 1);
 
-    const [existingImages, newImages] = splitExistingAndNewImages(images);
-    const documentsToUpload = [
-      ...Array.from(values.document ?? []), // We need null to keep the first place in the uploadables array for the document
-      ...newImages,
-    ];
     updateMutation({
       variables: {
         input,
         serviceInstanceId: serviceInstance.id,
-        document: documentsToUpload,
+        sourceDocument: sourceDocument.map(() => ({})),
+        images: newImages.map(() => ({})),
+        ...(isFile(logo[0]) ? { logo: logo.map(() => ({})) } : {}),
         documentId: resource.id,
         metadata: Object.keys(metadata)
           .map((key) => ({
@@ -173,10 +186,16 @@ export function useDocumentContext({
             value: metadata[key as keyof typeof metadata],
           }))
           .filter(({ value }) => Boolean(value)),
-        updateDocument: values.document !== undefined,
-        images: existingImages,
+        existingImageIds: [
+          ...existingImageIds,
+          ...(docIsExistingFile(logo[0]) ? [logo[0].id] : []),
+        ],
       },
-      uploadables: fileListToUploadableMap(documentsToUpload),
+      uploadables: splitFileListToUploadableMap({
+        sourceDocument,
+        images: newImages,
+        ...(isFile(logo[0]) ? { logo } : {}),
+      }),
       onCompleted: () => {
         onSuccess(values.name);
       },
@@ -200,6 +219,7 @@ export function useDocumentContext({
           [IntegrationTypeEnum.STREAM]: StreamForm,
           [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
             ThirdPartyIntegrationForm,
+          [IntegrationTypeEnum.CONNECTOR]: ConnectorForm,
         };
 
         return integrationMapping[integrationType] ?? CsvFeedForm;
@@ -222,6 +242,7 @@ export function useDocumentContext({
             [IntegrationTypeEnum.STREAM]: 'Service.Stream',
             [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
               'Service.ThirdPartyIntegration',
+            [IntegrationTypeEnum.CONNECTOR]: 'Service.Connector',
           };
 
         return integrationMapping[integrationType] ?? '';

@@ -6,7 +6,6 @@ import {
   documentItem,
   DocumentsItemQuery,
 } from '@/components/service/document/document.graphql';
-import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import { APP_PATH } from '@/utils/path/constant';
@@ -68,12 +67,8 @@ const OpenaevScenarioSlug = ({
                 variant={'button'}
               />
             </>
-          }>
-          <ShareableResourceCarousel
-            serviceInstance={serviceInstance}
-            documentData={documentData}
-          />
-        </ShareableResourceSlug>
+          }
+        />
       </AppServiceContext>
     )
   );

@@ -20,6 +20,8 @@ export const isIntegrationType = (
 
 export type Integration = Document & {
   integration_type: IntegrationType;
+  datasheet_url?: string;
+  demo_url?: string;
 };
 export type CsvFeed = Integration & {
   feed_url: string;
@@ -75,6 +77,8 @@ export type ConnectorMetadata = MetadataArray<
 export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
   { key: 'feed_url' },
   { key: 'integration_type' },
+  { key: 'datasheet_url', optional: true },
+  { key: 'demo_url', optional: true },
 ];
 export const INTEGRATION_CSV_FEED_METADATA_KEYS =
   INTEGRATION_CSV_FEED_METADATA.map(({ key }) => key);
@@ -83,6 +87,8 @@ export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
   { key: 'feed_url' },
   { key: 'integration_type' },
   { key: 'integration_subtype' },
+  { key: 'datasheet_url', optional: true },
+  { key: 'demo_url', optional: true },
 ];
 export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
   INTEGRATION_TAXII_FEED_METADATA.map(({ key }) => key);
@@ -91,6 +97,8 @@ export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
   { key: 'feed_url' },
   { key: 'integration_type' },
   { key: 'integration_subtype' },
+  { key: 'datasheet_url', optional: true },
+  { key: 'demo_url', optional: true },
 ];
 export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
   ({ key }) => key
@@ -102,6 +110,8 @@ export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegration
     { key: 'product_version', optional: true },
     { key: 'vendor_url' },
     { key: 'github_url', optional: true },
+    { key: 'datasheet_url', optional: true },
+    { key: 'demo_url', optional: true },
   ];
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS =
   INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA.map(({ key }) => key);
@@ -116,6 +126,8 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: 'integration_type' },
   { key: 'manager_supported' },
   { key: 'playbook_supported' },
+  { key: 'datasheet_url', optional: true },
+  { key: 'demo_url', optional: true },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);

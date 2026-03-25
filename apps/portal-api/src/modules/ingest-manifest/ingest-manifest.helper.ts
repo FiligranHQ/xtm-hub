@@ -2,6 +2,7 @@ import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { Readable } from 'stream';
 import z from 'zod';
 import {
+  DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
 } from '../../__generated__/resolvers-types';
@@ -103,7 +104,7 @@ export const extractManifestInformation = (
         slug: validContract.slug,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-        source_type: 'external',
+        source_type: DocumentSourceType.External,
         /* Document metadata properties */
         container_image: validContract.container_image,
         product_version: manifestData.version,
