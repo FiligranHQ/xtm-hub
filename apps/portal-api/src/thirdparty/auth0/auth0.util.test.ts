@@ -1,4 +1,4 @@
-import { GetUsers200ResponseOneOfInner } from 'auth0';
+import { Management } from 'auth0';
 import { describe, expect, it } from 'vitest';
 import { buildUserMetadataUpdate, removeEmptyGroups } from './auth0.util';
 import { Auth0UpdateUserRBACInstance } from './client';
@@ -66,7 +66,7 @@ describe('removeEmptyGroups', () => {
       user4: { groups: { someObject: true } },
       user5: { groups: 123 },
       user6: { groups: ['viewer'] },
-    };
+    } as unknown as Auth0UpdateUserRBACInstance;
 
     const expected: Auth0UpdateUserRBACInstance = {
       user1: { groups: ['admin'] },
@@ -93,7 +93,7 @@ describe('buildUserMetadataUpdate', () => {
           platform_1: { groups: ['User'] },
         },
       },
-    } as unknown as GetUsers200ResponseOneOfInner;
+    } as unknown as Management.UserResponseSchema;
 
     const userRBACInstance = {
       platform_2: { groups: ['Admin'] },
@@ -116,7 +116,7 @@ describe('buildUserMetadataUpdate', () => {
     const auth0_user = {
       user_id: 'auth0|123',
       user_metadata: {},
-    } as GetUsers200ResponseOneOfInner;
+    } as Management.UserResponseSchema;
 
     const userRBACInstance = {
       platform_2: { groups: ['Admin'] },

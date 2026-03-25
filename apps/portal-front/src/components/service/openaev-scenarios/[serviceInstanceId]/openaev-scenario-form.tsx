@@ -1,39 +1,42 @@
 import { PortalContext } from '@/components/me/app-portal-context';
-import { ServiceFormMultipleImagesField } from '@/components/service/form/multiple-images-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
-import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
+import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import FileInputWithPrevent from '@/components/ui/file-input-with-prevent';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { ExistingFile, fileListCheck, NewFile } from '@/utils/documents';
+import {
+  fileListCheck,
+  optionalFileListCheck,
+  transformToFileList,
+} from '@/utils/documents';
 import {
   AutoForm,
-  FileInput,
   FormControl,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-import { LogoFiligranIcon } from '@filigran/icon';
 
 const openAEVScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
   uploader_id: z.string().optional(),
   short_description: z.string().min(1, 'Required').max(250),
+  description: z.string().min(1, 'Required'),
   product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
     error: 'Product version must be X.Y.Z',
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
-  description: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck).optional(),
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
+  images: z.custom<FileList>(optionalFileListCheck),
 });
 export type OpenAEVScenarioFormValues = z.infer<
   typeof openAEVScenarioFormSchema
@@ -51,17 +54,11 @@ export const OpenaevScenarioForm = ({
   const t = useTranslations();
   const { me } = useContext(PortalContext);
 
-  const openAEVScenario = document;
-  const isCreation = !openAEVScenario;
+  const isCreation = !document;
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
-
-  const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
-    openAEVScenario?.children_documents as unknown as ExistingFile[]
-  );
   const onSubmit = (values: OpenAEVScenarioFormValues) => {
     if (isCreation) {
-      handleSubmit(values);
+      handleSubmit({ ...values, images: images as unknown as FileList });
     } else {
       const finalImages = images.filter(
         (img) => !imagesToDelete.includes(img.id)
@@ -78,29 +75,27 @@ export const OpenaevScenarioForm = ({
   const values = useMemo(
     () =>
       ({
-        ...openAEVScenario,
-        images: openAEVScenario?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
-        use_cases: openAEVScenario?.use_cases?.map((useCase) => useCase.id),
-        uploader_id: openAEVScenario?.uploader?.id ?? me?.id,
+        ...document,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
+        use_cases: document?.use_cases?.map((useCase) => useCase.id),
+        uploader_id: document?.uploader?.id ?? me?.id,
         uploader_organization_id:
           (isCreation
             ? me?.selected_organization_id
-            : openAEVScenario?.uploader_organization?.id) ?? '',
+            : document?.uploader_organization?.id) ?? '',
       }) as OpenAEVScenarioFormValues,
-    [me, openAEVScenario, isCreation]
+    [me, document, isCreation]
   );
   const formSchema = useMemo(
     () =>
-      openAEVScenario
+      document
         ? openAEVScenarioFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            images: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(optionalFileListCheck).optional(),
           })
         : openAEVScenarioFormSchema,
-    [openAEVScenario]
+    [document]
   );
 
   const {
@@ -113,10 +108,13 @@ export const OpenaevScenarioForm = ({
     uploader_organization_id,
     uploader_id,
     use_cases,
-  } = useSimpleServiceFormField({
+    imagesField,
+    images,
+    imagesToDelete,
+    logo,
+  } = useServiceFormFields({
     documentType: 'Scenario',
     platform: 'OpenAEV',
-    isCreation,
     document,
   });
 
@@ -160,8 +158,7 @@ export const OpenaevScenarioForm = ({
                     {t(
                       'Service.OpenAEVScenario.Form.ExistingOpenAEVScenarioFile',
                       {
-                        file_name:
-                          field.value?.[0].name ?? openAEVScenario?.file_name,
+                        file_name: field.value?.[0].name ?? document?.file_name,
                       }
                     )}
                   </FormLabel>
@@ -188,46 +185,8 @@ export const OpenaevScenarioForm = ({
                 </FormItem>
               ),
             },
-        images: isCreation
-          ? {
-              fieldType: ({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
-                  <FormControl>
-                    <div>
-                      <div className="w-24 p-m border border-light">
-                        <LogoFiligranIcon className="size-18" />
-                      </div>
-                      <FileInput
-                        {...field}
-                        allowedTypes="image/jpeg, image/png"
-                        multiple
-                        texts={{
-                          selectFile: t('Service.Form.SelectImage'),
-                          noFile: t('Service.Form.NoImage'),
-                          dropFiles: t('Service.Vault.FileForm.DropDocuments'),
-                        }}
-                      />
-                    </div>
-                  </FormControl>
-                  <p>{t('Service.Form.IllustrationDisclaimer')}</p>
-                  <FormMessage />
-                </FormItem>
-              ),
-            }
-          : {
-              fieldType: ({ field }) => (
-                <ServiceFormMultipleImagesField
-                  field={field}
-                  document={document}
-                  images={images}
-                  setImages={setImages}
-                  imagesToDelete={imagesToDelete}
-                  setImagesToDelete={setImagesToDelete}
-                  setIsDirty={setIsDirty}
-                />
-              ),
-            },
+        logo,
+        images: imagesField,
         active,
         short_description,
         slug,

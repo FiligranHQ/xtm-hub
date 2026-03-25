@@ -51,7 +51,7 @@ import {
   loadUsersByCapabilitiesInOrganization,
   updateUser,
 } from '../../users/users.domain';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import {
@@ -71,7 +71,7 @@ export const registrationApp = {
   ): Promise<Organization | null> => {
     const { user } = requestContext.require();
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(platformId);
+      await ServiceContractDomain.loadConfigurationByPlatform(platformId);
     if (!serviceConfiguration) {
       return null;
     }
@@ -124,7 +124,7 @@ export const registrationApp = {
     input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatformAndToken(input);
+      await ServiceContractDomain.loadConfigurationByPlatformAndToken(input);
     return {
       status:
         serviceConfiguration?.status === ServiceConfigurationStatus.Active
@@ -141,7 +141,7 @@ export const registrationApp = {
     }
 
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatformAndToken(input);
+      await ServiceContractDomain.loadConfigurationByPlatformAndToken(input);
     if (!serviceConfiguration) {
       if (!input.platformIdentifier) {
         return { status: PlatformRegistrationConnectivityStatus.Inactive };
@@ -167,7 +167,7 @@ export const registrationApp = {
     const shouldUpdatePlatformVersion =
       serviceConfiguration.config['version'] !== input.platformVersion;
     if (shouldUpdatePlatformVersion) {
-      await serviceContractDomain.updateConfiguration(
+      await ServiceContractDomain.updateConfiguration(
         serviceConfiguration.service_instance_id,
         {
           config: {
@@ -212,7 +212,7 @@ export const registrationApp = {
     }
 
     const isConfigurationValid =
-      await serviceContractDomain.isServiceConfigurationValid(
+      await ServiceContractDomain.isServiceConfigurationValid(
         serviceDefinition.id,
         configuration
       );
@@ -221,7 +221,7 @@ export const registrationApp = {
     }
 
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(platform.id);
+      await ServiceContractDomain.loadConfigurationByPlatform(platform.id);
 
     await withTransaction(async () => {
       if (serviceConfiguration) {
@@ -287,7 +287,7 @@ export const registrationApp = {
     identifier,
   }: UnregisterPlatformInput) => {
     const activeServiceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(
+      await ServiceContractDomain.loadConfigurationByPlatform(
         platformId,
         ServiceConfigurationStatus.Active
       );
@@ -323,7 +323,7 @@ export const registrationApp = {
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
 
-    await serviceContractDomain.updateConfiguration(
+    await ServiceContractDomain.updateConfiguration(
       activeServiceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
     );
@@ -354,7 +354,7 @@ export const registrationApp = {
     input: IsPlatformRegisteredInput
   ): Promise<IsPlatformRegisteredResponse> => {
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(input.platformId);
+      await ServiceContractDomain.loadConfigurationByPlatform(input.platformId);
     if (!serviceConfiguration) {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
@@ -387,7 +387,7 @@ export const registrationApp = {
     isInOrganization: boolean;
   }> => {
     const serviceConfiguration =
-      await serviceContractDomain.loadConfigurationByPlatform(
+      await ServiceContractDomain.loadConfigurationByPlatform(
         platformId,
         ServiceConfigurationStatus.Active
       );
@@ -456,7 +456,7 @@ export const registrationApp = {
 
     await withTransaction(async () => {
       await Promise.all([
-        serviceContractDomain.upsertConfiguration(
+        ServiceContractDomain.upsertConfiguration(
           deploymentRequest.service_instance_id,
           configuration
         ),

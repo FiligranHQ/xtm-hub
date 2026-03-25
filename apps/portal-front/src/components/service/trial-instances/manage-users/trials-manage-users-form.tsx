@@ -15,7 +15,8 @@ import { MultiSelectFormField } from '@filigran/ui/clients';
 import { serviceGroup_fragment$key } from '@generated/serviceGroup_fragment.graphql';
 import ServiceGroupsByServiceInstanceIdQueryGraphql, {
   serviceGroupsByServiceInstanceIdQuery,
-} from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';import ServiceGroupsUpdateMutationGraphql from '@generated/serviceGroupsUpdateMutation.graphql';
+} from '@generated/serviceGroupsByServiceInstanceIdQuery.graphql';
+import ServiceGroupsUpdateMutationGraphql from '@generated/serviceGroupsUpdateMutation.graphql';
 import { userList_fragment$key } from '@generated/userList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';

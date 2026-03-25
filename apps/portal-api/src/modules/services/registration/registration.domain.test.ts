@@ -31,7 +31,7 @@ import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import * as organizationDomain from '../../organizations/organizations.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import {
@@ -184,7 +184,7 @@ describe('Registration domain', () => {
       );
 
       updateConfigurationSpy = vi.spyOn(
-        serviceContractDomain,
+        ServiceContractDomain,
         'updateConfiguration'
       );
     });
@@ -360,7 +360,7 @@ describe('Registration domain', () => {
     });
     afterEach(async () => {
       await db('DeploymentRequest').delete();
-      await serviceContractDomain.deleteConfigurationBy({});
+      await ServiceContractDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
 
@@ -419,7 +419,7 @@ describe('Registration domain', () => {
     });
     afterEach(async () => {
       await db('DeploymentRequest').delete();
-      await serviceContractDomain.deleteConfigurationBy({});
+      await ServiceContractDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should return all registered platform without platformIdentifier in input ', async () => {
@@ -450,7 +450,7 @@ describe('Registration domain', () => {
       ).toBe(true);
     });
     it('should not return inactive platforms ', async () => {
-      await serviceContractDomain.updateConfiguration(
+      await ServiceContractDomain.updateConfiguration(
         openCTIServiceInstanceId,
         {
           status: ServiceConfigurationStatus.Inactive,

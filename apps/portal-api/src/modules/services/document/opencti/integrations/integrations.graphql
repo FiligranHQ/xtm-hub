@@ -49,6 +49,8 @@ interface Integration implements Node & Document {
   # Integration
   remover_id: ID
   integration_type: IntegrationType!
+  datasheet_url: String
+  demo_url: String
 }
 
 # Strictly equal to Integration. Otherwise we have typing issues because no type overlaps
@@ -81,6 +83,8 @@ type IntegrationHack implements Node & Document & Integration {
   # Integration
   remover_id: ID
   integration_type: IntegrationType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type CsvFeed implements Node & Document & Integration {
@@ -113,6 +117,8 @@ type CsvFeed implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type Connector implements Node & Document & Integration {
@@ -152,6 +158,8 @@ type Connector implements Node & Document & Integration {
   integration_subtype: IntegrationSubType!
   manager_supported: Boolean!
   playbook_supported: Boolean!
+  datasheet_url: String
+  demo_url: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {
@@ -185,6 +193,8 @@ type TaxiiFeed implements Node & Document & Integration {
   feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type Stream implements Node & Document & Integration {
@@ -218,6 +228,8 @@ type Stream implements Node & Document & Integration {
   feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type ThirdPartyIntegration implements Node & Document & Integration {
@@ -253,4 +265,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   vendor_url: String!
   product_version: String
   github_url: String
+  datasheet_url: String
+  demo_url: String
 }

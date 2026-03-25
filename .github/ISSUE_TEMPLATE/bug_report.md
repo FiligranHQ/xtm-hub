@@ -1,9 +1,10 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[BUG] - [SCOPEChangeMe] : "
+title: ""
 labels: bug, needs triage
 assignees: ''
+type: Bug
 
 ---
 
@@ -15,9 +16,6 @@ Add here screenshots & record to help a better understanding of the bug.
 
 **To Reproduce**
 Steps to reproduce the behavior:
-
-**Version**
-
 
 **Actual behavior**
 A clear and concise description of what happened.

@@ -11,6 +11,7 @@ import {
 import {
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
+  requestContextAdminUser,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
@@ -63,10 +64,12 @@ import { db } from '../../../../knexfile';
 import { CompetitorTier } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
 import { requestContext } from '../../../context/request.context';
+import { CompetitorId } from '../../../model/kanel/public/Competitor';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
+import Organization from '../../../model/kanel/public/Organization';
 import { PortalContext } from '../../../model/portal-context';
 import { CompetitorDomain } from '../competitor/competitor.domain';
-import { serviceContractDomain } from '../contract/service-configuration.domain';
+import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -98,9 +101,12 @@ describe('Deployment app', () => {
 
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
+      // Given
       vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: true,
       });
+
+      // When
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
@@ -111,6 +117,7 @@ describe('Deployment app', () => {
         type: DeploymentRequestDeploymentType.Trial,
       });
 
+      // Then
       const dbDeploymentRequest =
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
@@ -136,20 +143,21 @@ describe('Deployment app', () => {
 
       expect(dbDeploymentRequest).toBeDefined();
 
-      if (dbDeploymentRequest) {
-        const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-          'id',
-          dbDeploymentRequest.service_instance_id
-        );
-        expect(serviceInstance.creation_status).toBe(
-          ServiceInstanceCreationStatus.Pending
-        );
-      }
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        'id',
+        dbDeploymentRequest!.service_instance_id
+      );
+      expect(serviceInstance.creation_status).toBe(
+        ServiceInstanceCreationStatus.Pending
+      );
     });
     it('should create a deployment request with queued status when there is no space available', async () => {
+      // Given
       vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: false,
       });
+
+      // When
       const deployment = await DeploymentsApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
@@ -160,6 +168,7 @@ describe('Deployment app', () => {
         type: DeploymentRequestDeploymentType.Trial,
       });
 
+      // Then
       const dbDeploymentRequest =
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
@@ -183,15 +192,62 @@ describe('Deployment app', () => {
         use_case: DeploymentRequestUseCase.ThreatHunting,
       });
 
-      if (!dbDeploymentRequest) return;
-
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
         'id',
-        dbDeploymentRequest.service_instance_id
+        dbDeploymentRequest!.service_instance_id
       );
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
+    });
+    it('should throw when deployment is requested on a personal space', async () => {
+      // Given
+      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: true,
+      });
+      const personalSpaceOrganization = await db<Organization>('Organization')
+        .select('*')
+        .where('name', '=', TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL)
+        .first();
+
+      expect(personalSpaceOrganization).toBeDefined();
+      requestContext.set({
+        ...requestContextAdminUser,
+        user: {
+          ...requestContextAdminUser.user,
+          selected_organization_id: personalSpaceOrganization!.id,
+        },
+      });
+
+      // When
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      // Then
+      await expect(call).rejects.toThrow(
+        ErrorCode.CantRequestFreeTrialInPersonalSpace
+      );
+    });
+
+    it('should throw when service definition is not found', async () => {
+      const call = DeploymentsApp.createDeploymentRequest({
+        activity_sector:
+          DeploymentRequestActivitySector.ComputerNetworkSecurity,
+        job_title: DeploymentRequestJobTitle.CLevel,
+        use_case: DeploymentRequestUseCase.ThreatHunting,
+        platform_identifier: 'unknown' as PlatformIdentifier,
+        region: DeploymentRequestPlatformRegion.UsEast,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
   });
   describe('domains blacklist', () => {
@@ -201,6 +257,7 @@ describe('Deployment app', () => {
 
     it('should throw error when organization domain is blacklisted', async () => {
       await CompetitorDomain.insertCompetitor({
+        id: uuidv4() as CompetitorId,
         name: 'Filigran',
         tier: CompetitorTier.Tier1,
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
@@ -221,6 +278,7 @@ describe('Deployment app', () => {
 
     it('should allow deployment when organization domain is not blacklisted', async () => {
       await CompetitorDomain.insertCompetitor({
+        id: uuidv4() as CompetitorId,
         name: 'Blocked',
         tier: CompetitorTier.Tier1,
         domain: 'blocked.com',
@@ -1008,7 +1066,7 @@ describe('Deployment app', () => {
 
       it('should send a mail in case deployment request is in active (only first time)', async () => {
         vi.spyOn(
-          serviceContractDomain,
+          ServiceContractDomain,
           'loadConfigurationByPlatform'
         ).mockResolvedValue({
           service_instance_id: uuidv4() as ServiceInstanceId,
@@ -1081,6 +1139,7 @@ describe('Deployment app', () => {
 
     it('should return blacklisted = true if orga is blacklisted', async () => {
       await CompetitorDomain.insertCompetitor({
+        id: uuidv4() as CompetitorId,
         name: 'Filigran',
         tier: CompetitorTier.Tier1,
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
@@ -1210,7 +1269,7 @@ describe('Deployment app', () => {
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      await expect(call).rejects.toThrow(ErrorCode.UserNotInOrganization);
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
   });
   describe('reorderDeploymentRequestInQueue', () => {
@@ -1218,7 +1277,7 @@ describe('Deployment app', () => {
       vi.spyOn(
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
-      ).mockResolvedValue(null);
+      ).mockResolvedValue(undefined);
 
       const call = DeploymentsApp.reorderDeploymentRequestInQueue({
         id: uuidv4() as DeploymentRequestId,
@@ -1935,13 +1994,13 @@ describe('Deployment app', () => {
       const expiredTrial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestHubStatus.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
         end_date: new Date(Date.UTC(2025, 1, 1)),
       });
       const nonExpiredTrial = await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Active,
         target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestHubStatus.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
         end_date: new Date(Date.UTC(2025, 1, 5)),
       });
 

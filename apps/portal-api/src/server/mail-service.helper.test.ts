@@ -1,7 +1,7 @@
+import config from 'config';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PlatformIdentifier } from '../__generated__/resolvers-types';
 import * as producer from '../thirdparty/pgboss/producer';
-import config from 'config';
 import { clearTemplateCache, renderEmail, sendMail } from './mail-service';
 
 describe('renderEmail', () => {

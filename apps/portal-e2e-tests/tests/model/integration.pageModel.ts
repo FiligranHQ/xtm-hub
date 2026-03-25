@@ -155,10 +155,10 @@ export default class IntegrationPage {
     await this.page.getByLabel('Type').click();
     await this.page.getByLabel('Orchestration').click();
     await this.page
-      .getByRole('textbox', { name: 'Vendor URL' })
+      .getByRole('textbox', { name: 'Vendor link (url)' })
       .fill('https://example.com');
     await this.page
-      .getByRole('textbox', { name: 'Github URL' })
+      .getByRole('textbox', { name: 'Github link (url)' })
       .fill('https://text.com');
     await this.page
       .getByRole('textbox', { name: 'OpenCTI version' })
