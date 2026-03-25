@@ -284,6 +284,12 @@ enum DeploymentRequestPlatformState {
   removed
 }
 
+enum DeploymentRequestSource {
+  xtmhub
+  opencti_demo
+  openaev_demo
+}
+
 enum DeploymentRequestUseCase {
   threat_profiling_cti
   threat_profiling_fimi
@@ -414,6 +420,7 @@ input CreateDeploymentRequestInput {
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
+  source: DeploymentRequestSource!
 }
 
 input UpdateDeploymentRequestInput {

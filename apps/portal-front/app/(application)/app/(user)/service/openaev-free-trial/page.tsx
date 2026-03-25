@@ -7,6 +7,7 @@ import { TrialsHeader } from '@/components/service/trial-instances/trials-header
 import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
+import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
@@ -21,6 +22,16 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
   const openTrialFormSearchParams = (await searchParams).openForm;
   const openTrialForm =
     !!openTrialFormSearchParams && !Array.isArray(openTrialFormSearchParams);
+
+  const sourceParam = (await searchParams).source;
+  const source: DeploymentRequestSourceEnum =
+    !Array.isArray(sourceParam) &&
+    sourceParam !== undefined &&
+    (Object.values(DeploymentRequestSourceEnum) as string[]).includes(
+      sourceParam
+    )
+      ? (sourceParam as DeploymentRequestSourceEnum)
+      : DeploymentRequestSourceEnum.XTMHUB;
 
   const breadcrumbs = [
     {
@@ -55,6 +66,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
               <StartTrialButton
                 openForm={openTrialForm}
                 platformIdentifier={PlatformIdentifierEnum.OPENAEV}
+                source={source}
               />
             </GuardCapacityComponent>
           </>
