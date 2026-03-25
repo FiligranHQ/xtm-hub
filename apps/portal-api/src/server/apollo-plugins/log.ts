@@ -2,6 +2,10 @@ import { ApolloServerPlugin, BaseContext } from '@apollo/server';
 import type { Request, Response } from 'express';
 import type { UserLoadUserBy } from '../../model/user';
 import { AppLogsCategory, logApp } from '../../utils/app-logger.util';
+import type {
+  CustomApolloError,
+  ErrorLogLevel,
+} from '../../utils/error/error.type';
 
 export interface Context extends BaseContext {
   user: UserLoadUserBy;
@@ -32,7 +36,11 @@ export const errorLoggingPlugin = (): ApolloServerPlugin<Context> => ({
         const { errors, operationName, contextValue } = requestContext;
 
         errors.forEach((error) => {
-          logApp.error(
+          const logLevel: ErrorLogLevel =
+            (error.originalError as CustomApolloError | null)?._logLevel ??
+            'error';
+
+          logApp[logLevel](
             error.message,
             {
               path: error.path,
