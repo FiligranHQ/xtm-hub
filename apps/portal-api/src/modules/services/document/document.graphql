@@ -24,6 +24,7 @@ enum DocumentMetadataKeyCode {
   manager_supported
   playbook_supported
   image_type
+  minimum_deployable_version
 }
 
 type ShareableResource {
