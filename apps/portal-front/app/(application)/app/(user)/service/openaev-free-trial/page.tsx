@@ -1,83 +1,21 @@
-import GuardCapacityComponent from '@/components/admin-guard';
-import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
-import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/reach-sales-button';
-import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
-import { StartTrialButton } from '@/components/service/trial-instances/start-trial-button';
-import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
-import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { APP_PATH } from '@/utils/path/constant';
-import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import FreeTrialPage from '@/components/service/trial-instances/page/free-trial-page';
+import { parseFreeTrialSearchParams } from '@/utils/free-trial-search-params';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import React from 'react';
-import PersonalSpaceInfo from '../opencti-free-trial/personal-space-info';
 
 interface Props {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const Page: React.FC<Props> = async ({ searchParams }) => {
-  const openTrialFormSearchParams = (await searchParams).openForm;
-  const openTrialForm =
-    !!openTrialFormSearchParams && !Array.isArray(openTrialFormSearchParams);
-
-  const sourceParam = (await searchParams).source;
-  const source: DeploymentRequestSourceEnum =
-    !Array.isArray(sourceParam) &&
-    sourceParam !== undefined &&
-    (Object.values(DeploymentRequestSourceEnum) as string[]).includes(
-      sourceParam
-    )
-      ? (sourceParam as DeploymentRequestSourceEnum)
-      : DeploymentRequestSourceEnum.XTMHUB;
-
-  const breadcrumbs = [
-    {
-      label: 'MenuLinks.Home',
-      href: `/${APP_PATH}`,
-    },
-    {
-      label: 'OpenAEV Trial platform',
-      original: true,
-    },
-  ];
-
+  const { openTrialForm, source } =
+    await parseFreeTrialSearchParams(searchParams);
   return (
-    <>
-      <BreadcrumbNav value={breadcrumbs} />
-
-      <TrialsHeader
-        platformIdentifier={PlatformIdentifierEnum.OPENAEV}
-        actions={
-          <>
-            <SlackSupportButton />
-            <ReachSalesButton
-              variant="outline-primary"
-              platformIdentifier={PlatformIdentifierEnum.OPENAEV}
-            />
-            <GuardCapacityComponent
-              shouldNotBePersonalSpace
-              capacityRestriction={[
-                OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-                OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
-              ]}>
-              <StartTrialButton
-                openForm={openTrialForm}
-                platformIdentifier={PlatformIdentifierEnum.OPENAEV}
-                source={source}
-              />
-            </GuardCapacityComponent>
-          </>
-        }
-      />
-      <PersonalSpaceInfo />
-      <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENAEV} />
-      <RegistrationLearnMore
-        serviceInstanceTag={ServiceInstanceTagEnum.OPENAEV}
-      />
-    </>
+    <FreeTrialPage
+      platformIdentifier={PlatformIdentifierEnum.OPENAEV}
+      openTrialForm={openTrialForm}
+      source={source}
+    />
   );
 };
 
