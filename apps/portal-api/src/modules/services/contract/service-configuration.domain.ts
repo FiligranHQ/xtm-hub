@@ -18,7 +18,7 @@ const loadServiceContractBy = async (
   return db('Service_Contract').where(field).select('*').first();
 };
 
-export const serviceContractDomain = {
+export const ServiceContractDomain = {
   isServiceConfigurationValid: async (
     serviceDefinitionId: ServiceDefinitionId,
     config: Record<string, unknown>
@@ -56,7 +56,7 @@ export const serviceContractDomain = {
   loadConfigurationByPlatform: async (
     platformId: string,
     status?: ServiceConfigurationStatus
-  ): Promise<ServiceConfiguration | null> => {
+  ): Promise<ServiceConfiguration | undefined> => {
     const qb = db('Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platformId)
       .first()
@@ -66,7 +66,7 @@ export const serviceContractDomain = {
       qb.where({ status });
     }
 
-    return (await qb) ?? null;
+    return qb;
   },
 
   updateConfiguration: async (

@@ -53,18 +53,11 @@ const ServiceCard = ({
     connectionId,
     type: document.type as ShareableResourceType,
   });
-  const hasUploadCapability = useServiceCapability(
+
+  const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upload,
     serviceInstance
   );
-  const isAllowedIntegration =
-    isIntegrationItem(document) &&
-    document.integration_type !== IntegrationTypeEnum.CONNECTOR;
-  const isAllowedType =
-    document.type !== ShareableResourceType.OPENCTI_INTEGRATION;
-
-  const userCanUpdate =
-    hasUploadCapability && (isAllowedIntegration || isAllowedType);
 
   const userCanDelete = useServiceCapability(
     ServiceCapabilityName.Delete,

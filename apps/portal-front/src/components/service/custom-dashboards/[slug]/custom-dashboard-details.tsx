@@ -5,7 +5,6 @@ import {
   DocumentsItemQuery,
 } from '@/components/service/document/document.graphql';
 import ShareableResourceSlug from '@/components/service/document/shareable-resource-slug';
-import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/delete-integration-slug';
 import { APP_PATH } from '@/utils/path/constant';
@@ -68,12 +67,8 @@ const DashboardSlug: React.FunctionComponent<DashboardSlugProps> = ({
                 variant={'button'}
               />
             </>
-          }>
-          <ShareableResourceCarousel
-            serviceInstance={serviceInstance}
-            documentData={documentData}
-          />
-        </ShareableResourceSlug>
+          }
+        />
       </AppServiceContext>
     )
   );

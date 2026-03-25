@@ -12,7 +12,7 @@ import { useContext, useState } from 'react';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
 import useDecodedParams from '@/hooks/useDecodedParams';
-import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
 import DocumentItem_fragmentGraphql, {
   documentItem_fragment$key,
@@ -60,9 +60,11 @@ export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
         metadata: [],
         serviceInstanceId: slug,
         connections: connectionId ? [connectionId] : [],
-        document: [values.document],
+        sourceDocument: [values.document],
       },
-      uploadables: fileListToUploadableMap(values.document),
+      uploadables: splitFileListToUploadableMap({
+        sourceDocument: values.document,
+      }),
       onCompleted: (response) => {
         setOpenSheet(false);
         const createdDocument = readInlineData<documentItem_fragment$key>(

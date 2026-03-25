@@ -49,6 +49,10 @@ export const ServiceDefinitionDomain = {
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
 
+    if (!serviceDefinitionIdentifier) {
+      return undefined;
+    }
+
     return ServiceDefinitionDomain.loadServiceDefinitionBy({
       identifier: serviceDefinitionIdentifier,
     });

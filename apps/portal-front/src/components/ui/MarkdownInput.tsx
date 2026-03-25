@@ -6,10 +6,12 @@ const MarkdownInput = ({
   value,
   onChange,
   placeholder,
+  disabled,
 }: {
   value?: string;
   onChange: (v: string | undefined) => void;
   placeholder: string;
+  disabled?: boolean;
 }) => {
   const { theme } = useTheme();
 
@@ -32,6 +34,7 @@ const MarkdownInput = ({
         }}
         textareaProps={{
           placeholder,
+          disabled,
           style: {
             background: 'transparent',
             color: 'hsl(var(--text-foreground))',
