@@ -308,7 +308,7 @@ jobs:
       contents: read
     if: |
       github.event_name == 'pull_request' &&
-      contains(github.event.pull_request.labels.*.name, 'needs feature env')
+      !contains(github.event.pull_request.labels.*.name, 'skip-feature-env')
     steps:
       - name: Install AWX cli
         run: pip install awxkit
