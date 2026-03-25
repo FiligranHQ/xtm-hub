@@ -1,6 +1,7 @@
 import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/integration.utils';
 import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { useMemo } from 'react';
