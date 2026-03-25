@@ -18,11 +18,6 @@ on:
       - "main"
       - "development"
       - "issue/*"
-    paths:
-      - "apps/**"
-      - ".github/workflows/dockerbuild-ci.yml"
-      - "package.json"
-      - "yarn.lock"
 
 permissions:
   contents: read
@@ -32,7 +27,25 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - "apps/**"
+              - ".github/workflows/dockerbuild-ci.yml"
+              - "package.json"
+              - "yarn.lock"
+
   build-images-tests:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
