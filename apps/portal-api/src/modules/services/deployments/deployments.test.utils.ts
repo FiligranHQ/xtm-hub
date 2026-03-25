@@ -7,6 +7,7 @@ import {
   DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestSource,
   DeploymentRequestUseCase,
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
@@ -60,6 +61,7 @@ export async function insertDeploymentRequest(
     use_case: DeploymentRequestUseCase.ThreatHunting,
     service_instance_id: serviceInstanceId as ServiceInstanceId,
     user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+    source: DeploymentRequestSource.Xtmhub,
   };
   return await DeploymentRequestDomain.insertDeploymentRequest({
     ...defaultDeploymentRequestValues,

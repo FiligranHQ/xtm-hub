@@ -141,6 +141,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: DeploymentRequestUseCase.ThreatHunting,
+        source: DeploymentRequestSource.OpenctiDemo,
       });
 
       expect(dbDeploymentRequest).toBeDefined();
@@ -193,6 +194,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: DeploymentRequestUseCase.ThreatHunting,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -824,6 +826,7 @@ describe('Deployment app', () => {
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
         failure_reason: 'not failed',
+        source: DeploymentRequestSource.Xtmhub,
       });
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending

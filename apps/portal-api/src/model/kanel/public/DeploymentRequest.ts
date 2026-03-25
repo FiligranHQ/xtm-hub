@@ -4,7 +4,7 @@
 import type { UserId } from './User';
 import type { OrganizationId } from './Organization';
 import type { ServiceInstanceId } from './ServiceInstance';
-import type { DeploymentRequestDeploymentType, PlatformIdentifier, DeploymentRequestPlatformRegion, DeploymentRequestActivitySector, DeploymentRequestJobTitle, DeploymentRequestUseCase, DeploymentRequestHubStatus, DeploymentRequestPlatformState } from '../../../__generated__/resolvers-types';
+import type { DeploymentRequestDeploymentType, PlatformIdentifier, DeploymentRequestPlatformRegion, DeploymentRequestActivitySector, DeploymentRequestJobTitle, DeploymentRequestUseCase, DeploymentRequestHubStatus, DeploymentRequestPlatformState, DeploymentRequestSource } from '../../../__generated__/resolvers-types';
 
 /** Identifier type for public.DeploymentRequest */
 export type DeploymentRequestId = string & { __brand: 'public.DeploymentRequest' };
@@ -58,6 +58,8 @@ export default interface DeploymentRequest {
   cancellation_date: Date | null;
 
   cancellation_reason: string | null;
+
+  source: DeploymentRequestSource | null;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
@@ -112,6 +114,8 @@ export interface DeploymentRequestInitializer {
   cancellation_date?: Date | null;
 
   cancellation_reason?: string | null;
+
+  source?: DeploymentRequestSource | null;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
@@ -163,4 +167,6 @@ export interface DeploymentRequestMutator {
   cancellation_date?: Date | null;
 
   cancellation_reason?: string | null;
+
+  source?: DeploymentRequestSource | null;
 }
