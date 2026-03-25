@@ -121,6 +121,16 @@ test.describe('XTM Suite Roadmap', () => {
       timeline: 'next',
       uploader_id: ADMIN_USER.ID,
     });
+    await addEpic({
+      epic: 'Epic4',
+      title: 'Title4',
+      short_description: 'Short description for now epic',
+      description: 'This is a now epic',
+      product: 'opencti',
+      active: true,
+      timeline: 'now',
+      uploader_id: ADMIN_USER.ID,
+    });
 
     await test.step("It should display the epics' page correctly", async () => {
       await expect(
@@ -128,7 +138,7 @@ test.describe('XTM Suite Roadmap', () => {
       ).not.toBeVisible();
 
       await xtmSuiteRoadmapPage.checkFilters({
-        openCTINumbers: 1,
+        openCTINumbers: 2,
         openAEVNumbers: 1,
       });
 
@@ -142,6 +152,23 @@ test.describe('XTM Suite Roadmap', () => {
       await page.getByRole('button', { name: 'OpenAEV (1)' }).click();
       await expect(page.getByText('Epic2', { exact: true })).not.toBeVisible();
       await expect(page.getByText('Epic3', { exact: true })).toBeVisible();
+    });
+
+    await test.step('It should filter by timeline', async () => {
+      await page.getByRole('button', { name: 'All products (3)' }).click();
+      await page
+        .getByRole('combobox')
+        .filter({ hasText: 'All timelines' })
+        .click();
+      await page.getByLabel('Now').click();
+      await expect(page.getByText('Epic4', { exact: true })).toBeVisible();
+      await expect(page.getByText('Epic2', { exact: true })).not.toBeVisible();
+      await expect(page.getByText('Epic3', { exact: true })).not.toBeVisible();
+      await page.getByRole('combobox').filter({ hasText: 'Now' }).click();
+      await page.getByLabel('All timelines').click();
+      await expect(page.getByText('Epic2', { exact: true })).toBeVisible();
+      await expect(page.getByText('Epic3', { exact: true })).toBeVisible();
+      await expect(page.getByText('Epic4', { exact: true })).toBeVisible();
     });
 
     await test.step('It should display details', async () => {
