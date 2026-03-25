@@ -17,7 +17,19 @@ import { BOOLEAN_METADATA } from '../document.helper';
 import { DocumentData } from './document.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
-  Exclude<keyof Omit<T, 'use_cases'>, keyof DocumentResolverType>
+  Exclude<
+    keyof Omit<
+      DocumentData<T>,
+      | 'use_cases'
+      | 'uploader_id'
+      | 'uploader_organization_id'
+      | 'remover_id'
+      | 'mime_type'
+      | 'source_type'
+      | 'parent_document_id'
+    >,
+    keyof DocumentResolverType
+  >
 >;
 
 export const DocumentMetadataDomain = {
@@ -52,7 +64,7 @@ export const DocumentMetadataDomain = {
     const metadataToInsert = metadataKeys.map((key) => ({
       document_id: id,
       key: key as DocumentMetadataKey,
-      value: data[key] as string,
+      value: data[key as keyof DocumentData<T>] as string,
     }));
 
     return db<DocumentMetadata>('Document_Metadata')
@@ -122,7 +134,7 @@ export const DocumentMetadataDomain = {
 
   addIncludeMetadataQuery: (
     qb: Knex.QueryBuilder,
-    include_metadata: string[] = []
+    include_metadata: DocumentMetadataKeyCode[] = []
   ) => {
     include_metadata.forEach((metaKey, index) => {
       const metaAlias = `meta${index}`;

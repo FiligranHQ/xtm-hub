@@ -505,7 +505,7 @@ export enum DocumentImageType {
 }
 
 export type DocumentMetadata = {
-  key: Scalars['String']['input'];
+  key: DocumentMetadataKeyCode;
   value: Scalars['String']['input'];
 };
 
@@ -515,6 +515,7 @@ export enum DocumentMetadataKeyCode {
   DemoUrl = 'demo_url',
   FeedUrl = 'feed_url',
   GithubUrl = 'github_url',
+  ImageType = 'image_type',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   ManagerSupported = 'manager_supported',

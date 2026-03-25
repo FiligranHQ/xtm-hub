@@ -1,6 +1,5 @@
 import {
   DocumentMetadataKeyCode,
-  Document as DocumentResolverType,
   IntegrationType,
 } from '../../../../../__generated__/resolvers-types';
 import Document from '../../../../../model/kanel/public/Document';
@@ -53,26 +52,23 @@ export type Connector = Integration & {
 };
 
 export type CsvFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<CsvFeed, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<CsvFeed, keyof Document>
 >;
 
 export type TaxiiFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<TaxiiFeed, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<TaxiiFeed, keyof Document>
 >;
 
 export type StreamFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<Stream, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<Stream, keyof Document>
 >;
 
 export type ThirdPartyIntegrationMetadata = MetadataArray<
-  Exclude<
-    keyof Omit<ThirdPartyIntegration, 'use_cases'>,
-    keyof DocumentResolverType
-  >
+  keyof Omit<ThirdPartyIntegration, keyof Document>
 >;
 
 export type ConnectorMetadata = MetadataArray<
-  Exclude<keyof Omit<Connector, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<Connector, keyof Document>
 >;
 
 export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
@@ -133,7 +129,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);
 
-export const INTEGRATION_METADATA_KEYS: string[] = Array.from(
+export const INTEGRATION_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
   new Set([
     ...INTEGRATION_CSV_FEED_METADATA_KEYS,
     ...INTEGRATION_TAXII_FEED_METADATA_KEYS,
@@ -141,4 +137,4 @@ export const INTEGRATION_METADATA_KEYS: string[] = Array.from(
     ...INTEGRATION_STREAM_METADATA_KEYS,
     ...INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS,
   ])
-);
+) as DocumentMetadataKeyCode[];

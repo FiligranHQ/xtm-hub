@@ -613,7 +613,7 @@ const upsertDocument = async <T extends DocumentModel>(
 
 const getMetadataKeysAndDocumentTypeFromServiceDefinition = (
   serviceDefinition: ServiceDefinition
-): { documentType: DOCUMENT_TYPE; metadataKeys: string[] } => {
+): { documentType: DOCUMENT_TYPE; metadataKeys: DocumentMetadataKeyCode[] } => {
   const serviceDefinitionIdentifier =
     serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
 

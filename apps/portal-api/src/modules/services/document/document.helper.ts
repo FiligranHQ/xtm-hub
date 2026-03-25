@@ -22,6 +22,7 @@ import { isValidUrl } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
+import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { Upload } from './document.uploads.helper';
 import { DocumentDomain } from './domain/document.domain';
 import {
@@ -57,11 +58,12 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   parent_document_id?: DocumentId;
 };
 
-export const ALL_METADATA_KEYS: string[] = Array.from(
+export const ALL_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
   new Set([
     ...INTEGRATION_METADATA_KEYS,
     ...CUSTOM_DASHBOARD_METADATA_KEYS,
     ...OPENAEV_SCENARIO_METADATA_KEYS,
+    ...DOCUMENT_IMAGE_METADATA_KEYS,
   ])
 );
 
@@ -182,8 +184,10 @@ export const DocumentHelper = {
 
   getMetadataKeysForServiceDefinition: (
     serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier
-  ): string[] => {
-    const mapping: Partial<Record<ServiceDefinitionIdentifier, string[]>> = {
+  ): DocumentMetadataKeyCode[] => {
+    const mapping: Partial<
+      Record<ServiceDefinitionIdentifier, DocumentMetadataKeyCode[]>
+    > = {
       [ServiceDefinitionIdentifier.OpenctiIntegrations]:
         INTEGRATION_METADATA_KEYS,
       [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
@@ -369,7 +373,7 @@ export const updateDocumentWithCounters = async <T extends Document>(
 
 export const loadDocumentWithCountersById = async <T extends Document>(
   id: string,
-  include_metadata: string[] = []
+  include_metadata: DocumentMetadataKeyCode[] = []
 ) => {
   const document: T = await DocumentDomain.loadDocumentWithMetadataById(
     id,
@@ -385,7 +389,7 @@ export const loadDocumentWithCountersById = async <T extends Document>(
 export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
   type: DOCUMENT_TYPE,
   slug: string,
-  include_metadata: string[] = []
+  include_metadata: DocumentMetadataKeyCode[] = []
 ) => {
   const document: T = await DocumentDomain.loadSeoDocumentBySlug(
     type,

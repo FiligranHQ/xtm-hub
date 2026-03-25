@@ -29,6 +29,7 @@ import { documentCreateMutation } from '@generated/documentCreateMutation.graphq
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
@@ -96,7 +97,7 @@ export function useDocumentContext({
         },
         metadata: Object.keys(metadata)
           .map((key) => ({
-            key,
+            key: key as DocumentMetadataKeyCodeEnum,
             value: metadata[key as keyof typeof metadata],
           }))
           .filter(({ value }) => Boolean(value)),
@@ -182,7 +183,7 @@ export function useDocumentContext({
         documentId: resource.id,
         metadata: Object.keys(metadata)
           .map((key) => ({
-            key,
+            key: key as DocumentMetadataKeyCodeEnum,
             value: metadata[key as keyof typeof metadata],
           }))
           .filter(({ value }) => Boolean(value)),

@@ -4,6 +4,7 @@ import { baseConfig } from './knexconfig';
 import {
   DeploymentRequestFilter,
   DeploymentRequestFilterKey,
+  DocumentMetadataKeyCode,
   Filter,
   FilterKey,
   LogicalFilterInput,
@@ -378,7 +379,7 @@ const getFilterHandler = (key: string): FilterHandler => {
   }
 
   // Check if it's a metadata filter
-  if (INTEGRATION_METADATA_KEYS.includes(key)) {
+  if (INTEGRATION_METADATA_KEYS.includes(key as DocumentMetadataKeyCode)) {
     return createMetadataFilterHandler(key);
   }
 

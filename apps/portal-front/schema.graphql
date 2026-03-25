@@ -540,6 +540,7 @@ enum DocumentMetadataKeyCode {
   subscription_link
   manager_supported
   playbook_supported
+  image_type
 }
 
 type ShareableResource {
@@ -616,7 +617,7 @@ interface Document implements Node {
 }
 
 input DocumentMetadata {
-  key: String!
+  key: DocumentMetadataKeyCode!
   value: String!
 }
 

@@ -1,7 +1,4 @@
-import {
-  DocumentMetadataKeyCode,
-  Document as DocumentResolverType,
-} from '../../../../../__generated__/resolvers-types';
+import { DocumentMetadataKeyCode } from '../../../../../__generated__/resolvers-types';
 import Document from '../../../../../model/kanel/public/Document';
 import { MetadataArray } from '../../../../../utils/metadata';
 
@@ -11,7 +8,7 @@ export type OpenAEVScenario = Document & {
   product_version: string;
 };
 export type OpenAEVScenarioMetadataKeys = MetadataArray<
-  Exclude<keyof Omit<OpenAEVScenario, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<OpenAEVScenario, keyof Document>
 >;
 
 export const OPENAEV_SCENARIO_METADATA: OpenAEVScenarioMetadataKeys = [
@@ -20,4 +17,4 @@ export const OPENAEV_SCENARIO_METADATA: OpenAEVScenarioMetadataKeys = [
 
 export const OPENAEV_SCENARIO_METADATA_KEYS = OPENAEV_SCENARIO_METADATA.map(
   ({ key }) => key
-);
+) as DocumentMetadataKeyCode[];
