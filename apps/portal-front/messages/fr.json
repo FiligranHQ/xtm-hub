@@ -176,6 +176,7 @@
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "Une erreur inconnue s'est produite",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "DOCUMENT_CREATE_ERROR": "Une erreur s'est produite lors de la création de la ressource.",
+      "DOCUMENT_FILE_MISSING": "Fichier du document manquant",
       "DOCUMENT_MISSING_METADATA": "Il manque des métadonnées au document.",
       "DOCUMENT_NOT_FOUND": "La ressource n'a pas été trouvée.",
       "DOCUMENT_UNIQUE_SLUG_ERROR": "Le nom de la ressource est déjà utilisé.",
@@ -650,18 +651,27 @@
     "CreationStatus": "Statut de la création",
     "Form": {
       "Author": "Auteur",
+      "ContainerImageLabel": "Image du conteneur",
+      "CurrentLogo": "Logo actuel",
+      "DatasheetUrlLabel": "Lien vers la fiche technique (url)",
       "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
+      "DemoUrlLabel": "Lien vers la démo (url)",
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le {documentType}.",
       "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+      "DropDocuments": "Déposer les documents ici",
       "ExistingJSONFile": "Fichier JSON existant : {file_name}",
       "GithubUrlLabel": "URL Github",
       "Illustration": "Illustration",
-      "IllustrationDisclaimer": "Par défaut, le logo Filigran sera affiché sur la carte, vos illustrations seront ajoutées dans le carousel de la page détail.",
+      "LogoDisclaimer": "Le logo Filigran est utilisé par défaut",
+      "ImagesDisclaimer": "Vos images seront ajoutées et affichées sous forme de carrousel sur la page de détails de la ressource téléchargée",
       "ImageLabel": "Images",
+      "LogoLabel": "Logo",
+      "ManagerSupportedLabel": "Gestionnaire pris en charge",
       "NameLabel": "Nom",
       "NamePlaceholder": "nom {documentType}",
       "NoImage": "Pas d'image sélectionnée",
+      "PlaybookSupportedLabel": "Playbook pris en charge",
       "ProductVersionLabel": "version {platform}",
       "ProductVersionPlaceholder": "1.0.0",
       "PublishedPlaceholder": "Le {documentType} est-il publié ?",
@@ -673,11 +683,16 @@
       "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
       "SlugLabel": "Slug",
       "SlugPlaceholder": "slug",
+      "SourceCodeLabel": "Code source",
+      "SubscriptionLinkLabel": "Lien d'abonnement (url)",
       "UpdateJSONFile": "Mise à jour du fichier JSON",
       "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
+      "UploadLogo": "Télécharger un nouveau logo",
+      "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Cas d'utilisation",
       "UseCasesPlaceholder": "Ajouter des cas d'utilisation",
-      "VendorUrlLabel": "URL du fournisseur"
+      "VendorUrlLabel": "URL du fournisseur",
+      "VerifiedLabel": "Vérifié"
     },
     "OpenctiIntegrations": {
       "Actions": {
@@ -751,10 +766,17 @@
     },
     "Connector": {
       "Actions": {
-        "Deleted": "Le connecteur {name} a été supprimé avec succès"
+        "Added": "Le connecteur {name} a été ajouté avec succès",
+        "Deleted": "Le connecteur {name} a été supprimé avec succès",
+        "Share": "Partager le connecteur",
+        "Updated": "Le connecteur {name} a été modifié avec succès"
       },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau connecteur",
       "DeleteService": "Supprimer le connecteur {name}",
-      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le connecteur {name} ?"
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le connecteur {name} ?",
+      "UpdateService": "Mettre à jour le connecteur {name}"
     },
     "Stream": {
       "Actions": {
@@ -894,7 +916,9 @@
         "IntegrationSubType": "Sous-type",
         "GithubURL": "URL Github",
         "VendorURL": "URL du fournisseur",
-        "FeedURL": "URL du flux"
+        "FeedURL": "URL du flux",
+        "DatasheetURL": "URL de la fiche technique",
+        "DemoURL": "URL de la démo"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",

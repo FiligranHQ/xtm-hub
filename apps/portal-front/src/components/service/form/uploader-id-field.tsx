@@ -9,9 +9,14 @@ import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;
   document?: documentItem_fragment$data;
+  disabled?: boolean;
 }
 
-export const ServiceFormUploaderIdField = ({ field, document }: Props) => {
+export const ServiceFormUploaderIdField = ({
+  field,
+  document,
+  disabled,
+}: Props) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   return (
@@ -22,6 +27,7 @@ export const ServiceFormUploaderIdField = ({ field, document }: Props) => {
           defaultValue={document?.uploader?.email ?? me!.email}
           value={field.value}
           onValueChange={field.onChange}
+          disabled={disabled}
         />
       </FormControl>
     </FormItem>

@@ -105,8 +105,8 @@ type Mutation {
   cancelDeploymentRequest(deploymentRequestId: ID!, cancellationReason: String): DeploymentRequest
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
-  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, serviceInstanceId: String): Document!
-  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, document: [Upload!]!, updateDocument: Boolean!, images: [String!], serviceInstanceId: String): Document!
+  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
+  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
@@ -516,6 +516,16 @@ input TrialDeploymentsInput {
   platformIdentifiers: [PlatformIdentifier!]
 }
 
+enum DocumentSourceType {
+  external
+  internal
+}
+
+enum DocumentImageType {
+  logo
+  image
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -524,6 +534,8 @@ type ShareableResource {
   description: String
   download_number: Int
   active: Boolean!
+  source_type: DocumentSourceType!
+  image_type: DocumentImageType
 }
 
 enum DocumentOrdering {
@@ -720,6 +732,8 @@ interface Integration implements Node & Document {
   children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type IntegrationHack implements Node & Document & Integration {
@@ -746,6 +760,8 @@ type IntegrationHack implements Node & Document & Integration {
   children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type CsvFeed implements Node & Document & Integration {
@@ -773,6 +789,8 @@ type CsvFeed implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type Connector implements Node & Document & Integration {
@@ -807,6 +825,8 @@ type Connector implements Node & Document & Integration {
   integration_subtype: IntegrationSubType!
   manager_supported: Boolean!
   playbook_supported: Boolean!
+  datasheet_url: String
+  demo_url: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {
@@ -835,6 +855,8 @@ type TaxiiFeed implements Node & Document & Integration {
   feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type Stream implements Node & Document & Integration {
@@ -863,6 +885,8 @@ type Stream implements Node & Document & Integration {
   feed_url: String
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  demo_url: String
 }
 
 type ThirdPartyIntegration implements Node & Document & Integration {
@@ -893,6 +917,8 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   vendor_url: String!
   product_version: String
   github_url: String
+  datasheet_url: String
+  demo_url: String
 }
 
 type ServiceGroup implements Node {

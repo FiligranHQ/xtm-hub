@@ -1,0 +1,30 @@
+name: PR conventions checks
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, ready_for_review, synchronize]
+
+jobs:
+  check-pr-title-convention:
+    name: Check that PR title follows convention
+    runs-on: ubuntu-latest
+    if: github.actor != 'renovate[bot]'
+    permissions:
+      contents: read
+    steps:
+      - uses: Slashgear/action-check-pr-title@76166c63ec0b25cdbe693e5e972e83ca186313fb
+        with:
+          regexp: '^(\[(frontend|backend|e2e-tests)(/(frontend|backend|e2e-tests))*\] )?(feat|fix|docs|refactor|chore|test)(\([^)]+\))?: .+ \(#[0-9]+\)$'
+          helpMessage: |
+            PR title must follow the convention: '[package] type(scope): Message (#issuenumber)'
+
+            Package  : optional — frontend, backend, e2e-tests (combinable with /)
+            Types    : feat, fix, docs, refactor, chore, test
+            Scope    : optional, free text in parentheses
+
+            Examples:
+              [frontend] feat(custom-dashboards): add card component (#123)
+              [backend]  fix(login): handle missing auth token (#456)
+              [frontend/backend] refactor(auth): extract shared token logic (#789)
+              chore(ci): update docker base image (#101)
+              [e2e-tests] test(login): add SSO flow coverage (#202)

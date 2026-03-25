@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
 } from '../../__generated__/resolvers-types';
@@ -34,7 +35,7 @@ describe('Ingest manifest helper', () => {
           integration_type: IntegrationType.Connector,
           manager_supported: true,
           playbook_supported: false,
-          source_type: 'external',
+          source_type: DocumentSourceType.External,
           service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
         });
         expect(result.validContracts[1]).toEqual({
@@ -54,7 +55,7 @@ describe('Ingest manifest helper', () => {
           integration_type: IntegrationType.Connector,
           manager_supported: false,
           playbook_supported: true,
-          source_type: 'external',
+          source_type: DocumentSourceType.External,
           service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
         });
       });
