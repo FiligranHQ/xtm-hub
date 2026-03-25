@@ -233,6 +233,7 @@
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
+      "UPLOAD_USER_PICTURE_ERROR": "Une erreur s'est produite lors du téléchargement de votre photo de profil",
       "USER_DISABLED": "L'utilisateur est désactivé",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
       "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter"

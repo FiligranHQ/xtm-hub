@@ -1,8 +1,10 @@
+import config from 'config';
 import { EditMeUserInput } from '../../__generated__/resolvers-types';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
+import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
@@ -11,6 +13,14 @@ import {
   loadOrganizationBy,
   loadUserByOrganization,
 } from '../organizations/organizations.domain';
+import {
+  getDocumentName,
+  normalizeDocumentName,
+} from '../services/document/document.helper';
+import {
+  Upload,
+  waitForUploads,
+} from '../services/document/document.uploads.helper';
 import { updateSubscriptionBy } from '../subcription/subscription.domain';
 import {
   insertNewUserTransfer,
@@ -18,10 +28,6 @@ import {
 } from './user_transferRequest/user_transferRequest.domain';
 import { loadSimpleUserBy, loadUserDetails, updateUser } from './users.domain';
 import { updateAndDispatchUser } from './users.helper';
-import config from 'config';
-import { Upload, waitForUploads } from '../services/document/document.uploads.helper';
-import { MinIOClient } from '../../thirdparty/minio/client';
-import { getDocumentName, normalizeDocumentName } from '../services/document/document.helper';
 
 const deletePicture = async (pictureMinio: string) => {
   try {
@@ -35,19 +41,7 @@ const uploadPictureToMinIO = async (userId: string, file: Upload['file']) => {
   const fileName = normalizeDocumentName(file.filename);
   const minioName = `picture/${getDocumentName(fileName)}`;
 
-  const stream = file.createReadStream();
-  await MinIOClient.insertFile({
-    Bucket: config.get('minio.bucketName'),
-    Key: minioName,
-    Body: stream,
-    Metadata: {
-      mimetype: file.mimetype,
-      filename: fileName,
-      encoding: file.encoding,
-      Uploadinguserid: userId,
-      ServiceInstanceId: 'picture',
-    },
-  });
+  await MinIOClient.uploadFile(file, minioName, userId, fileName);
 
   return minioName;
 };

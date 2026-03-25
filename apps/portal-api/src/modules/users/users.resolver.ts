@@ -149,7 +149,7 @@ const resolvers: Resolvers = {
     },
     uploadUserPicture: async (_, { document }, context) => {
       try {
-        return await usersProfileApp.uploadUserPicture(context.user,document);
+        return await usersProfileApp.uploadUserPicture(context.user, document);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.UploadUserPictureError);
       }
