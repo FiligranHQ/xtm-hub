@@ -6,6 +6,10 @@ import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
 } from '@/components/epic/epic-list-utils';
+import {
+  EpicTimelineFilter,
+  EpicTimelineFilterType,
+} from '@/components/epic/epic-timeline-filter';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import useServiceCapability from '@/hooks/useServiceCapability';
 import { Separator } from '@filigran/ui/clients';
@@ -23,6 +27,8 @@ interface EpicListProps {
     | seoServiceInstanceFragment$data;
   selectedProduct: EpicFilterType;
   onFilterChange: (filter: EpicFilterType) => void;
+  selectedTimeline: EpicTimelineFilterType;
+  onTimelineChange: (timeline: EpicTimelineFilterType) => void;
 }
 
 export const EpicList = ({
@@ -30,6 +36,8 @@ export const EpicList = ({
   serviceInstance,
   selectedProduct,
   onFilterChange,
+  selectedTimeline,
+  onTimelineChange,
 }: EpicListProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
@@ -41,10 +49,15 @@ export const EpicList = ({
     ServiceCapabilityName.Delete,
     serviceInstance as serviceInstance_fragment$data
   );
-  const filteredEpics =
-    selectedProduct === 'all'
-      ? epics
-      : epics.filter((epic) => epic.product === selectedProduct);
+  const filteredEpics = epics
+    .filter(
+      (epic) => selectedProduct === 'all' || epic.product === selectedProduct
+    )
+    .filter(
+      (epic) =>
+        selectedTimeline === 'all' ||
+        (epic.active && epic.timeline === selectedTimeline)
+    );
 
   const { draft, now, next, under_consideration } =
     useDraftAndTimelineEpics(filteredEpics);
@@ -79,6 +92,12 @@ export const EpicList = ({
       <div className="flex flex-row items-center gap-4">
         <h1>{t('Epic.XTMRoadmap')}</h1>
         <div className="flex flex-row ml-auto items-center">
+          <div className="mr-s w-[180px]">
+            <EpicTimelineFilter
+              selectedTimeline={selectedTimeline}
+              onTimelineChange={onTimelineChange}
+            />
+          </div>
           <EpicFilter
             selectedFilter={selectedProduct}
             onSelectedFilterChange={onFilterChange}

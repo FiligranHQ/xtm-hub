@@ -1,5 +1,6 @@
 import { EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicList } from '@/components/epic/epic-list';
+import { EpicTimelineFilterType } from '@/components/epic/epic-timeline-filter';
 import {
   EpicListQuery,
   epicsListFragment,
@@ -31,6 +32,8 @@ const PublicEpicList: React.FC<Props> = ({ queryRef, serviceInstance }) => {
   );
 
   const [selectedProduct, setSelectedProduct] = useState<EpicFilterType>('all');
+  const [selectedTimeline, setSelectedTimeline] =
+    useState<EpicTimelineFilterType>('all');
 
   const filterByProduct = (product: FiligranProductEnum) => {
     setSelectedProduct(product);
@@ -48,6 +51,8 @@ const PublicEpicList: React.FC<Props> = ({ queryRef, serviceInstance }) => {
         serviceInstance={serviceInstance}
         selectedProduct={selectedProduct}
         onFilterChange={setSelectedProduct}
+        selectedTimeline={selectedTimeline}
+        onTimelineChange={setSelectedTimeline}
       />
     </EpicListContext.Provider>
   );
