@@ -3498,9 +3498,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:0.44.8":
-  version: 0.44.8
-  resolution: "@filigran/ui@npm:0.44.8"
+"@filigran/ui@npm:0.46.0":
+  version: 0.46.0
+  resolution: "@filigran/ui@npm:0.46.0"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -3536,14 +3536,14 @@ __metadata:
     tailwind-merge: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
   peerDependencies:
-    "@filigran/icon": ^0.22.3
+    "@filigran/icon": ^0.22.4
     "@hookform/resolvers": ^5.0.0
     "@types/react": ^16.8 || ^17.0 || ^18.0 || ^19.0
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/1cace929728194328168ecc3276ec6952e94b762efad85e6e07fc4b3cfb4fcc8a2619fb1beade70daccab5dcb4fcc460f7ac4468423bb96d4e17d536b6de3a8e
+  checksum: 10/c5c64f69467369bc39753f88f39b627c0fbd9a1285e4743b0aa8321139438afa86681a971d11f0bc27ba9293938dc15679e0bb78379391e216fd8f4324f7c9f1
   languageName: node
   linkType: hard
 
@@ -8958,7 +8958,7 @@ __metadata:
   resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
   dependencies:
     "@filigran/icon": "npm:0.22.4"
-    "@filigran/ui": "npm:0.44.8"
+    "@filigran/ui": "npm:0.46.0"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@testing-library/dom": "npm:10.4.1"

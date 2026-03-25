@@ -71,6 +71,7 @@ export const ServiceFormLogoField = ({ document, field }: Props) => {
       <FormControl>
         <FileInput
           {...field}
+          isFileNameHidden
           onChangeCapture={async (e: ChangeEvent<HTMLInputElement>) => {
             const localImages = [];
             if (e.target?.files) {
