@@ -1,3 +1,13 @@
+enum DocumentSourceType {
+  external
+  internal
+}
+
+enum DocumentImageType {
+  logo
+  image
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -6,6 +16,8 @@ type ShareableResource {
   description: String
   download_number: Int
   active: Boolean!
+  source_type: DocumentSourceType!
+  image_type: DocumentImageType
 }
 
 enum DocumentOrdering {
@@ -94,30 +106,6 @@ input UpdateDocumentInput {
   uploader_id: String
 }
 
-type Mutation {
-  createDocument(
-    input: CreateDocumentInput!
-    metadata: [DocumentMetadata!]!
-    document: [Upload!]!
-    serviceInstanceId: String
-  ): Document! @auth @service_capa(requires: [UPLOAD])
-  updateDocument(
-    documentId: ID!
-    input: UpdateDocumentInput!
-    metadata: [DocumentMetadata!]!
-    document: [Upload!]!
-    updateDocument: Boolean!
-    images: [String!]
-    serviceInstanceId: String
-  ): Document! @auth @service_capa(requires: [UPLOAD])
-  deleteDocument(
-    documentId: ID
-    service_instance_id: String
-    forceDelete: Boolean
-  ): Document! @auth @service_capa(requires: [DELETE])
-  incrementShareNumberDocument(documentId: ID): Document!
-}
-
 type DocumentEdge {
   cursor: String!
   node: Document!
@@ -127,6 +115,33 @@ type DocumentConnection {
   totalCount: Int!
   edges: [DocumentEdge!]!
   pageInfo: PageInfo!
+}
+
+type Mutation {
+  createDocument(
+    input: CreateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    serviceInstanceId: String
+    sourceDocument: Upload
+    logo: Upload
+    images: [Upload!]
+  ): Document! @auth @service_capa(requires: [UPLOAD])
+  updateDocument(
+    documentId: ID!
+    input: UpdateDocumentInput!
+    metadata: [DocumentMetadata!]!
+    serviceInstanceId: String
+    sourceDocument: Upload
+    logo: Upload
+    images: [Upload!]
+    existingImageIds: [ID!]
+  ): Document! @auth @service_capa(requires: [UPLOAD])
+  deleteDocument(
+    documentId: ID
+    service_instance_id: String
+    forceDelete: Boolean
+  ): Document! @auth @service_capa(requires: [DELETE])
+  incrementShareNumberDocument(documentId: ID): Document!
 }
 
 type Query {

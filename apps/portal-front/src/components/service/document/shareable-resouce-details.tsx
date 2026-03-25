@@ -8,14 +8,12 @@ import { Avatar } from '@filigran/ui/clients';
 import { ShareableResourceDetailsLink } from '@/components/service/document/shareable-resource-details-link';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
+import { ShareableResourceDetailMetadataItem } from '@/components/service/document/ui/shareable-resource-detail-metadata-item';
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
-import {
-  docHasMetadata,
-  isResourceDownloadable,
-} from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -109,12 +107,12 @@ const ShareableResourceDetails: React.FunctionComponent<
           )}
         </>
       )}
-      {docHasMetadata(documentData, 'feed_url') && documentData.feed_url && (
-        <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.FeedURL')}>
-          <ShareableResourceDetailsLink url={documentData.feed_url} />
-        </ShareableResourceDetailItem>
-      )}
+      <ShareableResourceDetailMetadataItem
+        documentData={documentData}
+        metadataKey={'feed_url'}
+        translationKey="FeedURL"
+        variant="link"
+      />
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.LastUpdatedAt')}>
         <span>
@@ -124,32 +122,42 @@ const ShareableResourceDetails: React.FunctionComponent<
           )}
         </span>
       </ShareableResourceDetailItem>
-      {docHasMetadata(documentData, 'vendor_url') &&
-        documentData.vendor_url && (
-          <ShareableResourceDetailItem
-            label={t('Service.ShareableResources.Details.VendorURL')}>
-            <ShareableResourceDetailsLink url={documentData.vendor_url} />
-          </ShareableResourceDetailItem>
-        )}
-      {docHasMetadata(documentData, 'github_url') &&
-        documentData.github_url && (
-          <ShareableResourceDetailItem
-            label={t('Service.ShareableResources.Details.GithubURL')}>
-            <ShareableResourceDetailsLink url={documentData.github_url} />
-          </ShareableResourceDetailItem>
-        )}
-      {docHasMetadata(documentData, 'product_version') && (
-        <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.ProductVersion')}>
-          <span>{documentData.product_version}</span>
-        </ShareableResourceDetailItem>
-      )}
+      <ShareableResourceDetailMetadataItem
+        documentData={documentData}
+        metadataKey={'vendor_url'}
+        translationKey="VendorURL"
+        variant="link"
+      />
+      <ShareableResourceDetailMetadataItem
+        documentData={documentData}
+        metadataKey={'github_url'}
+        translationKey="GithubURL"
+        variant="link"
+      />
+      <ShareableResourceDetailMetadataItem
+        documentData={documentData}
+        metadataKey={'product_version'}
+        translationKey="ProductVersion"
+        variant="text"
+      />
       {documentationUrl && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
           <ShareableResourceDetailsLink url={documentationUrl} />
         </ShareableResourceDetailItem>
       )}
+      <ShareableResourceDetailMetadataItem
+        documentData={documentData}
+        metadataKey={'datasheet_url'}
+        translationKey="DatasheetURL"
+        variant="link"
+      />
+      <ShareableResourceDetailMetadataItem
+        documentData={documentData}
+        metadataKey={'demo_url'}
+        translationKey="DemoURL"
+        variant="link"
+      />
       {isResourceDownloadable(documentData) && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.Downloads')}>

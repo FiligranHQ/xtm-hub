@@ -156,6 +156,7 @@
       "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "An unknown error occurred",
       "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "An unknown error occurred",
       "DOCUMENT_CREATE_ERROR": "An error occurred while creating the resource.",
+      "DOCUMENT_FILE_MISSING": "Document file is missing",
       "DOCUMENT_MISSING_METADATA": "Document is missing metadata.",
       "DOCUMENT_NOT_FOUND": "The resource was not found.",
       "DOCUMENT_UNIQUE_SLUG_ERROR": "The resource slug is already in use.",
@@ -627,18 +628,27 @@
     "CreationStatus": "Creation status",
     "Form": {
       "Author": "Author",
+      "ContainerImageLabel": "Container image",
+      "CurrentLogo": "Current logo",
+      "DatasheetUrlLabel": "Datasheet link (url)",
       "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
+      "DemoUrlLabel": "Demo link (url)",
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "This is a paragraph to describe the {documentType}.",
       "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
+      "DropDocuments": "Drop documents here",
       "ExistingJSONFile": "Existing JSON file: {file_name}",
-      "GithubUrlLabel": "Github URL",
+      "GithubUrlLabel": "Github link (url)",
       "Illustration": "Illustration",
-      "IllustrationDisclaimer": "By default Filigran's logo will be displayed on cards, your illustrations will be added on detail page carousel",
+      "LogoDisclaimer": "Filigran logo is used by default",
+      "ImagesDisclaimer": "Your images will be added and displayed as a carousel on the details page of the uploaded resource",
       "ImageLabel": "Images",
+      "LogoLabel": "Logo",
+      "ManagerSupportedLabel": "Manager supported",
       "NameLabel": "Name",
       "NamePlaceholder": "{documentType} name",
       "NoImage": "No image selected",
+      "PlaybookSupportedLabel": "Playbook supported",
       "ProductVersionLabel": "{platform} version",
       "ProductVersionPlaceholder": "1.0.0",
       "PublishedPlaceholder": "Is the {documentType} published?",
@@ -650,11 +660,16 @@
       "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
       "SlugLabel": "Slug",
       "SlugPlaceholder": "slug",
+      "SourceCodeLabel": "Source code",
+      "SubscriptionLinkLabel": "Subscription link (url)",
       "UpdateJSONFile": "Update JSON file",
       "UploadImage": "Upload new image(s)",
+      "UploadLogo": "Upload new logo",
+      "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Use cases",
       "UseCasesPlaceholder": "Add use cases",
-      "VendorUrlLabel": "Vendor URL"
+      "VendorUrlLabel": "Vendor link (url)",
+      "VerifiedLabel": "Verified"
     },
     "OpenctiIntegrations": {
       "Actions": {
@@ -728,10 +743,17 @@
     },
     "Connector": {
       "Actions": {
-        "Deleted": "The Connector {name} has been deleted successfully"
+        "Added": "The Connector {name} has been added successfully",
+        "Deleted": "The Connector {name} has been deleted successfully",
+        "Share": "Share Connector",
+        "Updated": "The Connector {name} has been modified successfully"
       },
+      "Active": "Published",
+      "AddService": "Add new Connector",
       "DeleteService": "Delete the Connector {name}",
-      "SureDeleteService": "Are you sure you want to delete the Connector {name}?"
+      "NonActive": "Draft",
+      "SureDeleteService": "Are you sure you want to delete the Connector {name}?",
+      "UpdateService": "Update the Connector {name}"
     },
     "Stream": {
       "Actions": {
@@ -871,7 +893,9 @@
         "IntegrationSubType": "Subtype",
         "GithubURL": "Github URL",
         "VendorURL": "Vendor URL",
-        "FeedURL": "Feed URL"
+        "FeedURL": "Feed URL",
+        "DatasheetURL": "Datasheet URL",
+        "DemoURL": "Demo URL"
       },
       "Download": "Download",
       "FromVersion": "From version",

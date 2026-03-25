@@ -34,6 +34,7 @@ import {
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './opencti/custom-dashboards/custom-dashboards.model';
 import {
+  INTEGRATION_CONNECTOR_METADATA,
   INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_METADATA_KEYS,
   INTEGRATION_STREAM_METADATA,
@@ -118,6 +119,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
       [IntegrationType.Stream]: INTEGRATION_STREAM_METADATA,
       [IntegrationType.ThirdPartyIntegration]:
         INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
+      [IntegrationType.Connector]: INTEGRATION_CONNECTOR_METADATA,
     };
     if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);
@@ -132,10 +134,10 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
 
 export const DocumentHelper = {
   buildCompleteMetadataFromDocumentFile: ({
-    files,
+    sourceDocumentFile,
     metadata,
   }: {
-    files: MinioFile[];
+    sourceDocumentFile?: MinioFile;
     metadata: DocumentMetadataResolverType[];
   }): DocumentMetadataResolverType[] => {
     const integrationType = metadata.find(
@@ -152,7 +154,7 @@ export const DocumentHelper = {
       return metadata;
     }
 
-    const jsonFileContent = files[0]?.jsonContent;
+    const jsonFileContent = sourceDocumentFile?.jsonContent;
     if (!jsonFileContent) {
       return metadata;
     }
@@ -216,6 +218,46 @@ export const DocumentHelper = {
       throw new Error(ErrorCode.DocumentMissingMetadata);
     }
   },
+  isDocumentFileRequired: ({
+    documentType,
+    documentMetadata,
+  }: {
+    documentType: DOCUMENT_TYPE;
+    documentMetadata: DocumentMetadataResolverType[];
+  }): boolean => {
+    if (documentType !== OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
+      return true;
+    }
+
+    const integrationType = documentMetadata.find(
+      (meta) => meta.key === 'integration_type'
+    )?.value as unknown as IntegrationType | undefined;
+
+    const isFileProhibited = [
+      IntegrationType.Connector,
+      IntegrationType.ThirdPartyIntegration,
+    ].includes(integrationType);
+
+    return !isFileProhibited;
+  },
+  assertDocumentFileIsNotMissing: ({
+    hasDocument,
+    documentType,
+    documentMetadata,
+  }: {
+    hasDocument: boolean;
+    documentType: DOCUMENT_TYPE;
+    documentMetadata: DocumentMetadataResolverType[];
+  }) => {
+    const isDocumentFileRequired = DocumentHelper.isDocumentFileRequired({
+      documentType,
+      documentMetadata,
+    });
+
+    if (isDocumentFileRequired && !hasDocument) {
+      throw new Error(ErrorCode.DocumentFileMissing);
+    }
+  },
   deleteFileFromMinIO: async (
     childrenDocumentFromDB: DocumentModel[],
     document: DocumentModel
@@ -270,7 +312,7 @@ export const uploadNewFile = async (
   const { user } = requestContext.require();
   const { minioName } = await MinIOClient.sendFile(
     document.file,
-    document.file.name,
+    document.file.filename,
     user.id,
     serviceInstanceId
   );
@@ -279,7 +321,7 @@ export const uploadNewFile = async (
     uploader_id: user.id,
     name: serviceInstanceId,
     minio_name: minioName,
-    file_name: document.file.name,
+    file_name: document.file.filename,
     service_instance_id: serviceInstanceId,
     created_at: new Date(),
     mime_type: document.file.mimetype,

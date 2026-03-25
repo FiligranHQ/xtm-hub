@@ -3,6 +3,7 @@ import { Carousel, CarouselItem, DialogContent } from '@filigran/ui/clients';
 import * as React from 'react';
 import { useState } from 'react';
 
+import { cn } from '@/lib/utils';
 import { Dialog } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
@@ -12,20 +13,21 @@ import Image from 'next/image';
 
 // Component interface
 interface ShareableResourceCarouselProps {
-  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  images?:
+    | documentItem_fragment$data['children_documents']
+    | publicDocumentItemFragment$data['children_documents'];
   serviceInstance:
     | seoServiceInstanceFragment$data
     | serviceInstance_fragment$data;
+  className?: string;
 }
 
 const ShareableResourceCarousel: React.FunctionComponent<
   ShareableResourceCarouselProps
-> = ({ documentData, serviceInstance }) => {
+> = ({ images, serviceInstance, className }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [pictureIndex, setPictureIndex] = useState<number>(0);
-  const fileNames = (documentData.children_documents ?? []).map(
-    (doc) => doc?.id
-  );
+  const fileNames = (images ?? []).map((image) => image?.id);
   const handleCarouselImageClick = (open: boolean, index: number) => {
     setOpen(open);
     setPictureIndex(index);
@@ -33,7 +35,7 @@ const ShareableResourceCarousel: React.FunctionComponent<
   return (
     <>
       {fileNames.length > 0 && (
-        <Carousel className="h-[35vh]">
+        <Carousel className={cn('h-[35vh]', className)}>
           {fileNames.map((name, index) => (
             <CarouselItem
               key={name}

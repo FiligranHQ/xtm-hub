@@ -1,37 +1,49 @@
 import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/shareable-resource-connector-details';
+import ShareableResourceCarousel from '@/components/service/document/ui/shareable-resource-carousel-view';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
-import React from 'react';
 import { MarkdownAsync } from 'react-markdown';
 
-interface ShareableResourceConnectorSlugPublicProps {
+interface Props {
   documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  serviceInstance:
+    | seoServiceInstanceFragment$data
+    | serviceInstance_fragment$data;
   pageUrl: string;
-  logo: string;
 }
 
-const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
-  ShareableResourceConnectorSlugPublicProps
-> = ({ documentData, logo, pageUrl }) => {
+const ShareableResourceConnectorSlugPublic = ({
+  documentData,
+  pageUrl,
+  serviceInstance,
+}: Props) => {
+  const logo = findDocumentLogo(documentData);
+  const carouselImages = filterDocumentImages(documentData);
+
   return (
     <>
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        <div className="w-24 flex-shrink-0 rounded overflow-hidden">
-          <Image
-            src={logo}
-            alt={`${documentData.name} logo`}
-            width={96}
-            height={96}
-            loading="lazy"
-            className="w-full h-full object-contain rounded"
-          />
-        </div>
+        {!!logo && (
+          <div className="w-24 flex-shrink-0 rounded overflow-hidden">
+            <Image
+              src={`/document/images/${serviceInstance.id}/${logo.id}`}
+              alt={`${documentData.name} logo`}
+              width={96}
+              height={96}
+              loading="lazy"
+              className="w-full h-full object-contain rounded"
+            />
+          </div>
+        )}
         <div className="flex flex-col flex-1 justify-center">
           <div className="flex items-center gap-s flex-wrap">
             <h1 className="whitespace-nowrap">{documentData.name}</h1>
@@ -63,6 +75,11 @@ const ShareableResourceConnectorSlugPublic: React.FunctionComponent<
           </div>
         </div>
       </div>
+
+      <ShareableResourceCarousel
+        serviceInstance={serviceInstance}
+        images={carouselImages}
+      />
 
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <div className="flex-[3_3_0%]">

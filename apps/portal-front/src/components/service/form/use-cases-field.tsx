@@ -10,15 +10,17 @@ import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;
+  disabled?: boolean;
 }
 
-export const ServiceFormUseCasesField = ({ field }: Props) => {
+export const ServiceFormUseCasesField = ({ field, disabled }: Props) => {
   const t = useTranslations();
   return (
     <FormItem>
       <FormLabel>{t('Service.Form.UseCasesLabel')}</FormLabel>
       <FormControl>
         <MultiSelectFormField
+          disabled={disabled}
           noResultString={t('Utils.NotFound')}
           options={getUseCases()}
           keyValue="id"

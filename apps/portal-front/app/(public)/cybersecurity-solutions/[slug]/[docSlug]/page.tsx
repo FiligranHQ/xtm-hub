@@ -7,6 +7,7 @@ import BadgeOverflowCounter, {
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { formatPersonNames } from '@/utils/format/name';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
@@ -19,6 +20,7 @@ import {
   isResourceDownloadable,
 } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
+import { LogoFiligranIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -204,6 +206,7 @@ const Page = async ({
       },
     };
     const mainChild = document.children_documents?.[0];
+    const logo = findDocumentLogo(document);
     if (document.children_documents!.length > 0) {
       jsonLd.image = document.children_documents!.map(
         (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
@@ -236,13 +239,15 @@ const Page = async ({
           />
           <BreadcrumbNav value={breadcrumbValue} />
           <ShareableResourceConnectorSlugPublic
-            logo={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
             documentData={document}
             pageUrl={pageUrl}
+            serviceInstance={serviceInstance}
           />
         </>
       );
     }
+
+    const carouselImages = filterDocumentImages(document);
 
     return (
       <>
@@ -253,18 +258,21 @@ const Page = async ({
           }}
         />
         <BreadcrumbNav value={breadcrumbValue} />
-
         <div className="flex gap-s pb-l flex-col md:flex-row">
-          {mainChild?.id && (
+          {logo ? (
             <div className="w-24 flex-shrink-0 rounded overflow-hidden">
               <Image
-                src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
+                src={`/document/images/${serviceInstance.id}/${logo.id}`}
                 alt={`${document.name} logo`}
                 width={96}
                 height={96}
                 loading="lazy"
                 className="w-full h-full object-contain rounded"
               />
+            </div>
+          ) : (
+            <div className="w-24 p-m border border-light flex-shrink-0">
+              <LogoFiligranIcon className="size-18" />
             </div>
           )}
           <div className="flex flex-col w-full justify-center">
@@ -295,14 +303,12 @@ const Page = async ({
             </div>
           </div>
         </div>
-        {(serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ||
-          serviceInstance.slug === ServiceSlug.OPEN_AEV_SCENARIOS) &&
-          mainChild && (
-            <ShareableResourceCarousel
-              serviceInstance={serviceInstance}
-              documentData={document}
-            />
-          )}
+        {mainChild && (
+          <ShareableResourceCarousel
+            serviceInstance={serviceInstance}
+            images={carouselImages}
+          />
+        )}
         <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
           <div className="flex-[3_3_0%]">
             <h3 className="py-s txt-container-title truncate text-muted-foreground">

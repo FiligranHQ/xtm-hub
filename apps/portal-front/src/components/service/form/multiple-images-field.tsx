@@ -16,15 +16,20 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentSourceTypeEnum } from '@generated/models/DocumentSourceType.enum';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useRef } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
+export type ServiceFormMultipleImagesFieldImages = (ExistingFile | NewFile) & {
+  source_type: DocumentSourceTypeEnum;
+};
+
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;
-  document: documentItem_fragment$data;
-  images: Array<ExistingFile | NewFile>;
-  setImages: (images: Array<ExistingFile | NewFile>) => void;
+  document?: documentItem_fragment$data;
+  images: Array<ServiceFormMultipleImagesFieldImages>;
+  setImages: (images: Array<ServiceFormMultipleImagesFieldImages>) => void;
   imagesToDelete: string[];
   setImagesToDelete: (ids: string[]) => void;
   setIsDirty: (isDirty: boolean) => void;
@@ -66,9 +71,12 @@ export const ServiceFormMultipleImagesField = ({
               const localImages = [...images];
               if (e.target?.files) {
                 for (const image of Array.from(e.target.files)) {
-                  const extendedImage = image as NewFile;
+                  const extendedImage = image as NewFile & {
+                    source_type: DocumentSourceTypeEnum;
+                  };
                   extendedImage.preview = await fileToBase64(image as File);
                   extendedImage.id = new Date().getTime().toString();
+                  extendedImage.source_type = DocumentSourceTypeEnum.INTERNAL;
                   localImages.push(extendedImage);
                 }
               }
@@ -78,7 +86,7 @@ export const ServiceFormMultipleImagesField = ({
             texts={{
               selectFile: t('Service.Form.UploadImage'),
               noFile: t('Service.Form.NoImage'),
-              dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+              dropFiles: t('Service.Form.DropDocuments'),
             }}
             allowedTypes={'image/jpeg, image/png'}
             ref={(e: HTMLInputElement) => {
@@ -89,8 +97,8 @@ export const ServiceFormMultipleImagesField = ({
           />
         </FormControl>
         <FormMessage />
-        <p>{t('Service.Form.IllustrationDisclaimer')}</p>
       </FormItem>
+      <p className="text-xs">{t('Service.Form.ImagesDisclaimer')}</p>
       {images?.length > 0 && (
         <div
           className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl"
@@ -144,6 +152,9 @@ export const ServiceFormMultipleImagesField = ({
                         (doc as NewFile)?.name}
                     </div>
                     <Button
+                      disabled={
+                        doc.source_type === DocumentSourceTypeEnum.EXTERNAL
+                      }
                       variant="outline-destructive"
                       size="icon"
                       type="button"

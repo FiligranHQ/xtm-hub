@@ -1,5 +1,9 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../../knexfile';
+import {
+  DocumentImageType,
+  DocumentSourceType,
+} from '../../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../../context/database.context';
 import {
   DocumentId,
@@ -12,7 +16,9 @@ import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { MinioFile } from '../../../../thirdparty/minio/types';
 import { DocumentApp } from '../document.app';
 import { Document } from '../document.helper';
+import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from '../document.model';
 import { processUploads, Upload } from '../document.uploads.helper';
+import { DocumentMetadataDomain } from './document.metadata.domain';
 
 export const DocumentChildrenDomain = {
   insertChildRelationship: async ({
@@ -44,8 +50,11 @@ export const DocumentChildrenDomain = {
     return children.map(({ child_document_id }) => child_document_id);
   },
 
-  loadChildrenDocuments: async (documentId: string): Promise<Document[]> => {
-    return db<Document>('Document_Children')
+  loadChildrenDocuments: async (
+    documentId: string,
+    include_metadata: string[] = []
+  ): Promise<Document[]> => {
+    const query = db<Document>('Document_Children')
       .leftJoin(
         'Document',
         'Document.id',
@@ -56,6 +65,10 @@ export const DocumentChildrenDomain = {
       .orderBy('created_at', 'asc')
       .select('Document.*')
       .groupBy('Document.id');
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
+
+    return query;
   },
 
   deleteChildrenByParent: async (parentDocumentId: DocumentId) => {
@@ -73,11 +86,13 @@ export const DocumentChildrenDomain = {
   createImageDocuments: async (
     parentDocumentId: DocumentId,
     serviceInstanceId: ServiceInstanceId,
-    files: MinioFile[]
+    files: MinioFile[],
+    imageType: DocumentImageType,
+    sourceType: DocumentSourceType = DocumentSourceType.Internal
   ) => {
     await Promise.all(
       files.map((file) =>
-        DocumentApp.createDocumentWithChildrenAndMetadata(
+        DocumentApp.createDocumentWithChildrenAndMetadata<DocumentImage>(
           {
             type: 'image',
             parent_document_id: parentDocumentId,
@@ -85,15 +100,17 @@ export const DocumentChildrenDomain = {
             minio_name: file.minioName,
             mime_type: file.mimeType,
             service_instance_id: serviceInstanceId,
+            source_type: sourceType,
+            image_type: imageType,
           },
-          []
+          DOCUMENT_IMAGE_METADATA_KEYS
         )
       )
     );
   },
 
   loadImagesByDocumentId: async (documentId: string) => {
-    const images = await db<Document>('Document')
+    const query = db<Document>('Document')
       .select(['Document.*'])
       .join(
         'Document_Children',
@@ -102,7 +119,15 @@ export const DocumentChildrenDomain = {
         'Document_Children.child_document_id'
       )
       .where('Document_Children.parent_document_id', '=', documentId)
-      .where('Document.mime_type', 'like', 'image/%');
+      .where('Document.mime_type', 'like', 'image/%')
+      .groupBy('Document.id');
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(
+      query,
+      DOCUMENT_IMAGE_METADATA_KEYS
+    );
+
+    const images = await query;
 
     for (const image of images) {
       image.id = toGlobalId('ShareableResourceImage', image.id);
@@ -110,23 +135,30 @@ export const DocumentChildrenDomain = {
     return images;
   },
 
-  upsertImages: async <T extends DocumentModel>(
+  upsertExternalImage: async <T extends DocumentModel>(
     doc: T,
-    upload: Upload[] | Upload
+    externalImageUpload: Upload
   ) => {
-    const files = await processUploads(upload, doc.service_instance_id);
+    const [logoFile] = await processUploads(
+      externalImageUpload,
+      doc.service_instance_id
+    );
 
     const deletedDocuments = await withTransaction(async () => {
-      const deletedDocuments =
-        await DocumentChildrenDomain.deleteChildImagesByParent(doc.id);
+      const deletedChildrenDocuments =
+        await DocumentChildrenDomain.deleteExternalImages(doc.id);
 
-      await DocumentChildrenDomain.createImageDocuments(
-        doc.id,
-        doc.service_instance_id,
-        files
-      );
+      if (logoFile) {
+        await DocumentChildrenDomain.createImageDocuments(
+          doc.id,
+          doc.service_instance_id,
+          [logoFile],
+          DocumentImageType.Logo,
+          DocumentSourceType.External
+        );
+      }
 
-      return deletedDocuments;
+      return deletedChildrenDocuments;
     });
     // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
     if (deletedDocuments.length > 0) {
@@ -138,9 +170,9 @@ export const DocumentChildrenDomain = {
     }
   },
 
-  deleteChildImagesByParent: async (
+  deleteExternalImages: async (
     parentDocumentId: DocumentId
-  ): Promise<Pick<Document, 'id' | 'minio_name'>[]> => {
+  ): Promise<{ id: string; minio_name: string }[]> => {
     return db('Document')
       .delete()
       .whereIn('id', function () {
@@ -148,7 +180,8 @@ export const DocumentChildrenDomain = {
           .from('Document_Children')
           .where('parent_document_id', parentDocumentId);
       })
-      .andWhere('type', 'image')
+      .andWhere('Document.type', '=', 'image')
+      .andWhere('Document.source_type', '=', DocumentSourceType.External)
       .returning(['id', 'minio_name']);
   },
 };
