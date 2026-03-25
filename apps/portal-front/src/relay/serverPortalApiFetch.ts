@@ -1,7 +1,12 @@
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { GraphQLResponse, OperationType, VariablesOf } from 'relay-runtime';
 import { ConcreteRequest } from 'relay-runtime/lib/util/RelayConcreteNode';
-import { getGraphqlApi, networkFetch } from './environment/fetchFn';
+import {
+  getGraphqlApi,
+  networkFetch,
+  UnauthenticatedError,
+} from './environment/fetchFn';
 
 // Call into raw network fetch to get serializable GraphQL query response
 // This response will be sent to the client to "warm" the QueryResponseCache
@@ -22,8 +27,12 @@ export default async function serverPortalApiFetch<
     request: request.params,
     variables,
     portalCookie,
-    redirectOnAuthFailure: false,
     options,
+  }).catch((e: unknown) => {
+    if (e instanceof UnauthenticatedError) {
+      redirect('/login');
+    }
+    throw e;
   });
 }
 
