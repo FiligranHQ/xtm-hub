@@ -23,18 +23,21 @@ interface Props {
   field: ControllerRenderProps<FieldValues, string>;
   integrationType: IntegrationTypeEnum;
   document?: documentItem_fragment$data;
+  disabled?: boolean;
 }
 
 export const ServiceFormIntegrationSubtypeField = ({
   field,
   integrationType,
   document,
+  disabled,
 }: Props) => {
   const t = useTranslations();
   return (
     <FormItem>
       <FormLabel>{t('Service.Form.SelectIntegrationSubType')}</FormLabel>
       <Select
+        disabled={disabled}
         onValueChange={field.onChange}
         defaultValue={document?.integration_subtype}>
         <FormControl>

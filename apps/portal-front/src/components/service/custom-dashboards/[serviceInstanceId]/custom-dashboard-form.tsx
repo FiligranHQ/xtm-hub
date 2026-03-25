@@ -1,27 +1,18 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
-import { ServiceFormMultipleImagesField } from '@/components/service/form/multiple-images-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
-import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
+import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import {
-  ExistingFile,
   fileListCheck,
-  NewFile,
   optionalFileListCheck,
+  transformToFileList,
 } from '@/utils/documents';
-import { LogoFiligranIcon } from '@filigran/icon';
-import {
-  AutoForm,
-  FileInput,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@filigran/ui';
+import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
 
@@ -38,7 +29,8 @@ const customDashboardSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(optionalFileListCheck).optional(),
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
+  images: z.custom<FileList>(optionalFileListCheck),
 });
 
 export type CustomDashboardFormValues = z.infer<typeof customDashboardSchema>;
@@ -58,15 +50,9 @@ export const CustomDashboardForm = ({
   const { me } = useContext(PortalContext);
 
   const isCreation = !document;
-
-  const [images, setImages] = useState<Array<ExistingFile | NewFile>>(
-    document?.children_documents as unknown as ExistingFile[]
-  );
-  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
-
   const onSubmit = (values: CustomDashboardFormValues) => {
     if (isCreation) {
-      handleSubmit(values);
+      handleSubmit({ ...values, images: images as unknown as FileList });
     } else {
       const finalImages = images.filter(
         (img) => !imagesToDelete.includes(img.id)
@@ -84,10 +70,8 @@ export const CustomDashboardForm = ({
     () =>
       ({
         ...document,
-        images: document?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me?.id,
         uploader_organization_id:
@@ -118,10 +102,13 @@ export const CustomDashboardForm = ({
     use_cases,
     uploader_id,
     uploader_organization_id,
-  } = useSimpleServiceFormField({
+    imagesField,
+    images,
+    imagesToDelete,
+    logo,
+  } = useServiceFormFields({
     documentType: 'Custom Dashboard',
     platform: 'OpenCTI',
-    isCreation,
     document,
   });
 
@@ -167,46 +154,8 @@ export const CustomDashboardForm = ({
                 />
               ),
             },
-        images: isCreation
-          ? {
-              fieldType: ({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
-                  <FormControl>
-                    <div>
-                      <div className="w-24 p-m border border-light">
-                        <LogoFiligranIcon className="size-18" />
-                      </div>
-                      <FileInput
-                        {...field}
-                        allowedTypes="image/jpeg, image/png"
-                        multiple
-                        texts={{
-                          selectFile: t('Service.Form.SelectImage'),
-                          noFile: t('Service.Form.NoImage'),
-                          dropFiles: t('Service.Vault.FileForm.DropDocuments'),
-                        }}
-                      />
-                    </div>
-                  </FormControl>
-                  <p>{t('Service.Form.IllustrationDisclaimer')}</p>
-                  <FormMessage />
-                </FormItem>
-              ),
-            }
-          : {
-              fieldType: ({ field }) => (
-                <ServiceFormMultipleImagesField
-                  field={field}
-                  document={document}
-                  images={images}
-                  setImages={setImages}
-                  imagesToDelete={imagesToDelete}
-                  setImagesToDelete={setImagesToDelete}
-                  setIsDirty={setIsDirty}
-                />
-              ),
-            },
+        logo,
+        images: imagesField,
         active,
         short_description,
         slug,

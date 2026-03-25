@@ -19,12 +19,14 @@ interface Props {
   field: ControllerRenderProps<FieldValues, string>;
   isCreation: boolean;
   document?: documentItem_fragment$data;
+  disabled?: boolean;
 }
 
 export const ServiceFormUploaderOrganizationIdField = ({
   field,
   isCreation,
   document,
+  disabled,
 }: Props) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
@@ -32,6 +34,7 @@ export const ServiceFormUploaderOrganizationIdField = ({
     <FormItem hidden={isCreation}>
       <FormLabel>{t('OrganizationInServiceAction.Organization')}</FormLabel>
       <Select
+        disabled={disabled}
         onValueChange={field.onChange}
         defaultValue={
           (isCreation

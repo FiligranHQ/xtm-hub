@@ -20,6 +20,8 @@ export interface ShareableResourceConnectorDetailsProps {
     product_version?: string | null;
     share_number?: number | null;
     manager_supported?: boolean;
+    datasheet_url?: string | null;
+    demo_url?: string | null;
   };
   compatibilityItem?: React.ReactNode;
 }
@@ -103,6 +105,19 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
         label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
         <ShareableResourceDetailsLink url={CONNECTOR_DOCUMENTATION} />
       </ShareableResourceDetailItem>
+
+      {connectorDetails?.datasheet_url && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.DatasheetURL')}>
+          <ShareableResourceDetailsLink url={connectorDetails.datasheet_url} />
+        </ShareableResourceDetailItem>
+      )}
+      {connectorDetails?.demo_url && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.DemoURL')}>
+          <ShareableResourceDetailsLink url={connectorDetails.demo_url} />
+        </ShareableResourceDetailItem>
+      )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Shares')}>
         <span>{roundToNearest(connectorDetails.share_number)}</span>

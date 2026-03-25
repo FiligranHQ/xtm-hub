@@ -21,7 +21,7 @@ import useServiceCapability from '@/hooks/useServiceCapability';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { useContext, useLayoutEffect } from 'react';
+import { Fragment, useContext, useLayoutEffect } from 'react';
 
 export interface ServiceListProps {
   active: documentItem_fragment$data[];
@@ -123,7 +123,7 @@ const ServiceList = ({
 
       {Object.entries(activeByIntegrationType).map(
         ([integrationType, documents]) => (
-          <>
+          <Fragment key={integrationType}>
             {Object.values(IntegrationTypeEnum).includes(
               integrationType as IntegrationTypeEnum
             ) && (
@@ -144,7 +144,7 @@ const ServiceList = ({
                 />
               ))}
             </ul>
-          </>
+          </Fragment>
         )
       )}
     </div>

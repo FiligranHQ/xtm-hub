@@ -126,6 +126,8 @@ export type Connector = Document & Integration & Node & {
   children_documents?: Maybe<Array<ShareableResource>>;
   container_image?: Maybe<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -197,6 +199,8 @@ export type CsvFeed = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   feed_url?: Maybe<Scalars['String']['output']>;
@@ -495,6 +499,11 @@ export type DocumentEdge = {
   node: Document;
 };
 
+export enum DocumentImageType {
+  Image = 'image',
+  Logo = 'logo'
+}
+
 export type DocumentMetadata = {
   key: Scalars['String']['input'];
   value: Scalars['String']['input'];
@@ -507,6 +516,11 @@ export enum DocumentOrdering {
   FileName = 'file_name',
   Name = 'name',
   UpdatedAt = 'updated_at'
+}
+
+export enum DocumentSourceType {
+  External = 'external',
+  Internal = 'internal'
 }
 
 export type EditMeUserInput = {
@@ -607,6 +621,8 @@ export type Integration = {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -634,6 +650,8 @@ export type IntegrationHack = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -886,10 +904,12 @@ export type MutationCreateDeploymentRequestArgs = {
 
 
 export type MutationCreateDocumentArgs = {
-  document: Array<Scalars['Upload']['input']>;
+  images?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateDocumentInput;
+  logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 
@@ -1047,13 +1067,14 @@ export type MutationUpdateDeploymentRequestArgs = {
 
 
 export type MutationUpdateDocumentArgs = {
-  document: Array<Scalars['Upload']['input']>;
   documentId: Scalars['ID']['input'];
-  images?: InputMaybe<Array<Scalars['String']['input']>>;
+  existingImageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  images?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: UpdateDocumentInput;
+  logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
   serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
-  updateDocument: Scalars['Boolean']['input'];
+  sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 
@@ -1825,7 +1846,9 @@ export type ShareableResource = {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  image_type?: Maybe<DocumentImageType>;
   name?: Maybe<Scalars['String']['output']>;
+  source_type: DocumentSourceType;
 };
 
 export type Stream = Document & Integration & Node & {
@@ -1833,6 +1856,8 @@ export type Stream = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   feed_url?: Maybe<Scalars['String']['output']>;
@@ -1941,6 +1966,8 @@ export type TaxiiFeed = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   feed_url?: Maybe<Scalars['String']['output']>;
@@ -1976,6 +2003,8 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
@@ -2355,8 +2384,10 @@ export type ResolversTypes = ResolversObject<{
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
+  DocumentImageType: DocumentImageType;
   DocumentMetadata: DocumentMetadata;
   DocumentOrdering: DocumentOrdering;
+  DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUseCaseInput: EditUseCaseInput;
@@ -2694,6 +2725,8 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   container_image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2728,6 +2761,8 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2941,6 +2976,8 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2967,6 +3004,8 @@ export type IntegrationHackResolvers<ContextType = PortalContext, ParentType ext
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3039,7 +3078,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
   createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
-  createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'document' | 'input' | 'metadata'>>;
+  createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
@@ -3072,7 +3111,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationUpdateCompetitorArgs, 'input'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
-  updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'document' | 'documentId' | 'input' | 'metadata' | 'updateDocument'>>;
+  updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'documentId' | 'input' | 'metadata'>>;
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
@@ -3391,7 +3430,9 @@ export type ShareableResourceResolvers<ContextType = PortalContext, ParentType e
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  image_type?: Resolver<Maybe<ResolversTypes['DocumentImageType']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  source_type?: Resolver<ResolversTypes['DocumentSourceType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3399,6 +3440,8 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3485,6 +3528,8 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3520,6 +3565,8 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
