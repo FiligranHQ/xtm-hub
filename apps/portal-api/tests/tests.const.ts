@@ -30,7 +30,7 @@ export const TEST_ORGANIZATIONS = {
         LAST_NAME: 'Beback',
       },
       SIMPLE: {
-        ID: 'e389e507-f1cd-4f2f-bfb2-274140d87d28',
+        ID: 'e389e507-f1cd-4f2f-bfb2-274140d87d28' as UserId,
       },
       SIMPLE2: {
         ID: '77b4b845-4ab4-4df8-8e12-0651da813ebb' as UserId,
@@ -57,6 +57,14 @@ export const TEST_ORGANIZATIONS = {
         LAST_NAME: 'Time',
         PERSONAL_SPACE_ID:
           '154006e2-f24b-42da-b39c-e0fb17bead00' as OrganizationId,
+      },
+      REGISTERER: {
+        ID: 'b2d22bec-182c-47b3-bf4e-ba8e0d3e6a40' as UserId,
+        EMAIL: 'user.registerer@second-orga.com',
+        FIRST_NAME: 'Anita',
+        LAST_NAME: 'Break',
+        PERSONAL_SPACE_ID:
+          'b2d22bec-182c-47b3-bf4e-ba8e0d3e6a40' as OrganizationId,
       },
     },
     DOMAINS: {
@@ -194,6 +202,49 @@ export const requestContextAdminSecondOrga = {
   portalContext: contextAdminSecondOrga,
 };
 
+export const contextRegistererUserSecondOrga: PortalContext = {
+  user: {
+    id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+    email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
+    password: null,
+    salt: null,
+    first_name:
+      TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.FIRST_NAME,
+    last_name:
+      TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.LAST_NAME,
+    selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+    selected_org_capabilities: ['MANAGE_PLATFORM_REGISTRATION'],
+    organizations: [
+      {
+        id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+        personal_space: false,
+        domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST],
+      },
+      {
+        id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER
+          .PERSONAL_SPACE_ID,
+        name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
+        personal_space: true,
+        domains: [],
+      },
+    ],
+    capabilities: [],
+    roles_portal: [],
+    organization_capabilities: [
+      {
+        id: 14,
+        organization: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        capabilities: ['MANAGE_PLATFORM_REGISTRATION'],
+      },
+    ],
+  },
+} as unknown as PortalContext;
+
+export const requestContextRegistererUserSecondOrga = {
+  user: contextRegistererUserSecondOrga.user,
+  portalContext: contextRegistererUserSecondOrga,
+};
 export const contextSimpleUserSecondOrga: PortalContext = {
   user: {
     id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,

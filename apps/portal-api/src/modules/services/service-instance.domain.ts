@@ -243,7 +243,7 @@ export const loadServiceInstanceSubscriptions = async (
       ),
     ]);
 };
-export const loadServiceInstanceSubscription = async (
+export const loadSubscriptionByServiceInstanceAndOrganization = async (
   selectedOrganizationId: OrganizationId,
   id: ServiceInstanceId
 ) => {
@@ -760,7 +760,7 @@ export const loadPlatformConfigurationByServiceInstanceId = async (
 
 export const updatePlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string,
-  config: PlatformConfiguration
+  config: Partial<PlatformConfiguration>
 ): Promise<ServiceConfiguration | null> => {
   const qb = db('Service_Configuration')
     .where('service_instance_id', '=', serviceInstanceId)

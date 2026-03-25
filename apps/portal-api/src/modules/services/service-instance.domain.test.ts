@@ -1,9 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../knexfile';
 import {
-  contextBypassUser,
-  requestContextAdminUser,
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { TestHelper } from '../../../tests/test.helper';
+import {
+  contextRegistererUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -11,22 +19,13 @@ import {
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
-  ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
-import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
-import UserService, {
-  UserServiceId,
-} from '../../model/kanel/public/UserService';
-import { ADMIN_UUID } from '../../portal.const';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { UserServiceId } from '../../model/kanel/public/UserService';
 import * as mailService from '../../server/mail-service';
 import { PlatformConfiguration } from '../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
@@ -36,9 +35,11 @@ import {
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
-  loadServiceInstanceSubscription,
+  loadPublicServiceInstances,
   loadServiceInstanceSubscriptions,
   loadServiceWithSubscriptions,
+  loadSubscribedServiceInstancesByIdentifier,
+  loadSubscriptionByServiceInstanceAndOrganization,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
@@ -46,483 +47,489 @@ import {
 
 describe('Service instance domain', () => {
   afterEach(async () => {
-    await db<Subscription>('Subscription').del();
+    await TestHelper.subscription.delete({});
   });
 
   describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
+    // Happy path
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ name: 'ServiceInstance 1' });
+      await TestHelper.serviceInstance.delete({ name: 'One serviceInstance' });
+    });
     it('should return service instances linked to service definition and with tags', async () => {
+      // When
       const serviceInstances =
         await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
           ServiceDefinitionIdentifier.Link,
           [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
         );
-
-      expect(serviceInstances.length).toBe(3);
-      expect(
-        serviceInstances.find(({ name }) => name === 'Filigran Blog')
-      ).toBeDefined();
-
-      expect(
-        serviceInstances.find(({ name }) => name === 'OpenCTI 101')
-      ).toBeDefined();
-
-      expect(
-        serviceInstances.find(({ name }) => name === 'OpenCTI Demo')
-      ).toBeDefined();
+      // Then
+      const names = serviceInstances.map(({ name }) => name);
+      expect(names).toHaveLength(3);
+      expect(names).toEqual(
+        expect.arrayContaining(['Filigran Blog', 'OpenCTI 101', 'OpenCTI Demo'])
+      );
     });
 
     it('should not return service instance linked to a subscription', async () => {
-      const linkServiceDefinition = await db<ServiceDefinition>(
-        'ServiceDefinition'
-      )
-        .where('identifier', '=', ServiceDefinitionIdentifier.Link)
-        .select('*')
-        .first();
-
-      expect(linkServiceDefinition).toBeDefined();
-
-      const [subscribedServiceInstance] = await db<ServiceInstance>(
-        'ServiceInstance'
-      )
-        .insert({
-          id: uuidv4() as ServiceInstanceId,
-          name: 'ServiceInstance 1',
-          tags: [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial],
-          service_definition_id: linkServiceDefinition!.id,
-        })
-        .returning('*');
-      expect(subscribedServiceInstance).toBeDefined();
-
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
-        service_instance_id: subscribedServiceInstance!.id,
+      // Given
+      const linkServiceDefinition = await TestHelper.serviceDefinition.load({
+        identifier: ServiceDefinitionIdentifier.Link,
       });
 
+      const instance = await TestHelper.serviceInstance.create({
+        name: 'ServiceInstance 1',
+        service_definition_id: linkServiceDefinition!.id,
+      });
+
+      await TestHelper.subscription.create({
+        service_instance_id: instance.id,
+      });
+
+      // When
       const serviceInstances =
         await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
           ServiceDefinitionIdentifier.Link,
           [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
         );
 
-      expect(
-        serviceInstances.find(
-          (serviceInstance) =>
-            serviceInstance.id === subscribedServiceInstance!.id
-        )
-      ).not.toBeDefined();
+      // Then
+      expect(serviceInstances.map((i) => i.id)).not.toContain(instance.id);
     });
 
-    it('should return an empty array when no service instance has tags', async () => {
-      const serviceInstances =
-        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
-          ServiceDefinitionIdentifier.Link,
-          ['test' as ServiceInstanceTag]
-        );
+    it.each`
+      title                                 | serviceDefinitionIdentifier                            | tags
+      ${'from another serviceDefinition'}   | ${ServiceDefinitionIdentifier.OpenctiCustomDashboards} | ${[ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]}
+      ${'missing one of the required tags'} | ${ServiceDefinitionIdentifier.Link}                    | ${[ServiceInstanceTag.OpenCti]}
+      ${'no tags'}                          | ${ServiceDefinitionIdentifier.Link}                    | ${[]}
+    `(
+      'should exclude instance if $title',
+      async ({ serviceDefinitionIdentifier, tags }) => {
+        // Given
+        const serviceDefinition = await TestHelper.serviceDefinition.load({
+          identifier: serviceDefinitionIdentifier,
+        });
 
-      expect(serviceInstances.length).toBe(0);
-    });
+        const instance = await TestHelper.serviceInstance.create({
+          name: 'One serviceInstance',
+          tags: tags,
+          service_definition_id: serviceDefinition.id,
+        });
+
+        // When
+        const result =
+          await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+            ServiceDefinitionIdentifier.Link,
+            [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
+          );
+
+        // Then
+        expect(result.map((i) => i.id)).not.toContain(instance.id);
+      }
+    );
   });
 
   describe('loadLinks', () => {
+    // Happy path
+    const generateId = uuidv4() as ServiceInstanceId;
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ id: generateId });
+    });
     it('should return the service link when the service instance exists and has links', async () => {
       const links = await loadLinks(SERVICES.INSTANCES.VAULT.ID);
-      expect(links.length).toBe(1);
+      expect(links).toHaveLength(1);
+      expect(links[0]?.service_instance_id).toBe(SERVICES.INSTANCES.VAULT.ID);
     });
 
     it('should return an empty array when the service instance exists but has no links', async () => {
-      const generateId = uuidv4();
-      const test = await db('ServiceInstance')
-        .insert([
-          {
-            id: generateId,
-            name: 'OpenCTI Platform',
-            description: 'short description',
-            creation_status: ServiceInstanceCreationStatus.Ready,
-            public: false,
-            join_type: ServiceInstanceJoinType.JoinAuto,
-            tags: '{others}',
-            service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-          },
-        ])
-        .returning('id');
-      expect(test).toBeTruthy();
+      // Given
+      await TestHelper.serviceInstance.create({
+        id: generateId,
+      });
+      // When
       const links = await loadLinks(generateId);
-      expect(links.length).toBe(0);
+      // Then
+      expect(links).toHaveLength(0);
     });
 
-    it('should return an empty array when the service instance does not exist', async () => {
+    it('should return an empty array when no links exist for the given serviceInstanceId', async () => {
+      // Given
       const generateId = uuidv4();
+      // When
       const links = await loadLinks(generateId);
-      expect(links.length).toBe(0);
+      // Then
+      expect(links).toHaveLength(0);
     });
   });
 
   describe('loadPlatformServiceInstance', () => {
-    it('should load platform service instance when it exists and user has subscription', async () => {
-      // Create a test service instance
-      const serviceInstanceId = uuidv4();
-      const serviceDefinitionId = uuidv4();
-
-      // Insert test data
-      await db('ServiceDefinition').insert({
-        id: serviceDefinitionId,
-        name: 'OpenCTI Registration',
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-      });
-
-      await db('ServiceInstance').insert({
-        id: serviceInstanceId,
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({
         name: 'Test OpenCTI Platform',
-        description: 'Test platform',
-        service_definition_id: serviceDefinitionId,
-        creation_status: ServiceInstanceCreationStatus.Ready,
+      });
+      await TestHelper.serviceInstance.delete({
+        name: 'Test OpenCTI Platform without subscription',
+      });
+    });
+    it('should load platform service instance when it exists and user has subscription', async () => {
+      // Given
+      const serviceDefinition = await TestHelper.serviceDefinition.create();
+
+      const serviceInstance = await TestHelper.serviceInstance.create({
+        service_definition_id: serviceDefinition.id,
+        name: 'Test OpenCTI Platform',
+      });
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstance.id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
-      await db('Subscription').insert({
-        id: uuidv4(),
-        service_instance_id: serviceInstanceId,
-        organization_id: contextBypassUser.user.selected_organization_id,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-      });
-
+      // When
       const result = await loadPlatformServiceInstance(
-        contextBypassUser.user.selected_organization_id,
-        serviceInstanceId
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        serviceInstance.id
       );
 
+      // Then
       expect(result).toBeTruthy();
-      expect(result.id).toBe(serviceInstanceId);
+      expect(result.id).toBe(serviceInstance.id);
       expect(result.name).toBe('Test OpenCTI Platform');
     });
 
     it('should return null when service instance does not exist', async () => {
+      // Given
       const nonExistentId = uuidv4();
+      // When
       const result = await loadPlatformServiceInstance(
-        contextBypassUser.user.selected_organization_id,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         nonExistentId
       );
+      // Then
       expect(result).toBeUndefined();
     });
 
     it('should return null when user has no subscription to the service', async () => {
-      const serviceInstanceId = uuidv4();
-      const serviceDefinitionId = uuidv4();
+      // Given
+      const serviceDefinition = await TestHelper.serviceDefinition.create();
 
-      await db('ServiceDefinition').insert({
-        id: serviceDefinitionId,
-        name: 'OpenCTI Registration',
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+      const serviceInstance = await TestHelper.serviceInstance.create({
+        service_definition_id: serviceDefinition.id,
+        name: 'Test OpenCTI Platform without subscription',
       });
-
-      await db('ServiceInstance').insert({
-        id: serviceInstanceId,
-        name: 'Test Platform No Sub',
-        description: 'Test platform without subscription',
-        service_definition_id: serviceDefinitionId,
-        creation_status: ServiceInstanceCreationStatus.Ready,
-      });
-
+      // When
       const result = await loadPlatformServiceInstance(
-        contextBypassUser.user.selected_organization_id,
-        serviceInstanceId
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        serviceInstance.id
       );
+
+      // Then
       expect(result).toBeUndefined();
     });
   });
 
   describe('updateServiceInstance', () => {
-    let mockServiceInstanceId: ServiceInstanceId;
-
+    let serviceInstance: ServiceInstance;
     beforeEach(async () => {
-      mockServiceInstanceId = uuidv4() as ServiceInstanceId;
-      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID; // Use existing service definition
-      await db('ServiceInstance').insert({
-        id: mockServiceInstanceId,
+      serviceInstance = await TestHelper.serviceInstance.create({
         name: 'Original Name',
         description: 'Original Description',
-        service_definition_id: serviceDefinitionId,
-        creation_status: ServiceInstanceCreationStatus.Ready,
+        public: false,
       });
     });
 
-    it('should update service instance with new data', async () => {
-      const updateData = {
-        name: 'Updated Name',
-        description: 'Updated Description',
-      };
-
-      const result = await updateServiceInstance(
-        mockServiceInstanceId,
-        updateData
-      );
-
-      expect(result).toBeTruthy();
-      expect(result?.name).toBe('Updated Name');
-      expect(result?.description).toBe('Updated Description');
-      expect(result?.id).toBe(mockServiceInstanceId);
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ name: 'Original Name' });
+      await TestHelper.serviceInstance.delete({ name: 'Only Name Updated' });
     });
 
     it('should update only provided fields', async () => {
+      // When
       const updateData = {
         name: 'Only Name Updated',
+        public: true,
       };
 
       const result = await updateServiceInstance(
-        mockServiceInstanceId,
+        serviceInstance.id,
         updateData
       );
 
+      // Then
       expect(result?.name).toBe('Only Name Updated');
-      expect(result?.description).toBe('Original Description'); // Should remain unchanged
+      expect(result?.description).toBe('Original Description');
+      expect(result?.public).toBe(true);
     });
 
     it('should return undefined when service instance does not exist', async () => {
+      // Given
       const nonExistentId = uuidv4();
       const updateData = { name: 'New Name' };
 
+      // When
       const result = await updateServiceInstance(
         nonExistentId as ServiceInstanceId,
         updateData
       );
+      // Then
       expect(result).toBeUndefined();
     });
   });
 
   describe('loadPlatformConfigurationByServiceInstanceId', () => {
-    let mockServiceInstanceId: string;
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
 
-    beforeEach(async () => {
-      mockServiceInstanceId = uuidv4();
-      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID; // Use existing service definition
-
-      // Create ServiceInstance first
-      await db('ServiceInstance').insert({
-        id: mockServiceInstanceId,
-        name: 'Test Service Config',
-        description: 'Test service for configuration',
-        service_definition_id: serviceDefinitionId,
-        creation_status: ServiceInstanceCreationStatus.Ready,
+    beforeAll(async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
 
-      const mockConfig: PlatformConfiguration = {
-        registerer_id: contextBypassUser.user.id,
-        platform_id: 'test-platform',
-        platform_title: 'Test Platform',
-        platform_url: 'https://test.com',
-        platform_contract: PlatformContract.Ee,
-        platform_version: '1.0.0',
-        token: 'test-token',
-      };
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+      });
+    });
+    afterAll(async () => {
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: serviceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+    });
 
-      await db('Service_Configuration').insert({
-        service_instance_id: mockServiceInstanceId,
-        config: JSON.stringify(mockConfig),
+    it('should load platform configuration when it exists', async () => {
+      // When
+      const result =
+        await loadPlatformConfigurationByServiceInstanceId(serviceInstanceId);
+
+      // Then
+      expect(result).toMatchObject({
+        service_instance_id: serviceInstanceId,
+        config: {
+          registerer_id: contextRegistererUserSecondOrga.user.id,
+          platform_id: 'test-platform',
+          platform_title: 'Test Platform',
+          platform_url: 'https://test.com',
+          platform_contract: PlatformContract.Ee,
+          platform_version: '1.0.0',
+          token: 'test-token',
+        },
         status: ServiceConfigurationStatus.Active,
       });
     });
 
-    it('should load platform configuration when it exists', async () => {
+    it('should return undefined when configuration does not exist', async () => {
+      // Given
+      const serviceInstance = await TestHelper.serviceInstance.create({
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+
+      // When
       const result = await loadPlatformConfigurationByServiceInstanceId(
-        mockServiceInstanceId
+        serviceInstance.id
       );
 
-      expect(result).toBeTruthy();
-      expect(result?.service_instance_id).toBe(mockServiceInstanceId);
-
-      const config = result?.config as PlatformConfiguration;
-      expect(config.platform_title).toBe('Test Platform');
-      expect(config.platform_url).toBe('https://test.com');
-    });
-
-    it('should return null when configuration does not exist', async () => {
-      const nonExistentServiceId = uuidv4();
-      const result =
-        await loadPlatformConfigurationByServiceInstanceId(
-          nonExistentServiceId
-        );
-
+      // Then
       expect(result).toBeUndefined();
     });
   });
 
   describe('updatePlatformConfigurationByServiceInstanceId', () => {
-    let mockServiceInstanceId: string;
-    let originalConfig: PlatformConfiguration;
-
-    beforeEach(async () => {
-      mockServiceInstanceId = uuidv4();
-      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID; // Use existing service definition
-
-      // Create ServiceInstance first
-      await db('ServiceInstance').insert({
-        id: mockServiceInstanceId,
-        name: 'Test Update Config',
-        description: 'Test service for configuration update',
-        service_definition_id: serviceDefinitionId,
-        creation_status: ServiceInstanceCreationStatus.Ready,
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
+    beforeAll(async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-
-      originalConfig = {
-        registerer_id: contextBypassUser.user.id,
-        platform_id: 'original-platform',
-        platform_title: 'Original Title',
-        platform_url: 'https://original.com',
-        platform_contract: PlatformContract.Ce,
-        platform_version: '1.0.0',
-        token: 'original-token',
-      };
-
-      await db('Service_Configuration').insert({
-        service_instance_id: mockServiceInstanceId,
-        config: JSON.stringify(originalConfig),
-        status: ServiceConfigurationStatus.Active,
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
       });
     });
 
-    it('should update platform configuration', async () => {
-      const updatedConfig: PlatformConfiguration = {
-        ...originalConfig,
-        platform_title: 'Updated Title',
-        platform_url: 'https://updated.com',
-        platform_version: '2.0.0',
-      };
-
-      const result = await updatePlatformConfigurationByServiceInstanceId(
-        mockServiceInstanceId,
-        updatedConfig
-      );
-
-      expect(result).toBeTruthy();
-      expect(result?.service_instance_id).toBe(mockServiceInstanceId);
-
-      const config = result?.config as PlatformConfiguration;
-      expect(config.platform_title).toBe('Updated Title');
-      expect(config.platform_url).toBe('https://updated.com');
-      expect(config.platform_version).toBe('2.0.0');
-      expect(config.platform_contract).toBe(PlatformContract.Ce);
-    });
-
-    it('should return null when configuration does not exist', async () => {
-      const nonExistentServiceId = uuidv4();
-      const updatedConfig: PlatformConfiguration = {
-        ...originalConfig,
-        platform_title: 'Should Not Update',
-      };
-
-      const result = await updatePlatformConfigurationByServiceInstanceId(
-        nonExistentServiceId,
-        updatedConfig
-      );
-
-      expect(result).toBeUndefined();
+    afterAll(async () => {
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: serviceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
     });
 
     it('should handle complete configuration replacement', async () => {
+      // Given
       const newConfig: PlatformConfiguration = {
         registerer_id: 'new-registerer',
         platform_id: 'completely-new-platform',
         platform_title: 'Completely New Title',
         platform_url: 'https://completelynew.com',
-        platform_contract: PlatformContract.Ee,
+        platform_contract: PlatformContract.Ce,
         platform_version: '3.0.0',
         token: 'new-token',
       };
 
+      // When
       const result = await updatePlatformConfigurationByServiceInstanceId(
-        mockServiceInstanceId,
+        serviceInstanceId,
         newConfig
       );
 
-      expect(result).toBeTruthy();
-      const config = result?.config as PlatformConfiguration;
-      expect(config.registerer_id).toBe('new-registerer');
-      expect(config.platform_id).toBe('completely-new-platform');
-      expect(config.platform_title).toBe('Completely New Title');
-      expect(config.platform_contract).toBe(PlatformContract.Ee);
+      // Then
+      expect(result).toMatchObject({
+        service_instance_id: serviceInstanceId,
+        config: newConfig,
+        status: ServiceConfigurationStatus.Active,
+      });
+    });
+
+    it('should update partial platform configuration', async () => {
+      // Given
+      const updatedConfig: Partial<PlatformConfiguration> = {
+        platform_title: 'Updated Title',
+        platform_url: 'https://updated.com',
+        platform_version: '2.0.0',
+        platform_contract: PlatformContract.Ce,
+      };
+
+      // When
+      const result = await updatePlatformConfigurationByServiceInstanceId(
+        serviceInstanceId,
+        updatedConfig
+      );
+
+      // Then
+      expect(result).toMatchObject({
+        service_instance_id: serviceInstanceId,
+        config: {
+          platform_title: 'Updated Title',
+          platform_url: 'https://updated.com',
+          platform_version: '2.0.0',
+          platform_contract: PlatformContract.Ce,
+        },
+        status: ServiceConfigurationStatus.Active,
+      });
+    });
+
+    it('should return null when configuration does not exist', async () => {
+      // Given
+      const nonExistentServiceId = uuidv4();
+      const updatedConfig: Partial<PlatformConfiguration> = {
+        platform_title: 'Should Not Update',
+      };
+
+      // When
+      const result = await updatePlatformConfigurationByServiceInstanceId(
+        nonExistentServiceId,
+        updatedConfig
+      );
+
+      // Then
+      expect(result).toBeUndefined();
     });
   });
 
   describe('grantServiceAccess', () => {
     let testServiceInstanceId: ServiceInstanceId;
+    let otherServiceInstanceId: ServiceInstanceId;
     let filigranSubscriptionId: SubscriptionId;
     let secondOrgaSubscriptionId: SubscriptionId;
 
     beforeEach(async () => {
       vi.spyOn(mailService, 'sendMail').mockResolvedValue();
       testServiceInstanceId = uuidv4() as ServiceInstanceId;
+      otherServiceInstanceId = uuidv4() as ServiceInstanceId;
       filigranSubscriptionId = uuidv4() as SubscriptionId;
       secondOrgaSubscriptionId = uuidv4() as SubscriptionId;
 
-      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_INTEGRATIONS.ID;
-
-      await db('ServiceInstance').insert({
+      await TestHelper.serviceInstance.create({
         id: testServiceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_INTEGRATIONS.ID,
         name: 'Test Service for Grant Access',
-        description: 'Test service',
-        service_definition_id: serviceDefinitionId,
-        creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
-      await db('Subscription').insert({
+      await TestHelper.subscription.create({
         id: filigranSubscriptionId,
         service_instance_id: testServiceInstanceId,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
       });
-
-      await db('Subscription').insert({
+      await TestHelper.subscription.create({
         id: secondOrgaSubscriptionId,
         service_instance_id: testServiceInstanceId,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
       });
     });
 
     afterEach(async () => {
       vi.restoreAllMocks();
-      await db<UserService>('User_Service')
-        .where(
-          'user_id',
-          '=',
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
-        )
-        .delete();
+
+      await TestHelper.user_Service.delete({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+      });
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: testServiceInstanceId,
+      });
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: otherServiceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({
+        id: testServiceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({
+        id: otherServiceInstanceId,
+      });
     });
 
     it('should create user_service linked to the correct subscription', async () => {
+      // When
       const result = await grantServiceAccess(
         [GenericServiceCapabilityIds.AccessId],
         [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
         secondOrgaSubscriptionId
       );
 
+      // Then
+      // Check the return
       expect(result).toHaveLength(1);
       expect(result[0]!.user_id).toBe(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
       );
       expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
 
-      const userServiceInDb = await db<UserService>('User_Service')
-        .where('id', '=', result[0]!.id)
-        .first();
+      // Check in DB
+      const userServiceInDb = await TestHelper.user_Service.load({
+        id: result[0]?.id as UserServiceId,
+      });
 
       expect(userServiceInDb).toBeDefined();
       expect(userServiceInDb?.subscription_id).toBe(secondOrgaSubscriptionId);
     });
 
+    it('should not link user_service to a different organization subscription', async () => {
+      // When
+      const result = await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        secondOrgaSubscriptionId
+      );
+
+      // Then
+      // Check the return
+      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
+
+      // Check in DB
+      const userServicesInDb = await TestHelper.user_Service.load({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+      });
+
+      expect(userServicesInDb?.subscription_id).toBe(secondOrgaSubscriptionId);
+    });
+
     it('should send an email when there is a mail template associated to the service', async () => {
+      // Given
       const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
+      // When
       await grantServiceAccess(
         [GenericServiceCapabilityIds.AccessId],
         [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
         secondOrgaSubscriptionId
       );
 
+      // Then
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
           name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
@@ -534,217 +541,294 @@ describe('Service instance domain', () => {
       });
     });
 
-    it('should not link user_service to a different organization subscription', async () => {
-      const result = await grantServiceAccess(
+    it('should not send an email when there is no mail template associated to the service', async () => {
+      // Given
+      const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
+
+      const anyServiceInstance = await TestHelper.serviceInstance.create({
+        id: otherServiceInstanceId,
+      });
+
+      const subscription = await TestHelper.subscription.create({
+        service_instance_id: anyServiceInstance.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+
+      // When
+      await grantServiceAccess(
         [GenericServiceCapabilityIds.AccessId],
         [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
-        secondOrgaSubscriptionId
+        subscription!.id
       );
-
-      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
-      expect(result[0]!.subscription_id).not.toBe(filigranSubscriptionId);
-
-      const userServicesInDb: UserService[] = await db<UserService[]>(
-        'User_Service'
-      )
-        .where(
-          'user_id',
-          '=',
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
-        )
-        .select('*');
-
-      expect(userServicesInDb).toHaveLength(1);
-      expect(userServicesInDb[0]!.subscription_id).toBe(
-        secondOrgaSubscriptionId
-      );
+      // Then
+      expect(sendMailSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('loadServiceWithSubscriptions', () => {
-    let testServiceInstanceId: ServiceInstanceId;
-    let filigranSubscriptionId: SubscriptionId;
-    let thalesSubscriptionId: SubscriptionId;
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
     beforeEach(async () => {
-      testServiceInstanceId = uuidv4() as ServiceInstanceId;
-      filigranSubscriptionId = uuidv4() as SubscriptionId;
-      thalesSubscriptionId = uuidv4() as SubscriptionId;
-
-      const serviceDefinitionId = '5f769173-5ace-4ef3-b04f-2c95609c5b59';
-
-      await db('ServiceInstance').insert({
-        id: testServiceInstanceId,
-        name: 'Test Service With Subscriptions',
-        description: 'Test service',
-        service_definition_id: serviceDefinitionId,
-        creation_status: ServiceInstanceCreationStatus.Ready,
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
       });
-
-      await db('Subscription').insert({
-        id: filigranSubscriptionId,
-        service_instance_id: testServiceInstanceId,
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstanceId,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
       });
-
-      await db('Subscription').insert({
-        id: thalesSubscriptionId,
-        service_instance_id: testServiceInstanceId,
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstanceId,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
       });
     });
-    it('should filter organizations by searchTerm when provided', async () => {
-      requestContext.set(requestContextAdminUser);
-      const result = await loadServiceWithSubscriptions(
-        testServiceInstanceId,
-        'SECOND'
-      );
-      expect(result.subscriptions.length).toBe(1);
-      expect(result.subscriptions[0].organization.name).toBe('SECOND ORGA');
+
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
     });
-    it('should return all subscriptions when no searchTerm provided', async () => {
-      requestContext.set(requestContextAdminUser);
 
-      const result = await loadServiceWithSubscriptions(
-        testServiceInstanceId,
-        undefined
-      );
+    it.each`
+      searchTerm    | expectedNames
+      ${'SECOND'}   | ${['SECOND ORGA']}
+      ${'ANYTHING'} | ${[]}
+      ${undefined}  | ${['Filigran', 'SECOND ORGA']}
+    `(
+      'should return subscriptions for searchTerm=$searchTerm',
+      async ({ searchTerm, expectedNames }) => {
+        // When
+        const result = await loadServiceWithSubscriptions(
+          serviceInstanceId,
+          searchTerm
+        );
 
-      expect(result.subscriptions.length).toBe(2);
-
-      const orgNames = result.subscriptions.map((sub) => sub.organization.name);
-      expect(orgNames).toContain('SECOND ORGA');
-      expect(orgNames).toContain('Filigran');
-    });
+        // Then
+        expect(result.subscriptions.length).toBe(expectedNames.length);
+        type SubscriptionWithOrg = {
+          organization: {
+            name: string;
+          };
+        };
+        const orgNames = result.subscriptions.map(
+          (sub: SubscriptionWithOrg) => sub.organization.name
+        );
+        expect(orgNames).toEqual(expectedNames);
+      }
+    );
   });
 
   describe('getUserJoined', () => {
+    afterAll(async () => {
+      await TestHelper.user_Service.delete({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+      });
+    });
     it('should return true when user subscribed to the service with the organization', async () => {
-      const [subscription] = await db<Subscription>('Subscription')
-        .insert({
-          id: uuidv4() as SubscriptionId,
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          start_date: new Date(),
-          status: 'ACCEPTED',
-          joining: 'AUTO_JOIN',
-        })
-        .returning('*');
-
-      expect(subscription).toBeDefined();
-
-      await db<UserService>('User_Service').insert({
-        id: uuidv4() as UserServiceId,
-        user_id: ADMIN_UUID,
+      // Given
+      const subscription = await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.user_Service.create({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         subscription_id: subscription!.id,
       });
+
+      // When
       const result = await getUserJoined(
-        ADMIN_UUID,
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        SERVICES.INSTANCES.INTEGRATIONS.ID
-      );
-
-      expect(result).toBe(true);
-    });
-
-    it('should return false when user did not subscribe to the service with the organization', async () => {
-      const result = await getUserJoined(
-        ADMIN_UUID,
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        SERVICES.INSTANCES.INTEGRATIONS.ID
-      );
-
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('loadServiceInstanceSubscription', () => {
-    beforeEach(async () => {
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
-      });
-    });
-
-    it('should return subscription when service instance and organization are found', async () => {
-      const subscription = await loadServiceInstanceSubscription(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        SERVICES.INSTANCES.INTEGRATIONS.ID
-      );
-
-      expect(subscription).toBeDefined();
-    });
-
-    it('should return undefined when service instance is not found', async () => {
-      const subscription = await loadServiceInstanceSubscription(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        SERVICES.INSTANCES.VAULT.ID
-      );
-
-      expect(subscription).toBeUndefined();
-    });
-
-    it('should return undefined when organization is not found', async () => {
-      const subscription = await loadServiceInstanceSubscription(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         SERVICES.INSTANCES.INTEGRATIONS.ID
       );
 
-      expect(subscription).toBeUndefined();
+      // Then
+      expect(result).toBe(true);
     });
+
+    it('should return false when user did not subscribe to the service with the organization', async () => {
+      // When
+      const result = await getUserJoined(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      // Then
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('loadSubscriptionByServiceInstanceAndOrganization', () => {
+    beforeEach(async () => {
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+    });
+
+    it('should return subscription when service instance and organization are found', async () => {
+      // When
+      const subscription =
+        await loadSubscriptionByServiceInstanceAndOrganization(
+          TEST_ORGANIZATIONS.FILIGRAN.ID,
+          SERVICES.INSTANCES.INTEGRATIONS.ID
+        );
+
+      // Then
+      expect(subscription).toMatchObject({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+    });
+
+    it.each`
+      description           | organizationId                               | serviceInstanceId
+      ${'service instance'} | ${TEST_ORGANIZATIONS.FILIGRAN.ID}            | ${SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID}
+      ${'organization'}     | ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID} | ${SERVICES.INSTANCES.INTEGRATIONS.ID}
+      ${'none'}             | ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID} | ${SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID}
+    `(
+      'should return undefined when $title is not found',
+      async ({ organizationId, serviceInstanceId }) => {
+        // When
+        const subscription =
+          await loadSubscriptionByServiceInstanceAndOrganization(
+            organizationId,
+            serviceInstanceId
+          );
+
+        // Then
+        expect(subscription).toBeUndefined();
+      }
+    );
   });
 
   describe('loadServiceInstanceSubscriptions', () => {
     it('should return a list of subscriptions linked to service instance', async () => {
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
+      // Given
+      await TestHelper.subscription.create({
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
       });
-
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
+      await TestHelper.subscription.create({
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
       });
-
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
+      await TestHelper.subscription.create({
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-        start_date: new Date(),
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
       });
 
+      // when
       const result = await loadServiceInstanceSubscriptions(
         SERVICES.INSTANCES.INTEGRATIONS.ID
       );
 
+      // Then
       expect(result.length).toBe(2);
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          }),
+          expect.objectContaining({
+            organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          }),
+        ])
+      );
     });
 
     it('should return an empty array when service instance is not found', async () => {
+      // When
       const result = await loadServiceInstanceSubscriptions(
         uuidv4() as ServiceInstanceId
       );
 
+      // Then
       expect(result.length).toBe(0);
+    });
+  });
+
+  describe('loadSubscribedServiceInstancesByIdentifier', () => {
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
+
+    beforeEach(async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+    });
+
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+    });
+
+    it('should return subscribed service instances for the user', async () => {
+      // When
+      const result = await loadSubscribedServiceInstancesByIdentifier(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        ServiceDefinitionIdentifier.OpenctiRegistration
+      );
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        service_instance_id: serviceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+    });
+
+    it('should return empty array if user has no subscription', async () => {
+      // When
+      const result = await loadSubscribedServiceInstancesByIdentifier(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        ServiceDefinitionIdentifier.OpenctiRegistration
+      );
+
+      // Then
+      expect(result).toHaveLength(0);
+    });
+  });
+
+  describe('loadPublicServiceInstances', () => {
+    const publicServiceInstanceId = uuidv4() as ServiceInstanceId;
+    const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+    beforeEach(async () => {
+      await TestHelper.serviceInstance.create({
+        id: publicServiceInstanceId,
+        public: true,
+      });
+      await TestHelper.serviceInstance.create({
+        id: privateServiceInstanceId,
+        public: false,
+      });
+    });
+
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ id: publicServiceInstanceId });
+      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+    });
+
+    it('Should return only public service instances', async () => {
+      const result = await loadPublicServiceInstances(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        { first: 10, orderBy: 'name', orderMode: 'asc' }
+      );
+
+      expect(result.edges).toHaveLength(10);
+
+      expect(result.edges.map((e) => e.node?.id)).toContain(
+        publicServiceInstanceId
+      );
+      expect(result.edges.map((e) => e.node?.id)).not.toContain(
+        privateServiceInstanceId
+      );
     });
   });
 });
