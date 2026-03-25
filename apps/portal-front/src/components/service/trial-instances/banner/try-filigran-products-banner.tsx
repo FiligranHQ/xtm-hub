@@ -51,7 +51,7 @@ export const TryFiligranProductsBanner = () => {
             height="25"
             alt={'Product Logo'}
             src={PlatformMetadataMapping[product].logoUrl}
-            className="mr-s"
+            className="mr-s object-contain"
           />
           {PlatformMetadataMapping[product].name}
         </div>
