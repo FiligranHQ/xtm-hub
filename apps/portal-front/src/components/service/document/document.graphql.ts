@@ -3,16 +3,20 @@ import { graphql } from 'react-relay';
 export const DocumentCreateMutation = graphql`
   mutation documentCreateMutation(
     $input: CreateDocumentInput!
-    $document: [Upload!]!
     $metadata: [DocumentMetadata!]!
     $serviceInstanceId: String!
     $connections: [ID!]!
+    $sourceDocument: Upload
+    $logo: Upload
+    $images: [Upload!]
   ) {
     createDocument(
       input: $input
-      document: $document
       metadata: $metadata
       serviceInstanceId: $serviceInstanceId
+      sourceDocument: $sourceDocument
+      logo: $logo
+      images: $images
     ) @prependNode(connections: $connections, edgeTypeName: "DocumentEdge") {
       __id
       name
@@ -26,19 +30,21 @@ export const DocumentUpdateMutation = graphql`
     $documentId: ID!
     $input: UpdateDocumentInput!
     $metadata: [DocumentMetadata!]!
-    $document: [Upload!]!
-    $updateDocument: Boolean!
-    $images: [String!]
+    $sourceDocument: Upload
+    $existingImageIds: [ID!]
     $serviceInstanceId: String!
+    $logo: Upload
+    $images: [Upload!]
   ) {
     updateDocument(
       documentId: $documentId
       input: $input
-      document: $document
-      updateDocument: $updateDocument
+      sourceDocument: $sourceDocument
       metadata: $metadata
-      images: $images
+      existingImageIds: $existingImageIds
       serviceInstanceId: $serviceInstanceId
+      logo: $logo
+      images: $images
     ) {
       __id
       ...documentItem_fragment
@@ -112,6 +118,7 @@ export const documentItem = graphql`
       download_number
       active
       source_type
+      image_type
     }
     slug
     service_instance {

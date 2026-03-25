@@ -1,5 +1,6 @@
 import { ServiceFormDescriptionField } from '@/components/service/form/description-field';
 import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/integration-subtype-field';
+import { ServiceFormLogoField } from '@/components/service/form/logo-field';
 import {
   ServiceFormMultipleImagesField,
   ServiceFormMultipleImagesFieldImages,
@@ -8,14 +9,8 @@ import { ServiceFormUploaderIdField } from '@/components/service/form/uploader-i
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/uploader-organization-id-field';
 import { ServiceFormUseCasesField } from '@/components/service/form/use-cases-field';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { LogoFiligranIcon } from '@filigran/icon';
-import {
-  FileInput,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@filigran/ui';
+import { filterDocumentImages } from '@/utils/documents';
+import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
@@ -87,9 +82,11 @@ export const useServiceFormFields = ({
   const [images, setImages] = useState<
     Array<ServiceFormMultipleImagesFieldImages>
   >(
-    (document?.children_documents ??
-      []) as unknown as ServiceFormMultipleImagesFieldImages[]
+    filterDocumentImages(
+      document
+    ) as unknown as ServiceFormMultipleImagesFieldImages[]
   );
+
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
   const { setIsDirty } = useDialogContext();
   const integrationType = integrationTypeMappedByDocumentType[documentType];
@@ -169,54 +166,35 @@ export const useServiceFormFields = ({
             },
           }
         : {}),
-      imagesField: !document
-        ? {
-            fieldType: ({
-              field,
-            }: {
-              field: ControllerRenderProps<FieldValues, string>;
-            }) => (
-              <FormItem>
-                <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
-                <FormControl>
-                  <div>
-                    <FileInput
-                      {...field}
-                      allowedTypes="image/jpeg, image/png"
-                      multiple
-                      texts={{
-                        selectFile: t('Service.Form.SelectImage'),
-                        noFile: t('Service.Form.NoImage'),
-                        dropFiles: t('Service.Form.DropDocuments'),
-                      }}
-                    />
-                  </div>
-                </FormControl>
-                <div className="w-24 p-m border border-light">
-                  <LogoFiligranIcon className="size-18" />
-                </div>
-                <p>{t('Service.Form.IllustrationDisclaimer')}</p>
-                <FormMessage />
-              </FormItem>
-            ),
-          }
-        : {
-            fieldType: ({
-              field,
-            }: {
-              field: ControllerRenderProps<FieldValues, string>;
-            }) => (
-              <ServiceFormMultipleImagesField
-                field={field}
-                document={document}
-                images={images}
-                setImages={setImages}
-                imagesToDelete={imagesToDelete}
-                setImagesToDelete={setImagesToDelete}
-                setIsDirty={setIsDirty}
-              />
-            ),
-          },
+      imagesField: {
+        fieldType: ({
+          field,
+        }: {
+          field: ControllerRenderProps<FieldValues, string>;
+        }) => (
+          <ServiceFormMultipleImagesField
+            field={field}
+            document={document}
+            images={images}
+            setImages={setImages}
+            imagesToDelete={imagesToDelete}
+            setImagesToDelete={setImagesToDelete}
+            setIsDirty={setIsDirty}
+          />
+        ),
+      },
+      logo: {
+        fieldType: ({
+          field,
+        }: {
+          field: ControllerRenderProps<FieldValues, string>;
+        }) => (
+          <ServiceFormLogoField
+            field={field}
+            document={document}
+          />
+        ),
+      },
       integration_type: { fieldType: () => <FormItem hidden={true} /> },
       active: {
         label: t('Service.Form.PublishedPlaceholder', {

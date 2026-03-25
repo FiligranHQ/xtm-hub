@@ -1,4 +1,5 @@
-import { expect } from 'vitest';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
+import { expect, vi } from 'vitest';
 import { db } from '../knexfile';
 import {
   DocumentMetadata as DocumentMetadataResolverType,
@@ -11,6 +12,18 @@ import { DocumentApp } from '../src/modules/services/document/document.app';
 import { Upload } from '../src/modules/services/document/document.uploads.helper';
 import { INTEGRATION_SERVICE_INSTANCE_ID } from '../src/modules/services/document/opencti/integrations/integrations.model';
 import { TEST_ORGANIZATIONS } from './tests.const';
+
+const mockFileUpload: FileUpload = {
+  filename: 'test-image.png',
+  mimetype: 'image/png',
+  encoding: '7bit',
+  createReadStream: vi.fn(),
+};
+
+const mockUpload = {
+  file: mockFileUpload,
+  promise: Promise.resolve(mockFileUpload),
+};
 
 export const TestHelper = {
   document: {
@@ -26,7 +39,7 @@ export const TestHelper = {
         { key: 'feed_url', value: 'https://example.com' },
       ],
       serviceInstanceId = INTEGRATION_SERVICE_INSTANCE_ID,
-      uploads = [],
+      sourceDocument = mockUpload,
     }: {
       name?: string;
       description?: string;
@@ -36,10 +49,10 @@ export const TestHelper = {
       uploader_id?: UserId;
       metadata?: DocumentMetadataResolverType[];
       serviceInstanceId?: ServiceInstanceId;
-      uploads?: Upload[];
+      sourceDocument?: Upload;
     }): Promise<Document> => {
-      const document = await DocumentApp.createDocument(
-        {
+      const document = await DocumentApp.createDocument({
+        input: {
           name,
           description,
           short_description,
@@ -49,8 +62,8 @@ export const TestHelper = {
         },
         metadata,
         serviceInstanceId,
-        uploads
-      );
+        sourceDocument,
+      });
 
       expect(document).toBeDefined();
 

@@ -26,11 +26,11 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
 import useDecodedParams from '@/hooks/useDecodedParams';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 
@@ -75,30 +75,23 @@ const ShareableResourceSlug: React.FunctionComponent<
       ShareableResourceType.OPENAEV_SCENARIO,
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData]);
-  const mainChild = documentData.children_documents?.[0];
 
   const carouselImages = useMemo(() => {
-    const isFirstImageALogo =
-      documentData.integration_type ===
-      IntegrationTypeEnum.THIRD_PARTY_INTEGRATION;
-    if (isFirstImageALogo) {
-      return documentData.children_documents?.slice(1) || [];
-    }
+    return filterDocumentImages(documentData);
+  }, [documentData]);
 
-    return documentData.children_documents;
-  }, [documentData.children_documents, documentData.integration_type]);
+  const logo = useMemo(() => {
+    return findDocumentLogo(documentData);
+  }, [documentData]);
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
-        {mainChild?.id &&
-        (documentData.integration_type === IntegrationTypeEnum.CONNECTOR ||
-          documentData.integration_type ===
-            IntegrationTypeEnum.THIRD_PARTY_INTEGRATION) ? (
+        {logo ? (
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
-              src={`/document/images/${serviceInstance.id}/${mainChild?.id}`}
+              src={`/document/images/${serviceInstance.id}/${logo.id}`}
               alt={`${documentData.name} logo`}
               width={96}
               height={96}

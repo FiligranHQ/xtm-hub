@@ -40,7 +40,6 @@ describe('Document domain', () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
-
     await db<Document>('Document').delete();
   });
 
@@ -73,8 +72,12 @@ describe('Document domain', () => {
   describe(`loadParentDocumentsByServiceInstance`, () => {
     let csvFeed: Document;
     beforeEach(async () => {
+      await db<Document>('Document')
+        .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
+        .delete();
       csvFeed = await TestHelper.document.create({});
     });
+
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       await upsertConnectors([
         sampleExtractedManifest[0],

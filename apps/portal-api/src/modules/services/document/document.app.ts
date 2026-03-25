@@ -1,7 +1,7 @@
 import {
   CreateDocumentInput,
+  DocumentImageType,
   DocumentMetadata as DocumentMetadataResolverType,
-  IntegrationType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   QueryDocumentsArgs,
   QueryPublicDocumentsArgs,
@@ -35,26 +35,30 @@ import {
   loadSeoDocumentWithCountersBySlug,
   ManageableServiceDefinitionIdentifier,
 } from './document.helper';
-import {
-  processDocumentUpdateUploads,
-  processUploads,
-  Upload,
-} from './document.uploads.helper';
+import { processUploads, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentData, DocumentDomain } from './domain/document.domain';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integrations.model';
 
 export const DocumentApp = {
-  createDocument: async (
-    input: CreateDocumentInput,
-    metadata: DocumentMetadataResolverType[],
-    serviceInstanceId: ServiceInstanceId,
-    uploads: Upload[]
-  ) => {
+  createDocument: async ({
+    input,
+    metadata,
+    serviceInstanceId,
+    sourceDocument,
+    logo,
+    images = [],
+  }: {
+    input: CreateDocumentInput;
+    metadata: DocumentMetadataResolverType[];
+    serviceInstanceId: ServiceInstanceId;
+    sourceDocument?: Upload;
+    logo?: Upload;
+    images?: Upload[];
+  }) => {
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
@@ -63,44 +67,55 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const files = await processUploads(uploads, serviceInstanceId);
-    const completeMetadata =
+    const [sourceDocumentFile] = await processUploads(
+      sourceDocument,
+      serviceInstanceId
+    );
+    const imagesFiles = await processUploads(images, serviceInstanceId);
+    const [logoFile] = await processUploads(logo, serviceInstanceId);
+
+    const documentMetadata =
       DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        sourceDocumentFile,
         metadata,
       });
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
-      completeMetadata
+      documentMetadata
     );
 
     const documentType =
       DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
         serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
       );
-    const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
+
+    DocumentHelper.assertDocumentFileIsNotMissing({
+      hasDocument: !!sourceDocument,
       documentType,
-      metadata
-    );
-    let documentData: DocumentData<Document> = {
+      documentMetadata,
+    });
+
+    const isDocumentFileRequired = DocumentHelper.isDocumentFileRequired({
+      documentType,
+      documentMetadata,
+    });
+
+    const documentData: DocumentData<Document> = {
       ...input,
       service_instance_id: serviceInstanceId,
       type: documentType,
+      ...(sourceDocumentFile && isDocumentFileRequired
+        ? {
+            file_name: sourceDocumentFile.fileName,
+            minio_name: sourceDocumentFile.minioName,
+            mime_type: sourceDocumentFile.mimeType,
+          }
+        : {}),
     };
 
-    if (shouldHandleFirstFile) {
-      const docFile = files.shift();
-      documentData = {
-        ...documentData,
-        file_name: docFile.fileName,
-        minio_name: docFile.minioName,
-        mime_type: docFile.mimeType,
-      };
-    }
-
     const createdDocument = await withTransaction(async () => {
-      const metadataKeys = completeMetadata.map(
+      const metadataKeys = documentMetadata.map(
         ({ key }) => key
       ) as DocumentMetadataKeys<Document>;
       const document = await DocumentDomain.createDocument(
@@ -108,13 +123,13 @@ export const DocumentApp = {
         metadataKeys
       );
 
-      if (completeMetadata.length) {
+      if (documentMetadata.length) {
         await DocumentMetadataDomain.insertMetadataFromKeyValue(
           document.id,
-          completeMetadata
+          documentMetadata
         );
 
-        for (const meta of completeMetadata) {
+        for (const meta of documentMetadata) {
           document[meta.key] = meta.value;
         }
       }
@@ -122,8 +137,18 @@ export const DocumentApp = {
       await DocumentChildrenDomain.createImageDocuments(
         document.id,
         document.service_instance_id,
-        files
+        imagesFiles,
+        DocumentImageType.Image
       );
+
+      if (logoFile) {
+        await DocumentChildrenDomain.createImageDocuments(
+          document.id,
+          document.service_instance_id,
+          [logoFile],
+          DocumentImageType.Logo
+        );
+      }
 
       if (documentData.use_cases?.length) {
         await objectUseCaseDomain.insertObjectUseCase(
@@ -150,15 +175,25 @@ export const DocumentApp = {
     return createdDocument;
   },
 
-  updateDocument: async (
-    parentDocumentId: DocumentId,
-    serviceInstanceId: ServiceInstanceId,
-    metadata: DocumentMetadataResolverType[],
-    mutationArgs: Pick<
-      MutationUpdateDocumentArgsResolverType,
-      'document' | 'updateDocument' | 'images' | 'input'
-    >
-  ) => {
+  updateDocument: async ({
+    parentDocumentId,
+    serviceInstanceId,
+    metadata,
+    sourceDocument,
+    existingImageIds,
+    input,
+    images,
+    logo,
+  }: {
+    parentDocumentId: DocumentId;
+    serviceInstanceId: ServiceInstanceId;
+    metadata: DocumentMetadataResolverType[];
+    sourceDocument?: Upload;
+    existingImageIds: DocumentId[];
+    logo?: Upload;
+    images?: Upload[];
+    input: MutationUpdateDocumentArgsResolverType['input'];
+  }) => {
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
         serviceInstanceId
@@ -167,45 +202,33 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const {
-      document,
-      updateDocument: isUpdateDoc,
-      images = [],
-      input,
-    } = mutationArgs;
-
     const documentType =
       DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
         serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
       );
-    const shouldHandleFirstFile = shouldHandleFirstFileAsDocument(
-      documentType,
-      metadata
+    const [sourceDocumentFile] = await processUploads(
+      sourceDocument,
+      serviceInstanceId
     );
-    const { documentFile, newImages, existingImageIds } =
-      await processDocumentUpdateUploads(
-        document,
-        isUpdateDoc && shouldHandleFirstFile,
-        images,
-        serviceInstanceId
-      );
+    const imagesFiles = await processUploads(images, serviceInstanceId);
+    const [logoFile] = await processUploads(logo, serviceInstanceId);
 
-    let completeMetadata = DocumentHelper.buildCompleteMetadataFromDocumentFile(
+    let documentMetadata = DocumentHelper.buildCompleteMetadataFromDocumentFile(
       {
-        files: [documentFile],
+        sourceDocumentFile,
         metadata,
       }
     );
 
-    if (!completeMetadata.some(({ key }) => key === 'feed_url')) {
+    if (!documentMetadata.some(({ key }) => key === 'feed_url')) {
       const existingFeedUrl =
         await DocumentMetadataDomain.loadMetadataValueByKey(
           parentDocumentId,
           'feed_url'
         );
       if (existingFeedUrl) {
-        completeMetadata = [
-          ...completeMetadata,
+        documentMetadata = [
+          ...documentMetadata,
           { key: 'feed_url', value: existingFeedUrl },
         ];
       }
@@ -213,7 +236,7 @@ export const DocumentApp = {
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
-      completeMetadata
+      documentMetadata
     );
 
     return withTransaction(async () => {
@@ -228,11 +251,18 @@ export const DocumentApp = {
           ? extractedUploaderId
           : user.id;
 
+      const file = DocumentHelper.isDocumentFileRequired({
+        documentType,
+        documentMetadata,
+      })
+        ? sourceDocumentFile
+        : undefined;
+
       const updatedDocument = await DocumentDomain.updateDocument({
         parentDocumentId,
         document: {
           data: input,
-          file: documentFile,
+          file,
           type: documentType,
         },
         uploader_organization_id,
@@ -255,14 +285,14 @@ export const DocumentApp = {
         }
       }
 
-      if (completeMetadata.length) {
+      if (documentMetadata.length) {
         await DocumentMetadataDomain.deleteMetadata({ id: parentDocumentId });
         await DocumentMetadataDomain.insertMetadataFromKeyValue(
           updatedDocument.id,
-          completeMetadata
+          documentMetadata
         );
 
-        for (const meta of completeMetadata) {
+        for (const meta of documentMetadata) {
           updatedDocument[meta.key] = BOOLEAN_METADATA.includes(meta.key)
             ? meta.value === 'true'
             : meta.value;
@@ -281,8 +311,18 @@ export const DocumentApp = {
       await DocumentChildrenDomain.createImageDocuments(
         parentDocumentId,
         serviceInstanceId,
-        newImages
+        imagesFiles,
+        DocumentImageType.Image
       );
+
+      if (logoFile) {
+        await DocumentChildrenDomain.createImageDocuments(
+          parentDocumentId,
+          serviceInstanceId,
+          [logoFile],
+          DocumentImageType.Logo
+        );
+      }
 
       return updatedDocument;
     });
@@ -583,23 +623,4 @@ const getMetadataKeysAndDocumentTypeFromServiceDefinition = (
     documentType,
     metadataKeys,
   };
-};
-
-const shouldHandleFirstFileAsDocument = (
-  documentType: string,
-  metadata: DocumentMetadataResolverType[]
-): boolean => {
-  if (documentType !== OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
-    return true;
-  }
-
-  const integration_type = metadata.find(
-    ({ key }) => key === 'integration_type'
-  );
-
-  if (!integration_type) {
-    return true;
-  }
-
-  return integration_type.value !== IntegrationType.ThirdPartyIntegration;
 };

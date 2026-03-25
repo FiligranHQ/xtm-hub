@@ -2,9 +2,14 @@ import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck } from '@/utils/documents';
+import {
+  fileListCheck,
+  optionalFileListCheck,
+  transformToFileList,
+} from '@/utils/documents';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useContext, useMemo } from 'react';
 import { z } from 'zod';
@@ -32,7 +37,8 @@ const connectorSchema = z.object({
   datasheet_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
-  images: z.custom<FileList>(fileListCheck),
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
+  images: z.custom<FileList>(optionalFileListCheck),
 });
 export type ConnectorFormValues = z.infer<typeof connectorSchema>;
 
@@ -69,12 +75,8 @@ export const ConnectorForm = ({
     () =>
       ({
         ...document,
-        images: (document?.children_documents?.length
-          ? document.children_documents.map((doc) => ({
-              ...doc,
-              name: doc.file_name,
-            }))
-          : undefined) as unknown as FileList,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((label) => label.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id: document?.uploader_organization?.id ?? '',
@@ -106,6 +108,7 @@ export const ConnectorForm = ({
     imagesField,
     images,
     imagesToDelete,
+    logo,
   } = useServiceFormFields({
     documentType: 'Connector',
     platform: 'OpenCTI',
@@ -162,6 +165,7 @@ export const ConnectorForm = ({
           manager_supported,
           playbook_supported,
           subscription_link,
+          logo,
           images: imagesField,
           document: { fieldType: () => <FormItem hidden={true} /> },
         }}>

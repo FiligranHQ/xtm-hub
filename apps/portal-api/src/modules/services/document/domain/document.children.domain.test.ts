@@ -2,12 +2,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import { SERVICES } from '../../../../../tests/tests.const';
-import { DocumentSourceType } from '../../../../__generated__/resolvers-types';
+import {
+  DocumentImageType,
+  DocumentSourceType,
+} from '../../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../../model/kanel/public/Document';
 import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID } from '../../../../portal.const';
 import { MinIOClient } from '../../../../thirdparty/minio/client';
+import { DOCUMENT_IMAGE_METADATA_KEYS } from '../document.model';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { Upload } from '../document.uploads.helper';
 import { DocumentChildrenDomain } from './document.children.domain';
@@ -299,22 +303,22 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         serviceInstanceId,
         [file],
+        DocumentImageType.Image,
         DocumentSourceType.External
       );
-      const children = await db<Document>('Document')
-        .leftJoin(
-          'Document_Children',
-          'Document.id',
-          'Document_Children.child_document_id'
-        )
-        .where('Document_Children.parent_document_id', parentId)
-        .select('Document.*');
+      const children = await DocumentChildrenDomain.loadChildrenDocuments(
+        parentId,
+        DOCUMENT_IMAGE_METADATA_KEYS
+      );
       expect(children.length).toBe(1);
-      expect(children[0].file_name).toBe('img1.png');
-      expect(children[0].minio_name).toBe('minio-img1');
-      expect(children[0].mime_type).toBe('image/png');
-      expect(children[0].source_type).toBe(DocumentSourceType.External);
-      expect(children[0].service_instance_id).toBe(serviceInstanceId);
+      expect(children[0]).toMatchObject({
+        file_name: 'img1.png',
+        minio_name: 'minio-img1',
+        mime_type: 'image/png',
+        source_type: DocumentSourceType.External,
+        image_type: DocumentImageType.Image,
+        service_instance_id: serviceInstanceId,
+      });
     });
 
     it('should create multiple image documents if multiple files are provided', async () => {
@@ -334,6 +338,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         serviceInstanceId,
         files,
+        DocumentImageType.Image,
         DocumentSourceType.Internal
       );
       const children = await db<Document>('Document')
@@ -358,6 +363,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         serviceInstanceId,
         [],
+        DocumentImageType.Logo,
         DocumentSourceType.External
       );
       const children = await db<Document>('Document')
@@ -380,18 +386,15 @@ describe('DocumentChildrenDomain', () => {
       await DocumentChildrenDomain.createImageDocuments(
         parentId,
         serviceInstanceId,
-        [file]
+        [file],
+        DocumentImageType.Image
       );
-      const children = await db<Document>('Document')
-        .leftJoin(
-          'Document_Children',
-          'Document.id',
-          'Document_Children.child_document_id'
-        )
-        .where('Document_Children.parent_document_id', parentId)
-        .select('Document.*');
+      const children = await DocumentChildrenDomain.loadChildrenDocuments(
+        parentId,
+        DOCUMENT_IMAGE_METADATA_KEYS
+      );
       expect(children.length).toBe(1);
-      expect(children[0].source_type).toBe(DocumentSourceType.Internal);
+      expect(children[0]!.source_type).toBe(DocumentSourceType.Internal);
     });
   });
 });

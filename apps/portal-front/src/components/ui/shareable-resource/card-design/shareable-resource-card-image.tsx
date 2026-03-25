@@ -1,5 +1,4 @@
-import { PLATFORM_ORGANIZATION_UUID } from '@/utils/constant';
-import { hasResourceLogo } from '@/utils/shareable-resources/shareable-resources.types';
+import { findDocumentLogo } from '@/utils/documents';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
@@ -13,14 +12,14 @@ interface ShareableResourceCardImageProps {
 export const ShareableResourceCardImage: FunctionComponent<
   ShareableResourceCardImageProps
 > = ({ document, serviceInstanceId }) => {
+  const logo = findDocumentLogo(document);
+
   return (
     <>
       <div className=" items-center self-stretch flex">
-        {document?.uploader_organization?.id !== PLATFORM_ORGANIZATION_UUID &&
-        document?.children_documents?.length &&
-        hasResourceLogo(document) ? (
+        {logo ? (
           <Image
-            src={`/document/images/${serviceInstanceId}/${document.children_documents?.[0]?.id}`}
+            src={`/document/images/${serviceInstanceId}/${logo.id}`}
             alt={`${document.name} logo`}
             width={96}
             height={96}

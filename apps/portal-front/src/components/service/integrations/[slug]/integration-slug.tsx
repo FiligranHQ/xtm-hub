@@ -85,7 +85,6 @@ const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
             serviceInstance={serviceInstance}
             documentData={documentData}
             shareUrl={shareUrl}
-            logo={`/document/images/${serviceInstance.id}/${documentData.children_documents?.[0]?.id}`}
           />
         ) : (
           <ShareableResourceSlug

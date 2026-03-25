@@ -16,6 +16,7 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/badge-overflow-counter';
 import { ShareLinkButton } from '@/components/ui/share-link/share-link-button';
+import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { getPlatformIdentifier } from '@/utils/platform';
 import { InfoIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { SimpleTooltip } from '@filigran/ui';
@@ -31,7 +32,6 @@ interface Props {
   serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
   shareUrl: string;
-  logo?: string;
 }
 
 // Component
@@ -39,7 +39,6 @@ const ShareableResourceConnectorSlug = ({
   documentData,
   breadcrumbValue,
   shareUrl,
-  logo,
   serviceInstance,
 }: Props) => {
   const t = useTranslations();
@@ -49,6 +48,10 @@ const ShareableResourceConnectorSlug = ({
   const manifest_url = documentData.source_code
     ? `${documentData.source_code}/__metadata__/connector_manifest.json`
     : '';
+
+  const carouselImages = filterDocumentImages(documentData);
+  const logo = findDocumentLogo(documentData);
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -56,7 +59,7 @@ const ShareableResourceConnectorSlug = ({
         {!!logo && (
           <div className="w-24 flex-shrink-0 rounded overflow-hidden">
             <Image
-              src={logo}
+              src={`/document/images/${serviceInstance.id}/${logo.id}`}
               width={96}
               height={96}
               loading="lazy"
@@ -117,7 +120,7 @@ const ShareableResourceConnectorSlug = ({
       </div>
       <ShareableResourceCarousel
         serviceInstance={serviceInstance}
-        images={documentData.children_documents?.slice(1)}
+        images={carouselImages}
         className="mt-4"
       />
       {documentData.verified && (

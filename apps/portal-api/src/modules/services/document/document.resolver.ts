@@ -28,6 +28,7 @@ import {
   checkDocumentExists,
   updateDocumentWithCounters,
 } from './document.helper';
+import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
@@ -37,17 +38,14 @@ import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integr
 
 const resolvers: Resolvers = {
   Mutation: {
-    createDocument: async (
-      _,
-      { input, document, serviceInstanceId, metadata }
-    ) => {
+    createDocument: async (_, input) => {
       try {
-        return await DocumentApp.createDocument(
-          input,
-          metadata,
-          extractId<ServiceInstanceId>(serviceInstanceId),
-          document
-        );
+        return await DocumentApp.createDocument({
+          ...input,
+          serviceInstanceId: extractId<ServiceInstanceId>(
+            input.serviceInstanceId
+          ),
+        });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
@@ -59,12 +57,16 @@ const resolvers: Resolvers = {
     },
     updateDocument: async (_, input) => {
       try {
-        return await DocumentApp.updateDocument(
-          extractId<DocumentId>(input.documentId),
-          extractId<ServiceInstanceId>(input.serviceInstanceId),
-          input.metadata,
-          input
-        );
+        return await DocumentApp.updateDocument({
+          ...input,
+          parentDocumentId: extractId<DocumentId>(input.documentId),
+          serviceInstanceId: extractId<ServiceInstanceId>(
+            input.serviceInstanceId
+          ),
+          existingImageIds: (input.existingImageIds ?? []).map((imageId) =>
+            extractId<DocumentId>(imageId)
+          ),
+        });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
@@ -162,7 +164,8 @@ const resolvers: Resolvers = {
 
     children_documents: async ({ id }, _) =>
       (await DocumentChildrenDomain.loadChildrenDocuments(
-        id
+        id,
+        DOCUMENT_IMAGE_METADATA_KEYS
       )) as ShareableResource[],
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
     uploader_organization: ({ id }, _) =>

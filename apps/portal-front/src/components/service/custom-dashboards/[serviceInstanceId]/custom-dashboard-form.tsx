@@ -3,9 +3,14 @@ import { ServiceFormJsonFileField } from '@/components/service/form/json-file-fi
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
 import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck, optionalFileListCheck } from '@/utils/documents';
+import {
+  fileListCheck,
+  optionalFileListCheck,
+  transformToFileList,
+} from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
@@ -24,6 +29,7 @@ const customDashboardSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
   images: z.custom<FileList>(optionalFileListCheck),
 });
 
@@ -46,7 +52,7 @@ export const CustomDashboardForm = ({
   const isCreation = !document;
   const onSubmit = (values: CustomDashboardFormValues) => {
     if (isCreation) {
-      handleSubmit(values);
+      handleSubmit({ ...values, images: images as unknown as FileList });
     } else {
       const finalImages = images.filter(
         (img) => !imagesToDelete.includes(img.id)
@@ -64,10 +70,8 @@ export const CustomDashboardForm = ({
     () =>
       ({
         ...document,
-        images: document?.children_documents?.map((doc) => ({
-          ...doc,
-          name: doc.file_name,
-        })) as unknown as FileList,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me?.id,
         uploader_organization_id:
@@ -101,6 +105,7 @@ export const CustomDashboardForm = ({
     imagesField,
     images,
     imagesToDelete,
+    logo,
   } = useServiceFormFields({
     documentType: 'Custom Dashboard',
     platform: 'OpenCTI',
@@ -149,6 +154,7 @@ export const CustomDashboardForm = ({
                 />
               ),
             },
+        logo,
         images: imagesField,
         active,
         short_description,
