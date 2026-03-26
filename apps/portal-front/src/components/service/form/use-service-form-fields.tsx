@@ -275,9 +275,9 @@ export const useServiceFormFields = ({
         },
       },
       minimum_deployable_version: {
-        label: t('Service.Form.ProductVersionLabel', { platform }),
+        label: t('Service.Form.MinimumDeployableVersionLabel', { platform }),
         inputProps: {
-          placeholder: t('Service.Form.ProductVersionPlaceholder'),
+          placeholder: t('Service.Form.MinimumDeployableVersionPlaceholder'),
           disabled: disabledFields.includes(
             DocumentMetadataKeyCodeEnum.MINIMUM_DEPLOYABLE_VERSION
           ),

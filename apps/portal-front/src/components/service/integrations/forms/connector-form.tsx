@@ -40,7 +40,8 @@ const connectorSchema = z.object({
       z.string().regex(validLtsVersionRegex, {
         error: 'Minimum deployable version must be a valid version',
       })
-    ),
+    )
+    .nullable(),
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
   container_image: z.string().min(1, 'Required'),
