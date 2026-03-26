@@ -63,9 +63,7 @@ export type TaxiiFeedMetadata = MetadataArray<
   keyof Omit<TaxiiFeed, keyof Document>
 >;
 
-export type RssFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<RssFeed, 'use_cases'>, keyof DocumentResolverType>
->;
+export type RssFeedMetadata = MetadataArray<keyof Omit<RssFeed, 'use_cases'>>;
 
 export type StreamFeedMetadata = MetadataArray<
   keyof Omit<Stream, keyof Document>
