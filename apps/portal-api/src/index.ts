@@ -15,6 +15,7 @@ import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 import { printSchema } from 'graphql/utilities/index.js';
 import { createServer } from 'http';
 import fs from 'node:fs';
+import { v4 as uuidv4 } from 'uuid';
 import { dbMigration } from '../knexfile';
 import { initAuthPlatform } from './auth/auth-platform';
 import portalConfig from './config';
@@ -32,6 +33,7 @@ import {
   sseSubscriptionCounter,
 } from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
+import { userPictureEndpoint } from './server/endpoints/user-picture-endpoint';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
 import { seedDevelopmentConnectors } from './server/initialize.helper';
@@ -45,7 +47,6 @@ import {
   stopSessionCleanup,
 } from './utils/session-cleanup';
 import { extractId } from './utils/utils';
-import { userPictureEndpoint } from './server/endpoints/user-picture-endpoint';
 const { json } = pkg;
 // region GraphQL server initialization
 export const PORTAL_COOKIE_NAME = 'cloud-portal';
@@ -176,9 +177,12 @@ if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
 }
 
 app.use(function (req, res, next) {
-  requestContext.run({ user: req.session.user }, () => {
-    next();
-  });
+  requestContext.run(
+    { user: req.session.user, correlationId: uuidv4() },
+    () => {
+      next();
+    }
+  );
 });
 
 // The ApolloServer constructor requires two parameters: your schema
@@ -302,7 +306,7 @@ await initAuthPlatform(app);
 documentDownloadEndpoint(app);
 documentVisualizeEndpoint(app);
 healthEndpoint(app);
-userPictureEndpoint (app);
+userPictureEndpoint(app);
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema
