@@ -1,5 +1,5 @@
 import {
-  Document as DocumentResolverType,
+  DocumentMetadataKeyCode,
   IntegrationType,
 } from '../../../../../__generated__/resolvers-types';
 import Document from '../../../../../model/kanel/public/Document';
@@ -52,53 +52,50 @@ export type Connector = Integration & {
 };
 
 export type CsvFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<CsvFeed, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<CsvFeed, keyof Document>
 >;
 
 export type TaxiiFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<TaxiiFeed, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<TaxiiFeed, keyof Document>
 >;
 
 export type StreamFeedMetadata = MetadataArray<
-  Exclude<keyof Omit<Stream, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<Stream, keyof Document>
 >;
 
 export type ThirdPartyIntegrationMetadata = MetadataArray<
-  Exclude<
-    keyof Omit<ThirdPartyIntegration, 'use_cases'>,
-    keyof DocumentResolverType
-  >
+  keyof Omit<ThirdPartyIntegration, keyof Document>
 >;
 
 export type ConnectorMetadata = MetadataArray<
-  Exclude<keyof Omit<Connector, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<Connector, keyof Document>
 >;
 
 export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
-  { key: 'feed_url' },
-  { key: 'integration_type' },
-  { key: 'datasheet_url', optional: true },
-  { key: 'demo_url', optional: true },
+  { key: DocumentMetadataKeyCode.FeedUrl },
+  { key: DocumentMetadataKeyCode.IntegrationType },
+  { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_CSV_FEED_METADATA_KEYS =
   INTEGRATION_CSV_FEED_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
-  { key: 'feed_url' },
-  { key: 'integration_type' },
-  { key: 'integration_subtype' },
-  { key: 'datasheet_url', optional: true },
-  { key: 'demo_url', optional: true },
+  { key: DocumentMetadataKeyCode.FeedUrl },
+  { key: DocumentMetadataKeyCode.IntegrationType },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
+  { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
   INTEGRATION_TAXII_FEED_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
-  { key: 'feed_url' },
-  { key: 'integration_type' },
-  { key: 'integration_subtype' },
-  { key: 'datasheet_url', optional: true },
-  { key: 'demo_url', optional: true },
+  { key: DocumentMetadataKeyCode.FeedUrl },
+  { key: DocumentMetadataKeyCode.IntegrationType },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
+  { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
   ({ key }) => key
@@ -106,33 +103,33 @@ export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
 
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegrationMetadata =
   [
-    { key: 'integration_subtype' },
-    { key: 'product_version', optional: true },
-    { key: 'vendor_url' },
-    { key: 'github_url', optional: true },
-    { key: 'datasheet_url', optional: true },
-    { key: 'demo_url', optional: true },
+    { key: DocumentMetadataKeyCode.IntegrationSubtype },
+    { key: DocumentMetadataKeyCode.ProductVersion, optional: true },
+    { key: DocumentMetadataKeyCode.VendorUrl },
+    { key: DocumentMetadataKeyCode.GithubUrl, optional: true },
+    { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+    { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
   ];
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS =
   INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
-  { key: 'product_version' },
-  { key: 'container_image' },
-  { key: 'verified' },
-  { key: 'source_code' },
-  { key: 'subscription_link' },
-  { key: 'integration_subtype' },
-  { key: 'integration_type' },
-  { key: 'manager_supported' },
-  { key: 'playbook_supported' },
-  { key: 'datasheet_url', optional: true },
-  { key: 'demo_url', optional: true },
+  { key: DocumentMetadataKeyCode.ProductVersion },
+  { key: DocumentMetadataKeyCode.ContainerImage },
+  { key: DocumentMetadataKeyCode.Verified },
+  { key: DocumentMetadataKeyCode.SourceCode },
+  { key: DocumentMetadataKeyCode.SubscriptionLink },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
+  { key: DocumentMetadataKeyCode.IntegrationType },
+  { key: DocumentMetadataKeyCode.ManagerSupported },
+  { key: DocumentMetadataKeyCode.PlaybookSupported },
+  { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);
 
-export const INTEGRATION_METADATA_KEYS: string[] = Array.from(
+export const INTEGRATION_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
   new Set([
     ...INTEGRATION_CSV_FEED_METADATA_KEYS,
     ...INTEGRATION_TAXII_FEED_METADATA_KEYS,
@@ -140,4 +137,4 @@ export const INTEGRATION_METADATA_KEYS: string[] = Array.from(
     ...INTEGRATION_STREAM_METADATA_KEYS,
     ...INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS,
   ])
-);
+) as DocumentMetadataKeyCode[];

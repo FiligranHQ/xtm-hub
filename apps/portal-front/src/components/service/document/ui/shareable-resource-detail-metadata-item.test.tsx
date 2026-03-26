@@ -42,7 +42,6 @@ describe('ShareableResourceDetailMetadataItem', () => {
   const baseData = {
     textKey: 'Some text',
     linkKey: 'https://example.com',
-    emptyKey: '',
   } as unknown as documentItem_fragment$data;
 
   it('renders nothing if value is falsy', () => {

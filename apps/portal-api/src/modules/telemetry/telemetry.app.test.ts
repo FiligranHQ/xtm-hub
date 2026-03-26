@@ -23,6 +23,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
+  DocumentMetadataKeyCode,
   IntegrationType,
   PlatformIdentifier,
   ServiceConfigurationStatus,
@@ -109,8 +110,14 @@ describe('TelemetryApp', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -190,8 +197,14 @@ describe('TelemetryApp', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -270,8 +283,14 @@ describe('TelemetryApp', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,

@@ -2,6 +2,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { db } from '../../../../../knexfile';
 import {
   DocumentImageType,
+  DocumentMetadataKeyCode,
   DocumentSourceType,
 } from '../../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../../context/database.context';
@@ -18,7 +19,10 @@ import { DocumentApp } from '../document.app';
 import { Document } from '../document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from '../document.model';
 import { processUploads, Upload } from '../document.uploads.helper';
-import { DocumentMetadataDomain } from './document.metadata.domain';
+import {
+  DocumentMetadataDomain,
+  DocumentMetadataKeys,
+} from './document.metadata.domain';
 
 export const DocumentChildrenDomain = {
   insertChildRelationship: async ({
@@ -52,7 +56,7 @@ export const DocumentChildrenDomain = {
 
   loadChildrenDocuments: async (
     documentId: string,
-    include_metadata: string[] = []
+    include_metadata: DocumentMetadataKeyCode[] = []
   ): Promise<Document[]> => {
     const query = db<Document>('Document_Children')
       .leftJoin(
@@ -103,7 +107,7 @@ export const DocumentChildrenDomain = {
             source_type: sourceType,
             image_type: imageType,
           },
-          DOCUMENT_IMAGE_METADATA_KEYS
+          DOCUMENT_IMAGE_METADATA_KEYS as DocumentMetadataKeys<DocumentImage>
         )
       )
     );

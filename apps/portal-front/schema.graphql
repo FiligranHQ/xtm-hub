@@ -525,6 +525,24 @@ enum DocumentImageType {
   image
 }
 
+enum DocumentMetadataKeyCode {
+  feed_url
+  integration_type
+  integration_subtype
+  datasheet_url
+  demo_url
+  product_version
+  vendor_url
+  github_url
+  container_image
+  verified
+  source_code
+  subscription_link
+  manager_supported
+  playbook_supported
+  image_type
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -599,7 +617,7 @@ interface Document implements Node {
 }
 
 input DocumentMetadata {
-  key: String!
+  key: DocumentMetadataKeyCode!
   value: String!
 }
 

@@ -505,9 +505,27 @@ export enum DocumentImageType {
 }
 
 export type DocumentMetadata = {
-  key: Scalars['String']['input'];
+  key: DocumentMetadataKeyCode;
   value: Scalars['String']['input'];
 };
+
+export enum DocumentMetadataKeyCode {
+  ContainerImage = 'container_image',
+  DatasheetUrl = 'datasheet_url',
+  DemoUrl = 'demo_url',
+  FeedUrl = 'feed_url',
+  GithubUrl = 'github_url',
+  ImageType = 'image_type',
+  IntegrationSubtype = 'integration_subtype',
+  IntegrationType = 'integration_type',
+  ManagerSupported = 'manager_supported',
+  PlaybookSupported = 'playbook_supported',
+  ProductVersion = 'product_version',
+  SourceCode = 'source_code',
+  SubscriptionLink = 'subscription_link',
+  VendorUrl = 'vendor_url',
+  Verified = 'verified'
+}
 
 export enum DocumentOrdering {
   CreatedAt = 'created_at',
@@ -2386,6 +2404,7 @@ export type ResolversTypes = ResolversObject<{
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
   DocumentImageType: DocumentImageType;
   DocumentMetadata: DocumentMetadata;
+  DocumentMetadataKeyCode: DocumentMetadataKeyCode;
   DocumentOrdering: DocumentOrdering;
   DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;

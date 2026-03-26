@@ -13,6 +13,7 @@ import { db } from '../../../../knexfile';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
+  DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
@@ -113,15 +114,15 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -143,7 +144,7 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.CsvFeed,
           },
         ],
@@ -163,15 +164,15 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -190,15 +191,15 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -237,7 +238,9 @@ describe('DocumentApp', () => {
 
       await DocumentApp.createDocument({
         input: documentData,
-        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.2.3' },
+        ],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
@@ -266,15 +269,15 @@ describe('DocumentApp', () => {
         input: documentData,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -299,15 +302,15 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -324,7 +327,7 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.CsvFeed,
           },
         ],
@@ -345,15 +348,15 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -374,15 +377,15 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ],
@@ -422,9 +425,17 @@ describe('DocumentApp', () => {
         integrationSubtype: IntegrationSubType | null;
       }) => {
         const metadata = [
-          { key: 'integration_type', value: integrationType },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: integrationType,
+          },
           ...(integrationSubtype
-            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            ? [
+                {
+                  key: DocumentMetadataKeyCode.IntegrationSubtype,
+                  value: integrationSubtype,
+                },
+              ]
             : []),
         ];
 
@@ -439,7 +450,7 @@ describe('DocumentApp', () => {
         expect(result).toBeDefined();
         const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
           result!.id,
-          'feed_url'
+          DocumentMetadataKeyCode.FeedUrl
         );
         expect(feedUrl).toBe('https://example.com');
       }
@@ -461,9 +472,17 @@ describe('DocumentApp', () => {
       }) => {
         const slug = 'integration-slug';
         const metadata = [
-          { key: 'integration_type', value: integrationType },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: integrationType,
+          },
           ...(integrationSubtype
-            ? [{ key: 'integration_subtype', value: integrationSubtype }]
+            ? [
+                {
+                  key: DocumentMetadataKeyCode.IntegrationSubtype,
+                  value: integrationSubtype,
+                },
+              ]
             : []),
         ];
 
@@ -494,7 +513,7 @@ describe('DocumentApp', () => {
         expect(result).toBeDefined();
         const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
           result!.id,
-          'feed_url'
+          DocumentMetadataKeyCode.FeedUrl
         );
         expect(feedUrl).toBe('https://example.com');
       }
@@ -503,15 +522,24 @@ describe('DocumentApp', () => {
     it('should convert boolean metadata keys to booleans on update', async () => {
       // Create a Connector document with required metadata
       const connectorMetadata = [
-        { key: 'integration_type', value: IntegrationType.Connector },
-        { key: 'integration_subtype', value: 'native' },
-        { key: 'product_version', value: '1.0.0' },
-        { key: 'verified', value: 'false' },
-        { key: 'manager_supported', value: 'false' },
-        { key: 'playbook_supported', value: 'false' },
-        { key: 'container_image', value: 'container_image_value' },
-        { key: 'source_code', value: 'source_code_value' },
-        { key: 'subscription_link', value: 'subscription_link_value' },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.Connector,
+        },
+        { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
+        { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
+        { key: DocumentMetadataKeyCode.Verified, value: 'false' },
+        { key: DocumentMetadataKeyCode.ManagerSupported, value: 'false' },
+        { key: DocumentMetadataKeyCode.PlaybookSupported, value: 'false' },
+        {
+          key: DocumentMetadataKeyCode.ContainerImage,
+          value: 'container_image_value',
+        },
+        { key: DocumentMetadataKeyCode.SourceCode, value: 'source_code_value' },
+        {
+          key: DocumentMetadataKeyCode.SubscriptionLink,
+          value: 'subscription_link_value',
+        },
       ];
       const slug = 'connector-slug';
       const createdDocument = await DocumentApp.createDocument({
@@ -524,15 +552,24 @@ describe('DocumentApp', () => {
 
       // Update with boolean metadata as strings
       const updatedMetadata = [
-        { key: 'integration_type', value: IntegrationType.Connector },
-        { key: 'integration_subtype', value: 'native' },
-        { key: 'product_version', value: '2.0.0' },
-        { key: 'verified', value: 'true' },
-        { key: 'manager_supported', value: 'true' },
-        { key: 'playbook_supported', value: 'false' },
-        { key: 'container_image', value: 'container_image_value' },
-        { key: 'source_code', value: 'source_code_value' },
-        { key: 'subscription_link', value: 'subscription_link_value' },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.Connector,
+        },
+        { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
+        { key: DocumentMetadataKeyCode.ProductVersion, value: '2.0.0' },
+        { key: DocumentMetadataKeyCode.Verified, value: 'true' },
+        { key: DocumentMetadataKeyCode.ManagerSupported, value: 'true' },
+        { key: DocumentMetadataKeyCode.PlaybookSupported, value: 'false' },
+        {
+          key: DocumentMetadataKeyCode.ContainerImage,
+          value: 'container_image_value',
+        },
+        { key: DocumentMetadataKeyCode.SourceCode, value: 'source_code_value' },
+        {
+          key: DocumentMetadataKeyCode.SubscriptionLink,
+          value: 'subscription_link_value',
+        },
       ];
       const result = await DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
@@ -564,7 +601,9 @@ describe('DocumentApp', () => {
           slug: 'slug',
           active: true,
         },
-        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.2.3' },
+        ],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
@@ -615,7 +654,9 @@ describe('DocumentApp', () => {
           slug: 'slug',
           active: true,
         },
-        metadata: [{ key: 'product_version', value: '1.2.3' }],
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.2.3' },
+        ],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
@@ -719,16 +760,22 @@ describe('DocumentApp', () => {
         'opencti_custom_dashboard',
         'test-slug',
         { page: 1, pageSize: 10, serviceInstanceId: 'valid-id' },
-        ['product_version']
+        [DocumentMetadataKeyCode.ProductVersion]
       );
     });
   });
 
   describe('upsertDocumentWithExternalImage', () => {
     const metadataKeys = [
-      { key: 'integration_type', value: IntegrationType.ThirdPartyIntegration },
-      { key: 'integration_subtype', value: IntegrationSubType.Orchestration },
-      { key: 'vendor_url', value: 'https://example.com' },
+      {
+        key: DocumentMetadataKeyCode.IntegrationType,
+        value: IntegrationType.ThirdPartyIntegration,
+      },
+      {
+        key: DocumentMetadataKeyCode.IntegrationSubtype,
+        value: IntegrationSubType.Orchestration,
+      },
+      { key: DocumentMetadataKeyCode.VendorUrl, value: 'https://example.com' },
     ] as unknown as DocumentMetadataKeys<ThirdPartyIntegration>;
 
     it('should create a new document with an external image', async () => {

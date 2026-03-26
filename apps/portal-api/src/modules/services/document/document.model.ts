@@ -1,6 +1,6 @@
 import {
   DocumentImageType,
-  Document as DocumentResolverType,
+  DocumentMetadataKeyCode,
 } from '../../../__generated__/resolvers-types';
 import Document from '../../../model/kanel/public/Document';
 import { MetadataArray } from '../../../utils/metadata';
@@ -10,13 +10,12 @@ export type DocumentImage = Document & {
 };
 
 export type DocumentImageMetadata = MetadataArray<
-  Exclude<keyof Omit<DocumentImage, 'use_cases'>, keyof DocumentResolverType>
+  keyof Omit<DocumentImage, keyof Document>
 >;
 
 export const DOCUMENT_IMAGE_METADATA: DocumentImageMetadata = [
-  { key: 'image_type' },
+  { key: DocumentMetadataKeyCode.ImageType },
 ];
 
-export const DOCUMENT_IMAGE_METADATA_KEYS = DOCUMENT_IMAGE_METADATA.map(
-  ({ key }) => key
-);
+export const DOCUMENT_IMAGE_METADATA_KEYS: DocumentMetadataKeyCode[] =
+  DOCUMENT_IMAGE_METADATA.map(({ key }) => key) as DocumentMetadataKeyCode[];

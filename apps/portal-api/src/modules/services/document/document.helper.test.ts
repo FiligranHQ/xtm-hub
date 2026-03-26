@@ -12,6 +12,7 @@ import {
 import { db } from '../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DocumentMetadataKeyCode,
   IntegrationSubType,
   IntegrationType,
   ServiceDefinitionIdentifier,
@@ -85,8 +86,14 @@ describe('DocumentHelper', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -127,7 +134,10 @@ describe('DocumentHelper', () => {
   describe('buildCompleteMetadataFromDocumentFile', () => {
     it('should return unchanged metadata when document is not a feed', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.Connector },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.Connector,
+        },
       ];
       const sourceDocumentFile = undefined;
 
@@ -141,7 +151,10 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when JSON file is not provided', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
       const sourceDocumentFile = undefined;
 
@@ -155,7 +168,10 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when JSON file does not contain configuration', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
       const sourceDocumentFile = { jsonContent: {} } as MinioFile;
 
@@ -169,7 +185,10 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when JSON file contains no URI', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
       const sourceDocumentFile = {
         jsonContent: { configuration: {} },
@@ -185,7 +204,10 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when URI in the JSON file is not valid', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
       const sourceDocumentFile = {
         jsonContent: { configuration: { uri: 'hello' } },
@@ -201,7 +223,10 @@ describe('DocumentHelper', () => {
 
     it('should add feed url to metadata when JSON file contains URI', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
       const sourceDocumentFile = {
         jsonContent: { configuration: { uri: 'https://example.com' } },
@@ -214,7 +239,7 @@ describe('DocumentHelper', () => {
 
       expect(result).toEqual([
         ...metadata,
-        { key: 'feed_url', value: 'https://example.com' },
+        { key: DocumentMetadataKeyCode.FeedUrl, value: 'https://example.com' },
       ]);
     });
   });
@@ -258,7 +283,12 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'feed_url', value: 'https://example.com' }]
+          [
+            {
+              key: DocumentMetadataKeyCode.FeedUrl,
+              value: 'https://example.com',
+            },
+          ]
         )
       ).toThrowError(ErrorCode.DocumentMissingMetadata);
     });
@@ -267,7 +297,7 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'integration_type', value: 'test' }]
+          [{ key: DocumentMetadataKeyCode.IntegrationType, value: 'test' }]
         )
       ).toThrowError(ErrorCode.IntegrationTypeNotRecognized);
     });
@@ -276,7 +306,12 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'integration_type', value: IntegrationType.JsonFeed }]
+          [
+            {
+              key: DocumentMetadataKeyCode.IntegrationType,
+              value: IntegrationType.JsonFeed,
+            },
+          ]
         )
       ).toThrowError(ErrorCode.IntegrationTypeNotManageable);
     });
@@ -285,7 +320,12 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'integration_type', value: IntegrationType.CsvFeed }]
+          [
+            {
+              key: DocumentMetadataKeyCode.IntegrationType,
+              value: IntegrationType.CsvFeed,
+            },
+          ]
         )
       ).toThrowError(ErrorCode.DocumentMissingMetadata);
     });
@@ -295,15 +335,15 @@ describe('DocumentHelper', () => {
         ServiceDefinitionIdentifier.OpenctiIntegrations,
         [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ]
@@ -315,11 +355,11 @@ describe('DocumentHelper', () => {
         ServiceDefinitionIdentifier.OpenctiIntegrations,
         [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.CsvFeed,
           },
           {
-            key: 'feed_url',
+            key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com',
           },
         ]
@@ -430,16 +470,19 @@ describe('DocumentHelper', () => {
           hasDocument,
           documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           documentMetadata: [
-            { key: 'integration_type', value: integrationType },
+            {
+              key: DocumentMetadataKeyCode.IntegrationType,
+              value: integrationType,
+            },
           ],
         })
       ).not.toThrow();
     });
 
     it.each`
-      title                                                            | documentMetadata                                                 | expectedError
-      ${'document file is required but missing'}                       | ${[{ key: 'integration_type', value: IntegrationType.CsvFeed }]} | ${ErrorCode.DocumentFileMissing}
-      ${'integration_type metadata is missing (defaults to required)'} | ${[]}                                                            | ${ErrorCode.DocumentFileMissing}
+      title                                                            | documentMetadata                                                                      | expectedError
+      ${'document file is required but missing'}                       | ${[{ key: DocumentMetadataKeyCode.IntegrationType, value: IntegrationType.CsvFeed }]} | ${ErrorCode.DocumentFileMissing}
+      ${'integration_type metadata is missing (defaults to required)'} | ${[]}                                                                                 | ${ErrorCode.DocumentFileMissing}
     `('should throw when $title', ({ documentMetadata, expectedError }) => {
       expect(() =>
         DocumentHelper.assertDocumentFileIsNotMissing({
@@ -465,7 +508,12 @@ describe('DocumentHelper', () => {
       'it should return $expected when document is $documentType and integration type is $integrationType',
       ({ documentType, integrationType, expected }) => {
         const documentMetadata = integrationType
-          ? [{ key: 'integration_type', value: integrationType }]
+          ? [
+              {
+                key: DocumentMetadataKeyCode.IntegrationType,
+                value: integrationType,
+              },
+            ]
           : [];
         const result = DocumentHelper.isDocumentFileRequired({
           documentType,
