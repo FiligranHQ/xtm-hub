@@ -64,7 +64,8 @@ type AvailableFields =
   | 'subscription_link'
   | 'verified'
   | 'manager_supported'
-  | 'playbook_supported';
+  | 'playbook_supported'
+  | 'minimum_deployable_version';
 
 interface Props {
   documentType: DocumentType;
@@ -270,6 +271,15 @@ export const useServiceFormFields = ({
           placeholder: t('Service.Form.ProductVersionPlaceholder'),
           disabled: disabledFields.includes(
             DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+          ),
+        },
+      },
+      minimum_deployable_version: {
+        label: t('Service.Form.ProductVersionLabel', { platform }),
+        inputProps: {
+          placeholder: t('Service.Form.ProductVersionPlaceholder'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.MINIMUM_DEPLOYABLE_VERSION
           ),
         },
       },

@@ -7,6 +7,7 @@ import {
   optionalFileListCheck,
   transformToFileList,
 } from '@/utils/documents';
+import { semanticVersionRegex, validLtsVersionRegex } from '@/utils/versioning';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
@@ -20,9 +21,26 @@ const connectorSchema = z.object({
   uploader_id: z.string().optional(),
   short_description: z.string().min(1, 'Required').max(250),
   description: z.string().min(1, 'Required'),
-  product_version: z.string().regex(/^\d+\.\d+\.\d+$/, {
-    error: 'Product version must be X.Y.Z',
-  }),
+  product_version: z
+    .string()
+    .regex(semanticVersionRegex, {
+      error: 'Product version must be a valid version',
+    })
+    .or(
+      z.string().regex(validLtsVersionRegex, {
+        error: 'Product version must be a valid version',
+      })
+    ),
+  minimum_deployable_version: z
+    .string()
+    .regex(semanticVersionRegex, {
+      error: 'Minimum deployable version must be a valid version',
+    })
+    .or(
+      z.string().regex(validLtsVersionRegex, {
+        error: 'Minimum deployable version must be a valid version',
+      })
+    ),
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
   container_image: z.string().min(1, 'Required'),
@@ -109,6 +127,7 @@ export const ConnectorForm = ({
     images,
     imagesToDelete,
     logo,
+    minimum_deployable_version,
   } = useServiceFormFields({
     documentType: 'Connector',
     platform: 'OpenCTI',
@@ -157,6 +176,9 @@ export const ConnectorForm = ({
           integration_type,
           datasheet_url,
           product_version,
+          minimum_deployable_version: document?.manager_supported
+            ? minimum_deployable_version
+            : { fieldType: () => <FormItem hidden={true} /> },
           demo_url,
           integration_subtype,
           container_image,
