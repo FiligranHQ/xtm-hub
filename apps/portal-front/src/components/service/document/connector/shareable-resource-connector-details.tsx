@@ -22,6 +22,7 @@ export interface ShareableResourceConnectorDetailsProps {
     manager_supported?: boolean;
     datasheet_url?: string | null;
     demo_url?: string | null;
+    minimum_deployable_version?: string | null;
   };
   compatibilityItem?: React.ReactNode;
 }
@@ -99,8 +100,18 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.ProductVersion')}>
-        {compatibilityItem || <span>{connectorDetails?.product_version}</span>}
+        <span>{connectorDetails?.product_version}</span>
       </ShareableResourceDetailItem>
+      {!!connectorDetails?.minimum_deployable_version && (
+        <ShareableResourceDetailItem
+          label={t(
+            'Service.ShareableResources.Details.MinimumDeployableVersion'
+          )}>
+          {compatibilityItem || (
+            <span>{connectorDetails?.minimum_deployable_version}</span>
+          )}
+        </ShareableResourceDetailItem>
+      )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
         <ShareableResourceDetailsLink url={CONNECTOR_DOCUMENTATION} />
