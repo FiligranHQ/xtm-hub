@@ -1,5 +1,6 @@
 import { db } from '../../../../knexfile';
 import {
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   ServiceDefinitionIdentifier,
@@ -21,6 +22,7 @@ import { isValidUrl } from '../../../utils/utils';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
+import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { Upload } from './document.uploads.helper';
 import { DocumentDomain } from './domain/document.domain';
 import {
@@ -34,6 +36,7 @@ import {
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './opencti/custom-dashboards/custom-dashboards.model';
 import {
+  INTEGRATION_CONNECTOR_METADATA,
   INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_METADATA_KEYS,
   INTEGRATION_STREAM_METADATA,
@@ -44,9 +47,9 @@ import {
 } from './opencti/integrations/integrations.model';
 
 export const BOOLEAN_METADATA = [
-  'verified',
-  'manager_supported',
-  'playbook_supported',
+  DocumentMetadataKeyCode.Verified,
+  DocumentMetadataKeyCode.ManagerSupported,
+  DocumentMetadataKeyCode.PlaybookSupported,
 ];
 
 export type Document = WithUseCases<DocumentModel>;
@@ -55,11 +58,12 @@ export type FullDocumentMutator = Partial<DocumentModel> & {
   parent_document_id?: DocumentId;
 };
 
-export const ALL_METADATA_KEYS: string[] = Array.from(
+export const ALL_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
   new Set([
     ...INTEGRATION_METADATA_KEYS,
     ...CUSTOM_DASHBOARD_METADATA_KEYS,
     ...OPENAEV_SCENARIO_METADATA_KEYS,
+    ...DOCUMENT_IMAGE_METADATA_KEYS,
   ])
 );
 
@@ -98,7 +102,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
     CUSTOM_DASHBOARD_METADATA,
   [ServiceDefinitionIdentifier.OpenctiIntegrations]: (metadata) => {
     const integrationTypeMetadata = metadata.find(
-      (data) => data.key === 'integration_type'
+      (data) => data.key === DocumentMetadataKeyCode.IntegrationType
     );
     if (!integrationTypeMetadata) {
       throw new Error(ErrorCode.DocumentMissingMetadata);
@@ -118,6 +122,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
       [IntegrationType.Stream]: INTEGRATION_STREAM_METADATA,
       [IntegrationType.ThirdPartyIntegration]:
         INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
+      [IntegrationType.Connector]: INTEGRATION_CONNECTOR_METADATA,
     };
     if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);
@@ -132,14 +137,14 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
 
 export const DocumentHelper = {
   buildCompleteMetadataFromDocumentFile: ({
-    files,
+    sourceDocumentFile,
     metadata,
   }: {
-    files: MinioFile[];
+    sourceDocumentFile?: MinioFile;
     metadata: DocumentMetadataResolverType[];
   }): DocumentMetadataResolverType[] => {
     const integrationType = metadata.find(
-      (meta) => meta.key === 'integration_type'
+      (meta) => meta.key === DocumentMetadataKeyCode.IntegrationType
     );
     const hasFeedDocumentType =
       integrationType &&
@@ -152,7 +157,7 @@ export const DocumentHelper = {
       return metadata;
     }
 
-    const jsonFileContent = files[0]?.jsonContent;
+    const jsonFileContent = sourceDocumentFile?.jsonContent;
     if (!jsonFileContent) {
       return metadata;
     }
@@ -162,7 +167,7 @@ export const DocumentHelper = {
       return metadata;
     }
 
-    return [...metadata, { key: 'feed_url', value: uri }];
+    return [...metadata, { key: DocumentMetadataKeyCode.FeedUrl, value: uri }];
   },
 
   retrieveDocumentTypeFromServiceDefinition: (
@@ -179,8 +184,10 @@ export const DocumentHelper = {
 
   getMetadataKeysForServiceDefinition: (
     serviceDefinitionIdentifier: ManageableServiceDefinitionIdentifier
-  ): string[] => {
-    const mapping: Partial<Record<ServiceDefinitionIdentifier, string[]>> = {
+  ): DocumentMetadataKeyCode[] => {
+    const mapping: Partial<
+      Record<ServiceDefinitionIdentifier, DocumentMetadataKeyCode[]>
+    > = {
       [ServiceDefinitionIdentifier.OpenctiIntegrations]:
         INTEGRATION_METADATA_KEYS,
       [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
@@ -214,6 +221,46 @@ export const DocumentHelper = {
         `Document is missing metadata keys: ${missingMetadataKeys.map(({ key }) => key).join(', ')}`
       );
       throw new Error(ErrorCode.DocumentMissingMetadata);
+    }
+  },
+  isDocumentFileRequired: ({
+    documentType,
+    documentMetadata,
+  }: {
+    documentType: DOCUMENT_TYPE;
+    documentMetadata: DocumentMetadataResolverType[];
+  }): boolean => {
+    if (documentType !== OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
+      return true;
+    }
+
+    const integrationType = documentMetadata.find(
+      (meta) => meta.key === DocumentMetadataKeyCode.IntegrationType
+    )?.value as unknown as IntegrationType | undefined;
+
+    const isFileProhibited = [
+      IntegrationType.Connector,
+      IntegrationType.ThirdPartyIntegration,
+    ].includes(integrationType);
+
+    return !isFileProhibited;
+  },
+  assertDocumentFileIsNotMissing: ({
+    hasDocument,
+    documentType,
+    documentMetadata,
+  }: {
+    hasDocument: boolean;
+    documentType: DOCUMENT_TYPE;
+    documentMetadata: DocumentMetadataResolverType[];
+  }) => {
+    const isDocumentFileRequired = DocumentHelper.isDocumentFileRequired({
+      documentType,
+      documentMetadata,
+    });
+
+    if (isDocumentFileRequired && !hasDocument) {
+      throw new Error(ErrorCode.DocumentFileMissing);
     }
   },
   deleteFileFromMinIO: async (
@@ -270,7 +317,7 @@ export const uploadNewFile = async (
   const { user } = requestContext.require();
   const { minioName } = await MinIOClient.sendFile(
     document.file,
-    document.file.name,
+    document.file.filename,
     user.id,
     serviceInstanceId
   );
@@ -279,7 +326,7 @@ export const uploadNewFile = async (
     uploader_id: user.id,
     name: serviceInstanceId,
     minio_name: minioName,
-    file_name: document.file.name,
+    file_name: document.file.filename,
     service_instance_id: serviceInstanceId,
     created_at: new Date(),
     mime_type: document.file.mimetype,
@@ -326,7 +373,7 @@ export const updateDocumentWithCounters = async <T extends Document>(
 
 export const loadDocumentWithCountersById = async <T extends Document>(
   id: string,
-  include_metadata: string[] = []
+  include_metadata: DocumentMetadataKeyCode[] = []
 ) => {
   const document: T = await DocumentDomain.loadDocumentWithMetadataById(
     id,
@@ -342,7 +389,7 @@ export const loadDocumentWithCountersById = async <T extends Document>(
 export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
   type: DOCUMENT_TYPE,
   slug: string,
-  include_metadata: string[] = []
+  include_metadata: DocumentMetadataKeyCode[] = []
 ) => {
   const document: T = await DocumentDomain.loadSeoDocumentBySlug(
     type,

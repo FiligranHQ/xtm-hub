@@ -3498,9 +3498,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:0.44.8":
-  version: 0.44.8
-  resolution: "@filigran/ui@npm:0.44.8"
+"@filigran/ui@npm:0.46.0":
+  version: 0.46.0
+  resolution: "@filigran/ui@npm:0.46.0"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -3536,14 +3536,14 @@ __metadata:
     tailwind-merge: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
   peerDependencies:
-    "@filigran/icon": ^0.22.3
+    "@filigran/icon": ^0.22.4
     "@hookform/resolvers": ^5.0.0
     "@types/react": ^16.8 || ^17.0 || ^18.0 || ^19.0
     react: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/1cace929728194328168ecc3276ec6952e94b762efad85e6e07fc4b3cfb4fcc8a2619fb1beade70daccab5dcb4fcc460f7ac4468423bb96d4e17d536b6de3a8e
+  checksum: 10/c5c64f69467369bc39753f88f39b627c0fbd9a1285e4743b0aa8321139438afa86681a971d11f0bc27ba9293938dc15679e0bb78379391e216fd8f4324f7c9f1
   languageName: node
   linkType: hard
 
@@ -7540,6 +7540,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/accepts@npm:*":
+  version: 1.3.7
+  resolution: "@types/accepts@npm:1.3.7"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/7678cf74976e16093aff6e6f9755826faf069ac1e30179276158ce46ea246348ff22ca6bdd46cef08428881337d9ceefbf00bab08a7731646eb9fc9449d6a1e7
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^5.0.1":
   version: 5.0.4
   resolution: "@types/aria-query@npm:5.0.4"
@@ -7647,6 +7656,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/content-disposition@npm:*":
+  version: 0.5.9
+  resolution: "@types/content-disposition@npm:0.5.9"
+  checksum: 10/d895703c0027ca6c4c0c1ede363909dbb590deec3b206a84b88a49c8b2840bcbd31b4ddeb2e1e6caa1af00801cc79c5b69a5c75a8152f2959810b10fe75a4e1f
+  languageName: node
+  linkType: hard
+
+"@types/cookies@npm:*":
+  version: 0.9.2
+  resolution: "@types/cookies@npm:0.9.2"
+  dependencies:
+    "@types/connect": "npm:*"
+    "@types/express": "npm:*"
+    "@types/keygrip": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10/9af618670680cf0d9b77867aa5c7cf73dcfd8987c6fae6896217927b99690f8ad989795ee14b6dc83e96a8e10d54a18c1255691b5f6bd90fc7add135c4d6aa6a
+  languageName: node
+  linkType: hard
+
 "@types/cors@npm:2.8.19":
   version: 2.8.19
   resolution: "@types/cors@npm:2.8.19"
@@ -7731,6 +7759,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/graphql-upload@npm:17.0.0":
+  version: 17.0.0
+  resolution: "@types/graphql-upload@npm:17.0.0"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/koa": "npm:*"
+    "@types/node": "npm:*"
+    fs-capacitor: "npm:^8.0.0"
+    graphql: "npm:^16.9.0"
+  checksum: 10/ce53ecceb4791f95846e5503735d0009b369aff2c855c5c9e48fe824803d5536673d1b527189d9b2e8d2672d72bb1bcd4f82a2be67728170a5aaf87fd918419f
+  languageName: node
+  linkType: hard
+
 "@types/hast@npm:^2.0.0":
   version: 2.3.10
   resolution: "@types/hast@npm:2.3.10"
@@ -7749,7 +7790,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-errors@npm:*":
+"@types/http-assert@npm:*":
+  version: 1.5.6
+  resolution: "@types/http-assert@npm:1.5.6"
+  checksum: 10/dfe1010164ba633859d90a50c4c53e69a38a16972061ef614acc1b0bdb7e53a1c923a11b4169a4a7eedc20b2303962d761727a212ae099717327cf4f38293817
+  languageName: node
+  linkType: hard
+
+"@types/http-errors@npm:*, @types/http-errors@npm:^2":
   version: 2.0.5
   resolution: "@types/http-errors@npm:2.0.5"
   checksum: 10/a88da669366bc483e8f3b3eb3d34ada5f8d13eeeef851b1204d77e2ba6fc42aba4566d877cca5c095204a3f4349b87fe397e3e21288837bdd945dd514120755b
@@ -7774,6 +7822,38 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 10/4e5aed58cabb2bbf6f725da13421aa50a49abb6bc17bfab6c31b8774b073fa7b50d557c61f961a09a85f6056151190f8ac95f13f5b48136ba5841f7d4484ec56
+  languageName: node
+  linkType: hard
+
+"@types/keygrip@npm:*":
+  version: 1.0.6
+  resolution: "@types/keygrip@npm:1.0.6"
+  checksum: 10/d157f60bf920492347791d2b26d530d5069ce05796549fbacd4c24d66ffbebbcb0ab67b21e7a1b80a593b9fd4b67dc4843dec04c12bbc2e0fddfb8577a826c41
+  languageName: node
+  linkType: hard
+
+"@types/koa-compose@npm:*":
+  version: 3.2.9
+  resolution: "@types/koa-compose@npm:3.2.9"
+  dependencies:
+    "@types/koa": "npm:*"
+  checksum: 10/0f86016fc8055c1ed945630718ab74dac3e301c944ae1ab35762ff1bc393728b5867ec33896054c22ee161d9c2aa94b5915a122e595232b371fb41494e4473ef
+  languageName: node
+  linkType: hard
+
+"@types/koa@npm:*":
+  version: 3.0.1
+  resolution: "@types/koa@npm:3.0.1"
+  dependencies:
+    "@types/accepts": "npm:*"
+    "@types/content-disposition": "npm:*"
+    "@types/cookies": "npm:*"
+    "@types/http-assert": "npm:*"
+    "@types/http-errors": "npm:^2"
+    "@types/keygrip": "npm:*"
+    "@types/koa-compose": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10/b1581d31d562bb5d9f61bc0148652abffc701c39930eb77a57b7d1f43aaad56ffa1970f6f3d4d6a0a56395a6832e2711a3278850dcc5a6c986ba6ed2cd0f4f1f
   languageName: node
   linkType: hard
 
@@ -8818,6 +8898,7 @@ __metadata:
     "@types/config": "npm:3.3.5"
     "@types/cors": "npm:2.8.19"
     "@types/express-session": "npm:1.18.2"
+    "@types/graphql-upload": "npm:17.0.0"
     "@types/node": "npm:24.12.0"
     "@types/nodemailer": "npm:6.4.23"
     "@types/passport": "npm:1.0.17"
@@ -8877,7 +8958,7 @@ __metadata:
   resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
   dependencies:
     "@filigran/icon": "npm:0.22.4"
-    "@filigran/ui": "npm:0.44.8"
+    "@filigran/ui": "npm:0.46.0"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@testing-library/dom": "npm:10.4.1"
@@ -13333,7 +13414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:16.13.1":
+"graphql@npm:16.13.1, graphql@npm:^16.9.0":
   version: 16.13.1
   resolution: "graphql@npm:16.13.1"
   checksum: 10/a42f857f60351e1f4665aa5bc5524796d3f45bf81793e6db932f902aff769b0488dafaa1d9c07bddda7122a1f6d0b0105fab12d38992f6b6fb81fc3d7ced1afc

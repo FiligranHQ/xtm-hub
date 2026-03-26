@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
@@ -24,7 +25,10 @@ export const ShareableResourceCardIcon: FunctionComponent<
     <>
       {document.active && shouldDisplayBothIcons && (
         <TooltipProvider>
-          {docHasMetadata(document, 'manager_supported') &&
+          {docHasMetadata(
+            document,
+            DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
+          ) &&
             document.manager_supported && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -35,16 +39,17 @@ export const ShareableResourceCardIcon: FunctionComponent<
                 </TooltipContent>
               </Tooltip>
             )}
-          {docHasMetadata(document, 'verified') && document.verified && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
-              </TooltipTrigger>
-              <TooltipContent className="bg-gray-50">
-                {t('Utils.Verified')}
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {docHasMetadata(document, DocumentMetadataKeyCodeEnum.VERIFIED) &&
+            document.verified && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
+                </TooltipTrigger>
+                <TooltipContent className="bg-gray-50">
+                  {t('Utils.Verified')}
+                </TooltipContent>
+              </Tooltip>
+            )}
         </TooltipProvider>
       )}
       {document.active && !shouldDisplayBothIcons && (

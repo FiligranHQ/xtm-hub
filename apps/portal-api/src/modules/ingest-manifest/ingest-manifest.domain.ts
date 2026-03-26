@@ -20,7 +20,7 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         connector.logo,
         `${connector.name}-logo.png`
       );
-      const doc = await DocumentApp.upsertDocument<Connector>(
+      const doc = await DocumentApp.upsertDocumentWithExternalImage<Connector>(
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         { ...omit(connector, ['logo']) } as Connector,
         uploadLogo,

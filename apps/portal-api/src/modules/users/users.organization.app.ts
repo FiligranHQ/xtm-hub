@@ -110,6 +110,8 @@ export const UsersOrganizationApp = {
       'User.id': updatedUser.id,
     });
     portalContext.req.session.user = updatedUserLoadUserBy;
+    portalContext.req.session.save();
+    portalContext.user = updatedUserLoadUserBy;
     requestContext.update({ user: updatedUserLoadUserBy });
 
     return updatedUserLoadUserBy;

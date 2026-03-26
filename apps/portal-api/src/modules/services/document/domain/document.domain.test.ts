@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import {
   DocumentConnection,
+  DocumentMetadataKeyCode,
   DocumentOrdering,
   FilterKey,
   Integration,
@@ -40,7 +41,6 @@ describe('Document domain', () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
-
     await db<Document>('Document').delete();
   });
 
@@ -73,8 +73,12 @@ describe('Document domain', () => {
   describe(`loadParentDocumentsByServiceInstance`, () => {
     let csvFeed: Document;
     beforeEach(async () => {
+      await db<Document>('Document')
+        .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
+        .delete();
       csvFeed = await TestHelper.document.create({});
     });
+
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
       await upsertConnectors([
         sampleExtractedManifest[0],
@@ -477,12 +481,12 @@ describe('Document domain', () => {
 
       await db('Document_Metadata').insert({
         document_id: inserted.id,
-        key: 'product_version',
+        key: DocumentMetadataKeyCode.ProductVersion,
         value: '1.2.3',
       });
       const loaded = await DocumentDomain.loadDocumentWithMetadataById(
         inserted.id,
-        ['product_version']
+        [DocumentMetadataKeyCode.ProductVersion]
       );
       expect(loaded).toBeDefined();
       expect(loaded).toMatchObject({

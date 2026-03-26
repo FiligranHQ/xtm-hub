@@ -31,6 +31,8 @@ export default interface User {
   country: string | null;
 
   platform_token: string | null;
+
+  picture_minio: string | null;
 }
 
 /** Represents the initializer for the table public.User */
@@ -58,6 +60,8 @@ export interface UserInitializer {
   country?: string | null;
 
   platform_token?: string | null;
+
+  picture_minio?: string | null;
 }
 
 /** Represents the mutator for the table public.User */
@@ -85,4 +89,6 @@ export interface UserMutator {
   country?: string | null;
 
   platform_token?: string | null;
+
+  picture_minio?: string | null;
 }

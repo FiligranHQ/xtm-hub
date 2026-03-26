@@ -6,6 +6,7 @@ import useScrollPosition from '@/hooks/useScrollPosition';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
@@ -56,7 +57,10 @@ const ShareableResourceCard = ({
         <ShareableResourceCardHeader
           document={document}
           shouldDisplayBothIcons={
-            docHasMetadata(document, 'integration_type') &&
+            docHasMetadata(
+              document,
+              DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE
+            ) &&
             !!document.integration_type &&
             FOOTER_VERSIONS_INTEGRATION_TYPES.includes(
               document.integration_type
@@ -69,7 +73,10 @@ const ShareableResourceCard = ({
         </p>
       </Link>
       <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
-        {docHasMetadata(document, 'integration_type') &&
+        {docHasMetadata(
+          document,
+          DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE
+        ) &&
         document.integration_type &&
         FOOTER_VERSIONS_INTEGRATION_TYPES.includes(
           document.integration_type
@@ -83,7 +90,10 @@ const ShareableResourceCard = ({
         ) : (
           <ShareableResourceCardFooterAuthor
             shouldDisplayAuthor={
-              (docHasMetadata(document, 'integration_type') &&
+              (docHasMetadata(
+                document,
+                DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE
+              ) &&
                 document.integration_type &&
                 !FOOTER_NO_AUTHOR_INTEGRATION_TYPES.includes(
                   document.integration_type

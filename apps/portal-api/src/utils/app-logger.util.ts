@@ -153,8 +153,11 @@ export const logApp = {
     meta: Record<string, unknown> = {},
     category: AppLogsCategory = AppLogsCategory.BACKEND
   ) => logApp._log('info', message, null, meta, category),
-  warn: (messageOrError: string | Error, meta: Record<string, unknown> = {}) =>
-    logApp._logWithError('warn', messageOrError, meta),
+  warn: (
+    messageOrError: string | Error,
+    meta: Record<string, unknown> = {},
+    category: AppLogsCategory = AppLogsCategory.BACKEND
+  ) => logApp._logWithError('warn', messageOrError, meta, category),
   error: (
     messageOrError: string | Error,
     meta: Record<string, unknown> = {},
