@@ -14,13 +14,6 @@ export const availableIntegrationTypes: IntegrationTypeEnum[] = [
   IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
 ];
 
-export const integrationsWithSubtype: IntegrationTypeEnum[] = [
-  IntegrationTypeEnum.CONNECTOR,
-  IntegrationTypeEnum.TAXII_FEED,
-  IntegrationTypeEnum.STREAM,
-  IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
-];
-
 export const integrationSubTypeMetadata: Record<
   IntegrationSubTypeEnum,
   { label: string; color: string }

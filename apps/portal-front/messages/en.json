@@ -812,7 +812,7 @@
       "AddService": "Add new dashboard",
       "DeleteService": "Delete the custom dashboard {name}",
       "NonActive": "Draft",
-      "SureDeleteService": "Are you sure you want to delete the {name} dashboard?",
+      "SureDeleteService": "Are you sure you want to delete the dashboard {name}?",
       "UpdateService": "Update dashboard"
     },
     "OpenAEVScenario": {

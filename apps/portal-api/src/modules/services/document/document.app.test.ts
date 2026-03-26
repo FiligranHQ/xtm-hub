@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db } from '../../../../knexfile';
+import { TestHelper } from '../../../../tests/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
@@ -47,7 +47,6 @@ import {
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from './opencti/custom-dashboards/custom-dashboards.model';
 import {
-  Connector,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from './opencti/integrations/integrations.model';
@@ -81,6 +80,21 @@ describe('DocumentApp', () => {
     active: true,
   };
 
+  const integrationMetadata = [
+    {
+      key: DocumentMetadataKeyCode.IntegrationType,
+      value: IntegrationType.ThirdPartyIntegration,
+    },
+    {
+      key: DocumentMetadataKeyCode.IntegrationSubtype,
+      value: IntegrationSubType.Orchestration,
+    },
+    {
+      key: DocumentMetadataKeyCode.VendorUrl,
+      value: 'https://example.com',
+    },
+  ];
+
   beforeEach(() => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
@@ -100,36 +114,45 @@ describe('DocumentApp', () => {
 
   describe('createDocument', () => {
     it('should throw when metadata is missing', async () => {
+      // When
       const call = DocumentApp.createDocument({
         input: documentData,
         metadata: [],
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       });
 
+      // Then
       await expect(call).rejects.toThrow(ErrorCode.DocumentMissingMetadata);
     });
 
-    it('should not throw when metadata is missing but optional', async () => {
+    it('should throw when serviceDefinition is not found', async () => {
+      // Given
+      vi.spyOn(
+        ServiceDefinitionDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(undefined);
+
+      // When
+      const call = DocumentApp.createDocument({
+        input: documentData,
+        metadata: integrationMetadata,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+      });
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should create document with metadata', async () => {
+      // When
       const result = await DocumentApp.createDocument({
         input: documentData,
-        metadata: [
-          {
-            key: DocumentMetadataKeyCode.IntegrationType,
-            value: IntegrationType.ThirdPartyIntegration,
-          },
-          {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
-          },
-          {
-            key: DocumentMetadataKeyCode.VendorUrl,
-            value: 'https://example.com',
-          },
-        ],
+        metadata: integrationMetadata,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         sourceDocument: mockUpload,
       });
 
+      // Then
       expect(result).toMatchObject({
         ...documentData,
         integration_type: IntegrationType.ThirdPartyIntegration,
@@ -139,77 +162,33 @@ describe('DocumentApp', () => {
       });
     });
 
-    it('should use document when file is provided', async () => {
-      const createdDocument = await DocumentApp.createDocument({
-        input: documentData,
-        metadata: [
-          {
-            key: DocumentMetadataKeyCode.IntegrationType,
-            value: IntegrationType.CsvFeed,
-          },
-        ],
-        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        sourceDocument: mockUpload,
-      });
-
-      expect(createdDocument).toMatchObject({
-        file_name: minioFileMock.fileName,
-        minio_name: minioFileMock.minioName,
-        mime_type: minioFileMock.mimeType,
-      });
-    });
-
     it('should not use document file when document is a third party integration', async () => {
+      // When
       const createdDocument = await DocumentApp.createDocument({
         input: documentData,
-        metadata: [
-          {
-            key: DocumentMetadataKeyCode.IntegrationType,
-            value: IntegrationType.ThirdPartyIntegration,
-          },
-          {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
-          },
-          {
-            key: DocumentMetadataKeyCode.VendorUrl,
-            value: 'https://example.com',
-          },
-        ],
+        metadata: integrationMetadata,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         sourceDocument: mockUpload,
       });
 
-      expect(createdDocument).toBeDefined();
-      expect(createdDocument!.file_name).toBeNull();
-      expect(createdDocument!.minio_name).toBeNull();
-      expect(createdDocument!.mime_type).toBeNull();
+      // Then
+      expect(createdDocument).toMatchObject({
+        file_name: null,
+        minio_name: null,
+        mime_type: null,
+      });
     });
 
     it('should create children image and logo documents', async () => {
+      // When
       const createdDocument = await DocumentApp.createDocument({
         input: documentData,
-        metadata: [
-          {
-            key: DocumentMetadataKeyCode.IntegrationType,
-            value: IntegrationType.ThirdPartyIntegration,
-          },
-          {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
-          },
-          {
-            key: DocumentMetadataKeyCode.VendorUrl,
-            value: 'https://example.com',
-          },
-        ],
+        metadata: integrationMetadata,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         sourceDocument: mockUpload,
         images: [mockUpload],
         logo: mockUpload,
       });
-
-      expect(createdDocument).toBeDefined();
 
       const children: DocumentImage[] =
         (await DocumentChildrenDomain.loadChildrenDocuments(
@@ -217,18 +196,22 @@ describe('DocumentApp', () => {
           DOCUMENT_IMAGE_METADATA_KEYS
         )) as unknown as DocumentImage[];
 
-      expect(children.length).toBe(2);
       const image = children.find(
         (child) => child.image_type === DocumentImageType.Image
       );
-      expect(image).toBeDefined();
       const logo = children.find(
         (child) => child.image_type === DocumentImageType.Logo
       );
+
+      // Then
+      expect(children.length).toBe(2);
+      expect(createdDocument).toBeDefined();
+      expect(image).toBeDefined();
       expect(logo).toBeDefined();
     });
 
     it('should send a create telemetry event when creating a document', async () => {
+      // Given
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -236,6 +219,7 @@ describe('DocumentApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
+      // When
       await DocumentApp.createDocument({
         input: documentData,
         metadata: [
@@ -244,6 +228,8 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
+
+      // Then
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.CREATE,
@@ -264,27 +250,15 @@ describe('DocumentApp', () => {
   describe('updateDocument', () => {
     let createdDocument: Document | undefined;
     beforeEach(async () => {
-      await db<Document>('Document').del();
+      await TestHelper.document.delete({});
       createdDocument = await DocumentApp.createDocument({
         input: documentData,
-        metadata: [
-          {
-            key: DocumentMetadataKeyCode.IntegrationType,
-            value: IntegrationType.ThirdPartyIntegration,
-          },
-          {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
-          },
-          {
-            key: DocumentMetadataKeyCode.VendorUrl,
-            value: 'https://example.com',
-          },
-        ],
+        metadata: integrationMetadata,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
     });
     it('should throw when metadata is missing', async () => {
+      // When
       const call = DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
@@ -293,10 +267,32 @@ describe('DocumentApp', () => {
         existingImageIds: [],
       });
 
+      // Then
       await expect(call).rejects.toThrow(ErrorCode.DocumentMissingMetadata);
     });
 
-    it('should not throw when metadata is missing but optional', async () => {
+    it('should throw when servide Definition is not found', async () => {
+      // Given
+      vi.spyOn(
+        ServiceDefinitionDomain,
+        'loadServiceDefinitionByServiceInstance'
+      ).mockResolvedValue(undefined);
+
+      // When
+      const call = DocumentApp.updateDocument({
+        parentDocumentId: createdDocument!.id,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        metadata: integrationMetadata,
+        input: documentData,
+        existingImageIds: [],
+      });
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should return fields when metadata is missing but optional', async () => {
+      // When
       const result = await DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -311,17 +307,22 @@ describe('DocumentApp', () => {
           },
           {
             key: DocumentMetadataKeyCode.VendorUrl,
-            value: 'https://example.com',
+            value: 'https://changed.com',
           },
         ],
         input: documentData,
         existingImageIds: [],
       });
 
-      expect(result).toBeDefined();
+      // Then
+      expect(result).toMatchObject({
+        short_description: 'short_description',
+        vendor_url: 'https://changed.com',
+      });
     });
 
     it('should use first file for document when document is not a third party integration', async () => {
+      // When
       const result = await DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -336,59 +337,39 @@ describe('DocumentApp', () => {
         input: documentData,
       });
 
-      expect(result).toBeDefined();
-      expect(result!.file_name).toBe(minioFileMock.fileName);
-      expect(result!.minio_name).toBe(minioFileMock.minioName);
-      expect(result!.mime_type).toBe(minioFileMock.mimeType);
+      // Then
+      expect(result).toMatchObject({
+        file_name: minioFileMock.fileName,
+        minio_name: minioFileMock.minioName,
+        mime_type: minioFileMock.mimeType,
+      });
     });
 
     it('should not use document file when document is a third party integration', async () => {
+      // When
       const result = await DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        metadata: [
-          {
-            key: DocumentMetadataKeyCode.IntegrationType,
-            value: IntegrationType.ThirdPartyIntegration,
-          },
-          {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
-          },
-          {
-            key: DocumentMetadataKeyCode.VendorUrl,
-            value: 'https://example.com',
-          },
-        ],
+        metadata: integrationMetadata,
         sourceDocument: mockUpload,
         existingImageIds: [],
         input: documentData,
       });
 
-      expect(result).toBeDefined();
-      expect(result!.file_name).toBeNull();
-      expect(result!.minio_name).toBeNull();
-      expect(result!.mime_type).toBeNull();
+      // Then
+      expect(result).toMatchObject({
+        file_name: null,
+        minio_name: null,
+        mime_type: null,
+      });
     });
 
     it('should add a logo document when logo file is provided', async () => {
+      // When
       const result = await DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        metadata: [
-          {
-            key: DocumentMetadataKeyCode.IntegrationType,
-            value: IntegrationType.ThirdPartyIntegration,
-          },
-          {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
-          },
-          {
-            key: DocumentMetadataKeyCode.VendorUrl,
-            value: 'https://example.com',
-          },
-        ],
+        metadata: integrationMetadata,
         sourceDocument: mockUpload,
         existingImageIds: [],
         input: documentData,
@@ -403,6 +384,8 @@ describe('DocumentApp', () => {
       const logo = children.find(
         (doc) => doc.image_type === DocumentImageType.Logo
       );
+
+      // Then
       expect(logo).toMatchObject({
         file_name: minioFileMock.fileName,
         minio_name: minioFileMock.minioName,
@@ -424,6 +407,7 @@ describe('DocumentApp', () => {
         integrationType: IntegrationType;
         integrationSubtype: IntegrationSubType | null;
       }) => {
+        // Given
         const metadata = [
           {
             key: DocumentMetadataKeyCode.IntegrationType,
@@ -439,6 +423,7 @@ describe('DocumentApp', () => {
             : []),
         ];
 
+        // When
         const result = await DocumentApp.updateDocument({
           parentDocumentId: createdDocument!.id,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -447,12 +432,14 @@ describe('DocumentApp', () => {
           existingImageIds: [],
         });
 
-        expect(result).toBeDefined();
-        const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
-          result!.id,
-          DocumentMetadataKeyCode.FeedUrl
-        );
-        expect(feedUrl).toBe('https://example.com');
+        const feedUrlFromDb =
+          await DocumentMetadataDomain.loadMetadataValueByKey(
+            result!.id,
+            DocumentMetadataKeyCode.FeedUrl
+          );
+        // Then
+        expect(result).toMatchObject({ feed_url: 'https://example.com' });
+        expect(feedUrlFromDb).toBe('https://example.com');
       }
     );
 
@@ -470,6 +457,7 @@ describe('DocumentApp', () => {
         integrationType: IntegrationType;
         integrationSubtype: IntegrationSubType | null;
       }) => {
+        // Given
         const slug = 'integration-slug';
         const metadata = [
           {
@@ -493,7 +481,6 @@ describe('DocumentApp', () => {
           sourceDocument: mockUpload,
           images: [mockUpload],
         });
-        expect(createdDocument).toBeDefined();
 
         vi.spyOn(MinIOClient, 'createFile').mockResolvedValue({
           minioName: 'imageFile',
@@ -501,6 +488,7 @@ describe('DocumentApp', () => {
           fileName: 'image.png',
         });
 
+        // When
         const result = await DocumentApp.updateDocument({
           parentDocumentId: createdDocument!.id,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -509,17 +497,20 @@ describe('DocumentApp', () => {
           sourceDocument: mockUpload,
           existingImageIds: [],
         });
+        const feedUrlFromDb =
+          await DocumentMetadataDomain.loadMetadataValueByKey(
+            result!.id,
+            DocumentMetadataKeyCode.FeedUrl
+          );
 
-        expect(result).toBeDefined();
-        const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
-          result!.id,
-          DocumentMetadataKeyCode.FeedUrl
-        );
-        expect(feedUrl).toBe('https://example.com');
+        // Then
+        expect(result).toMatchObject({ feed_url: 'https://example.com' });
+        expect(feedUrlFromDb).toBe('https://example.com');
       }
     );
 
     it('should convert boolean metadata keys to booleans on update', async () => {
+      // Given
       // Create a Connector document with required metadata
       const connectorMetadata = [
         {
@@ -548,7 +539,6 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         sourceDocument: mockUpload,
       });
-      expect(createdDocument).toBeDefined();
 
       // Update with boolean metadata as strings
       const updatedMetadata = [
@@ -571,6 +561,8 @@ describe('DocumentApp', () => {
           value: 'subscription_link_value',
         },
       ];
+
+      // When
       const result = await DocumentApp.updateDocument({
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -578,10 +570,9 @@ describe('DocumentApp', () => {
         input: { ...documentData, slug },
         existingImageIds: [],
       });
-      expect(result).toBeDefined();
 
-      const updatedConnector = result as Connector;
-      expect(updatedConnector).toMatchObject({
+      // Then
+      expect(result).toMatchObject({
         verified: true,
         manager_supported: true,
         playbook_supported: false,
@@ -592,6 +583,7 @@ describe('DocumentApp', () => {
 
   describe('loadDocument', () => {
     it('should return the document with elastic search counters', async () => {
+      // Given
       const document = await DocumentApp.createDocument({
         input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
@@ -607,7 +599,6 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
-      expect(document).toBeDefined();
 
       const documentId = document!.id;
 
@@ -627,8 +618,10 @@ describe('DocumentApp', () => {
         }
       );
 
+      // When
       const documentLoaded = await DocumentApp.loadDocument(documentId);
 
+      // Then
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);
     });
@@ -636,15 +629,18 @@ describe('DocumentApp', () => {
 
   describe('loadPublicDocumentBySlug', () => {
     it('should throw when service definition is not found', async () => {
+      // When
       const call = DocumentApp.loadPublicDocumentBySlug(
         uuidv4() as ServiceInstanceId,
         'slug'
       );
 
+      // Then
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
     it('should return the document with elastic search counters', async () => {
+      // Given
       const document = await DocumentApp.createDocument({
         input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
@@ -660,7 +656,6 @@ describe('DocumentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
-      expect(document).toBeDefined();
 
       const documentId = document!.id;
 
@@ -680,11 +675,13 @@ describe('DocumentApp', () => {
         }
       );
 
+      // When
       const documentLoaded = await DocumentApp.loadPublicDocumentBySlug(
         SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         document!.slug!
       );
 
+      // Then
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);
     });
@@ -692,45 +689,52 @@ describe('DocumentApp', () => {
 
   describe('loadPublicDocumentsByServiceSlug', () => {
     it('should throw when service definition is not found', async () => {
+      // When
       const call = DocumentApp.loadPublicDocumentsByServiceSlug('unknown-slug');
 
+      // Then
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
     it('should return the documents', async () => {
+      // Given
       const loadSeoDocumentsByServiceSlugSpy = vi
         .spyOn(DocumentDomain, 'loadSeoDocumentsByServiceSlug')
         .mockResolvedValue([{}]);
 
-      const loadedDocuments =
-        await DocumentApp.loadPublicDocumentsByServiceSlug(
-          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG
-        );
+      // When
+      await DocumentApp.loadPublicDocumentsByServiceSlug(
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG
+      );
 
+      // Then
       expect(loadSeoDocumentsByServiceSlugSpy).toHaveBeenCalledWith(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG,
         CUSTOM_DASHBOARD_METADATA_KEYS
       );
-      expect(loadedDocuments).toBeDefined();
-      expect(loadedDocuments.length).toBe(1);
     });
   });
 
   describe('loadPublicDocuments', () => {
     it('should throw if service definition is not found', async () => {
+      // Given
       vi.spyOn(
         ServiceDefinitionDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(undefined);
       const input = { serviceInstanceId: 'invalid-id', slug: 'test-slug' };
+
+      // When
       const call = DocumentApp.loadPublicDocuments(
         input as QueryPublicDocumentsArgs
       );
+      // Then
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
     it('should call DocumentDomain.loadPaginatedSeoDocumentsByServiceSlug with correct params', async () => {
+      // Given
       const mockServiceDefinition = {
         identifier: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
       };
@@ -752,10 +756,12 @@ describe('DocumentApp', () => {
         pageSize: 10,
       };
 
+      // When
       await DocumentApp.loadPublicDocuments(
         input as unknown as QueryPublicDocumentsArgs
       );
 
+      // Then
       expect(loadPaginatedSeoDocumentsSpy).toHaveBeenCalledWith(
         'opencti_custom_dashboard',
         'test-slug',
@@ -779,35 +785,54 @@ describe('DocumentApp', () => {
     ] as unknown as DocumentMetadataKeys<ThirdPartyIntegration>;
 
     it('should create a new document with an external image', async () => {
+      // Given
       const input = {
         ...documentData,
         uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       };
+
+      // When
       const doc = await DocumentApp.upsertDocumentWithExternalImage(
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         input,
         mockUpload,
         metadataKeys
       );
-      expect(doc).toBeDefined();
-      expect(doc.id).toBeDefined();
-      expect(doc.type).toBe(OPENCTI_INTEGRATION_DOCUMENT_TYPE);
-      expect(doc.file_name).toBeNull();
       const children = await DocumentChildrenDomain.loadChildrenDocuments(
         doc.id
       );
-      expect(children.length).toBe(1);
-      expect(children[0]!.source_type).toBe(DocumentSourceType.External);
-      expect(children[0]!.minio_name).toBe(minioFileMock.minioName);
+      // Then
+      expect(doc).toMatchObject({
+        id: expect.any(String),
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        file_name: null,
+      });
+      expect(children).toHaveLength(1);
+      expect(children[0]).toMatchObject({
+        source_type: DocumentSourceType.External,
+        minio_name: minioFileMock.minioName,
+      });
     });
 
     it('should update an existing document and replace external image', async () => {
+      // Given
       // First create
       const input = {
         ...documentData,
         uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         slug: 'unique-slug',
       };
+      vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
+        {
+          ...minioFileMock,
+          fileName: 'new-image.png',
+        },
+      ]);
+      const newFileUpload = {
+        ...mockUpload,
+        file: { ...mockFileUpload, filename: 'new-image.png' },
+      };
+      // When
       const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
         'integration',
         input,
@@ -815,31 +840,24 @@ describe('DocumentApp', () => {
         metadataKeys
       );
       // Update with new image
-      const newFileUpload = {
-        ...mockUpload,
-        file: { ...mockFileUpload, filename: 'new-image.png' },
-      };
-
-      vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
-        {
-          ...minioFileMock,
-          fileName: 'new-image.png',
-        },
-      ]);
-
       const doc2 = await DocumentApp.upsertDocumentWithExternalImage(
         'integration',
         input,
         newFileUpload,
         metadataKeys
       );
-      expect(doc2.id).toBe(doc1.id);
       const children = await DocumentChildrenDomain.loadChildrenDocuments(
         doc2.id
       );
-      expect(children.length).toBe(1);
-      expect(children[0]!.source_type).toBe(DocumentSourceType.External);
-      expect(children[0]!.file_name).toBe('new-image.png');
+
+      // Then
+      expect(doc2.id).toBe(doc1.id);
+
+      expect(children).toHaveLength(1);
+      expect(children[0]).toMatchObject({
+        source_type: DocumentSourceType.External,
+        file_name: 'new-image.png',
+      });
     });
   });
 });
