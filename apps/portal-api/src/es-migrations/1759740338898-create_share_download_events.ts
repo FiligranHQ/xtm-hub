@@ -3,9 +3,9 @@
 import knex from 'knex';
 import { baseConfig } from '../../knexconfig';
 import {
-  TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetrySource,
 } from '../modules/telemetry/telemetry.const';
 import { TelemetryEventType } from '../modules/telemetry/telemetry.types';
 import { esDbClient } from '../thirdparty/elasticsearch/client';
@@ -74,7 +74,7 @@ async function buildDocumentList(
               ? TelemetryEventType.SHARE
               : TelemetryEventType.DOWNLOAD,
           organization_type: event_type === 'share' ? 'Public' : undefined,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           service: service,
           service_type: serviceType,
           resource_id: doc.id,

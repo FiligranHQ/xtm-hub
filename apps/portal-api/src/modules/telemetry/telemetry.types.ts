@@ -7,10 +7,10 @@ import {
   DeploymentRequestUseCase,
 } from '../../__generated__/resolvers-types';
 import {
-  TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
   TelemetryOrganizationType,
+  TelemetrySource,
   TelemetryTargetProduct,
 } from './telemetry.const';
 
@@ -35,7 +35,7 @@ export interface BaseTelemetryEvent {
   organization_type: TelemetryOrganizationType;
   user_id: string;
   '@timestamp': string;
-  source: typeof TELEMETRY_SOURCE;
+  source: TelemetrySource;
 }
 
 export interface LoginEvent extends BaseTelemetryEvent {

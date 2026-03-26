@@ -2,7 +2,7 @@
 
 import knex from 'knex';
 import { baseConfig } from '../../knexconfig';
-import { TELEMETRY_SOURCE } from '../modules/telemetry/telemetry.const';
+import { TelemetrySource } from '../modules/telemetry/telemetry.const';
 import { TelemetryEventType } from '../modules/telemetry/telemetry.types';
 import { ADMIN_UUID } from '../portal.const';
 import { esDbClient } from '../thirdparty/elasticsearch/client';
@@ -22,7 +22,7 @@ export const up = async function (next) {
         organization_id: orga.id,
         organization_name: orga.name,
         organization_type: 'Professional',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: ADMIN_UUID,
         domains: orga.domains,
       },

@@ -1,6 +1,7 @@
 import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import type { createFreeTrialAvailableTrialsQuery } from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
 import CreateFreeTrialAvailableTrials from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
+import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
@@ -23,8 +24,12 @@ export const redirectToCreateFreeTrial = async (
       platformIdentifier === PlatformIdentifierEnum.OPENCTI
         ? 'opencti'
         : 'openaev';
+    const source =
+      platformIdentifier === PlatformIdentifierEnum.OPENCTI
+        ? DeploymentRequestSourceEnum.OPENCTI_DEMO
+        : DeploymentRequestSourceEnum.OPENAEV_DEMO;
     const freeTrialUrl = new URL(
-      `/app/service/${pathKey}-free-trial`,
+      `/app/service/${pathKey}-free-trial?source=${source}`,
       baseUrlFront
     );
 
@@ -69,7 +74,7 @@ export const redirectToCreateFreeTrial = async (
       return NextResponse.redirect(`${freeTrialUrl}`);
     }
 
-    return NextResponse.redirect(`${freeTrialUrl}?openForm=true`);
+    return NextResponse.redirect(`${freeTrialUrl}&openForm=true`);
   } catch (error) {
     if ((error as Error).message === 'UNAUTHENTICATED') {
       return NextResponse.redirect(redirectionUrl);

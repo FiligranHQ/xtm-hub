@@ -27,8 +27,8 @@ import { MinIOClient } from '../../../thirdparty/minio/client';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
-  TELEMETRY_SOURCE,
   TelemetryEventService,
+  TelemetrySource,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
@@ -250,7 +250,7 @@ describe('DocumentApp', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
         organization_type: 'Professional',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         service: TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
         resource_id: expect.any(String),

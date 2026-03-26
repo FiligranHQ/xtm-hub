@@ -14,7 +14,7 @@ import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
 import { ROLE_ADMIN } from '../../portal.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
-import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
+import { TelemetrySource } from '../telemetry/telemetry.const';
 import {
   loadUserBy,
   loadUserConnection,
@@ -65,7 +65,7 @@ describe('Users domain', () => {
       organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
       organization_type: 'Professional',
-      source: TELEMETRY_SOURCE,
+      source: TelemetrySource.XTMHUB,
       user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
     });
   });

@@ -8,6 +8,7 @@ import {
   DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestSource,
   DeploymentRequestUseCase,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -38,6 +39,7 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
+            source: DeploymentRequestSource.Xtmhub,
           },
         }
       );
@@ -66,6 +68,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       expect(initialDeployment).toMatchObject({
@@ -146,6 +149,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
       const updates = {
         id: initialDeployment.id,
