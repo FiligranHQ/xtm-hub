@@ -181,8 +181,12 @@
                       extensive integrations.<br />
                       {{/if}}
                       <br />
-                      Log in to your free trial:
-                      <a href="{{ platformUrl }}"> {{ platformUrl }}</a> <br />
+                      <strong>
+                        Log in to your free trial:
+                        <a href="{{ platformUrl }}">
+                          {{ platformUrl }}</a
+                        > </strong
+                      ><br />
                       <br />
                       If you'd like a walkthrough or have questions, simply
                       reply to this email or use the 'Contact Us' option in the
@@ -202,6 +206,47 @@
                       >
                       {{/if}}
                     </p>
+                    <p>
+                      <strong
+                        >If you want to add a user to your
+                        {{platformIdentifier}} trial:</strong
+                      ><br />
+                      <br />
+                      1. Ensure the user has an XTM Hub account. If not, ask
+                      them to create one here:
+                      <a href="{{ base_url_front }}">XTM Hub</a>. They must log
+                      in once so they can be added to your organization.<br />
+                      2. Confirm the user appears on the
+                      <a href="{{ base_url_front }}/app/manage/user"
+                        >Users page</a
+                      >, or approve their request.<br />
+                      3. Go to "Manage Users" and assign the appropriate role:
+                      {{#if (eq platformIdentifier 'OpenCTI')}}
+                      <a
+                        href="{{ base_url_front }}/app/service/opencti_registration/{{globalServiceInstanceId}}?openForm=true"
+                        >Manage Users</a
+                      >. {{else}}
+                      <a
+                        href="{{ base_url_front }}/app/service/openaev_registration/{{globalServiceInstanceId}}?openForm=true"
+                        >Manage Users</a
+                      >. {{/if}}
+
+                      <br />
+                      The user will receive an email invitation and will then be
+                      able to access the trial.<br />
+                      <br />
+                      If you need more information please refer to the {{#if (eq
+                      platformIdentifier 'OpenCTI')}}
+                      <a
+                        href="https://docs.hub.filigran.io/latest/user/opencti-freetrials/#manage-users-on-your-opencti-free-trial"
+                        >documentation</a
+                      >. {{else}}
+                      <a
+                        href="https://docs.hub.filigran.io/latest/user/openaev-freetrials/#manage-users-on-your-openaev-free-trial"
+                        >documentation</a
+                      >. {{/if}}
+                    </p>
+
                     <p style="margin: 0; padding-top: 16px">
                       Best regards, <br />
                       <br />

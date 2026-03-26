@@ -111,6 +111,7 @@ describe('renderEmail', () => {
         firstName: 'User',
         platformUrl: 'http://myTestPlatform',
         platformIdentifier: PlatformIdentifier.Openaev,
+        globalServiceInstanceId: 'test-global-service-instance-id',
       });
 
       expect(html).not.toContain('OpenCTI');

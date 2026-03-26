@@ -1106,6 +1106,10 @@ describe('Deployment app', () => {
             firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
             platformUrl: 'http://example.com',
             platformIdentifier: PlatformIdentifier.Opencti,
+            globalServiceInstanceId: toGlobalId(
+              'ServiceInstance',
+              initialDeployment.service_instance_id
+            ),
           },
         });
 

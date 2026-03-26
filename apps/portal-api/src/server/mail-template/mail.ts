@@ -32,6 +32,7 @@ export interface FreeTrialRegistered {
   firstName: string;
   platformUrl: string;
   platformIdentifier: PlatformIdentifier;
+  globalServiceInstanceId: string;
 }
 export interface FreeTrialGenericModel {
   firstName: string;
