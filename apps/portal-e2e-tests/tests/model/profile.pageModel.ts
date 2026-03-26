@@ -12,10 +12,6 @@ export default class ProfilePage {
     return this.page.getByPlaceholder('Last name');
   }
 
-  getPictureInput() {
-    return this.page.getByPlaceholder('Picture');
-  }
-
   async fillFirstNameInput(input: string) {
     await this.getFirstNameInput().click({ force: true });
     return this.getFirstNameInput().fill(input);
@@ -31,13 +27,16 @@ export default class ProfilePage {
     await this.page.getByRole('option', { name: input }).click();
   }
 
-  async fillPictureInput(input: string) {
-    await this.getPictureInput().click();
-    return this.getPictureInput().fill(input);
+  getUpdateButton() {
+    return this.page.getByRole('button', { name: 'Update profile' });
   }
 
-  getUpdateButton() {
-    return this.page.getByRole('button', { name: 'Update' });
+  getUpdatePictureButton() {
+    return this.page.getByRole('button', { name: 'Update picture' });
+  }
+
+  getEditPictureButton() {
+    return this.page.getByRole('button', { name: 'Edit' });
   }
 
   getFirstOrLastNameEditionWarningMessage() {
@@ -62,15 +61,19 @@ export default class ProfilePage {
     await this.page.getByRole('menuitem', { name: 'Profile' }).click();
   }
 
+  async uploadProfilePicture(filePath: string) {
+    const fileInput = this.page.locator('input[type="file"]');
+    await fileInput.setInputFiles(filePath);
+    await this.getUpdatePictureButton().click();
+  }
+
   async editProfile({
     firstName,
     lastName,
-    picture,
     country,
   }: {
     firstName?: string;
     lastName?: string;
-    picture?: string;
     country?: string;
   }) {
     if (firstName) {
@@ -83,10 +86,6 @@ export default class ProfilePage {
 
     if (country) {
       await this.fillCountryInput(country);
-    }
-
-    if (picture) {
-      await this.fillPictureInput(picture);
     }
 
     return this.getUpdateButton().click();

@@ -147,6 +147,13 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
       }
     },
+    uploadUserPicture: async (_, { document }, context) => {
+      try {
+        return await usersProfileApp.uploadUserPicture(context.user, document);
+      } catch (error) {
+        throw mapToGraphQLError(error, UnknownErrorCode.UploadUserPictureError);
+      }
+    },
     resetPassword: async (_, __) => {
       await resetPassword();
       return { success: true };

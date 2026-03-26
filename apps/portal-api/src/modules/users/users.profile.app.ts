@@ -1,35 +1,58 @@
+import config from 'config';
 import { EditMeUserInput } from '../../__generated__/resolvers-types';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
-import { dispatch } from '../../pub';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
+import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
-import { isImgUrl } from '../../utils/utils';
 import { isValidEmail } from '../../utils/verify-email.util';
 import {
   loadOrganizationBy,
   loadUserByOrganization,
 } from '../organizations/organizations.domain';
+import {
+  getDocumentName,
+  normalizeDocumentName,
+} from '../services/document/document.helper';
+import {
+  Upload,
+  waitForUploads,
+} from '../services/document/document.uploads.helper';
 import { updateSubscriptionBy } from '../subcription/subscription.domain';
 import {
   insertNewUserTransfer,
   loadUserTransfer,
 } from './user_transferRequest/user_transferRequest.domain';
 import { loadSimpleUserBy, loadUserDetails, updateUser } from './users.domain';
-import { mapUserToGraphqlUser } from './users.helper';
+import { updateAndDispatchUser } from './users.helper';
+
+const deletePicture = async (pictureMinio: string) => {
+  try {
+    await MinIOClient.deleteFile(pictureMinio);
+  } catch (err) {
+    logApp.error('Error deleting previous picture from MinIO', { error: err });
+  }
+};
+
+const uploadPictureToMinIO = async (userId: string, file: Upload['file']) => {
+  const fileName = normalizeDocumentName(file.filename);
+  const minioName = `picture/${getDocumentName(fileName)}`;
+
+  await MinIOClient.uploadFile(file, minioName, userId, fileName);
+
+  return minioName;
+};
+
+const buildPictureUrl = (userId: string) => {
+  const baseUrlFront: string = config.get('base_url_front');
+  return `${baseUrlFront}/user/picture/${userId}?t=${Date.now()}`;
+};
 
 export const usersProfileApp = {
   editMeUser: async (meUser, input: EditMeUserInput) => {
-    if (input.picture) {
-      const isPictureImgUrl = await isImgUrl(input.picture);
-      if (!isPictureImgUrl) {
-        throw ErrorCode.InvalidImageUrl;
-      }
-    }
-
     const updatedUser = await updateUser(meUser.id, input);
 
     try {
@@ -47,10 +70,24 @@ export const usersProfileApp = {
 
     updateUserSession(user);
 
-    const mappedUser = mapUserToGraphqlUser(user);
-    await dispatch('User', 'edit', mappedUser);
+    return updateAndDispatchUser(meUser.id);
+  },
+  uploadUserPicture: async (meUser, document: Upload) => {
+    await waitForUploads(document);
 
-    return mappedUser;
+    if (meUser.picture_minio) {
+      await deletePicture(meUser.picture_minio);
+    }
+
+    const minioName = await uploadPictureToMinIO(meUser.id, document.file);
+    const pictureUrl = buildPictureUrl(meUser.id);
+
+    await updateUser(meUser.id, {
+      picture: pictureUrl,
+      picture_minio: minioName,
+    });
+
+    return updateAndDispatchUser(meUser.id);
   },
   requestTransferPersonalSpace: async (user, newEmail: string) => {
     if (!isValidEmail(newEmail)) {
