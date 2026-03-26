@@ -168,6 +168,7 @@ export type CreateDeploymentRequestInput = {
   job_title?: InputMaybe<DeploymentRequestJobTitle>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
+  source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
   use_case?: InputMaybe<DeploymentRequestUseCase>;
 };
@@ -443,6 +444,12 @@ export enum DeploymentRequestPlatformState {
   Unprovisioned = 'unprovisioned'
 }
 
+export enum DeploymentRequestSource {
+  OpenaevDemo = 'openaev_demo',
+  OpenctiDemo = 'opencti_demo',
+  Xtmhub = 'xtmhub'
+}
+
 export enum DeploymentRequestUseCase {
   AttackSimulation = 'attack_simulation',
   CentralizingKnowledge = 'centralizing_knowledge',
@@ -545,7 +552,6 @@ export type EditMeUserInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
-  picture?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditServiceCapabilityInput = {
@@ -812,6 +818,7 @@ export type Mutation = {
   updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
+  uploadUserPicture: User;
 };
 
 
@@ -1111,6 +1118,11 @@ export type MutationUpdatePlatformServiceMetadataArgs = {
 
 export type MutationUpdateServiceGroupsArgs = {
   input: UpdateServiceGroupsInput;
+};
+
+
+export type MutationUploadUserPictureArgs = {
+  document: Scalars['Upload']['input'];
 };
 
 export type Node = {
@@ -2398,6 +2410,7 @@ export type ResolversTypes = ResolversObject<{
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
+  DeploymentRequestSource: DeploymentRequestSource;
   DeploymentRequestUseCase: DeploymentRequestUseCase;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
@@ -3134,6 +3147,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
+  uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

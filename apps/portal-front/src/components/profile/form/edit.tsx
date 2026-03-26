@@ -25,10 +25,6 @@ const formSchema = z.object({
     .string()
     .transform((val) => val || null)
     .nullish(),
-  picture: z
-    .string()
-    .transform((val) => val || null)
-    .nullish(),
 });
 
 export type ProfileFormEditSchema = z.infer<typeof formSchema>;
@@ -56,7 +52,6 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
             first_name: me?.first_name ?? '',
             last_name: me?.last_name ?? '',
             country: me?.country ?? '',
-            picture: me?.picture ?? '',
           }}
           fieldConfig={{
             first_name: {
@@ -84,12 +79,6 @@ export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
                   <FormMessage />
                 </FormItem>
               ),
-            },
-            picture: {
-              label: t('UserForm.Picture'),
-              inputProps: {
-                placeholder: t('UserForm.Picture'),
-              },
             },
           }}>
           <div className="flex justify-end">

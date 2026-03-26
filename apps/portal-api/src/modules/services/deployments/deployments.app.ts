@@ -152,6 +152,7 @@ export const DeploymentsApp = {
               use_case: input.use_case,
               activity_sector: input.activity_sector,
               platform_token: uuidv4(),
+              source: input.source,
             });
           }
         );
@@ -161,6 +162,7 @@ export const DeploymentsApp = {
           chosenOrganization,
           user.id,
           input.platform_identifier,
+          input.source,
           {
             region: createdDeploymentRequest.region,
             status: createdDeploymentRequest.hub_status,

@@ -2,6 +2,11 @@ import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
 import ProfilePage from '../model/profile.pageModel';
 
+const TEST_PICTURE = {
+  path: './tests/tests_files/assets/user-picture-test.png',
+  successMessage: 'Success',
+};
+
 test.describe('Profile edition', () => {
   let loginPage: LoginPage;
   let profilePage: ProfilePage;
@@ -54,8 +59,6 @@ test.describe('Profile edition', () => {
 
     await test.step('edit other properties', async () => {
       await profilePage.editProfile({
-        picture:
-          'https://upload.wikimedia.org/wikipedia/commons/1/1b/Haricots_verts01.jpg',
         country: 'Germany',
       });
 
@@ -66,6 +69,16 @@ test.describe('Profile edition', () => {
       await expect(
         profilePage.getAdminEditionWarningMessage()
       ).not.toBeVisible();
+    });
+  });
+
+  test('should upload profile picture', async ({ page }) => {
+    await test.step('upload a picture', async () => {
+      await profilePage.uploadProfilePicture(TEST_PICTURE.path);
+
+      await expect(
+        page.getByText(TEST_PICTURE.successMessage, { exact: true })
+      ).toBeVisible();
     });
   });
 });

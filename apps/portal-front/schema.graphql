@@ -142,6 +142,7 @@ type Mutation {
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   editMeUser(input: EditMeUserInput!): User!
+  uploadUserPicture(document: Upload!): User!
   resetPassword: Success!
   requestTransferPersonalSpace(new_email: String): Success!
   transferPersonalSpace(requestId: ID!): Success!
@@ -284,6 +285,12 @@ enum DeploymentRequestPlatformState {
   removed
 }
 
+enum DeploymentRequestSource {
+  xtmhub
+  opencti_demo
+  openaev_demo
+}
+
 enum DeploymentRequestUseCase {
   threat_profiling_cti
   threat_profiling_fimi
@@ -414,6 +421,7 @@ input CreateDeploymentRequestInput {
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
+  source: DeploymentRequestSource!
 }
 
 input UpdateDeploymentRequestInput {
@@ -1529,7 +1537,6 @@ input EditUserCapabilitiesInput {
 input EditMeUserInput {
   first_name: String
   last_name: String
-  picture: String
   country: String
 }
 

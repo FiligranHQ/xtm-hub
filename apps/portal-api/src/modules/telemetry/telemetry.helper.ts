@@ -1,4 +1,5 @@
 import {
+  DeploymentRequestSource,
   IntegrationType,
   Organization,
   PlatformContract,
@@ -13,10 +14,10 @@ import { requestContext } from '../../context/request.context';
 import { DocumentMetadataDomain } from '../services/document/domain/document.metadata.domain';
 import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import {
-  TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
   TelemetryOrganizationType,
+  TelemetrySource,
   TelemetryTargetProduct,
 } from './telemetry.const';
 import {
@@ -38,7 +39,8 @@ import {
 function buildBaseEvent(
   organization: Organization | undefined,
   user_id: UserId | undefined,
-  timestamp?: Date
+  timestamp?: Date,
+  source: TelemetrySource = TelemetrySource.XTMHUB
 ) {
   const eventTimestamp = timestamp || new Date();
   const organization_type: TelemetryOrganizationType = !organization
@@ -52,7 +54,7 @@ function buildBaseEvent(
     organization_type: organization_type,
     user_id,
     '@timestamp': eventTimestamp.toISOString(),
-    source: TELEMETRY_SOURCE,
+    source,
   };
 }
 
@@ -100,6 +102,15 @@ const IntegrationTypeToEventServiceType = new Map<
     IntegrationType.ThirdPartyIntegration,
     TelemetryEventServiceType.THIRD_PARTY_INTEGRATIONS,
   ],
+]);
+
+export const DeploymentRequestSourceToTelemetrySource = new Map<
+  DeploymentRequestSource,
+  TelemetrySource
+>([
+  [DeploymentRequestSource.Xtmhub, TelemetrySource.XTMHUB],
+  [DeploymentRequestSource.OpenaevDemo, TelemetrySource.DEMO_OPENAEV],
+  [DeploymentRequestSource.OpenctiDemo, TelemetrySource.DEMO_OPENCTI],
 ]);
 
 const buildServiceTypeEvent = async (resource_id: string) => {
@@ -289,13 +300,19 @@ export function buildCreateDeploymentEvent(
   organization: Organization,
   user_id: UserId,
   platform_identifier: PlatformIdentifier,
+  source: DeploymentRequestSource,
   additional_data: Omit<
     CreateDeploymentEvent,
     'event_type' | 'target_product' | keyof BaseTelemetryEvent
   >,
   timestamp?: Date
 ): CreateDeploymentEvent {
-  const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+  const baseEvent = buildBaseEvent(
+    organization,
+    user_id,
+    timestamp,
+    DeploymentRequestSourceToTelemetrySource.get(source)
+  );
 
   return {
     ...baseEvent,

@@ -14,5 +14,6 @@ export const config = {
     '/document/visualize/:serviceInstanceId/:filename*',
     '/document/deploy/:serviceInstanceId/:filename*',
     '/document/images/:documentId*',
+    '/user/picture/:userId*',
   ],
 };
