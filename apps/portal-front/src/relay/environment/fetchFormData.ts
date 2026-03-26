@@ -1,5 +1,6 @@
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
+import { UnauthenticatedError } from './fetchFn';
 
 const FILE_PREFIX_SEPARATOR = 'prefix-';
 
@@ -98,7 +99,7 @@ export const fetchFormData = async (
           e.extensions.code === 'UNAUTHENTICATED'
       ) !== undefined;
     if (containsAuthenticationFailure) {
-      throw new Error('UNAUTHENTICATED');
+      throw new UnauthenticatedError();
     }
     throw new Error(json.errors[0].message);
   }

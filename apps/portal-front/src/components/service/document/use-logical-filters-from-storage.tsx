@@ -1,6 +1,7 @@
 import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/integration.utils';
 import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/logical-multi-select-form-field';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { useMemo } from 'react';
@@ -73,7 +74,9 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     params.serviceInstanceSlug,
     params.labels,
     'deployable' in params ? params.deployable : undefined,
-    'verified' in params ? params.verified : undefined,
+    DocumentMetadataKeyCodeEnum.VERIFIED in params
+      ? params.verified
+      : undefined,
     'integrationTypes' in params ? params.integrationTypes : undefined,
     'productVersions' in params ? params.productVersions : undefined,
   ]);

@@ -12,6 +12,7 @@ import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
 import { filterDocumentImages } from '@/utils/documents';
 import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -160,7 +161,9 @@ export const useServiceFormFields = ({
                   field={field}
                   integrationType={integrationType}
                   document={document}
-                  disabled={disabledFields.includes('integration_subtype')}
+                  disabled={disabledFields.includes(
+                    DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE
+                  )}
                 />
               ),
             },
@@ -229,71 +232,93 @@ export const useServiceFormFields = ({
         label: t('Service.Form.VendorUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('vendor_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.VENDOR_URL
+          ),
         },
       },
       github_url: {
         label: t('Service.Form.GithubUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('github_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.GITHUB_URL
+          ),
         },
       },
       datasheet_url: {
         label: t('Service.Form.DatasheetUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('datasheet_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.DATASHEET_URL
+          ),
         },
       },
       demo_url: {
         label: t('Service.Form.DemoUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes('demo_url'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.DEMO_URL
+          ),
         },
       },
       product_version: {
         label: t('Service.Form.ProductVersionLabel', { platform }),
         inputProps: {
           placeholder: t('Service.Form.ProductVersionPlaceholder'),
-          disabled: disabledFields.includes('product_version'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+          ),
         },
       },
       container_image: {
         label: t('Service.Form.ContainerImageLabel'),
         inputProps: {
-          disabled: disabledFields.includes('container_image'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.CONTAINER_IMAGE
+          ),
         },
       },
       source_code: {
         label: t('Service.Form.SourceCodeLabel'),
         inputProps: {
-          disabled: disabledFields.includes('source_code'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.SOURCE_CODE
+          ),
         },
       },
       subscription_link: {
         label: t('Service.Form.SubscriptionLinkLabel'),
         inputProps: {
-          disabled: disabledFields.includes('subscription_link'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.SUBSCRIPTION_LINK
+          ),
         },
       },
       verified: {
         label: t('Service.Form.VerifiedLabel'),
         inputProps: {
-          disabled: disabledFields.includes('verified'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.VERIFIED
+          ),
         },
       },
       manager_supported: {
         label: t('Service.Form.ManagerSupportedLabel'),
         inputProps: {
-          disabled: disabledFields.includes('manager_supported'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
+          ),
         },
       },
       playbook_supported: {
         label: t('Service.Form.PlaybookSupportedLabel'),
         inputProps: {
-          disabled: disabledFields.includes('playbook_supported'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.PLAYBOOK_SUPPORTED
+          ),
         },
       },
     }),

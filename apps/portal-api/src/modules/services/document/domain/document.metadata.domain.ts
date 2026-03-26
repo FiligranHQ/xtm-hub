@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { db, dbRaw } from '../../../../../knexfile';
 import {
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   Document as DocumentResolverType,
   IntegrationType,
@@ -16,7 +17,19 @@ import { BOOLEAN_METADATA } from '../document.helper';
 import { DocumentData } from './document.domain';
 
 export type DocumentMetadataKeys<T extends DocumentModel> = Array<
-  Exclude<keyof Omit<T, 'use_cases'>, keyof DocumentResolverType>
+  Exclude<
+    keyof Omit<
+      DocumentData<T>,
+      | 'use_cases'
+      | 'uploader_id'
+      | 'uploader_organization_id'
+      | 'remover_id'
+      | 'mime_type'
+      | 'source_type'
+      | 'parent_document_id'
+    >,
+    keyof DocumentResolverType
+  >
 >;
 
 export const DocumentMetadataDomain = {
@@ -51,7 +64,7 @@ export const DocumentMetadataDomain = {
     const metadataToInsert = metadataKeys.map((key) => ({
       document_id: id,
       key: key as DocumentMetadataKey,
-      value: data[key] as string,
+      value: data[key as keyof DocumentData<T>] as string,
     }));
 
     return db<DocumentMetadata>('Document_Metadata')
@@ -79,7 +92,7 @@ export const DocumentMetadataDomain = {
       'Document_Metadata'
     )
       .where('document_id', id)
-      .where('key', 'product_version')
+      .where('key', DocumentMetadataKeyCode.ProductVersion)
       .select('value')
       .first();
 
@@ -92,7 +105,7 @@ export const DocumentMetadataDomain = {
     const doc = await db('Document_Metadata')
       .select('value')
       .where({
-        key: 'integration_type',
+        key: DocumentMetadataKeyCode.IntegrationType,
         document_id,
       })
       .first();
@@ -121,7 +134,7 @@ export const DocumentMetadataDomain = {
 
   addIncludeMetadataQuery: (
     qb: Knex.QueryBuilder,
-    include_metadata: string[] = []
+    include_metadata: DocumentMetadataKeyCode[] = []
   ) => {
     include_metadata.forEach((metaKey, index) => {
       const metaAlias = `meta${index}`;

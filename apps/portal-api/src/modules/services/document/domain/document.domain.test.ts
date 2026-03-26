@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import {
   DocumentConnection,
+  DocumentMetadataKeyCode,
   DocumentOrdering,
   FilterKey,
   Integration,
@@ -480,12 +481,12 @@ describe('Document domain', () => {
 
       await db('Document_Metadata').insert({
         document_id: inserted.id,
-        key: 'product_version',
+        key: DocumentMetadataKeyCode.ProductVersion,
         value: '1.2.3',
       });
       const loaded = await DocumentDomain.loadDocumentWithMetadataById(
         inserted.id,
-        ['product_version']
+        [DocumentMetadataKeyCode.ProductVersion]
       );
       expect(loaded).toBeDefined();
       expect(loaded).toMatchObject({

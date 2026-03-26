@@ -82,11 +82,11 @@ const ShareableResourceConnectorSlugPublic = ({
       />
 
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
-        <div className="flex-[3_3_0%]">
+        <div className="flex-[3_3_0%] min-w-0">
           <h3 className="py-s txt-container-title truncate text-muted-foreground">
             Overview
           </h3>
-          <section className="border rounded border-border-light bg-page-background">
+          <section className="border rounded border-border-light bg-page-background overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>
             <div className="p-l !bg-page-background markdown-content">
               <MarkdownAsync>{documentData?.description ?? ''}</MarkdownAsync>
