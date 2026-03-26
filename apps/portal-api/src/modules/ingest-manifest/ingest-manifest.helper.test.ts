@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
@@ -70,7 +71,9 @@ describe('Ingest manifest helper', () => {
         if (!firstItem) {
           return;
         }
-        expect(firstItem).toHaveProperty('product_version');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.ProductVersion
+        );
         expect(typeof firstItem.product_version).toBe('string');
         expect(firstItem).toHaveProperty('name');
         expect(typeof firstItem.name).toBe('string');
@@ -78,25 +81,35 @@ describe('Ingest manifest helper', () => {
         expect(typeof firstItem.description).toBe('string');
         expect(firstItem).toHaveProperty('short_description');
         expect(typeof firstItem.short_description).toBe('string');
-        expect(firstItem).toHaveProperty('container_image');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.ContainerImage
+        );
         expect(typeof firstItem.container_image).toBe('string');
         expect(firstItem).toHaveProperty('slug');
         expect(typeof firstItem.slug).toBe('string');
         expect(firstItem).toHaveProperty('logo');
         expect(typeof firstItem.logo).toBe('string');
-        expect(firstItem).toHaveProperty('verified');
+        expect(firstItem).toHaveProperty(DocumentMetadataKeyCode.Verified);
         expect(typeof firstItem.verified).toBe('boolean');
-        expect(firstItem).toHaveProperty('integration_subtype');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.IntegrationSubtype
+        );
         expect(typeof firstItem.integration_subtype).toBe('string');
-        expect(firstItem).toHaveProperty('integration_type');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.IntegrationType
+        );
         expect(typeof firstItem.integration_type).toBe('string');
         expect(firstItem).toHaveProperty('type');
         expect(typeof firstItem.type).toBe('string');
         expect(firstItem).toHaveProperty('use_cases');
         expect(Array.isArray(firstItem.use_cases)).toBe(true);
-        expect(firstItem).toHaveProperty('manager_supported');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.ManagerSupported
+        );
         expect(typeof firstItem.manager_supported).toBe('boolean');
-        expect(firstItem).toHaveProperty('playbook_supported');
+        expect(firstItem).toHaveProperty(
+          DocumentMetadataKeyCode.PlaybookSupported
+        );
         expect(typeof firstItem.playbook_supported).toBe('boolean');
         expect(typeof firstItem.source_code).toBe('string');
 

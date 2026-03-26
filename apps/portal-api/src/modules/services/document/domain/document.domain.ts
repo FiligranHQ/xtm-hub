@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
   DocumentConnection,
+  DocumentMetadataKeyCode,
   Organization,
   QueryDocumentsArgs,
   UpdateDocumentInput,
@@ -78,7 +79,7 @@ export const DocumentDomain = {
 
   loadDocumentWithMetadataById: async <T extends Document>(
     id: string,
-    include_metadata: string[] = []
+    include_metadata: DocumentMetadataKeyCode[] = []
   ): Promise<T> => {
     const docQuery = db<T>('Document')
       .where('Document.id', '=', id)
@@ -115,7 +116,7 @@ export const DocumentDomain = {
   loadParentDocumentsByServiceInstance: async (
     type: string,
     input: QueryDocumentsArgs,
-    include_metadata?: string[]
+    include_metadata?: DocumentMetadataKeyCode[]
   ): Promise<DocumentConnection> => {
     return DocumentDomain.loadDocuments(
       {
@@ -136,7 +137,7 @@ export const DocumentDomain = {
   loadDocuments: async (
     opts: Partial<QueryDocumentsArgs>,
     field: Record<string, unknown>,
-    include_metadata?: string[]
+    include_metadata?: DocumentMetadataKeyCode[]
   ): Promise<DocumentConnection> => {
     const { user } = requestContext.require();
 
@@ -217,7 +218,7 @@ export const DocumentDomain = {
   loadSeoDocumentBySlug: async (
     type: string,
     slug: string,
-    include_metadata: string[] = []
+    include_metadata: DocumentMetadataKeyCode[] = []
   ) => {
     const docQuery = db<Document>('Document')
       .select('Document.*')
@@ -242,7 +243,7 @@ export const DocumentDomain = {
     type: string,
     serviceSlug: string,
     opts: Partial<QueryDocumentsArgs>,
-    include_metadata?: string[]
+    include_metadata?: DocumentMetadataKeyCode[]
   ) => {
     const useDefaultSort = !opts.orderBy;
     const loadDocumentsQuery = DocumentDomain.loadSeoDocumentsByServiceSlug(
@@ -263,7 +264,7 @@ export const DocumentDomain = {
   loadSeoDocumentsByServiceSlug: (
     type: string,
     serviceSlug: string,
-    include_metadata: string[] = [],
+    include_metadata: DocumentMetadataKeyCode[] = [],
     orderResults: boolean = true
   ): Knex.QueryBuilder => {
     const loadDocumentsQuery = db<Document>('Document')

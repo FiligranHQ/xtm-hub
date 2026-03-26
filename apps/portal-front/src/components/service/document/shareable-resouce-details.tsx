@@ -16,6 +16,7 @@ import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resourc
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
@@ -109,7 +110,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       )}
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'feed_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.FEED_URL}
         translationKey="FeedURL"
         variant="link"
       />
@@ -124,13 +125,13 @@ const ShareableResourceDetails: React.FunctionComponent<
       </ShareableResourceDetailItem>
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'vendor_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.VENDOR_URL}
         translationKey="VendorURL"
         variant="link"
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'github_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.GITHUB_URL}
         translationKey="GithubURL"
         variant="link"
       />
@@ -148,13 +149,13 @@ const ShareableResourceDetails: React.FunctionComponent<
       )}
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'datasheet_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.DATASHEET_URL}
         translationKey="DatasheetURL"
         variant="link"
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={'demo_url'}
+        metadataKey={DocumentMetadataKeyCodeEnum.DEMO_URL}
         translationKey="DemoURL"
         variant="link"
       />

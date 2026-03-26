@@ -1,6 +1,7 @@
 import {
   CreateDocumentInput,
   DocumentImageType,
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   QueryDocumentsArgs,
@@ -220,16 +221,20 @@ export const DocumentApp = {
       }
     );
 
-    if (!documentMetadata.some(({ key }) => key === 'feed_url')) {
+    if (
+      !documentMetadata.some(
+        ({ key }) => key === DocumentMetadataKeyCode.FeedUrl
+      )
+    ) {
       const existingFeedUrl =
         await DocumentMetadataDomain.loadMetadataValueByKey(
           parentDocumentId,
-          'feed_url'
+          DocumentMetadataKeyCode.FeedUrl
         );
       if (existingFeedUrl) {
         documentMetadata = [
           ...documentMetadata,
-          { key: 'feed_url', value: existingFeedUrl },
+          { key: DocumentMetadataKeyCode.FeedUrl, value: existingFeedUrl },
         ];
       }
     }
@@ -575,19 +580,20 @@ const upsertDocument = async <T extends DocumentModel>(
         // Delete all existing metadata except 'version'
         await DocumentMetadataDomain.deleteMetadata({
           id: document.id,
-          excludedKeys: ['product_version'],
+          excludedKeys: [DocumentMetadataKeyCode.ProductVersion],
         });
         const existingVersion = await DocumentMetadataDomain.loadProductVersion(
           document.id
         );
         if (existingVersion) {
-          document['product_version'] = existingVersion;
+          document[DocumentMetadataKeyCode.ProductVersion] = existingVersion;
         }
       }
 
       // Insert new metadata (excluding version) if documentWasUpdated
       const metadataKeysWithoutProductVersion = metadataKeys.filter(
-        (key) => key !== 'product_version' || !documentWasUpdated
+        (key) =>
+          key !== DocumentMetadataKeyCode.ProductVersion || !documentWasUpdated
       );
 
       const metadatas = await DocumentMetadataDomain.insertMetadata(
@@ -607,7 +613,7 @@ const upsertDocument = async <T extends DocumentModel>(
 
 const getMetadataKeysAndDocumentTypeFromServiceDefinition = (
   serviceDefinition: ServiceDefinition
-): { documentType: DOCUMENT_TYPE; metadataKeys: string[] } => {
+): { documentType: DOCUMENT_TYPE; metadataKeys: DocumentMetadataKeyCode[] } => {
   const serviceDefinitionIdentifier =
     serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
 

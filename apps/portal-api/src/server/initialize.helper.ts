@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../knexfile';
 import {
+  DocumentMetadataKeyCode,
   IntegrationType,
   OrganizationCapability,
   ServiceDefinition,
@@ -441,7 +442,7 @@ export const initializeDevUsers = async (): Promise<void> => {
  */
 export const seedDevelopmentConnectors = async () => {
   const areConnectorsSeeded = await db<Document>('Document_Metadata')
-    .where('key', '=', 'integration_type')
+    .where('key', '=', DocumentMetadataKeyCode.IntegrationType)
     .andWhere('value', '=', IntegrationType.Connector)
     .first();
 

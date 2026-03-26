@@ -8,6 +8,24 @@ enum DocumentImageType {
   image
 }
 
+enum DocumentMetadataKeyCode {
+  feed_url
+  integration_type
+  integration_subtype
+  datasheet_url
+  demo_url
+  product_version
+  vendor_url
+  github_url
+  container_image
+  verified
+  source_code
+  subscription_link
+  manager_supported
+  playbook_supported
+  image_type
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -28,6 +46,7 @@ enum DocumentOrdering {
   download_number
   name
 }
+
 """
 /!\ WARNING Do not use this type.
 It exists only to cover cases where we failed to map to a specific Document.
@@ -81,7 +100,7 @@ interface Document implements Node {
 }
 
 input DocumentMetadata {
-  key: String!
+  key: DocumentMetadataKeyCode!
   value: String!
 }
 

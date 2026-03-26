@@ -10,6 +10,7 @@ import {
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
@@ -106,7 +107,7 @@ export const ThirdPartyIntegrationForm = ({
     return extendedSchema.superRefine((data, ctx) => {
       if (data.github_url && !data.product_version) {
         ctx.addIssue({
-          path: ['product_version'],
+          path: [DocumentMetadataKeyCodeEnum.PRODUCT_VERSION],
           code: 'custom',
           message: 'Github URL and product version must be filled together',
         });
@@ -114,7 +115,7 @@ export const ThirdPartyIntegrationForm = ({
 
       if (!data.github_url && data.product_version) {
         ctx.addIssue({
-          path: ['github_url'],
+          path: [DocumentMetadataKeyCodeEnum.GITHUB_URL],
           code: 'custom',
           message: 'Github URL and product version must be filled together',
         });
@@ -166,10 +167,13 @@ export const ThirdPartyIntegrationForm = ({
             }
           }
           if (values.product_version === '') {
-            form.setValue('product_version', undefined);
+            form.setValue(
+              DocumentMetadataKeyCodeEnum.PRODUCT_VERSION,
+              undefined
+            );
           }
           if (values.github_url === '') {
-            form.setValue('github_url', undefined);
+            form.setValue(DocumentMetadataKeyCodeEnum.GITHUB_URL, undefined);
           }
         }}
         values={values}

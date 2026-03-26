@@ -2,7 +2,10 @@ import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
-import { IntegrationType } from '../../../../__generated__/resolvers-types';
+import {
+  DocumentMetadataKeyCode,
+  IntegrationType,
+} from '../../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../../model/kanel/public/Document';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
@@ -56,8 +59,14 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com/feed' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com/feed',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -65,7 +74,7 @@ describe('DocumentMetadataDomain', () => {
 
       const value = await DocumentMetadataDomain.loadMetadataValueByKey(
         document!.id,
-        'feed_url'
+        DocumentMetadataKeyCode.FeedUrl
       );
 
       expect(value).toBe('https://example.com/feed');
@@ -82,8 +91,14 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com/feed' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com/feed',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -100,7 +115,7 @@ describe('DocumentMetadataDomain', () => {
     it('should return null when no document matches the given id', async () => {
       const value = await DocumentMetadataDomain.loadMetadataValueByKey(
         '00000000-0000-0000-0000-000000000000' as DocumentId,
-        'feed_url'
+        DocumentMetadataKeyCode.FeedUrl
       );
 
       expect(value).toBeNull();
@@ -117,9 +132,18 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.TaxiiFeed },
-          { key: 'feed_url', value: 'https://example.com/taxii' },
-          { key: 'integration_subtype', value: 'some_subtype' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.TaxiiFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com/taxii',
+          },
+          {
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
+            value: 'some_subtype',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -127,12 +151,12 @@ describe('DocumentMetadataDomain', () => {
 
       const feedUrl = await DocumentMetadataDomain.loadMetadataValueByKey(
         document!.id,
-        'feed_url'
+        DocumentMetadataKeyCode.FeedUrl
       );
       const integrationType =
         await DocumentMetadataDomain.loadMetadataValueByKey(
           document!.id,
-          'integration_type'
+          DocumentMetadataKeyCode.IntegrationType
         );
 
       expect(feedUrl).toBe('https://example.com/taxii');
@@ -150,8 +174,14 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://first.example.com/feed' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://first.example.com/feed',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -167,8 +197,14 @@ describe('DocumentMetadataDomain', () => {
           active: true,
         },
         metadata: [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://second.example.com/feed' },
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://second.example.com/feed',
+          },
         ],
         serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
         sourceDocument: mockUpload,
@@ -176,11 +212,11 @@ describe('DocumentMetadataDomain', () => {
 
       const firstValue = await DocumentMetadataDomain.loadMetadataValueByKey(
         firstDocument!.id,
-        'feed_url'
+        DocumentMetadataKeyCode.FeedUrl
       );
       const secondValue = await DocumentMetadataDomain.loadMetadataValueByKey(
         secondDocument!.id,
-        'feed_url'
+        DocumentMetadataKeyCode.FeedUrl
       );
 
       expect(firstValue).toBe('https://first.example.com/feed');

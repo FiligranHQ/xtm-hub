@@ -4,6 +4,7 @@ import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { FunctionComponent, ReactNode } from 'react';
 
@@ -17,7 +18,9 @@ export const ShareableResourceCardFooterVersion: FunctionComponent<
   ShareableResourceCardFooterVersionProps
 > = ({ document, publicPath = false, shareLinkUrl, extraContent }) => {
   let documentMetadata;
-  if (docHasMetadata(document, 'integration_subtype')) {
+  if (
+    docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE)
+  ) {
     documentMetadata = getIntegrationSubTypeMetadata(
       document.integration_subtype
     );
@@ -35,22 +38,33 @@ export const ShareableResourceCardFooterVersion: FunctionComponent<
           </Badge>
         )}
         {publicPath ||
-        (docHasMetadata(document, 'manager_supported') &&
+        (docHasMetadata(
+          document,
+          DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
+        ) &&
           !document.manager_supported) ? (
           <span className="text-sm">
-            {docHasMetadata(document, 'product_version') &&
-              document.product_version}
+            {docHasMetadata(
+              document,
+              DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+            ) && document.product_version}
           </span>
         ) : (
           <ShareableResourceCardVersion
             className="text-sm"
             product_version={
-              docHasMetadata(document, 'product_version')
+              docHasMetadata(
+                document,
+                DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+              )
                 ? document.product_version
                 : ''
             }
             requiredProductVersion={
-              docHasMetadata(document, 'product_version')
+              docHasMetadata(
+                document,
+                DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+              )
                 ? document.product_version
                 : ''
             }
