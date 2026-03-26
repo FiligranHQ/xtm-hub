@@ -39,6 +39,7 @@ export enum BadRequestErrorCode {
   DocumentMissingMetadata = 'DOCUMENT_MISSING_METADATA',
   IntegrationTypeNotRecognized = 'INTEGRATION_TYPE_NOT_RECOGNIZED',
   MissingAutoRegisterPlatformArgument = 'MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT',
+  DocumentFileMissing = 'DOCUMENT_FILE_MISSING',
 }
 
 export enum UnknownErrorCode {

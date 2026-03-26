@@ -26,7 +26,8 @@ export const docHasMetadata = <T, K extends string>(
   metadataKey: K
 ): documentData is T & Record<K, unknown> =>
   hasProperty<T, K, unknown>(documentData, metadataKey) &&
-  !!documentData[metadataKey];
+  documentData[metadataKey] !== null &&
+  documentData[metadataKey] !== undefined;
 
 export const isResourceDownloadable = (
   document: documentItem_fragment$data | publicDocumentItemFragment$data

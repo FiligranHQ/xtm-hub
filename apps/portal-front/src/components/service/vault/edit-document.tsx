@@ -55,9 +55,7 @@ export const EditDocument: FunctionComponent<EditDocumentProps> = ({
           description: values.description,
         },
         metadata: [],
-        document: [],
-        updateDocument: false,
-        images: [],
+        existingImageIds: [],
       },
       onCompleted: (response) => {
         setOpen(false);

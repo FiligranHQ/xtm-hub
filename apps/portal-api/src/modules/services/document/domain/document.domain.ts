@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
   DocumentConnection,
+  DocumentMetadataKeyCode,
   Organization,
   QueryDocumentsArgs,
   UpdateDocumentInput,
@@ -78,7 +79,7 @@ export const DocumentDomain = {
 
   loadDocumentWithMetadataById: async <T extends Document>(
     id: string,
-    include_metadata: string[] = []
+    include_metadata: DocumentMetadataKeyCode[] = []
   ): Promise<T> => {
     const docQuery = db<T>('Document')
       .where('Document.id', '=', id)
@@ -90,7 +91,7 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
-  loadUploader: async (documentId: string): Promise<User | null> => {
+  loadUploader: async (documentId: string): Promise<User | undefined> => {
     return db<User>('User')
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
       .where('Document.id', '=', documentId)
@@ -100,23 +101,22 @@ export const DocumentDomain = {
 
   loadUploaderOrganization: async (
     documentId: string
-  ): Promise<Organization> => {
-    const [organization] = await db<Organization>('Organization')
+  ): Promise<Organization | undefined> => {
+    return db<Organization>('Organization')
       .leftJoin(
         'Document',
         'Document.uploader_organization_id',
         'Organization.id'
       )
       .where('Document.id', '=', documentId)
-      .select('Organization.*');
-
-    return organization;
+      .select('Organization.*')
+      .first();
   },
 
   loadParentDocumentsByServiceInstance: async (
     type: string,
     input: QueryDocumentsArgs,
-    include_metadata?: string[]
+    include_metadata?: DocumentMetadataKeyCode[]
   ): Promise<DocumentConnection> => {
     return DocumentDomain.loadDocuments(
       {
@@ -137,7 +137,7 @@ export const DocumentDomain = {
   loadDocuments: async (
     opts: Partial<QueryDocumentsArgs>,
     field: Record<string, unknown>,
-    include_metadata?: string[]
+    include_metadata?: DocumentMetadataKeyCode[]
   ): Promise<DocumentConnection> => {
     const { user } = requestContext.require();
 
@@ -218,7 +218,7 @@ export const DocumentDomain = {
   loadSeoDocumentBySlug: async (
     type: string,
     slug: string,
-    include_metadata: string[] = []
+    include_metadata: DocumentMetadataKeyCode[] = []
   ) => {
     const docQuery = db<Document>('Document')
       .select('Document.*')
@@ -243,7 +243,7 @@ export const DocumentDomain = {
     type: string,
     serviceSlug: string,
     opts: Partial<QueryDocumentsArgs>,
-    include_metadata?: string[]
+    include_metadata?: DocumentMetadataKeyCode[]
   ) => {
     const useDefaultSort = !opts.orderBy;
     const loadDocumentsQuery = DocumentDomain.loadSeoDocumentsByServiceSlug(
@@ -264,7 +264,7 @@ export const DocumentDomain = {
   loadSeoDocumentsByServiceSlug: (
     type: string,
     serviceSlug: string,
-    include_metadata: string[] = [],
+    include_metadata: DocumentMetadataKeyCode[] = [],
     orderResults: boolean = true
   ): Knex.QueryBuilder => {
     const loadDocumentsQuery = db<Document>('Document')

@@ -31,12 +31,13 @@ import { useDebounceCallback } from 'usehooks-ts';
 interface SelectUsersFormFieldProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   defaultValue?: string;
   onValueChange: (value: string) => void;
+  disabled?: boolean;
 }
 
 const SelectUsersFormField = React.forwardRef<
   HTMLButtonElement,
   SelectUsersFormFieldProps
->(({ defaultValue, onValueChange, ...props }, ref) => {
+>(({ defaultValue, onValueChange, disabled, ...props }, ref) => {
   const t = useTranslations();
 
   const [selectedValues, setSelectedValues] = useState<string[]>([
@@ -225,6 +226,7 @@ const SelectUsersFormField = React.forwardRef<
           <Button
             ref={ref}
             {...props}
+            disabled={disabled}
             onClick={() => setIsPopoverOpen(!isPopoverOpen)}
             className="flex h-9 w-full items-center justify-between rounded border border-input bg-inherit p-1 hover:bg-hover">
             {selectedValues.length > 0 ? (

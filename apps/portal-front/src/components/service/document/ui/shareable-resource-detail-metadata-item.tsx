@@ -1,0 +1,50 @@
+import { ShareableResourceDetailsLink } from '@/components/service/document/shareable-resource-details-link';
+import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
+import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
+
+type Variant = 'text' | 'link';
+
+interface Props {
+  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  metadataKey: string;
+  translationKey: string;
+  variant?: Variant;
+}
+
+export const ShareableResourceDetailMetadataItem = ({
+  documentData,
+  metadataKey,
+  translationKey,
+  variant = 'text',
+}: Props) => {
+  const t = useTranslations();
+  const content = useMemo(() => {
+    if (!docHasMetadata(documentData, metadataKey)) {
+      return null;
+    }
+
+    const value = documentData[metadataKey] as string;
+
+    const mapping: Record<Variant, React.ReactNode> = {
+      link: <ShareableResourceDetailsLink url={value} />,
+      text: <span>{value}</span>,
+    };
+
+    return mapping[variant];
+  }, [variant, documentData, metadataKey]);
+
+  if (!content) {
+    return null;
+  }
+
+  return (
+    <ShareableResourceDetailItem
+      label={t(`Service.ShareableResources.Details.${translationKey}`)}>
+      {content}
+    </ShareableResourceDetailItem>
+  );
+};

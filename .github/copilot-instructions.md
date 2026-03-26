@@ -308,8 +308,24 @@ Triggered on pushes to `main`/`development`, tags `v*`, and PRs to `main`/`devel
 2. **run-e2e-tests** (20 min) — Playwright E2E via `docker-compose-ci.yml`
 3. **run-front-unit-tests** (10 min) — Frontend Vitest in Docker container
 4. **run-api-unit-tests** (10 min) — Backend Vitest via docker-compose (needs PostgreSQL + MinIO)
-5. **build-images-prod** — Production images (after all tests pass, only on main/development/tags)
-6. **deploy** — AWX deployment to staging/production
+5. **deploy-feature-branch** — Deploys an ephemeral preview environment at `https://dev-pr-{number}.hub.staging.filigran.io` after tests pass, for every PR **unless** the `skip-feature-env` label is present (opt-out)
+6. **build-images-prod** — Production images (after all tests pass, only on main/development/tags)
+7. **deploy** — AWX deployment to staging/production
+
+### Feature Environment (opt-out)
+
+A preview environment is automatically created for every PR when CI passes. To skip it:
+- Add the `skip-feature-env` label to the PR before or after CI runs
+- The PR checklist includes a reminder for this
+
+Behaviour controlled by label:
+
+| Label | Feature env deployed? | "Ready for merging" auto-set? |
+|---|---|---|
+| *(none)* | ✅ Yes (default) | ❌ No — requires manual testing first |
+| `skip-feature-env` | ❌ No | ✅ Yes — once checks + approval pass |
+
+Removing the `skip-feature-env` label from an already-open PR triggers an immediate re-deployment via `.github/workflows/pr-issue-automation.yml`.
 
 ### CI Requirement
 
@@ -323,13 +339,17 @@ cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
 
 Format: `[package] <type>(<scope>): Message (#issueNumber)`
 
-- **Packages**: `frontend`, `backend`, `doc`
+- **Package**: optional — omit entirely for CI, chores, or cross-cutting changes with no clear owner
+- **Packages**: `frontend`, `backend`, `e2e-tests` — combinable with `/` for cross-package changes
 - **Types**: `feat`, `fix`, `docs`, `refactor`, `chore`, `test`
 - **Scope**: optional component name
 
 Examples:
-- `[frontend] feat(custom dashboards): add card component (#123)`
+- `[frontend] feat(custom-dashboards): add card component (#123)`
 - `[backend] fix(login): handle missing auth token (#456)`
+- `[frontend/backend] refactor(auth): extract shared token logic (#789)`
+- `[e2e-tests] test(login): add SSO flow coverage (#202)`
+- `chore(ci): update docker base image (#101)`
 
 ## Environment Variables
 

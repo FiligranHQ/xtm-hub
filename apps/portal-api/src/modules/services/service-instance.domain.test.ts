@@ -23,15 +23,21 @@ import ServiceInstance, {
 import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
-import UserService from '../../model/kanel/public/UserService';
+import UserService, {
+  UserServiceId,
+} from '../../model/kanel/public/UserService';
+import { ADMIN_UUID } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { PlatformConfiguration } from './registration/registration.domain';
 import {
+  getUserJoined,
   grantServiceAccess,
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  loadServiceInstanceSubscription,
+  loadServiceInstanceSubscriptions,
   loadServiceWithSubscriptions,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
@@ -39,6 +45,10 @@ import {
 } from './service-instance.domain';
 
 describe('Service instance domain', () => {
+  afterEach(async () => {
+    await db<Subscription>('Subscription').del();
+  });
+
   describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
     it('should return service instances linked to service definition and with tags', async () => {
       const serviceInstances =
@@ -444,7 +454,7 @@ describe('Service instance domain', () => {
       filigranSubscriptionId = uuidv4() as SubscriptionId;
       secondOrgaSubscriptionId = uuidv4() as SubscriptionId;
 
-      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID;
+      const serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_INTEGRATIONS.ID;
 
       await db('ServiceInstance').insert({
         id: testServiceInstanceId,
@@ -492,17 +502,36 @@ describe('Service instance domain', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].user_id).toBe(
+      expect(result[0]!.user_id).toBe(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
       );
-      expect(result[0].subscription_id).toBe(secondOrgaSubscriptionId);
+      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
 
       const userServiceInDb = await db<UserService>('User_Service')
-        .where('id', '=', result[0].id)
+        .where('id', '=', result[0]!.id)
         .first();
 
       expect(userServiceInDb).toBeDefined();
       expect(userServiceInDb?.subscription_id).toBe(secondOrgaSubscriptionId);
+    });
+
+    it('should send an email when there is a mail template associated to the service', async () => {
+      const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
+      await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        secondOrgaSubscriptionId
+      );
+
+      expect(sendMailSpy).toHaveBeenCalledWith({
+        params: {
+          name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
+          serviceLink: expect.any(String),
+          serviceName: 'Test Service for Grant Access',
+        },
+        template: 'opencti_integrations',
+        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
+      });
     });
 
     it('should not link user_service to a different organization subscription', async () => {
@@ -512,10 +541,12 @@ describe('Service instance domain', () => {
         secondOrgaSubscriptionId
       );
 
-      expect(result[0].subscription_id).toBe(secondOrgaSubscriptionId);
-      expect(result[0].subscription_id).not.toBe(filigranSubscriptionId);
+      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
+      expect(result[0]!.subscription_id).not.toBe(filigranSubscriptionId);
 
-      const userServicesInDb = await db<UserService>('User_Service')
+      const userServicesInDb: UserService[] = await db<UserService[]>(
+        'User_Service'
+      )
         .where(
           'user_id',
           '=',
@@ -524,7 +555,7 @@ describe('Service instance domain', () => {
         .select('*');
 
       expect(userServicesInDb).toHaveLength(1);
-      expect(userServicesInDb[0].subscription_id).toBe(
+      expect(userServicesInDb[0]!.subscription_id).toBe(
         secondOrgaSubscriptionId
       );
     });
@@ -589,6 +620,131 @@ describe('Service instance domain', () => {
       const orgNames = result.subscriptions.map((sub) => sub.organization.name);
       expect(orgNames).toContain('SECOND ORGA');
       expect(orgNames).toContain('Filigran');
+    });
+  });
+
+  describe('getUserJoined', () => {
+    it('should return true when user subscribed to the service with the organization', async () => {
+      const [subscription] = await db<Subscription>('Subscription')
+        .insert({
+          id: uuidv4() as SubscriptionId,
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          start_date: new Date(),
+          status: 'ACCEPTED',
+          joining: 'AUTO_JOIN',
+        })
+        .returning('*');
+
+      expect(subscription).toBeDefined();
+
+      await db<UserService>('User_Service').insert({
+        id: uuidv4() as UserServiceId,
+        user_id: ADMIN_UUID,
+        subscription_id: subscription!.id,
+      });
+      const result = await getUserJoined(
+        ADMIN_UUID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when user did not subscribe to the service with the organization', async () => {
+      const result = await getUserJoined(
+        ADMIN_UUID,
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('loadServiceInstanceSubscription', () => {
+    beforeEach(async () => {
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+    });
+
+    it('should return subscription when service instance and organization are found', async () => {
+      const subscription = await loadServiceInstanceSubscription(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(subscription).toBeDefined();
+    });
+
+    it('should return undefined when service instance is not found', async () => {
+      const subscription = await loadServiceInstanceSubscription(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        SERVICES.INSTANCES.VAULT.ID
+      );
+
+      expect(subscription).toBeUndefined();
+    });
+
+    it('should return undefined when organization is not found', async () => {
+      const subscription = await loadServiceInstanceSubscription(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(subscription).toBeUndefined();
+    });
+  });
+
+  describe('loadServiceInstanceSubscriptions', () => {
+    it('should return a list of subscriptions linked to service instance', async () => {
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      await db<Subscription>('Subscription').insert({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        start_date: new Date(),
+        status: 'ACCEPTED',
+        joining: 'AUTO_JOIN',
+      });
+
+      const result = await loadServiceInstanceSubscriptions(
+        SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+
+      expect(result.length).toBe(2);
+    });
+
+    it('should return an empty array when service instance is not found', async () => {
+      const result = await loadServiceInstanceSubscriptions(
+        uuidv4() as ServiceInstanceId
+      );
+
+      expect(result.length).toBe(0);
     });
   });
 });

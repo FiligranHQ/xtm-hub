@@ -1,3 +1,5 @@
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
+import { v4 as uuidv4 } from 'uuid';
 import {
   afterAll,
   afterEach,
@@ -10,6 +12,7 @@ import {
 import { db } from '../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DocumentMetadataKeyCode,
   IntegrationSubType,
   IntegrationType,
   ServiceDefinitionIdentifier,
@@ -39,30 +42,42 @@ import {
 } from './opencti/integrations/integrations.model';
 
 describe('DocumentHelper', () => {
+  const minioFileMock = {
+    minioName: 'minioFile',
+    mimeType: 'mimeType',
+    fileName: 'csvfilename',
+  };
+  const mockFileUpload: FileUpload = {
+    filename: 'test-image.png',
+    mimetype: 'image/png',
+    encoding: '7bit',
+    createReadStream: vi.fn(),
+  };
+
+  const mockUpload = {
+    file: mockFileUpload,
+    promise: Promise.resolve(mockFileUpload),
+  };
+
+  beforeEach(() => {
+    vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
+      minioFileMock,
+    ]);
+  });
+
   afterEach(async () => {
     vi.restoreAllMocks();
     await db<Document>('Document').delete();
   });
 
-  describe('CSV Feed', () => {
-    const minioFileMock = {
-      minioName: 'minioFile',
-      mimeType: 'mimeType',
-      fileName: 'csvfilename',
-    };
-    beforeEach(() => {
-      vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
-        minioFileMock,
-      ]);
-    });
-
+  describe('loadDocumentWithCountersById', () => {
     afterAll(async () => {
       vi.useRealTimers();
     });
 
-    it('cvsFeed should return the document with elastic search counters', async () => {
-      const document = await DocumentApp.createDocument(
-        {
+    it('should return the document with elastic search counters', async () => {
+      const document = await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
@@ -70,13 +85,19 @@ describe('DocumentHelper', () => {
           slug: 'slug',
           active: true,
         },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+        metadata: [
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
+        serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+        sourceDocument: mockUpload,
+      });
       expect(document).toBeDefined();
 
       const documentId = document!.id;
@@ -102,17 +123,26 @@ describe('DocumentHelper', () => {
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);
     });
+
+    it('should throw an error document is not found', async () => {
+      const call = loadDocumentWithCountersById(uuidv4());
+
+      await expect(call).rejects.toThrow(ErrorCode.DocumentNotFound);
+    });
   });
 
   describe('buildCompleteMetadataFromDocumentFile', () => {
     it('should return unchanged metadata when document is not a feed', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.Connector },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.Connector,
+        },
       ];
-      const files: MinioFile[] = [];
+      const sourceDocumentFile = undefined;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -121,12 +151,15 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when JSON file is not provided', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
-      const files: MinioFile[] = [];
+      const sourceDocumentFile = undefined;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -135,12 +168,15 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when JSON file does not contain configuration', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
-      const files: MinioFile[] = [{ jsonContent: {} } as MinioFile];
+      const sourceDocumentFile = { jsonContent: {} } as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -149,14 +185,17 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when JSON file contains no URI', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
-      const files: MinioFile[] = [
-        { jsonContent: { configuration: {} } } as unknown as MinioFile,
-      ];
+      const sourceDocumentFile = {
+        jsonContent: { configuration: {} },
+      } as unknown as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -165,16 +204,17 @@ describe('DocumentHelper', () => {
 
     it('should return unchanged metadata when URI in the JSON file is not valid', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
-      ];
-      const files: MinioFile[] = [
         {
-          jsonContent: { configuration: { uri: 'hello' } },
-        } as unknown as MinioFile,
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
+      const sourceDocumentFile = {
+        jsonContent: { configuration: { uri: 'hello' } },
+      } as unknown as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        sourceDocumentFile,
         metadata,
       });
 
@@ -183,22 +223,23 @@ describe('DocumentHelper', () => {
 
     it('should add feed url to metadata when JSON file contains URI', () => {
       const metadata = [
-        { key: 'integration_type', value: IntegrationType.CsvFeed },
-      ];
-      const files: MinioFile[] = [
         {
-          jsonContent: { configuration: { uri: 'https://example.com' } },
-        } as unknown as MinioFile,
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.CsvFeed,
+        },
       ];
+      const sourceDocumentFile = {
+        jsonContent: { configuration: { uri: 'https://example.com' } },
+      } as unknown as MinioFile;
 
       const result = DocumentHelper.buildCompleteMetadataFromDocumentFile({
-        files,
+        sourceDocumentFile,
         metadata,
       });
 
       expect(result).toEqual([
         ...metadata,
-        { key: 'feed_url', value: 'https://example.com' },
+        { key: DocumentMetadataKeyCode.FeedUrl, value: 'https://example.com' },
       ]);
     });
   });
@@ -242,7 +283,12 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'feed_url', value: 'https://example.com' }]
+          [
+            {
+              key: DocumentMetadataKeyCode.FeedUrl,
+              value: 'https://example.com',
+            },
+          ]
         )
       ).toThrowError(ErrorCode.DocumentMissingMetadata);
     });
@@ -251,7 +297,7 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'integration_type', value: 'test' }]
+          [{ key: DocumentMetadataKeyCode.IntegrationType, value: 'test' }]
         )
       ).toThrowError(ErrorCode.IntegrationTypeNotRecognized);
     });
@@ -260,7 +306,12 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'integration_type', value: IntegrationType.Connector }]
+          [
+            {
+              key: DocumentMetadataKeyCode.IntegrationType,
+              value: IntegrationType.JsonFeed,
+            },
+          ]
         )
       ).toThrowError(ErrorCode.IntegrationTypeNotManageable);
     });
@@ -269,7 +320,12 @@ describe('DocumentHelper', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(
           ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [{ key: 'integration_type', value: IntegrationType.CsvFeed }]
+          [
+            {
+              key: DocumentMetadataKeyCode.IntegrationType,
+              value: IntegrationType.CsvFeed,
+            },
+          ]
         )
       ).toThrowError(ErrorCode.DocumentMissingMetadata);
     });
@@ -279,15 +335,15 @@ describe('DocumentHelper', () => {
         ServiceDefinitionIdentifier.OpenctiIntegrations,
         [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: 'integration_subtype',
+            key: DocumentMetadataKeyCode.IntegrationSubtype,
             value: IntegrationSubType.Orchestration,
           },
           {
-            key: 'vendor_url',
+            key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://example.com',
           },
         ]
@@ -299,11 +355,11 @@ describe('DocumentHelper', () => {
         ServiceDefinitionIdentifier.OpenctiIntegrations,
         [
           {
-            key: 'integration_type',
+            key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.CsvFeed,
           },
           {
-            key: 'feed_url',
+            key: DocumentMetadataKeyCode.FeedUrl,
             value: 'https://example.com',
           },
         ]
@@ -401,5 +457,71 @@ describe('DocumentHelper', () => {
       expect(MinIOClient.deleteFile).toHaveBeenCalledTimes(1);
       expect(MinIOClient.deleteFile).toHaveBeenCalledWith('parent-file');
     });
+  });
+
+  describe('assertDocumentFileIsNotMissing', () => {
+    it.each`
+      title                                      | hasDocument | integrationType
+      ${'document file is optional and missing'} | ${false}    | ${IntegrationType.Connector}
+      ${'document file is present'}              | ${true}     | ${IntegrationType.CsvFeed}
+    `('should not throw when $title', ({ hasDocument, integrationType }) => {
+      expect(() =>
+        DocumentHelper.assertDocumentFileIsNotMissing({
+          hasDocument,
+          documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          documentMetadata: [
+            {
+              key: DocumentMetadataKeyCode.IntegrationType,
+              value: integrationType,
+            },
+          ],
+        })
+      ).not.toThrow();
+    });
+
+    it.each`
+      title                                                            | documentMetadata                                                                      | expectedError
+      ${'document file is required but missing'}                       | ${[{ key: DocumentMetadataKeyCode.IntegrationType, value: IntegrationType.CsvFeed }]} | ${ErrorCode.DocumentFileMissing}
+      ${'integration_type metadata is missing (defaults to required)'} | ${[]}                                                                                 | ${ErrorCode.DocumentFileMissing}
+    `('should throw when $title', ({ documentMetadata, expectedError }) => {
+      expect(() =>
+        DocumentHelper.assertDocumentFileIsNotMissing({
+          hasDocument: false,
+          documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          documentMetadata,
+        })
+      ).toThrow(expectedError);
+    });
+  });
+
+  describe('isDocumentFileRequired', () => {
+    it.each`
+      documentType                         | integrationType                          | expected
+      ${OPENAEV_SCENARIO_DOCUMENT_TYPE}    | ${null}                                  | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${null}                                  | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.CsvFeed}               | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.Stream}                | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.TaxiiFeed}             | ${true}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.Connector}             | ${false}
+      ${OPENCTI_INTEGRATION_DOCUMENT_TYPE} | ${IntegrationType.ThirdPartyIntegration} | ${false}
+    `(
+      'it should return $expected when document is $documentType and integration type is $integrationType',
+      ({ documentType, integrationType, expected }) => {
+        const documentMetadata = integrationType
+          ? [
+              {
+                key: DocumentMetadataKeyCode.IntegrationType,
+                value: integrationType,
+              },
+            ]
+          : [];
+        const result = DocumentHelper.isDocumentFileRequired({
+          documentType,
+          documentMetadata,
+        });
+
+        expect(result).toBe(expected);
+      }
+    );
   });
 });

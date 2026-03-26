@@ -1,12 +1,17 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
-import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
+import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck } from '@/utils/documents';
+import {
+  fileListCheck,
+  optionalFileListCheck,
+  transformToFileList,
+} from '@/utils/documents';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
@@ -30,8 +35,11 @@ const thirdPartyIntegrationFormSchema = z.object({
     })
     .nullish(),
   active: z.boolean().optional(),
+  datasheet_url: z.url().or(z.literal('')).nullish(),
+  demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
-  images: z.custom<FileList>(fileListCheck).optional(),
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
+  images: z.custom<FileList>(fileListCheck),
 });
 
 export type ThirdPartyIntegrationFormValues = z.infer<
@@ -39,7 +47,7 @@ export type ThirdPartyIntegrationFormValues = z.infer<
 >;
 
 interface ThirdPartyIntegrationFormProps {
-  handleSubmit?: (values: ThirdPartyIntegrationFormValues) => void;
+  handleSubmit: (values: ThirdPartyIntegrationFormValues) => void;
   document: documentItem_fragment$data | undefined;
 }
 
@@ -47,22 +55,33 @@ export const ThirdPartyIntegrationForm = ({
   handleSubmit,
   document,
 }: ThirdPartyIntegrationFormProps) => {
-  const t = useTranslations();
   const { me } = useContext(PortalContext);
   const { handleCloseSheet } = useDialogContext();
 
   const isCreation = !document;
 
+  const onSubmit = (values: ThirdPartyIntegrationFormValues) => {
+    if (isCreation) {
+      handleSubmit({ ...values, images: images as unknown as FileList });
+    } else {
+      const finalImages = images.filter(
+        (img) => !imagesToDelete.includes(img.id)
+      );
+
+      const finalValues = {
+        ...values,
+        images: finalImages as unknown as FileList,
+      };
+      handleSubmit(finalValues);
+    }
+  };
+
   const values = useMemo(
     () =>
       ({
         ...document,
-        images: (document?.children_documents?.length
-          ? document.children_documents.map((doc) => ({
-              ...doc,
-              name: doc.file_name,
-            }))
-          : undefined) as unknown as FileList,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -88,7 +107,7 @@ export const ThirdPartyIntegrationForm = ({
     return extendedSchema.superRefine((data, ctx) => {
       if (data.github_url && !data.product_version) {
         ctx.addIssue({
-          path: ['product_version'],
+          path: [DocumentMetadataKeyCodeEnum.PRODUCT_VERSION],
           code: 'custom',
           message: 'Github URL and product version must be filled together',
         });
@@ -96,7 +115,7 @@ export const ThirdPartyIntegrationForm = ({
 
       if (!data.github_url && data.product_version) {
         ctx.addIssue({
-          path: ['github_url'],
+          path: [DocumentMetadataKeyCodeEnum.GITHUB_URL],
           code: 'custom',
           message: 'Github URL and product version must be filled together',
         });
@@ -118,10 +137,15 @@ export const ThirdPartyIntegrationForm = ({
     uploader_organization_id,
     integration_type,
     integration_subtype,
-  } = useSimpleServiceFormField({
+    datasheet_url,
+    demo_url,
+    imagesField,
+    images,
+    imagesToDelete,
+    logo,
+  } = useServiceFormFields({
     documentType: 'Third Party Integration',
     platform: 'OpenCTI',
-    isCreation,
     document,
   });
 
@@ -129,7 +153,7 @@ export const ThirdPartyIntegrationForm = ({
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit?.(values as ThirdPartyIntegrationFormValues);
+          onSubmit(values as ThirdPartyIntegrationFormValues);
         }}
         onValuesChange={(values, form) => {
           if (values.name) {
@@ -143,10 +167,13 @@ export const ThirdPartyIntegrationForm = ({
             }
           }
           if (values.product_version === '') {
-            form.setValue('product_version', undefined);
+            form.setValue(
+              DocumentMetadataKeyCodeEnum.PRODUCT_VERSION,
+              undefined
+            );
           }
           if (values.github_url === '') {
-            form.setValue('github_url', undefined);
+            form.setValue(DocumentMetadataKeyCodeEnum.GITHUB_URL, undefined);
           }
         }}
         values={values}
@@ -157,13 +184,8 @@ export const ThirdPartyIntegrationForm = ({
           uploader_id,
           uploader_organization_id,
           document: { fieldType: () => <FormItem hidden={true} /> },
-          images: {
-            label: t('Service.Form.Illustration'),
-            fieldType: 'file',
-            inputProps: {
-              accept: 'image/jpeg, image/png',
-            },
-          },
+          logo,
+          images: imagesField,
           active,
           short_description,
           slug,
@@ -173,6 +195,8 @@ export const ThirdPartyIntegrationForm = ({
           vendor_url,
           github_url,
           product_version,
+          datasheet_url,
+          demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>

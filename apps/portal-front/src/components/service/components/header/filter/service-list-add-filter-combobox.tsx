@@ -26,7 +26,7 @@ export const ServiceListAddFilterCombobox: React.FC<Props> = ({
 
   return (
     <Combobox
-      className="w-[150px]"
+      className="w-[190px]"
       dataTab={dataTab}
       order={t('Service.List.Filter.Add')}
       placeholder={t('Service.List.Filter.Add')}

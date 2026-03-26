@@ -5,6 +5,7 @@ import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-reso
 import { Avatar } from '@filigran/ui/clients';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { FunctionComponent, ReactNode } from 'react';
 
@@ -18,7 +19,9 @@ export const ShareableResourceCardFooterAuthor: FunctionComponent<
   ShareableResourceCardFooterAuthorProps
 > = ({ document, shareLinkUrl, shouldDisplayAuthor = true, extraContent }) => {
   let documentMetadata;
-  if (docHasMetadata(document, 'integration_subtype')) {
+  if (
+    docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE)
+  ) {
     documentMetadata = getIntegrationSubTypeMetadata(
       document.integration_subtype
     );

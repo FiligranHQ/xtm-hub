@@ -12,7 +12,7 @@ import {
   Store,
 } from 'relay-runtime';
 import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironment';
-import { networkFetch } from './fetchFn';
+import { networkFetch, UnauthenticatedError } from './fetchFn';
 import {
   buildQueryId,
   fieldLogger,
@@ -22,6 +22,14 @@ import {
 
 // A singleton helper that is shared on the client.
 let clientSideRelayEnvironment: RelayModernEnvironment | null = null;
+
+function handleUnauthenticated(e: unknown): Promise<never> {
+  if (e instanceof UnauthenticatedError) {
+    window.location.href = `/login?redirect=${btoa(window.location.pathname)}`;
+    return new Promise<never>(() => {});
+  }
+  throw e;
+}
 
 /**
  * Creates a Relay Environment, while hydrating the Relay store with the responses
@@ -55,10 +63,15 @@ export function createClientSideRelayEnvironment() {
     }
 
     if (!isNil(uploadables) && !isEmpty(uploadables)) {
-      return fetchFormData('/graphql-api', request, variables, uploadables);
+      return fetchFormData(
+        '/graphql-api',
+        request,
+        variables,
+        uploadables
+      ).catch(handleUnauthenticated);
     }
     // If we don't have hydration responses, execute the request as usual.
-    return networkFetch({ request, variables });
+    return networkFetch({ request, variables }).catch(handleUnauthenticated);
   };
 
   // Create a new helper or reuse the existing one, if one has already been created.

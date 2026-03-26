@@ -1,5 +1,21 @@
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
+import { UnauthenticatedError } from './fetchFn';
+
+const FILE_PREFIX_SEPARATOR = 'prefix-';
+
+export const splitFileListToUploadableMap = (files: {
+  [key: string]: FileList | (File | null)[];
+}): UploadableMap => {
+  const acc: UploadableMap = {};
+  Object.entries(files).forEach(([key, fileList]) => {
+    Array.from(fileList).forEach((file) => {
+      if (!file) return;
+      acc[`${key}${FILE_PREFIX_SEPARATOR}${file.name}`] = file;
+    });
+  });
+  return acc;
+};
 
 export const fileListToUploadableMap = (
   files: FileList | (File | null)[]
@@ -32,19 +48,33 @@ export const fetchFormData = async (
     JSON.stringify({ query: request.text, variables })
   );
 
-  const uploadablesArray = Object.values(uploadables);
-  const map = uploadablesArray.reduce<{ [key: number]: string[] }>(
-    (acc, _, index) => {
-      acc[index] = [
-        `variables.document${uploadablesArray.length > 1 ? '.' + index : ''}`,
-      ];
+  const keyMapping: Record<string, number> = {};
+  const uploadableKeys = Object.keys(uploadables);
+  const map = uploadableKeys.reduce<{ [key: number]: string[] }>(
+    (acc, uploadableKey, index) => {
+      const splitted = uploadableKey.split(FILE_PREFIX_SEPARATOR);
+      const variableName = splitted.length > 1 ? splitted[0]! : 'document';
+
+      if (uploadableKeys.length === 1) {
+        acc[index] = [`variables.${variableName}`];
+        return acc;
+      }
+
+      if (keyMapping[variableName] === undefined) {
+        keyMapping[variableName] = 0;
+      } else {
+        keyMapping[variableName] = keyMapping[variableName] + 1;
+      }
+
+      acc[index] = [`variables.${variableName}.${keyMapping[variableName]}`];
+
       return acc;
     },
     {}
   );
   formData.append('map', JSON.stringify(map));
 
-  uploadablesArray.forEach((file, index) =>
+  Object.values(uploadables).forEach((file, index) =>
     formData.append(String(index), file)
   );
 
@@ -69,7 +99,7 @@ export const fetchFormData = async (
           e.extensions.code === 'UNAUTHENTICATED'
       ) !== undefined;
     if (containsAuthenticationFailure) {
-      throw new Error('UNAUTHENTICATED');
+      throw new UnauthenticatedError();
     }
     throw new Error(json.errors[0].message);
   }

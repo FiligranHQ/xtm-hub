@@ -1,3 +1,4 @@
+import { logApp } from '../../utils/app-logger.util';
 import { omit } from '../../utils/utils';
 import { DocumentApp } from '../services/document/document.app';
 import {
@@ -19,7 +20,7 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         connector.logo,
         `${connector.name}-logo.png`
       );
-      const doc = await DocumentApp.upsertDocument<Connector>(
+      const doc = await DocumentApp.upsertDocumentWithExternalImage<Connector>(
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         { ...omit(connector, ['logo']) } as Connector,
         uploadLogo,
@@ -33,7 +34,7 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
 
       results.push(doc);
     } catch (error) {
-      console.error(`Failed to upsert connector ${connector.name}:`, error);
+      logApp.error(`Failed to upsert connector ${connector.name}:`, error);
       throw error;
     }
   }

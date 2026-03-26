@@ -1,24 +1,21 @@
 import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceFormJsonFileField } from '@/components/service/form/json-file-field';
 import { ServiceFormSheetFooter } from '@/components/service/form/sheet-footer';
-import { useSimpleServiceFormField } from '@/components/service/form/use-service-form-fields';
+import { useServiceFormFields } from '@/components/service/form/use-service-form-fields';
 import { useDialogContext } from '@/components/ui/sheet-with-preventing-dialog';
-import { fileListCheck } from '@/utils/documents';
 import {
-  AutoForm,
-  FileInput,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@filigran/ui';
+  fileListCheck,
+  optionalFileListCheck,
+  transformToFileList,
+} from '@/utils/documents';
+import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-import { LogoFiligranIcon } from '@filigran/icon';
 
 const taxiiFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
@@ -31,13 +28,16 @@ const taxiiFeedFormSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
+  datasheet_url: z.url().or(z.literal('')).nullish(),
+  demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
-  images: z.custom<FileList>(fileListCheck).optional(),
+  logo: z.custom<FileList>(optionalFileListCheck).optional(),
+  images: z.custom<FileList>(optionalFileListCheck),
 });
 export type TaxiiFeedFormValues = z.infer<typeof taxiiFeedFormSchema>;
 
 interface TaxiiFeedFormProps {
-  handleSubmit?: (values: TaxiiFeedFormValues) => void;
+  handleSubmit: (values: TaxiiFeedFormValues) => void;
   document: documentItem_fragment$data | undefined;
 }
 
@@ -51,16 +51,28 @@ export const TaxiiFeedForm = ({
 
   const isCreation = !document;
 
+  const onSubmit = (values: TaxiiFeedFormValues) => {
+    if (isCreation) {
+      handleSubmit({ ...values, images: images as unknown as FileList });
+    } else {
+      const finalImages = images.filter(
+        (img) => !imagesToDelete.includes(img.id)
+      );
+
+      const finalValues = {
+        ...values,
+        images: finalImages as unknown as FileList,
+      };
+      handleSubmit(finalValues);
+    }
+  };
+
   const values = useMemo(
     () =>
       ({
         ...document,
-        images: (document?.children_documents?.length
-          ? document.children_documents.map((doc) => ({
-              ...doc,
-              name: doc.file_name,
-            }))
-          : undefined) as unknown as FileList,
+        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
+        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -77,7 +89,7 @@ export const TaxiiFeedForm = ({
       document
         ? taxiiFeedFormSchema.extend({
             document: z.custom<FileList>(fileListCheck).optional(),
-            images: z.custom<FileList>(fileListCheck).optional(),
+            images: z.custom<FileList>(optionalFileListCheck).optional(),
           })
         : taxiiFeedFormSchema,
     [document]
@@ -94,10 +106,15 @@ export const TaxiiFeedForm = ({
     uploader_id,
     integration_type,
     integration_subtype,
-  } = useSimpleServiceFormField({
+    datasheet_url,
+    demo_url,
+    imagesField,
+    images,
+    imagesToDelete,
+    logo,
+  } = useServiceFormFields({
     documentType: 'TAXII Feed',
     platform: 'OpenCTI',
-    isCreation,
     document,
   });
 
@@ -105,7 +122,7 @@ export const TaxiiFeedForm = ({
     <>
       <AutoForm
         onSubmit={(values, _methods) => {
-          handleSubmit?.(values as TaxiiFeedFormValues);
+          onSubmit(values as TaxiiFeedFormValues);
         }}
         onValuesChange={(values, form) => {
           if (values.name) {
@@ -131,8 +148,7 @@ export const TaxiiFeedForm = ({
                 label: t('Service.Form.SelectJSONFile'),
                 fieldType: 'file',
                 inputProps: {
-                  allowedTypes: 'application/json',
-                  multiple: 'multiple',
+                  accept: 'application/json',
                 },
               }
             : {
@@ -144,48 +160,16 @@ export const TaxiiFeedForm = ({
                   />
                 ),
               },
-          images: isCreation
-            ? {
-                fieldType: ({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Service.Form.ImageLabel')}</FormLabel>
-                    <FormControl>
-                      <div>
-                        <div className="w-24 p-m border border-light">
-                          <LogoFiligranIcon className="size-18" />
-                        </div>
-                        <FileInput
-                          {...field}
-                          allowedTypes="image/jpeg, image/png"
-                          multiple
-                          texts={{
-                            selectFile: t('Service.Form.SelectImage'),
-                            noFile: t('Service.Form.NoImage'),
-                            dropFiles: t(
-                              'Service.Vault.FileForm.DropDocuments'
-                            ),
-                          }}
-                        />
-                      </div>
-                    </FormControl>
-                    <p>{t('Service.Form.IllustrationDisclaimer')}</p>
-                    <FormMessage />
-                  </FormItem>
-                ),
-              }
-            : {
-                label: t('Service.Form.Illustration'),
-                fieldType: 'file',
-                inputProps: {
-                  accept: 'image/jpeg, image/png',
-                },
-              },
+          logo,
+          images: imagesField,
           active,
           short_description,
           slug,
           name,
           integration_type,
           integration_subtype,
+          datasheet_url,
+          demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>

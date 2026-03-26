@@ -1,5 +1,7 @@
 import { ApolloError } from 'apollo-errors';
 
+export type ErrorLogLevel = 'warn' | 'error';
+
 export interface ErrorInformation {
   detail?: Error | string;
   [key: string]: unknown;
@@ -14,6 +16,7 @@ export enum ErrorCategory {
 export enum ErrorType {
   BadRequest = 'BAD_REQUEST',
   ForbiddenAccess = 'FORBIDDEN_ACCESS',
+  Unauthenticated = 'UNAUTHENTICATED',
   UnknownError = 'UNKNOWN_ERROR',
   StillReference = 'STILL_REFERENCED',
   AlreadyExists = 'ALREADY_EXISTS',
@@ -21,6 +24,8 @@ export enum ErrorType {
 }
 
 export type CustomApolloError = ApolloError & {
+  _logLevel?: ErrorLogLevel;
+  extensions?: { code?: string };
   data: {
     genre?: ErrorCategory;
     http_status?: number;

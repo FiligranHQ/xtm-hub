@@ -20,8 +20,10 @@ import {
 } from './telemetry.types';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
+  DocumentMetadataKeyCode,
   IntegrationType,
   PlatformIdentifier,
   ServiceConfigurationStatus,
@@ -54,6 +56,19 @@ describe('TelemetryApp', () => {
     mimeType: 'mimeType',
     fileName: 'csvfilename',
   };
+
+  const mockFileUpload: FileUpload = {
+    filename: 'test-image.png',
+    mimetype: 'image/png',
+    encoding: '7bit',
+    createReadStream: vi.fn(),
+  };
+
+  const mockUpload = {
+    file: mockFileUpload,
+    promise: Promise.resolve(mockFileUpload),
+  };
+
   beforeEach(async () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
@@ -85,8 +100,8 @@ describe('TelemetryApp', () => {
         status: ServiceConfigurationStatus.Active,
       });
 
-      const document = await DocumentApp.createDocument(
-        {
+      const document = await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
@@ -94,13 +109,19 @@ describe('TelemetryApp', () => {
           slug: 'slug',
           active: true,
         },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+        metadata: [
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
+        serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+        sourceDocument: mockUpload,
+      });
       expect(document).toBeDefined();
 
       const documentId = document!.id;
@@ -166,8 +187,8 @@ describe('TelemetryApp', () => {
         status: ServiceConfigurationStatus.Active,
       });
 
-      const document = await DocumentApp.createDocument(
-        {
+      const document = await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
@@ -175,13 +196,19 @@ describe('TelemetryApp', () => {
           slug: 'slug',
           active: true,
         },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+        metadata: [
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
+        serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+        sourceDocument: mockUpload,
+      });
       expect(document).toBeDefined();
 
       const documentId = document!.id;
@@ -246,8 +273,8 @@ describe('TelemetryApp', () => {
         },
         status: ServiceConfigurationStatus.Active,
       });
-      const document = await DocumentApp.createDocument(
-        {
+      const document = await DocumentApp.createDocument({
+        input: {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           name: 'myCsvFeed',
           description: 'description',
@@ -255,13 +282,19 @@ describe('TelemetryApp', () => {
           slug: 'slug',
           active: true,
         },
-        [
-          { key: 'integration_type', value: IntegrationType.CsvFeed },
-          { key: 'feed_url', value: 'https://example.com' },
+        metadata: [
+          {
+            key: DocumentMetadataKeyCode.IntegrationType,
+            value: IntegrationType.CsvFeed,
+          },
+          {
+            key: DocumentMetadataKeyCode.FeedUrl,
+            value: 'https://example.com',
+          },
         ],
-        INTEGRATION_SERVICE_INSTANCE_ID,
-        []
-      );
+        serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+        sourceDocument: mockUpload,
+      });
       expect(document).toBeDefined();
 
       const documentId = document!.id;

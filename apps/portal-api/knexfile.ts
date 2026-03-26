@@ -4,6 +4,7 @@ import { baseConfig } from './knexconfig';
 import {
   DeploymentRequestFilter,
   DeploymentRequestFilterKey,
+  DocumentMetadataKeyCode,
   Filter,
   FilterKey,
   LogicalFilterInput,
@@ -240,8 +241,11 @@ const createTagsFilter = (): FilterHandler => ({
   key: ServiceInstanceFilterKey.Tags,
   addWhere: (qb, _type, values) => {
     if (!values.length) return;
-    const formattedValue = values.map((v) => `'${v}'`).join(',');
-    qb.whereRaw(`"ServiceInstance"."tags"::text[] @> array[${formattedValue}]`);
+    const placeholders = values.map(() => '?').join(',');
+    qb.whereRaw(
+      `"ServiceInstance"."tags"::text[] @> array[${placeholders}]`,
+      values
+    );
   },
 });
 
@@ -287,7 +291,8 @@ const createProductVersionFilter = (): FilterHandler => ({
     const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
     qb.whereRaw(
       dbRaw(
-        `("${metaAlias}"."value" IS NULL OR string_to_array(replace("${metaAlias}"."value", '-lts', ''),'.')::int[] <= string_to_array('${lowestVersion}','.')::int[])`
+        `("${metaAlias}"."value" IS NULL OR string_to_array(replace("${metaAlias}"."value", '-lts', ''),'.')::int[] <= string_to_array(?,'.')::int[])`,
+        [lowestVersion]
       )
     );
   },
@@ -374,7 +379,7 @@ const getFilterHandler = (key: string): FilterHandler => {
   }
 
   // Check if it's a metadata filter
-  if (INTEGRATION_METADATA_KEYS.includes(key)) {
+  if (INTEGRATION_METADATA_KEYS.includes(key as DocumentMetadataKeyCode)) {
     return createMetadataFilterHandler(key);
   }
 

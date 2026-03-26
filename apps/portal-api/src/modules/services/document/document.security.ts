@@ -1,7 +1,11 @@
-import { ServiceRestriction } from '../../../__generated__/resolvers-types';
+import {
+  ServiceDefinitionIdentifier,
+  ServiceRestriction,
+} from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../../../model/user';
 import { isUserGranted } from '../../../security/access';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { loadCapabilities } from '../../user_service/user-service-capability/user-service-capability.helper';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 
@@ -20,10 +24,14 @@ export const isUserRestrictedToActiveDocument = async (
   );
   const serviceDef =
     await loadServiceDefinitionByServiceInstance(serviceInstanceId);
+  if (!serviceDef) {
+    throw new Error(ErrorCode.ServiceDefinitionNotFound);
+  }
   return (
     !capabilities?.includes(ServiceRestriction.Upload) &&
-    ['opencti_custom_dashboards', 'opencti_integrations'].includes(
-      serviceDef.identifier
-    )
+    [
+      ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+      ServiceDefinitionIdentifier.OpenctiIntegrations,
+    ].includes(serviceDef.identifier)
   );
 };
