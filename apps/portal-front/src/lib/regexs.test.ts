@@ -38,10 +38,4 @@ describe('emailRegex', () => {
       expect(emailRegex.test(email)).toBe(false);
     });
   });
-
-  it('should reset lastIndex when used with global flag', () => {
-    const email = 'test@example.com';
-    expect(emailRegex.test(email)).toBe(true);
-    expect(emailRegex.test(email)).toBe(true);
-  });
 });

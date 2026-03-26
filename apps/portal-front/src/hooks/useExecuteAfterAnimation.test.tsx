@@ -1,3 +1,4 @@
+import { ANIMATION_TIME } from '@/utils/constant';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useExecuteAfterAnimation } from './useExecuteAfterAnimation';
 
@@ -10,13 +11,13 @@ describe('useExecuteAfterAnimation', () => {
     vi.useRealTimers();
   });
 
-  it('should call callback after animation time (300ms)', () => {
+  it('should call callback after animation time', () => {
     const callback = vi.fn();
 
     useExecuteAfterAnimation(callback);
 
     expect(callback).not.toHaveBeenCalled();
-    vi.advanceTimersByTime(300);
+    vi.advanceTimersByTime(ANIMATION_TIME);
     expect(callback).toHaveBeenCalledOnce();
   });
 
@@ -25,7 +26,7 @@ describe('useExecuteAfterAnimation', () => {
 
     useExecuteAfterAnimation(callback);
 
-    vi.advanceTimersByTime(299);
+    vi.advanceTimersByTime(ANIMATION_TIME - 1);
     expect(callback).not.toHaveBeenCalled();
   });
 
@@ -34,7 +35,7 @@ describe('useExecuteAfterAnimation', () => {
 
     useExecuteAfterAnimation(callback);
 
-    vi.advanceTimersByTime(600);
+    vi.advanceTimersByTime(ANIMATION_TIME * 2);
     expect(callback).toHaveBeenCalledOnce();
   });
 });
