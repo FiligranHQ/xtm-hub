@@ -46,7 +46,7 @@ export const EpicList = ({
       ? epics
       : epics.filter((epic) => epic.product === selectedProduct);
 
-  const { draft, now, next, under_consideration } =
+  const { draft, now, next, under_consideration, finished } =
     useDraftAndTimelineEpics(filteredEpics);
   const countsByProduct = useCountEpicsByProduct(epics, userCanUpdate);
 
@@ -56,8 +56,9 @@ export const EpicList = ({
       { title: TimelineEnum.NOW, epics: now },
       { title: TimelineEnum.NEXT, epics: next },
       { title: TimelineEnum.UNDER_CONSIDERATION, epics: under_consideration },
+      { title: TimelineEnum.FINISHED, epics: finished },
     ],
-    [draft, now, next, under_consideration]
+    [draft, now, next, under_consideration, finished]
   );
 
   const renderEpicItems = useCallback(

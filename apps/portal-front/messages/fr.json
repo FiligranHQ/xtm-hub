@@ -125,7 +125,8 @@
       "draft": "Brouillons",
       "now": "Maintenant",
       "next": "Après",
-      "under_consideration": "En considération"
+      "under_consideration": "En considération",
+      "finished": "Fini"
     },
     "Form": {
       "Epic": "Epic",

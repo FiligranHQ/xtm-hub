@@ -10,6 +10,7 @@ export function useDraftAndTimelineEpics(epics: epic_fragment$data[]) {
       now: [],
       next: [],
       under_consideration: [],
+      finished: [],
     };
 
     if (!epics) return initial;
@@ -20,6 +21,7 @@ export function useDraftAndTimelineEpics(epics: epic_fragment$data[]) {
       else if (item.timeline === TimelineEnum.NEXT) acc.next.push(item);
       else if (item.timeline === TimelineEnum.UNDER_CONSIDERATION)
         acc.under_consideration.push(item);
+      else if (item.timeline === TimelineEnum.FINISHED) acc.finished.push(item);
 
       return acc;
     }, initial);

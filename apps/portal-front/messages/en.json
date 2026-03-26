@@ -104,7 +104,8 @@
       "draft": "Draft",
       "now": "Now",
       "next": "Next",
-      "under_consideration": "Under consideration"
+      "under_consideration": "Under consideration",
+      "finished": "Finished"
     },
     "Form": {
       "Epic": "Epic",
