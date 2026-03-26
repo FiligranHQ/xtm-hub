@@ -55,6 +55,11 @@ export const publicDocumentItem = graphql`
       feed_url
     }
 
+    ... on RssFeed {
+      integration_type
+      integration_subtype
+    }
+
     ... on Stream {
       integration_type
       feed_url

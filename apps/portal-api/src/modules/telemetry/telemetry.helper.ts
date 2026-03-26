@@ -97,6 +97,7 @@ const IntegrationTypeToEventServiceType = new Map<
   [IntegrationType.CsvFeed, TelemetryEventServiceType.CSV_FEEDS],
   [IntegrationType.Connector, TelemetryEventServiceType.CONNECTORS],
   [IntegrationType.TaxiiFeed, TelemetryEventServiceType.TAXII_FEEDS],
+  [IntegrationType.RssFeed, TelemetryEventServiceType.RSS_FEEDS],
   [IntegrationType.Stream, TelemetryEventServiceType.STREAMS],
   [
     IntegrationType.ThirdPartyIntegration,

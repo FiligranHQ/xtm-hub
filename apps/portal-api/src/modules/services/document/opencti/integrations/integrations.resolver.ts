@@ -18,6 +18,7 @@ const resolvers: Resolvers = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
         [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
+        [IntegrationType.RssFeed]: 'RssFeed',
         [IntegrationType.Stream]: 'Stream',
         [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
       };

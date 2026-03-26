@@ -7,6 +7,7 @@ import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 
 export const availableIntegrationTypes: IntegrationTypeEnum[] = [
   IntegrationTypeEnum.TAXII_FEED,
+  IntegrationTypeEnum.RSS_FEED,
   IntegrationTypeEnum.CONNECTOR,
   IntegrationTypeEnum.CSV_FEED,
   IntegrationTypeEnum.STREAM,
@@ -77,6 +78,7 @@ export const SubTypesPerIntegrationType = new Map<
     ],
   ],
   [IntegrationTypeEnum.TAXII_FEED, [IntegrationSubTypeEnum.NATIVE]],
+  [IntegrationTypeEnum.RSS_FEED, [IntegrationSubTypeEnum.NATIVE]],
   [IntegrationTypeEnum.CSV_FEED, []],
   [IntegrationTypeEnum.STREAM, [IntegrationSubTypeEnum.NATIVE]],
   [

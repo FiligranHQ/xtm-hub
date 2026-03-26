@@ -19,6 +19,7 @@ const INTEGRATION_TRANSLATION_KEY_MAP: Partial<Record<CardTypeEnum, string>> = {
   [IntegrationTypeEnum.CSV_FEED]: 'CsvFeed',
   [IntegrationTypeEnum.CONNECTOR]: 'Connector',
   [IntegrationTypeEnum.TAXII_FEED]: 'TaxiiFeed',
+  [IntegrationTypeEnum.RSS_FEED]: 'RssFeed',
   [IntegrationTypeEnum.STREAM]: 'Stream',
   [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]: 'ThirdPartyIntegration',
   [ShareableResourceType.OPENAEV_SCENARIO]: 'OpenAEVScenario',
