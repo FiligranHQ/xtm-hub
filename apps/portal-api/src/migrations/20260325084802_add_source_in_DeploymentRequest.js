@@ -4,7 +4,7 @@
  */
 export async function up(knex) {
   await knex.schema.alterTable('DeploymentRequest', (table) => {
-    table.string('source');
+    table.string('source').notNullable().defaultTo('xtmhub');
   });
 }
 

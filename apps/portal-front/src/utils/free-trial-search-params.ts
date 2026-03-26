@@ -1,3 +1,4 @@
+import { isValueInEnum } from '@/utils/isValueInEnum';
 import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 
 export interface FreeTrialSearchParams {
@@ -11,17 +12,12 @@ export const parseFreeTrialSearchParams = async (
   const params = await searchParams;
 
   const openFormParam = params.openForm;
-  const openTrialForm = !!openFormParam && !Array.isArray(openFormParam);
+  const openTrialForm = openFormParam === 'true';
 
   const sourceParam = params.source;
-  const source: DeploymentRequestSourceEnum =
-    !Array.isArray(sourceParam) &&
-    sourceParam !== undefined &&
-    (Object.values(DeploymentRequestSourceEnum) as string[]).includes(
-      sourceParam
-    )
-      ? (sourceParam as DeploymentRequestSourceEnum)
-      : DeploymentRequestSourceEnum.XTMHUB;
+  const source = isValueInEnum(sourceParam, DeploymentRequestSourceEnum)
+    ? sourceParam
+    : DeploymentRequestSourceEnum.XTMHUB;
 
   return { openTrialForm, source };
 };
