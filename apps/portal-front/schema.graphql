@@ -77,8 +77,8 @@ type Query {
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
-  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   subscriptionById(subscription_id: ID): SubscriptionModel
+  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
@@ -117,13 +117,13 @@ type Mutation {
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
-  addUseCase(input: AddUseCaseInput!): UseCase!
-  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
-  deleteUseCase(id: ID!): UseCase!
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
+  addUseCase(input: AddUseCaseInput!): UseCase!
+  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
+  deleteUseCase(id: ID!): UseCase!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
@@ -1228,38 +1228,6 @@ type Settings {
   environment: String!
 }
 
-type UseCase implements Node {
-  id: ID!
-  name: String!
-  color: String!
-}
-
-enum UseCaseOrdering {
-  name
-  color
-}
-
-type UseCaseEdge {
-  cursor: String!
-  node: UseCase!
-}
-
-type UseCaseConnection {
-  totalCount: Int!
-  edges: [UseCaseEdge!]!
-  pageInfo: PageInfo!
-}
-
-input AddUseCaseInput {
-  name: String!
-  color: String!
-}
-
-input EditUseCaseInput {
-  name: String
-  color: String
-}
-
 enum SubscriptionOrdering {
   organization_name
   start_date
@@ -1305,6 +1273,38 @@ input OneClickDeployInput {
 
 type SendTelemetryMutation {
   oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
+}
+
+type UseCase implements Node {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+enum UseCaseOrdering {
+  name
+  color
+}
+
+type UseCaseEdge {
+  cursor: String!
+  node: UseCase!
+}
+
+type UseCaseConnection {
+  totalCount: Int!
+  edges: [UseCaseEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddUseCaseInput {
+  name: String!
+  color: String!
+}
+
+input EditUseCaseInput {
+  name: String
+  color: String
 }
 
 type GenericServiceCapability implements Node {
