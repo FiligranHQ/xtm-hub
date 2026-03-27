@@ -82,7 +82,7 @@ test.describe('Custom dashboards', () => {
         .getByRole('textbox', { name: 'Short Description *' })
         .fill(UPDATED_DASHBOARD_TEST.shortDescription);
       await page
-        .getByRole('textbox', { name: 'OpenCTI product version *' })
+        .getByRole('textbox', { name: 'OpenCTI compatibility version *' })
         .fill(UPDATED_DASHBOARD_TEST.version);
       await page
         .getByRole('textbox', { name: 'This is a paragraph to' })

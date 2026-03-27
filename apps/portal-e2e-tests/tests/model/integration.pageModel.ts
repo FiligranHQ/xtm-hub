@@ -161,7 +161,7 @@ export default class IntegrationPage {
       .getByRole('textbox', { name: 'Github link (url)' })
       .fill('https://text.com');
     await this.page
-      .getByRole('textbox', { name: 'OpenCTI product version' })
+      .getByRole('textbox', { name: 'OpenCTI compatibility version' })
       .fill('1.2.3');
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await expect(this.page).toHaveScreenshot();

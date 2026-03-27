@@ -1,3 +1,4 @@
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { ShareableResourceDetailsLink } from '@/components/service/document/shareable-resource-details-link';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
@@ -5,6 +6,7 @@ import { getIntegrationSubTypeMetadata } from '@/components/service/integrations
 import { roundToNearest } from '@/lib/utils';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
 import { Badge, Button } from '@filigran/ui/servers';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';
@@ -33,7 +35,8 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
   ShareableResourceConnectorDetailsProps
 > = ({ connectorDetails, compatibilityItem }) => {
   const t = useTranslations();
-
+  const platformName =
+    PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name;
   const connectorMetadata = getIntegrationSubTypeMetadata(
     connectorDetails?.integration_subtype ?? undefined
   );
@@ -99,13 +102,18 @@ export const ShareableResourceConnectorDetails: FunctionComponent<
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.ProductVersion')}>
+        label={t('Service.ShareableResources.Details.ProductVersion', {
+          platform: platformName,
+        })}>
         <span>{connectorDetails?.product_version}</span>
       </ShareableResourceDetailItem>
       {!!connectorDetails?.minimum_deployable_version && (
         <ShareableResourceDetailItem
           label={t(
-            'Service.ShareableResources.Details.MinimumDeployableVersion'
+            'Service.ShareableResources.Details.MinimumDeployableVersion',
+            {
+              platform: platformName,
+            }
           )}>
           {compatibilityItem || (
             <span>{connectorDetails?.minimum_deployable_version}</span>
