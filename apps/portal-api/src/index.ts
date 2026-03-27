@@ -15,6 +15,7 @@ import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 import { printSchema } from 'graphql/utilities/index.js';
 import { createServer } from 'http';
 import fs from 'node:fs';
+import { v4 as uuidv4 } from 'uuid';
 import { dbMigration } from '../knexfile';
 import { initAuthPlatform } from './auth/auth-platform';
 import portalConfig from './config';
@@ -176,9 +177,12 @@ if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
 }
 
 app.use(function (req, res, next) {
-  requestContext.run({ user: req.session.user }, () => {
-    next();
-  });
+  requestContext.run(
+    { user: req.session.user, correlationId: uuidv4() },
+    () => {
+      next();
+    }
+  );
 });
 
 // The ApolloServer constructor requires two parameters: your schema
