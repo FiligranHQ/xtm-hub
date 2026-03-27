@@ -1,5 +1,5 @@
-import { Resolvers } from '../../../__generated__/resolvers-types';
-import { UseCaseId, UseCaseMutator } from '../../../model/kanel/public/UseCase';
+import { Resolvers } from '../../__generated__/resolvers-types';
+import { UseCaseId, UseCaseMutator } from '../../model/kanel/public/UseCase';
 import { useCaseApp } from './use-case.app';
 import { useCaseDomain } from './use-case.domain';
 

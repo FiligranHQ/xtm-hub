@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
+import { db } from '../../../knexfile';
 import ObjectUseCase, {
   ObjectUseCaseObjectId,
-} from '../../../model/kanel/public/ObjectUseCase';
-import { objectUseCaseDomain } from '../objectUseCase/object-useCase.domain';
+} from '../../model/kanel/public/ObjectUseCase';
+import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseApp } from './use-case.app';
 import { useCaseDomain } from './use-case.domain';
 
