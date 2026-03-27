@@ -1,9 +1,9 @@
-import { db, paginate } from '../../../../knexfile';
+import { db, paginate } from '../../../knexfile';
 import {
   EpicConnection,
   QueryEpicsArgs,
-} from '../../../__generated__/resolvers-types';
-import Epic, { EpicId, EpicMutator } from '../../../model/kanel/public/Epic';
+} from '../../__generated__/resolvers-types';
+import Epic, { EpicId, EpicMutator } from '../../model/kanel/public/Epic';
 
 export const EpicDomain = {
   loadEpics: async (opts: Partial<QueryEpicsArgs>) => {
