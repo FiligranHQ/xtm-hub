@@ -80,7 +80,9 @@ const addBasicMetaInformation = (
   const logMeta: Record<string, unknown> = {
     ...omit(meta, ['user']),
     user_id: meta.user?.id ?? context?.user?.id,
+    correlation_id: context?.correlationId,
   };
+
   if (error) logMeta.errors = buildMetaErrors(error);
   for (const key of Object.keys(logMeta)) {
     if (logMeta[key] instanceof Error) {
