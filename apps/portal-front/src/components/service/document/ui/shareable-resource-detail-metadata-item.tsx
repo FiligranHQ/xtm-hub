@@ -4,7 +4,7 @@ import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-reso
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 type Variant = 'text' | 'link';
 
@@ -12,6 +12,7 @@ interface Props {
   documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
   metadataKey: string;
   translationKey: string;
+  translationMetadata?: Record<string, string | number | Date>;
   variant?: Variant;
 }
 
@@ -19,6 +20,7 @@ export const ShareableResourceDetailMetadataItem = ({
   documentData,
   metadataKey,
   translationKey,
+  translationMetadata,
   variant = 'text',
 }: Props) => {
   const t = useTranslations();
@@ -29,7 +31,7 @@ export const ShareableResourceDetailMetadataItem = ({
 
     const value = documentData[metadataKey] as string;
 
-    const mapping: Record<Variant, React.ReactNode> = {
+    const mapping: Record<Variant, ReactNode> = {
       link: <ShareableResourceDetailsLink url={value} />,
       text: <span>{value}</span>,
     };
@@ -43,7 +45,10 @@ export const ShareableResourceDetailMetadataItem = ({
 
   return (
     <ShareableResourceDetailItem
-      label={t(`Service.ShareableResources.Details.${translationKey}`)}>
+      label={t(
+        `Service.ShareableResources.Details.${translationKey}`,
+        translationMetadata
+      )}>
       {content}
     </ShareableResourceDetailItem>
   );

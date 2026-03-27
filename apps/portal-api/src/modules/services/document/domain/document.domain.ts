@@ -91,6 +91,27 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
+  loadDocumentsByMetadata: async (
+    key: string,
+    value: string,
+    include_metadata: DocumentMetadataKeyCode[] = []
+  ): Promise<DocumentModel[]> => {
+    const docQuery = db<DocumentModel>('Document')
+      .leftJoin(
+        'Document_Metadata',
+        'Document.id',
+        'Document_Metadata.document_id'
+      )
+      .where('Document_Metadata.key', key)
+      .andWhere('Document_Metadata.value', value)
+      .select('Document.*')
+      .groupBy('Document.id');
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
+
+    return docQuery;
+  },
+
   loadUploader: async (documentId: string): Promise<User | undefined> => {
     return db<User>('User')
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
