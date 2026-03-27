@@ -549,6 +549,7 @@ enum DocumentMetadataKeyCode {
   manager_supported
   playbook_supported
   image_type
+  minimum_deployable_version
 }
 
 type ShareableResource {
@@ -852,6 +853,7 @@ type Connector implements Node & Document & Integration {
   playbook_supported: Boolean!
   datasheet_url: String
   demo_url: String
+  minimum_deployable_version: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {

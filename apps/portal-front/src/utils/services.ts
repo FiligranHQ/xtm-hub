@@ -6,6 +6,7 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { buildPlatformHoverLinks, isTrial } from '@/utils/platform';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
@@ -24,6 +25,16 @@ export const isExternalService = (
     ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
     ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
   ].includes(service_definition_identifier);
+
+export const platformIdentifierMappedByShareableResourceType: Record<
+  ShareableResourceType,
+  PlatformIdentifierEnum
+> = {
+  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]:
+    PlatformIdentifierEnum.OPENCTI,
+  [ShareableResourceType.OPENCTI_INTEGRATION]: PlatformIdentifierEnum.OPENCTI,
+  [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifierEnum.OPENAEV,
+};
 
 export const isAutomaticSubscriptionService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum

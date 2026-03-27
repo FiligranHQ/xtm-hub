@@ -178,6 +178,7 @@ export const documentItem = graphql`
       playbook_supported
       datasheet_url
       demo_url
+      minimum_deployable_version
     }
 
     ... on OpenAEVScenario {

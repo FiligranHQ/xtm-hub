@@ -24,13 +24,13 @@ export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
   const { platformToBeUpdated, incompatiblePlatformsCount } =
     useBuildCompatibilityTranslationKey({
       platforms,
-      requiredProductVersion: connectorDetails?.product_version,
+      requiredProductVersion: connectorDetails?.minimum_deployable_version,
     });
 
   const compatibilityItem =
     incompatiblePlatformsCount > 0 ? (
       <span className="text-gray/60 flex gap-s items-center">
-        {connectorDetails?.product_version}
+        {connectorDetails?.minimum_deployable_version}
         <CheckIndeterminateIcon className="h-4 w-4" />
       </span>
     ) : undefined;

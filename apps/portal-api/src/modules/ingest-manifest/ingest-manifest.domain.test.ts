@@ -265,4 +265,94 @@ describe('upsertConnectors', () => {
       expect(result).toHaveLength(0);
     });
   });
+
+  describe('minimum deployable version logic', () => {
+    const baseManifest = sampleExtractedManifest[0] as ManifestInformation;
+
+    it('should not set minimum_deployable_version if manager_supported is false', async () => {
+      const manifest: ManifestInformation = {
+        ...baseManifest,
+        slug: 'min-deployable-false',
+        name: 'Min Deployable False',
+        product_version: '3.0.0-false',
+        manager_supported: false,
+        minimum_deployable_version: undefined,
+      };
+      await upsertConnectors([manifest]);
+      const [result] = await upsertConnectors([
+        { ...manifest, product_version: '3.0.1-false' },
+      ]);
+      expect(result).toBeDefined();
+      expect(result!.minimum_deployable_version).toBeNull();
+    });
+
+    it('should set minimum_deployable_version if manager_supported is true and not set', async () => {
+      const manifest: ManifestInformation = {
+        ...baseManifest,
+        slug: 'min-deployable-true',
+        name: 'Min Deployable True',
+        product_version: '3.0.0-true',
+        manager_supported: true,
+        minimum_deployable_version: undefined,
+      };
+      await upsertConnectors([manifest]);
+      const [result] = await upsertConnectors([
+        { ...manifest, product_version: '3.0.1-true' },
+      ]);
+      expect(result).toBeDefined();
+      expect(result!.minimum_deployable_version).toBe('3.0.1-true');
+    });
+
+    it('should not override minimum_deployable_version if already set, regardless of manager_supported', async () => {
+      const manifest: ManifestInformation = {
+        ...baseManifest,
+        slug: 'min-deployable-already',
+        name: 'Min Deployable Already',
+        product_version: '3.0.0-already',
+        manager_supported: true,
+        minimum_deployable_version: '2.2.2',
+      };
+      await upsertConnectors([manifest]);
+      const [result] = await upsertConnectors([
+        {
+          ...manifest,
+          product_version: '3.0.1-already',
+          manager_supported: false,
+        },
+      ]);
+      expect(result).toBeDefined();
+      expect(result!.minimum_deployable_version).toBe('2.2.2');
+    });
+  });
+
+  describe('datasheet_url and demo_url preservation', () => {
+    const baseManifest = sampleExtractedManifest[0] as ManifestInformation;
+    const initialDatasheetUrl = 'https://filigran.io/datasheet.pdf';
+    const initialDemoUrl = 'https://filigran.io/demo';
+
+    it('should preserve datasheet_url and demo_url from the first creation', async () => {
+      // First creation with datasheet_url and demo_url set
+      const manifest: ManifestInformation = {
+        ...baseManifest,
+        slug: 'datasheet-demo-test',
+        name: 'Datasheet Demo Test',
+        datasheet_url: initialDatasheetUrl,
+        demo_url: initialDemoUrl,
+      };
+      await upsertConnectors([manifest]);
+
+      // Second call with datasheet_url and demo_url changed in manifest
+      const updatedManifest: ManifestInformation = {
+        ...manifest,
+        description: 'Updated description',
+        datasheet_url: 'https://malicious-override.com/datasheet.pdf',
+        demo_url: 'https://malicious-override.com/demo',
+      };
+      const [secondResult] = await upsertConnectors([updatedManifest]);
+
+      expect(secondResult).toBeDefined();
+      expect(secondResult!.datasheet_url).toBe(initialDatasheetUrl);
+      expect(secondResult!.demo_url).toBe(initialDemoUrl);
+    });
+  });
 });
