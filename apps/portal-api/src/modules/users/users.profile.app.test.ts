@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
@@ -27,7 +28,6 @@ import {
 } from './user_transferRequest/user_transferRequest.domain';
 import { updateUser } from './users.domain';
 import { usersProfileApp } from './users.profile.app';
-import { Readable } from 'stream';
 
 describe('User profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
@@ -63,7 +63,6 @@ describe('User profile app', () => {
         }
       );
       expect(userReturned.last_name).toStrictEqual('anotherLastName');
-     
     });
   });
 
@@ -188,7 +187,10 @@ describe('User profile app', () => {
       });
     });
 
-    const createMockUpload = (filename = 'test.png', mimetype = 'image/png') => ({
+    const createMockUpload = (
+      filename = 'test.png',
+      mimetype = 'image/png'
+    ) => ({
       file: {
         filename,
         mimetype,
@@ -265,5 +267,4 @@ describe('User profile app', () => {
       expect(result.picture).toContain('/user/picture/');
     });
   });
-
 });
