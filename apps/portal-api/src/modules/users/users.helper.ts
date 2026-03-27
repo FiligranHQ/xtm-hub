@@ -493,7 +493,6 @@ const updateUserCapabilities = async ({
   return { user, userMapped };
 };
 
-
 export const updateAndDispatchUser = async (userId: UserId) => {
   const user = await loadUserDetails({ 'User.id': userId });
   updateUserSession(user);
