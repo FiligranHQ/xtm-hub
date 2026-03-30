@@ -8935,7 +8935,7 @@ __metadata:
     lint-staged: "npm:15.5.2"
     migrate: "npm:^2.1.0"
     node-cron: "npm:4.2.1"
-    nodemailer: "npm:7.0.11"
+    nodemailer: "npm:8.0.4"
     openid-client: "npm:5.7.1"
     passport: "npm:0.7.0"
     pg: "npm:8.20.0"
@@ -16720,7 +16720,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:7.0.11, nodemailer@npm:^7.0.6":
+"nodemailer@npm:8.0.4":
+  version: 8.0.4
+  resolution: "nodemailer@npm:8.0.4"
+  checksum: 10/b396d52b1faf3ee73a6eca1b7febdb8ea16df50d6c41efbf0f1e500e6a42a73cea5e0db9e52d64b34f509ac3dbf4c10fe828de6cb3f66899b493be38b8abe926
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^7.0.6":
   version: 7.0.11
   resolution: "nodemailer@npm:7.0.11"
   checksum: 10/2ad4dd56a4caf84a83aa6f4378ded26d5ef8a644ca3be09c3b4fb2255d861369e620f29be6c3c97148ac4a50aa5fdff6240b9d60805362bd99ca15f2ea62e8a2
