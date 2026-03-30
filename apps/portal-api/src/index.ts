@@ -214,13 +214,19 @@ const server = new ApolloServer<PortalContext>({
   },
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
-    ApolloServerPluginLandingPageLocalDefault({
-      includeCookies: true,
-      variables: {},
-    }),
+    ...(process.env.NODE_ENV !== 'production'
+      ? [
+          ApolloServerPluginLandingPageLocalDefault({
+            includeCookies: true,
+            variables: {},
+          }),
+        ]
+      : []),
+
     errorLoggingPlugin(),
     operationMetricsPlugin,
   ],
+  introspection: process.env.NODE_ENV !== 'production', // Disable introspection in production env
 });
 
 // Note you must call `start()` on the `ApolloServer`
