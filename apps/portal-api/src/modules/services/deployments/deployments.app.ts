@@ -247,101 +247,20 @@ export const DeploymentsApp = {
     input: UpdateDeploymentRequestInput
   ): Promise<PlatformDeploymentRequest> => {
     const deploymentRequestId = input.id as DeploymentRequestId;
-
     const deploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({
-        id: deploymentRequestId,
-      });
-
-    if (!deploymentRequest) {
-      logApp.error(
-        `Deployment request not found with id ${deploymentRequestId}`
-      );
-      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-    }
-
-    if (
-      input.actual_state &&
-      !isPlatformStateTransitionValid(
-        deploymentRequest.actual_state,
-        input.actual_state
-      )
-    ) {
-      logApp.error(
-        `Invalid deployment request status update from ${deploymentRequest.actual_state} to ${input.actual_state}`
-      );
-      throw new Error(
-        BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
-      );
-    }
-
-    const isActiveInputDataInvalid =
-      input.actual_state == DeploymentRequestPlatformState.Active &&
-      (!input.start_date || !input.end_date);
-    if (isActiveInputDataInvalid) {
-      logApp.error(
-        `Missing start or end date for active deployment request with id ${deploymentRequestId}`
-      );
-      throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
-    }
-
-    let newStatus = computeHubStatus(
-      deploymentRequest.hub_status,
+      await loadDeploymentRequestForUpdate(deploymentRequestId);
+    await checkStatusAndDataValidity(deploymentRequest, input);
+    const newStatus = resolveNextHubStatus(
+      deploymentRequest,
       input.actual_state
     );
-    // if no status is computed, it means it the transition is invalid.
-    // Let's just keep the same hub_status and log an error to investigate.
-    if (!newStatus) {
-      logApp.error('Invalid deployment request hub status update', {
-        deploymentRequest: deploymentRequest.id,
-        new_hub_status: newStatus,
-        previous_hub_status: deploymentRequest.hub_status,
-        actual_state: input.actual_state,
-      });
-      newStatus = deploymentRequest.hub_status;
-    }
 
-    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
-      {
-        platformIdentifier: deploymentRequest.platform_identifier,
-        region: deploymentRequest.region,
-      },
-      async () => {
-        const shouldUpdateSubscriptionDates =
-          input.start_date || input.end_date;
-        if (shouldUpdateSubscriptionDates) {
-          await updateSubscriptionBy(
-            { service_instance_id: deploymentRequest.service_instance_id },
-            {
-              start_date: input.start_date,
-              end_date: input.end_date,
-            }
-          );
-        }
-
-        const updateData: DeploymentRequestMutator = {
-          start_date: input.start_date,
-          end_date: input.end_date,
-          platform_id: input.platform_id,
-          failure_reason: input.failure_reason,
-          actual_state: input.actual_state,
-          ordering: input.ordering,
-          hub_status: newStatus,
-        };
-
-        await DeploymentRequestDomain.updateDeploymentRequestById(
-          deploymentRequestId,
-          updateData
-        );
-
-        if (newStatus === DeploymentRequestHubStatus.Active) {
-          await DeploymentRequestDomain.initialiseServiceGroup(
-            deploymentRequestId,
-            deploymentRequest.platform_identifier
-          );
-        }
-      }
-    );
+    await applyDeploymentRequestUpdateInQuotaTransaction({
+      deploymentRequest,
+      deploymentRequestId,
+      input,
+      newStatus,
+    });
 
     const updatedDeploymentRequest =
       await DeploymentRequestDomain.loadFullDeploymentRequestById(
@@ -354,68 +273,17 @@ export const DeploymentsApp = {
       deploymentRequest
     );
 
-    try {
-      if (
-        newStatus === DeploymentRequestHubStatus.Provisioning &&
-        newStatus !== deploymentRequest.hub_status
-      ) {
-        const [user] = await loadUser({
-          id: deploymentRequest.user_requester_id,
-        });
-
-        await sendMail({
-          to: user.email,
-          template: 'free_trial_provisioning',
-          params: {
-            firstName: formatName(user.first_name ?? ''),
-            platformIdentifier: deploymentRequest.platform_identifier,
-          },
-        });
-      }
-    } catch (error) {
-      logApp.error('Unable to send mail', {
-        error,
-        deploymentRequestId: deploymentRequest.id,
-      });
+    if (
+      newStatus === DeploymentRequestHubStatus.Provisioning &&
+      newStatus !== deploymentRequest.hub_status
+    ) {
+      await sendProvisioningPlatformEmail(deploymentRequest);
     }
-
-    try {
-      if (
-        newStatus === DeploymentRequestHubStatus.Active &&
-        newStatus !== deploymentRequest.hub_status
-      ) {
-        const [user] = await loadUser({
-          id: deploymentRequest.user_requester_id,
-        });
-
-        const serviceConfiguration =
-          await ServiceContractDomain.loadConfigurationByPlatform(
-            deploymentRequest.platform_id
-          );
-
-        const parsedConfig = JSON.parse(
-          JSON.stringify(serviceConfiguration.config)
-        );
-
-        await sendMail({
-          to: user.email,
-          template: 'free_trial_registered',
-          params: {
-            firstName: formatName(user.first_name ?? ''),
-            platformUrl: parsedConfig.platform_url,
-            platformIdentifier: deploymentRequest.platform_identifier,
-            globalServiceInstanceId: toGlobalId(
-              'ServiceInstance',
-              deploymentRequest.service_instance_id
-            ),
-          },
-        });
-      }
-    } catch (error) {
-      logApp.error('Unable to send mail after deployment request is active', {
-        error: error,
-        deploymentRequestId: deploymentRequest.id,
-      });
+    if (
+      newStatus === DeploymentRequestHubStatus.Active &&
+      newStatus !== deploymentRequest.hub_status
+    ) {
+      await sendActivePlatformEmail(deploymentRequest);
     }
 
     return updatedDeploymentRequest;
@@ -819,6 +687,190 @@ export const DeploymentsApp = {
         await CompetitorApp.isOrganizationBlacklisted(organization),
     };
   },
+};
+
+const loadDeploymentRequestForUpdate = async (
+  deploymentRequestId: DeploymentRequestId
+) => {
+  const deploymentRequest =
+    await DeploymentRequestDomain.loadDeploymentRequestBy({
+      id: deploymentRequestId,
+    });
+
+  if (!deploymentRequest) {
+    logApp.error(`Deployment request not found with id ${deploymentRequestId}`);
+    throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+  }
+
+  return deploymentRequest;
+};
+
+const checkStatusAndDataValidity = async (
+  deploymentRequest: DeploymentRequestModel,
+  input: UpdateDeploymentRequestInput
+) => {
+  if (
+    input.actual_state &&
+    !isPlatformStateTransitionValid(
+      deploymentRequest.actual_state,
+      input.actual_state
+    )
+  ) {
+    logApp.error(
+      `Invalid deployment request status update from ${deploymentRequest.actual_state} to ${input.actual_state}`
+    );
+    throw new Error(
+      BadRequestErrorCode.DeploymentRequestStatusUpdateNotAllowed
+    );
+  }
+
+  const isActiveInputDataInvalid =
+    input.actual_state == DeploymentRequestPlatformState.Active &&
+    (!input.start_date || !input.end_date);
+  if (isActiveInputDataInvalid) {
+    logApp.error(
+      `Missing start or end date for active deployment request with id ${deploymentRequest.id}`
+    );
+    throw new Error(BadRequestErrorCode.MissingStartOrEndDate);
+  }
+};
+
+const resolveNextHubStatus = (
+  deploymentRequest: DeploymentRequestModel,
+  actualState: UpdateDeploymentRequestInput['actual_state']
+) => {
+  const computedStatus = computeHubStatus(
+    deploymentRequest.hub_status,
+    actualState
+  );
+
+  // If hub status cannot be computed, keep previous status and log for investigation.
+  if (!computedStatus) {
+    logApp.error('Invalid deployment request hub status update', {
+      deploymentRequest: deploymentRequest.id,
+      new_hub_status: computedStatus,
+      previous_hub_status: deploymentRequest.hub_status,
+      actual_state: actualState,
+    });
+    return deploymentRequest.hub_status;
+  }
+
+  return computedStatus;
+};
+
+const applyDeploymentRequestUpdateInQuotaTransaction = async ({
+  deploymentRequest,
+  deploymentRequestId,
+  input,
+  newStatus,
+}: {
+  deploymentRequest: DeploymentRequestModel;
+  deploymentRequestId: DeploymentRequestId;
+  input: UpdateDeploymentRequestInput;
+  newStatus: DeploymentRequestHubStatus;
+}) => {
+  await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+    {
+      platformIdentifier: deploymentRequest.platform_identifier,
+      region: deploymentRequest.region,
+    },
+    async () => {
+      const shouldUpdateSubscriptionDates = input.start_date || input.end_date;
+      if (shouldUpdateSubscriptionDates) {
+        await updateSubscriptionBy(
+          { service_instance_id: deploymentRequest.service_instance_id },
+          {
+            start_date: input.start_date,
+            end_date: input.end_date,
+          }
+        );
+      }
+
+      const updateData: DeploymentRequestMutator = {
+        start_date: input.start_date,
+        end_date: input.end_date,
+        platform_id: input.platform_id,
+        failure_reason: input.failure_reason,
+        actual_state: input.actual_state,
+        ordering: input.ordering,
+        hub_status: newStatus,
+      };
+
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequestId,
+        updateData
+      );
+
+      if (newStatus === DeploymentRequestHubStatus.Active) {
+        await DeploymentRequestDomain.initialiseServiceGroup(
+          deploymentRequestId,
+          deploymentRequest.platform_identifier
+        );
+      }
+    }
+  );
+};
+
+const sendProvisioningPlatformEmail = async (
+  deploymentRequest: DeploymentRequestModel
+) => {
+  try {
+    const [user] = await loadUser({
+      id: deploymentRequest.user_requester_id,
+    });
+
+    await sendMail({
+      to: user.email,
+      template: 'free_trial_provisioning',
+      params: {
+        firstName: formatName(user.first_name ?? ''),
+        platformIdentifier: deploymentRequest.platform_identifier,
+      },
+    });
+  } catch (error) {
+    logApp.error('Unable to send mail', {
+      error,
+      deploymentRequestId: deploymentRequest.id,
+    });
+  }
+};
+
+const sendActivePlatformEmail = async (
+  deploymentRequest: DeploymentRequestModel
+) => {
+  try {
+    const [user] = await loadUser({
+      id: deploymentRequest.user_requester_id,
+    });
+
+    const serviceConfiguration =
+      await ServiceContractDomain.loadConfigurationByPlatform(
+        deploymentRequest.platform_id
+      );
+
+    const parsedConfig = JSON.parse(
+      JSON.stringify(serviceConfiguration.config)
+    );
+
+    await sendMail({
+      to: user.email,
+      template: 'free_trial_registered',
+      params: {
+        firstName: formatName(user.first_name ?? ''),
+        platformUrl: parsedConfig.platform_url,
+        platformIdentifier: deploymentRequest.platform_identifier,
+        globalServiceInstanceId: toGlobalId(
+          'ServiceInstance',
+          deploymentRequest.service_instance_id
+        ),
+      },
+    });
+  } catch (error) {
+    logApp.error('Unable to send mail after deployment request is active', {
+      error: error,
+      deploymentRequestId: deploymentRequest.id,
+    });
+  }
 };
 
 const sendUpdateDeploymentTelemetryEvent = async (

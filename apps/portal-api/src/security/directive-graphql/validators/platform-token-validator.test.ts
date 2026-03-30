@@ -2,6 +2,7 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { ServiceContractDomain } from '../../../modules/services/contract/service-configuration.domain';
 import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
@@ -143,8 +144,7 @@ describe('Platform Token Validation', () => {
         'loadDeploymentRequestBy'
       ).mockResolvedValue({
         platform_id: platformId,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as DeploymentRequest);
 
       const req: express.Request = {
         headers: {
@@ -165,7 +165,7 @@ describe('Platform Token Validation', () => {
       vi.spyOn(
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
-      ).mockResolvedValue(null);
+      ).mockResolvedValue(undefined);
 
       const req: express.Request = {
         headers: {
@@ -188,8 +188,30 @@ describe('Platform Token Validation', () => {
         'loadDeploymentRequestBy'
       ).mockResolvedValue({
         platform_id: uuidv4(),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as DeploymentRequest);
+
+      const req: express.Request = {
+        headers: {
+          [PLATFORM_TOKEN_HEADER]: platformToken,
+          [PLATFORM_ID_HEADER]: platformId,
+        },
+      } as unknown as express.Request;
+
+      const result = await validateAndGetRequestedPlatformToken(req);
+
+      expect(result).toBe(null);
+    });
+
+    it('should return null when deployment request has no platform_id yet', async () => {
+      const platformId = uuidv4();
+      const platformToken = uuidv4();
+
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue({
+        platform_id: null,
+      } as DeploymentRequest);
 
       const req: express.Request = {
         headers: {
