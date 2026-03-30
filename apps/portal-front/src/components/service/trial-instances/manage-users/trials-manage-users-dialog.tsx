@@ -9,15 +9,17 @@ interface Props {
   serviceInstanceId: string;
   organizationId?: string;
   trigger?: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
 export const TrialsManageUsersDialog: React.FC<Props> = ({
   serviceInstanceId,
   organizationId,
   trigger,
+  defaultOpen,
 }) => {
   const t = useTranslations();
-  const [openSheet, setOpenSheet] = useState(false);
+  const [openSheet, setOpenSheet] = useState(defaultOpen ?? false);
 
   return (
     <SheetWithPreventingDialog

@@ -1,8 +1,8 @@
 import cron, { ScheduledTask } from 'node-cron';
 import { requestContext } from './context/request.context';
 import { DeploymentsApp } from './modules/services/deployments/deployments.app';
-import { EpicApp } from './modules/services/xtm-suite-roadmap/epic.app';
 import { UsersOrganizationApp } from './modules/users/users.organization.app';
+import { EpicApp } from './modules/xtm-suite-roadmap/epic.app';
 import { SYSTEM_USER_CONTEXT } from './portal.const';
 import { logApp } from './utils/app-logger.util';
 
