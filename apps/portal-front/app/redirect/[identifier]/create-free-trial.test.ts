@@ -14,13 +14,13 @@ vi.mock('@/relay/serverPortalApiFetch', () => ({
 }));
 
 const BASE_URL = 'http://localhost:3002';
-const REQUEST_URL = `${BASE_URL}/redirect/create-free-trial`;
+const REQUEST_URL = `/redirect/create-free-trial`;
 const EXPECTED_LOGIN_REDIRECT_URL = `${BASE_URL}/login?redirect=${btoa(REQUEST_URL)}`;
 
 const OPENCTI_FREE_TRIAL_URL = `${BASE_URL}/app/service/opencti-free-trial?source=${DeploymentRequestSourceEnum.OPENCTI_DEMO}`;
 const OPENAEV_FREE_TRIAL_URL = `${BASE_URL}/app/service/openaev-free-trial?source=${DeploymentRequestSourceEnum.OPENAEV_DEMO}`;
 
-const makeRequest = () => new NextRequest(REQUEST_URL);
+const makeRequest = () => new NextRequest(`${BASE_URL}${REQUEST_URL}`);
 
 type LoadMeUserResult = Awaited<ReturnType<typeof loadMeUser>>;
 
