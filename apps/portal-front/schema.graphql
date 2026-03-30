@@ -130,7 +130,6 @@ type Mutation {
   deleteUserService(input: UserServiceDeleteInput!): UserService
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
-  mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: ID!): User

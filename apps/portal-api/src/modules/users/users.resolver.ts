@@ -1,6 +1,5 @@
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
-  MergeEvent,
   Resolvers,
   User,
   UserPendingSubscription,
@@ -86,12 +85,6 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    // Api for testing merge event behavior
-    mergeTest: async (_, { from, target }) => {
-      const test: MergeEvent = { id: 'merge', from, target };
-      await dispatch('User', 'merge', test);
-      return from;
-    },
     // Management
     addUser: async (_, { input }) => {
       try {
