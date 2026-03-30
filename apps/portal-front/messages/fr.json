@@ -121,12 +121,13 @@
   "Epic": {
     "XTMRoadmap": "Roadmap Suite XTM",
     "AllProducts": "Tous les produits",
+    "ShowFinished": "Afficher les épics terminés",
     "Timeline": {
       "draft": "Brouillons",
       "now": "Maintenant",
       "next": "Après",
       "under_consideration": "En considération",
-      "finished": "Fini"
+      "finished": "Terminé"
     },
     "Form": {
       "Epic": "Epic",
