@@ -164,30 +164,31 @@
                       style="margin: 0; line-height: 24px; margin-bottom: 24px">
                       Hi {{firstName}},<br />
                       <br />
-                      Welcome to Filigran! Let's get you started with your free
-                      trial.<br />
+                      You’ve been invited to join a {{platformIdentifier}} free
+                      trial by {{adminEmail}}.<br />
                       <br />
-                      {{#if (eq platformIdentifier "OpenAEV")}} For the next 30
-                      days, you’ll have full access to OpenAEV Enterprise
-                      Edition, our leading exposure validation platform. Explore
-                      all key functionalities to simulate offensive attacks, run
-                      realistic tabletop exercises, evaluate your defenses, and
-                      ultimately improve your security posture. <br />
-                      {{else}} For the next 30 days, you'll have full access to
-                      OpenCTI Enterprise Edition, our leading Threat
+                      <strong>
+                        Log in to your free trial:
+                        <a href="{{ platformUrl }}"> {{ platformUrl }}</a>
+                      </strong>
+                      <br />
+                      <br />
+                      {{#if (eq platformIdentifier "OpenAEV")}} Until
+                      {{trialEndDate}}, you’ll have full access to OpenAEV
+                      Enterprise Edition, our leading exposure validation
+                      platform. Explore all key functionalities to simulate
+                      offensive attacks, run realistic tabletop exercises,
+                      evaluate your defenses, and ultimately improve your
+                      security posture. <br />
+                      {{else}} Until {{trialEndDate}}, you'll have full access
+                      to OpenCTI Enterprise Edition, our leading Threat
                       Intelligence Platform. Explore all key functionality:
                       gather and enrich intelligence, visualize relationships
                       with powerful tools, run investigations, and try our
                       extensive integrations.<br />
                       {{/if}}
                       <br />
-                      <strong>
-                        Log in to your free trial:
-                        <a href="{{ platformUrl }}">
-                          {{ platformUrl }}</a
-                        > </strong
-                      ><br />
-                      <br />
+
                       If you'd like a walkthrough or have questions, simply
                       reply to this email or use the 'Contact Us' option in the
                       platform—we're here to help.<br />
@@ -206,55 +207,11 @@
                       >
                       {{/if}}
                     </p>
-                    <p>
-                      <strong
-                        >If you want to add a user to your
-                        {{platformIdentifier}} trial:</strong
-                      ><br />
-                      <br />
-                      1. Ensure the user has an XTM Hub account. If not, ask
-                      them to create one here:
-                      <a href="{{ base_url_front }}">XTM Hub</a>. They must log
-                      in once so they can be added to your organization.<br />
-                      2. Confirm the user appears on the
-                      <a href="{{ base_url_front }}/app/manage/user"
-                        >Users page</a
-                      >, or approve their request.<br />
-                      3. Go to "Manage Users" and assign the appropriate role:
-                      {{#if (eq platformIdentifier 'OpenCTI')}}
-                      <a
-                        href="{{ base_url_front }}/app/service/opencti_registration/{{globalServiceInstanceId}}?openForm=true"
-                        >Manage Users</a
-                      >. {{else}}
-                      <a
-                        href="{{ base_url_front }}/app/service/openaev_registration/{{globalServiceInstanceId}}?openForm=true"
-                        >Manage Users</a
-                      >. {{/if}}
-
-                      <br />
-                      The user will receive an email invitation and will then be
-                      able to access the trial.<br />
-                      <br />
-                      If you need more information please refer to the {{#if (eq
-                      platformIdentifier 'OpenCTI')}}
-                      <a
-                        href="https://docs.hub.filigran.io/latest/user/opencti-freetrials/#manage-users-on-your-opencti-free-trial"
-                        >documentation</a
-                      >. {{else}}
-                      <a
-                        href="https://docs.hub.filigran.io/latest/user/openaev-freetrials/#manage-users-on-your-openaev-free-trial"
-                        >documentation</a
-                      >. {{/if}}
-                    </p>
 
                     <p style="margin: 0; padding-top: 16px">
                       Best regards, <br />
                       <br />
                       <strong>The Filigran Team</strong>
-                    </p>
-                    <p>
-                      Note: This trial uses public Filigran API keys, but you
-                      can change them based on your requirements.
                     </p>
                     <div
                       role="separator"
