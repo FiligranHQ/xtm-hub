@@ -8927,7 +8927,7 @@ __metadata:
     graphql-sse: "npm:2.6.0"
     graphql-subscriptions: "npm:2.0.0"
     graphql-upload: "npm:17.0.0"
-    handlebars: "npm:4.7.8"
+    handlebars: "npm:4.7.9"
     husky: "npm:9.1.7"
     jwt-decode: "npm:4.0.0"
     kanel: "npm:3.16.1"
@@ -8935,7 +8935,7 @@ __metadata:
     lint-staged: "npm:15.5.2"
     migrate: "npm:^2.1.0"
     node-cron: "npm:4.2.1"
-    nodemailer: "npm:7.0.11"
+    nodemailer: "npm:8.0.4"
     openid-client: "npm:5.7.1"
     passport: "npm:0.7.0"
     pg: "npm:8.20.0"
@@ -13431,9 +13431,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"handlebars@npm:4.7.8":
-  version: 4.7.8
-  resolution: "handlebars@npm:4.7.8"
+"handlebars@npm:4.7.9":
+  version: 4.7.9
+  resolution: "handlebars@npm:4.7.9"
   dependencies:
     minimist: "npm:^1.2.5"
     neo-async: "npm:^2.6.2"
@@ -13445,7 +13445,7 @@ __metadata:
       optional: true
   bin:
     handlebars: bin/handlebars
-  checksum: 10/bd528f4dd150adf67f3f857118ef0fa43ff79a153b1d943fa0a770f2599e38b25a7a0dbac1a3611a4ec86970fd2325a81310fb788b5c892308c9f8743bd02e11
+  checksum: 10/e755433d652e8a15fc02f83d7478e652359e7a4d354c4328818853ed4f8a39d4a09e1d22dad3c7213c5240864a65b3c840970b8b181745575dd957dd258f2b8d
   languageName: node
   linkType: hard
 
@@ -16720,7 +16720,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:7.0.11, nodemailer@npm:^7.0.6":
+"nodemailer@npm:8.0.4":
+  version: 8.0.4
+  resolution: "nodemailer@npm:8.0.4"
+  checksum: 10/b396d52b1faf3ee73a6eca1b7febdb8ea16df50d6c41efbf0f1e500e6a42a73cea5e0db9e52d64b34f509ac3dbf4c10fe828de6cb3f66899b493be38b8abe926
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^7.0.6":
   version: 7.0.11
   resolution: "nodemailer@npm:7.0.11"
   checksum: 10/2ad4dd56a4caf84a83aa6f4378ded26d5ef8a644ca3be09c3b4fb2255d861369e620f29be6c3c97148ac4a50aa5fdff6240b9d60805362bd99ca15f2ea62e8a2
