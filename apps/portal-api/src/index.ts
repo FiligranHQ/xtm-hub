@@ -67,7 +67,7 @@ const sessionMiddleware = expressSession({
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: portalConfig.environment !== 'development',
     maxAge: SESSION_MAX_AGE,
   },
 });
