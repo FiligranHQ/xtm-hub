@@ -46,7 +46,7 @@ const connectorSchema = z.object({
   integration_type: z.string().min(1, 'Required'),
   container_image: z.string().min(1, 'Required'),
   source_code: z.string().min(1, 'Required'),
-  subscription_link: z.url().or(z.literal('')).nullish(),
+  subscription_link: z.string().min(1, 'Required'),
   integration_subtype: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
