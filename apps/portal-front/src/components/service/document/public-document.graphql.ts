@@ -78,6 +78,7 @@ export const publicDocumentItem = graphql`
       subscription_link
       manager_supported
       playbook_supported
+      minimum_deployable_version
     }
 
     ... on OpenAEVScenario {
