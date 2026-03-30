@@ -8,7 +8,7 @@ import {
   Connector,
   INTEGRATION_SERVICE_INSTANCE_ID,
 } from '../services/document/opencti/integrations/integrations.model';
-import { useCaseDomain } from '../settings/useCase/use-case.domain';
+import { useCaseDomain } from '../use-case/use-case.domain';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';

@@ -1,13 +1,13 @@
-import { db, paginate } from '../../../../knexfile';
+import { db, paginate } from '../../../knexfile';
 import {
   QueryUseCasesArgs,
   UseCaseConnection,
-} from '../../../__generated__/resolvers-types';
+} from '../../__generated__/resolvers-types';
 import UseCase, {
   UseCaseId,
   UseCaseInitializer,
   UseCaseMutator,
-} from '../../../model/kanel/public/UseCase';
+} from '../../model/kanel/public/UseCase';
 
 export const useCaseDomain = {
   insertUseCase: async (input: UseCaseInitializer): Promise<UseCase> => {
