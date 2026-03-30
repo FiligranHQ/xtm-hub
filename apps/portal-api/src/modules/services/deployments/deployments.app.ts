@@ -404,6 +404,10 @@ export const DeploymentsApp = {
             firstName: formatName(user.first_name ?? ''),
             platformUrl: parsedConfig.platform_url,
             platformIdentifier: deploymentRequest.platform_identifier,
+            globalServiceInstanceId: toGlobalId(
+              'ServiceInstance',
+              deploymentRequest.service_instance_id
+            ),
           },
         });
       }

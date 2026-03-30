@@ -34,6 +34,9 @@ export const TEST_ORGANIZATIONS = {
       },
       SIMPLE2: {
         ID: '77b4b845-4ab4-4df8-8e12-0651da813ebb' as UserId,
+        EMAIL: 'access-subscription@filigran.io',
+        FIRST_NAME: 'access',
+        LAST_NAME: 'subscription',
       },
     },
   },
