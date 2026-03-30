@@ -135,6 +135,7 @@ export type Connector = Document & Integration & Node & {
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   manager_supported: Scalars['Boolean']['output'];
+  minimum_deployable_version?: Maybe<Scalars['String']['output']>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   playbook_supported: Scalars['Boolean']['output'];
@@ -526,6 +527,7 @@ export enum DocumentMetadataKeyCode {
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   ManagerSupported = 'manager_supported',
+  MinimumDeployableVersion = 'minimum_deployable_version',
   PlaybookSupported = 'playbook_supported',
   ProductVersion = 'product_version',
   SourceCode = 'source_code',
@@ -2766,6 +2768,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  minimum_deployable_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   playbook_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
