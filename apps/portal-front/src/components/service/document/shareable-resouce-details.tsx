@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 
 import { Avatar } from '@filigran/ui/clients';
 
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { ShareableResourceDetailsLink } from '@/components/service/document/shareable-resource-details-link';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/shareable-resource-basic-information';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/shareable-resource-detail-item';
@@ -12,7 +13,11 @@ import { ShareableResourceDetailMetadataItem } from '@/components/service/docume
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
-import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
+import { platformIdentifierMappedByShareableResourceType } from '@/utils/services';
+import {
+  isIntegrationItem,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -44,6 +49,11 @@ const ShareableResourceDetails: React.FunctionComponent<
   ShareableResourceDetailsProps
 > = ({ documentData, downloadNumber }) => {
   const t = useTranslations();
+  const platformIdentifier =
+    platformIdentifierMappedByShareableResourceType[
+      documentData.type as ShareableResourceType
+    ];
+  const platformName = PlatformMetadataMapping[platformIdentifier].name;
   const isIntegration = isIntegrationItem(documentData);
   const integrationSubTypeMetadata = useMemo(() => {
     if (!isIntegration) {
@@ -139,6 +149,7 @@ const ShareableResourceDetails: React.FunctionComponent<
         documentData={documentData}
         metadataKey={'product_version'}
         translationKey="ProductVersion"
+        translationMetadata={{ platform: platformName }}
         variant="text"
       />
       {documentationUrl && (

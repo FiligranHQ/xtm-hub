@@ -17,6 +17,7 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import React, { useContext, useState } from 'react';
 import { useFragment } from 'react-relay';
 
@@ -28,6 +29,8 @@ export const RegistrationDetails: React.FC<Props> = ({
   registeredPlatform,
 }) => {
   const t = useTranslations();
+  const searchParams = useSearchParams();
+  const openForm = searchParams.get('openForm') === 'true';
 
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
   const [openCancelSheet, setOpenCancelSheet] = useState(false);
@@ -163,6 +166,7 @@ export const RegistrationDetails: React.FC<Props> = ({
               <TrialsManageUsersDialog
                 serviceInstanceId={serviceInstanceId}
                 organizationId={platform.subscription?.organization.id}
+                defaultOpen={openForm}
               />
             </GuardCapacityComponent>
           )}
