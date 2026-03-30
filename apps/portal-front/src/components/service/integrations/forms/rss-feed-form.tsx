@@ -28,6 +28,8 @@ const rssFeedFormSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
+  datasheet_url: z.url().or(z.literal('')).nullish(),
+  demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
   logo: z.custom<FileList>(optionalFileListCheck).optional(),
   images: z.custom<FileList>(optionalFileListCheck),
@@ -102,6 +104,8 @@ export const RssFeedForm = ({ handleSubmit, document }: RssFeedFormProps) => {
     uploader_organization_id,
     uploader_id,
     integration_type,
+    datasheet_url,
+    demo_url,
     imagesField,
     images,
     imagesToDelete,
@@ -162,6 +166,8 @@ export const RssFeedForm = ({ handleSubmit, document }: RssFeedFormProps) => {
           slug,
           name,
           integration_type,
+          datasheet_url,
+          demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
       </AutoForm>

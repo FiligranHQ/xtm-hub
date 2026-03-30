@@ -31,7 +31,7 @@ const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
   badges = [],
   className,
 }) => {
-  const [visibleTags, setVisibleTags] = useState<number>(badges?.length);
+  const [visibleTags, setVisibleTags] = useState<number>(badges?.length ?? 0);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const containerRef = useCallback(

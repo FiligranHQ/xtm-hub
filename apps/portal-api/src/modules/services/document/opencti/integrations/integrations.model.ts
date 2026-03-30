@@ -31,6 +31,7 @@ export type TaxiiFeed = Integration & {
   integration_subtype: string;
 };
 export type RssFeed = Integration & {
+  feed_url: string;
   integration_subtype: string;
 };
 export type Stream = Integration & {
@@ -63,7 +64,9 @@ export type TaxiiFeedMetadata = MetadataArray<
   keyof Omit<TaxiiFeed, keyof Document>
 >;
 
-export type RssFeedMetadata = MetadataArray<keyof Omit<RssFeed, 'use_cases'>>;
+export type RssFeedMetadata = MetadataArray<
+  keyof Omit<RssFeed, keyof Document>
+>;
 
 export type StreamFeedMetadata = MetadataArray<
   keyof Omit<Stream, keyof Document>
@@ -97,9 +100,13 @@ export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
   INTEGRATION_TAXII_FEED_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_RSS_FEED_METADATA: RssFeedMetadata = [
-  { key: 'integration_type' },
-  { key: 'integration_subtype' },
+  { key: DocumentMetadataKeyCode.FeedUrl },
+  { key: DocumentMetadataKeyCode.IntegrationType },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
+  { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
+
 export const INTEGRATION_RSS_FEED_METADATA_KEYS =
   INTEGRATION_RSS_FEED_METADATA.map(({ key }) => key);
 

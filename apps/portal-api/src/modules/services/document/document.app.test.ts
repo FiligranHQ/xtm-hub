@@ -271,7 +271,7 @@ describe('DocumentApp', () => {
       await expect(call).rejects.toThrow(ErrorCode.DocumentMissingMetadata);
     });
 
-    it('should throw when servide Definition is not found', async () => {
+    it('should throw when serviceDefinition is not found', async () => {
       // Given
       vi.spyOn(
         ServiceDefinitionDomain,

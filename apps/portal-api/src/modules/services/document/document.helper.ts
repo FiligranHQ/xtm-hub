@@ -153,6 +153,7 @@ export const DocumentHelper = {
       [
         IntegrationType.CsvFeed,
         IntegrationType.TaxiiFeed,
+        IntegrationType.RssFeed,
         IntegrationType.Stream,
       ].includes(integrationType.value as IntegrationType);
     if (!hasFeedDocumentType) {
