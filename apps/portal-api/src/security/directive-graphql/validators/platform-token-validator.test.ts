@@ -203,8 +203,8 @@ describe('Platform Token Validation', () => {
     });
 
     it('should return null when deployment request has no platform_id yet', async () => {
-      const attackerPlatformId = uuidv4();
-      const attackerToken = uuidv4();
+      const platformId = uuidv4();
+      const platformToken = uuidv4();
 
       vi.spyOn(
         DeploymentRequestDomain,
@@ -215,8 +215,8 @@ describe('Platform Token Validation', () => {
 
       const req: express.Request = {
         headers: {
-          [PLATFORM_TOKEN_HEADER]: attackerToken,
-          [PLATFORM_ID_HEADER]: attackerPlatformId,
+          [PLATFORM_TOKEN_HEADER]: platformToken,
+          [PLATFORM_ID_HEADER]: platformId,
         },
       } as unknown as express.Request;
 
