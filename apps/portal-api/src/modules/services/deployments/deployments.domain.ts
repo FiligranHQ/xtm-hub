@@ -35,7 +35,9 @@ export const DeploymentRequestDomain = {
     return createdDeploymentRequest;
   },
 
-  loadDeploymentRequestBy: async (conditions: DeploymentRequestMutator) => {
+  loadDeploymentRequestBy: async (
+    conditions: DeploymentRequestMutator
+  ): Promise<DeploymentRequest | undefined> => {
     return db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .select('*')
