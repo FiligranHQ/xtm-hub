@@ -8,6 +8,7 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
+import { requestContext } from '../../context/request.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import Subscription, {
   SubscriptionId,
@@ -135,6 +136,13 @@ describe('User profile app', () => {
       await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });
     });
     it('Should update subscription', async () => {
+      requestContext.set({
+        user: {
+          ...contextBypassUser.user,
+          id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID as UserId,
+        },
+        portalContext: contextBypassUser,
+      });
       // Cast to unknown because we take the personal space of these users
       const subsFromBefore = (await db<Subscription>('Subscription')
         .where({
@@ -169,6 +177,19 @@ describe('User profile app', () => {
       expect(subsToBefore.length).toStrictEqual(0);
       expect(subsFromAfter.length).toStrictEqual(0);
       expect(subsToAfter.length).toStrictEqual(1);
+    });
+
+    it('Should reject transfer if caller is not the intended recipient', async () => {
+      requestContext.set({
+        user: contextBypassUser.user,
+        portalContext: contextBypassUser,
+      });
+
+      await expect(
+        usersProfileApp.transferPersonalSpace(
+          mockTransferRequestData[0]?.id as UserTransferRequestId
+        )
+      ).rejects.toThrow();
     });
 
     it('Should throw error if no request found', async () => {
