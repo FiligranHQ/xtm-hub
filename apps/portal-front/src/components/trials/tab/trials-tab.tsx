@@ -369,16 +369,32 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 const reason = row.original.cancellation_reason;
                 if (!reason) return <span>-</span>;
+                const otherLabel = t(
+                  'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOther'
+                );
+                let displayReason: string;
+                if (reason.startsWith('Other:')) {
+                  const freeText = reason.slice('Other:'.length).trim();
+                  displayReason = freeText
+                    ? `${otherLabel}: ${freeText}`
+                    : otherLabel;
+                } else if (reason.toLowerCase() === 'other') {
+                  displayReason = otherLabel;
+                } else {
+                  displayReason = t(
+                    `Service.Trials.CancellationReason.${reason}`
+                  );
+                }
                 return (
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="truncate block cursor-help">
-                          {t(`Service.Trials.CancellationReason.${reason}`)}
+                          {displayReason}
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="bg-gray-50 max-w-md">
-                        {t(`Service.Trials.CancellationReason.${reason}`)}
+                        {displayReason}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
