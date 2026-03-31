@@ -14,6 +14,10 @@ import Document, {
   DocumentId,
   DocumentMutator,
 } from '../src/model/kanel/public/Document';
+import ServiceCapability, {
+  ServiceCapabilityId,
+  ServiceCapabilityMutator,
+} from '../src/model/kanel/public/ServiceCapability';
 import ServiceConfiguration, {
   ServiceConfigurationMutator,
 } from '../src/model/kanel/public/ServiceConfiguration';
@@ -158,6 +162,23 @@ export const TestHelper = {
     },
     delete: async (field: ServiceDefinitionMutator) => {
       await db<ServiceDefinition>('ServiceDefinition').where(field).del();
+    },
+  },
+  serviceCapability: {
+    create: async (
+      data?: ServiceCapabilityMutator
+    ): Promise<ServiceCapability> => {
+      const [serviceCapability] = await db<ServiceCapability>(
+        'Service_Capability'
+      )
+        .insert({
+          id: uuidv4() as ServiceCapabilityId,
+          name: 'RANDOM SERVICE CAPABILITY',
+          description: 'This is a short description',
+          ...data,
+        })
+        .returning('*');
+      return serviceCapability;
     },
   },
   serviceConfiguration: {
