@@ -6,7 +6,10 @@ import {
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
 } from '../src/__generated__/resolvers-types';
-import Document, { DocumentId } from '../src/model/kanel/public/Document';
+import Document, {
+  DocumentId,
+  DocumentMutator,
+} from '../src/model/kanel/public/Document';
 import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
 import { UserId } from '../src/model/kanel/public/User';
 import { DocumentApp } from '../src/modules/services/document/document.app';
@@ -78,6 +81,9 @@ export const TestHelper = {
         .where('id', '=', documentId)
         .select('*')
         .first();
+    },
+    delete: async (field: DocumentMutator) => {
+      await db<Document>('Document').where(field).del();
     },
   },
 };

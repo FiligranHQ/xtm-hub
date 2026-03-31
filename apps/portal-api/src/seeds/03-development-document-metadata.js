@@ -48,6 +48,21 @@ export async function seed(knex) {
         value: 'https://test.fr',
       },
       {
+        document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
+        key: 'integration_type',
+        value: 'rss_feed',
+      },
+      {
+        document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
+        key: 'integration_subtype',
+        value: 'NATIVE',
+      },
+      {
+        document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
+        key: 'feed_url',
+        value: 'https://filigran.io',
+      },
+      {
         document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
         key: 'integration_type',
         value: 'stream',
