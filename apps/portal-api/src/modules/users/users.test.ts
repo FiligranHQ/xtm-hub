@@ -12,7 +12,7 @@ import {
   loadOrganizationBy,
 } from '../organizations/organizations.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
-import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
+import { TelemetrySource } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
@@ -94,7 +94,7 @@ describe('User helpers', async () => {
         organization_id: expect.any(String),
         organization_name: newOrganization.name,
         organization_type: 'Professional',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: newUser.id,
         domains: ['test-new-organization.fr'],
       });

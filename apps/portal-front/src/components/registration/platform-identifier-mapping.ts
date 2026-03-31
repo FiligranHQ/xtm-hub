@@ -1,5 +1,6 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 
 export interface PlatformMetadata {
@@ -45,4 +46,12 @@ export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
     PlatformIdentifierEnum.OPENCTI,
   [ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION]:
     PlatformIdentifierEnum.OPENAEV,
+};
+
+export const serviceInstanceTagByPlatformIdentifier: Record<
+  PlatformIdentifierEnum,
+  ServiceInstanceTagEnum
+> = {
+  [PlatformIdentifierEnum.OPENCTI]: ServiceInstanceTagEnum.OPENCTI,
+  [PlatformIdentifierEnum.OPENAEV]: ServiceInstanceTagEnum.OPENAEV,
 };

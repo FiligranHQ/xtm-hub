@@ -1,7 +1,7 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../knexfile';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { db } from '../../../knexfile';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   EpicOrdering,
   EpicType,
@@ -9,15 +9,15 @@ import {
   OrderingMode,
   ServiceDefinitionIdentifier,
   Timeline,
-} from '../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../model/kanel/public/Document';
-import Epic, { EpicId } from '../../../model/kanel/public/Epic';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { MinIOClient } from '../../../thirdparty/minio/client';
-import { DocumentApp } from '../document/document.app';
-import * as DocumentUploadsHelper from '../document/document.uploads.helper';
-import { DocumentDomain } from '../document/domain/document.domain';
-import * as ServiceInstanceDomain from '../service-instance.domain';
+} from '../../__generated__/resolvers-types';
+import Document, { DocumentId } from '../../model/kanel/public/Document';
+import Epic, { EpicId } from '../../model/kanel/public/Epic';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { MinIOClient } from '../../thirdparty/minio/client';
+import { DocumentApp } from '../services/document/document.app';
+import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
+import { DocumentDomain } from '../services/document/domain/document.domain';
+import * as ServiceInstanceDomain from '../services/service-instance.domain';
 import { EpicApp } from './epic.app';
 import { EpicDomain } from './epic.domain';
 

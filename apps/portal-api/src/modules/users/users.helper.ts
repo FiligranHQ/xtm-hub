@@ -492,3 +492,11 @@ const updateUserCapabilities = async ({
   const userMapped = mapUserToGraphqlUser(user);
   return { user, userMapped };
 };
+
+export const updateAndDispatchUser = async (userId: UserId) => {
+  const user = await loadUserDetails({ 'User.id': userId });
+  updateUserSession(user);
+  const mappedUser = mapUserToGraphqlUser(user);
+  await dispatch('User', 'edit', mappedUser);
+  return mappedUser;
+};

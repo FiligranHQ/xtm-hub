@@ -554,7 +554,7 @@ describe('Document domain', () => {
 
   describe('loadSeoDocumentsByServiceSlug', () => {
     const TEST_SERVICE_SLUG = 'opencti-integrations';
-    const TEST_METADATA_KEY = 'seo_meta';
+    const TEST_METADATA_KEY = DocumentMetadataKeyCode.FeedUrl;
     const TEST_METADATA_VALUE = 'meta_value';
 
     let parentDoc: Document;
@@ -703,6 +703,74 @@ describe('Document domain', () => {
       );
       expect(Array.isArray(docs)).toBe(true);
       expect(docs.length).toBe(0);
+    });
+  });
+
+  describe('loadDocumentsByMetadata', () => {
+    let doc1: Document;
+    let doc2: Document;
+    let doc3: Document;
+    const TEST_KEY = DocumentMetadataKeyCode.ProductVersion;
+    const TEST_VALUE = 'test_value';
+    const OTHER_VALUE = 'other_value';
+
+    beforeEach(async () => {
+      await db<Document>('Document').delete();
+      await db('Document_Metadata').delete();
+      doc1 = await TestHelper.document.create({});
+      doc2 = await TestHelper.document.create({ slug: 'doc2-slug' });
+      doc3 = await TestHelper.document.create({ slug: 'doc3-slug' });
+      await db('Document_Metadata').insert([
+        { document_id: doc1.id, key: TEST_KEY, value: TEST_VALUE },
+        { document_id: doc2.id, key: TEST_KEY, value: OTHER_VALUE },
+      ]);
+    });
+
+    it('should return documents matching the metadata key and value', async () => {
+      const docs = await DocumentDomain.loadDocumentsByMetadata(
+        TEST_KEY,
+        TEST_VALUE
+      );
+      expect(Array.isArray(docs)).toBe(true);
+      expect(docs.length).toBe(1);
+      expect(docs[0]!.id).toBe(doc1.id);
+    });
+
+    it('should return multiple documents if multiple match', async () => {
+      await db('Document_Metadata').insert({
+        document_id: doc3.id,
+        key: TEST_KEY,
+        value: TEST_VALUE,
+      });
+      const docs = await DocumentDomain.loadDocumentsByMetadata(
+        TEST_KEY,
+        TEST_VALUE
+      );
+      expect(docs.length).toBe(2);
+      const ids = docs.map((d) => d.id);
+      expect(ids).toContain(doc1.id);
+      expect(ids).toContain(doc3.id);
+    });
+
+    it('should return empty array if no documents match', async () => {
+      const docs = await DocumentDomain.loadDocumentsByMetadata(
+        TEST_KEY,
+        'nonexistent'
+      );
+      expect(Array.isArray(docs)).toBe(true);
+      expect(docs.length).toBe(0);
+    });
+
+    it('should include requested metadata fields', async () => {
+      const docs = await DocumentDomain.loadDocumentsByMetadata(
+        TEST_KEY,
+        TEST_VALUE,
+        [TEST_KEY]
+      );
+      expect(docs.length).toBe(1);
+      expect((docs[0] as unknown as { [TEST_KEY]: string })[TEST_KEY]).toBe(
+        TEST_VALUE
+      );
     });
   });
 });

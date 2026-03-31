@@ -76,10 +76,9 @@ type Query {
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
-  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!): EpicConnection
   settings: Settings!
-  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   subscriptionById(subscription_id: ID): SubscriptionModel
+  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
@@ -88,6 +87,7 @@ type Query {
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
+  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!): EpicConnection
   node(id: ID!): Node
 }
 
@@ -117,23 +117,19 @@ type Mutation {
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
-  createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
-  updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
-  deleteEpic(id: ID!): Epic!
-  addUseCase(input: AddUseCaseInput!): UseCase!
-  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
-  deleteUseCase(id: ID!): UseCase!
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
+  addUseCase(input: AddUseCaseInput!): UseCase!
+  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
+  deleteUseCase(id: ID!): UseCase!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
-  mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
@@ -142,12 +138,16 @@ type Mutation {
   removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
   removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
   editMeUser(input: EditMeUserInput!): User!
+  uploadUserPicture(document: Upload!): User!
   resetPassword: Success!
   requestTransferPersonalSpace(new_email: String): Success!
   transferPersonalSpace(requestId: ID!): Success!
   login(email: String!, password: String): User
   logout: ID!
   contactUs(message: String, platformId: ID, platformIdentifier: PlatformIdentifier): Success!
+  createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
+  updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
+  deleteEpic(id: ID!): Epic!
 }
 
 enum OrganizationOrdering {
@@ -284,6 +284,12 @@ enum DeploymentRequestPlatformState {
   removed
 }
 
+enum DeploymentRequestSource {
+  xtmhub
+  opencti_demo
+  openaev_demo
+}
+
 enum DeploymentRequestUseCase {
   threat_profiling_cti
   threat_profiling_fimi
@@ -414,6 +420,7 @@ input CreateDeploymentRequestInput {
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
   use_case: DeploymentRequestUseCase
+  source: DeploymentRequestSource!
 }
 
 input UpdateDeploymentRequestInput {
@@ -541,6 +548,7 @@ enum DocumentMetadataKeyCode {
   manager_supported
   playbook_supported
   image_type
+  minimum_deployable_version
 }
 
 type ShareableResource {
@@ -844,6 +852,7 @@ type Connector implements Node & Document & Integration {
   playbook_supported: Boolean!
   datasheet_url: String
   demo_url: String
+  minimum_deployable_version: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {
@@ -1207,82 +1216,6 @@ type Subscription {
   UserPending(organizationId: ID!): UserPendingSubscription
 }
 
-enum FiligranProduct {
-  opencti
-  openaev
-  opengrc
-  xtmone
-  xtmhub
-}
-
-enum Timeline {
-  now
-  next
-  under_consideration
-}
-
-enum EpicType {
-  other
-  integration
-}
-
-type Epic implements Node {
-  id: ID!
-  epic: String!
-  title: String!
-  short_description: String!
-  description: String!
-  active: Boolean!
-  product: FiligranProduct!
-  timeline: Timeline!
-  epic_type: EpicType!
-  document: Document
-  document_id: ID
-  uploader_id: String!
-  updater_id: String
-  created_at: Date!
-  updated_at: Date
-}
-
-input CreateEpicInput {
-  epic: String!
-  title: String!
-  short_description: String!
-  description: String!
-  active: Boolean
-  product: FiligranProduct!
-  timeline: Timeline!
-  is_integration: Boolean
-  illustration_document: Upload
-}
-
-input UpdateEpicInput {
-  epic: String
-  title: String
-  short_description: String
-  description: String
-  active: Boolean
-  product: FiligranProduct
-  timeline: Timeline
-  is_integration: Boolean
-  illustration_document: Upload
-}
-
-type EpicEdge {
-  cursor: String!
-  node: Epic!
-}
-
-type EpicConnection {
-  totalCount: Int!
-  edges: [EpicEdge!]!
-  pageInfo: PageInfo!
-}
-
-enum EpicOrdering {
-  epic
-}
-
 type PlatformProvider {
   name: String!
   type: String!
@@ -1294,38 +1227,6 @@ type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
-}
-
-type UseCase implements Node {
-  id: ID!
-  name: String!
-  color: String!
-}
-
-enum UseCaseOrdering {
-  name
-  color
-}
-
-type UseCaseEdge {
-  cursor: String!
-  node: UseCase!
-}
-
-type UseCaseConnection {
-  totalCount: Int!
-  edges: [UseCaseEdge!]!
-  pageInfo: PageInfo!
-}
-
-input AddUseCaseInput {
-  name: String!
-  color: String!
-}
-
-input EditUseCaseInput {
-  name: String
-  color: String
 }
 
 enum SubscriptionOrdering {
@@ -1373,6 +1274,38 @@ input OneClickDeployInput {
 
 type SendTelemetryMutation {
   oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
+}
+
+type UseCase implements Node {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+enum UseCaseOrdering {
+  name
+  color
+}
+
+type UseCaseEdge {
+  cursor: String!
+  node: UseCase!
+}
+
+type UseCaseConnection {
+  totalCount: Int!
+  edges: [UseCaseEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddUseCaseInput {
+  name: String!
+  color: String!
+}
+
+input EditUseCaseInput {
+  name: String
+  color: String
 }
 
 type GenericServiceCapability implements Node {
@@ -1529,7 +1462,6 @@ input EditUserCapabilitiesInput {
 input EditMeUserInput {
   first_name: String
   last_name: String
-  picture: String
   country: String
 }
 
@@ -1574,6 +1506,82 @@ type MeUserSubscription {
 type UserPendingSubscription {
   delete: User
   invalidate: OrganizationId
+}
+
+enum FiligranProduct {
+  opencti
+  openaev
+  opengrc
+  xtmone
+  xtmhub
+}
+
+enum Timeline {
+  now
+  next
+  under_consideration
+}
+
+enum EpicType {
+  other
+  integration
+}
+
+type Epic implements Node {
+  id: ID!
+  epic: String!
+  title: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  product: FiligranProduct!
+  timeline: Timeline!
+  epic_type: EpicType!
+  document: Document
+  document_id: ID
+  uploader_id: String!
+  updater_id: String
+  created_at: Date!
+  updated_at: Date
+}
+
+input CreateEpicInput {
+  epic: String!
+  title: String!
+  short_description: String!
+  description: String!
+  active: Boolean
+  product: FiligranProduct!
+  timeline: Timeline!
+  is_integration: Boolean
+  illustration_document: Upload
+}
+
+input UpdateEpicInput {
+  epic: String
+  title: String
+  short_description: String
+  description: String
+  active: Boolean
+  product: FiligranProduct
+  timeline: Timeline
+  is_integration: Boolean
+  illustration_document: Upload
+}
+
+type EpicEdge {
+  cursor: String!
+  node: Epic!
+}
+
+type EpicConnection {
+  totalCount: Int!
+  edges: [EpicEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum EpicOrdering {
+  epic
 }
 
 enum PortalCapability {

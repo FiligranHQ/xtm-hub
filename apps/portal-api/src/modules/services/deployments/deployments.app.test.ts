@@ -22,6 +22,7 @@ import {
   DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestSource,
   DeploymentRequestUseCase,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
@@ -49,8 +50,8 @@ import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { deleteSubscription } from '../../subcription/subscription.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
-  TELEMETRY_SOURCE,
   TelemetryOrganizationType,
+  TelemetrySource,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
@@ -115,6 +116,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.OpenctiDemo,
       });
 
       // Then
@@ -139,6 +141,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: DeploymentRequestUseCase.ThreatHunting,
+        source: DeploymentRequestSource.OpenctiDemo,
       });
 
       expect(dbDeploymentRequest).toBeDefined();
@@ -166,6 +169,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       // Then
@@ -190,6 +194,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: DeploymentRequestUseCase.ThreatHunting,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
@@ -228,6 +233,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       // Then
@@ -245,6 +251,7 @@ describe('Deployment app', () => {
         platform_identifier: 'unknown' as PlatformIdentifier,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
@@ -271,6 +278,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
@@ -292,6 +300,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       expect(deployment).toBeDefined();
@@ -307,6 +316,7 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
+        source: DeploymentRequestSource.Xtmhub,
       });
 
       expect(deployment).toBeDefined();
@@ -315,12 +325,14 @@ describe('Deployment app', () => {
 
     describe('telemetry', () => {
       it.each`
-        product                       | targetProduct
-        ${PlatformIdentifier.Opencti} | ${'open-cti'}
-        ${PlatformIdentifier.Openaev} | ${'open-aev'}
+        product                       | targetProduct | source                                 | telemetrySource
+        ${PlatformIdentifier.Opencti} | ${'open-cti'} | ${DeploymentRequestSource.OpenctiDemo} | ${TelemetrySource.DEMO_OPENCTI}
+        ${PlatformIdentifier.Openaev} | ${'open-aev'} | ${DeploymentRequestSource.OpenaevDemo} | ${TelemetrySource.DEMO_OPENAEV}
+        ${PlatformIdentifier.Opencti} | ${'open-cti'} | ${DeploymentRequestSource.Xtmhub}      | ${TelemetrySource.XTMHUB}
+        ${PlatformIdentifier.Openaev} | ${'open-aev'} | ${DeploymentRequestSource.Xtmhub}      | ${TelemetrySource.XTMHUB}
       `(
         'should send a telemetry event when trial for $product platform is launched',
-        async ({ product, targetProduct }) => {
+        async ({ product, targetProduct, source, telemetrySource }) => {
           vi.useFakeTimers();
           const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
           vi.setSystemTime(date);
@@ -333,6 +345,7 @@ describe('Deployment app', () => {
             platform_identifier: product,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
+            source,
           });
 
           expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -341,7 +354,7 @@ describe('Deployment app', () => {
             organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
             organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             organization_type: TelemetryOrganizationType.PROFESSIONAL,
-            source: TELEMETRY_SOURCE,
+            source: telemetrySource,
             email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
             job_title: DeploymentRequestJobTitle.CLevel,
             user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
@@ -370,6 +383,7 @@ describe('Deployment app', () => {
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
+          source: DeploymentRequestSource.Xtmhub,
         });
 
         expect(deployment).toBeDefined();
@@ -387,6 +401,7 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
+            source: DeploymentRequestSource.Xtmhub,
           });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -429,6 +444,7 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
+            source: DeploymentRequestSource.Xtmhub,
           });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -481,6 +497,7 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
+            source: DeploymentRequestSource.Xtmhub,
           });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -523,6 +540,7 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
+            source: DeploymentRequestSource.Xtmhub,
           });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -808,6 +826,7 @@ describe('Deployment app', () => {
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
         failure_reason: 'not failed',
+        source: DeploymentRequestSource.Xtmhub,
       });
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
@@ -992,7 +1011,7 @@ describe('Deployment app', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: initialDeployment.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,
@@ -1087,6 +1106,10 @@ describe('Deployment app', () => {
             firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
             platformUrl: 'http://example.com',
             platformIdentifier: PlatformIdentifier.Opencti,
+            globalServiceInstanceId: toGlobalId(
+              'ServiceInstance',
+              initialDeployment.service_instance_id
+            ),
           },
         });
 
@@ -1490,7 +1513,7 @@ describe('Deployment app', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         deployment_id: deployment.id,
         deployment_type: DeploymentRequestDeploymentType.Trial,
@@ -1721,7 +1744,7 @@ describe('Deployment app', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
@@ -1736,7 +1759,7 @@ describe('Deployment app', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
@@ -1950,7 +1973,7 @@ describe('Deployment app', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: pendingRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
@@ -1965,7 +1988,7 @@ describe('Deployment app', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: pendingRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
@@ -2112,7 +2135,7 @@ describe('Deployment app', () => {
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: SYSTEM_USER_UUID,
         deployment_id: trial?.id,
         deployment_type: DeploymentRequestDeploymentType.Trial,
@@ -2260,7 +2283,7 @@ describe('Deployment app', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
-          source: TELEMETRY_SOURCE,
+          source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           deployment_id: queuedDeploymentRequest!.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,

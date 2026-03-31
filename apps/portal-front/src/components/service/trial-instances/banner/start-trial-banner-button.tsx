@@ -38,6 +38,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@filigran/ui';
+import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PlatformIdentifier } from '@generated/oneClickDeployMutation.graphql';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
@@ -93,6 +94,7 @@ export const StartTrialBannerButton = () => {
           ...valuesWithoutAcceptTerms,
           platform_identifier: platformIdentifier,
           type: DeploymentRequestDeploymentTypeEnum.TRIAL,
+          source: DeploymentRequestSourceEnum.XTMHUB,
         },
       },
       updater: () => {

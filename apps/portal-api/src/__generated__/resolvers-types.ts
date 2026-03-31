@@ -135,6 +135,7 @@ export type Connector = Document & Integration & Node & {
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   manager_supported: Scalars['Boolean']['output'];
+  minimum_deployable_version?: Maybe<Scalars['String']['output']>;
   minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   playbook_supported: Scalars['Boolean']['output'];
@@ -168,6 +169,7 @@ export type CreateDeploymentRequestInput = {
   job_title?: InputMaybe<DeploymentRequestJobTitle>;
   platform_identifier: PlatformIdentifier;
   region: DeploymentRequestPlatformRegion;
+  source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
   use_case?: InputMaybe<DeploymentRequestUseCase>;
 };
@@ -443,6 +445,12 @@ export enum DeploymentRequestPlatformState {
   Unprovisioned = 'unprovisioned'
 }
 
+export enum DeploymentRequestSource {
+  OpenaevDemo = 'openaev_demo',
+  OpenctiDemo = 'opencti_demo',
+  Xtmhub = 'xtmhub'
+}
+
 export enum DeploymentRequestUseCase {
   AttackSimulation = 'attack_simulation',
   CentralizingKnowledge = 'centralizing_knowledge',
@@ -519,6 +527,7 @@ export enum DocumentMetadataKeyCode {
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   ManagerSupported = 'manager_supported',
+  MinimumDeployableVersion = 'minimum_deployable_version',
   PlaybookSupported = 'playbook_supported',
   ProductVersion = 'product_version',
   SourceCode = 'source_code',
@@ -545,7 +554,6 @@ export type EditMeUserInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
-  picture?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditServiceCapabilityInput = {
@@ -793,7 +801,6 @@ export type Mutation = {
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
-  mergeTest: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
   registerPlatform: RegistrationResponse;
@@ -812,6 +819,7 @@ export type Mutation = {
   updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups?: Maybe<Success>;
+  uploadUserPicture: User;
 };
 
 
@@ -1021,12 +1029,6 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationMergeTestArgs = {
-  from: Scalars['ID']['input'];
-  target: Scalars['ID']['input'];
-};
-
-
 export type MutationRefreshPlatformRegistrationConnectivityStatusArgs = {
   input: RefreshPlatformRegistrationConnectivityStatusInput;
 };
@@ -1111,6 +1113,11 @@ export type MutationUpdatePlatformServiceMetadataArgs = {
 
 export type MutationUpdateServiceGroupsArgs = {
   input: UpdateServiceGroupsInput;
+};
+
+
+export type MutationUploadUserPictureArgs = {
+  document: Scalars['Upload']['input'];
 };
 
 export type Node = {
@@ -2398,6 +2405,7 @@ export type ResolversTypes = ResolversObject<{
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
   DeploymentRequestPlatformState: DeploymentRequestPlatformState;
+  DeploymentRequestSource: DeploymentRequestSource;
   DeploymentRequestUseCase: DeploymentRequestUseCase;
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
@@ -2753,6 +2761,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  minimum_deployable_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   playbook_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -3115,7 +3124,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
   refreshUserPlatformToken?: Resolver<ResolversTypes['RefreshUserPlatformTokenResponse'], ParentType, ContextType>;
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
@@ -3134,6 +3142,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
+  uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

@@ -95,7 +95,9 @@ const ShareableResourceConnectorSlug = ({
               {canClickOnDeployButton ? (
                 <OneClickDeploy
                   documentData={documentData}
-                  requiredProductVersion={documentData.product_version}
+                  requiredProductVersion={
+                    documentData.minimum_deployable_version
+                  }
                 />
               ) : (
                 <SimpleTooltip

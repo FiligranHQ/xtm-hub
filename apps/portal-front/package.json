@@ -29,7 +29,7 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "extract-files": "13.0.0",
-    "graphql": "16.13.1",
+    "graphql": "16.13.2",
     "graphql-sse": "2.6.0",
     "next": "16.1.7",
     "next-intl": "4.8.3",

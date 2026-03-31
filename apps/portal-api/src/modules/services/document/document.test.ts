@@ -22,9 +22,9 @@ import { PortalContext } from '../../../model/portal-context';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
-  TELEMETRY_SOURCE,
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetrySource,
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
@@ -320,7 +320,7 @@ describe('increment shared counter', () => {
       organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       organization_name: 'Filigran',
       organization_type: 'Professional',
-      source: TELEMETRY_SOURCE,
+      source: TelemetrySource.XTMHUB,
       user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
@@ -348,7 +348,7 @@ describe('increment shared counter', () => {
       '@timestamp': '2025-02-03T13:12:15.000Z',
       event_type: TelemetryEventType.SHARE,
       organization_type: 'Public',
-      source: TELEMETRY_SOURCE,
+      source: TelemetrySource.XTMHUB,
       service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,

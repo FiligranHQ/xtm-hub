@@ -31,18 +31,21 @@ import {
 } from 'react-relay';
 
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
+import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
 interface Props {
   openForm?: boolean;
   platformIdentifier?: PlatformIdentifierEnum;
+  source: DeploymentRequestSourceEnum;
 }
 
 // Component
 export const StartTrialButton: React.FC<Props> = ({
   openForm = false,
   platformIdentifier = PlatformIdentifierEnum.OPENCTI,
+  source,
 }) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
@@ -90,6 +93,7 @@ export const StartTrialButton: React.FC<Props> = ({
           ...valuesWithoutAcceptTerms,
           platform_identifier: platformIdentifier,
           type: DeploymentRequestDeploymentTypeEnum.TRIAL,
+          source,
         },
       },
       updater: (store) => {

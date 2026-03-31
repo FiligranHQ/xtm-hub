@@ -1,8 +1,8 @@
 import UseCase, {
   UseCaseInitializer,
   UseCaseMutator,
-} from '../../../model/kanel/public/UseCase';
-import { objectUseCaseDomain } from '../objectUseCase/object-useCase.domain';
+} from '../../model/kanel/public/UseCase';
+import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseDomain } from './use-case.domain';
 
 export const useCaseApp = {

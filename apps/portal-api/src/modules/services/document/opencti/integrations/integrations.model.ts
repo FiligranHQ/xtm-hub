@@ -49,6 +49,7 @@ export type Connector = Integration & {
   integration_subtype: string;
   manager_supported: boolean;
   playbook_supported: boolean;
+  minimum_deployable_version?: string;
 };
 
 export type CsvFeedMetadata = MetadataArray<
@@ -123,6 +124,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.ManagerSupported },
   { key: DocumentMetadataKeyCode.PlaybookSupported },
+  { key: DocumentMetadataKeyCode.MinimumDeployableVersion, optional: true },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];

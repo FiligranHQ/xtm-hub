@@ -4,7 +4,7 @@ import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from '../telemetry/telemetry.app';
-import { TELEMETRY_SOURCE } from '../telemetry/telemetry.const';
+import { TelemetrySource } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { organizationsApp } from './organizations.app';
 import {
@@ -42,7 +42,7 @@ describe('organizationsApp', () => {
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         organization_name: 'new OrgaName',
         organization_type: 'Professional',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         domains: [
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST.NAME,
@@ -72,7 +72,7 @@ describe('organizationsApp', () => {
         organization_id: expect.any(String),
         organization_name: 'test.com',
         organization_type: 'Professional',
-        source: TELEMETRY_SOURCE,
+        source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         domains: ['test.com', 'test.fr'],
       });

@@ -23,6 +23,7 @@ const COLUMN_ENUM_MAP = {
     use_case: 'DeploymentRequestUseCase',
     activity_sector: 'DeploymentRequestActivitySector',
     job_title: 'DeploymentRequestJobTitle',
+    source: 'DeploymentRequestSource'
   },
   DeploymentRequestQuota: {
     platform_identifier: 'PlatformIdentifier',

@@ -1,8 +1,10 @@
+import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import {
   contextBypassUser,
+  contextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -41,7 +43,6 @@ describe('User profile app', () => {
       await updateUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID, {
         first_name: 'firstName',
         last_name: 'lastName',
-        picture: null,
         country: null,
       });
     });
@@ -59,13 +60,9 @@ describe('User profile app', () => {
         contextBypassUser.user,
         {
           last_name: 'anotherLastName',
-          picture: 'https://s.gravatar.com/avatar/aaaa.png',
         }
       );
       expect(userReturned.last_name).toStrictEqual('anotherLastName');
-      expect(userReturned.picture).toStrictEqual(
-        'https://s.gravatar.com/avatar/aaaa.png'
-      );
     });
   });
 
@@ -178,6 +175,96 @@ describe('User profile app', () => {
       await expect(
         usersProfileApp.transferPersonalSpace('noId' as UserTransferRequestId)
       ).rejects.toThrow();
+    });
+  });
+
+  describe('uploadUserPicture', () => {
+    afterEach(async () => {
+      vi.restoreAllMocks();
+      await updateUser(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID, {
+        picture: null,
+        picture_minio: null,
+      });
+    });
+
+    const createMockUpload = (
+      filename = 'test.png',
+      mimetype = 'image/png'
+    ) => ({
+      file: {
+        filename,
+        mimetype,
+        encoding: '7bit',
+        createReadStream: () => {
+          return Readable.from(Buffer.from('fake-image-content'));
+        },
+      },
+      promise: Promise.resolve(),
+    });
+
+    const mockMinIOClient = async () => {
+      const MinIOClientModule = await import('../../thirdparty/minio/client');
+      return {
+        insertFile: vi
+          .spyOn(MinIOClientModule.MinIOClient, 'insertFile')
+          .mockResolvedValue('picture/test_123.png'),
+        deleteFile: vi
+          .spyOn(MinIOClientModule.MinIOClient, 'deleteFile')
+          .mockResolvedValue(undefined),
+      };
+    };
+
+    it('should upload picture and update user', async () => {
+      const { insertFile } = await mockMinIOClient();
+
+      const mockUpload = createMockUpload();
+      const result = await usersProfileApp.uploadUserPicture(
+        contextSimpleUserSecondOrga.user,
+        mockUpload
+      );
+
+      expect(insertFile).toHaveBeenCalledOnce();
+      expect(result.picture).toContain('/user/picture/');
+      expect(result.picture).toContain(contextSimpleUserSecondOrga.user.id);
+    });
+
+    it('should delete previous picture from MinIO when uploading new one', async () => {
+      const { insertFile, deleteFile } = await mockMinIOClient();
+
+      const mockUpload1 = createMockUpload('first.png');
+      await usersProfileApp.uploadUserPicture(
+        contextSimpleUserSecondOrga.user,
+        mockUpload1
+      );
+
+      const userWithPicture = {
+        ...contextSimpleUserSecondOrga.user,
+        picture_minio: 'picture/first_123.png',
+      };
+
+      const mockUpload2 = createMockUpload('second.png');
+      await usersProfileApp.uploadUserPicture(userWithPicture, mockUpload2);
+
+      expect(deleteFile).toHaveBeenCalledWith('picture/first_123.png');
+      expect(insertFile).toHaveBeenCalledTimes(2);
+    });
+
+    it('should continue upload even if deleting previous picture fails', async () => {
+      const { deleteFile } = await mockMinIOClient();
+      deleteFile.mockRejectedValue(new Error('MinIO delete error'));
+
+      const userWithPicture = {
+        ...contextSimpleUserSecondOrga.user,
+        picture_minio: 'picture/old_123.png',
+      };
+
+      const mockUpload = createMockUpload();
+      const result = await usersProfileApp.uploadUserPicture(
+        userWithPicture,
+        mockUpload
+      );
+
+      expect(result.picture).toContain('/user/picture/');
     });
   });
 });

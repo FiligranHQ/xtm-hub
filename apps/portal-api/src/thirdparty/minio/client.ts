@@ -136,6 +136,28 @@ export const MinIOClient = {
     };
   },
 
+  uploadFile: async (
+    file: UploadedFile,
+    key: string,
+    userId: string,
+    fileName: string
+  ): Promise<string> => {
+    const fileParams = {
+      Bucket: config.get<string>('minio.bucketName'),
+      Key: key,
+      Body: file.createReadStream(),
+      Metadata: {
+        mimetype: file.mimetype,
+        filename: fileName,
+        encoding: file.encoding,
+        Uploadinguserid: userId,
+        ServiceInstanceId: 'none',
+      },
+    };
+
+    return MinIOClient.insertFile(fileParams);
+  },
+
   downloadFile: async (minioName: string) => {
     try {
       const object = await s3Client.send(

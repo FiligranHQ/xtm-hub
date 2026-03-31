@@ -213,6 +213,7 @@
       "UNKNOWN_ERROR": "An unknown error occurred",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "An error occurred while updating platform service metadata",
+      "UPLOAD_USER_PICTURE_ERROR": "An error occurred while uploading your profile picture",
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
       "YOU_CAN_NOT_LOGIN": "You can not login"
@@ -450,10 +451,12 @@
     "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
+    "Picture": "Picture",
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
     },
     "Title": "Profile",
+    "UpdatePicture": "Update picture",
     "UpdateProfile": "Update profile",
     "PersonalSpace": {
       "SuccessTransfer": "Personal space successfully transfered",
@@ -644,11 +647,13 @@
       "ImageLabel": "Images",
       "LogoLabel": "Logo",
       "ManagerSupportedLabel": "Manager supported",
+      "MinimumDeployableVersionLabel": "{platform} deployable from hub version",
+      "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "Name",
       "NamePlaceholder": "{documentType} name",
       "NoImage": "No image selected",
       "PlaybookSupportedLabel": "Playbook supported",
-      "ProductVersionLabel": "{platform} version",
+      "ProductVersionLabel": "{platform} compatibility version",
       "ProductVersionPlaceholder": "1.0.0",
       "PublishedPlaceholder": "Is the {documentType} published?",
       "Restore": "Restore",
@@ -886,7 +891,8 @@
         "Downloads": "Downloads",
         "LastUpdatedAt": "Last updated at",
         "Overview": "Overview",
-        "ProductVersion": "Product minimum version",
+        "MinimumDeployableVersion": "{platform} deployable from hub version",
+        "ProductVersion": "{platform} compatibility version",
         "Shares": "Shares",
         "IntegrationType": "Type",
         "IntegrationSubType": "Subtype",
@@ -1245,6 +1251,7 @@
     "Deleted": "has been deleted",
     "Details": "Details",
     "Download": "Download",
+    "Edit": "Edit",
     "Error": "Error",
     "FailedToCopy": "Failed to copy",
     "Form": {

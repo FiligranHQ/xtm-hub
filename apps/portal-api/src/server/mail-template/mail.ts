@@ -32,6 +32,14 @@ export interface FreeTrialRegistered {
   firstName: string;
   platformUrl: string;
   platformIdentifier: PlatformIdentifier;
+  globalServiceInstanceId: string;
+}
+export interface FreeTrialUserAddedModel {
+  firstName: string;
+  platformUrl: string;
+  platformIdentifier: PlatformIdentifier;
+  adminEmail: string;
+  trialEndDate: string;
 }
 export interface FreeTrialGenericModel {
   firstName: string;
@@ -101,6 +109,7 @@ export type MailTemplates = {
   free_trial_provisioning: FreeTrialGenericModel;
   free_trial_cancelled: FreeTrialGenericModel;
   free_trial_expired: FreeTrialGenericModel;
+  free_trial_user_added: FreeTrialUserAddedModel;
   organization_pending_user_digest: OrganizationPendingUserDigestModel;
   admin_saas_instance_requested: AdminSaasInstanceRequestedModel;
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -151,6 +160,10 @@ export const templateSubjects: {
     `Your ${PlatformIdentifierToString[params.platformIdentifier]} Trial Has Been Cancelled`,
   free_trial_expired: (params: FreeTrialGenericModel) =>
     `Your ${PlatformIdentifierToString[params.platformIdentifier]} Free Trial Has Expired`,
+  free_trial_user_added: (params: FreeTrialUserAddedModel) =>
+    `Welcome to your ${
+      PlatformIdentifierToString[params.platformIdentifier]
+    } free trial!`,
   organization_pending_user_digest: () =>
     'XTM Hub - Users Requesting to Join Your Organization',
   admin_saas_instance_requested: (params: AdminSaasInstanceRequestedModel) => {

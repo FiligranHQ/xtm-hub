@@ -234,6 +234,7 @@
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
       "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
+      "UPLOAD_USER_PICTURE_ERROR": "Une erreur s'est produite lors du téléchargement de votre photo de profil",
       "USER_DISABLED": "L'utilisateur est désactivé",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
       "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter"
@@ -471,10 +472,12 @@
     "xtmhub": "XTM Hub"
   },
   "ProfilePage": {
+    "Picture": "Photo de profil",
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
     },
     "Title": "Profile",
+    "UpdatePicture": "Mettre à jour la photo de profil",
     "UpdateProfile": "Mise à jour du profil",
     "PersonalSpace": {
       "SuccessTransfer": "Espace personnel transféré avec succès",
@@ -665,11 +668,13 @@
       "ImageLabel": "Images",
       "LogoLabel": "Logo",
       "ManagerSupportedLabel": "Gestionnaire pris en charge",
+      "MinimumDeployableVersionLabel": "Version minimale pour déployer sur {platform}",
+      "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "Nom",
       "NamePlaceholder": "nom {documentType}",
       "NoImage": "Pas d'image sélectionnée",
       "PlaybookSupportedLabel": "Playbook pris en charge",
-      "ProductVersionLabel": "version {platform}",
+      "ProductVersionLabel": "Version de compatibilité d'{platform}",
       "ProductVersionPlaceholder": "1.0.0",
       "PublishedPlaceholder": "Le {documentType} est-il publié ?",
       "Restore": "Restaurer",
@@ -907,7 +912,8 @@
         "Downloads": "Téléchargements",
         "LastUpdatedAt": "Dernière mise à jour le",
         "Overview": "Vue d'ensemble",
-        "ProductVersion": "Version minimale du produit",
+        "MinimumDeployableVersion": "Version minimale pour être déployé sur {platform}",
+        "ProductVersion": "Version de compatibilité d'{platform}",
         "Shares": "Actions",
         "IntegrationType": "Type",
         "IntegrationSubType": "Sous-type",
@@ -1266,6 +1272,7 @@
     "Deleted": "a été supprimé",
     "Details": "Details",
     "Download": "Télécharger",
+    "Edit": "Modifier",
     "Error": "Erreur",
     "FailedToCopy": "Échec de la copie",
     "Form": {
