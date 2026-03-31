@@ -16,9 +16,9 @@ import serviceGroupResolver from '../modules/services/group/service-group.resolv
 import registrationResolver from '../modules/services/registration/registration.resolver';
 import ServiceInstanceResolver from '../modules/services/services.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
-import useCaseResolver from '../modules/settings/useCase/use-case.resolver';
 import subscriptionsResolver from '../modules/subcription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
+import useCaseResolver from '../modules/use-case/use-case.resolver';
 import serviceCapabilityResolver from '../modules/user_service/service-capability/service-capability.resolver';
 import userServiceResolver from '../modules/user_service/user_service.resolver';
 import usersResolver from '../modules/users/users.resolver';

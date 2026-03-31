@@ -1,6 +1,7 @@
 import config from 'config';
 import { EditMeUserInput } from '../../__generated__/resolvers-types';
 import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
+import { UserLoadUserBy } from '../../model/user';
 import { sendMail } from '../../server/mail-service';
 import { updateUserSession } from '../../session-store-manager';
 import { auth0Client } from '../../thirdparty/auth0/client';
@@ -89,7 +90,10 @@ export const usersProfileApp = {
 
     return updateAndDispatchUser(meUser.id);
   },
-  requestTransferPersonalSpace: async (user, newEmail: string) => {
+  requestTransferPersonalSpace: async (
+    user: UserLoadUserBy,
+    newEmail: string
+  ) => {
     if (!isValidEmail(newEmail)) {
       throw new Error(ErrorCode.InvalidEmail);
     }

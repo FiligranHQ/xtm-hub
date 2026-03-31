@@ -22,10 +22,10 @@ import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { extractId } from '../../../utils/utils';
-import { objectUseCaseDomain } from '../../settings/objectUseCase/object-useCase.domain';
-import { useCaseApp } from '../../settings/useCase/use-case.app';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateEvent } from '../../telemetry/telemetry.helper';
+import { objectUseCaseDomain } from '../../use-case/object-use-case/object-use-case.domain';
+import { useCaseApp } from '../../use-case/use-case.app';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
 import {
   ALL_METADATA_KEYS,

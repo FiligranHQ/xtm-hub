@@ -1,7 +1,7 @@
 import { Resolvers } from '../../../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../../../model/kanel/public/ServiceInstance';
-import { useCaseDomain } from '../../../../settings/useCase/use-case.domain';
 import { subscriptionApp } from '../../../../subcription/subscription.app';
+import { useCaseDomain } from '../../../../use-case/use-case.domain';
 import { getServiceInstance } from '../../../service-instance.domain';
 import { DocumentChildrenDomain } from '../../domain/document.children.domain';
 import { DocumentDomain } from '../../domain/document.domain';
