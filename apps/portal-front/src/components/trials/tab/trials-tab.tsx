@@ -1,4 +1,5 @@
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/trials-manage-users-dialog';
+import { formatCancellationReason } from '@/components/trials/tab/trials-tab.utils';
 import { useTrialsListLocalstorage } from '@/components/trials/trial-list-localstorage';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import {
@@ -369,22 +370,7 @@ const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 const reason = row.original.cancellation_reason;
                 if (!reason) return <span>-</span>;
-                const otherLabel = t(
-                  'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOther'
-                );
-                let displayReason: string;
-                if (reason.startsWith('Other:')) {
-                  const freeText = reason.slice('Other:'.length).trim();
-                  displayReason = freeText
-                    ? `${otherLabel}: ${freeText}`
-                    : otherLabel;
-                } else if (reason.toLowerCase() === 'other') {
-                  displayReason = otherLabel;
-                } else {
-                  displayReason = t(
-                    `Service.Trials.CancellationReason.${reason}`
-                  );
-                }
+                const displayReason = formatCancellationReason(reason, t);
                 return (
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
