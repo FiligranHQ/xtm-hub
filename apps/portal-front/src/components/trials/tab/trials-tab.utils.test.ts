@@ -25,84 +25,68 @@ const mockT = (key: string): string => translations[key] ?? key;
 
 describe('formatCancellationReason', () => {
   describe('standard reasons (known keywords)', () => {
-    it.each([
-      ['value', translations['Service.Trials.CancellationReason.value']],
-      [
-        'compatibility',
-        translations['Service.Trials.CancellationReason.compatibility'],
-      ],
-      [
-        'complexity',
-        translations['Service.Trials.CancellationReason.complexity'],
-      ],
-      [
-        'legal-security',
-        translations['Service.Trials.CancellationReason.legal-security'],
-      ],
-      [
-        'expertise',
-        translations['Service.Trials.CancellationReason.expertise'],
-      ],
-    ])('should translate "%s" to its full label', (keyword, expected) => {
-      expect(formatCancellationReason(keyword, mockT)).toBe(expected);
-    });
+    it.each`
+      reason              | expected
+      ${'value'}          | ${translations['Service.Trials.CancellationReason.value']}
+      ${'compatibility'}  | ${translations['Service.Trials.CancellationReason.compatibility']}
+      ${'complexity'}     | ${translations['Service.Trials.CancellationReason.complexity']}
+      ${'legal-security'} | ${translations['Service.Trials.CancellationReason.legal-security']}
+      ${'expertise'}      | ${translations['Service.Trials.CancellationReason.expertise']}
+    `(
+      'should translate "$reason" to its full label',
+      ({ reason, expected }) => {
+        expect(formatCancellationReason(reason, mockT)).toBe(expected);
+      }
+    );
   });
 
   describe('"Other" without free text', () => {
-    it('should translate "Other" (capital, new submission) to the Other label', () => {
-      expect(formatCancellationReason('Other', mockT)).toBe('Other');
-    });
-
-    it('should translate "other" (lowercase, migrated) to the Other label', () => {
-      expect(formatCancellationReason('other', mockT)).toBe('Other');
-    });
-
-    it('should translate "OTHER" (any casing) to the Other label', () => {
-      expect(formatCancellationReason('OTHER', mockT)).toBe('Other');
-    });
+    it.each`
+      reason     | description
+      ${'Other'} | ${'capital O — new submission'}
+      ${'other'} | ${'lowercase — migrated from old data'}
+      ${'OTHER'} | ${'all caps — any casing'}
+    `(
+      'should return the Other label for "$reason" ($description)',
+      ({ reason }) => {
+        expect(formatCancellationReason(reason, mockT)).toBe('Other');
+      }
+    );
   });
 
   describe('"Other: <free text>" with free text', () => {
-    it('should format "Other: my custom reason" as "Other: my custom reason"', () => {
-      expect(formatCancellationReason('Other: my custom reason', mockT)).toBe(
-        'Other: my custom reason'
-      );
-    });
-
-    it('should trim whitespace around the free text', () => {
-      expect(
-        formatCancellationReason('Other:   lots of spaces   ', mockT)
-      ).toBe('Other: lots of spaces');
-    });
-
-    it('should handle "Other:" with no text after as just the Other label', () => {
-      expect(formatCancellationReason('Other:', mockT)).toBe('Other');
-    });
-
-    it('should handle "Other:  " with only whitespace as just the Other label', () => {
-      expect(formatCancellationReason('Other:  ', mockT)).toBe('Other');
-    });
-
-    it('should preserve colons in the free text', () => {
-      expect(
-        formatCancellationReason('Other: reason: with colons', mockT)
-      ).toBe('Other: reason: with colons');
-    });
+    it.each`
+      reason                          | expected                        | description
+      ${'Other: my custom reason'}    | ${'Other: my custom reason'}    | ${'standard free text'}
+      ${'Other:   lots of spaces   '} | ${'Other: lots of spaces'}      | ${'whitespace trimmed'}
+      ${'Other:'}                     | ${'Other'}                      | ${'empty after colon'}
+      ${'Other:  '}                   | ${'Other'}                      | ${'only whitespace after colon'}
+      ${'Other: reason: with colons'} | ${'Other: reason: with colons'} | ${'colons preserved in free text'}
+    `(
+      'should format "$reason" as "$expected" ($description)',
+      ({ reason, expected }) => {
+        expect(formatCancellationReason(reason, mockT)).toBe(expected);
+      }
+    );
   });
 
-  describe('i18n integration', () => {
-    it('should use the translated Other label for French locale', () => {
-      const frTranslations: Record<string, string> = {
-        'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOther':
-          'Autre',
-      };
-      const frT = (key: string): string => frTranslations[key] ?? key;
+  describe('i18n — French locale', () => {
+    const frT = (key: string): string =>
+      key ===
+      'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOther'
+        ? 'Autre'
+        : key;
 
-      expect(formatCancellationReason('Other', frT)).toBe('Autre');
-      expect(formatCancellationReason('other', frT)).toBe('Autre');
-      expect(formatCancellationReason('Other: ma raison', frT)).toBe(
-        'Autre: ma raison'
-      );
-    });
+    it.each`
+      reason                | expected
+      ${'Other'}            | ${'Autre'}
+      ${'other'}            | ${'Autre'}
+      ${'Other: ma raison'} | ${'Autre: ma raison'}
+    `(
+      'should return "$expected" for "$reason" in FR',
+      ({ reason, expected }) => {
+        expect(formatCancellationReason(reason, frT)).toBe(expected);
+      }
+    );
   });
 });
