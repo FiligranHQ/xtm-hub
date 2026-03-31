@@ -1,6 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@reference '@filigran/ui/index.css';
+@import "@filigran/ui/theme.css";
+@import "tw-animate-css";
+@import "tailwindcss";
+
+
+@source "../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}";
+@source "../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}";
+
+@variant dark (.dark &);
+@variant mobile (@media screen and (max-width: 40rem));
+
 
 @layer base {
   * {
@@ -17,13 +26,11 @@
     font-family: var(--font-geologica), system-ui, sans-serif;
   }
 
-  @layer base {
-    h1 {
-      @apply txt-title;
-    }
-    h2 {
-      @apply txt-subtitle;
-    }
+  h1 {
+    @apply txt-title;
+  }
+  h2 {
+    @apply txt-subtitle;
   }
 
   body {
@@ -136,3 +143,4 @@
 .w-md-editor-text {
   min-height: 100% !important;
 }
+
